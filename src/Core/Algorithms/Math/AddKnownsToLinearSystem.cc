@@ -111,7 +111,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 
 		if (IsFinite((*x).coeff(p)))
 		{
-			just_copying_inputs = false;
+            just_copying_inputs = false;
 			//knowns++;
 
 			// index_type* rows = a_out->get_rows();

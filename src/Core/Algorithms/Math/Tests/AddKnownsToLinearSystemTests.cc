@@ -161,8 +161,6 @@ namespace
 		(*m)(1,0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2,0) = 3;
 		return m;
-        
-        // Look, I made a change!
 	}
 
     // HELPER METHODS
@@ -174,9 +172,10 @@ namespace
 		for (int r=0; r < ouput->rows(); r++)
 		{
 			for (int c=0; c < ouput->cols(); c++)
-				std::cout << ouput->coeff(r,c);
+				std::cout << ouput->coeff(r,c) << " ";
 			std::cout << std::endl;
 		}
+        std::cout << std::endl;
 	}
 	// method for displaying right hand side vector (DenseColumnMatrixHandle)
 	void dispRHS (DenseColumnMatrixHandle output)
@@ -264,11 +263,6 @@ TEST (AddKnownsToLinearSystemAlgo, X_Contains_NaN)
 	algo.run(LHS(),rhs_zero(3),x_1,output_stiff,output_rhs);
 	dispRHS(output_rhs);
 	dispStiffOutput(output_stiff);
-}
-
-TEST (AddKnownsToLinearSystemAlgo, for_debugging)
-{	
-	system("pause");
 }
 
 // TODO test the output stiff
