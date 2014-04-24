@@ -57,7 +57,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     glLayout->update();
 
     // Set spire transient value (should no longer be used).
-    mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
+    mSpire = std::weak_ptr<Render::SRInterface>(mGLWidget->getSpire());
   }
   else
   {

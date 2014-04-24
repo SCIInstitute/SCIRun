@@ -84,9 +84,9 @@ private:
   void addAutoViewButton();
   void addObjectToggleMenu();
 
-  GLWidget*                     mGLWidget;  ///< GL widget containing context.
-  std::weak_ptr<SRInterface>    mSpire;     ///< Instance of Spire.
-  QToolBar*                     mToolBar;   ///< Tool bar.
+  GLWidget*                           mGLWidget;  ///< GL widget containing context.
+  std::weak_ptr<Render::SRInterface>  mSpire;     ///< Instance of Spire.
+  QToolBar*                           mToolBar;   ///< Tool bar.
   bool shown_;
   std::shared_ptr<class ViewSceneItemManager> itemManager_;
 };

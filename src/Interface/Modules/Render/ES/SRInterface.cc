@@ -26,15 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   February 2013
-
 #include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
-
-#include <Interface/Modules/Render/ES/SRCommonAttributes.h>
-#include <Interface/Modules/Render/ES/SRCommonUniforms.h>
 
 #include <Core/Application/Application.h>
 
@@ -44,7 +38,7 @@
 using namespace std::placeholders;
 
 namespace SCIRun {
-namespace Gui {
+namespace Render {
 
 //------------------------------------------------------------------------------
 SRInterface::SRInterface(std::shared_ptr<GLContext> context,
@@ -494,6 +488,6 @@ void SRInterface::generateColormaps()
 }
 
 
-} // namespace Gui
+} // namespace Render
 } // namespace SCIRun 
 

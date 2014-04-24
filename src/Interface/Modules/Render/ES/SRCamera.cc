@@ -35,7 +35,7 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Render {
 
 //------------------------------------------------------------------------------
 SRCamera::SRCamera(SRInterface& iface) :
@@ -165,6 +165,6 @@ glm::vec2 SRCamera::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
   return mouseScreenSpace;
 }
 
-} // namespace Gui
+} // namespace Render
 } // namespace SCIRun 
 

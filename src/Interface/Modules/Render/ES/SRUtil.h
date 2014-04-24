@@ -26,11 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   August 2013
-
-#ifndef SRUTIL_H
-#define SRUTIL_H
+#ifndef INTERFACE_MODULES_RENDER_ES_SRUTIL_H
+#define INTERFACE_MODULES_RENDER_ES_SRUTIL_H
 
 #include <cstdint>
 #include <string>
@@ -38,7 +35,7 @@
 #include <memory>
 
 namespace SCIRun {
-namespace Gui {
+namespace Render {
 
 // Misc SCIRun utilities.
 
@@ -61,7 +58,7 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
                                   size_t posOffset = 0,
                                   size_t normOffset = sizeof(float) * 3);
 
-} // namespace Gui
+} // namespace Render
 } // namespace SCIRun 
 
 #endif 

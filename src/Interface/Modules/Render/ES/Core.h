@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2013 Scientific Computing and Imaging Institute,
+   Copyright (c) 2014 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -26,38 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   March 2013
+#ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
+#define INTERFACE_MODULES_RENDER_ES_CORE_HPP
 
-#ifndef SPIRE_APPSPECIFIC_SCIRUN_SRCOMMONATTRIBUTES_H
-#define SPIRE_APPSPECIFIC_SCIRUN_SRCOMMONATTRIBUTES_H
-
-#include <tuple>
-
-#include <Interface/Modules/Render/namespaces.h>
+#include <entity-system/ESCoreBase.hpp>
+#include <es-cereal/CerealCore.hpp>
+#include <es-systems/SystemCore.hpp>
+#include <es-acorn/Acorn.hpp>
 
 namespace SCIRun {
-namespace Gui {
+namespace Render {
 
-/// Common uniforms used by Spire.
-/// \todo Look into the ability to rename these uniforms in the future. This is
-/// so that Spire can adapt to other code bases.
-class SRCommonAttributes
+/// Entity system core sitting on top of Acorn.
+class Core : public CPM_ES_ACORN_NS::Acorn
 {
 public:
-  SRCommonAttributes()          {}
-  virtual ~SRCommonAttributes() {}
+  Core();
+  virtual ~Core();
   
-  //----------------------------------------------------------------------------
-  // Common transformations
-  //----------------------------------------------------------------------------
-
-  // static std::tuple<const char*, spire::UNIFORM_TYPE> getObjectToWorldTrafo()
-  // {return std::make_pair("objToWorld", spire::UNIFORM_FLOAT_MAT4);}
-
 };
 
-} // namespace Gui
-} // namespace SCIRun 
+} // namespace Render
+} // namespace SCIRun
 
 #endif 

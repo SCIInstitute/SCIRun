@@ -37,7 +37,7 @@
 #include <arc-look-at/ArcLookAt.hpp>
 
 namespace SCIRun {
-namespace Gui {
+namespace Render {
 
 /// Basic camera class for spire, mimicking SCIRun v4.
 class SRCamera
@@ -108,7 +108,7 @@ private:
 
 };
 
-} // namespace Gui
+} // namespace Render
 } // namespace SCIRun 
 
 #endif 

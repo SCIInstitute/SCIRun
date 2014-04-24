@@ -37,8 +37,6 @@ SET(Interface_Modules_Render_HEADERS
   GLWidget.h
   QtGLContext.h
   ES/SRCamera.h
-  ES/SRCommonAttributes.h
-  ES/SRCommonUniforms.h
   ES/SRInterface.h
   ES/SRUtil.h
 )

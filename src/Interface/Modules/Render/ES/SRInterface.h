@@ -26,9 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   February 2013
-
 #ifndef INTERFACE_MODULES_RENDER_SPIRESCIRUN_SRINTERFACE_H
 #define INTERFACE_MODULES_RENDER_SPIRESCIRUN_SRINTERFACE_H
 
@@ -46,7 +43,7 @@
 #include <glm/glm.hpp>
 
 namespace SCIRun {
-namespace Gui {
+namespace Render {
 
 class SRCamera;
 
@@ -188,7 +185,7 @@ private:
 
 };
 
-} // namespace Gui
+} // namespace Render
 } // namespace SCIRun 
 
 #endif 

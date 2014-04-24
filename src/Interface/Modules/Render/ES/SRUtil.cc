@@ -26,16 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   August 2013
-
 #include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/ES/SRUtil.h>
 
 #include <glm/glm.hpp>
 
 namespace SCIRun {
-namespace Gui {
+namespace Render {
 
 size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
                                   size_t stride, float normalLength,
@@ -112,6 +109,6 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
   return numInVertices;
 }
 
-} // namespace Gui
+} // namespace Render
 } // namespace SCIRun 
 
