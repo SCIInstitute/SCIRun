@@ -79,7 +79,7 @@ AddKnownsToLinearSystemAlgo::run(MatrixHandle a_in,
     return (false);  
   }
 
-  // TODO: if matrix A is sparse (checked and/or converted),
+  /// @todo: if matrix A is sparse (checked and/or converted),
   // then is this call to sparse needed?
   // If the matrix is already sparse, then the pointer to the
   // sparse matrix object is returned...
@@ -196,7 +196,7 @@ AddKnownsToLinearSystemAlgo::run(MatrixHandle a_in,
         a_out->put(j, p, 0.0); 
       }
       
-      //! updating dirichlet node and corresponding entry in b_ptr
+      /// updating dirichlet node and corresponding entry in b_ptr
       a_out->put(p, p, 1.0);
       b_ptr[p] = x_ptr[p];
     }

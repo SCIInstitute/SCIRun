@@ -27,16 +27,15 @@
 */
 
 
-/*
- *  CompGeom.cc
- *
- *  Written by:
- *   Allen Sanderson
- *   SCI Institute
- *   University of Utah
- *   August 2005
- *
- */
+///
+///@file CompGeom.cc
+///
+///@author
+///      Allen Sanderson
+///      SCI Institute
+///      University of Utah
+///@date August 2005
+///
 
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <iostream>

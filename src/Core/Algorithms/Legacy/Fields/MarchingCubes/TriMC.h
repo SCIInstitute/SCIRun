@@ -52,7 +52,7 @@
 namespace SCIRun {
 
 
-//! A Marching Cube tesselator for a triangle face
+/// A Marching Cube tesselator for a triangle face
 
 class TriMC : public BaseMC
 {

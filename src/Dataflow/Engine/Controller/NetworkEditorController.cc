@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Dataflow/Engine/Controller/NetworkEditorController.cc
 
 #include <iostream>
 #include <boost/thread.hpp>
@@ -59,11 +60,12 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   stateFactory_(sf), 
   algoFactory_(af),
   executorFactory_(executorFactory),
-  modulePositionEditor_(mpg)
+  modulePositionEditor_(mpg),
+  signalSwitch_(true)
 {
   dynamicPortManager_.reset(new DynamicPortManager(connectionAdded_, connectionRemoved_, this));
 
-  //TODO should this class own the network or just keep a reference?
+  /// @todo should this class own the network or just keep a reference?
 
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this));
@@ -75,20 +77,30 @@ NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::Net
 {
 }
 
-ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
+ModuleHandle NetworkEditorController::addModule(const std::string& name)
 {
-  auto realModule = addModuleImpl(moduleName);
-  /*emit*/ moduleAdded_(moduleName, realModule);
+  return addModule(ModuleLookupInfo(name));
+}
+
+ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
+{
+  auto realModule = addModuleImpl(info.module_name_);
+  if (signalSwitch_)
+  {
+    /*emit*/ moduleAdded_(info.module_name_, realModule);
+  }
   printNetwork();
   return realModule;
 }
 
 ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleName)
 {
-  //TODO: should pass in entire info struct
+  /// @todo: should pass in entire info struct
   ModuleLookupInfo info;
   info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
+  realModule->addPortConnection(connectPortAdded(boost::bind(&ModuleInterface::portAddedSlot, realModule.get(), _1, _2)));
+  realModule->addPortConnection(connectPortRemoved(boost::bind(&ModuleInterface::portRemovedSlot, realModule.get(), _1, _2)));
   return realModule;
 }
 
@@ -112,7 +124,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   newModule->set_state(module->get_state()->clone());
   moduleAdded_(id.name_, newModule);
 
-  //TODO: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
+  /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   
   BOOST_FOREACH(InputPortHandle input, module->inputPorts())
@@ -121,7 +133,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
     {
       auto conn = input->connection(0);
       auto source = conn->oport_;
-      //TODO: this will work if we define PortId.id# to be 0..n, unique for each module. But what about gaps?
+      /// @todo: this will work if we define PortId.id# to be 0..n, unique for each module. But what about gaps?
       requestConnection(source.get(), newModule->getInputPort(input->id()).get());
     }
   }
@@ -133,10 +145,10 @@ void NetworkEditorController::connectNewModule(const SCIRun::Dataflow::Networks:
 {
   auto newMod = addModule(newModuleName);
 
-  //TODO: see above
+  /// @todo: see above
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 
-  //TODO duplication
+  /// @todo duplication
   if (portToConnect->isInput())
   {
     BOOST_FOREACH(OutputPortHandle p, newMod->outputPorts())
@@ -163,7 +175,7 @@ void NetworkEditorController::connectNewModule(const SCIRun::Dataflow::Networks:
 
 void NetworkEditorController::printNetwork() const
 {
-  //TODO: and make this switchable
+  /// @todo: and make this switchable
   if (false)
   {
     if (theNetwork_)
@@ -357,4 +369,14 @@ DisableDynamicPortSwitch::~DisableDynamicPortSwitch()
 {
   if (dpm_ && first_)
     dpm_->enable();
+}
+
+void NetworkEditorController::disableSignals()
+{
+  signalSwitch_ = false;
+}
+
+void NetworkEditorController::enableSignals()
+{
+  signalSwitch_ = true;
 }

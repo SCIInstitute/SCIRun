@@ -26,10 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-//    File   : SelectFieldROIWithBoxWidget.h
-//    Author : Michael Callahan
-//    Date   : August 2001
+/*
+    @file    SelectFieldROIWithBoxWidget.h
+    @author  Michael Callahan
+    @date    August 2001
+ */
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>

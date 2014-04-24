@@ -31,7 +31,7 @@
 
 #include <Core/Datatypes/MatrixFwd.h>
 
-//TODO DAN
+/// @todo DAN
 
 namespace SCIRun {
 namespace Core {

@@ -49,51 +49,51 @@ public:
   {
     basis_ = &(mesh_->get_basis());
   
-    //! Collect general information on mesh type. These are constants and should
-    //! be accessible down the road by inline function calls. The latter 
-    //! construction was chosen to improve performance and reduce the need for
-    //! for virtual function calls
+    /// Collect general information on mesh type. These are constants and should
+    /// be accessible down the road by inline function calls. The latter 
+    /// construction was chosen to improve performance and reduce the need for
+    /// for virtual function calls
     
     
-    //! cache the mesh basis order (1=liner, 2=quadratic, 3=cubic)
+    /// cache the mesh basis order (1=liner, 2=quadratic, 3=cubic)
     basis_order_   = mesh_->basis_order();
-    //! cache the mesh dimension (0=point,1=curve, 2=surface, or 3=volume)
+    /// cache the mesh dimension (0=point,1=curve, 2=surface, or 3=volume)
     dimension_     = mesh_->dimensionality();
-    //! cache whether we can edit the mesh by adding nodes and elements
+    /// cache whether we can edit the mesh by adding nodes and elements
     is_editable_   = mesh_->is_editable();
-    //! cache whether we haev surface normals
+    /// cache whether we haev surface normals
     has_normals_   = mesh_->has_normals();   
-    //! cache whether we have node points defined or whether we derive them
-    //! implicitly. 
+    /// cache whether we have node points defined or whether we derive them
+    /// implicitly. 
     is_regular_    = (mesh_->topology_geometry()&Mesh::REGULAR) != 0;
-    //! cache whether we  have connectivity defined or whether we assume the data
-    //! to be structured enough so we can derive it implicitly
+    /// cache whether we  have connectivity defined or whether we assume the data
+    /// to be structured enough so we can derive it implicitly
     is_structured_ = (mesh_->topology_geometry()&Mesh::STRUCTURED) != 0;
 
-    //! Store topology information on the mesh:
-    //! This section converts the relevant data out of the underlying older data
-    //! structures.
+    /// Store topology information on the mesh:
+    /// This section converts the relevant data out of the underlying older data
+    /// structures.
     
-    //! Number of nodes in one element
+    /// Number of nodes in one element
     num_nodes_per_elem_  = basis_->number_of_mesh_vertices();
     
-    //! Number of edge nodes for quadratic interpolation model
+    /// Number of edge nodes for quadratic interpolation model
     num_enodes_per_elem_ = basis_->number_of_vertices() - basis_->number_of_mesh_vertices();
     
-    //! Number of edges in one element
+    /// Number of edges in one element
     num_edges_per_elem_  = basis_->number_of_edges();
     
-    //! Number of faces in one element
+    /// Number of faces in one element
     num_faces_per_elem_  = basis_->faces_of_cell();
     
-    //! Number of nodes per face (volume and surface meshes only)
+    /// Number of nodes per face (volume and surface meshes only)
     num_nodes_per_face_  = basis_->vertices_of_face();
     
-    //! Number of edges per face (volume and surface meshes only)
+    /// Number of edges per face (volume and surface meshes only)
     num_edges_per_face_  = 0;
     if (basis_->vertices_of_face() > 0) num_edges_per_face_  = basis_->vertices_of_face()-1; 
     
-    //! Number of gradients per node for cubic interpolation model
+    /// Number of gradients per node for cubic interpolation model
     num_gradients_per_node_ = basis_->num_hderivs();
     
     element_size_ = basis_->domain_size();
@@ -133,9 +133,6 @@ public:
   
   virtual ~VMeshShared() {}
   
-  virtual MeshHandle mesh();
-  virtual VMesh*     vmesh();  
-  
   virtual bool synchronize(unsigned int sync);
   virtual bool unsynchronize(unsigned int sync);
   virtual bool clear_synchronization();
@@ -166,20 +163,6 @@ protected:
 
 
 };
-
-template <class MESH>
-MeshHandle
-VMeshShared<MESH>::mesh()
-{
-  return (MeshHandle(mesh_));
-}
-
-template <class MESH>
-VMesh*
-VMeshShared<MESH>::vmesh()
-{
-  return (this);
-}
 
 template<class MESH>
 void 

@@ -58,7 +58,7 @@ SinCosTable::build_table(int n, double min, double max, double scale)
 
 void SinCosTable::fill_table( double max, double min, double scale )
 {
-  //TODO: white space, casting
+  /// @todo: white space, casting
   double d=max-min;
   for(int i=0;i<n_;i++)
   {

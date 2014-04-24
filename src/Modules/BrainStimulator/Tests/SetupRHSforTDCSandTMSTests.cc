@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -61,7 +61,7 @@ TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForNullInput)
   EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
 }
 
-TEST_F(SetupRHSforTDCSandTMSTests, Foo)
+TEST_F(SetupRHSforTDCSandTMSTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
 }

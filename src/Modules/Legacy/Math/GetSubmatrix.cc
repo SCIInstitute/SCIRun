@@ -27,16 +27,16 @@
 */
 
 
-/*
- *  GetSubmatrix: Clip out a subregion from a Matrix
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   January 2002
- *
- */
+///
+///@class GetSubmatrix
+///@brief Clip out a subregion from a Matrix
+///
+///@author
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  January 2002
+///
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Module.h>

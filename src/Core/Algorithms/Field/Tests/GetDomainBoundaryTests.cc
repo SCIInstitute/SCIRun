@@ -66,14 +66,15 @@ protected:
     // How to set parameters on an algorithm (that come from the GUI)
     algo.set(GetDomainBoundaryAlgo::AddOuterBoundary, includeOuterBoundary);
     
-    // TODO: this logic matches the wacky module behavior
+    /// @todo: this logic matches the wacky module behavior
+
     algo.set(GetDomainBoundaryAlgo::UseRange, useRange);
     if (!useRange)
     {
       algo.set(GetDomainBoundaryAlgo::Domain, domainValue);
       algo.set(GetDomainBoundaryAlgo::MinRange, domainValue);
       algo.set(GetDomainBoundaryAlgo::MaxRange, domainValue);
-      algo.set(GetDomainBoundaryAlgo::UseRange, true);
+	  algo.set(GetDomainBoundaryAlgo::UseRange, true);
     }
 
     FieldHandle boundary;
@@ -96,44 +97,43 @@ protected:
 // expected values of -1 need to be figured out from the v4 GUI.
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_1)
 {
-  runTest(false, true, 1, 8680, 8334);
+  runTest(false, true, 1, 9024, 8574);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_1)
 {
-  runTest(false, false, 1, 9024, 8574);
+  runTest(false, false, 1, 8680, 8334);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_1)
 {
-  runTest(true, false, 1, 17264, 17700);
+  runTest(true, false, 1, 12328, 12324);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_1)
 {
-  runTest(true, true, 1, 12328, 12324);
+  runTest(true, true, 1, 17264, 17700);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_4)
 {
-  runTest(false, false, 4, 9024, 8574);
+  runTest(false, false, 4, 0, 0);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_4)
 {
-  runTest(true, false, 4, 17264, 17700);
+  runTest(true, false, 4, 0, 0);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_4)
 {
-  runTest(false, true, 4, 0, 0);
+  runTest(false, true, 4, 9024, 8574);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_4)
 {
-  runTest(true, true, 4, 0, 0);
+  runTest(true, true, 4, 17264, 17700);
 }
-
 
 TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)
 {
@@ -153,53 +153,55 @@ using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
 class GetDomainBoundaryTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, int, int, int> >
+
 {
 public:
-  FieldHandle boundary;
-  SparseRowMatrixHandle unused;
-  ~GetDomainBoundaryTestsParameterized() {} 
+  FieldHandle boundary_;
+  SparseRowMatrixHandle unused_;
+  GetDomainBoundaryAlgo algo_;
+  FieldHandle latVol_;
+  GetDomainBoundaryTestsParameterized() 
+  {
+    latVol_ = loadFieldFromFile(TestResources::rootDir() / "latVolWithNormData.fld");
+    SCIRun::Core::Logging::Log::get().setVerbose(true);
+  } 
 
 protected:
   virtual void SetUp()
   {
-    SCIRun::Core::Logging::Log::get().setVerbose(true);
-  //}
-    /*void runTest(bool includeOuterBoundary, bool useRange, int domainValue,
-    int expectedBoundaryNodes, int expectedBoundaryElements)
-  {*/
-    FieldHandle latVol = loadFieldFromFile(TestResources::rootDir() / "latVolWithNormData.fld");
-    ASSERT_TRUE(latVol->vmesh()->is_latvolmesh());
-
-    GetDomainBoundaryAlgo algo;
+    ASSERT_TRUE(latVol_->vmesh()->is_latvolmesh());
+    
     // How to set parameters on an algorithm (that come from the GUI)
+    algo_.set(GetDomainBoundaryAlgo::AddOuterBoundary, ::std::tr1::get<0>(GetParam()));
     
-    algo.set(GetDomainBoundaryAlgo::AddOuterBoundary, ::std::tr1::get<0>(GetParam()));
-    
-    //// TODO: this logic matches the wacky module behavior
-    algo.set(GetDomainBoundaryAlgo::UseRange, ::std::tr1::get<1>(GetParam()));
-    if (!::std::tr1::get<1>(GetParam()))//!useRange)
+    /// @todo: this logic matches the wacky module behavior
+    algo_.set(GetDomainBoundaryAlgo::UseRange, ::std::tr1::get<1>(GetParam()));
+    if (!::std::tr1::get<1>(GetParam()))///useRange)
     {
-      algo.set(GetDomainBoundaryAlgo::Domain,   ::std::tr1::get<2>(GetParam()));
-      algo.set(GetDomainBoundaryAlgo::MinRange, ::std::tr1::get<3>(GetParam()));
-      algo.set(GetDomainBoundaryAlgo::MaxRange, ::std::tr1::get<3>(GetParam()));
-      algo.set(GetDomainBoundaryAlgo::UseRange, true);
+      algo_.set(GetDomainBoundaryAlgo::Domain,   ::std::tr1::get<2>(GetParam()));
+      algo_.set(GetDomainBoundaryAlgo::MinRange, ::std::tr1::get<3>(GetParam()));
+      algo_.set(GetDomainBoundaryAlgo::MaxRange, ::std::tr1::get<3>(GetParam()));
+      algo_.set(GetDomainBoundaryAlgo::UseRange, true);
     }
-    algo.runImpl(latVol, unused, boundary);
-
+	//algo_.set(GetDomainBoundaryAlgo::InnerBoundaryOnly, ::std::tr1::get<3>(GetParam()));
+	//algo_.set(GetDomainBoundaryAlgo::NoInnerBoundary, ::std::tr1::get<4>(GetParam()));
+	//algo_.set(GetDomainBoundaryAlgo::DisconnectBoundaries, ::std::tr1::get<5>(GetParam())); 
+    //ASSERT_TRUE(algo_.runImpl(latVol, unused, boundary));
   }
   virtual void TearDown()
   {  }
-
 };
 
 TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)
 {
-    EXPECT_NO_FATAL_FAILURE(GetDomainBoundaryTestsParameterized); 
-    //EXPECT_EQ(0, module->boundary->vmesh()->num_nodes()); 
-    //ASSERT_THAT(boundary, NotNull());
+    //EXPECT_NO_FATAL_FAILURE(GetDomainBoundaryTestsParameterized); 
+    //EXPECT_EQ(0, boundary->vmesh()->num_nodes()); 
+  boundary_.reset();
+  ASSERT_TRUE(algo_.runImpl(latVol_, unused_, boundary_));
+  ASSERT_THAT(boundary_, NotNull());
     //EXPECT_EQ(expectedBoundaryNodes, boundary->vmesh()->num_nodes());
     //EXPECT_EQ(expectedBoundaryElements, boundary->vmesh()->num_elems());
-    //EXPECT_TRUE(boundary->vmesh()->is_quadsurfmesh());
+  EXPECT_TRUE(boundary_->vmesh()->is_quadsurfmesh());
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -207,8 +209,7 @@ INSTANTIATE_TEST_CASE_P(
   GetDomainBoundaryTestsParameterized,
   Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4)) 
   );
-
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
-//
+
 #endif 

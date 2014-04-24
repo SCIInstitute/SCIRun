@@ -34,14 +34,14 @@
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::TestUtils;
 
-TEST(ElectrodeCoilSetupAlgorithm, Foo)
+TEST(ElectrodeCoilSetupAlgorithm, DISABLED_Foo)
 {
   ElectrodeCoilSetupAlgorithm algo;
   FAIL() << "Insert code here for the most basic test cases !"; 

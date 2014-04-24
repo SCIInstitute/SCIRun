@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Serialization/Network/NetworkXMLSerializer.h
+
 
 #ifndef CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H
 #define CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H 
@@ -50,7 +52,7 @@ namespace Networks {
     ModuleFactoryHandle moduleFactory_;
     ModuleStateFactoryHandle stateFactory_;
     Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
-    NetworkEditorControllerInterface* connectionMaker_;
+    NetworkEditorControllerInterface* controller_;
     ModulePositionEditor* mpg_;
   };
 

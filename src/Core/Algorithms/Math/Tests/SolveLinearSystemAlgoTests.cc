@@ -117,7 +117,7 @@ void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
 TEST(SolveLinearSystemTests, CanSolveDarrell_CG)
 {
   double solutionError;
-  //TODO: investigate this significant difference
+  /// @todo: investigate this significant difference
 #ifdef WIN32
   solutionError = 0.15;
 #else
@@ -134,15 +134,14 @@ TEST(SolveLinearSystemTests, CanSolveDarrell_BICG)
 
 TEST(SolveLinearSystemTests, CanSolveDarrell_Jacobi)
 {
-  //TODO: doesn't converge for this system. Problem?
+  /// @todo: doesn't converge for this system. Problem?
   double solutionError = 105;
   CanSolveDarrellWithMethod("jacobi", solutionError);
 }
 
 TEST(SolveLinearSystemTests, CanSolveDarrell_MINRES)
 {
-  //TODO: converges but not as accurate.
+  /// @todo: converges but not as accurate.
   double solutionError = 2.4;
   CanSolveDarrellWithMethod("minres", solutionError);
 }
-

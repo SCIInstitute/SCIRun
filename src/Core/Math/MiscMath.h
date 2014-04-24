@@ -61,7 +61,7 @@ inline bool nonzero(T d)
   return(! comp(d, 0));
 }
   
-// Faster versions of several math functions
+/// Faster versions of several math functions
 
 //------------------------------------------
 // Min/Max functions

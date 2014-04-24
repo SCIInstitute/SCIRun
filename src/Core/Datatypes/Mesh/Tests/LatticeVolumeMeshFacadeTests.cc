@@ -61,7 +61,7 @@ protected:
   MeshHandle mesh_;
 };
 
-// TODO: move to utils file (duplicated in TriSurfMeshFacadeTests.cc)
+/// @todo: move to utils file (duplicated in TriSurfMeshFacadeTests.cc)
 namespace
 {
   template <typename T>

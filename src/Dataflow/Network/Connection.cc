@@ -38,7 +38,7 @@ Connection::Connection(OutputPortHandle oport, InputPortHandle iport, const Conn
   ENSURE_NOT_NULL(oport_, "output port is null");
   ENSURE_NOT_NULL(iport_, "input port is null");
 
-  //TODO: this is already checked in the controller layer. Do we need a redundant check here? 
+  /// @todo: this is already checked in the controller layer. Do we need a redundant check here? 
   //if (oport_->get_colorname() != iport_->get_colorname())
   //  THROW_INVALID_ARGUMENT("Ports do not have matching type.");
 

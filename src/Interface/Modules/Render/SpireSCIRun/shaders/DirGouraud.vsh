@@ -53,7 +53,7 @@ void main( void )
 
   // Convert color into gamma space before rasterization.
   spec        = pow(spec, uSpecularPower);
-  fColor      = pow(diffuse * spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor, vec4(1.0/2.2));
+  fColor      = diffuse * spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor;
 
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
 }

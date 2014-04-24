@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation Core/Thread/Legacy/ UsedWithLockingHandle.h
 #ifndef Core_Thread_UsedWithLockingHandle_h
 #define Core_Thread_UsedWithLockingHandle_h
 

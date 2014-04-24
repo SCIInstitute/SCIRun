@@ -30,7 +30,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/FieldInformation.h>
 
-//! Namespace used for SCIRun Algorithmic layer
+/// Namespace used for SCIRun Algorithmic layer
 namespace SCIRunAlgo {
 
 using namespace SCIRun;
@@ -45,31 +45,31 @@ bool
 GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output);
 
 
-//! Function call to convert data from Field into Matrix data
+/// Function call to convert data from Field into Matrix data
 bool 
 GetFieldDataAlgo::
 run(FieldHandle& input, MatrixHandle& output)
 {
   algo_start("GetFieldData");
   
-  //! Check whether we have a field.
+  /// Check whether we have a field.
   if (input.get_rep() == 0)
   {
     error("No input source field");
     algo_end(); return (false);
   }
   
-  //! Construct a class with all the type information of this field
+  /// Construct a class with all the type information of this field
   FieldInformation fi(input);
 
-  //! Check whether we have data
+  /// Check whether we have data
   if (fi.is_nodata())
   {
     error("Field does not contain any data");
     algo_end(); return (false);
   }
   
-  //! Depending on the data type select a sub algorithm
+  /// Depending on the data type select a sub algorithm
   if (fi.is_scalar())
     return(GetScalarFieldDataV(this,input,output));
 
@@ -87,14 +87,14 @@ run(FieldHandle& input, MatrixHandle& output)
 bool 
 GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output)
 {
-  //! Obtain virtual interface
+  /// Obtain virtual interface
   VField* vfield = input->vfield();
   
-  //! Obtain the number values in a field
+  /// Obtain the number values in a field
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
   
-  //! Create output object
+  /// Create output object
   output = new DenseMatrix(size+esize,1);
   if (output.get_rep() == 0)
   {
@@ -222,31 +222,31 @@ GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output);
 
 
 
-//! Function call to convert data from Field into Matrix data
+/// Function call to convert data from Field into Matrix data
 bool 
 GetFieldDataAlgo::
 run(FieldHandle& input, NrrdDataHandle& output)
 {
   algo_start("GetFieldData");
   
-  //! Check whether we have a field.
+  /// Check whether we have a field.
   if (input.get_rep() == 0)
   {
     error("No input source field");
     algo_end(); return (false);
   }
   
-  //! Construct a class with all the type information of this field
+  /// Construct a class with all the type information of this field
   FieldInformation fi(input);
 
-  //! Check whether we have data
+  /// Check whether we have data
   if (fi.is_nodata())
   {
     error("Field does not contain any data");
     algo_end(); return (false);
   }
   
-  //! Depending on the data type select a sub algorithm
+  /// Depending on the data type select a sub algorithm
   if (fi.is_scalar())
     return(GetScalarFieldDataV(this,input,output));
 
@@ -263,14 +263,14 @@ run(FieldHandle& input, NrrdDataHandle& output)
 bool 
 GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 {
-  //! Obtain virtual interface
+  /// Obtain virtual interface
   VField* vfield = input->vfield();
   
-  //! Obtain the number values in a field
+  /// Obtain the number values in a field
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
   
-  //! Create output object
+  /// Create output object
   output = new NrrdData();
 
   if (output.get_rep() == 0)

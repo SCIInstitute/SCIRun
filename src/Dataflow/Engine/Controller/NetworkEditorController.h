@@ -25,12 +25,13 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Dataflow/Engine/Controller/NetworkEditorController.h
 
 #ifndef ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
 #define ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
 
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/NetworkInterface.h> //TODO: split out connectionmakerservice
+#include <Dataflow/Network/NetworkInterface.h> /// @todo: split out connectionmakerservice
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
@@ -60,7 +61,7 @@ namespace Engine {
     boost::shared_ptr<DynamicPortManager> dpm_;
   };
 
-  // TODO Refactoring: split this class into two classes, NetworkEditorService and Controller.
+  /// @todo Refactoring: split this class into two classes, NetworkEditorService and Controller.
   //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
   //   This will be done in issue #231
 
@@ -76,7 +77,8 @@ namespace Engine {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////Start: To be Pythonized/////////////////////////////
-    Networks::ModuleHandle addModule(const std::string& moduleName);
+    virtual Networks::ModuleHandle addModule(const Networks::ModuleLookupInfo& info) override;
+    Networks::ModuleHandle addModule(const std::string& name);
     void removeModule(const Networks::ModuleId& id);
     
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
@@ -105,15 +107,18 @@ namespace Engine {
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
 
-    virtual Networks::NetworkHandle getNetwork() const;
-    virtual void setNetwork(Networks::NetworkHandle nh); 
+    virtual void enableSignals() override;
+    virtual void disableSignals() override;
+
+    virtual Networks::NetworkHandle getNetwork() const override;
+    virtual void setNetwork(Networks::NetworkHandle nh) override; 
     Networks::NetworkGlobalSettings& getSettings();
 
     boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
 
     void setExecutorType(int type);
 
-    //TODO: eek, getting bloated here. Figure out a better way to wire this one in.
+    /// @todo: eek, getting bloated here. Figure out a better way to wire this one in.
     void setModulePositionEditor(Networks::ModulePositionEditor* editor) { modulePositionEditor_ = editor; }
 
     const Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
@@ -136,6 +141,7 @@ namespace Engine {
     InvalidConnectionSignalType invalidConnection_;
 
     boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
+    bool signalSwitch_;
   };
 
   typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;

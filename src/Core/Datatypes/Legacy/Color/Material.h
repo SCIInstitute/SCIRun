@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Datatypes/Legacy/Color/Material.h
 
 #ifndef CORE_DATATYPES_MATERIAL_H
 #define CORE_DATATYPES_MATERIAL_H 1

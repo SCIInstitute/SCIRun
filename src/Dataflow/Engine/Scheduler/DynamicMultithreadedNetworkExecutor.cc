@@ -49,7 +49,7 @@ namespace SCIRun {
         BoostGraphParallelScheduler ModuleProducer::scheduler_(filter());
       }
 
-      //TODO: templatize along with producer/consumer
+      /// @todo: templatize along with producer/consumer
       class DynamicMultithreadedNetworkExecutorImpl
       {
       public:

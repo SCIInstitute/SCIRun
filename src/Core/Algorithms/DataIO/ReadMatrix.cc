@@ -64,7 +64,7 @@ ReadMatrixAlgorithm::ReadMatrixAlgorithm()
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
   {
-    //BOOST FILESYSTEM BUG: it is not thread-safe. TODO: need to meld this locking code into the ENSURE_FILE_EXISTS macro.
+    //BOOST FILESYSTEM BUG: it is not thread-safe. @todo: need to meld this locking code into the ENSURE_FILE_EXISTS macro.
     boost::lock_guard<boost::mutex> guard(ReadMatrixAlgorithmPrivate::fileCheckMutex_);
     ENSURE_FILE_EXISTS(filename);
   }

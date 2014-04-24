@@ -28,16 +28,16 @@
 
 
 
-/*
- *  MaskLatVolWithTriSurf.cc:  MaskLatVolWithTriSurf two point clouds
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
+///
+///@file  MaskLatVolWithTriSurf.cc 
+///@brief MaskLatVolWithTriSurf two point clouds
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
+///
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/FieldPort.h>

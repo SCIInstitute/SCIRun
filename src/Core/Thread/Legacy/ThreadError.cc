@@ -29,16 +29,16 @@
 
 
 
-/*
- *  ThreadError: Exception class for unusual errors in the thread library
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: August 1999
- *
- */
+///
+///@file  ThreadError.cc
+///@brief Exception class for unusual errors in the thread library
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  August 1999
+///
 
 #include <Core/Thread/Legacy/ThreadError.h>
 namespace SCIRun {

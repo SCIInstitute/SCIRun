@@ -46,6 +46,8 @@
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
+#include <Interface/Modules/Fields/JoinFieldsDialog.h>
+#include <Interface/Modules/Fields/SplitFieldByDomainDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
@@ -56,6 +58,8 @@
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
 #include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
+#include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
+#include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -120,6 +124,14 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new CreateBasicColorMapDialog(moduleId, state, parentToUse_);
   if (moduleId.find("GetDomainBoundary") != std::string::npos)
     return new GetDomainBoundaryDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("JoinFields") != std::string::npos)
+    return new JoinFieldsDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("InsertFieldsIntoBundle") != std::string::npos)
+    return new InsertFieldsIntoBundleDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("GetFieldsFromBundle") != std::string::npos)
+    return new GetFieldsFromBundleDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("SplitFieldByDomain") != std::string::npos)
+    return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

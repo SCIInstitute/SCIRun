@@ -41,6 +41,7 @@
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Utils/ProgressReporter.h>
+#include <Core/Utils/StringUtil.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -86,13 +87,14 @@ namespace Algorithms {
   class SCISHARE Variable
   {
   public:
-    //TODO: expand this 
+    /// @todo: expand this 
     typedef boost::variant<
       int,
       double,
       std::string,
       bool,
-      AlgoOption
+      AlgoOption,
+      std::vector<Variable>
     > Value;
 
     Variable() {}
@@ -108,8 +110,12 @@ namespace Algorithms {
     std::string getString() const;
     bool getBool() const;
     Datatypes::DatatypeHandle getDatatype() const;
+    std::vector<Variable> getList() const;
     AlgoOption getOption() const;
   };
+
+  SCISHARE bool operator==(const Variable& lhs, const Variable& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   
   typedef Variable AlgorithmParameter;
 
@@ -120,7 +126,7 @@ namespace Algorithms {
     ~AlgorithmLogger();
     void setLogger(Core::Logging::LoggerHandle logger);
 
-    //! functions for the algorithm, so it can forward errors if needed
+    /// functions for the algorithm, so it can forward errors if needed
     virtual void error(const std::string& error) const;
     virtual void warning(const std::string& warning) const;
     virtual void remark(const std::string& remark) const;
@@ -130,7 +136,7 @@ namespace Algorithms {
     Core::Logging::LoggerHandle defaultLogger_;
   };
 
-  //TODO: integrate with logger type above
+  /// @todo: integrate with logger type above
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
@@ -165,7 +171,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmData
   {
   public:
-    typedef std::map<Name, Datatypes::DatatypeHandle> Map;
+    typedef std::map<Name, std::vector<Datatypes::DatatypeHandle>> Map;
     AlgorithmData() {}
     explicit AlgorithmData(const Map& m) : data_(m) {}
 
@@ -175,11 +181,25 @@ namespace Algorithms {
     boost::shared_ptr<T> get(const Name& name) const
     {
       auto it = data_.find(name);
-      //TODO: log incorrect type if present but wrong type
-      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second);
+      /// @todo: log incorrect type if present but wrong type
+      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second[0]);
     }
 
-    //TODO: lame
+    template <typename T>
+    std::vector<boost::shared_ptr<T>> getList(const Name& name) const
+    {
+      auto it = data_.find(name);
+      /// @todo: log incorrect type if present but wrong type
+      return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(it->second);
+    }
+
+    template <typename T>
+    void setList(const Name& name, const std::vector<boost::shared_ptr<T>>& list)
+    {
+      data_[name] = upcast_range<Datatypes::Datatype>(list);
+    }
+
+    /// @todo: lame
     void setTransient(boost::any t) { transient_ = t; }
     boost::any getTransient() const { return transient_; }
 
@@ -206,7 +226,7 @@ namespace Algorithms {
     virtual ~AlgorithmInterface() {}
     
     /*
-      TODO idea: make it mockable
+ @todo idea: make it mockable
   
     virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
 
@@ -220,7 +240,7 @@ namespace Algorithms {
     virtual const AlgorithmParameter& get(const AlgorithmParameterName& key) const = 0;
   };
 
-  //TODO: link this to ModuleState via meeting discussion
+  /// @todo: link this to ModuleState via meeting discussion
   class SCISHARE AlgorithmParameterList : public AlgorithmInterface
   {
   public:
@@ -246,6 +266,22 @@ namespace Algorithms {
   public:
     AlgoInputBuilder();
     AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
+    AlgoInputBuilder& operator()(const AlgorithmParameterName& name, Datatypes::DatatypeHandle d)
+    {
+      return operator()(name.name(), d);
+    }
+    template <typename T>
+    AlgoInputBuilder& operator()(const std::string& name, const std::vector<T>& vec)
+    {
+      //BOOST_STATIC_ASSERT(boost::is_base_of<Datatypes::Datatype,T>::value);
+      map_[Name(name)] = upcast_range<Datatypes::Datatype>(vec);
+      return *this;
+    }
+    template <typename T>
+    AlgoInputBuilder& operator()(const AlgorithmParameterName& name, const std::vector<T>& vec)
+    {
+      return operator()(name.name(), vec);
+    }
     AlgorithmInput build() const;
   private:
     AlgorithmData::Map map_;

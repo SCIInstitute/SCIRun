@@ -42,13 +42,14 @@ namespace SCIRun {
 
         struct SCISHARE ModuleExecutor
         {
-          ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) : module_(mod), lookup_(lookup), producer_(producer), shouldLog_(false)
+          ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) : 
+            module_(mod), lookup_(lookup), producer_(producer), shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
           {
             Core::Logging::Log::get("executor").setVerbose(shouldLog_);
           }
           void run()
           {
-            //TODO: crashes on Mac
+            /// @todo: crashes on Mac
             if (shouldLog_)
               Core::Logging::Log::get("executor") << Core::Logging::DEBUG_LOG << "Module Executor: " << module_->get_id() << std::endl;
             auto exec = lookup_->lookupExecutable(module_->get_id());

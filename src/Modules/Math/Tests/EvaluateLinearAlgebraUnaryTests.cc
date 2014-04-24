@@ -68,8 +68,8 @@ TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
 
   stubPortNWithThisData(module, 0, m);
 
-  //TODO: mock module state for passing to algorithm
-  //TODO: algorithm factory to provide mock algorithm
-  //TODO: need algorithm parameters set up from algo ctor. Partial mock?
+  /// @todo: mock module state for passing to algorithm
+  /// @todo: algorithm factory to provide mock algorithm
+  /// @todo: need algorithm parameters set up from algo ctor. Partial mock?
   module->execute();
 }

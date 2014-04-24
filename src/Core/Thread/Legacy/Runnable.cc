@@ -29,16 +29,16 @@
 
 
 
-/*
- *  Runnable: The base class for all threads
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@class Runnable
+///@brief The base class for all threads
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 #include <Core/Thread/Legacy/Runnable.h>
 #include <Core/Thread/Legacy/Thread.h>

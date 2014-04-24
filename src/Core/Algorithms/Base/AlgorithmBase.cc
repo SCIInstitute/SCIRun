@@ -44,7 +44,7 @@ Name::Name(const std::string& name) : name_(name)
   if (!std::all_of(name.begin(), name.end(), isalnum))
   {
     //std::cout << "APN not accessible from Python: " << name << std::endl;
-    //TODO: log this, exception is overkill.
+    /// @todo: log this, exception is overkill.
     //THROW_INVALID_ARGUMENT("Algorithm parameter name must be alphanumeric");
   }
 }
@@ -79,6 +79,12 @@ AlgoOption AlgorithmParameter::getOption() const
 {
   const AlgoOption* opt = boost::get<AlgoOption>(&value_);
   return opt ? *opt : AlgoOption();
+}
+
+std::vector<Variable> AlgorithmParameter::getList() const
+{
+  const std::vector<Variable>* v = boost::get<std::vector<Variable>>(&value_);
+  return v ? *v : std::vector<Variable>();
 }
 
 DatatypeHandle AlgorithmParameter::getDatatype() const
@@ -157,7 +163,10 @@ ScopedAlgorithmStatusReporter::~ScopedAlgorithmStatusReporter()
 
 DatatypeHandle& AlgorithmData::operator[](const Name& name)
 {
-  return data_[name];
+  std::vector<DatatypeHandle>& vec = data_[name];
+  if (vec.empty())
+    vec.resize(1);
+  return vec[0];
 }
 
 void AlgorithmParameterList::add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
@@ -223,7 +232,11 @@ AlgoInputBuilder::AlgoInputBuilder() {}
 
 AlgoInputBuilder& AlgoInputBuilder::operator()(const std::string& name, DatatypeHandle d)
 {
-  map_[Name(name)] = d;
+  std::vector<DatatypeHandle>& vec = map_[Name(name)];
+  if (vec.empty())
+    vec.push_back(d);
+  else
+    vec[0] = d;
   return *this;
 }
 
@@ -245,4 +258,14 @@ std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Name
 AlgorithmInput SCIRun::Core::Algorithms::makeNullInput()
 {
   return AlgorithmInput();
+}
+
+bool SCIRun::Core::Algorithms::operator==(const Variable& lhs, const Variable& rhs)
+{
+  return lhs.name_ == rhs.name_ && lhs.value_ == rhs.value_ && lhs.data_ == rhs.data_;
+}
+
+std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Variable& var)
+{
+  return out << "[" << var.name_ << ", " << var.value_ << "]";
 }

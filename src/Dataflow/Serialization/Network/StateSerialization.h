@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Serialization/Network/StateSerialization.h
+
 
 #ifndef CORE_SERIALIZATION_NETWORK_STATE_SERIALIZATION_H
 #define CORE_SERIALIZATION_NETWORK_STATE_SERIALIZATION_H 
@@ -37,6 +39,7 @@
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/variant.hpp>
+#include <boost/serialization/vector.hpp>
 #include <Dataflow/Serialization/Network/share.h>
 
 namespace SCIRun {

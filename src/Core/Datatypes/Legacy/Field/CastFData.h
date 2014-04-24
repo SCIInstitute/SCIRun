@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Legacy/Field/CastFData.h
 
 #ifndef CORE_DATATYPES_CASTFDATA_H
 #define CORE_DATATYPES_CASTFDATA_H 1
@@ -100,7 +101,7 @@ template <class T> inline T CastFData(const double &val) { return (static_cast<T
 template <> inline Core::Geometry::Vector CastFData<Core::Geometry::Vector>(const double& /*val*/) { return (Core::Geometry::Vector(0,0,0)); }
 template <> inline Core::Geometry::Tensor CastFData<Core::Geometry::Tensor>(const double &val) { return (Core::Geometry::Tensor(static_cast<double>(val))); }
 template <> inline float CastFData(const double &val) { return (static_cast<float>(val)); }
-template <> inline double CastFData(const double &val) { return (static_cast<double>(val)); }
+template <> inline double CastFData(const double &val) { return val; }
 
 template <class T> inline T CastFData(const Core::Geometry::Vector& /*val*/) { return (0); }
 template <> inline Core::Geometry::Vector CastFData<Core::Geometry::Vector>(const Core::Geometry::Vector &val) { return (val); }

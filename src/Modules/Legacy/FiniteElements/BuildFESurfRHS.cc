@@ -25,14 +25,15 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/FiniteElements/BuildFESurfRHS.cc
 
-//! Include the algorithm
+// Include the algorithm
 #include <Core/Algorithms/FiniteElements/BuildRHS/BuildFESurfRHS.h>
 
-//! The module class
+// The module class
 #include <Dataflow/Network/Module.h>
 
-//! We need to define the ports used
+// We need to define the ports used
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
@@ -40,13 +41,13 @@ namespace SCIRun {
 
 class BuildFESurfRHS : public Module {
   public:
-    //! constructor and execute function
+    /// constructor and execute function
     BuildFESurfRHS(GuiContext*);
     virtual ~BuildFESurfRHS() {}
     virtual void execute();
 
   private:
-    //! Define algorithms needed
+    /// Define algorithms needed
     SCIRunAlgo::BuildFESurfRHSAlgo algo_;
 };
 
@@ -55,7 +56,7 @@ DECLARE_MAKER(BuildFESurfRHS)
 BuildFESurfRHS::BuildFESurfRHS(GuiContext* ctx)
   : Module("BuildFESurfRHS", ctx, Source, "FiniteElements", "SCIRun")
 {
-  //! Forward error messages;
+  /// Forward error messages;
   algo_.set_progress_reporter(this);  
 }
 

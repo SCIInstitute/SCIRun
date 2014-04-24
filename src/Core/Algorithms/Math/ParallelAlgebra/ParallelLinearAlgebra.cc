@@ -29,7 +29,7 @@
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
-//TODO DAN: REFACTORING NEEDED: LEVEL HIGHEST
+/// @todo DAN: REFACTORING NEEDED: LEVEL HIGHEST
 ///////////////////////////
 
 #include <cfloat>
@@ -132,7 +132,7 @@ bool ParallelLinearAlgebra::add_matrix(SparseRowMatrixHandle mat, ParallelMatrix
   if (!mat) return (false);
   if (mat->nrows() != size_) return (false);
   
-  mat->makeCompressed(); //TODO: this should be an invariant of our SparseRowMatrix type.
+  mat->makeCompressed(); /// @todo: this should be an invariant of our SparseRowMatrix type.
   M.data_ = mat->valuePtr();
   M.rows_ = mat->outerIndexPtr();
   M.columns_ = mat->innerIndexPtr();
@@ -144,7 +144,7 @@ bool ParallelLinearAlgebra::add_matrix(SparseRowMatrixHandle mat, ParallelMatrix
   return (true);
 }
 
-//TODO: refactor duplication
+/// @todo: refactor duplication
 
 void ParallelLinearAlgebra::mult(const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
 { 
@@ -567,7 +567,7 @@ double ParallelLinearAlgebra::norm(const ParallelVector& a)
   return(sqrt(reduce_sum(val)));
 }
 
-//TODO: refactor to use algorithm
+/// @todo: refactor to use algorithm
 double ParallelLinearAlgebra::max(const ParallelVector& a)
 {
   double m = -(DBL_MAX);
@@ -735,7 +735,7 @@ double ParallelLinearAlgebra::reduce_sum(double val)
   return (ret);
 }
 
-//TODO: std::max_element
+/// @todo: std::max_element
 double ParallelLinearAlgebra::reduce_max(double val)
 {
   int buffer = reduce_buffer_;
@@ -750,7 +750,7 @@ double ParallelLinearAlgebra::reduce_max(double val)
   return (ret);
 }
 
-//TODO: std::min_element
+/// @todo: std::min_element
 double ParallelLinearAlgebra::reduce_min(double val)
 {
   int buffer = reduce_buffer_;
@@ -775,8 +775,8 @@ bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc
     || matrices.x0->nrows() != size)
     return false;
 
-  //! Require a minimum of 50 variables per processor
-  //! Below that parallelism is overhead
+  /// Require a minimum of 50 variables per processor
+  /// Below that parallelism is overhead
   if (nproc*50 > static_cast<int>(size))
   {
     nproc = static_cast<int>(size) / 50;
@@ -809,5 +809,5 @@ ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInp
   if (inputs.b->nrows() != size_
     || inputs.x->nrows() != size_
     || inputs.x0->nrows() != size_)
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Dimension mismatch")); //TODO: use new DimensionMismatch exception type
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Dimension mismatch")); /// @todo: use new DimensionMismatch exception type
 }

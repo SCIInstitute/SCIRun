@@ -37,6 +37,7 @@
 uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
 uniform vec4    uAmbientColor;      // Ambient color
 uniform vec4    uSpecularColor;     // Specular color     
+uniform vec4    uDiffuseColor;      // Diffuse color
 uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDirWorld;     // Directional light (world space).
 uniform sampler1D uTX0;
@@ -59,8 +60,9 @@ void main()
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
   vec4 diffuseColor = texture1D( uTX0, vFieldData );
+  diffuseColor.a = uAmbientColor.a;
 
   spec              = pow(spec, uSpecularPower);
-  gl_FragColor      = pow(diffuse * spec * uSpecularColor + diffuse * diffuseColor + uAmbientColor, vec4(1.0/2.2));
+  gl_FragColor      = diffuse * spec * uSpecularColor + diffuse * diffuseColor + uAmbientColor;
 }
 

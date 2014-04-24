@@ -34,14 +34,14 @@
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::TestUtils;
 
-TEST(SetupRHSforTDCSandTMSAlgorithm, Foo)
+TEST(SetupRHSforTDCSandTMSAlgorithm, DISABLED_Foo)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   FAIL() << "Insert code here for the most basic test cases !"; 

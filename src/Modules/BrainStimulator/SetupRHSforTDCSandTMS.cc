@@ -34,7 +34,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
@@ -54,7 +54,7 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
-  //TODO
+  /// @todo
 }
 
 void SetupRHSforTDCSandTMSModule::execute()

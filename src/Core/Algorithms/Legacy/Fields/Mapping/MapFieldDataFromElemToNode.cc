@@ -52,7 +52,7 @@ MapFieldDataFromElemToNodeT(MapFieldDataFromElemToNodeAlgo* algo,
   VField *ifield = input->vfield();
   VField *ofield = output->vfield();
     
-  //! Make sure that the data vector has the same length
+  /// Make sure that the data vector has the same length
   ofield->resize_fdata();
   
   VMesh* mesh = input->vmesh();
@@ -209,16 +209,16 @@ MapFieldDataFromElemToNodeT(MapFieldDataFromElemToNodeAlgo* algo,
     }
   }
   
-  //! Check whether algorithm was aborted
+  /// Check whether algorithm was aborted
   if (algo->check_abort())
   {
-    //! Data is not valid, hence purge it
+    /// Data is not valid, hence purge it
     output = 0;
-    //! Return an error status to the user
+    /// Return an error status to the user
     algo->algo_end(); return (false);
   }
   
-  //! Algorithm succeeded
+  /// Algorithm succeeded
   algo->algo_end(); return (true);
 }
 
@@ -229,19 +229,19 @@ run(FieldHandle& input, FieldHandle& output)
 { 
   algo_start("MapFieldData");
   
-  //! Safety check
+  /// Safety check
   if (input.get_rep() == 0)
   {
     error("No input source field");
     algo_end(); return (false);
   }
 
-  //! Get type information
+  /// Get type information
   FieldInformation fi(input);
   FieldInformation fo(input);
   
 
-  //! If input is already on nodes: just passing through
+  /// If input is already on nodes: just passing through
   if (fi.is_lineardata())
   {
     remark("Data is already located at nodes");
@@ -255,10 +255,10 @@ run(FieldHandle& input, FieldHandle& output)
     algo_end(); return (false);  
   }
 
-  //! Select output type
+  /// Select output type
   fo.make_lineardata();
 
-  //! Create output field
+  /// Create output field
   output = CreateField(fo,input->mesh());
 
   if (output.get_rep() == 0)

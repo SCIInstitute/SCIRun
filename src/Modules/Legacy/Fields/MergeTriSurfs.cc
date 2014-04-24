@@ -56,7 +56,7 @@ class MergeTriSurfsAlgo
 {
 public:
 
-  //! virtual interface. 
+  /// virtual interface. 
   void execute(ProgressReporter *reporter,
                FieldHandle tris,
                std::vector<index_type> &new_nodes,
@@ -181,7 +181,7 @@ MergeTriSurfs::execute()
     return;
   }
 
-  // TODO: Verify that it's a trisurf that we're testing.
+  /// @todo: Verify that it's a trisurf that we're testing.
   update_state(Executing);
     
   MergeTriSurfsAlgo algo;

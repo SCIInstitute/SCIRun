@@ -34,6 +34,7 @@ SET(Algorithms_Math_Tests_SRCS
   ParallelLinearAlgebraTests.cc
   SolveLinearSystemWithEigenTests.cc
   SolveLinearSystemAlgoTests.cc
+  SolveLinearSystemAlgoTestsParameterized.cc
   #AddKnownsToLinearSystemTests.cc
 )
 

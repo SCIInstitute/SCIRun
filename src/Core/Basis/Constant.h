@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : Constant.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Mon Aug 23 09:57:14 2004
+///    @file    Constant.h
+///    @author  Martin Cole, Frank B. Sachse
+///    @date    Mon Aug 23 09:57:14 2004
 
 #ifndef CORE_BASIS_CONSTANT_H
 #define CORE_BASIS_CONSTANT_H 1
@@ -44,49 +44,49 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of ConstantBasis 
+/// Class for describing unit geometry of ConstantBasis 
 class SCISHARE ConstantBasisUnitElement {
 public: 
-  static double unit_vertices[1][1]; //!< Parametric coordinates of vertices 
-  static int unit_edges[1][1];    //!< References to vertices of unit edge 
+  static double unit_vertices[1][1]; ///< Parametric coordinates of vertices 
+  static int unit_edges[1][1];    ///< References to vertices of unit edge 
   static double unit_center[3];
   
   ConstantBasisUnitElement() {}
   virtual ~ConstantBasisUnitElement() {}
   
-  //! return dimension of domain 
+  /// return dimension of domain 
   static int domain_dimension() 
     { return 0; } 
     
-  //! return size of domain  
+  /// return size of domain  
   static double domain_size() 
     { return 0.0; } 
     
-  //! return number of vertices
+  /// return number of vertices
   static int number_of_vertices() 
     { return 0; } 
     
-  //! return number of vertices  
+  /// return number of vertices  
   static int number_of_mesh_vertices() 
     { return 0; } 
   
-  //! return number of edges   
+  /// return number of edges   
   static int number_of_edges() 
     { return 0; }  
     
-  //! return degrees of freedom
+  /// return degrees of freedom
   static int dofs() 
     { return 1; } 
   
-  //! return number of vertices per face 
+  /// return number of vertices per face 
   static int vertices_of_face() 
     { return 0; } 
     
-  //! return number of faces per cell  
+  /// return number of faces per cell  
   static int faces_of_cell() 
     { return 0; } 
   
-  //! return volume
+  /// return volume
   static double volume() 
     { return 0.; } 
     
@@ -98,9 +98,9 @@ public:
   ConstantApprox() {}
   virtual ~ConstantApprox() {}
   
-  //! Approximate edge for element by piecewise linear segments
-  //! return: coords gives parametric coordinates of the approximation.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate edge for element by piecewise linear segments
+  /// return: coords gives parametric coordinates of the approximation.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_edge(const unsigned edge, 
                    const unsigned div_per_unit, 
@@ -109,9 +109,9 @@ public:
     coords.resize(0);
   }
   
-  //! Approximate faces for element by piecewise linear elements
-  //! return: coords gives parametric coordinates at the approximation point.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate faces for element by piecewise linear elements
+  /// return: coords gives parametric coordinates at the approximation point.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_face(const unsigned face, 
                    const unsigned div_per_unit, 
@@ -123,7 +123,7 @@ public:
 };
 
 
-//! Class for handling of element with constant field variables
+/// Class for handling of element with constant field variables
 template <class T>
   class ConstantBasis : public BasisSimple<T>, 
               public ConstantBasisUnitElement,
@@ -140,14 +140,14 @@ public:
   
   static int polynomial_order() { return 0; }
   
-  //! get value at parametric coordinate 
+  /// get value at parametric coordinate 
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &, const ElemData &cd) const
   {
     return cd.elem();
   }
 
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &, 
 		VECTOR2 &derivs) const
@@ -158,14 +158,14 @@ public:
       derivs[si] = static_cast<typename VECTOR2::value_type>(0);
   }
 
-  //! Get the weights for doing an interpolation
+  /// Get the weights for doing an interpolation
   template <class VECTOR>
   void get_weights(const VECTOR &coords, double *w) const
   {
     w[0]=1;
   }
 
-  //! Get the weights for doing a gradient
+  /// Get the weights for doing a gradient
   template <class VECTOR>
   void get_derivate_weights(const VECTOR &coords, double *w) const
   {
@@ -174,7 +174,7 @@ public:
       w[si] = 0;
   }
 
-  //! Functions for dynamic compilation and storing this object on disk
+  /// Functions for dynamic compilation and storing this object on disk
   static  const std::string type_name(int n = -1);
   virtual void io (Piostream& str);
 };

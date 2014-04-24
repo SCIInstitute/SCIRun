@@ -25,97 +25,86 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/SplitFieldByDomain.cc
 
-#include <Core/Algorithms/Fields/DomainFields/SplitFieldByDomain.h>
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
-#include <Dataflow/Network/Module.h>
-
-#include <sstream>
-
-namespace SCIRun {
+#include <Modules/Legacy/Fields/SplitFieldByDomain.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-class SplitFieldByDomain : public Module {
-  public:
-    SplitFieldByDomain(GuiContext*);
-    virtual ~SplitFieldByDomain() {}
+ModuleLookupInfo SplitFieldByDomain::staticInfo_("SplitFieldByDomain", "NewField", "SCIRun");
 
-    virtual void execute();
-
-  private:
-    GuiInt  gui_sort_by_size_;
-    GuiDouble gui_sort_ascending_;
-    SCIRunAlgo::SplitFieldByDomainAlgo algo_;
-
-};
-
-
-DECLARE_MAKER(SplitFieldByDomain)
-
-SplitFieldByDomain::SplitFieldByDomain(GuiContext* ctx) :
-  Module("SplitFieldByDomain", ctx, Source, "NewField", "SCIRun"),
-  gui_sort_by_size_(get_ctx()->subVar("sort-by-size"),0),
-  gui_sort_ascending_(get_ctx()->subVar("sort-ascending"),0)
+SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(All_Fields);
+  INITIALIZE_PORT(Field1);
+  INITIALIZE_PORT(Field2);
+  INITIALIZE_PORT(Field3);
+  INITIALIZE_PORT(Field4);
+  INITIALIZE_PORT(Field5);
+  INITIALIZE_PORT(Field6);
+  INITIALIZE_PORT(Field7);
+  INITIALIZE_PORT(Field8);
 }
 
-void
-SplitFieldByDomain::execute()
+void SplitFieldByDomain::setStateDefaults()
 {
-  FieldHandle input;
-  BundleHandle boutput;
-  std::vector<FieldHandle> output;
-  FieldHandle nofield = 0;
-  
-  get_input_handle("Field",input,true);
-  
+  auto state = get_state();
+  state->setValue(SplitFieldByDomainAlgo::SortBySize, false);
+  state->setValue(SplitFieldByDomainAlgo::SortAscending, false);
+}
+
+void SplitFieldByDomain::execute()
+{
+  auto input = getRequiredInput(InputField);
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || !oport_cached("All Fields") || !oport_cached("Field1")
     || !oport_cached("Field2") || !oport_cached("Field3") || !oport_cached("Field4")
     || !oport_cached("Field5") || !oport_cached("Field6") || !oport_cached("Field7") 
     || !oport_cached("Field8")  ||gui_sort_by_size_.changed()
     || gui_sort_ascending_.changed())
+#endif
+  if (needToExecute())
   {
     update_state(Executing);
 
-    algo_.set_bool("sort_by_size",gui_sort_by_size_.get());
-    algo_.set_bool("sort_ascending",gui_sort_ascending_.get());
+    setAlgoBoolFromState(SplitFieldByDomainAlgo::SortBySize);
+    setAlgoBoolFromState(SplitFieldByDomainAlgo::SortAscending);
 
-    if(!(algo_.run(input,output))) return;
-    boutput = new Bundle;
-    for (size_t j=0; j< output.size(); j++)
+    auto algoOutput = algo().run_generic(make_input((InputField, input)));
+    
+    auto output = algoOutput.getList<Field>(Variables::ListOfOutputFields);
+
+    BundleHandle boutput(new Bundle);
+    for (size_t j = 0; j < output.size(); ++j)
     {
       std::ostringstream oss;
       oss << "Field" << j;
-      boutput->setField(oss.str(),output[j]);
+      boutput->set(oss.str(), output[j]);
     }
+
+    FieldHandle nofield;
     
-    send_output_handle("All Fields",boutput);
-    if (output.size() > 0) send_output_handle("Field1",output[0]); 
-    else send_output_handle("Field1",nofield); 
-    if (output.size() > 1) send_output_handle("Field2",output[1]);
-    else send_output_handle("Field2",nofield); 
-    if (output.size() > 2) send_output_handle("Field3",output[2]);
-    else send_output_handle("Field3",nofield); 
-    if (output.size() > 3) send_output_handle("Field4",output[3]);
-    else send_output_handle("Field4",nofield); 
-    if (output.size() > 4) send_output_handle("Field5",output[4]);
-    else send_output_handle("Field5",nofield); 
-    if (output.size() > 5) send_output_handle("Field6",output[5]);
-    else send_output_handle("Field6",nofield); 
-    if (output.size() > 6) send_output_handle("Field7",output[6]);
-    else send_output_handle("Field7",nofield); 
-    if (output.size() > 7) send_output_handle("Field8",output[7]);
-    else send_output_handle("Field8",nofield); 
+    sendOutput(All_Fields, boutput);
+
+    //TODO: make array of output ports, somehow
+    sendOutput(Field1, output.size() > 0 ? output[0] : nofield);
+    sendOutput(Field2, output.size() > 1 ? output[1] : nofield);
+    sendOutput(Field3, output.size() > 2 ? output[2] : nofield);
+    sendOutput(Field4, output.size() > 3 ? output[3] : nofield);
+    sendOutput(Field5, output.size() > 4 ? output[4] : nofield);
+    sendOutput(Field6, output.size() > 5 ? output[5] : nofield);
+    sendOutput(Field7, output.size() > 6 ? output[6] : nofield);
+    sendOutput(Field8, output.size() > 7 ? output[7] : nofield);
   }
 }
-
-} // End namespace SCIRun
-
-

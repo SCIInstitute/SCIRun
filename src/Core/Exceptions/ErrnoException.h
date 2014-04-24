@@ -27,16 +27,16 @@
 */
 
 
-/*
- *  ErrnoException.h: Generic exception for internal errors
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   May 2000
- *
- */
+///
+///@file  ErrnoException.h
+///@brief Generic exception for internal errors
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  May 2000
+///
 
 #ifndef Core_Exceptions_ErrnoException_h
 #define Core_Exceptions_ErrnoException_h

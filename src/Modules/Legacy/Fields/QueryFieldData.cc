@@ -26,18 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  QueryFieldData: Field data operations
- *
- *  Written by:
- *   Allen R. Sanderson
- *   Michael Callahan
- *   SCI Institute
- *   University of Utah
- *   February 2006
- *
- */
+///
+///@class QueryFieldData
+///@brief Field data operations
+///
+///@author
+///   Allen R. Sanderson
+///   Michael Callahan
+///   SCI Institute
+///   University of Utah
+///@date  February 2006
+///
 
 
 #include <Core/Datatypes/String.h>

@@ -26,15 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  ReadString.cc:
- *
- *  Written by:
- *   jeroen
- *   TODAY'S DATE HERE
- *
- */
-
+///
+/// @file  ReadString.cc
+/// 
+/// @author
+///    jeroen
+///   
+///  TODAY'S DATE HERE
+/// 
 
 #include <fstream>
 #include <string>
