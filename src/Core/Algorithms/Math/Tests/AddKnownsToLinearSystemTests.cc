@@ -144,14 +144,14 @@ namespace
 	}
 
 	// RHS vector [1;2;3]
-	DenseColumnMatrixHandle rhs()
-	{
-		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
-		(*m)(0,0) = 1;
-		(*m)(1,0) = 2;
-		(*m)(2,0) = 3;
-		return m;
-	}
+//	DenseColumnMatrixHandle rhs()
+//	{
+//		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+//		(*m)(0,0) = 1;
+//		(*m)(1,0) = 2;
+//		(*m)(2,0) = 3;
+//		return m;
+//	}
 
 	// RHS vector with NaN
 	DenseColumnMatrixHandle rhs_nan()
