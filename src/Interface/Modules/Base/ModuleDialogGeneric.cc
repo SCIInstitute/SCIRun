@@ -28,10 +28,12 @@
 
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <boost/bind.hpp>
+#include <Core/Logging/Log.h>
 #include <boost/foreach.hpp>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
@@ -70,16 +72,77 @@ void ModuleDialogGeneric::pull_newVersionToReplaceOld()
     wsm->pull();
 }
 
-WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog) : state_(state), dialog_(dialog)
+class ComboBoxSlotManager : public WidgetSlotManager
 {
+public:
+  typedef boost::function<std::string(const QString&)> FromQStringConverter;
+  typedef boost::function<QString(const std::string&)> ToQStringConverter;
+  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox, 
+    FromQStringConverter fromLabelConverter = boost::bind(&QString::toStdString, _1),
+    ToQStringConverter toLabelConverter = &QString::fromStdString) : 
+  WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
+  {
+    connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto value = state_->getValue(stateKey_).getString();
+    auto qstring = toLabelConverter_(value);
+    if (qstring != comboBox_->currentText())
+    {
+      LOG_DEBUG("In new version of pull code for combobox: " << value);
+      comboBox_->setCurrentIndex(comboBox_->findText(qstring));
+    }
+  }
+  virtual void pushImpl() override
+  {
+    auto label = fromLabelConverter_(comboBox_->currentText());
+    if (label != state_->getValue(stateKey_).getString())
+    {
+      LOG_DEBUG("In new version of push code for combobox: " << label);
+      state_->setValue(stateKey_, label);
+    }
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QComboBox* comboBox_;
+  FromQStringConverter fromLabelConverter_;
+  ToQStringConverter toLabelConverter_;
+};
+
+void ModuleDialogGeneric::addComboBoxManager(const AlgorithmParameterName& stateKey, QComboBox* comboBox)
+{
+  addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
 }
 
-WidgetSlotManager::~WidgetSlotManager() 
+class TextEditSlotManager : public WidgetSlotManager
 {
-}
+public:
+  TextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) : 
+      WidgetSlotManager(state, dialog), stateKey_(stateKey), textEdit_(textEdit) 
+      {
+        connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
+      }
+      virtual void pull() override
+      {
+        auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
+        if (newValue != textEdit_->toPlainText())
+        {
+          textEdit_->setPlainText(newValue);
+          LOG_DEBUG("In new version of pull code: " << newValue.toStdString());
+        }
+      }
+      virtual void pushImpl() override
+      {
+        LOG_DEBUG("In new version of push code: " << textEdit_->toPlainText().toStdString());
+        state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
+      }
+private:
+  AlgorithmParameterName stateKey_;
+  QTextEdit* textEdit_;
+};
 
-void WidgetSlotManager::push()
+void ModuleDialogGeneric::addTextEditManager(const AlgorithmParameterName& stateKey, QTextEdit* textEdit)
 {
-  if (!dialog_.isPulling())
-    pushImpl();
+  addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, stateKey, textEdit));
 }

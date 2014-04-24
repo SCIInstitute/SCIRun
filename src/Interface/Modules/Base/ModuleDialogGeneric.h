@@ -29,33 +29,15 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
-#include <QDialog>
-#include <Dataflow/Network/NetworkFwd.h>
+#include <Interface/Modules/Base/WidgetSlotManagers.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h> //TODO: split up this header!
+#include <QtGui>
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
 #include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-  class ModuleDialogGeneric;
-
-  class SCISHARE WidgetSlotManager : public QObject
-  {
-    Q_OBJECT
-  public:
-    WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog);
-    virtual ~WidgetSlotManager();
-    virtual void pushImpl() = 0;
-  public Q_SLOTS:
-    void push();
-    virtual void pull() = 0;
-  protected:
-    SCIRun::Dataflow::Networks::ModuleStateHandle state_;
-    ModuleDialogGeneric& dialog_;
-  };
-
-  typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;
 
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
@@ -89,8 +71,11 @@ namespace Gui {
       ~Pulling() { m_->pulling_ = false; }
       ModuleDialogGeneric* m_;
     };
-    void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
+    
+    void addComboBoxManager(const Core::Algorithms::AlgorithmParameterName& stateKey, QComboBox* comboBox);
+    void addTextEditManager(const Core::Algorithms::AlgorithmParameterName& stateKey, QTextEdit* textEdit);
   private:
+    void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     std::vector<WidgetSlotManagerPtr> slotManagers_;
   };
 

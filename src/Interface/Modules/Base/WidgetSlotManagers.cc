@@ -26,28 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/CreateFieldDataDialog.h>
-#include <Modules/Legacy/Fields/CreateFieldData.h>
+#include <Interface/Modules/Base/WidgetSlotManagers.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-typedef SCIRun::Modules::Fields::CreateFieldData CreateFieldDataModule;
 
-CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog) : state_(state), dialog_(dialog)
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-  
-  addTextEditManager(CreateFieldDataModule::FunctionString, functionTextEdit_);
-  addComboBoxManager(CreateFieldDataModule::FormatString, fieldOutputDataComboBox_);
-  addComboBoxManager(CreateFieldDataModule::BasisString, fieldOutputBasisComboBox_);
 }
 
-void CreateFieldDataDialog::pull()
+WidgetSlotManager::~WidgetSlotManager() 
 {
-  pull_newVersionToReplaceOld();
+}
+
+void WidgetSlotManager::push()
+{
+  if (!dialog_.isPulling())
+    pushImpl();
 }

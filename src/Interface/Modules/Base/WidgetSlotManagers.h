@@ -26,28 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/CreateFieldDataDialog.h>
-#include <Modules/Legacy/Fields/CreateFieldData.h>
+#ifndef INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
+#define INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-typedef SCIRun::Modules::Fields::CreateFieldData CreateFieldDataModule;
+#include <QObject>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Interface/Modules/Base/share.h>
 
-CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+namespace SCIRun {
+namespace Gui {
   
-  addTextEditManager(CreateFieldDataModule::FunctionString, functionTextEdit_);
-  addComboBoxManager(CreateFieldDataModule::FormatString, fieldOutputDataComboBox_);
-  addComboBoxManager(CreateFieldDataModule::BasisString, fieldOutputBasisComboBox_);
+  class ModuleDialogGeneric;
+
+  class SCISHARE WidgetSlotManager : public QObject
+  {
+    Q_OBJECT
+  public:
+    WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog);
+    virtual ~WidgetSlotManager();
+    virtual void pushImpl() = 0;
+  public Q_SLOTS:
+    void push();
+    virtual void pull() = 0;
+  protected:
+    SCIRun::Dataflow::Networks::ModuleStateHandle state_;
+    ModuleDialogGeneric& dialog_;
+  };
+
+  typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;
+
+}
 }
 
-void CreateFieldDataDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}
+#endif
