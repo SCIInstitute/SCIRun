@@ -163,9 +163,12 @@ namespace
 		return m;
 	}
 
-	// helper method for displaying SparseRowMatrixHandle ~ LHS
-	void dispLHS (SparseRowMatrixHandle ouput)
+    // HELPER METHODS
+    
+	// method for displaying stiff / left hand side matrix (SparseRowMatrixHandle)
+	void dispStiffOutput (SparseRowMatrixHandle ouput)
 	{
+        std::cout << "stiff matrix output:" << std::endl;
 		for (int r=0; r < ouput->rows(); r++)
 		{
 			for (int c=0; c < ouput->cols(); c++)
@@ -173,13 +176,13 @@ namespace
 			std::cout << std::endl;
 		}
 	}
-	// helper method for displaying DenseColumnMatrixHandle ~ RHS
+	// method for displaying right hand side vector (DenseColumnMatrixHandle)
 	void dispRHS (DenseColumnMatrixHandle output)
 	{
 		for (int r=0; r < output->rows(); r++)
 		std::cout << "rhs[" << r << "] = " << (*output)[r] << std::endl;
 	}
-	// helper method for displaying DenseMatrixHandle ~ X
+	// method for displaying x vector (DenseMatrixHandle)
 	void dispX (DenseMatrixHandle x)
 	{
 		for (int r=0; r < x->rows(); r++)
@@ -234,31 +237,31 @@ TEST (AddKnownsToLinearSystemAlgo, X_Contains_NaN)
 	std::cout << "x contains one NaN" << std::endl;
 	dispX(x);
 	dispRHS(output_rhs);
-	dispLHS(output_stiff);
+	dispStiffOutput(output_stiff);
 
 	std::cout << "x contains all NaN" << std::endl;
 	algo.run(LHS(),rhs_zero(3),x_all_nan(),output_stiff,output_rhs);
 	dispRHS(output_rhs);
-	dispLHS(output_stiff);
+	dispStiffOutput(output_stiff);
 
 	std::cout << "x contains numbers" << std::endl;
 	DenseMatrixHandle xNum = x_num();
 	algo.run(LHS(),rhs_zero(3),xNum,output_stiff,output_rhs);
 	dispX(xNum);
 	dispRHS(output_rhs);
-	dispLHS(output_stiff);
+	dispStiffOutput(output_stiff);
 
 	std::cout << "x contains all 0s" << std::endl;
 	DenseMatrixHandle x_0 = x_zero(3);
 	algo.run(LHS(),rhs_zero(3),x_0,output_stiff,output_rhs);
 	dispRHS(output_rhs);
-	dispLHS(output_stiff);
+	dispStiffOutput(output_stiff);
 
 	std::cout << "x contains all 1s" << std::endl;
 	DenseMatrixHandle x_1 = x_ones(3,1);
 	algo.run(LHS(),rhs_zero(3),x_1,output_stiff,output_rhs);
 	dispRHS(output_rhs);
-	dispLHS(output_stiff);
+	dispStiffOutput(output_stiff);
 }
 
 TEST (AddKnownsToLinearSystemAlgo, for_debugging)
