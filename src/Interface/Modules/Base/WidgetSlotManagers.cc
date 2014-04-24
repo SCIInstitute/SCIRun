@@ -41,6 +41,7 @@ WidgetSlotManager::~WidgetSlotManager()
 
 void WidgetSlotManager::push()
 {
+  //TODO: idea: tell state_ directly, i'm in a scoped region of pushing/editing, don't signal while i edit. signal when done editing!
   if (!dialog_.isPulling())
     pushImpl();
 }

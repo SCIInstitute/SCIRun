@@ -242,3 +242,35 @@ void ModuleDialogGeneric::addDoubleSpinBoxManager(const AlgorithmParameterName& 
 {
   addWidgetSlotManager(boost::make_shared<DoubleSpinBoxSlotManager>(state_, *this, stateKey, spinBox));
 }
+
+class CheckBoxSlotManager : public WidgetSlotManager
+{
+public:
+  CheckBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QCheckBox* checkBox) : 
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), checkBox_(checkBox) 
+  {
+    connect(checkBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    bool newValue = state_->getValue(stateKey_).getBool();
+    if (newValue != checkBox_->isChecked())
+    {
+      LOG_DEBUG("In new version of pull code for CheckBox: " << newValue);
+      checkBox_->setChecked(newValue);
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for CheckBox: " << checkBox_->isChecked());
+    state_->setValue(stateKey_, checkBox_->isChecked());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QCheckBox* checkBox_;
+};
+
+void ModuleDialogGeneric::addCheckBoxManager(const AlgorithmParameterName& stateKey, QCheckBox* checkBox)
+{
+  addWidgetSlotManager(boost::make_shared<CheckBoxSlotManager>(state_, *this, stateKey, checkBox));
+}

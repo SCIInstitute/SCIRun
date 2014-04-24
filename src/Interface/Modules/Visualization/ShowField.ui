@@ -246,7 +246,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="enableTransparencyEdgesCheckBox_1">
+           <widget class="QCheckBox" name="enableTransparencyEdgesCheckBox_">
             <property name="text">
              <string>Enable Transparency</string>
             </property>
@@ -396,7 +396,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="enableTransparencyFacesCheckBox_2">
+           <widget class="QCheckBox" name="enableTransparencyFacesCheckBox_">
             <property name="text">
              <string>Enable Transparency</string>
             </property>
