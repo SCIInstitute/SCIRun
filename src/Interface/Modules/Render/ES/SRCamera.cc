@@ -31,8 +31,8 @@
 
 #include <Interface/Modules/Render/namespaces.h>
 
-#include <Interface/Modules/Render/SpireSCIRun/SRCommonUniforms.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRCamera.h>
+#include <Interface/Modules/Render/ES/SRCommonUniforms.h>
+#include <Interface/Modules/Render/ES/SRCamera.h>
 
 namespace SCIRun {
 namespace Gui {

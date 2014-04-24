@@ -41,7 +41,7 @@
 #include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/QtGLContext.h>
 
-#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/namespaces.h>
 
 #include <QtOpenGL/QGLWidget>

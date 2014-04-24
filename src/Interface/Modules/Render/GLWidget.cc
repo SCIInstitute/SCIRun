@@ -155,7 +155,7 @@ void GLWidget::makeCurrent()
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  mGraphics->doFrame();
+  mGraphics->doFrame(0.0, 0.0);
   mContext->swapBuffers();
 }
 

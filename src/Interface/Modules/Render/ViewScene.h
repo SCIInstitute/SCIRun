@@ -41,9 +41,9 @@
 
 #include <Interface/Modules/Render/namespaces.h>
 
-#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRCommonAttributes.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRCommonUniforms.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
+#include <Interface/Modules/Render/ES/SRCommonAttributes.h>
+#include <Interface/Modules/Render/ES/SRCommonUniforms.h>
 
 #include <Interface/Modules/Render/GLWidget.h>
 

@@ -30,7 +30,7 @@
 /// \date   August 2013
 
 #include <Interface/Modules/Render/namespaces.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRUtil.h>
+#include <Interface/Modules/Render/ES/SRUtil.h>
 
 #include <glm/glm.hpp>
 

@@ -112,7 +112,7 @@ public:
   void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object);
 
   /// Performs a frame.
-  void doFrame();
+  void doFrame(double currentTime, double constantDeltaTime);
 
   /// Sets the mouse interaction mode.
   void setMouseMode(MouseMode mode);

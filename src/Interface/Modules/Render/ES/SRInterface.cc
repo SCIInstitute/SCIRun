@@ -30,11 +30,11 @@
 /// \date   February 2013
 
 #include <Interface/Modules/Render/namespaces.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRCamera.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
+#include <Interface/Modules/Render/ES/SRCamera.h>
 
-#include <Interface/Modules/Render/SpireSCIRun/SRCommonAttributes.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRCommonUniforms.h>
+#include <Interface/Modules/Render/ES/SRCommonAttributes.h>
+#include <Interface/Modules/Render/ES/SRCommonUniforms.h>
 
 #include <Core/Application/Application.h>
 
@@ -156,7 +156,7 @@ void SRInterface::beginFrame()
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::doFrame()
+void SRInterface::doFrame(double currentTime, double constantDeltaTime)
 {
   mContext->makeCurrent();
 
