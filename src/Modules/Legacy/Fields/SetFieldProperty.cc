@@ -26,16 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  SetFieldProperty: Set a property for a Field
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   June 1999
- *
- */
+///
+///@class SetFieldProperty
+///@brief Set a property for a Field
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  June 1999
+///
 
 #include <Dataflow/Network/SetPropertyModule.h>
 #include <Dataflow/Network/Ports/FieldPort.h>

@@ -29,17 +29,17 @@
 #ifndef CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEINSIDEWHICHFIELD_H
 #define CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEINSIDEWHICHFIELD_H 1
 
-//! Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 
-//! Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! STL class needed
+// STL class needed
 #include <vector>
 
-//! for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -51,24 +51,24 @@ class SCISHARE CalculateInsideWhichFieldAlgo : public AlgoBase
   public:
     CalculateInsideWhichFieldAlgo() 
     {
-      // How many samples inside the elements to test for being inside the
-      // object field
+      /// How many samples inside the elements to test for being inside the
+      /// object field
       add_option("sampling_scheme","regular2","regular1|regular2|regular3|regular4|regular5");
-      // Value for inside elements
+      /// Value for inside elements
       add_scalar("outside_value",0.0);
-      // Output type of the algorithm
+      /// Output type of the algorithm
       add_option("output_type","same as input","same as input|char|unsigned char|short|unsigned short|int|unsigned int|float|double");
-      // How many nodes need to be inside to call it inside
+      /// How many nodes need to be inside to call it inside
       add_option("method","one","one|most|all");
-      // Which value the first field is
+      /// Which value the first field is
       add_scalar("start_value",1.0);
-      // Do not alter the outside values
+      /// Do not alter the outside values
       add_bool("change_outside_values",true);
-      // For nodes or for elements
+      /// For nodes or for elements
       add_option("data_location","elem","elem|node");
     }
     
-    //! run the algorithm
+    /// run the algorithm
     bool run(FieldHandle input, std::vector<FieldHandle> object, FieldHandle& output);
 };
 

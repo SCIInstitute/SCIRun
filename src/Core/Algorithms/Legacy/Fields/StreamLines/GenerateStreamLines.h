@@ -30,14 +30,14 @@
 #define CORE_ALGORITHMS_FIELDS_STREAMLINES_GENERATESTREAMLINES_H 1
 
 
-//! Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 
-//! Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -64,7 +64,7 @@ class SCISHARE GenerateStreamLinesAlgo : public AlgoBase
       add_int("num_streamlines",0);
     }
     
-    //! Convert data into a matrix
+    /// Convert data into a matrix
     bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
 };
 

@@ -775,7 +775,7 @@ class ClipMeshByIsovalueAlgoTri
         return a.first < b.first || a.first == b.first && a.second < b.second;
       }
     };
-// TODO: needs cleanup, replace all this hash code with unordered map and set
+/// @todo: needs cleanup, replace all this hash code with unordered map and set
 #ifdef HAVE_HASH_MAP
     struct edgepairhash
     {
@@ -1620,7 +1620,7 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
     }
   }
 
-  //! Copy properties of the property manager
+  /// Copy properties of the property manager
 	output->copy_properties(input.get_rep());
    
   // Success:

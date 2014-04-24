@@ -28,16 +28,17 @@
 
 
 
-/*
- *  Datatype.cc: The Datatype Data type
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+///@file  Datatype.cc
+///@brief The Datatype Data type
+///
+///@author
+///       David Weinstein
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1994
+///
+///
 
 #include <Core/Thread/Guard.h>
 #include <Core/Datatypes/Datatype.h>
@@ -45,7 +46,7 @@
 
 namespace SCIRun {
 
-// TODO: assuming we keep this class in the future,
+/// @todo: assuming we keep this class in the future,
 // replace these with class static variables?
 static AtomicCounter* current_generation = 0;
 static Mutex init_lock("Datatypes generation counter initialization lock");

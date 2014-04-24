@@ -28,16 +28,15 @@
 */
 
 
-/*
- * ConvertMappingMatrixToMaskVector
- *
- *  Written by:
- *   McKay Davis
- *   School of Computing
- *   University of Utah
- *   August, 2005
- *
- */
+///
+///@class ConvertMappingMatrixToMaskVector
+///
+///@author
+///   McKay Davis
+///   School of Computing
+///   University of Utah
+///@date  August, 2005
+///
 
 #include <Dataflow/Network/Module.h>
 

@@ -60,7 +60,7 @@ DefinePeriodicBoundariesAlgo::run(FieldHandle& input,
                                   MatrixHandle& periodic_nodelink, 
                                   MatrixHandle& periodic_delemlink)
 {
-  // TODO: add progress reporting
+  /// @todo: add progress reporting
   algo_start("DefinePeriodicBoundaries");
   
   // Get parameters
@@ -184,7 +184,7 @@ DefinePeriodicBoundariesAlgo::run(FieldHandle& input,
     pointmap[nodelist[r]] = p;
   }
   
-  // TODO: Need to replace this with searchgrid implementation
+  /// @todo: Need to replace this with searchgrid implementation
   
   double shiftx = 0.0;
   double shifty = 0.0;

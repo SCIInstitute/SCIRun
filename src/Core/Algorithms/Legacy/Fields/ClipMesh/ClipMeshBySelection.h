@@ -30,15 +30,15 @@
 #ifndef CORE_ALGORITHMS_FIELDS_CLIPMESH_CLIPMESHBYSELECTION_H
 #define CORE_ALGORITHMS_FIELDS_CLIPMESH_CLIPMESHBYSELECTION_H 1
 
-//! Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 
-//! Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -48,14 +48,14 @@ using namespace SCIRun;
 class SCISHARE ClipMeshBySelectionAlgo : public AlgoBase
 {
   public:
-    //! Set defaults
+    /// Set defaults
     ClipMeshBySelectionAlgo()
     {
       add_option("method","one","element|onenode|majoritynodes|allnodes");
       add_bool("build_mapping",true);
     }
   
-    //! run the algorithm
+    /// run the algorithm
     bool run(FieldHandle input, 
              FieldHandle selection,
              FieldHandle& output);

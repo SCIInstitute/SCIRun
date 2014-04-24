@@ -30,15 +30,15 @@
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFESURFRHS_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFESURFRHS_H 1
 
-//! Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 
-//! Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+// for Windows support
 #include <Core/Algorithms/FiniteElements/share.h>
 
 namespace SCIRunAlgo {
@@ -48,15 +48,15 @@ using namespace SCIRun;
 class SCISHARE BuildFESurfRHSAlgo : public AlgoBase
 {
   public:
-    //! Set defaults
+    /// Set defaults
   BuildFESurfRHSAlgo() 
   {
     //MDS add_option("mapping","auto","auto|node|elem|none");
   }
   
-  //! With mapping
+  /// With mapping
   //MDS bool run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping);
-  //! Without mapping
+  /// Without mapping
   bool run(FieldHandle input, FieldHandle& output, MatrixHandle& mat_output);
 
 };

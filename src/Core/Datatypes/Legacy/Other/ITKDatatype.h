@@ -26,15 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-// itkDatatype.h - Base Insight Datatype
-//
-//  Written by:
-//   Darby J Brown
-//   School of Computing
-//   University of Utah
-//   January 2003
-//
+/*
+ *@file  itkDatatype.h
+ *@brief Base Insight Datatype
+ *
+ *@author
+ *   Darby J Brown
+ *   School of Computing
+ *   University of Utah
+ *@date  January 2003
+ */
 
 #ifndef SCI_Insight_itkDatatype_h
 #define SCI_Insight_itkDatatype_h

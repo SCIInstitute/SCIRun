@@ -25,11 +25,14 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
+/// @todo Documentation Core/Utils/StringUtil.h
 
 #ifndef CORE_UTILS_STRINGUTIL_H
 #define CORE_UTILS_STRINGUTIL_H 1
 
 #include <sstream>
+#include <vector>
+#include <boost/shared_ptr.hpp>
 #include <Core/Utils/share.h>
 
 namespace SCIRun 

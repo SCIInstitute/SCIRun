@@ -29,16 +29,16 @@
 
 
 
-/*
- *  ParallelBase: Helper class to instantiate several threads
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@class ParallelBase
+///@brief Helper class to instantiate several threads
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 #include <Core/Thread/Legacy/ParallelBase.h>
 namespace SCIRun {

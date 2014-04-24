@@ -38,10 +38,10 @@ namespace SCIRun
 namespace Core
 {
 
-// CLASS SINGLETON:
-/// Class for defining a singleton implementation
-/// A singleton class embeds this class to handle 
-/// the creation of the singleton class.
+///@class SINGLETON:
+///@brief Class for defining a singleton implementation
+///@details A singleton class embeds this class to handle 
+///	    the creation of the singleton class.
 
 /// NOTE: This singleton model requires that the project is linked statically
 

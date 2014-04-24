@@ -26,18 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  CoregisterPointClouds.cc:  CoregisterPointClouds two point clouds
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
+///
+///@file  CoregisterPointClouds.cc
+///@brief CoregisterPointClouds two point clouds
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
+///
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -209,7 +207,7 @@ CoregisterPointClouds::execute()
 }
 
 
-//! Commands invoked from the Gui.  Pause/unpause/stop the search.
+/// Commands invoked from the Gui.  Pause/unpause/stop the search.
 
 void
 CoregisterPointClouds::tcl_command(GuiArgs& args, void* userdata)

@@ -110,7 +110,7 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
     a << 1, 0, 3.5,
       -1, 2, 0;
 
-    //TODO: compare dense and sparse
+    /// @todo: compare dense and sparse
     //EXPECT_EQ(a, *mat);
     EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
   }

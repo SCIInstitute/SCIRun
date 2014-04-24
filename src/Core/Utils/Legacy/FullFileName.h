@@ -26,7 +26,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation Core/Util/Legacy/FullFileName.h
 
 #ifndef CORE_UTIL_FILENAME_H
 #define CORE_UTIL_FILENAME_H 1
@@ -39,7 +39,7 @@
 
 namespace SCIRun {
 
-// TODO: most of the functionality in this class can be replaced with the
+/// @todo: most of the functionality in this class can be replaced with the
 // boost::filesystem::path class
 class SCISHARE FullFileName 
 {

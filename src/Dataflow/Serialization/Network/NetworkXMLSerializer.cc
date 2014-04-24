@@ -26,9 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Serialization/Network/NetworkXMLSerializer.cc
+
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Dataflow/Network/Network.h> //TODO: need network factory??
+#include <Dataflow/Network/Network.h> /// @todo: need network factory??
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -64,7 +66,7 @@ NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, Modu
 
 NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
-  //TODO: need to use NEC here to manage signal/slots for dynamic ports.
+  /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
   NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_, algoFactory_));
   controller_->setNetwork(network);
 

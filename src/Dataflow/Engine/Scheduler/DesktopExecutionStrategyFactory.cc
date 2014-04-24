@@ -77,7 +77,7 @@ ExecutionStrategyHandle DesktopExecutionStrategyFactory::createDefault() const
   }
   else
   {
-    LOG_DEBUG("no thread mode found, using dynamic parallel"); //TODO: update this to best working version
+    LOG_DEBUG("no thread mode found, using dynamic parallel"); /// @todo: update this to best working version
     return create(latestWorkingVersion);  
   }
 }

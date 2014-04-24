@@ -54,7 +54,7 @@ bool find_second_closest_elem(VMesh *tsm, SearchGridHandle elem_grid,
 			      double diffdist) {
   VMesh::Elem::size_type sz = tsm->num_elems();
   
-  //! If there are no elements we cannot find the closest one
+  /// If there are no elements we cannot find the closest one
   if (sz < 1) return (false);
 
   // get grid sizes
@@ -81,8 +81,8 @@ bool find_second_closest_elem(VMesh *tsm, SearchGridHandle elem_grid,
   do 
     {
       found = true; 
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
       for (SCIRun::size_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;

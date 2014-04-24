@@ -48,9 +48,9 @@ public:
   static AlgorithmOutputName BoundaryField;
   static AlgorithmOutputName MappingMatrix;
 
-  //! With mapping
+  /// With mapping
   bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping) const;
-  //! Without mapping
+  /// Without mapping
   bool run(FieldHandle input, FieldHandle& output);
 
   AlgorithmOutput run_generic(const AlgorithmInput& input) const;

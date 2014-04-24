@@ -52,7 +52,7 @@ TEST_F(SolveMinNormLeastSqSystemTests, ThrowsOnNullInput)
 
 TEST_F(SolveMinNormLeastSqSystemTests, BasicTest)
 {
-  //TODO: when algo is extracted, this test needs the real factory:
+  /// @todo: when algo is extracted, this test needs the real factory:
   //UseRealAlgorithmFactory f;
 
   auto sls = makeModule("SolveMinNormLeastSqSystem");
@@ -67,7 +67,7 @@ TEST_F(SolveMinNormLeastSqSystemTests, BasicTest)
 
   sls->execute();
 
-  //TODO: waiting on getData() to enable
+  /// @todo: waiting on getData() to enable
   if (false)
   {
     auto weight = getDataOnThisOutputPort(sls, 0);

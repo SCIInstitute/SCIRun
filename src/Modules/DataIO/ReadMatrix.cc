@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/DataIO/ReadMatrix.cc
 
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -43,10 +44,10 @@ ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "Da
   INITIALIZE_PORT(MatrixLoaded);
 }
 
-//TODO: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
+/// @todo: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
 void ReadMatrixModule::execute()
 {
-  //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
+  /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
   if (!fileOption)
     filename_ = get_state()->getValue(Variables::Filename).getString();

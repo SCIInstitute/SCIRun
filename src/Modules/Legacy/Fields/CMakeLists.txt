@@ -41,6 +41,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   GetFieldNodes.h
   JoinFields.h
   SplitFieldByDomain.h
+  CreateFieldData.h
   #ApplyMappingMatrix.h
 )
 
@@ -142,7 +143,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CalculateIsInsideField.cc
   #CalculateInsideWhichField.cc
   #ConvertIndicesToFieldData.cc
-  #CreateFieldData.cc
+  CreateFieldData.cc
   #GetFieldData.cc
   #SetFieldData.cc
   GetFieldNodes.cc
@@ -189,7 +190,7 @@ TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
   #Core_GeomInterface
   #Core_ImportExport
   Core_Math
-  #Core_Parser
+  Core_Parser
   #Core_Persistent
   #Core_Thread
   Core_Util_Legacy

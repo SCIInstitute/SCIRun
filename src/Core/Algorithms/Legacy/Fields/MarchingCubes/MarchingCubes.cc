@@ -104,12 +104,12 @@ MarchingCubesAlgoP<TESSELATOR>::run(AlgoBase* algo,
   algo_ = algo;
   
   int np = algo->get_int("num_threads");
-  //! By default (-1) choose number of processors
+  /// By default (-1) choose number of processors
   if (np < 1) np = Thread::numProcessors();
-  //! Cap the number of threads
+  /// Cap the number of threads
   if (np > 4*Thread::numProcessors()) np = 4*Thread::numProcessors();
   
-  // TODO: FIX MULTI THREADING OF MARCHING CUBES FIELDS ARE NOT PROPORLY LINKED
+  /// @todo: FIX MULTI THREADING OF MARCHING CUBES FIELDS ARE NOT PROPORLY LINKED
   
   np = 1;
   size_t num_values = iso_values_.size();

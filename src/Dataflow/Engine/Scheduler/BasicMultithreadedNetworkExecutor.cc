@@ -47,7 +47,7 @@ namespace
     
     void operator()() const
     {
-      //TODO ESSENTIAL: scoped start/finish signaling
+      /// @todo ESSENTIAL: scoped start/finish signaling
       bounds_.executeStarts_();
       for (int group = order_.minGroup(); group <= order_.maxGroup(); ++group)
       {

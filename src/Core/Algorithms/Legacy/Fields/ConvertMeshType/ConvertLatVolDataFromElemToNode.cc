@@ -37,7 +37,7 @@ bool
 ConvertLatVolDataFromElemToNodeAlgo::
 run(FieldHandle input, FieldHandle& output)
 {
-  //! Mark start of algorithm and report that we will not report progress
+  /// Mark start of algorithm and report that we will not report progress
   algo_start("ConvertLatVolDataFromNodeToElem");
 
   if (input.get_rep() == 0)

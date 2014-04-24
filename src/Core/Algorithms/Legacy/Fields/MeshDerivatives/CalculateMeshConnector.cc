@@ -40,7 +40,7 @@ CalculateMeshConnectorAlgo::run(FieldHandle input1, FieldHandle input2, FieldHan
 {
   algo_start("CalculateMeshConnector");
   
-  //! Safety check
+  /// Safety check
   if (input1.get_rep() == 0)
   {
     error("The first input field is empty");
@@ -53,7 +53,7 @@ CalculateMeshConnectorAlgo::run(FieldHandle input1, FieldHandle input2, FieldHan
     algo_end(); return (false);
   }
   
-  //! Get the information of the input field
+  /// Get the information of the input field
   FieldInformation fo("CurveMesh",-1,"double");
   
   VMesh* imesh1 = input1->vmesh(); 

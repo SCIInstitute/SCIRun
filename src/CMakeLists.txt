@@ -209,13 +209,15 @@ ENDIF()
 ########################################################################
 # Configure documentation
 
-OPTION(BUILD_DOXYGEN_DOCUMENTATION "Generate doxygen-based documentation." OFF)
+OPTION(BUILD_DOXYGEN_DOCUMENTATION "Generate Doxygen-based documentation." OFF)
 MARK_AS_ADVANCED(BUILD_DOXYGEN_DOCUMENTATION)
 
 IF(BUILD_DOXYGEN_DOCUMENTATION)
   FIND_PACKAGE(Doxygen)
 
   IF(DOXYGEN_FOUND)
+    OPTION(COPY_DOXYGEN_TO_SERVER "Copy Doxygen documentation to server." OFF)
+    MARK_AS_ADVANCED(COPY_DOXYGEN_TO_SERVER)
     ADD_SUBDIRECTORY(Documentation/Doxygen)
   ELSE()
     SET(BUILD_DOXYGEN_DOCUMENTATION OFF CACHE BOOL "Generate doxygen-based documentation." FORCE)
@@ -610,6 +612,7 @@ SET_PROPERTY(TARGET Core_Geometry_Primitives         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Application         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Utils         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Math         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Parser         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Exceptions_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Util_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Containers         PROPERTY FOLDER "Core")
@@ -676,6 +679,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_Serialization_Network_Tests         PROPERTY FOLDER "Dataflow/Serialization/Tests")
   SET_PROPERTY(TARGET Core_Thread_Tests   PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Utils_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Core_Parser_Tests         PROPERTY FOLDER "Core/Tests")
 
   SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
   SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")

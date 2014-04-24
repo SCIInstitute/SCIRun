@@ -27,16 +27,16 @@
 */
 
 
-/*
- *  WriteMatrix.cc: Save persistent representation of a matrix to a file
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+///@file  WriteMatrix.cc
+///@brief Save persistent representation of a matrix to a file
+///
+///@author
+///   Steven G. Parker
+///   Department of Computer Science
+///   University of Utah
+///@date  July 1994
+///
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Modules/DataIO/GenericWriter.h>

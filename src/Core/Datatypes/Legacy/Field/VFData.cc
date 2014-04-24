@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Datatypes/Legacy/Field/VFData.cc
 
 #include <Core/Datatypes/Legacy/Field/VFData.h>
 
@@ -60,10 +61,10 @@ void VFData::set_evalues(const type *, VMesh::size_type, VMesh::size_type) \
 void VFData::set_all_values(const type &) \
 { ASSERTFAIL("VFData interface has no virtual function implementation for set_all_values"); } \
 \
-void VFData::get_weighted_value(type &, VMesh::index_type*, VMesh::weight_type*, VMesh::size_type) const \
+void VFData::get_weighted_value(type &, const VMesh::index_type*, const VMesh::weight_type*, VMesh::size_type) const \
 { ASSERTFAIL("VFData interface has no virtual function implementation for get_weighted_values"); } \
 \
-void VFData::get_weighted_evalue(type &, VMesh::index_type*, VMesh::weight_type*, VMesh::size_type) const \
+void VFData::get_weighted_evalue(type &, const VMesh::index_type*, const VMesh::weight_type*, VMesh::size_type) const \
 { ASSERTFAIL("VFData interface has no virtual function implementation for get_weighted_values"); } \
 \
 void VFData::get_values(type *, VMesh::Node::array_type&) const \

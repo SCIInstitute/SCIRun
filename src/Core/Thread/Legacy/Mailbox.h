@@ -28,16 +28,15 @@
 
 
 
-/*
- *  Mailbox: Threadsafe FIFO
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@file   Mailbox.h
+///@brief  Threadsafe FIFO
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_Mailbox_h
 #define Core_Thread_Mailbox_h
@@ -53,13 +52,13 @@
 namespace SCIRun {
 /**************************************
 
-  CLASS
+@class
   Mailbox
 
   KEYWORDS
   Thread, FIFO
 
-  DESCRIPTION
+@details
   A thread-safe, fixed-length FIFO queue which allows multiple
   concurrent senders and receivers.  Multiple threads send <b>Item</b>s
   to the mailbox, and multiple thread may receive <b>Item</b>s from the
@@ -69,71 +68,71 @@ namespace SCIRun {
 template<class Item> class Mailbox {
 public:
   //////////
-  // Create a mailbox with a maximum queue size of <i>size</i>
-  // items. If size is zero, then the mailbox will use
-  // <i>rendevous semantics</i>, where a sender will block
-  // until a reciever is waiting for the item.  The item will
-  // be handed off synchronously. <i>name</i> should be a
-  // static string which describes the primitive for debugging
-  // purposes.
+  /// Create a mailbox with a maximum queue size of <i>size</i>
+  /// items. If size is zero, then the mailbox will use
+  /// <i>rendevous semantics</i>, where a sender will block
+  /// until a reciever is waiting for the item.  The item will
+  /// be handed off synchronously. <i>name</i> should be a
+  /// static string which describes the primitive for debugging
+  /// purposes.
   Mailbox(const char* name, int size);
     
   //////////
-  // Destroy the mailbox.  All items in the queue are silently
-  // dropped.
+  /// Destroy the mailbox.  All items in the queue are silently
+  /// dropped.
   ~Mailbox();
     
   //////////
-  // Puts <i>msg</i> in the queue.  If the queue is full, the
-  // thread will be blocked until there is room in the queue.
-  // Messages from the same thread will be placed in the
-  // queue in a first-in/first out order. Multiple threads may
-  // call <i>send</i> concurrently, and the messages will be
-  // placed in the queue in an arbitrary order.
+  /// Puts <i>msg</i> in the queue.  If the queue is full, the
+  /// thread will be blocked until there is room in the queue.
+  /// Messages from the same thread will be placed in the
+  /// queue in a first-in/first out order. Multiple threads may
+  /// call <i>send</i> concurrently, and the messages will be
+  /// placed in the queue in an arbitrary order.
   void send(const Item& msg);
     
   //////////
-  // Attempt to send <i>msg</i> to the queue.  If the queue is
-  // full, the thread will not be blocked, and <i>trySend</i>
-  // will return false.  Otherwise, <i>trySend</i> will return
-  // true.  This may never complete if the reciever only uses
-  // <i>tryRecieve</i>.  
+  /// Attempt to send <i>msg</i> to the queue.  If the queue is
+  /// full, the thread will not be blocked, and <i>trySend</i>
+  /// will return false.  Otherwise, <i>trySend</i> will return
+  /// true.  This may never complete if the reciever only uses
+  /// <i>tryRecieve</i>.  
   bool trySend(const Item& msg);
     
   
   //////////
-  // Send <i>msg</i> to the queue only if the <i>checker</i> function
-  // fails to compare the <i>msg</i> to what is already the last item
-  // there.  This is useful if we want to make certain that at least
-  // one of a particular message (like a viewer resize redraw) gets
-  // put on the mailbox without spamming it.  This blocks like
-  // <i>send</i> does.  It returns true if <i>msg</i> was added to the
-  // queue and false if it wasn't.
+  /// Send <i>msg</i> to the queue only if the <i>checker</i> function
+  /// fails to compare the <i>msg</i> to what is already the last item
+  /// there.  This is useful if we want to make certain that at least
+  /// one of a particular message (like a viewer resize redraw) gets
+  /// put on the mailbox without spamming it.  This blocks like
+  /// <i>send</i> does.  It returns true if <i>msg</i> was added to the
+  /// queue and false if it wasn't.
   bool sendIfNotSentLast(const Item& msg,
                          bool (*checker)(const Item &a, const Item &b));
 
   //////////
-  // Receive an item from the queue.  If the queue is empty,
-  // the thread will block until another thread sends an item.
-  // Multiple threads may call <i>recieve</i> concurrently, but
-  // no guarantee is made as to which thread will recieve the
-  // next token.  However, implementors should give preference
-  // to the thread that has been waiting the longest.
+  /// Receive an item from the queue.  If the queue is empty,
+  /// the thread will block until another thread sends an item.
+  /// Multiple threads may call <i>recieve</i> concurrently, but
+  /// no guarantee is made as to which thread will recieve the
+  /// next token.  However, implementors should give preference
+  /// to the thread that has been waiting the longest.
   Item receive();
 
   //////////
-  // Attempt to recieve <i>item</i> from the mailbox.  If the
-  // queue is empty, the thread is blocked and <i>tryRecieve</i>
-  // will return false.  Otherwise, <i>tryRecieve</i> returns true.
+  /// Attempt to recieve <i>item</i> from the mailbox.  If the
+  /// queue is empty, the thread is blocked and <i>tryRecieve</i>
+  /// will return false.  Otherwise, <i>tryRecieve</i> returns true.
   bool tryReceive(Item& item);
     
   //////////
-  // Return the maximum size of the mailbox queue, as given in the
-  // constructor.
+  /// Return the maximum size of the mailbox queue, as given in the
+  /// constructor.
   int size() const;
 
   //////////
-  // Return the number of items currently in the queue.
+  /// Return the number of items currently in the queue.
   int numItems() const;
 
 private:
