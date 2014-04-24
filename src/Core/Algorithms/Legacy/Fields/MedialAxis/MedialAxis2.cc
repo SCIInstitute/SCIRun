@@ -325,8 +325,8 @@ MedialAxisP::find_closest_two_distances(VMesh* surfmesh,
   do   // if it doesn't find anything it will go to false.
   {
     found = true;
-    //! We need to do a full shell without any elements that are closer
-    //! to make sure there no closer elements in neighboring searchgrid cells
+    /// We need to do a full shell without any elements that are closer
+    /// to make sure there no closer elements in neighboring searchgrid cells
     for (index_type i = bi; i <= ei; i++) // finds closest distance to the surface
     {
       if (i < 0 || i >= ni) continue;
@@ -484,8 +484,8 @@ MedialAxisP::find_closest_two_distances(VMesh* surfmesh,
   do
   {
     found = true;
-    //! We need to do a full shell without any elements that are closer
-    //! to make sure there no closer elements in neighboring searchgrid cells
+    /// We need to do a full shell without any elements that are closer
+    /// to make sure there no closer elements in neighboring searchgrid cells
     for (index_type i = bi; i <= ei; i++)
     { 
       if (i < 0 || i >= ni) continue;
@@ -659,8 +659,8 @@ MedialAxisP::find_closest_two_distances(VMesh* surfmesh,
     do
     {
       found = true;
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i >= ni) continue;

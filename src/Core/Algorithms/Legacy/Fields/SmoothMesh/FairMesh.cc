@@ -210,7 +210,7 @@ FairMeshAlgo::run(FieldHandle input,FieldHandle& output)
           }
         }
 
-        //! set the displacement vector for this node.
+        /// set the displacement vector for this node.
         if (totw != 0.0) disp[idx] = d * (1.0 / totw);
       }
 

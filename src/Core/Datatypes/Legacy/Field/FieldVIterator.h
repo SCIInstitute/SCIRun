@@ -36,7 +36,7 @@
 namespace SCIRun {
 
 
-//! Base type for FieldVIterator types.
+/// Base type for FieldVIterator types.
 template <class T>
 class FieldVIteratorBase 
 {
@@ -44,7 +44,7 @@ class FieldVIteratorBase
   FieldVIteratorBase(T i) :
     index_(i) {}
 
-  //! Field Iterators need to be able to increment.
+  /// Field Iterators need to be able to increment.
   inline 
   T operator ++() { return ++index_; }
   T operator --() { return --index_; }
@@ -62,13 +62,13 @@ class FieldVIteratorBase
 protected:
   T index_;
 private:
-  //! Hide this in private to prevent it from being called.
+  /// Hide this in private to prevent it from being called.
   FieldVIteratorBase<T> operator ++(int);
   FieldVIteratorBase<T> operator --(int);
 };
 
 
-//! Distinct type for node FieldIterator.
+/// Distinct type for node FieldIterator.
 template <class T>
 struct VNodeIterator : public FieldVIteratorBase<T> {
   VNodeIterator() :
@@ -76,7 +76,7 @@ struct VNodeIterator : public FieldVIteratorBase<T> {
   VNodeIterator(T iter) :
     FieldVIteratorBase<T>(iter) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   VNodeIndex<T> operator*() const { return VNodeIndex<T>(this->index_); }
 
@@ -87,7 +87,7 @@ struct VNodeIterator : public FieldVIteratorBase<T> {
   template <class U> friend U operator+(const VNodeIndex<U> &a, const VNodeIndex<U> &b);
 };
 
-//! Distinct type for lagrangian node FieldIterator.
+/// Distinct type for lagrangian node FieldIterator.
 template <class T>
 struct VENodeIterator : public FieldVIteratorBase<T> {
   VENodeIterator() :
@@ -95,12 +95,12 @@ struct VENodeIterator : public FieldVIteratorBase<T> {
   VENodeIterator(T iter) :
     FieldVIteratorBase<T>(iter) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   VENodeIndex<T> operator*() const { return VENodeIndex<T>(this->index_); }
 };
 
-//! Distinct type for edge Iterator.
+/// Distinct type for edge Iterator.
 template <class T>
 struct VEdgeIterator : public FieldVIteratorBase<T> {
   VEdgeIterator() :
@@ -108,7 +108,7 @@ struct VEdgeIterator : public FieldVIteratorBase<T> {
   VEdgeIterator(T index) :
     FieldVIteratorBase<T>(index) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   VEdgeIndex<T> operator*() const { return VEdgeIndex<T>(this->index_); }
 
@@ -117,7 +117,7 @@ struct VEdgeIterator : public FieldVIteratorBase<T> {
   typedef VEdgeIndex<T>& reference;
 };
 
-//! Distinct type for face Iterator.
+/// Distinct type for face Iterator.
 template <class T>
 struct VFaceIterator : public FieldVIteratorBase<T> {
   VFaceIterator() :
@@ -125,14 +125,14 @@ struct VFaceIterator : public FieldVIteratorBase<T> {
   VFaceIterator(T index) :
     FieldVIteratorBase<T>(index) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   VFaceIndex<T> operator*() const { return VFaceIndex<T>(this->index_); }
   
   template <class U> friend U operator+(const VFaceIndex<U> &a, const VFaceIndex<U> &b);
 };
 
-//! Distinct type for cell Iterator.
+/// Distinct type for cell Iterator.
 template <class T>
 struct VCellIterator : public FieldVIteratorBase<T> {
   VCellIterator() :
@@ -140,12 +140,12 @@ struct VCellIterator : public FieldVIteratorBase<T> {
   VCellIterator(T index) :
     FieldVIteratorBase<T>(index) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   VCellIndex<T> operator*() const { return VCellIndex<T>(this->index_); }
 };
 
-//! Distinct type for cell Iterator.
+/// Distinct type for cell Iterator.
 template <class T>
 struct VElemIterator : public FieldVIteratorBase<T> {
   VElemIterator() :
@@ -153,12 +153,12 @@ struct VElemIterator : public FieldVIteratorBase<T> {
   VElemIterator(T index) :
     FieldVIteratorBase<T>(index) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   VElemIndex<T> operator*() const { return VElemIndex<T>(this->index_); }
 };
 
-//! Distinct type for cell Iterator.
+/// Distinct type for cell Iterator.
 template <class T>
 struct VDElemIterator : public FieldVIteratorBase<T> {
   VDElemIterator() :
@@ -166,7 +166,7 @@ struct VDElemIterator : public FieldVIteratorBase<T> {
   VDElemIterator(T index) :
     FieldVIteratorBase<T>(index) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   VDElemIndex<T> operator*() const { return VDElemIndex<T>(this->index_); }
 };

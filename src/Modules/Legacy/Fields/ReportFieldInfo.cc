@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/ReportFieldInfo.cc
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/Field.h>

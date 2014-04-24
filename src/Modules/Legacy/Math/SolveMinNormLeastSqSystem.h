@@ -27,27 +27,27 @@
 */
 
 
-/*
- *  SolveMinNormLeastSqSystem: Select a row or column of a matrix
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   June 1999
- *
- *
- * This module computes the minimal norm, least squared solution to a
- *  nx3 linear system.
- * Given four input ColumnMatrices (v0,v1,v2,b),
- *  find the three coefficients (w0,w1,w2) that minimize:
- *  | (w0v0 + w1v1 + w2v2) - b |.
- * If more than one minimum exists (the system is under-determined),
- *  choose the coefficients such that (w0,w1,w2) has minimum norm.
- * We output the vector (w0,w1,w2) as a row-matrix,
- *  and we output the ColumnMatrix (called x), which is: | w0v0 + w1v1 + w2v2 |.
- *
- */
+///
+///@file  SolveMinNormLeastSqSystem
+///@brief Select a row or column of a matrix
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  June 1999
+///
+///@details
+/// This module computes the minimal norm, least squared solution to a
+///  nx3 linear system.
+/// Given four input ColumnMatrices (v0,v1,v2,b),
+///  find the three coefficients (w0,w1,w2) that minimize:
+///  | (w0v0 + w1v1 + w2v2) - b |.
+/// If more than one minimum exists (the system is under-determined),
+///  choose the coefficients such that (w0,w1,w2) has minimum norm.
+/// We output the vector (w0,w1,w2) as a row-matrix,
+///  and we output the ColumnMatrix (called x), which is: | w0v0 + w1v1 + w2v2 |.
+///
 
 #ifndef MODULES_LEGACY_MATH_SOLVEMINNORMLEASTSQSYSTEM_H
 #define MODULES_LEGACY_MATH_SOLVEMINNORMLEASTSQSYSTEM_H

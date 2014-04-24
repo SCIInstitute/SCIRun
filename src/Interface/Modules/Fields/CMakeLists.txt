@@ -30,20 +30,26 @@
 SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
   GetDomainBoundary.ui
+  JoinFields.ui
   ReportFieldInfoDialog.ui
+  SplitFieldByDomain.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
   CreateLatVolDialog.h
   GetDomainBoundaryDialog.h
+  JoinFieldsDialog.h
   ReportFieldInfoDialog.h
+  SplitFieldByDomainDialog.h
   share.h
 )
 
 SET(Interface_Modules_Fields_SOURCES 
   CreateLatVolDialog.cc
   GetDomainBoundaryDialog.cc
+  JoinFieldsDialog.cc
   ReportFieldInfoDialog.cc
+  SplitFieldByDomainDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

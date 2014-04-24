@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/CalculateVectorMagnitudes.h
 
 #ifndef MODULES_LEGACY_FIELDS_CalculateVectorMagnitudes_H__
 #define MODULES_LEGACY_FIELDS_CalculateVectorMagnitudes_H__

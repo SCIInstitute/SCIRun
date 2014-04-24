@@ -76,7 +76,7 @@ USE AT YOUR OWN RISK!</string>
            <string>Parallel</string>
           </property>
           <property name="checked">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -86,7 +86,7 @@ USE AT YOUR OWN RISK!</string>
            <string>Improved parallel</string>
           </property>
           <property name="checked">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
          </widget>
         </item>

@@ -25,28 +25,40 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/CreateFieldData.cc
 
-
-// Include all code for the dynamic engine
+#include <Modules/Legacy/Fields/CreateFieldData.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Parser/ArrayMathEngine.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-namespace SCIRun {
+ModuleLookupInfo CreateFieldData::staticInfo_("CreateFieldData", "ChangeFieldData", "SCIRun");
+AlgorithmParameterName CreateFieldData::FunctionString("FunctionString");
+AlgorithmParameterName CreateFieldData::FormatString("FormatString");
+AlgorithmParameterName CreateFieldData::BasisString("BasisString");
 
-class CreateFieldData : public Module {
-  public:
-    CreateFieldData(GuiContext*);
-    virtual ~CreateFieldData() {}
-    virtual void execute();
+CreateFieldData::CreateFieldData() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Function);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(DataArray);
+}
+
+void CreateFieldData::setStateDefaults()
+{
+  auto state = get_state();
+}
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     virtual void presave();
-
     virtual void tcl_command(GuiArgs&, void*);
 
   private:
@@ -54,41 +66,32 @@ class CreateFieldData : public Module {
     GuiString guiformat_;       // scalar, vector, or tensor ?
     GuiString guibasis_;       // constant, linear, quadratic, ....
 
-};
-
-
-DECLARE_MAKER(CreateFieldData)
-CreateFieldData::CreateFieldData(GuiContext* ctx)
-  : Module("CreateFieldData", ctx, Source, "ChangeFieldData", "SCIRun"),
-  guifunction_(get_ctx()->subVar("function")),
+    guifunction_(get_ctx()->subVar("function")),
   guiformat_(get_ctx()->subVar("format")),  
   guibasis_(get_ctx()->subVar("basis"))
-{
-}
-
+#endif
 
 void
 CreateFieldData::execute()
 {
-  FieldHandle field;
-  StringHandle func;
-  std::vector<MatrixHandle> matrices;
+  auto field = getRequiredInput(InputField);
+  auto func = getOptionalInput(Function);
   
-  get_input_handle("Field",field,true);
-  if (get_input_handle("Function",func,false))
+  if (func && *func)
   {
-    if (func.get_rep())
-    {
-      guifunction_.set(func->get());
-      get_ctx()->reset();  
-    }
+    get_state()->setValue(FunctionString, (*func)->value());
   }
-  get_dynamic_input_handles("DataArray",matrices,false);
+  auto matrices = getRequiredDynamicInputs(DataArray);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   TCLInterface::eval(get_id()+" update_text");
+#endif
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || guiformat_.changed() || guibasis_.changed() 
                     || guifunction_.changed() || !oport_cached("Field"))
+#endif
+  if (needToExecute())
   {
     update_state(Executing);
     
@@ -99,13 +102,14 @@ CreateFieldData::execute()
       error("This module cannot handle more than 23 input matrices.");
       return;
     }
+    auto state = get_state();
 
     NewArrayMathEngine engine;
-    engine.set_progress_reporter(this);
+    engine.setLogger(this);
     
-    std::string format = guiformat_.get();
+    std::string format = state->getValue(FormatString).getString();
     if (format == "") format = "double";
-    std::string basis = guibasis_.get();
+    std::string basis = state->getValue(BasisString).getString();
     if (basis == "") basis = "Linear";
 
     // Add as well the output object
@@ -124,7 +128,7 @@ CreateFieldData::execute()
   
     for (size_t p = 0; p < matrices.size(); p++)
     {
-      if (matrices[p].get_rep() == 0)
+      if (!matrices[p])
       {
         error("No matrix was found on input port.");
         return;      
@@ -141,7 +145,7 @@ CreateFieldData::execute()
     if(!(engine.add_index("INDEX"))) return;
     if(!(engine.add_size("SIZE"))) return;
 
-    std::string function = guifunction_.get();
+    std::string function = state->getValue(FunctionString).getString();
     if(!(engine.add_expressions(function))) return;
     
     // Actual engine call, which does the dynamic compilation, the creation of the
@@ -149,17 +153,17 @@ CreateFieldData::execute()
     // over every data point
 
     if (!(engine.run())) return;
-    
+
     // Get the result from the engine
     FieldHandle ofield;    
     engine.get_field("RESULT",ofield);
 
     // send new output if there is any: 
-    send_output_handle("Field", ofield);
+    sendOutput(OutputField, ofield);
   }
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void
 CreateFieldData::tcl_command(GuiArgs& args, void* userdata)
 {
@@ -190,3 +194,4 @@ CreateFieldData::presave()
 } // End namespace SCIRun
 
 
+#endif

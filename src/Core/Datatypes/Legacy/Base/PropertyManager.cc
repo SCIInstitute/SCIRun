@@ -26,17 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/* PropertyManager.cc
- *
- *  Written by:
- *   Yarden Livnat
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- *  Manage properties of persistent objects.
- */
+///
+///@file  PropertyManager.cc
+///
+///@author
+///       Yarden Livnat
+///       Department of Computer Science
+///       University of Utah
+/// 
+///@date  March 2001
+///
+///@brief Manage properties of persistent objects.
+///
 
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <Core/Utils/Legacy/MemoryUtil.h>
@@ -45,7 +46,7 @@ using namespace SCIRun::Core::Thread;
 
 namespace SCIRun {
 
-// TODO: should be using Guards here...
+/// @todo: should be using Guards here...
 PersistentTypeID 
 PropertyBase::type_id("PropertyBase", "Persistent", maker);
 
@@ -77,7 +78,7 @@ PropertyManager::PropertyManager() :
 
 // PropertyManagers are created thawed.  Only non transient data is copied.
 //
-// TODO: this and copy properties share essentially common code.
+/// @todo: this and copy properties share essentially common code.
 // Add a helper function to manage duplicated code.
 PropertyManager::PropertyManager(const PropertyManager &copy) :
   Persistent(copy),
@@ -106,7 +107,7 @@ PropertyManager::operator=(const PropertyManager &src)
   return *this;
 }
 
-// TODO: currently, field types are passing in pointers
+/// @todo: currently, field types are passing in pointers
 // usually obtained from LockingHandle::get_rep().
 // We should either change this to take a reference, or
 // a smart pointer
@@ -189,7 +190,8 @@ PropertyManager::thaw()
 {
   // Assert that detach has been called on any handles to this PropertyManager.
 
-  // TODO: since we're using Boost shared pointers, ref_cnt is no longer used.
+ /// @todo: since we're using Boost shared pointers, ref_cnt is no longer u
+ ///sed.
   // Do we need to verify that all handles are detached?
   //ASSERT(ref_cnt <= 1);
 

@@ -26,17 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
-  Environment.h: Interface to setting environemnt variables and parsing .rc files
-
-  Written by:
-    McKay Davis
-    Scientific Computing and Imaging Institute 
-    University of Utah
-    January 2004
-
-*/
-
+///
+///@file  Environment.h
+///@brief Interface to setting environemnt variables and parsing .rc files
+///
+///@author
+///       McKay Davis
+///       Scientific Computing and Imaging Institute 
+///       University of Utah
+///@date  January 2004
+///
 
 #ifndef Core_Util_Environment_h
 #define Core_Util_Environment_h 1

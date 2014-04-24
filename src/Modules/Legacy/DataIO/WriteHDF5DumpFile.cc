@@ -107,15 +107,15 @@
   --------------------------------------------------------------------------
 */
 
-/*
- *  WriteHDF5DumpFile.cc
- *
- *  Written by:
- *   Allen Sanderson
- *   SCI Institute
- *   University of Utah
- *   May 2003
- */
+///
+///@file  WriteHDF5DumpFile.cc
+///
+///@author
+///   Allen Sanderson
+///   SCI Institute
+///   University of Utah
+///@date  May 2003
+///
 
 
 #include <cstdlib>

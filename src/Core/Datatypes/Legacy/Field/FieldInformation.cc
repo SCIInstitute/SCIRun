@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Datatypes/Legacy/Field/FieldInformation.cc
 
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -35,7 +36,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
 
-//TODO DAN: use std::replace for strings below.
+/// @todo DAN: use std::replace for strings below.
 
 void
 FieldTypeInformation::insert_field_type_information(Field* field)
@@ -703,7 +704,7 @@ FieldTypeInformation::is_cubicdata()
   return ((basis_type.find("ubicHmt") != std::string::npos));
 }
 
-// TODO: an enum would be good for keeping track of basis order...
+/// @todo: an enum would be good for keeping track of basis order...
 int
 FieldTypeInformation::field_basis_order()
 {

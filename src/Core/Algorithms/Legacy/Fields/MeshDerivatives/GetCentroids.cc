@@ -38,14 +38,14 @@ GetCentroidsAlgo::run(FieldHandle input, FieldHandle& output)
 {
   algo_start("GetCentroids");
   
-  //! Safety check
+  /// Safety check
   if (input.get_rep() == 0)
   {
     error("No input field");
     algo_end(); return (false);
   }
   
-  //! Get the information of the input field
+  /// Get the information of the input field
   FieldInformation fo(input);
   fo.make_pointcloudmesh();
   fo.make_nodata();

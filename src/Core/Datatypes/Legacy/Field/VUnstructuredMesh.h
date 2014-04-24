@@ -32,7 +32,7 @@
 
 #include <Core/Datatypes/Legacy/Field/VMeshShared.h>
 
-//! Include needed for Windows: declares SCISHARE
+/// Include needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -41,7 +41,7 @@ template <class MESH>
 class SCISHARE VUnstructuredMesh : public VMeshShared<MESH> {
 public:
   
-  //! Constructor: This will initialize VMeshShared and VMesh
+  /// Constructor: This will initialize VMeshShared and VMesh
   explicit VUnstructuredMesh(MESH* mesh) :
     VMeshShared<MESH>(mesh)
   {}
@@ -130,7 +130,7 @@ public:
   
   virtual void get_dimensions(VMesh::dimension_type& dim);
 
-  //! Get the jacobian for the global coordinates to local coordinates transformation 
+  /// Get the jacobian for the global coordinates to local coordinates transformation 
   virtual double det_jacobian(const VMesh::coords_type& coords, 
                               VMesh::Elem::index_type idx) const; 
 
@@ -147,21 +147,21 @@ public:
   virtual double jacobian_metric(const VMesh::Elem::index_type elem) const;
   
   
-  //! Functions for forwarding call to the basis class of the
-  //! mesh
+  /// Functions for forwarding call to the basis class of the
+  /// mesh
   virtual void node_reserve(size_t size);
   virtual void elem_reserve(size_t size);
   virtual void resize_nodes(size_t size);
   virtual void resize_elems(size_t size);  
 
-  //! Get normals, for surface meshes only
+  /// Get normals, for surface meshes only
   virtual void get_normal(Core::Geometry::Vector& norm, VMesh::Node::index_type i) const;
 
   virtual void get_normal(Core::Geometry::Vector& norm, VMesh::coords_type& coords, 
                 VMesh::Elem::index_type i, VMesh::DElem::index_type j) const;
   
-  //! Get all the information needed for interpolation:
-  //! this includes weights and node indices
+  /// Get all the information needed for interpolation:
+  /// this includes weights and node indices
 
   virtual void get_interpolate_weights(const Core::Geometry::Point& point, 
                                        VMesh::ElemInterpolate& ei,

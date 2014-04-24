@@ -28,16 +28,15 @@
 
 
 
-/*
- *  GeneratePointSamplesFromField.cc
- *
- *  Written by:
- *   Robert Van Uitert
- *   Diagnostic Radiology Department
- *   National Institutes of Health
- *   November 2004
- *
- */
+///
+///@file  GeneratePointSamplesFromField.cc
+///
+///@author
+///   Robert Van Uitert
+///   Diagnostic Radiology Department
+///   National Institutes of Health
+///@date  November 2004
+///
 
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
@@ -122,7 +121,7 @@ GeneratePointSamplesFromField::execute()
   update_state(Executing);
 
   bool input_field_p = true;
-  // TODO: It looks like the input field is meant to be optional even
+  /// @todo: It looks like the input field is meant to be optional even
   // though it is not.
   //  if (!(ifp->get(ifieldhandle) && ifieldhandle.get_rep()))
   //  {

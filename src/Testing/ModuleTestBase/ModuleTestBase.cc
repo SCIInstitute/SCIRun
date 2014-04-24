@@ -90,8 +90,11 @@ ModuleTest::ModuleTest() : factory_(new HardCodedModuleFactory)
 {
   Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
   Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
+  DefaultValue<AlgorithmParameterName>::Set(AlgorithmParameterName());
   DefaultValue<AlgorithmParameter>::Set(AlgorithmParameter());
+  DefaultValue<const AlgorithmParameter&>::Set(algoParam_);
   DefaultValue<AlgorithmOutput>::Set(AlgorithmOutput());
+  DefaultValue<AlgorithmInput>::Set(AlgorithmInput());
   Core::Logging::Log::get().setVerbose(true);
 }
 
@@ -102,6 +105,7 @@ ModuleHandle ModuleTest::makeModule(const std::string& name)
 
 void ModuleTest::stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
 {
+  //TODO: this doesn't work with dynamic ports beyond 1
   if (portNum < module->num_input_ports())
   {
     auto iport = module->inputPorts()[portNum];

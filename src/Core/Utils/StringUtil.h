@@ -25,11 +25,14 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
+/// @todo Documentation Core/Utils/StringUtil.h
 
 #ifndef CORE_UTILS_STRINGUTIL_H
 #define CORE_UTILS_STRINGUTIL_H 1
 
 #include <sstream>
+#include <vector>
+#include <boost/shared_ptr.hpp>
 #include <Core/Utils/share.h>
 
 namespace SCIRun 
@@ -55,6 +58,47 @@ std::vector<T> parseLineOfNumbers(const std::string& line)
   return numbers;
 }
 
+template <class T, class Iter>
+std::vector<boost::shared_ptr<T>> downcast_range(Iter begin, Iter end)
+{
+  std::vector<boost::shared_ptr<T>> output;
+  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return boost::dynamic_pointer_cast<T>(p); });
+  return std::move(output);
+}
+
+template <class T, class Cont>
+std::vector<boost::shared_ptr<T>> downcast_range(const Cont& container)
+{
+  return downcast_range<T>(container.begin(), container.end());
+}
+
+template <class T, class Iter>
+std::vector<boost::shared_ptr<T>> upcast_range(Iter begin, Iter end)
+{
+  //BOOST_STATIC_ASSERT(boost::is_base_of<T, typename Iter::value_type>::value);
+  std::vector<boost::shared_ptr<T>> output;
+  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return boost::static_pointer_cast<T>(p); });
+  return std::move(output);
+}
+
+template <class T, class Cont>
+std::vector<boost::shared_ptr<T>> upcast_range(const Cont& container)
+{
+  return upcast_range<T>(container.begin(), container.end());
+}
+
 }}
+
+namespace std
+{
+  template <class T>
+  std::ostream& operator<<(std::ostream& o, const std::vector<T>& vec)
+  {
+    o << "[";
+    std::copy(vec.begin(), vec.end(), std::ostream_iterator<T>(o, " "));
+    o << "]";
+    return o;
+  }
+}
 
 #endif

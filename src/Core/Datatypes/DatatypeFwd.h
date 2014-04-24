@@ -25,11 +25,11 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-
+/// @todo Documentation Core/Datatypes/DatatypeFwd.h
 #ifndef CORE_DATATYPES_DATATYPE_FWD_H
 #define CORE_DATATYPES_DATATYPE_FWD_H 
 
+#include <vector>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
@@ -55,12 +55,16 @@ namespace Datatypes {
   class String;
   class GeometryObject;
   class ColorMap;
+  class Bundle;
+
+  typedef boost::shared_ptr<String> StringHandle;
 }}
 
   class Field;
   class Mesh;
   typedef boost::shared_ptr<Field> FieldHandle;
   typedef boost::shared_ptr<Mesh> MeshHandle;
+  typedef std::vector<FieldHandle> FieldList;
 }
 
 

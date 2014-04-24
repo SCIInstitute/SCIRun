@@ -54,8 +54,8 @@
   virtual void get_evalues(type *ptr, VMesh::size_type sz, VMesh::size_type offset) const; \
   virtual void set_evalues(const type *ptr, VMesh::size_type sz, VMesh::size_type offset); \
   virtual void set_all_values(const type &val); \
-  virtual void get_weighted_value(type &val, VMesh::index_type* idx, VMesh::weight_type* w, VMesh::size_type sz) const;  \
-  virtual void get_weighted_evalue(type &val, VMesh::index_type* idx, VMesh::weight_type* w, VMesh::size_type sz) const; \
+  virtual void get_weighted_value(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz) const;  \
+  virtual void get_weighted_evalue(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz) const; \
   virtual void get_values(type *ptr, VMesh::Node::array_type& nodes) const; \
   virtual void get_values(type *ptr, VMesh::Elem::array_type& elems) const; \
   virtual void set_values(const type *ptr, VMesh::Node::array_type& nodes); \
@@ -78,11 +78,11 @@
 
 namespace SCIRun {
 
-//! Interface class to data stored in field.
-//! The VField class has a pointer to this class and hence can call the
-//! appropriate function from the table listed by this class. This class
-//! works with references to the original class and hence the additional
-//! overhead should be small.
+/// Interface class to data stored in field.
+/// The VField class has a pointer to this class and hence can call the
+/// appropriate function from the table listed by this class. This class
+/// works with references to the original class and hence the additional
+/// overhead should be small.
 class SCISHARE VFData {
 public:
   virtual ~VFData() {}
@@ -118,7 +118,7 @@ public:
   VFDATA_ACCESS_DECLARATION2(Core::Geometry::Tensor)
 
 
-  //! Copy a value without needing to know the type
+  /// Copy a value without needing to know the type
   virtual void copy_value(VFData* fdata,
                           VMesh::index_type vidx,
                           VMesh::index_type idx);
@@ -128,14 +128,14 @@ public:
                            VMesh::index_type idx,
                            VMesh::size_type num);
 
-  //! Copy a weighted value without needing to know the type
+  /// Copy a weighted value without needing to know the type
   virtual void copy_weighted_value(VFData* fdata,
                                    VMesh::index_type* vidx,
                                    VMesh::weight_type* vw,
                                    VMesh::size_type sz,
                                    VMesh::index_type idx);
 
-  //! Copy a edge value without needing to know the type
+  /// Copy a edge value without needing to know the type
   virtual void copy_evalue(VFData* fdata,
                            VMesh::index_type vidx,
                            VMesh::index_type idx);
@@ -145,14 +145,14 @@ public:
                             VMesh::index_type idx,
                             VMesh::size_type num);
 
-  //! Copy a weighted edge value without needing to know the type
+  /// Copy a weighted edge value without needing to know the type
   virtual void copy_weighted_evalue(VFData* fdata,
                                     VMesh::index_type* vidx,
                                     VMesh::weight_type* vw,
                                     VMesh::size_type sz,
                                     VMesh::index_type idx);
 
-  //! Copy values from one FData array to another FData array
+  /// Copy values from one FData array to another FData array
   virtual void copy_values(VFData* fdata);
   virtual void copy_evalues(VFData* fdata);
 
@@ -168,23 +168,23 @@ public:
 
 // Functions to instantiate the FData interface
 
-//! In case we encounter an unknow datatype.
-//! We could have this function return a fuly functional interface, in which
-//! case after the field is created in the dynamic compilation process it would
-//! have this part of the virtual interface. It would be compiled with the first
-//! instantiation of the field. However for the moment we ignore that case and
-//! do not provide virtual interfaces for unknown data types.
+/// In case we encounter an unknow datatype.
+/// We could have this function return a fuly functional interface, in which
+/// case after the field is created in the dynamic compilation process it would
+/// have this part of the virtual interface. It would be compiled with the first
+/// instantiation of the field. However for the moment we ignore that case and
+/// do not provide virtual interfaces for unknown data types.
 template<class FDATA, class LFDATA, class HFDATA>
 inline VFData* CreateVFData(FDATA& /*fdata*/, LFDATA& /*lfdata*/, HFDATA& /*hfdata*/)
 {
   return (0);
 }
 
-//! Pre instantiated versions, these should cover most of SCIRun needs
-//! As these are declared as functions, dynamic compilation should not instantiate
-//! these once more, but link agianst the dynamic library. This should reduce the
-//! amount of time spend in dynamic compilation and keep dynamically compiled files
-//! small while providing a full virtual framework in parallel.
+/// Pre instantiated versions, these should cover most of SCIRun needs
+/// As these are declared as functions, dynamic compilation should not instantiate
+/// these once more, but link agianst the dynamic library. This should reduce the
+/// amount of time spend in dynamic compilation and keep dynamically compiled files
+/// small while providing a full virtual framework in parallel.
 
 
 VFDATA_FUNCTION_DECLARATION(char)

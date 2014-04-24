@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Basic/ReceiveScalarModuleState.h
 
 #ifndef DATAFLOW_STATE_RECEIVESCALARMODULESTATE_H
 #define DATAFLOW_STATE_RECEIVESCALARMODULESTATE_H
@@ -33,7 +34,7 @@
 
 namespace SCIRun {
 namespace State {
-  //TODO 
+  /// @todo 
   class ReceiveScalarState //: public AbstractModuleState...
   {
   public:

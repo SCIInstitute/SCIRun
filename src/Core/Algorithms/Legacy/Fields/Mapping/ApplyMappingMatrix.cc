@@ -50,8 +50,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
-//! Internal function to this algorithm: no need for this function to be
-//! public. It is called from the algorithm class only.
+/// Internal function to this algorithm: no need for this function to be
+/// public. It is called from the algorithm class only.
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class DATA> 
 bool 
@@ -59,7 +59,7 @@ ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
                     VField* input, VField* output,
                     SparseRowMatrix* mapping);
 
-//! This is the basic algorithm behind the mapping algorithm
+/// This is the basic algorithm behind the mapping algorithm
 template <class DATA> 
 bool 
 ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
@@ -83,12 +83,12 @@ ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
     cnt++; if (cnt==400) algo->update_progress(idx,m);
   }
   
-  //! Algorithm succeeded
+  /// Algorithm succeeded
   algo->algo_end(); return (true);
 }
  #endif
 
-//! Actual Algorithm class
+/// Actual Algorithm class
 
 bool 
 ApplyMappingMatrixAlgo::
@@ -97,14 +97,14 @@ run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& ou
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   algo_start("ApplyMappingMatrix");
   
-  //! safety check
+  /// safety check
   if (isrc.get_rep() == 0)
   {
     error("No input source field");
     algo_end(); return (false);
   }
 
-  //! safety check
+  /// safety check
   if (idst.get_rep() == 0)
   {
     error("No input source field");
@@ -131,7 +131,7 @@ run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& ou
   //VMesh*  imsrc =  isrc->vmesh();
   VMesh*  imdst =  idst->vmesh();
 
-  //! Get information about field types
+  /// Get information about field types
   FieldInformation fi(isrc);
   FieldInformation fo(idst);
   fo.set_data_type(fi.get_data_type());
@@ -170,25 +170,25 @@ run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& ou
     algo_end(); return (false);
   }
 
-  //! Create output field
+  /// Create output field
   output = CreateField(fo,idst->mesh());
  
   VField* ofield = output->vfield();
   ofield->resize_values();
   
-  //! Check whether output field was created
+  /// Check whether output field was created
   if (output.get_rep() == 0)
   {
     error("Could not create output field");
     algo_end(); return(false);
   } 
   
-  //! Simple table to deal with the various data type formats
-  //! Note that not every data type is handled, all char, shorts etc,
-  //! are automatically handled by the int, and unsigned int case, by
-  //! casting the data on input (these should be the less frequently
-  //! used datatypes and hence have no specific algorithm in place).
-  //! Similarly floats are casted to doubles.
+  /// Simple table to deal with the various data type formats
+  /// Note that not every data type is handled, all char, shorts etc,
+  /// are automatically handled by the int, and unsigned int case, by
+  /// casting the data on input (these should be the less frequently
+  /// used datatypes and hence have no specific algorithm in place).
+  /// Similarly floats are casted to doubles.
 
   if (isrc->vfield()->is_char()) 
     return (ApplyMappingMatrixT<char>(this,ifsrc,ofield,matrix));

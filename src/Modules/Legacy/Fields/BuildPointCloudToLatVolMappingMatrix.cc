@@ -28,17 +28,16 @@
 
 
 
-/*
- *  BuildPointCloudToLatVolMappingMatrix.cc:  
- *   Builds mapping matrix that projects data from a PointCloud to a LatVol
- *
- *  Written by:
- *   McKay Davis
- *   Scientific Computing and Imaging INstitute
- *   University of Utah
- *   May 2005
- *
- */
+///
+///@file  BuildPointCloudToLatVolMappingMatrix.cc  
+///@brief Builds mapping matrix that projects data from a PointCloud to a LatVol
+///
+///@author
+///   McKay Davis
+///   Scientific Computing and Imaging INstitute
+///   University of Utah
+///@date  May 2005
+///
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
@@ -187,7 +186,7 @@ BuildPointCloudToLatVolMappingMatrix::execute()
         // Normalize, and dont add if contribution is nil
         double d = pb->second/total;
         if (d > 0.0000001) 
-        { // TODO: Better epsilon checking
+        { /// @todo: Better epsilon checking
           // Add the data to the sparse row matrix
           cols.push_back(pb->first);
           data.push_back(d);

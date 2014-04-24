@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//! Class definition of this one
+/// Class definition of this one
 #include <Core/Algorithms/Fields/MergeFields/AppendFields.h>
 
-//! Need to find out what type of field we are dealing with
+/// Need to find out what type of field we are dealing with
 #include <Core/Datatypes/FieldInformation.h>
 
 namespace SCIRunAlgo {
@@ -85,7 +85,7 @@ AppendFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
     error("This algorithm does not work for non-linear fields");
     algo_end(); return (false);  
   }
-  //! Make sure mesh and mesh basis order are equal
+  /// Make sure mesh and mesh basis order are equal
   
   VMesh*  mesh  = inputs[0]->vmesh();
   VField* field = inputs[0]->vfield();

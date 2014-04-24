@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
+#include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 
-#ifndef CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H
-#define CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H 1
+using namespace SCIRun::Testing;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-#include <Core/Datatypes/Field.h>
-#include <vector>
-
-#include <Core/Algorithms/Util/AlgoBase.h>
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-class SCISHARE JoinFieldsAlgo : public AlgoBase
+class InsertDataIntoBundleModuleTest : public ModuleTest
 {
-  public:
-    // Algorithm defaults
-    JoinFieldsAlgo()
-    {
-      //! Merge duplicate nodes?
-      add_bool("merge_nodes",true);
-      //! Merge duplicate elements?
-      add_bool("merge_elems",false);
-      //! Tolerance for merging duplicate nodes?
-      add_scalar("tolerance",1e-6);
-      //! Only merge nodes whose value is the same
-      add_bool("match_node_values",false);
-      //! Create a field with no data
-      add_bool("make_no_data",false);
-    }
-    bool run(std::vector<SCIRun::FieldHandle>& input, SCIRun::FieldHandle& output);   
 };
 
-}
+TEST_F(InsertDataIntoBundleModuleTest, ThrowsForNullBundles)
+{
+  auto sls = makeModule("InsertMatricesIntoBundle");
+  BundleHandle nullBundle;
+  stubPortNWithThisData(sls, 0, nullBundle);
 
-#endif
+  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
+}

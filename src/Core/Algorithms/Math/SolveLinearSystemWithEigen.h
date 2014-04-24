@@ -31,7 +31,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
-//TODO: move
+/// @todo: move
 #include <Eigen/src/Core/util/Constants.h>
 #include <Core/Algorithms/Math/share.h>
 
@@ -40,7 +40,7 @@ namespace Core {
 namespace Algorithms {
 namespace Math {
   
-  //TODO: this will be the base class of all the solvers. for now it will just contain the Eigen CG impl.
+  /// @todo: this will be the base class of all the solvers. for now it will just contain the Eigen CG impl.
   class SCISHARE SolveLinearSystemAlgorithm : public AlgorithmBase
   {
   public:

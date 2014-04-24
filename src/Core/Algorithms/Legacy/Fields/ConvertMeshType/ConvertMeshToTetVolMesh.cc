@@ -45,7 +45,7 @@ bool
 ConvertMeshToTetVolMeshAlgo::
 run(FieldHandle input, FieldHandle& output)
 {
-  //! Mark start of algorithm and report that we will not report progress
+  /// Mark start of algorithm and report that we will not report progress
   algo_start("ConvertMeshToTetVolMesh");
 
   if (input.get_rep() == 0)
@@ -128,7 +128,7 @@ bool ConvertHexVolToTetVolV(AlgoBase *algo,
     ++nbi;
   }
 
-  //! Make sure that get_neighbors works with elements
+  /// Make sure that get_neighbors works with elements
 
   imesh->synchronize(Mesh::ELEM_NEIGHBORS_E);
   omesh->elem_reserve(numelems*5);
@@ -185,7 +185,7 @@ bool ConvertHexVolToTetVolV(AlgoBase *algo,
           }
         }
         
-        //! For checker board ordering
+        /// For checker board ordering
         if (newtype == 0) newtype = 1;
         if (newtype == 1) newtype = 2; else newtype = 1;
         
@@ -194,7 +194,7 @@ bool ConvertHexVolToTetVolV(AlgoBase *algo,
                 
         if (newtype == 1)
         {
-          //! Add one type of ordering
+          /// Add one type of ordering
           a[0] = hv[0]; a[1] = hv[1]; a[2] = hv[2]; a[3] = hv[5];
           elemmap[buffer[i]] = omesh->add_elem(a);
 
@@ -211,7 +211,7 @@ bool ConvertHexVolToTetVolV(AlgoBase *algo,
         }
         else
         {
-          //! Add the other type of ordering
+          /// Add the other type of ordering
           a[0] = hv[0]; a[1] = hv[1]; a[2] = hv[3]; a[3] = hv[4];
           elemmap[buffer[i]] = omesh->add_elem(a);
 

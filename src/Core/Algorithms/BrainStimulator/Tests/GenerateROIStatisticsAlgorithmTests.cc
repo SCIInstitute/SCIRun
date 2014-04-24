@@ -34,14 +34,14 @@
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::TestUtils;
 
-TEST(GenerateROIStatisticsAlgorithm, Foo)
+TEST(GenerateROIStatisticsAlgorithm, DISABLED_Foo)
 {
   GenerateROIStatisticsAlgorithm algo;
   FAIL() << "Insert code here for the most basic test cases !"; 

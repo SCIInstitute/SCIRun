@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+// @todo Documentation Core/Datatypes/String.h
 
 #ifndef CORE_DATATYPES_STRING_H
 #define CORE_DATATYPES_STRING_H 
@@ -47,8 +47,6 @@ namespace Datatypes {
   private:
     std::string value_;
   };
-
-  typedef boost::shared_ptr<String> StringHandle;
 
 }}}
 

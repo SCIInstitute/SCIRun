@@ -159,8 +159,8 @@ public:
 };
 
 
-//! The Fast stream is binary, its results can only safely be used
-//! on the architecture where the file is generated.
+/// The Fast stream is binary, its results can only safely be used
+/// on the architecture where the file is generated.
 class SCISHARE FastPiostream : public Piostream {
 private:
   FILE* fp_;

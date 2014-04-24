@@ -34,7 +34,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
@@ -54,7 +54,7 @@ ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("
 
 void ElectrodeCoilSetupModule::setStateDefaults()
 {
-  //TODO
+  /// @todo
 }
 
 void ElectrodeCoilSetupModule::execute()

@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Color.h 
 
 #ifndef CORE_DATATYPES_COLORRGB_H
 #define CORE_DATATYPES_COLORRGB_H 

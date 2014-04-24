@@ -27,17 +27,15 @@
 */
 
 
-/*
- *  ReadHDF5File.h
- *
- *  Written by:
- *   Allen Sanderson
- *   SCI Institute
- *   University of Utah
- *   May 2003
- *
- */
-
+///
+/// @file  ReadHDF5File.h
+/// 
+/// @author
+///    Allen Sanderson
+///    SCI Institute
+///    University of Utah
+/// @date   May 2003
+/// 
 
 #if !defined(ReadHDF5File_h)
 #define ReadHDF5File_h

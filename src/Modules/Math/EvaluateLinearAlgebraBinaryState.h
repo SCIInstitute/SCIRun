@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Math/EvaluateLinearAlgebraBinaryState.h
 
 #ifndef MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
 #define MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
@@ -34,7 +35,7 @@
 namespace SCIRun {
   namespace Modules {
     namespace Basic {
-      //TODO 
+      /// @todo 
     
 }}}
 

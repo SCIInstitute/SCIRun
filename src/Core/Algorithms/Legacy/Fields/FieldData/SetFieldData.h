@@ -30,16 +30,16 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SETFIELDDATA_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SETFIELDDATA_H 1
 
-//! Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/NrrdData.h>
 
-//! Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -49,10 +49,10 @@ using namespace SCIRun;
 class SCISHARE SetFieldDataAlgo : public AlgoBase
 {
   public:
-    //! Set defaults
+    /// Set defaults
     SetFieldDataAlgo()
     {
-      //! keep scalar type defines whether we convert to double or not
+      /// keep scalar type defines whether we convert to double or not
       add_option("scalardatatype","double","char|unsigned char|short|unsigned short|int|unsigned int");
       add_index("column_index",-1);
     }

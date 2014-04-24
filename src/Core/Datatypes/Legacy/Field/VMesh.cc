@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation Core/Datatypes/Legacy/Field/VMesh.cc
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
@@ -34,12 +34,6 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
-
-MeshHandle
-VMesh::mesh()
-{
-  return (MeshHandle());
-}
 
 void 
 VMesh::size(Node::size_type& size) const

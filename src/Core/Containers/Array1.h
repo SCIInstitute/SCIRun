@@ -28,16 +28,15 @@
 
 
 
-/*
- *  Array1.h: Interface to dynamic 1D array class
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   March 1994
- *
- */
+///
+///@file   Array1.h
+///@brief  Interface to dynamic 1D array class
+///
+///@author Steven G. Parker
+///        Department of Computer Science
+/// 	   University of Utah
+///@date   March 1994
+///
 
 #ifndef CORE_CONAINTERS_ARRAY1_H
 #define CORE_CONAINTERS_ARRAY1_H 1

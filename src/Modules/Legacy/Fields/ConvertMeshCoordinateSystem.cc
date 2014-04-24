@@ -27,16 +27,16 @@
 */
 
 
-/*
- *  ConvertMeshCoordinateSystem.cc: Take in fields and add all of their points into one field
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   November 1994
- *
- */
+///
+///@file  ConvertMeshCoordinateSystem.cc
+///@brief Take in fields and add all of their points into one field
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  November 1994
+///
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Algorithms/Fields/TransformMesh/ConvertMeshCoordinateSystem.h>

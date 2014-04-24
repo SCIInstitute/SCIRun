@@ -41,6 +41,7 @@ SET(Interface_Modules_DataIO_HEADERS
   ReadMeshDialog.h
   WriteFieldDialog.h
   WriteMatrixDialog.h
+  share.h
 )
 
 SET(Interface_Modules_DataIO_SOURCES 
