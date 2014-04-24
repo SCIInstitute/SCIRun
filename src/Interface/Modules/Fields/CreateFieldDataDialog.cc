@@ -69,8 +69,8 @@ public:
   typedef boost::function<std::string(const QString&)> FromQStringConverter;
   typedef boost::function<QString(const std::string&)> ToQStringConverter;
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox, 
-    FromQStringConverter fromLabelConverter = [](const QString& s) { return s.toStdString(); },
-    ToQStringConverter toLabelConverter = [](const std::string& s) { return QString::fromStdString(s); }) : 
+    FromQStringConverter fromLabelConverter = boost::bind(&QString::toStdString, _1),
+    ToQStringConverter toLabelConverter = &QString::fromStdString) : 
       WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
       {
         connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
@@ -78,18 +78,19 @@ public:
       virtual void pull() override
       {
         auto value = state_->getValue(stateKey_).getString();
-
-        LOG_DEBUG("In new version of pull code for combobox: " << value);
         auto qstring = toLabelConverter_(value);
-        comboBox_->setCurrentIndex(comboBox_->findText(qstring));
+        if (qstring != comboBox_->currentText())
+        {
+          LOG_DEBUG("In new version of pull code for combobox: " << value);
+          comboBox_->setCurrentIndex(comboBox_->findText(qstring));
+        }
       }
       virtual void pushImpl() override
       {
         auto label = fromLabelConverter_(comboBox_->currentText());
-        LOG_DEBUG("In new version of push code for combobox: " << label);
-
         if (label != state_->getValue(stateKey_).getString())
         {
+          LOG_DEBUG("In new version of push code for combobox: " << label);
           state_->setValue(stateKey_, label);
         }
       }
@@ -108,26 +109,12 @@ CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  connect(fieldOutputDataComboBox_, SIGNAL(activated(const QString&)), this, SLOT(push()));
-  connect(fieldOutputBasisComboBox_, SIGNAL(activated(const QString&)), this, SLOT(push()));
-
   addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, CreateFieldDataModule::FunctionString, functionTextEdit_));
   addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, CreateFieldDataModule::FormatString, fieldOutputDataComboBox_));
-}
-
-void CreateFieldDataDialog::push()
-{
-  if (!pulling_)
-  {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    state_->setValue(CreateFieldDataModule::FormatString,
-    state_->setValue(CreateFieldDataModule::BasisString,
-#endif
-  }
+  addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, CreateFieldDataModule::BasisString, fieldOutputBasisComboBox_));
 }
 
 void CreateFieldDataDialog::pull()
 {
   pull_newVersionToReplaceOld();
-  //hook up format, basis later.
 }

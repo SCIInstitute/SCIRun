@@ -16,15 +16,39 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>FunctionString</name>
+									<name>BasisString</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>FunctionString</name>
+									<name>BasisString</name>
 									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
 										<which>2</which>
 										<value>RESULT =sin( (X^2+Y^2+Z^2)*100);</value>
 									</value>
