@@ -41,7 +41,7 @@ namespace SCIRun {
 namespace Render {
 
 //------------------------------------------------------------------------------
-SRInterface::SRInterface(std::shared_ptr<GLContext> context,
+SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
             const std::vector<std::string>& shaderDirs) :
     mMouseMode(MOUSE_OLDSCIRUN),
     mScreenWidth(640),

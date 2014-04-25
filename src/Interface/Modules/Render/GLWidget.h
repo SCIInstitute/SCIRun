@@ -88,7 +88,7 @@ private:
   QTimer*                               mTimer;
 };
 
-} // end of namespace SCIRun
 } // end of namespace Gui
+} // end of namespace SCIRun
 
 #endif // SPIRE_GLWIDGET_H

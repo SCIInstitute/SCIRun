@@ -66,10 +66,17 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   }
 
   {
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
-    spire->setMouseMode(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? SRInterface::MOUSE_NEWSCIRUN : SRInterface::MOUSE_OLDSCIRUN);
+    if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
+    {
+      spire->setMouseMode(Render::SRInterface::MOUSE_NEWSCIRUN);
+    }
+    else
+    {
+      spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
+    }
   }
 }
 
@@ -98,7 +105,7 @@ void ViewSceneDialog::moduleExecuted()
     auto geomData = optional_any_cast_or_default<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
     if (!geomData)
       return;
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
 
@@ -114,7 +121,7 @@ void ViewSceneDialog::moduleExecuted()
   }
   else
   {
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
     spire->removeAllGeomObjects();
@@ -124,18 +131,18 @@ void ViewSceneDialog::moduleExecuted()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::menuMouseControlChanged(int index)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
   if (spire == nullptr)
     return;
 
   if (index == 0)
   {
-    spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
+    spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
     SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls = false;
   }
   else
   {
-    spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+    spire->setMouseMode(Render::SRInterface::MOUSE_NEWSCIRUN);
     SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls = true;
   }
 }
@@ -143,7 +150,7 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::autoViewClicked()
 {
-  std::shared_ptr<SRInterface> spireLock = mSpire.lock();
+  std::shared_ptr<Render::SRInterface> spireLock = mSpire.lock();
   spireLock->doAutoView();
 }
 

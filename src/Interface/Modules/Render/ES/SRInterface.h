@@ -54,7 +54,7 @@ class SRCamera;
 class SRInterface
 {
 public:
-  SRInterface(std::shared_ptr<GLContext> context,
+  SRInterface(std::shared_ptr<Gui::GLContext> context,
               const std::vector<std::string>& shaderDirs);
   ~SRInterface();
 
@@ -166,22 +166,22 @@ private:
 
   void generateColormaps();
 
-  MouseMode                   mMouseMode;       ///< Current mouse mode.
+  MouseMode                       mMouseMode;       ///< Current mouse mode.
 
-  size_t                      mScreenWidth;     ///< Screen width in pixels.
-  size_t                      mScreenHeight;    ///< Screen height in pixels.
+  size_t                          mScreenWidth;     ///< Screen width in pixels.
+  size_t                          mScreenHeight;    ///< Screen height in pixels.
 
-  GLuint                      mRainbowCMap;     ///< Rainbow color map.
-  GLuint                      mGrayscaleCMap;   ///< Grayscale color map.
+  GLuint                          mRainbowCMap;     ///< Rainbow color map.
+  GLuint                          mGrayscaleCMap;   ///< Grayscale color map.
 
-  std::shared_ptr<GLContext>  mContext;         ///< Context to use for rendering.
-  std::unique_ptr<SRCamera>   mCamera;          ///< Primary camera.
-  std::vector<SRObject>       mSRObjects;       ///< All SCIRun objects.
-  Core::Geometry::BBox        mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
+  std::shared_ptr<Gui::GLContext> mContext;         ///< Context to use for rendering.
+  std::unique_ptr<SRCamera>       mCamera;          ///< Primary camera.
+  std::vector<SRObject>           mSRObjects;       ///< All SCIRun objects.
+  Core::Geometry::BBox            mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
 
-  std::string                 mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
-  std::string                 mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
-  std::string                 mArrowObjectName; ///< Object name for profile arrow.
+  std::string                     mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
+  std::string                     mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
+  std::string                     mArrowObjectName; ///< Object name for profile arrow.
 
 };
 

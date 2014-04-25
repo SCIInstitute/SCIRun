@@ -39,14 +39,10 @@
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
-#include <Interface/Modules/Render/namespaces.h>
-
 #include <Interface/Modules/Render/ES/SRInterface.h>
-#include <Interface/Modules/Render/ES/SRCommonAttributes.h>
-#include <Interface/Modules/Render/ES/SRCommonUniforms.h>
 
+#include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/GLWidget.h>
-
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow

@@ -40,7 +40,8 @@
 
 #include <Interface/Modules/Render/GLWidget.h>
 
-using namespace SCIRun::Gui;
+namespace SCIRun {
+namespace Gui {
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(QtGLContext* context) :
@@ -86,9 +87,9 @@ void GLWidget::initializeGL()
 }
 
 //------------------------------------------------------------------------------
-Render::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
+SCIRun::Render::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  Render::SRInterface::MouseButton btn = Render::SRInterface::MOUSE_NONE;
+  SCIRun::Render::SRInterface::MouseButton btn = SCIRun::Render::SRInterface::MOUSE_NONE;
   if (event->buttons() & Qt::LeftButton)
     btn = Render::SRInterface::MOUSE_LEFT;
   else if (event->buttons() & Qt::RightButton)
@@ -103,21 +104,21 @@ Render::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   // Extract appropriate key.
-  Render::SRInterface::MouseButton btn = getSpireButton(event);
+  SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  Render::SRInterface::MouseButton btn = getSpireButton(event);
+  SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  Render::SRInterface::MouseButton btn = getSpireButton(event);
+  SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
 }
 
@@ -158,4 +159,7 @@ void GLWidget::updateRenderer()
   mGraphics->doFrame(0.0, 0.0);
   mContext->swapBuffers();
 }
+
+} // namespace Gui
+} // namespace SCIRun
 
