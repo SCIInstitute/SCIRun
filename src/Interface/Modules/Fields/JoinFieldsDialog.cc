@@ -47,7 +47,7 @@ JoinFieldsDialog::JoinFieldsDialog(const std::string& name, ModuleStateHandle st
   connect(mergeDuplicateNodesCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
   connect(mergeMeshOnlyCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
   connect(onlyMergeSameValueCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  addDoubleSpinBoxManager(JoinFieldsAlgo::Tolerance, nodeToleranceDoubleSpinBox_);
+  addDoubleSpinBoxManager(nodeToleranceDoubleSpinBox_, JoinFieldsAlgo::Tolerance);
 }
 
 void JoinFieldsDialog::push()

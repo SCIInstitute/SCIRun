@@ -42,7 +42,7 @@ CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandl
   fixSize();
   
   buttonBox->setVisible(false);
-  addLineEditManager(CreateStringModule::InputString, stringInput_);
+  addLineEditManager(stringInput_, CreateStringModule::InputString);
 }
 
 void CreateStringDialog::pull()

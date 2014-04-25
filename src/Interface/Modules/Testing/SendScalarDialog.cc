@@ -42,7 +42,7 @@ SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle st
   executeButton_->setEnabled(false);
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  addDoubleSpinBoxManager(SendScalarModule::ValueToSend(), scalarValueToSend_);
+  addDoubleSpinBoxManager(scalarValueToSend_, SendScalarModule::ValueToSend());
   buttonBox->setVisible(false);
 }
 

@@ -46,13 +46,13 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(ShowFieldModule::ShowNodes, showNodesCheckBox_);
-  addCheckBoxManager(ShowFieldModule::ShowEdges, showEdgesCheckBox_);
-  addCheckBoxManager(ShowFieldModule::ShowFaces, showFacesCheckBox_);
-  addCheckBoxManager(ShowFieldModule::NodeTransparency, enableTransparencyNodesCheckBox_);
-  addCheckBoxManager(ShowFieldModule::EdgeTransparency, enableTransparencyEdgesCheckBox_);
-  addCheckBoxManager(ShowFieldModule::FaceTransparency, enableTransparencyFacesCheckBox_);
-  addCheckBoxManager(ShowFieldModule::FaceInvertNormals, invertNormalsCheckBox);
+  addCheckBoxManager(showNodesCheckBox_, ShowFieldModule::ShowNodes);
+  addCheckBoxManager(showEdgesCheckBox_, ShowFieldModule::ShowEdges);
+  addCheckBoxManager(showFacesCheckBox_, ShowFieldModule::ShowFaces);
+  addCheckBoxManager(enableTransparencyNodesCheckBox_, ShowFieldModule::NodeTransparency);
+  addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
+  addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
+  addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
   buttonBox->setVisible(false);
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 }

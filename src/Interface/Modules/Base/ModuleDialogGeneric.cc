@@ -110,7 +110,7 @@ private:
   ToQStringConverter toLabelConverter_;
 };
 
-void ModuleDialogGeneric::addComboBoxManager(const AlgorithmParameterName& stateKey, QComboBox* comboBox)
+void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
 }
@@ -142,7 +142,7 @@ private:
   QTextEdit* textEdit_;
 };
 
-void ModuleDialogGeneric::addTextEditManager(const AlgorithmParameterName& stateKey, QTextEdit* textEdit)
+void ModuleDialogGeneric::addTextEditManager(QTextEdit* textEdit, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, stateKey, textEdit));
 }
@@ -174,7 +174,7 @@ private:
   QLineEdit* lineEdit_;
 };
 
-void ModuleDialogGeneric::addLineEditManager(const AlgorithmParameterName& stateKey, QLineEdit* lineEdit)
+void ModuleDialogGeneric::addLineEditManager(QLineEdit* lineEdit, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
 }
@@ -206,7 +206,7 @@ private:
   QSpinBox* spinBox_;
 };
 
-void ModuleDialogGeneric::addSpinBoxManager(const AlgorithmParameterName& stateKey, QSpinBox* spinBox)
+void ModuleDialogGeneric::addSpinBoxManager(QSpinBox* spinBox, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<SpinBoxSlotManager>(state_, *this, stateKey, spinBox));
 }
@@ -238,7 +238,7 @@ private:
   QDoubleSpinBox* spinBox_;
 };
 
-void ModuleDialogGeneric::addDoubleSpinBoxManager(const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox)
+void ModuleDialogGeneric::addDoubleSpinBoxManager(QDoubleSpinBox* spinBox, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<DoubleSpinBoxSlotManager>(state_, *this, stateKey, spinBox));
 }
@@ -270,7 +270,7 @@ private:
   QCheckBox* checkBox_;
 };
 
-void ModuleDialogGeneric::addCheckBoxManager(const AlgorithmParameterName& stateKey, QCheckBox* checkBox)
+void ModuleDialogGeneric::addCheckBoxManager(QCheckBox* checkBox, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<CheckBoxSlotManager>(state_, *this, stateKey, checkBox));
 }

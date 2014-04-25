@@ -42,9 +42,9 @@ CreateLatVolDialog::CreateLatVolDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  addSpinBoxManager(CreateLatVolModule::XSize, xSizeSpinBox_);
-  addSpinBoxManager(CreateLatVolModule::YSize, ySizeSpinBox_);
-  addSpinBoxManager(CreateLatVolModule::ZSize, zSizeSpinBox_);
+  addSpinBoxManager(xSizeSpinBox_, CreateLatVolModule::XSize);
+  addSpinBoxManager(ySizeSpinBox_, CreateLatVolModule::YSize);
+  addSpinBoxManager(zSizeSpinBox_, CreateLatVolModule::ZSize);
 
   connect(elementSizeNormalizedButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(elementSizeOneButton_, SIGNAL(clicked()), this, SLOT(push()));

@@ -61,8 +61,8 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addSpinBoxManager(Variables::MaxIterations, maxIterationsSpinBox_);
-  addDoubleSpinBoxManager(Variables::TargetError, targetErrorSpinBox_);
+  addSpinBoxManager(maxIterationsSpinBox_, Variables::MaxIterations);
+  addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
   //TODO: clean these up...still getting circles of push/pull
   //TODO: need this connection ???
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushParametersToState()));
