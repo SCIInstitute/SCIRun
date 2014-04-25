@@ -28,7 +28,6 @@
 
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
