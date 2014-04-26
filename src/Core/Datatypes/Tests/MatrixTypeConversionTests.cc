@@ -38,7 +38,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 
-DenseColumnMatrixHandle densecolumnmatrix()  
+DenseColumnMatrixHandle CreateColumnMatrix()  
 {
     DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
 
@@ -49,7 +49,7 @@ DenseColumnMatrixHandle densecolumnmatrix()
     return m;
 }
 
-SparseRowMatrixHandle col2sparse()  
+SparseRowMatrixHandle CreateSparseMatrixWithOneColumn()  
 { 
     SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,1));
     m->insert(0,0) = 1;
@@ -59,7 +59,7 @@ SparseRowMatrixHandle col2sparse()
     return m;
 }
 
-DenseColumnMatrixHandle densecolumnmatrix2()  
+DenseColumnMatrixHandle CreateColumnMatrix_2()  
 {
     DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
 
@@ -69,7 +69,7 @@ DenseColumnMatrixHandle densecolumnmatrix2()
     return m;
 }
 
-DenseMatrixHandle densematrix2()  
+DenseMatrixHandle CreateDenseMatrix_2()  
 {
     DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,3));
 
@@ -86,7 +86,7 @@ DenseMatrixHandle densematrix2()
     return m;
 }
 
-SparseRowMatrixHandle densematrix2sparse()  
+SparseRowMatrixHandle CreateSparseMatrix()  
 { 
     SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
     m->insert(0,0) = 1;
@@ -96,7 +96,7 @@ SparseRowMatrixHandle densematrix2sparse()
     return m;
 }
 
-DenseMatrixHandle densematrix()  
+DenseMatrixHandle CreateDenseMatrix()  
 {
     DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
 
@@ -109,7 +109,7 @@ DenseMatrixHandle densematrix()
  
 TEST(MatrixTypeConversionTests, dense2column)
 {
-   DenseMatrixHandle from(densematrix());
+   DenseMatrixHandle from(CreateDenseMatrix());
     
    DenseColumnMatrixHandle result =  matrix_convert::to_column(from);
    
@@ -124,11 +124,11 @@ TEST(MatrixTypeConversionTests, dense2column)
 
 TEST(MatrixTypeConversionTest, dense2column2)
 {
-   DenseMatrixHandle from(densematrix2());
+   DenseMatrixHandle from(CreateDenseMatrix_2());
     
    DenseColumnMatrixHandle result =  matrix_convert::to_column(from);
    
-   DenseColumnMatrixHandle expected_result(densecolumnmatrix2());
+   DenseColumnMatrixHandle expected_result(CreateColumnMatrix_2());
    
    EXPECT_EQ(expected_result->ncols(), result->ncols());
    EXPECT_EQ(expected_result->nrows(), result->nrows());
@@ -141,7 +141,7 @@ TEST(MatrixTypeConversionTest, dense2column2)
 
 TEST(MatrixTypeConversionTest, dense2sparse)
 {
-   DenseMatrixHandle from(densematrix2());
+   DenseMatrixHandle from(CreateDenseMatrix_2());
     
    SparseRowMatrixHandle result =  matrix_convert::to_sparse_md(from);
    
@@ -150,7 +150,7 @@ TEST(MatrixTypeConversionTest, dense2sparse)
     std::cout << " Error: resulting null pointer !" << std::endl; 
    }
    
-   SparseRowMatrixHandle expected_result  = densematrix2sparse();
+   SparseRowMatrixHandle expected_result  = CreateSparseMatrix();
    
    EXPECT_EQ(expected_result->ncols(), result->ncols());
    EXPECT_EQ(expected_result->nrows(), result->nrows());      
@@ -163,7 +163,7 @@ TEST(MatrixTypeConversionTest, dense2sparse)
 
 TEST(MatrixTypeConversionTest, colvector2sparse)
 {  
-  DenseColumnMatrixHandle from(densecolumnmatrix());
+  DenseColumnMatrixHandle from(CreateColumnMatrix());
 
   SparseRowMatrixHandle result =  matrix_convert::to_sparse_md(from);
   
@@ -172,7 +172,7 @@ TEST(MatrixTypeConversionTest, colvector2sparse)
     std::cout << " Error: resulting null pointer !" << std::endl; 
    }
   
-  SparseRowMatrixHandle expected_result  = col2sparse();
+  SparseRowMatrixHandle expected_result  = CreateSparseMatrixWithOneColumn();
   
    if (!result)
    {
@@ -189,7 +189,7 @@ TEST(MatrixTypeConversionTest, colvector2sparse)
 
 TEST(MatrixTypeConversionTest, sparse2col)
 {  
-  SparseRowMatrixHandle from = densematrix2sparse(); 
+  SparseRowMatrixHandle from = CreateSparseMatrix(); 
   
   DenseColumnMatrixHandle result =  matrix_convert::to_column_md(from);
   
@@ -198,7 +198,7 @@ TEST(MatrixTypeConversionTest, sparse2col)
     std::cout << " Error: resulting null pointer !" << std::endl; 
   } 
    
-  DenseColumnMatrixHandle  expected_result  = densecolumnmatrix2(); 
+  DenseColumnMatrixHandle  expected_result  = CreateColumnMatrix_2(); 
    
   EXPECT_EQ(expected_result->ncols(), result->ncols());
   EXPECT_EQ(expected_result->nrows(), result->nrows());   
@@ -211,7 +211,7 @@ TEST(MatrixTypeConversionTest, sparse2col)
 
 TEST(MatrixTypeConversionTest, sparse2dense)
 {  
-  SparseRowMatrixHandle from = densematrix2sparse(); 
+  SparseRowMatrixHandle from = CreateSparseMatrix(); 
   
   DenseMatrixHandle result =  matrix_convert::to_dense_md(from);
   
@@ -220,7 +220,7 @@ TEST(MatrixTypeConversionTest, sparse2dense)
     std::cout << " Error: resulting null pointer !" << std::endl; 
   } 
    
-  DenseMatrixHandle  expected_result  = densematrix2(); 
+  DenseMatrixHandle  expected_result  = CreateDenseMatrix_2(); 
    
   EXPECT_EQ(expected_result->ncols(), result->ncols());
   EXPECT_EQ(expected_result->nrows(), result->nrows());   
@@ -234,7 +234,7 @@ TEST(MatrixTypeConversionTest, sparse2dense)
 
 TEST(MatrixTypeConversionTest, col2dense)
 {
- DenseColumnMatrixHandle from(densecolumnmatrix()); 
+ DenseColumnMatrixHandle from(CreateColumnMatrix()); 
  
  DenseMatrixHandle result =  matrix_convert::to_dense_md(from);
 
@@ -243,7 +243,7 @@ TEST(MatrixTypeConversionTest, col2dense)
     std::cout << " Error: resulting null pointer !" << std::endl; 
  } 
  
- DenseMatrixHandle  expected_result  = densematrix();
+ DenseMatrixHandle  expected_result  = CreateDenseMatrix();
  
  EXPECT_EQ(expected_result->ncols(), result->ncols());
  EXPECT_EQ(expected_result->nrows(), result->nrows());

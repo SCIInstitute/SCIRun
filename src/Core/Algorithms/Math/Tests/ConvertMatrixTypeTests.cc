@@ -40,7 +40,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
-DenseColumnMatrixHandle densecolumnmatrix()  
+DenseColumnMatrixHandle CreateColumnMatrix()  
 {
     DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
 
@@ -51,7 +51,7 @@ DenseColumnMatrixHandle densecolumnmatrix()
     return m;
 }
 
-SparseRowMatrixHandle col2sparse()  
+SparseRowMatrixHandle CreateSparseMatrixWithOneColumn()  
 { 
     SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,1));
     m->insert(0,0) = 1;
@@ -61,7 +61,7 @@ SparseRowMatrixHandle col2sparse()
     return m;
 }
 
-DenseColumnMatrixHandle densecolumnmatrix2()  
+DenseColumnMatrixHandle CreateColumnMatrix_2()  
 {
     DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
 
@@ -71,7 +71,7 @@ DenseColumnMatrixHandle densecolumnmatrix2()
     return m;
 }
 
-DenseMatrixHandle densematrix2()  
+DenseMatrixHandle CreateDenseMatrix_2()  
 {
     DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,3));
 
@@ -88,7 +88,7 @@ DenseMatrixHandle densematrix2()
     return m;
 }
 
-SparseRowMatrixHandle densematrix2sparse()  
+SparseRowMatrixHandle CreateSparseMatrix()  
 { 
     SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
     m->insert(0,0) = 1;
@@ -98,7 +98,7 @@ SparseRowMatrixHandle densematrix2sparse()
     return m;
 }
 
-DenseMatrixHandle densematrix()  
+DenseMatrixHandle CreateDenseMatrix()  
 {
     DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
 
@@ -110,7 +110,7 @@ DenseMatrixHandle densematrix()
 }
 
 
-TEST(ConvertMatrixTests, emptyinput)
+TEST(ConvertMatrixTests, EmptyInput)
 {
   ConvertMatrixTypeAlgorithm algo;
   
@@ -148,7 +148,7 @@ TEST(ConvertMatrixTests, emptyinput)
   
 }
 
-TEST(ConvertMatrixTests, passthrough)
+TEST(ConvertMatrixTests, PassInputThrough)
 {  
   
   ConvertMatrixTypeAlgorithm algo;
@@ -158,7 +158,7 @@ TEST(ConvertMatrixTests, passthrough)
   algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
   algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
   
-  MatrixHandle input1(densematrix());
+  MatrixHandle input1(CreateDenseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
   
   if (!output_matrix1)
@@ -176,7 +176,7 @@ TEST(ConvertMatrixTests, passthrough)
    for (int j = 0; j < output_matrix1->ncols(); j++)
         EXPECT_EQ((*in1)(i, j),(*out1)(i, j));  
   
-  MatrixHandle input2(densecolumnmatrix());
+  MatrixHandle input2(CreateColumnMatrix());
   
   MatrixHandle output_matrix2 = algo.run(input2);  
   if (!output_matrix2)
@@ -196,7 +196,7 @@ TEST(ConvertMatrixTests, passthrough)
 
  }
 
-TEST(ConvertMatrixTests, dense2col)
+TEST(ConvertMatrixTests, DenseToColumnMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
@@ -205,10 +205,10 @@ TEST(ConvertMatrixTests, dense2col)
   algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
   algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
 
-  MatrixHandle input1(densematrix2());
+  MatrixHandle input1(CreateDenseMatrix_2());
   MatrixHandle output_matrix1 = algo.run(input1);
       
-  auto expected_result = densecolumnmatrix2();
+  auto expected_result = CreateColumnMatrix_2();
   auto out1 = matrix_cast::as_column(output_matrix1);
   
   EXPECT_EQ(expected_result->nrows(), out1->nrows());
@@ -220,7 +220,7 @@ TEST(ConvertMatrixTests, dense2col)
 }
 
 
-TEST(ConvertMatrixTests, dense2sparse)
+TEST(ConvertMatrixTests, DenseToSparseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
@@ -229,10 +229,10 @@ TEST(ConvertMatrixTests, dense2sparse)
   algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
   algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, true);
 
-  MatrixHandle input1(densematrix2());
+  MatrixHandle input1(CreateDenseMatrix_2());
   MatrixHandle output_matrix1 = algo.run(input1); 
   
-  auto expected_result = densematrix2sparse();
+  auto expected_result = CreateSparseMatrix();
   auto out1 = matrix_cast::as_sparse(output_matrix1); 
   
   EXPECT_EQ(expected_result->nrows(), out1->nrows());
@@ -244,7 +244,7 @@ TEST(ConvertMatrixTests, dense2sparse)
   
 }
 
-TEST(ConvertMatrixTests, col2dense)
+TEST(ConvertMatrixTests, ColumnToDenseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
@@ -253,10 +253,10 @@ TEST(ConvertMatrixTests, col2dense)
   algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, true);
   algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
   
-  MatrixHandle input1(densecolumnmatrix());
+  MatrixHandle input1(CreateColumnMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
   
-  auto expected_result = densematrix();
+  auto expected_result = CreateDenseMatrix();
   auto out1 = matrix_cast::as_dense(output_matrix1);   
   
   EXPECT_EQ(expected_result->nrows(), out1->nrows());
@@ -267,7 +267,7 @@ TEST(ConvertMatrixTests, col2dense)
         EXPECT_EQ((*expected_result)(i, j),(*out1)(i, j));
 }
 
-TEST(ConvertMatrixTests, col2sparse)
+TEST(ConvertMatrixTests, ColumnToSparseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
@@ -276,10 +276,10 @@ TEST(ConvertMatrixTests, col2sparse)
   algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
   algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, true);
   
-  MatrixHandle input1(densecolumnmatrix());
+  MatrixHandle input1(CreateColumnMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
   
-  auto expected_result = col2sparse();
+  auto expected_result = CreateSparseMatrixWithOneColumn();
   auto out1 = matrix_cast::as_sparse(output_matrix1);   
 
   EXPECT_EQ(expected_result->nrows(), out1->nrows());
@@ -290,7 +290,7 @@ TEST(ConvertMatrixTests, col2sparse)
         EXPECT_EQ(expected_result->coeff(i, j),out1->coeff(i, j)); 
 }
 
-TEST(ConvertMatrixTests, sparse2col)
+TEST(ConvertMatrixTests, SparseToColumnMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
@@ -299,10 +299,10 @@ TEST(ConvertMatrixTests, sparse2col)
   algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
   algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
 
-  MatrixHandle input1(col2sparse());
+  MatrixHandle input1(CreateSparseMatrixWithOneColumn());
   MatrixHandle output_matrix1 = algo.run(input1);
   
-  auto expected_result = densecolumnmatrix();
+  auto expected_result = CreateColumnMatrix();
   auto out1 = matrix_cast::as_column(output_matrix1);  
   
   EXPECT_EQ(expected_result->nrows(), out1->nrows());
@@ -314,7 +314,7 @@ TEST(ConvertMatrixTests, sparse2col)
   
 }
 
-TEST(ConvertMatrixTests, sparse2dense)
+TEST(ConvertMatrixTests, SparseToDenseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
@@ -323,10 +323,10 @@ TEST(ConvertMatrixTests, sparse2dense)
   algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, true);
   algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
 
-  MatrixHandle input1(densematrix2sparse());
+  MatrixHandle input1(CreateSparseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
 
-  auto expected_result = densematrix2();
+  auto expected_result = CreateDenseMatrix_2();
   auto out1 = matrix_cast::as_dense(output_matrix1);  
 
   EXPECT_EQ(expected_result->nrows(), out1->nrows());
