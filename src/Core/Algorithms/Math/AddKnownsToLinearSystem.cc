@@ -103,37 +103,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
  
 	bool just_copying_inputs = true;
 
-//	for (index_type p=0; p<m; p++)
-//	{
-//		// making sure the rhs vector is finite
-//		if (!IsFinite((*rhsCol)[p]))
-//			THROW_ALGORITHM_INPUT_ERROR("NaN exist in the b vector");
-//		if (IsFinite((*x).coeff(p)))
-//		{
-//      just_copying_inputs = false;
-//			for (index_type i=0; i<m; i++)
-//			{
-//				if (i!=p) 
-//				{
-//					(*rhsCol).coeffRef(i) += -(*stiff).coeff(i,p) * (*xCol).coeff(p);
-//					additionalData[i][p] = 0.0;
-//				}
-//				else
-//				{    
-//					(*rhsCol)[p] = (*xCol).coeff(p);
-//					additionalData[p][p] = 1.0; 
-//				}	    
-//			}	           
-//		}
-//		cnt++;
-//		if (cnt == 10)
-//		{
-//			cnt = 0;
-//			update_progress((double)p/m);
-//		}
-//	} 
-
-  // performs calculation adjustments for setting row and col values to 0
+  // performs calculation adjustments for setting row and col values to zero
   for (index_type p=0; p<m; p++)
 	{
 		// making sure the rhs vector is finite
