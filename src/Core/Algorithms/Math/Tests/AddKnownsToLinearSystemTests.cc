@@ -55,16 +55,16 @@ namespace
 				(*m)(i, j) = i+3;
 		return m;
 	}
-	// x vector of zeros
-	DenseMatrixHandle x_zero (int rows)
-	{
-		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
-		for (int i = 0; i < m->rows(); ++ i)
-			for (int j = 0; j < m->cols(); ++ j)
-				(*m)(i, j) = 0;
-		return m;
-	}
-	// x vector [1; NaN; 2;] 
+//	// x vector of zeros
+//	DenseMatrixHandle x_zero (int rows)
+//	{
+//		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
+//		for (int i = 0; i < m->rows(); ++ i)
+//			for (int j = 0; j < m->cols(); ++ j)
+//				(*m)(i, j) = 0;
+//		return m;
+//	}
+	// x vector [3; nan; nan]
 	DenseMatrixHandle x_one_nan ()
 	{
 		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
@@ -73,24 +73,32 @@ namespace
 		(*m)(2, 0) = 2;
 		return m;
 	}
-	// x vector [NaN; NaN; NaN;] 
-	DenseMatrixHandle x_all_nan ()
+	DenseMatrixHandle x_two_nan ()
 	{
 		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
-		(*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
+		(*m)(0, 0) = 3;
 		(*m)(1, 0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
 		return m;
 	}
-	// x vector of all ones
-	DenseMatrixHandle x_ones (int row, int col)
-	{
-		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(row,col));
-		for (int i = 0; i < m->rows(); ++ i)
-			for (int j = 0; j < m->cols(); ++ j)
-				(*m)(i, j) = 1;
-		return m;
-	}
+//	// x vector [NaN; NaN; NaN;]
+//	DenseMatrixHandle x_all_nan ()
+//	{
+//		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+//		(*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
+//		(*m)(1, 0) = std::numeric_limits<double>::quiet_NaN();
+//		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
+//		return m;
+//	}
+//	// x vector of all ones
+//	DenseMatrixHandle x_ones (int row, int col)
+//	{
+//		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(row,col));
+//		for (int i = 0; i < m->rows(); ++ i)
+//			for (int j = 0; j < m->cols(); ++ j)
+//				(*m)(i, j) = 1;
+//		return m;
+//	}
 	
 	// symmetric LHS (stiff) matrix
 	SparseRowMatrixHandle LHS() 
@@ -239,11 +247,18 @@ TEST (AddKnownsToLinearSystemAlgo, X_Contains_NaN)
 	dispX(x);
 	dispRHS(output_rhs);
 	dispStiffOutput(output_stiff);
-
-	std::cout << "x contains all NaN" << std::endl;
-	algo.run(LHS(),rhs_zero(3),x_all_nan(),output_stiff,output_rhs);
+  
+  x = x_two_nan();
+	algo.run(LHS(),rhs_zero(3),x,output_stiff,output_rhs);
+	std::cout << "x contains two NaN" << std::endl;
+	dispX(x);
 	dispRHS(output_rhs);
 	dispStiffOutput(output_stiff);
+
+//	std::cout << "x contains all NaN" << std::endl;
+//	algo.run(LHS(),rhs_zero(3),x_all_nan(),output_stiff,output_rhs);
+//	dispRHS(output_rhs);
+//	dispStiffOutput(output_stiff);
 
 	std::cout << "x contains numbers" << std::endl;
 	DenseMatrixHandle xNum = x_num();
@@ -252,17 +267,17 @@ TEST (AddKnownsToLinearSystemAlgo, X_Contains_NaN)
 	dispRHS(output_rhs);
 	dispStiffOutput(output_stiff);
 
-	std::cout << "x contains all 0s" << std::endl;
-	DenseMatrixHandle x_0 = x_zero(3);
-	algo.run(LHS(),rhs_zero(3),x_0,output_stiff,output_rhs);
-	dispRHS(output_rhs);
-	dispStiffOutput(output_stiff);
+//	std::cout << "x contains all 0s" << std::endl;
+//	DenseMatrixHandle x_0 = x_zero(3);
+//	algo.run(LHS(),rhs_zero(3),x_0,output_stiff,output_rhs);
+//	dispRHS(output_rhs);
+//	dispStiffOutput(output_stiff);
 
-	std::cout << "x contains all 1s" << std::endl;
-	DenseMatrixHandle x_1 = x_ones(3,1);
-	algo.run(LHS(),rhs_zero(3),x_1,output_stiff,output_rhs);
-	dispRHS(output_rhs);
-	dispStiffOutput(output_stiff);
+//	std::cout << "x contains all 1s" << std::endl;
+//	DenseMatrixHandle x_1 = x_ones(3,1);
+//	algo.run(LHS(),rhs_zero(3),x_1,output_stiff,output_rhs);
+//	dispRHS(output_rhs);
+//	dispStiffOutput(output_stiff);
 }
 
 // TODO test the output stiff
