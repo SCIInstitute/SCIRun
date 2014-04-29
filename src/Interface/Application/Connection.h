@@ -35,6 +35,7 @@
 #include <boost/function.hpp>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Interface/Application/Port.h>
+#include <Interface/Application/Note.h>
 #include <Core/Utils/Exception.h>
 
 namespace SCIRun {
@@ -56,7 +57,7 @@ enum ConnectionDrawType
   MANHATTAN, EUCLIDEAN, CUBIC
 };
 
-class ConnectionLine : public QObject, public QGraphicsPathItem
+class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes
 {
   Q_OBJECT
 
@@ -79,6 +80,7 @@ private:
   ConnectionDrawStrategyPtr drawer_;
   void destroy();
   bool destroyed_;
+  class ConnectionMenu* menu_;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};

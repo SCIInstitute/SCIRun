@@ -102,8 +102,32 @@ public:
   }
 };
 
+namespace SCIRun
+{
+  namespace Gui
+  {
+    const QString deleteAction("Delete");
+    const QString insertModuleAction("Insert Module->*");
+    const QString disableEnableAction("Disable*");
+    const QString editNotesAction("Edit Notes...");
+  
+    class ConnectionMenu : public QMenu
+    {
+    public:
+      ConnectionMenu(QWidget* parent = 0) : QMenu(parent)
+      {
+        addAction(deleteAction);
+        addAction(insertModuleAction)->setDisabled(true);
+        addAction(disableEnableAction)->setDisabled(true);
+        notesAction_ = addAction(editNotesAction);
+      }
+      QAction* notesAction_;
+    };
+  }
+}
+
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
-  : fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer)
+  : HasNotes(id), fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer), menu_(0)
 {
   if (fromPort_)
   {
@@ -128,6 +152,9 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   setZValue(1); 
   setToolTip("Left - Highlight*\nDouble-Left - Menu");
 
+  menu_ = new ConnectionMenu();
+  connectNoteEditorToAction(menu_->notesAction_);
+
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
 }
@@ -140,6 +167,7 @@ ConnectionLine::~ConnectionLine()
 
 void ConnectionLine::destroy() 
 {
+  delete menu_;
   if (fromPort_ && toPort_)
   {
     fromPort_->removeConnection(this);
@@ -165,7 +193,6 @@ QColor ConnectionLine::color() const
 
 void ConnectionLine::trackNodes()
 {
-  //std::cout << "trackNodes " << id_.id_ << std::endl;
   if (fromPort_ && toPort_)
   {
     drawer_->draw(this, fromPort_->position(), toPort_->position());
@@ -183,34 +210,17 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
   }
 }
 
-namespace
-{
-  const QString deleteAction("Delete");
-  const QString insertModuleAction("Insert Module->*");
-  const QString disableEnableAction("Disable*");
-  const QString editNotesAction("Edit Notes...*");
-}
-
-class ConnectionMenu : public QMenu
-{
-public:
-  ConnectionMenu()
-  {
-    addAction(deleteAction);
-    addAction(insertModuleAction)->setDisabled(true);
-    addAction(disableEnableAction)->setDisabled(true);
-    addAction(editNotesAction)->setDisabled(true);
-  }
-};
-
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-  ConnectionMenu menu;
-  auto a = menu.exec(event->screenPos());
-  if (a && a->text() == deleteAction)
+  auto action = menu_->exec(event->screenPos());
+  if (action && action->text() == deleteAction)
   {
     scene()->removeItem(this);
     destroy();
+  }
+  else if (action && action->text() == editNotesAction)
+  {
+    std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
   }
 }
 

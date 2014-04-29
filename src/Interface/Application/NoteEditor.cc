@@ -105,8 +105,6 @@ void NoteEditor::changeTextColor()
 
 void NoteEditor::resetText()
 {
-  //noteBackup_.html_ = textEdit_->toHtml();
-
   textEdit_->clear();
 }
 
@@ -127,8 +125,6 @@ void NoteEditor::cancel()
 {
   textEdit_->setHtml(noteHtmlBackup_);
   fontSizeComboBox_->setCurrentIndex(fontSizeBackup_);
-  //positionComboBox_->setCurrentIndex(positionBackup_);
-  //updateNote();
   hide();
 }
 
@@ -143,6 +139,5 @@ void NoteEditor::showEvent(QShowEvent* event)
 {
   noteHtmlBackup_ = textEdit_->toHtml();
   fontSizeBackup_ = fontSizeComboBox_->currentIndex();
-  //positionBackup_ = positionComboBox_->currentIndex();
   QDialog::showEvent(event);
 }

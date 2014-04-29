@@ -33,6 +33,8 @@
 #include <QFont>
 #include <QColor>
 
+class QAction;
+
 namespace SCIRun {
 namespace Gui {
 
@@ -53,6 +55,18 @@ namespace Gui {
     NotePosition position_; 
   };
 
+  class HasNotes 
+  {
+  public:
+    explicit HasNotes(const std::string& name);
+    ~HasNotes();
+    void connectNoteEditorToAction(QAction* action);
+    void connectUpdateNote(QObject* obj);
+    void setCurrentNote(const Note& note) { currentNote_ = note; }
+  private:
+    class NoteEditor* noteEditor_;
+    Note currentNote_;
+  };
 }
 }
 
