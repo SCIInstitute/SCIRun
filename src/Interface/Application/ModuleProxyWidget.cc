@@ -55,9 +55,9 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 }
 
 NoteDisplayHelper::NoteDisplayHelper(QGraphicsScene* scene) : note_(0), notePosition_(Default),
-defaultNotePosition_(Top), //TODO
-item_(0),
-scene_(scene)
+  defaultNotePosition_(Top), //TODO
+  item_(0),
+  scene_(scene)
 {
 }
 
@@ -70,12 +70,12 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
 {
   std::cout << "updateNoteImpl " << std::endl;
   if (!note_)
-    {
+  {
 
     note_ = new QGraphicsTextItem("", 0, scene_);
-        std::cout << "note created " << std::endl;
-    }
-  
+    std::cout << "note created " << std::endl;
+  }
+
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
   updateNotePosition();
