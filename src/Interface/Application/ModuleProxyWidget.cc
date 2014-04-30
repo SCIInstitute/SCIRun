@@ -40,25 +40,50 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
-  : QGraphicsProxyWidget(parent),
+  : QGraphicsProxyWidget(parent), NoteDisplayHelper(scene()),
   module_(module),
   grabbedByWidget_(false),
   isSelected_(false),
-  pressedSubWidget_(0),
-  note_(0),
-  notePosition_(Default),
-  defaultNotePosition_(Top) //TODO
+  pressedSubWidget_(0)
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
+  setNoteGraphicsContext(this);
+}
+
+NoteDisplayHelper::NoteDisplayHelper(QGraphicsScene* scene) : note_(0), notePosition_(Default),
+defaultNotePosition_(Top), //TODO
+item_(0),
+scene_(scene)
+{
+}
+
+NoteDisplayHelper::~NoteDisplayHelper()
+{
+  delete note_;
+}
+
+void NoteDisplayHelper::updateNoteImpl(const Note& note)
+{
+  std::cout << "updateNoteImpl " << std::endl;
+  if (!note_)
+    {
+
+    note_ = new QGraphicsTextItem("", 0, scene_);
+        std::cout << "note created " << std::endl;
+    }
+  
+  note_->setHtml(note.html_);
+  notePosition_ = note.position_;
+  updateNotePosition();
+  note_->setZValue(item_->zValue() - 1);
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
-  delete note_;
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
@@ -185,27 +210,20 @@ void ModuleProxyWidget::createPortPositionProviders()
 
 void ModuleProxyWidget::updateNote(const Note& note)
 {
-  if (!note_)
-  {
-    note_ = new QGraphicsTextItem("", 0, scene());
-  }
-
-  note_->setHtml(note.html_);
-  notePosition_ = note.position_;
-  updateNotePosition();
-  note_->setZValue(zValue() - 1);
+  updateNoteImpl(note);
 }
 
-QPointF ModuleProxyWidget::relativeNotePosition()
+QPointF NoteDisplayHelper::relativeNotePosition()
 {
-  if (note_)
+  if (note_ && item_)
   {
+      std::cout << "relativeNotePosition" << std::endl;
     const int noteMargin = 2;
     auto noteRect = note_->boundingRect();
-    auto thisRect = boundingRect();
+    auto thisRect = item_->boundingRect();
     auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
     note_->setVisible(!(Tooltip == position || None == position));
-    this->setToolTip("");
+    item_->setToolTip("");
     switch (position)
     {
       case None:
@@ -249,7 +267,9 @@ QPointF ModuleProxyWidget::relativeNotePosition()
         return noteLeftMidpointShift;
       }
       case Tooltip:
-        this->setToolTip(note_->toHtml());
+        item_->setToolTip(note_->toHtml());
+        break;
+      case Default:
         break;
     }
   }
@@ -258,12 +278,20 @@ QPointF ModuleProxyWidget::relativeNotePosition()
 
 void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 {
+  setDefaultNotePositionImpl(position);
+}
+
+void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
+{
   defaultNotePosition_ = position;
   updateNotePosition();
 }
 
-void ModuleProxyWidget::updateNotePosition()
+void NoteDisplayHelper::updateNotePosition()
 {
-  if (note_)
-    note_->setPos(pos() + relativeNotePosition());
+  if (note_ && item_)
+    {
+    std::cout << "updateNotePosition" << std::endl;
+    note_->setPos(item_->pos() + relativeNotePosition());
+    }
 }

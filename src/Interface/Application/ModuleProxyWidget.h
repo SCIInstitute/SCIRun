@@ -38,8 +38,28 @@ namespace SCIRun
   namespace Gui
   {
     class ModuleWidget;
+  
+    class NoteDisplayHelper
+    {
+    public:
+    virtual ~NoteDisplayHelper();
+    protected:
+    explicit NoteDisplayHelper(QGraphicsScene* scene);
+    void setNoteGraphicsContext(QGraphicsItem* g) { item_ = g; }
+    void updateNoteImpl(const Note& note);
+    void updateNotePosition();
+    void setDefaultNotePositionImpl(NotePosition position);
+    private:
+    QGraphicsTextItem* note_;
+    NotePosition notePosition_, defaultNotePosition_;
+    
+    QGraphicsItem* item_;
+    QGraphicsScene* scene_;
+    QPointF relativeNotePosition();
+    
+    };
 
-    class ModuleProxyWidget : public QGraphicsProxyWidget
+    class ModuleProxyWidget : public QGraphicsProxyWidget, public NoteDisplayHelper
     {
 	    Q_OBJECT
 	
@@ -66,15 +86,11 @@ namespace SCIRun
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
-      QPointF relativeNotePosition();
-      void updateNotePosition();
-
+    
       ModuleWidget* module_;
       bool grabbedByWidget_, isSelected_;
       QWidget* pressedSubWidget_;
       QPointF position_;
-      QGraphicsTextItem* note_;
-      NotePosition notePosition_, defaultNotePosition_;
     };
 
   }
