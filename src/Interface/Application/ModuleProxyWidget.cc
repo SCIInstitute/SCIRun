@@ -54,34 +54,6 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setNoteGraphicsContext(this);
 }
 
-NoteDisplayHelper::NoteDisplayHelper(QGraphicsScene* scene) : note_(0), notePosition_(Default),
-  defaultNotePosition_(Top), //TODO
-  item_(0),
-  scene_(scene)
-{
-}
-
-NoteDisplayHelper::~NoteDisplayHelper()
-{
-  delete note_;
-}
-
-void NoteDisplayHelper::updateNoteImpl(const Note& note)
-{
-  std::cout << "updateNoteImpl " << std::endl;
-  if (!note_)
-  {
-
-    note_ = new QGraphicsTextItem("", 0, scene_);
-    std::cout << "note created " << std::endl;
-  }
-
-  note_->setHtml(note.html_);
-  notePosition_ = note.position_;
-  updateNotePosition();
-  note_->setZValue(item_->zValue() - 1);
-}
-
 ModuleProxyWidget::~ModuleProxyWidget()
 {
 }
@@ -213,11 +185,38 @@ void ModuleProxyWidget::updateNote(const Note& note)
   updateNoteImpl(note);
 }
 
+NoteDisplayHelper::NoteDisplayHelper(QGraphicsScene* scene) : note_(0), notePosition_(Default),
+  defaultNotePosition_(Top), //TODO
+  item_(0),
+  scene_(scene)
+{
+}
+
+NoteDisplayHelper::~NoteDisplayHelper()
+{
+  delete note_;
+}
+
+void NoteDisplayHelper::updateNoteImpl(const Note& note)
+{
+  std::cout << "updateNoteImpl " << std::endl;
+  if (!note_)
+  {
+    note_ = new QGraphicsTextItem("", 0, scene_);
+    std::cout << "note created " << std::endl;
+  }
+
+  note_->setHtml(note.html_);
+  notePosition_ = note.position_;
+  updateNotePosition();
+  note_->setZValue(item_->zValue() - 1);
+}
+
 QPointF NoteDisplayHelper::relativeNotePosition()
 {
   if (note_ && item_)
   {
-      std::cout << "relativeNotePosition" << std::endl;
+    std::cout << "relativeNotePosition" << std::endl;
     const int noteMargin = 2;
     auto noteRect = note_->boundingRect();
     auto thisRect = item_->boundingRect();
@@ -290,8 +289,8 @@ void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
 void NoteDisplayHelper::updateNotePosition()
 {
   if (note_ && item_)
-    {
+  {
     std::cout << "updateNotePosition" << std::endl;
     note_->setPos(item_->pos() + relativeNotePosition());
-    }
+  }
 }
