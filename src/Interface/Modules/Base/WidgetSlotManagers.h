@@ -26,25 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
+#ifndef INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
+#define INTERFACE_APPLICATION_WIDGET_SLOT_MANAGERS_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::BrainStimulator;
+#include <QObject>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Interface/Modules/Base/share.h>
 
+namespace SCIRun {
+namespace Gui {
+  
+  class ModuleDialogGeneric;
 
-GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+  class SCISHARE WidgetSlotManager : public QObject
+  {
+    Q_OBJECT
+  public:
+    WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog);
+    virtual ~WidgetSlotManager();
+    virtual void pushImpl() = 0;
+  public Q_SLOTS:
+    void push();
+    virtual void pull() = 0;
+  protected:
+    SCIRun::Dataflow::Networks::ModuleStateHandle state_;
+    ModuleDialogGeneric& dialog_;
+  };
+
+  typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;
+
+}
 }
 
-void GenerateROIStatisticsDialog::pull()
-{
-  //TODO
-}
-
+#endif

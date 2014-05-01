@@ -26,11 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/bind.hpp>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Core/Logging/Log.h>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
@@ -39,7 +42,14 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   setModal(false);
 
   if (state_)
-    state_->connect_state_changed(boost::bind(&ModuleDialogGeneric::pull, this));
+  {
+    //TODO: replace with pull_newVersion
+    state_->connect_state_changed([this]() { pull(); });
+  }
+}
+
+ModuleDialogGeneric::~ModuleDialogGeneric()
+{
 }
 
 void ModuleDialogGeneric::fixSize()
@@ -48,4 +58,219 @@ void ModuleDialogGeneric::fixSize()
   {
     setFixedSize(minimumWidth(), minimumHeight());
   }
+}
+
+void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr) 
+{ 
+  slotManagers_.push_back(ptr); 
+}
+
+void ModuleDialogGeneric::pull_newVersionToReplaceOld()
+{
+  Pulling p(this);
+  BOOST_FOREACH(WidgetSlotManagerPtr wsm, slotManagers_)
+    wsm->pull();
+}
+
+class ComboBoxSlotManager : public WidgetSlotManager
+{
+public:
+  typedef boost::function<std::string(const QString&)> FromQStringConverter;
+  typedef boost::function<QString(const std::string&)> ToQStringConverter;
+  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox, 
+    FromQStringConverter fromLabelConverter = boost::bind(&QString::toStdString, _1),
+    ToQStringConverter toLabelConverter = &QString::fromStdString) : 
+  WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
+  {
+    connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto value = state_->getValue(stateKey_).getString();
+    auto qstring = toLabelConverter_(value);
+    if (qstring != comboBox_->currentText())
+    {
+      LOG_DEBUG("In new version of pull code for combobox: " << value);
+      comboBox_->setCurrentIndex(comboBox_->findText(qstring));
+    }
+  }
+  virtual void pushImpl() override
+  {
+    auto label = fromLabelConverter_(comboBox_->currentText());
+    if (label != state_->getValue(stateKey_).getString())
+    {
+      LOG_DEBUG("In new version of push code for combobox: " << label);
+      state_->setValue(stateKey_, label);
+    }
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QComboBox* comboBox_;
+  FromQStringConverter fromLabelConverter_;
+  ToQStringConverter toLabelConverter_;
+};
+
+void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
+}
+
+class TextEditSlotManager : public WidgetSlotManager
+{
+public:
+  TextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) : 
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), textEdit_(textEdit) 
+  {
+    connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
+    if (newValue != textEdit_->toPlainText())
+    {
+      textEdit_->setPlainText(newValue);
+      LOG_DEBUG("In new version of pull code for TextEdit: " << newValue.toStdString());
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for TextEdit: " << textEdit_->toPlainText().toStdString());
+    state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QTextEdit* textEdit_;
+};
+
+void ModuleDialogGeneric::addTextEditManager(QTextEdit* textEdit, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, stateKey, textEdit));
+}
+
+class LineEditSlotManager : public WidgetSlotManager
+{
+public:
+  LineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) : 
+      WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit) 
+  {
+    connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
+    if (newValue != lineEdit_->text())
+    {
+      lineEdit_->setText(newValue);
+      LOG_DEBUG("In new version of pull code for LineEdit: " << newValue.toStdString());
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
+    state_->setValue(stateKey_, lineEdit_->text().toStdString());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QLineEdit* lineEdit_;
+};
+
+void ModuleDialogGeneric::addLineEditManager(QLineEdit* lineEdit, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
+}
+
+class SpinBoxSlotManager : public WidgetSlotManager
+{
+public:
+  SpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSpinBox* spinBox) : 
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox) 
+  {
+    connect(spinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = state_->getValue(stateKey_).getInt();
+    if (newValue != spinBox_->value())
+    {
+      spinBox_->setValue(newValue);
+      LOG_DEBUG("In new version of pull code for SpinBox: " << newValue);
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for SpinBox: " << spinBox_->value());
+    state_->setValue(stateKey_, spinBox_->value());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QSpinBox* spinBox_;
+};
+
+void ModuleDialogGeneric::addSpinBoxManager(QSpinBox* spinBox, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<SpinBoxSlotManager>(state_, *this, stateKey, spinBox));
+}
+
+class DoubleSpinBoxSlotManager : public WidgetSlotManager
+{
+public:
+  DoubleSpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox) : 
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox) 
+  {
+    connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = state_->getValue(stateKey_).getDouble();
+    if (newValue != spinBox_->value())
+    {
+      spinBox_->setValue(newValue);
+      LOG_DEBUG("In new version of pull code for DoubleSpinBox: " << newValue);
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for DoubleSpinBox: " << spinBox_->value());
+    state_->setValue(stateKey_, spinBox_->value());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QDoubleSpinBox* spinBox_;
+};
+
+void ModuleDialogGeneric::addDoubleSpinBoxManager(QDoubleSpinBox* spinBox, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<DoubleSpinBoxSlotManager>(state_, *this, stateKey, spinBox));
+}
+
+class CheckBoxSlotManager : public WidgetSlotManager
+{
+public:
+  CheckBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QCheckBox* checkBox) : 
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), checkBox_(checkBox) 
+  {
+    connect(checkBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    bool newValue = state_->getValue(stateKey_).getBool();
+    if (newValue != checkBox_->isChecked())
+    {
+      LOG_DEBUG("In new version of pull code for CheckBox: " << newValue);
+      checkBox_->setChecked(newValue);
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for CheckBox: " << checkBox_->isChecked());
+    state_->setValue(stateKey_, checkBox_->isChecked());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QCheckBox* checkBox_;
+};
+
+void ModuleDialogGeneric::addCheckBoxManager(QCheckBox* checkBox, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<CheckBoxSlotManager>(state_, *this, stateKey, checkBox));
 }

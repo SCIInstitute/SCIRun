@@ -30,18 +30,13 @@
 #define INTERFACE_MODULES_CREATE_STRING_H
 
 #include "Interface/Modules/String/ui_CreateString.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/String/share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-  //TODO DAN
-
 class SCISHARE CreateStringDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
   public Ui::CreateString
 {
 	Q_OBJECT
@@ -51,9 +46,6 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
-
-private Q_SLOTS:
-  void pushStringToState(const QString& str);
 };
 
 }

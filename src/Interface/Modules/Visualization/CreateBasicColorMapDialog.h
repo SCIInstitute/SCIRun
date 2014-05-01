@@ -30,8 +30,6 @@
 #define INTERFACE_MODULES_CREATEBASICCOLORMAPDIALOG_H
 
 #include "Interface/Modules/Visualization/ui_CreateBasicColorMap.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Visualization/share.h>
 
@@ -39,7 +37,6 @@ namespace SCIRun {
 namespace Gui {
   
 class SCISHARE CreateBasicColorMapDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
   public Ui::CreateBasicColorMap
 {
 	Q_OBJECT
@@ -49,9 +46,6 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
-
-  private Q_SLOTS:
-    void pushParametersToState(const QString&);
 };
 
 }
