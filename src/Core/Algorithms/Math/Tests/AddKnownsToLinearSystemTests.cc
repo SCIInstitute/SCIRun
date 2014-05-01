@@ -152,7 +152,7 @@ namespace
 }
 
 // this test makes sure an exception is thrown for non symmetrical, but square, LHS matrix
-TEST (AddKnownsToLinearSystemTests, Non_Symmetrical_but_Sqaure_LHS)
+TEST (AddKnownsToLinearSystemTests, Non_Symmetrical_but_Square_LHS)
 {	
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
@@ -161,7 +161,7 @@ TEST (AddKnownsToLinearSystemTests, Non_Symmetrical_but_Sqaure_LHS)
 }
 
 // this test makes sure an exception is thrown for a non square matrix
-TEST (AddKnownsToLinearSystemTests, Non_Sqaure_LHS)
+TEST (AddKnownsToLinearSystemTests, Non_Square_LHS)
 {
   SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
@@ -170,7 +170,7 @@ TEST (AddKnownsToLinearSystemTests, Non_Sqaure_LHS)
 }
 
 // this test makes sure no exceptions are thrown when a symmetric matric is used for the LHS
-TEST (AddKnownsToLinearSystemTests, Sqaure_and_Symmetric_LHS)
+TEST (AddKnownsToLinearSystemTests, Square_and_Symmetric_LHS)
 {	
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
