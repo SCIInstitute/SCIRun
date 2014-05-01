@@ -29,6 +29,7 @@
 #ifndef INTERFACE_APPLICATION_NOTE_H
 #define INTERFACE_APPLICATION_NOTE_H
 
+#include <boost/shared_ptr.hpp>
 #include <QString>
 #include <QFont>
 #include <QColor>
@@ -72,12 +73,23 @@ namespace Gui {
     Note currentNote_;
   };
 
+  class NoteDisplayStrategy
+  {
+  public:
+    virtual ~NoteDisplayStrategy() {}
+    virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const = 0;
+  };
+
+  typedef boost::shared_ptr<NoteDisplayStrategy> NoteDisplayStrategyPtr;
+  class ModuleWidgetNoteDisplayStrategy;
+  class ConnectionNoteDisplayStrategy;
+
   class NoteDisplayHelper
   {
   public:
     virtual ~NoteDisplayHelper();
   protected:
-    NoteDisplayHelper();
+    explicit NoteDisplayHelper(NoteDisplayStrategyPtr display);
     virtual void setNoteGraphicsContext() = 0;
     void updateNoteImpl(const Note& note);
     void updateNotePosition();
@@ -87,6 +99,7 @@ namespace Gui {
   private:
     QGraphicsTextItem* note_;
     NotePosition notePosition_, defaultNotePosition_;
+    NoteDisplayStrategyPtr displayStrategy_;
 
     QPointF relativeNotePosition();
   };

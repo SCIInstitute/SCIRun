@@ -34,6 +34,7 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 
@@ -126,8 +127,25 @@ namespace SCIRun
   }
 }
 
+namespace SCIRun
+{
+  namespace Gui
+  {
+    class ConnectionLineNoteDisplayStrategy : public NoteDisplayStrategy
+    {
+    public:
+      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const
+      {
+        return QPointF(-100,-100);
+      }
+    };
+  }
+}
+
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
-  : HasNotes(id), fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer), menu_(0)
+  : HasNotes(id), 
+  NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
+  fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer), menu_(0)
 {
   if (fromPort_)
   {
@@ -135,14 +153,14 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
     fromPort_->turn_on_light();
   }
   else
-    std::cout << "NULL FROM PORT: " << id_.id_ << std::endl;
+    LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
   if (toPort_)
   {
     toPort_->addConnection(this);
     toPort_->turn_on_light();
   }
   else
-    std::cout << "NULL TO PORT: " << id_.id_ << std::endl;
+    LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
 
   if (fromPort_ && toPort_)
     setColor(fromPort_->color());
