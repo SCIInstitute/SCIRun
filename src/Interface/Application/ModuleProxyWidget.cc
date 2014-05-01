@@ -35,12 +35,14 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
 
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
-  : QGraphicsProxyWidget(parent), NoteDisplayHelper(scene()),
+  : QGraphicsProxyWidget(parent), 
   module_(module),
   grabbedByWidget_(false),
   isSelected_(false),
@@ -51,7 +53,6 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
-  setNoteGraphicsContext(this);
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
@@ -185,10 +186,16 @@ void ModuleProxyWidget::updateNote(const Note& note)
   updateNoteImpl(note);
 }
 
-NoteDisplayHelper::NoteDisplayHelper(QGraphicsScene* scene) : note_(0), notePosition_(Default),
+void ModuleProxyWidget::setNoteGraphicsContext()
+{
+  scene_ = scene();
+  item_ = this;
+}
+
+NoteDisplayHelper::NoteDisplayHelper() : note_(0), notePosition_(Default),
   defaultNotePosition_(Top), //TODO
   item_(0),
-  scene_(scene)
+  scene_(0)
 {
 }
 
@@ -199,11 +206,12 @@ NoteDisplayHelper::~NoteDisplayHelper()
 
 void NoteDisplayHelper::updateNoteImpl(const Note& note)
 {
-  std::cout << "updateNoteImpl " << std::endl;
   if (!note_)
   {
+    setNoteGraphicsContext();
+    if (!scene_)
+      Log::get() << WARN << "Scene not set, network notes will not be displayed!" << std::endl;
     note_ = new QGraphicsTextItem("", 0, scene_);
-    std::cout << "note created " << std::endl;
   }
 
   note_->setHtml(note.html_);
@@ -216,7 +224,6 @@ QPointF NoteDisplayHelper::relativeNotePosition()
 {
   if (note_ && item_)
   {
-    std::cout << "relativeNotePosition" << std::endl;
     const int noteMargin = 2;
     auto noteRect = note_->boundingRect();
     auto thisRect = item_->boundingRect();
@@ -290,7 +297,6 @@ void NoteDisplayHelper::updateNotePosition()
 {
   if (note_ && item_)
   {
-    std::cout << "updateNotePosition" << std::endl;
     note_->setPos(item_->pos() + relativeNotePosition());
   }
 }

@@ -44,16 +44,17 @@ namespace SCIRun
     public:
       virtual ~NoteDisplayHelper();
     protected:
-      explicit NoteDisplayHelper(QGraphicsScene* scene);
-      void setNoteGraphicsContext(QGraphicsItem* g) { item_ = g; }
+      NoteDisplayHelper();
+      virtual void setNoteGraphicsContext() = 0;
       void updateNoteImpl(const Note& note);
       void updateNotePosition();
       void setDefaultNotePositionImpl(NotePosition position);
+      QGraphicsItem* item_;
+      QGraphicsScene* scene_;
     private:
       QGraphicsTextItem* note_;
       NotePosition notePosition_, defaultNotePosition_;
-      QGraphicsItem* item_;
-      QGraphicsScene* scene_;
+      
       QPointF relativeNotePosition();
     };
 
@@ -78,6 +79,7 @@ namespace SCIRun
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+      virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
       void updateNote(const Note& note);
     private:
