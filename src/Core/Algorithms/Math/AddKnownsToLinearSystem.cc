@@ -27,7 +27,7 @@
    
    Author            : Moritz Dannhauer
    Author            : Spencer Frisby
-   Last modification : 4/23/2014
+   Last modification : 5/1/2014
    
 */
 
@@ -73,7 +73,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 	// Checking if the rhs matrix is allocated and that the dimenions agree with the stiff matrix
 	if (!rhs)
 	{
-        THROW_ALGORITHM_INPUT_ERROR("Could not allocate new b matrix");
+    THROW_ALGORITHM_INPUT_ERROR("Could not allocate new b matrix");
 	}
 	else if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))) )
 	{
@@ -104,6 +104,9 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 	bool just_copying_inputs = true;
 
   // performs calculation adjustments for setting row and col values to zero
+  // NOTE: right hand side vector values are reset multiple times during this
+  //   proccess, thus it was necessary to have a second for loop to set the
+  //   right hand side vector equal to the known values
   for (index_type p=0; p<m; p++)
 	{
 		// making sure the rhs vector is finite
@@ -155,7 +158,6 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 			update_progress((double)p/m);
 		}
 	}
-  
   
 	if (just_copying_inputs)
     remark("X vector does not contain any knowns! Copying inputs to outputs.");

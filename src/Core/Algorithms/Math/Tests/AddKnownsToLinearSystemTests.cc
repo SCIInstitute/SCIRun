@@ -55,16 +55,7 @@ namespace
 				(*m)(i, j) = i+3;
 		return m;
 	}
-//	// x vector of zeros
-//	DenseMatrixHandle x_zero (int rows)
-//	{
-//		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
-//		for (int i = 0; i < m->rows(); ++ i)
-//			for (int j = 0; j < m->cols(); ++ j)
-//				(*m)(i, j) = 0;
-//		return m;
-//	}
-	// x vector [3; nan; nan]
+	// x vector [1; nan; 2]
 	DenseMatrixHandle x_one_nan ()
 	{
 		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
@@ -73,6 +64,7 @@ namespace
 		(*m)(2, 0) = 2;
 		return m;
 	}
+  // x vector [3; nan; nan]
 	DenseMatrixHandle x_two_nan ()
 	{
 		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
@@ -81,24 +73,15 @@ namespace
 		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
 		return m;
 	}
-//	// x vector [NaN; NaN; NaN;]
-//	DenseMatrixHandle x_all_nan ()
-//	{
-//		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
-//		(*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
-//		(*m)(1, 0) = std::numeric_limits<double>::quiet_NaN();
-//		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
-//		return m;
-//	}
-//	// x vector of all ones
-//	DenseMatrixHandle x_ones (int row, int col)
-//	{
-//		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(row,col));
-//		for (int i = 0; i < m->rows(); ++ i)
-//			for (int j = 0; j < m->cols(); ++ j)
-//				(*m)(i, j) = 1;
-//		return m;
-//	}
+	// x vector [NaN; NaN; NaN;]
+	DenseMatrixHandle x_all_nan ()
+	{
+		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+		(*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
+		(*m)(1, 0) = std::numeric_limits<double>::quiet_NaN();
+		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
+		return m;
+	}
 	
 	// symmetric LHS (stiff) matrix
 	SparseRowMatrixHandle LHS() 
@@ -116,7 +99,6 @@ namespace
 		m->makeCompressed();
 		return m;
 	}
-
 	// non symmetric LHS (stiff) matrix
 	SparseRowMatrixHandle LHS_not_sym() 
 	{
@@ -133,7 +115,6 @@ namespace
 		m->makeCompressed();
 		return m;
 	}
-
 	// non square LHS (Stiff) matrix
 	SparseRowMatrixHandle LHS_non_sqr() 
 	{
@@ -150,17 +131,15 @@ namespace
 		m->setZero();
 		return m;
 	}
-
 	// RHS vector [1;2;3]
-//	DenseColumnMatrixHandle rhs()
-//	{
-//		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
-//		(*m)(0,0) = 1;
-//		(*m)(1,0) = 2;
-//		(*m)(2,0) = 3;
-//		return m;
-//	}
-
+	DenseColumnMatrixHandle rhs()
+	{
+		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+		(*m)(0,0) = 1;
+		(*m)(1,0) = 2;
+		(*m)(2,0) = 3;
+		return m;
+	}
 	// RHS vector with NaN
 	DenseColumnMatrixHandle rhs_nan()
 	{
@@ -169,117 +148,214 @@ namespace
 		(*m)(1,0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2,0) = 3;
 		return m;
-	}
-
-    // HELPER METHODS
-    
-	// method for displaying stiff / left hand side matrix (SparseRowMatrixHandle)
-	void dispStiffOutput (SparseRowMatrixHandle ouput)
-	{
-        std::cout << "stiff matrix output:" << std::endl;
-		for (int r=0; r < ouput->rows(); r++)
-		{
-			for (int c=0; c < ouput->cols(); c++)
-				std::cout << ouput->coeff(r,c) << " ";
-			std::cout << std::endl;
-		}
-        std::cout << std::endl;
-	}
-	// method for displaying right hand side vector (DenseColumnMatrixHandle)
-	void dispRHS (DenseColumnMatrixHandle output)
-	{
-		for (int r=0; r < output->rows(); r++)
-		std::cout << "rhs[" << r << "] = " << (*output)[r] << std::endl;
-	}
-	// method for displaying x vector (DenseMatrixHandle)
-	void dispX (DenseMatrixHandle x)
-	{
-		for (int r=0; r < x->rows(); r++)
-		std::cout << "x(" << r << ",0) = " << (*x)(r,0) << std::endl;
-	}
-		
+	}		
 }
 
-TEST (AddKnownsToLinearSystemAlgo, Bad_LHS_Input)
+// this test makes sure an exception is thrown for non symmetrical, but square, LHS matrix
+TEST (AddKnownsToLinearSystemAlgo, Non_Symmetrical_but_Sqaure_LHS)
 {	
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
 	AddKnownsToLinearSystemAlgo algo;
-
-	// this test makes sure an exception is thrown for non symmetrical, but square, LHS matrix
 	EXPECT_THROW (algo.run(LHS_not_sym(),rhs_zero(3),x_num(),output_stiff,output_rhs), AlgorithmInputException);
-	 
-	// this test makes sure an exception is thrown for a non square matrix
-	EXPECT_THROW (algo.run(LHS_non_sqr(),rhs_zero(3),x_num(),output_stiff,output_rhs), AlgorithmInputException);
 }
 
-TEST (AddKnownsToLinearSystemAlgo, Good_LHS_Input)
+// this test makes sure an exception is thrown for a non square matrix
+TEST (AddKnownsToLinearSystemAlgo, Non_Sqaure_LHS)
+{
+  SparseRowMatrixHandle output_stiff;
+	DenseColumnMatrixHandle output_rhs;
+	AddKnownsToLinearSystemAlgo algo;
+  EXPECT_THROW (algo.run(LHS_non_sqr(),rhs_zero(3),x_num(),output_stiff,output_rhs), AlgorithmInputException);
+}
+
+// this test makes sure no exceptions are thrown when a symmetric matric is used for the LHS
+TEST (AddKnownsToLinearSystemAlgo, Sqaure_and_Symmetric_LHS)
 {	
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
 	AddKnownsToLinearSystemAlgo algo;
-	
-	// this test makes sure no exceptions are thrown when a symmetric matric is used for the LHS
 	EXPECT_TRUE(algo.run(LHS(),rhs_zero(3),x_num(),output_stiff,output_rhs));
 }
 
-TEST (AddKnownsToLinearSystemAlgo, Bad_RHS_Input)
+// this test makes sure an exception is thrown when rhs contains NaN
+TEST (AddKnownsToLinearSystemAlgo, RHS_Contains_NaN)
 {
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
 	AddKnownsToLinearSystemAlgo algo;
-	
-	// this test makes sure an exception is thrown for rhs containing NaN
 	EXPECT_THROW (algo.run(LHS(),rhs_nan(),x_num(),output_stiff,output_rhs), AlgorithmInputException);
 }
 
-// Looking at what having NaN in x does, and different values of x does
-// RHS is always zero, LHS is always symmetric
-TEST (AddKnownsToLinearSystemAlgo, X_Contains_NaN)
-{	
-	SparseRowMatrixHandle output_stiff;
+// this test compares the output from SCIRun4 when X contains a single NaN, RHS is all 0
+TEST (AddKnownsToLinearSystemAlgo, X_contains_one_NaN_and_RHS_contains_0)
+{
+  // this information was obtained from SCIRun4.7
+  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  m->insert(0,0) = 1;
+  m->insert(0,1) = 0;
+  m->insert(0,2) = 0;
+  m->insert(1,0) = 0;
+  m->insert(1,1) = 4;
+  m->insert(1,2) = 0;
+  m->insert(2,0) = 0;
+  m->insert(2,1) = 0;
+  m->insert(2,2) = 1;
+  m->makeCompressed();
+  DenseColumnMatrixHandle ro(boost::make_shared<DenseColumnMatrix>(3));
+  (*ro)(0,0) = 1;
+  (*ro)(1,0) = 3;
+  (*ro)(2,0) = 2;
+
+  SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
 	AddKnownsToLinearSystemAlgo algo;
-	
-	DenseMatrixHandle x = x_one_nan();
-	algo.run(LHS(),rhs_zero(3),x,output_stiff,output_rhs);
-	std::cout << "x contains one NaN" << std::endl;
-	dispX(x);
-	dispRHS(output_rhs);
-	dispStiffOutput(output_stiff);
-  
-  x = x_two_nan();
-	algo.run(LHS(),rhs_zero(3),x,output_stiff,output_rhs);
-	std::cout << "x contains two NaN" << std::endl;
-	dispX(x);
-	dispRHS(output_rhs);
-	dispStiffOutput(output_stiff);
-
-//	std::cout << "x contains all NaN" << std::endl;
-//	algo.run(LHS(),rhs_zero(3),x_all_nan(),output_stiff,output_rhs);
-//	dispRHS(output_rhs);
-//	dispStiffOutput(output_stiff);
-
-	std::cout << "x contains numbers" << std::endl;
-	DenseMatrixHandle xNum = x_num();
-	algo.run(LHS(),rhs_zero(3),xNum,output_stiff,output_rhs);
-	dispX(xNum);
-	dispRHS(output_rhs);
-	dispStiffOutput(output_stiff);
-
-//	std::cout << "x contains all 0s" << std::endl;
-//	DenseMatrixHandle x_0 = x_zero(3);
-//	algo.run(LHS(),rhs_zero(3),x_0,output_stiff,output_rhs);
-//	dispRHS(output_rhs);
-//	dispStiffOutput(output_stiff);
-
-//	std::cout << "x contains all 1s" << std::endl;
-//	DenseMatrixHandle x_1 = x_ones(3,1);
-//	algo.run(LHS(),rhs_zero(3),x_1,output_stiff,output_rhs);
-//	dispRHS(output_rhs);
-//	dispStiffOutput(output_stiff);
+	algo.run(LHS(),rhs_zero(3),x_one_nan(),output_stiff,output_rhs);
+  // making sure each element of LHS are equal
+  for (int r=0; r < m->rows(); r++)
+  {
+    for (int c=0; c < m->cols(); c++)
+    {
+      EXPECT_EQ(output_stiff->coeff(r,c),m->coeff(r,c));
+    }
+  }
+  // making sure each element of RHS are equal
+  for (int r=0; r < ro->rows(); r++)
+    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
 }
 
-// TODO test the output stiff
+// this test compares the output from SCIRun4 when X contains two NaN, RHS is all 0
+TEST (AddKnownsToLinearSystemAlgo, X_contains_two_NaN_and_RHS_contains_0)
+{
+  // this information was obtained from SCIRun4.7
+  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  m->insert(0,0) = 1;
+  m->insert(0,1) = 0;
+  m->insert(0,2) = 0;
+  m->insert(1,0) = 0;
+  m->insert(1,1) = 4;
+  m->insert(1,2) = -5;
+  m->insert(2,0) = 0;
+  m->insert(2,1) = -5;
+  m->insert(2,2) = 6;
+  m->makeCompressed();
+  DenseColumnMatrixHandle ro(boost::make_shared<DenseColumnMatrix>(3));
+  (*ro)(0,0) = 3;
+  (*ro)(1,0) = -21;
+  (*ro)(2,0) = -9;
 
-// TODO test the outout rhs
+  SparseRowMatrixHandle output_stiff;
+	DenseColumnMatrixHandle output_rhs;
+	AddKnownsToLinearSystemAlgo algo;
+	algo.run(LHS(),rhs_zero(3),x_two_nan(),output_stiff,output_rhs);
+  // making sure each element of LHS are equal
+  for (int r=0; r < m->rows(); r++)
+  {
+    for (int c=0; c < m->cols(); c++)
+    {
+      EXPECT_EQ(output_stiff->coeff(r,c),m->coeff(r,c));
+    }
+  }
+  // making sure each element of RHS are equal
+  for (int r=0; r < ro->rows(); r++)
+    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
+}
+
+// this test compares the output from SCIRun4 when X contains a single NaN, RHS is [1,2,3]
+TEST (AddKnownsToLinearSystemAlgo, X_contains_one_NaN_and_RHS_contains_numbers)
+{
+  // this information was obtained from SCIRun4.7
+  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  m->insert(0,0) = 1;
+  m->insert(0,1) = 0;
+  m->insert(0,2) = 0;
+  m->insert(1,0) = 0;
+  m->insert(1,1) = 4;
+  m->insert(1,2) = 0;
+  m->insert(2,0) = 0;
+  m->insert(2,1) = 0;
+  m->insert(2,2) = 1;
+  m->makeCompressed();
+  DenseColumnMatrixHandle ro(boost::make_shared<DenseColumnMatrix>(3));
+  (*ro)(0,0) = 1;
+  (*ro)(1,0) = 5;
+  (*ro)(2,0) = 2;
+  
+  SparseRowMatrixHandle output_stiff;
+	DenseColumnMatrixHandle output_rhs;
+	AddKnownsToLinearSystemAlgo algo;
+	algo.run(LHS(),rhs(),x_one_nan(),output_stiff,output_rhs);
+  // making sure each element of LHS are equal
+  for (int r=0; r < m->rows(); r++)
+  {
+    for (int c=0; c < m->cols(); c++)
+    {
+      EXPECT_EQ(output_stiff->coeff(r,c),m->coeff(r,c));
+    }
+  }
+  // making sure each element of RHS are equal
+  for (int r=0; r < ro->rows(); r++)
+    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
+}
+
+// this test compares the output from SCIRun4 when X contains two NaN, RHS is [1,2,3]
+TEST (AddKnownsToLinearSystemAlgo, X_contains_two_NaN_and_RHS_contains_numbers)
+{
+  // this information was obtained from SCIRun 4.7
+  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  m->insert(0,0) = 1;
+  m->insert(0,1) = 0;
+  m->insert(0,2) = 0;
+  m->insert(1,0) = 0;
+  m->insert(1,1) = 4;
+  m->insert(1,2) = -5;
+  m->insert(2,0) = 0;
+  m->insert(2,1) = -5;
+  m->insert(2,2) = 6;
+  m->makeCompressed();
+  DenseColumnMatrixHandle ro(boost::make_shared<DenseColumnMatrix>(3));
+  (*ro)(0,0) = 3;
+  (*ro)(1,0) = -19;
+  (*ro)(2,0) = -6;
+  
+  SparseRowMatrixHandle output_stiff;
+	DenseColumnMatrixHandle output_rhs;
+	AddKnownsToLinearSystemAlgo algo;
+	algo.run(LHS(),rhs(),x_two_nan(),output_stiff,output_rhs);
+  // making sure each element of LHS are equal
+  for (int r=0; r < m->rows(); r++)
+  {
+    for (int c=0; c < m->cols(); c++)
+    {
+      EXPECT_EQ(output_stiff->coeff(r,c),m->coeff(r,c));
+    }
+  }
+  // making sure each element of RHS are equal
+  for (int r=0; r < ro->rows(); r++)
+    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
+}
+
+// test to make sure when X contains all NaN that outputs are copied from inputs
+TEST (AddKnownsToLinearSystemAlgo, X_is_NaN)
+{
+  // this is what is expected to be returned (the input)
+  SparseRowMatrixHandle m = LHS();
+  DenseColumnMatrixHandle ro = rhs_zero(3);
+  
+  SparseRowMatrixHandle output_stiff;
+	DenseColumnMatrixHandle output_rhs;
+	AddKnownsToLinearSystemAlgo algo;
+  algo.run(LHS(),rhs_zero(3),x_all_nan(),output_stiff,output_rhs);
+  
+  // making sure each element of LHS are equal
+  for (int r=0; r < m->rows(); r++)
+  {
+    for (int c=0; c < m->cols(); c++)
+    {
+      EXPECT_EQ(output_stiff->coeff(r,c),m->coeff(r,c));
+    }
+  }
+  // making sure each element of RHS are equal
+  for (int r=0; r < ro->rows(); r++)
+    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
+}
