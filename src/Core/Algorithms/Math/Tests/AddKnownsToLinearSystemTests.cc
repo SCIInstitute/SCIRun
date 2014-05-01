@@ -152,7 +152,7 @@ namespace
 }
 
 // this test makes sure an exception is thrown for non symmetrical, but square, LHS matrix
-TEST (AddKnownsToLinearSystemAlgo, Non_Symmetrical_but_Sqaure_LHS)
+TEST (AddKnownsToLinearSystemTests, Non_Symmetrical_but_Sqaure_LHS)
 {	
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
@@ -161,7 +161,7 @@ TEST (AddKnownsToLinearSystemAlgo, Non_Symmetrical_but_Sqaure_LHS)
 }
 
 // this test makes sure an exception is thrown for a non square matrix
-TEST (AddKnownsToLinearSystemAlgo, Non_Sqaure_LHS)
+TEST (AddKnownsToLinearSystemTests, Non_Sqaure_LHS)
 {
   SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
@@ -170,7 +170,7 @@ TEST (AddKnownsToLinearSystemAlgo, Non_Sqaure_LHS)
 }
 
 // this test makes sure no exceptions are thrown when a symmetric matric is used for the LHS
-TEST (AddKnownsToLinearSystemAlgo, Sqaure_and_Symmetric_LHS)
+TEST (AddKnownsToLinearSystemTests, Sqaure_and_Symmetric_LHS)
 {	
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
@@ -179,7 +179,7 @@ TEST (AddKnownsToLinearSystemAlgo, Sqaure_and_Symmetric_LHS)
 }
 
 // this test makes sure an exception is thrown when rhs contains NaN
-TEST (AddKnownsToLinearSystemAlgo, RHS_Contains_NaN)
+TEST (AddKnownsToLinearSystemTests, RHS_Contains_NaN)
 {
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
@@ -188,7 +188,7 @@ TEST (AddKnownsToLinearSystemAlgo, RHS_Contains_NaN)
 }
 
 // this test compares the output from SCIRun4 when X contains a single NaN, RHS is all 0
-TEST (AddKnownsToLinearSystemAlgo, X_contains_one_NaN_and_RHS_contains_0)
+TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_0)
 {
   // this information was obtained from SCIRun4.7
   SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
@@ -225,7 +225,7 @@ TEST (AddKnownsToLinearSystemAlgo, X_contains_one_NaN_and_RHS_contains_0)
 }
 
 // this test compares the output from SCIRun4 when X contains two NaN, RHS is all 0
-TEST (AddKnownsToLinearSystemAlgo, X_contains_two_NaN_and_RHS_contains_0)
+TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_0)
 {
   // this information was obtained from SCIRun4.7
   SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
@@ -262,7 +262,7 @@ TEST (AddKnownsToLinearSystemAlgo, X_contains_two_NaN_and_RHS_contains_0)
 }
 
 // this test compares the output from SCIRun4 when X contains a single NaN, RHS is [1,2,3]
-TEST (AddKnownsToLinearSystemAlgo, X_contains_one_NaN_and_RHS_contains_numbers)
+TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_numbers)
 {
   // this information was obtained from SCIRun4.7
   SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
@@ -299,7 +299,7 @@ TEST (AddKnownsToLinearSystemAlgo, X_contains_one_NaN_and_RHS_contains_numbers)
 }
 
 // this test compares the output from SCIRun4 when X contains two NaN, RHS is [1,2,3]
-TEST (AddKnownsToLinearSystemAlgo, X_contains_two_NaN_and_RHS_contains_numbers)
+TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_numbers)
 {
   // this information was obtained from SCIRun 4.7
   SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
@@ -336,7 +336,7 @@ TEST (AddKnownsToLinearSystemAlgo, X_contains_two_NaN_and_RHS_contains_numbers)
 }
 
 // test to make sure when X contains all NaN that outputs are copied from inputs
-TEST (AddKnownsToLinearSystemAlgo, X_is_NaN)
+TEST (AddKnownsToLinearSystemTests, X_is_NaN)
 {
   // this is what is expected to be returned (the input)
   SparseRowMatrixHandle m = LHS();
