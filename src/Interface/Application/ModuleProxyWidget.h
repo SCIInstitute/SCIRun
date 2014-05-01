@@ -38,25 +38,6 @@ namespace SCIRun
   namespace Gui
   {
     class ModuleWidget;
-  
-    class NoteDisplayHelper
-    {
-    public:
-      virtual ~NoteDisplayHelper();
-    protected:
-      NoteDisplayHelper();
-      virtual void setNoteGraphicsContext() = 0;
-      void updateNoteImpl(const Note& note);
-      void updateNotePosition();
-      void setDefaultNotePositionImpl(NotePosition position);
-      QGraphicsItem* item_;
-      QGraphicsScene* scene_;
-    private:
-      QGraphicsTextItem* note_;
-      NotePosition notePosition_, defaultNotePosition_;
-      
-      QPointF relativeNotePosition();
-    };
 
     class ModuleProxyWidget : public QGraphicsProxyWidget, public NoteDisplayHelper
     {

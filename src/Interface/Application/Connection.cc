@@ -154,6 +154,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 
   menu_ = new ConnectionMenu();
   connectNoteEditorToAction(menu_->notesAction_);
+  connectUpdateNote(this);
 
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
@@ -222,6 +223,17 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
     std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
   }
+}
+
+void ConnectionLine::setNoteGraphicsContext() 
+{
+  scene_ = scene();
+  item_ = this;
+}
+
+void ConnectionLine::updateNote(const Note& note)
+{
+  updateNoteImpl(note);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)

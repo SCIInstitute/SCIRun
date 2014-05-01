@@ -32,8 +32,12 @@
 #include <QString>
 #include <QFont>
 #include <QColor>
+#include <QPointF>
 
 class QAction;
+class QGraphicsItem;
+class QGraphicsTextItem;
+class QGraphicsScene;
 
 namespace SCIRun {
 namespace Gui {
@@ -59,13 +63,32 @@ namespace Gui {
   {
   public:
     explicit HasNotes(const std::string& name);
-    ~HasNotes();
+    virtual ~HasNotes();
     void connectNoteEditorToAction(QAction* action);
     void connectUpdateNote(QObject* obj);
     void setCurrentNote(const Note& note) { currentNote_ = note; }
   private:
     class NoteEditor* noteEditor_;
     Note currentNote_;
+  };
+
+  class NoteDisplayHelper
+  {
+  public:
+    virtual ~NoteDisplayHelper();
+  protected:
+    NoteDisplayHelper();
+    virtual void setNoteGraphicsContext() = 0;
+    void updateNoteImpl(const Note& note);
+    void updateNotePosition();
+    void setDefaultNotePositionImpl(NotePosition position);
+    QGraphicsItem* item_;
+    QGraphicsScene* scene_;
+  private:
+    QGraphicsTextItem* note_;
+    NotePosition notePosition_, defaultNotePosition_;
+
+    QPointF relativeNotePosition();
   };
 }
 }
