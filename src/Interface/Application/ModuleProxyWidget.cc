@@ -254,10 +254,18 @@ void ModuleProxyWidget::updateNote(const Note& note)
   updateNoteImpl(note);
 }
 
+PassThroughPositioner::PassThroughPositioner(const QGraphicsProxyWidget* widget) : widget_(widget) {}
+
+QPointF PassThroughPositioner::currentPosition() const 
+{
+  return widget_->pos();
+}
+
 void ModuleProxyWidget::setNoteGraphicsContext()
 {
   scene_ = scene();
   item_ = this;
+  positioner_ = boost::make_shared<PassThroughPositioner>(this);
 }
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : note_(0), notePosition_(Default),
@@ -317,7 +325,7 @@ void NoteDisplayHelper::updateNotePosition()
 {
   if (note_ && item_)
   {
-    auto position = item_->pos() + relativeNotePosition();
+    auto position = positioner_->currentPosition() + relativeNotePosition();
     //std::cout << "updating position to: " << position.x() << " , " << position.y() << std::endl;
     note_->setPos(position);
   }

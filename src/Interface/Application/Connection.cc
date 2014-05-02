@@ -35,6 +35,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Core/Logging/Log.h>
+#include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
 
@@ -174,6 +175,8 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
 
+  setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
+
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
 }
@@ -239,7 +242,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   }
   else if (action && action->text() == editNotesAction)
   {
-    std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
+    //std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
   }
 }
 
@@ -247,6 +250,7 @@ void ConnectionLine::setNoteGraphicsContext()
 {
   scene_ = scene();
   item_ = this;
+  positioner_ = getPositionObject();
 }
 
 void ConnectionLine::updateNote(const Note& note)
@@ -290,6 +294,16 @@ void ConnectionInProgressManhattan::update(const QPointF& end)
     drawStrategy_->draw(this, fromPort_->position(), end);
 }
 
+MidpointPositioner::MidpointPositioner(PositionProviderPtr p1, PositionProviderPtr p2) : p1_(p1), p2_(p2)
+{
+  ENSURE_NOT_NULL(p1, "port1");
+  ENSURE_NOT_NULL(p2, "port2");
+}
+
+QPointF MidpointPositioner::currentPosition() const
+{
+  return (p1_->currentPosition() + p2_->currentPosition()) / 2;
+}
 
 ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene), 
   euclidean_(new EuclideanDrawStrategy), 

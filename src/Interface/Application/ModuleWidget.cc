@@ -62,16 +62,6 @@ QPointF ProxyWidgetPosition::currentPosition() const
   return widget_->pos() + offset_;
 }
 
-QPointF ProxyWidgetPosition::mapToScene(const QPointF &point) const
-{
-  return widget_->mapToScene(point);
-}
-
-QPointF ProxyWidgetPosition::mapFromScene(const QPointF &point) const
-{
-  return widget_->mapFromScene(point);
-}
-
 namespace SCIRun {
 namespace Gui {
   class ModuleActionsMenu

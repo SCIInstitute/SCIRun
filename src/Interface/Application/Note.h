@@ -29,6 +29,7 @@
 #ifndef INTERFACE_APPLICATION_NOTE_H
 #define INTERFACE_APPLICATION_NOTE_H
 
+#include <Interface/Application/PositionProvider.h>
 #include <boost/shared_ptr.hpp>
 #include <QString>
 #include <QFont>
@@ -96,6 +97,7 @@ namespace Gui {
     void setDefaultNotePositionImpl(NotePosition position);
     QGraphicsItem* item_;
     QGraphicsScene* scene_;
+    PositionProviderPtr positioner_;
   private:
     QGraphicsTextItem* note_;
     NotePosition notePosition_, defaultNotePosition_;
