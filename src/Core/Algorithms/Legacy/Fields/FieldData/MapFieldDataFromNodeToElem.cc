@@ -24,9 +24,6 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   Author            : Moritz Dannhauer
-   Last modification : March 22 2014 (ported from SCIRun4)
-   TODO: Nrrd aoutput
 */
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
@@ -47,6 +44,187 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun;
 
+//! Internal function to this algorithm: no need for this function to be
+//! public. It is called from the algorithm class only.
+
+template <class DATA> 
+bool 
+MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
+                            FieldHandle& input, 
+                            FieldHandle& output);
+
+//! This is the basic algorithm behind the mapping algorithm
+
+template <class DATA> 
+bool 
+MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
+                            FieldHandle& input, 
+                            FieldHandle& output)
+{
+ 
+  //! Get the method the user selected.
+  //! Since we do a check of valid entries when then user sets the
+  //! algorithm, we can assume it is one of the specified ones
+   std::string method = algo->get_option(MapFieldDataFromNodeToElemAlgo::Method);
+   std::cout << "method:" << method << std::endl;
+  //! Get pointers to the virtual interfaces of the fields
+  //! We need these to obtain the data values
+  
+  VField *ifield = input->vfield();
+  VField *ofield = output->vfield();
+  
+  //! Make sure that the data vector has the same length
+  ofield->resize_fdata();
+  
+  //! Make sure that the data vector has the proper length  
+  VMesh* mesh = input->vmesh();
+
+  VMesh::Elem::array_type elems;
+  VMesh::Elem::iterator it, eit;
+  VMesh::Elem::size_type sz;
+
+  VMesh::Node::array_type nodearray;
+
+  mesh->begin(it);
+  mesh->end(eit);
+  mesh->size(sz);
+  index_type cnt = 0, c = 0;
+
+  if ((method == "average") || (method == "interpolate"))
+  {
+    DATA tval(0);
+    
+    while (it != eit)
+    {
+      std::cout << "c:" << c << std::endl;
+      mesh->get_nodes(nodearray, *it);
+      size_t nsize = nodearray.size();
+      DATA val(0);
+      for (size_t p = 0; p < nsize; p++)
+      {
+        ifield->get_value(tval,nodearray[p]);
+        val += tval;
+      }
+      val = static_cast<DATA>(val * static_cast<double>((1.0/static_cast<double>(nsize))));
+      ofield->set_value(val,*it);
+      ++it;
+      cnt++; 
+      if (cnt==1000) 
+      { 
+        cnt=0; c+=1000; 
+	algo->update_progress(c/sz); 
+        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
+      }
+    }
+  }
+  else if (method == "max")
+  {
+    while (it != eit)
+    {
+      mesh->get_nodes(nodearray, *it);
+      size_t nsize = nodearray.size();
+      DATA val(0);
+      DATA tval(0);
+      if (nsize > 0)
+      {
+        ifield->get_value(val,nodearray[0]);
+        for (size_t p = 1; p < nsize; p++)
+        {
+          ifield->get_value(tval,nodearray[p]);
+          if (val < tval) val = tval;
+        }
+      }
+      ofield->set_value(val,*it);
+      ++it;                 
+      cnt++; 
+      if (cnt==1000) 
+      { 
+        cnt=0; c+=1000; 
+        algo->update_progress(c/sz); 
+        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
+      }
+    }
+  }
+  else if (method == "min")
+  {
+    DATA tval(0);
+    while (it != eit)
+    {
+      mesh->get_nodes(nodearray, *it);
+      size_t nsize = nodearray.size();
+      DATA val(0);
+      if (nsize > 0)
+      {
+        ifield->get_value(val,nodearray[0]);
+        for (size_t p = 1; p < nsize; p++)
+        {
+          ifield->value(tval,nodearray[p]);
+          if (tval < val) val = tval;
+        }
+      }
+      ofield->set_value(val,*it);
+      ++it;
+      cnt++; 
+      if (cnt==1000) 
+      { 
+        cnt=0; c+=1000; 
+        algo->update_progress(c/sz); 
+        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
+      }
+    } 
+  }
+  else if (method == "sum")
+  {
+    DATA tval(0);
+    while (it != eit)
+    {
+      mesh->get_nodes(nodearray, *it);
+      size_t nsize = nodearray.size();
+      DATA val(0);
+      for (size_t p = 0; p < nsize; p++)
+      {
+        ifield->get_value(tval,nodearray[p]);
+        val += tval;
+      }
+      ofield->set_value(val,*it);
+      ++it;
+      cnt++;
+      if (cnt==1000) 
+      { 
+        cnt=0; c+=1000; 
+	algo->update_progress(c/sz); 
+        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
+      }
+    }
+  }
+  else if (method == "median")
+  {
+    std::vector<DATA> valarray;
+    while (it != eit)
+    {
+      mesh->get_nodes(nodearray, *it);
+      size_t nsize = nodearray.size();
+      valarray.resize(nsize);
+      for (size_t p = 0; p < nsize; p++)
+      {
+        ifield->get_value(valarray[p],nodearray[p]);
+      }
+      sort(valarray.begin(),valarray.end());
+      int idx = static_cast<int>((valarray.size()/2));
+      ofield->set_value(valarray[idx],*it);        
+      ++it;
+      cnt++;
+      if (cnt==1000) 
+      { 
+        cnt=0; c+=1000; 
+	algo->update_progress(c/sz); 
+        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
+      }
+    }
+  } else return false;
+  
+  return true;
+}
 
 MapFieldDataFromNodeToElemAlgo::MapFieldDataFromNodeToElemAlgo()
 {
@@ -62,7 +240,7 @@ AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run_generic(const AlgorithmInput
   auto input_field = input.get<Field>(InputField);
   
   FieldHandle output_field;
- // output_field = run(input_field);
+  output_field = run(input_field);
   
   AlgorithmOutput output;
   output[OutputField] = output_field;
@@ -70,11 +248,71 @@ AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run_generic(const AlgorithmInput
   return output;
 }
 
-//! Function call to convert data from Field into Matrix data
 FieldHandle MapFieldDataFromNodeToElemAlgo::run(FieldHandle input_field) const
 {   
    FieldHandle output;
- 
+
+   if (!input_field)
+   {
+     THROW_ALGORITHM_INPUT_ERROR("Input field is not allocated");
+   } 
+    
+   FieldInformation fi(input_field);
+   FieldInformation fo(input_field);
+   
+   fo.make_lineardata();
+   
+   output = CreateField(fo,input_field->mesh());
+   
+   if (!output)
+   {
+     THROW_ALGORITHM_INPUT_ERROR("output field cannot be allocated");
+   } 
+   
+   if (input_field->vfield()->is_signed_integer())
+    {
+       if(!MapFieldDataFromNodeToElemT<int>(this,input_field,output))
+          {
+	    THROW_ALGORITHM_INPUT_ERROR("output int field cannot be allocated");
+	  } 
+    } else 
+    	  
+  if (input_field->vfield()->is_unsigned_integer()) 
+   {
+     if(!MapFieldDataFromNodeToElemT<unsigned int>(this,input_field,output))
+     {
+      THROW_ALGORITHM_INPUT_ERROR("output uint field cannot be allocated");
+     }
+   } else
+    
+  if (input_field->vfield()->is_scalar())
+   {
+     if (!MapFieldDataFromNodeToElemT<double>(this,input_field,output))
+     { 
+      THROW_ALGORITHM_INPUT_ERROR("output scalar field cannot be allocated");
+     }
+   } else
+  
+  if (input_field->vfield()->is_vector()) 
+  {
+    if (!MapFieldDataFromNodeToElemT<Vector>(this,input_field,output))
+    {
+     THROW_ALGORITHM_INPUT_ERROR("output vector field cannot be allocated");    
+    }
+  } else
+  
+  if (input_field->vfield()->is_tensor()) 
+  {
+    if (!MapFieldDataFromNodeToElemT<Tensor>(this,input_field,output))
+    {
+     THROW_ALGORITHM_INPUT_ERROR("output tensor field cannot be allocated"); 
+    }
+  } else
+  {
+    THROW_ALGORITHM_INPUT_ERROR(" Unknown field data type ");  
+  }     
    
    return output;
 }
+
+
