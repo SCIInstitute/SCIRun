@@ -39,7 +39,7 @@ namespace SCIRun
   {
     class ModuleWidget;
 
-    class ModuleProxyWidget : public QGraphicsProxyWidget
+    class ModuleProxyWidget : public QGraphicsProxyWidget, public NoteDisplayHelper
     {
 	    Q_OBJECT
 	
@@ -60,21 +60,18 @@ namespace SCIRun
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+      virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
       void updateNote(const Note& note);
     private:
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
-      QPointF relativeNotePosition();
-      void updateNotePosition();
-
+    
       ModuleWidget* module_;
       bool grabbedByWidget_, isSelected_;
       QWidget* pressedSubWidget_;
       QPointF position_;
-      QGraphicsTextItem* note_;
-      NotePosition notePosition_, defaultNotePosition_;
     };
 
   }
