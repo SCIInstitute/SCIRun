@@ -268,79 +268,7 @@ void ModuleProxyWidget::setNoteGraphicsContext()
   positioner_ = boost::make_shared<PassThroughPositioner>(this);
 }
 
-NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : note_(0), notePosition_(Default),
-  defaultNotePosition_(Top), //TODO
-  displayStrategy_(display),
-  item_(0),
-  scene_(0),
-  destroyed_(false)
-{
-}
-
-NoteDisplayHelper::~NoteDisplayHelper()
-{
-  destroy();
-}
-
-void NoteDisplayHelper::destroy()
-{
-  if (!destroyed_)
-  {
-    if (note_ && scene_)
-    {
-      scene_->removeItem(note_);
-    }
-    delete note_;
-    destroyed_ = true;
-  }
-}
-
-void NoteDisplayHelper::updateNoteImpl(const Note& note)
-{
-  if (!note_)
-  {
-    setNoteGraphicsContext();
-    if (!scene_)
-      Log::get() << WARN << "Scene not set, network notes will not be displayed!" << std::endl;
-    note_ = new QGraphicsTextItem("", 0, scene_);
-  }
-
-  note_->setHtml(note.html_);
-  notePosition_ = note.position_;
-  updateNotePosition();
-  note_->setZValue(item_->zValue() - 1);
-}
-
-QPointF NoteDisplayHelper::relativeNotePosition()
-{
-  if (note_ && item_)
-  {
-    auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
-    note_->setVisible(!(Tooltip == position || None == position));
-    item_->setToolTip("");
-
-    return displayStrategy_->relativeNotePosition(item_, note_, position);
-  }
-  return QPointF();
-}
-
 void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 {
   setDefaultNotePositionImpl(position);
-}
-
-void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
-{
-  defaultNotePosition_ = position;
-  updateNotePosition();
-}
-
-void NoteDisplayHelper::updateNotePosition()
-{
-  if (note_ && item_)
-  {
-    auto position = positioner_->currentPosition() + relativeNotePosition();
-    //std::cout << "updating position to: " << position.x() << " , " << position.y() << std::endl;
-    note_->setPos(position);
-  }
 }

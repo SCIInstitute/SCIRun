@@ -32,8 +32,20 @@
 #include <Core/Logging/Log.h>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/NoteEditor.h>
+#include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Logging;
+
+HasNotes::HasNotes(const std::string& name, bool positionAdjustable) : destroyed_(false)
+{
+  noteEditor_ = new NoteEditor(QString::fromStdString(name), positionAdjustable, SCIRunMainWindow::Instance());
+}
+
+HasNotes::~HasNotes()
+{
+  destroy();
+}
 
 void HasNotes::destroy()
 {
@@ -41,5 +53,88 @@ void HasNotes::destroy()
   {
     delete noteEditor_;
     destroyed_ = true;
+  }
+}
+
+void HasNotes::connectNoteEditorToAction(QAction* action)
+{
+  QObject::connect(action, SIGNAL(triggered()), noteEditor_, SLOT(show()));
+  QObject::connect(action, SIGNAL(triggered()), noteEditor_, SLOT(raise()));
+}
+
+void HasNotes::connectUpdateNote(QObject* obj)
+{
+  QObject::connect(noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
+}
+
+NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : note_(0), notePosition_(Default),
+  defaultNotePosition_(Top), //TODO
+  displayStrategy_(display),
+  item_(0),
+  scene_(0),
+  destroyed_(false)
+{
+}
+
+NoteDisplayHelper::~NoteDisplayHelper()
+{
+  destroy();
+}
+
+void NoteDisplayHelper::destroy()
+{
+  if (!destroyed_)
+  {
+    if (note_ && scene_)
+    {
+      scene_->removeItem(note_);
+    }
+    delete note_;
+    destroyed_ = true;
+  }
+}
+
+void NoteDisplayHelper::updateNoteImpl(const Note& note)
+{
+  if (!note_)
+  {
+    setNoteGraphicsContext();
+    if (!scene_)
+      Log::get() << WARN << "Scene not set, network notes will not be displayed!" << std::endl;
+    note_ = new QGraphicsTextItem("", 0, scene_);
+  }
+
+  note_->setHtml(note.html_);
+  notePosition_ = note.position_;
+  updateNotePosition();
+  note_->setZValue(item_->zValue() - 1);
+}
+
+QPointF NoteDisplayHelper::relativeNotePosition()
+{
+  if (note_ && item_)
+  {
+    auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
+    note_->setVisible(!(Tooltip == position || None == position));
+    item_->setToolTip("");
+
+    return displayStrategy_->relativeNotePosition(item_, note_, position);
+  }
+  return QPointF();
+}
+
+void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
+{
+  defaultNotePosition_ = position;
+  updateNotePosition();
+}
+
+void NoteDisplayHelper::updateNotePosition()
+{
+  if (note_ && item_)
+  {
+    auto position = positioner_->currentPosition() + relativeNotePosition();
+    //std::cout << "updating position to: " << position.x() << " , " << position.y() << std::endl;
+    note_->setPos(position);
   }
 }

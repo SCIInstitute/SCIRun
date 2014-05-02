@@ -111,26 +111,6 @@ namespace
 #endif
 }
 
-HasNotes::HasNotes(const std::string& name, bool positionAdjustable) : destroyed_(false)
-{
-  noteEditor_ = new NoteEditor(QString::fromStdString(name), positionAdjustable, SCIRunMainWindow::Instance());
-}
-
-HasNotes::~HasNotes()
-{
-  destroy();
-}
-
-void HasNotes::connectNoteEditorToAction(QAction* action)
-{
-  QObject::connect(action, SIGNAL(triggered()), noteEditor_, SLOT(show()));
-  QObject::connect(action, SIGNAL(triggered()), noteEditor_, SLOT(raise()));
-}
-
-void HasNotes::connectUpdateNote(QObject* obj)
-{
-  QObject::connect(noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
-}
 
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
   QWidget* parent /* = 0 */)
