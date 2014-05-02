@@ -111,9 +111,9 @@ namespace
 #endif
 }
 
-HasNotes::HasNotes(const std::string& name) : destroyed_(false)
+HasNotes::HasNotes(const std::string& name, bool positionAdjustable) : destroyed_(false)
 {
-  noteEditor_ = new NoteEditor(QString::fromStdString(name), SCIRunMainWindow::Instance());
+  noteEditor_ = new NoteEditor(QString::fromStdString(name), positionAdjustable, SCIRunMainWindow::Instance());
 }
 
 HasNotes::~HasNotes()
@@ -134,7 +134,7 @@ void HasNotes::connectUpdateNote(QObject* obj)
 
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
   QWidget* parent /* = 0 */)
-  : QFrame(parent), HasNotes(theModule->get_id()),
+  : QFrame(parent), HasNotes(theModule->get_id(), true),
   ports_(new PortWidgetManager),
   deletedFromGui_(true),
   colorLocked_(false),

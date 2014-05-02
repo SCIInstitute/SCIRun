@@ -64,7 +64,7 @@ namespace Gui {
   class HasNotes 
   {
   public:
-    explicit HasNotes(const std::string& name);
+    HasNotes(const std::string& name, bool positionAdjustable);
     virtual ~HasNotes();
     void connectNoteEditorToAction(QAction* action);
     void connectUpdateNote(QObject* obj);
