@@ -32,19 +32,12 @@
 
 using namespace SCIRun::Gui;
 
-namespace
-{
-  int moveIncrement = 30;
-}
-
 NoteEditor::NoteEditor(const QString& moduleName, QWidget* parent) : QDialog(parent), moduleName_(moduleName)
 {
   setupUi(this);
   setModal(false);
   setWindowTitle("Note for " + moduleName);
   setVisible(false);
-  moveIncrement += moveIncrement;
-  move(moveIncrement, moveIncrement);
 
   connect(chooseColorButton_, SIGNAL(clicked()), this, SLOT(changeTextColor()));
   connect(resetColorButton_, SIGNAL(clicked()), this, SLOT(resetTextColor()));
