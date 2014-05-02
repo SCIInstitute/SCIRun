@@ -93,18 +93,21 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
   if ((method == "average") || (method == "interpolate"))
   {
     DATA tval(0);
-    
+    std::cout << "sz:" << sz << std::endl;
     while (it != eit)
     {
-      std::cout << "c:" << c << std::endl;
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
+      std::cout << "e:" << nodearray[0] << std::endl;
       DATA val(0);
       for (size_t p = 0; p < nsize; p++)
       {
+        std::cout << "p:" << p << std::endl;
         ifield->get_value(tval,nodearray[p]);
+	std::cout << "q:" << p << std::endl;
         val += tval;
       }
+      
       val = static_cast<DATA>(val * static_cast<double>((1.0/static_cast<double>(nsize))));
       ofield->set_value(val,*it);
       ++it;

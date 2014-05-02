@@ -151,7 +151,7 @@ TEST(MapFieldDataFromNodeToElemTestIntAvr, TetMeshTest)
  
  algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "average");
 
- FieldHandle input(CreateTetMesh1());
+ FieldHandle input=CreateTetMesh1();
 
  FieldHandle result = algo.run(input);
  
