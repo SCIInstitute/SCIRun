@@ -69,9 +69,13 @@ namespace Gui {
     void connectNoteEditorToAction(QAction* action);
     void connectUpdateNote(QObject* obj);
     void setCurrentNote(const Note& note) { currentNote_ = note; }
+  protected:
+    void destroy();
   private:
     class NoteEditor* noteEditor_;
     Note currentNote_;
+    /// @todo: extract and make atomic
+    bool destroyed_;
   };
 
   class NoteDisplayStrategy
@@ -98,10 +102,12 @@ namespace Gui {
     QGraphicsItem* item_;
     QGraphicsScene* scene_;
     PositionProviderPtr positioner_;
+    void destroy();
   private:
     QGraphicsTextItem* note_;
     NotePosition notePosition_, defaultNotePosition_;
     NoteDisplayStrategyPtr displayStrategy_;
+    bool destroyed_;
 
     QPointF relativeNotePosition();
   };

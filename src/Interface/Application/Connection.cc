@@ -137,7 +137,7 @@ namespace SCIRun
     public:
       virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const
       {
-        return QPointF(-100,-100);
+        return QPointF(0,0);
       }
     };
   }
@@ -183,24 +183,28 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 
 ConnectionLine::~ConnectionLine()
 {
-  if (!destroyed_)
-    destroy();
+  destroy();
 }
 
 void ConnectionLine::destroy() 
 {
-  delete menu_;
-  if (fromPort_ && toPort_)
+  if (!destroyed_)
   {
-    fromPort_->removeConnection(this);
-    fromPort_->turn_off_light();
-    toPort_->removeConnection(this);
-    toPort_->turn_off_light();
+    delete menu_;
+    if (fromPort_ && toPort_)
+    {
+      fromPort_->removeConnection(this);
+      fromPort_->turn_off_light();
+      toPort_->removeConnection(this);
+      toPort_->turn_off_light();
+    }
+    drawer_.reset();
+    Q_EMIT deleted(id_);
+    GuiLogger::Instance().log("Connection deleted.");
+    HasNotes::destroy();
+    NoteDisplayHelper::destroy();
+    destroyed_ = true;
   }
-  drawer_.reset();
-  Q_EMIT deleted(id_);
-  GuiLogger::Instance().log("Connection deleted.");
-  destroyed_ = true;
 }
 
 void ConnectionLine::setColor(const QColor& color)

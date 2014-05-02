@@ -272,13 +272,27 @@ NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : note_(0),
   defaultNotePosition_(Top), //TODO
   displayStrategy_(display),
   item_(0),
-  scene_(0)
+  scene_(0),
+  destroyed_(false)
 {
 }
 
 NoteDisplayHelper::~NoteDisplayHelper()
 {
-  delete note_;
+  destroy();
+}
+
+void NoteDisplayHelper::destroy()
+{
+  if (!destroyed_)
+  {
+    if (note_ && scene_)
+    {
+      scene_->removeItem(note_);
+    }
+    delete note_;
+    destroyed_ = true;
+  }
 }
 
 void NoteDisplayHelper::updateNoteImpl(const Note& note)

@@ -111,14 +111,14 @@ namespace
 #endif
 }
 
-HasNotes::HasNotes(const std::string& name)
+HasNotes::HasNotes(const std::string& name) : destroyed_(false)
 {
   noteEditor_ = new NoteEditor(QString::fromStdString(name), SCIRunMainWindow::Instance());
 }
 
 HasNotes::~HasNotes()
 {
-  delete noteEditor_;
+  destroy();
 }
 
 void HasNotes::connectNoteEditorToAction(QAction* action)
