@@ -218,6 +218,7 @@ void ConnectionLine::trackNodes()
   if (fromPort_ && toPort_)
   {
     drawer_->draw(this, fromPort_->position(), toPort_->position());
+    updateNotePosition();
   }
   else
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
