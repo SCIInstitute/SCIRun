@@ -55,7 +55,7 @@ void MapFieldDataFromElemToNodeModule::execute()
 { 
   FieldHandle input = getRequiredInput(InputField);
 
-  //algo().set_option(MapFieldDataFromElemToNodeAlgo::Method, get_state()->getValue(MapFieldDataFromElemToNodeAlgo::Method).getString());
+  algo().set_option(MapFieldDataFromElemToNodeAlgo::Method, get_state()->getValue(MapFieldDataFromElemToNodeAlgo::Method).getString());
   
   auto output = algo().run_generic(make_input((InputField, input)));
   
