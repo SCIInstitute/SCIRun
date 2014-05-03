@@ -90,21 +90,17 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
   mesh->size(sz);
   index_type cnt = 0, c = 0;
 
-  if ((method == "average") || (method == "interpolate"))
+  if ((method == "average") || (method == "interpolation"))
   {
     DATA tval(0);
-    std::cout << "sz:" << sz << std::endl;
     while (it != eit)
     {
       mesh->get_nodes(nodearray, *it);
       size_t nsize = nodearray.size();
-      std::cout << "e:" << nodearray[0] << std::endl;
       DATA val(0);
       for (size_t p = 0; p < nsize; p++)
       {
-        std::cout << "p:" << p << std::endl;
         ifield->get_value(tval,nodearray[p]);
-	std::cout << "q:" << p << std::endl;
         val += tval;
       }
       

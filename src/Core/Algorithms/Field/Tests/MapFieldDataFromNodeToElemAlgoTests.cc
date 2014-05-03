@@ -44,41 +44,11 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
-  
- FieldHandle CreateTetMesh1()
- {
-  FieldInformation fi("TetVolMesh", 1, "double");    
-  FieldHandle singleTetField_ = CreateField(fi);
-  VMesh *vmesh = singleTetField_->vmesh();
-  VMesh::Node::array_type vdata;
-  vdata.resize(4);
-      
-  vmesh->node_reserve(8);
-  vmesh->elem_reserve(1);
-  vmesh->add_point( Point(0.0, 0.0, 0.0) );
-  vmesh->add_point( Point(1.0, 0.0, 0.0) );
-  vmesh->add_point( Point(1.0, 1.0, 0.0) );
-  vmesh->add_point( Point(0.0, 1.0, 0.0) ); 
-  vmesh->add_point( Point(0.0, 0.0, 1.0) );
-  vmesh->add_point( Point(1.0, 0.0, 1.0) );
-  vmesh->add_point( Point(1.0, 1.0, 1.0) );
-  vmesh->add_point( Point(0.0, 1.0, 1.0) );
- 
-  vdata[0]=5; vdata[1]=6;  vdata[2]=0; vdata[3]=4;
-  vmesh->add_elem(vdata);
-  vdata[0]=0; vdata[1]=7;  vdata[2]=2; vdata[3]=3;
-  vmesh->add_elem(vdata);
-  vdata[0]=2; vdata[1]=6;  vdata[2]=0; vdata[3]=1;
-  vmesh->add_elem(vdata);
-  vdata[0]=0; vdata[1]=6;  vdata[2]=5; vdata[3]=1;
-  vmesh->add_elem(vdata);
-  vdata[0]=0; vdata[1]=6;  vdata[2]=2; vdata[3]=7;
-  vmesh->add_elem(vdata);
-  vdata[0]=6; vdata[1]=7;  vdata[2]=0; vdata[3]=4;
-  vmesh->add_elem(vdata);
- 
-  return singleTetField_;
-}
+  FieldHandle CreateTetMesh1()
+  {     
+   return loadFieldFromFile(TestResources::rootDir() / "mapfielddatafrom_/test_mapfielddatafromelemtonode.fld");
+  }
+
   
   DenseMatrixHandle test_MapFieldDataFromNodeToElemFLD_IntAvr()
   {
@@ -155,9 +125,9 @@ TEST(MapFieldDataFromNodeToElemTestIntAvr, TetMeshTest)
 
  FieldHandle result = algo.run(input);
  
- //std::cout << result->vfield()->num_values() << std::endl;
+ std::cout << result->vfield()->num_values() << std::endl;
 
-/* ASSERT_TRUE(result->vfield()->num_values() == 8);
+ ASSERT_TRUE(result->vfield()->num_values() == 8);
  
  DenseMatrixHandle output(new DenseMatrix(8, 1));
 
@@ -170,9 +140,10 @@ TEST(MapFieldDataFromNodeToElemTestIntAvr, TetMeshTest)
  
  for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
  {
-   double tmp = (*expected_result_min)(idx,0);
-   EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-5);
- } */
+   //double tmp = (*expected_result_min)(idx,0);
+   //EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-5);
+   std::cout << (*output)(idx, 0) << std::endl;
+ } 
  
 }
 
@@ -218,7 +189,7 @@ TEST(MapFieldDataFromNodeToElemTestWrongInterpolationFunction, TetMeshTest)
 {
  MapFieldDataFromNodeToElemAlgo algo;
  
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "interpolate");
+ algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "interpolation");
 
  
 }
