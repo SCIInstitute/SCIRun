@@ -38,6 +38,7 @@ SET(Algorithms_Field_Tests_SRCS
   InterfaceWithCleaverAlgorithmTests.cc
   JoinFieldsAlgoTests.cc
   MapFieldDataFromElemToNodeAlgoTests.cc
+  MapFieldDataFromNodeToElemAlgoTests.cc
   GetFieldDataAlgoTests.cc
   SetFieldDataAlgoTests.cc
   LoadFieldsForAlgoCoreTests.cc

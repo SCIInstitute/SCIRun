@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -33,6 +34,7 @@
 #include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
@@ -48,17 +50,20 @@ MapFieldDataFromNodeToElemModule::MapFieldDataFromNodeToElemModule()
 void MapFieldDataFromNodeToElemModule::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(MapFieldDataFromNodeToElemAlgo::Method, std::string("interpolate"));
+  state->setValue(Variables::Method,"interpolation");
 }
 
 void MapFieldDataFromNodeToElemModule::execute()
 { 
   FieldHandle input = getRequiredInput(InputField);
+  auto method = get_state()->getValue(Variables::Method).getString();
+  algo().set_option(Variables::Method, method);
 
-  //algo().set_option(MapFieldDataFromNodeToElemAlgo::Method, get_state()->getValue(MapFieldDataFromNodeToElemAlgo::Method).getString());
-  
-  auto output = algo().run_generic(make_input((InputField, input)));
-  
-  sendOutputFromAlgorithm(OutputField, output);
-
+  if (needToExecute())
+  {
+   update_state(Executing);
+   auto output = algo().run_generic(make_input((InputField, input)));
+   sendOutputFromAlgorithm(OutputField, output);
+  }
+ 
 }
