@@ -54,6 +54,7 @@
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
+#include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
