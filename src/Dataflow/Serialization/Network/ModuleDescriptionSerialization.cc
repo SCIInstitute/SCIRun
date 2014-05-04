@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Serialization/Network/ModuleDescriptionSerialization.cc
+
 #include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -44,6 +46,6 @@ ConnectionDescriptionXML::ConnectionDescriptionXML(const ConnectionDescription& 
 
 bool SCIRun::Dataflow::Networks::operator<(const ConnectionDescriptionXML& lhs, const ConnectionDescriptionXML& rhs)
 {
-  //TODO: assumes only input ports can be dynamic.
+  /// @todo: assumes only input ports can be dynamic.
   return lhs.in_.portId_.id < rhs.in_.portId_.id;
 }

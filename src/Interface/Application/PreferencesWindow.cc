@@ -40,7 +40,6 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* =
 {
   setupUi(this);
   connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
-  //connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
   connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateSaveBeforeExecuteOption(int)));
 }
 

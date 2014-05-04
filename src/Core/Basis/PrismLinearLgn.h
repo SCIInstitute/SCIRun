@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : PrismLinearLgn.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Dec 04 2004
+///   @file    PrismLinearLgn.h
+///   @author  Martin Cole, Frank B. Sachse
+///   @date    Dec 04 2004
 
 #ifndef CORE_BASIS_PRISMLINEARLGN_H
 #define CORE_BASIS_PRISMLINEARLGN_H 1
@@ -46,59 +46,59 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of PrismLinearLgn 
+/// Class for describing unit geometry of PrismLinearLgn 
 class PrismLinearLgnUnitElement {
 public:
-  //! Parametric coordinates of vertices of unit edge
+  /// Parametric coordinates of vertices of unit edge
   static SCISHARE double unit_vertices[6][3];
-  //! References to vertices of unit edge 
+  /// References to vertices of unit edge 
   static SCISHARE int unit_edges[9][2]; 
-  //! References to vertices of unit face
+  /// References to vertices of unit face
   static SCISHARE int unit_faces[5][4]; 
-  //! Normals of unit face
+  /// Normals of unit face
   static SCISHARE double unit_face_normals[5][3];
-  //! Precalculated area of faces
+  /// Precalculated area of faces
   static SCISHARE double unit_face_areas[5];
-  //! Center of the unit element
+  /// Center of the unit element
   static SCISHARE double unit_center[3];
 
   PrismLinearLgnUnitElement() {};
   virtual ~PrismLinearLgnUnitElement() {}
 
-  //! return dimension of domain 
+  /// return dimension of domain 
   static int domain_dimension() 
     { return 3; } 
   
-  //! return size of the domain
+  /// return size of the domain
   static double domain_size() 
     { return 0.5; }  
   
-  //! return number of vertices
+  /// return number of vertices
   static int number_of_vertices() 
     { return 6; } 
   
-  //! return number of vertices in mesh
+  /// return number of vertices in mesh
   static int number_of_mesh_vertices() 
     { return 6; }
   
-  //! return number of edges 
+  /// return number of edges 
   static int number_of_edges() 
     { return 9; } 
   
-  //! return degrees of freedom
+  /// return degrees of freedom
   static int dofs() 
     { return 6; } 
   
-  //! return number of vertices per face 
+  /// return number of vertices per face 
   static int vertices_of_face() 
     { return 3; } 
   
-  //! return number of faces per cell 
+  /// return number of faces per cell 
   static int faces_of_cell() 
     { return 5; } 
 
   static inline double length(int edge) 
-  { //!< return length
+  { ///< return length
     const double *v0 = unit_vertices[unit_edges[edge][0]];
     const double *v1 = unit_vertices[unit_edges[edge][1]];
     const double dx = v1[0] - v0[0];
@@ -106,20 +106,20 @@ public:
     const double dz = v1[2] - v0[2];
     return sqrt(dx*dx+dy*dy+dz*dz);
   } 
-  static double area(int face) { return unit_face_areas[face]; } //!< return area
-  static double volume() { return .5; } //!< return volume
+  static double area(int face) { return unit_face_areas[face]; } ///< return area
+  static double volume() { return .5; } ///< return volume
 };
 
-//! Class for creating geometrical approximations of Prism meshes
+/// Class for creating geometrical approximations of Prism meshes
 class PrismApprox {  
 public:
 
   PrismApprox() {}
   virtual ~PrismApprox() {}
   
-  //! Approximate edge for element by piecewise linear segments
-  //! return: coords gives parametric coordinates of the approximation.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate edge for element by piecewise linear segments
+  /// return: coords gives parametric coordinates of the approximation.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_edge(const unsigned edge,
                    const unsigned div_per_unit, 
@@ -149,9 +149,9 @@ public:
     } 	
   }
     
-  //! Approximate faces for element by piecewise linear elements
-  //! return: coords gives parametric coordinates at the approximation point.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate faces for element by piecewise linear elements
+  /// return: coords gives parametric coordinates at the approximation point.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_face(const unsigned face,
                    const unsigned div_per_unit, 
@@ -211,8 +211,8 @@ public:
   }
 };
 
-//! Class for searching of parametric coordinates related to a value in Prism meshes and fields
-//! to do
+/// Class for searching of parametric coordinates related to a value in Prism meshes and fields
+/// to do
 template <class ElemBasis>
 class PrismLocate : public Dim3Locate<ElemBasis> {
 public:
@@ -245,7 +245,7 @@ protected:
     return false;
   }
   
-  //! find a reasonable initial guess 
+  /// find a reasonable initial guess 
   template <class ElemData, class VECTOR>
   void initial_guess(const ElemBasis *pElem, const T &val, const ElemData &cd, 
 		     VECTOR & guess) const
@@ -286,7 +286,7 @@ protected:
 };
 
 
-//! Class with weights and coordinates for 2nd order Gaussian integration
+/// Class with weights and coordinates for 2nd order Gaussian integration
 template <class T>
 class PrismGaussian1 
 {
@@ -312,7 +312,7 @@ template <class T>
 T PrismGaussian1<T>::GaussianWeights[1] = 
   {1.0};
 
-//! Class with weights and coordinates for 2nd order Gaussian integration
+/// Class with weights and coordinates for 2nd order Gaussian integration
 template <class T>
 class PrismGaussian2 
 {
@@ -340,10 +340,10 @@ template <class T>
 T PrismGaussian2<T>::GaussianWeights[6] = 
   {1./6., 1./6., 1./6., 1./6., 1./6., 1./6.};
   
-//! Class with weights and coordinates for 3rd order Gaussian integration
-//! to do
+/// Class with weights and coordinates for 3rd order Gaussian integration
+/// to do
 
-//! Class for handling of element of type prism with linear lagrangian interpolation
+/// Class for handling of element of type prism with linear lagrangian interpolation
 template <class T>
 class PrismLinearLgn : 
            public BasisSimple<T>, 
@@ -369,7 +369,7 @@ public:
   inline void get_derivate_weights(const VECTOR& coords, double *w) const
     { get_linear_derivate_weights(coords,w); }
   
-  //! get value at parametric coordinate 
+  /// get value at parametric coordinate 
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
@@ -384,7 +384,7 @@ public:
 	       w[5] * cd.node5());
   }
   
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &cd, 
 		VECTOR2 &derivs) const
@@ -418,7 +418,7 @@ public:
 	       w[16] * cd.node4() +
 	       w[17] * cd.node5());  }
 
-  //! get parametric coordinate for value within the element
+  /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
   bool get_coords(VECTOR &coords, const T& value, 
 		  const ElemData &cd) const  
@@ -427,14 +427,14 @@ public:
     return CL.get_coords(this, coords, value, cd);
   }  
 
-  //! get arc length for edge
+  /// get arc length for edge
   template <class ElemData>
   double get_arc_length(const unsigned edge, const ElemData &cd) const  
   {
     return get_arc3d_length<CrvGaussian1<double> >(this, edge, cd);
   }
  
-  //! get area
+  /// get area
   template <class ElemData>
     double get_area(const unsigned face, const ElemData &cd) const  
   {
@@ -444,7 +444,7 @@ public:
       return get_area3<QuadGaussian2<double> >(this, face, cd);
   }
  
-  //! get volume
+  /// get volume
   template <class ElemData>
     double get_volume(const ElemData & cd) const  
   {

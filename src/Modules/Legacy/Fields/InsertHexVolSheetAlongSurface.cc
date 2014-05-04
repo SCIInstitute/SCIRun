@@ -26,16 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  InsertHexVolSheetAlongSurface.cc:  Insert a layer of hexes.
- *
- *  Written by:
- *   Jason Shepherd
- *   Department of Computer Science
- *   University of Utah
- *   March 2006
- *
- */
+///
+///@file  InsertHexVolSheetAlongSurface.cc 
+///@brief Insert a layer of hexes.
+///
+///@author
+///   Jason Shepherd
+///   Department of Computer Science
+///   University of Utah
+///@date   March 2006
+///
 
 #include <Core/Util/StringUtil.h>
 
@@ -818,7 +818,7 @@ const int hex_normal_edges[6][2] = {
 class InsertHexVolSheetAlongSurfaceAlgo
 {
   public:
-    //! virtual interface. 
+    /// virtual interface. 
     bool execute(
       ProgressReporter *reporter, 
       FieldHandle hexfieldh, FieldHandle trifieldh, 
@@ -894,7 +894,7 @@ InsertHexVolSheetAlongSurfaceAlgo::execute(
   
   
   FieldInformation fi(hexfieldh);
-  // TODO: Since the algorithm does not copy data
+  /// @todo: Since the algorithm does not copy data
   // make the field no data. We should add some interpolation at some point
   fi.make_nodata();
   fi.make_hexvolmesh();
@@ -979,7 +979,7 @@ InsertHexVolSheetAlongSurfaceAlgo::load_hex_mesh( VMesh* sci_hexmesh )
   }
 }
 
-//! Brief projects points on the axis, tests overlap.
+/// Brief projects points on the axis, tests overlap.
 bool
 InsertHexVolSheetAlongSurfaceAlgo::interferes(const std::vector<Vector> &p,
                                                  const Vector &axis, int split )

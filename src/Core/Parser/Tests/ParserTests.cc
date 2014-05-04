@@ -38,8 +38,11 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using ::testing::NotNull;
 
-namespace
+class BasicParserTests : public ::testing::Test
 {
+public:
+
+protected:
   FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5)
   {
     FieldInformation lfi("LatVolMesh", 1, "double");
@@ -50,15 +53,64 @@ namespace
     ofh->vfield()->clear_all_values();
     return ofh;
   }
-}
+  void setupEngine(NewArrayMathEngine& engine, FieldHandle field)
+  {
+    std::string format = "double";
+    std::string basis = "Linear";
+    int basis_order = 1;
 
-TEST(BasicParserTests, CanCreateEngine)
+    ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
+
+    ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
+
+    ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
+
+    ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
+
+    ASSERT_TRUE(engine.add_index("INDEX"));
+    ASSERT_TRUE(engine.add_size("SIZE"));
+  }
+  void testMinMaxOfFunction(const std::string& function, double expectedMin, double expectedMax)
+  {
+    FieldHandle field(CreateEmptyLatVol(3,3,3));
+
+    NewArrayMathEngine engine;
+    setupEngine(engine, field);
+
+    const std::string resultStr = "RESULT = ";
+    ASSERT_TRUE(engine.add_expressions(resultStr + function));
+    ASSERT_TRUE(engine.run());
+
+    FieldHandle ofield;
+    engine.get_field("RESULT",ofield);
+
+    ASSERT_THAT(ofield, NotNull());
+    auto ovfield = ofield->vfield();
+    double min, max;
+    ovfield->minmax(min,max);
+    EXPECT_EQ(expectedMin, min);
+    EXPECT_EQ(expectedMax, max);
+  }
+  void testBadParseFunction(const std::string& function)
+  {
+    FieldHandle field(CreateEmptyLatVol(3,3,3));
+
+    NewArrayMathEngine engine;
+    setupEngine(engine, field);
+
+    const std::string resultStr = "RESULT = ";
+    ASSERT_TRUE(engine.add_expressions(resultStr + function));
+    ASSERT_FALSE(engine.run());
+  }
+};
+
+TEST_F(BasicParserTests, CanCreateEngine)
 {
   NewArrayMathEngine engine;
   EXPECT_FALSE(engine.run());
 }
 
-TEST(BasicParserTests, CreateFieldDataDuplicate)
+TEST_F(BasicParserTests, CreateFieldDataDuplicate)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -68,25 +120,11 @@ TEST(BasicParserTests, CreateFieldDataDuplicate)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
+  setupEngine(engine, field);
   
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
-  
-  std::string function = "RESULT = X + Y + Z;";
+  const std::string resultStr = "RESULT = ";
+  std::string function = resultStr + "X + Y + Z;";
   ASSERT_TRUE(engine.add_expressions(function));
-  
   ASSERT_TRUE(engine.run());
  
   FieldHandle ofield;
@@ -97,4 +135,14 @@ TEST(BasicParserTests, CreateFieldDataDuplicate)
   ovfield->minmax(min,max);
   EXPECT_EQ(-3, min);
   EXPECT_EQ(3, max);
+}
+
+TEST_F(BasicParserTests, DistanceFunction)
+{
+  testMinMaxOfFunction("sqrt(X^2 + Y^2 + Z^2);", 0, sqrt(3.0));
+}
+
+TEST_F(BasicParserTests, BadParses)
+{
+  testBadParseFunction("sqrt(x);");
 }

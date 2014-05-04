@@ -24,10 +24,12 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
-//  
-//    File   : NrrdToITK.h
-//    Author : McKay Davis
-//    Date   : Sun Oct 22 22:46:48 2006
+
+/*  
+ *@file    NrrdToITK.h
+ *@author  McKay Davis
+ *@date    Sun Oct 22 22:46:48 2006
+ */
 
 #ifndef SEG3D_NrrdToITK_H
 #define SEG3D_NrrdToITK_H

@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Logging/LoggerInterface.h
 
 #ifndef CORE_LOGGING_LOGGER_H
 #define CORE_LOGGING_LOGGER_H 

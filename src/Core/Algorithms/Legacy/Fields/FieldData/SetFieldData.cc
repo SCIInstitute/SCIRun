@@ -801,7 +801,7 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
   {
     if (column_index >= 0)
     {
-      // TODO: upgrade this for HO
+      /// @todo: upgrade this for HO
       std::vector<double> values(nrows);
       for (VField::index_type j=0; j<nrows; j++) values[j] = matrixdata[column_index+j*ncols];
       ofield->set_values(values);

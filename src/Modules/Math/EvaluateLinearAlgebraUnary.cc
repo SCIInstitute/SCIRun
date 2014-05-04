@@ -25,13 +25,14 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Math/EvaluateLinearAlgebraUnary.cc
 
 #include <iostream>
 #include <stdexcept>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/DenseMatrix.h> //TODO: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
+#include <Core/Datatypes/DenseMatrix.h> /// @todo: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
@@ -56,7 +57,7 @@ void EvaluateLinearAlgebraUnaryModule::execute()
 {
   auto denseInput = getRequiredInput(InputMatrix);
 
-  //TODO: standardize on camel case!
+  /// @todo: standardize on camel case!
   auto state = get_state();
   
   auto oper = state->getValue(Variables::Operator).getInt();

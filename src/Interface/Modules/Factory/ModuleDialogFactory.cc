@@ -138,6 +138,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new GetFieldsFromBundleDialog(moduleId, state, parentToUse_);
   if (moduleId.find("SplitFieldByDomain") != std::string::npos)
     return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("CreateFieldData") != std::string::npos)
+    return new CreateFieldDataDialog(moduleId, state, parentToUse_);
   if (moduleId.find("SetFieldData") != std::string::npos)
     return new SetFieldDataDialog(moduleId, state, parentToUse_);   
   if (moduleId.find("InterfaceWithCleaver") != std::string::npos)

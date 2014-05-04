@@ -26,19 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  StackVector.h: Interface to statically allocated std::vector class.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   July 2004
- *
- */
+///
+///@file   StackVector.h
+///@brief  Interface to statically allocated std::vector class.
+///
+///@author Michael Callahan
+///	   Department of Computer Science
+/// 	   University of Utah
+///@date   July 2004
+///
 
-// This implements a subclass of the std::vector class, except that
-// the vector is statically allocated on the stack for performance.
+/// This implements a subclass of the std::vector class, except that
+/// the vector is statically allocated on the stack for performance.
 
 #ifndef SCI_Containers_StackVector_h
 #define SCI_Containers_StackVector_h 1

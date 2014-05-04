@@ -28,16 +28,17 @@
 
 
 
-/*
- *  Datatype.h: The Datatype Data type
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+///@file  Datatype.h
+///@brief The Datatype Data type
+///
+///@author
+///       David Weinstein
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1994
+///
+///
 
 #ifndef CORE_DATATYPES_DATATYPE_H
 #define CORE_DATATYPES_DATATYPE_H 1
@@ -55,7 +56,7 @@ namespace SCIRun {
 class SCISHARE Datatype : public Persistent, public UsedWithLockingHandle<RecursiveMutex>
 {
 public:
-  //! unique id for each instance
+  /// unique id for each instance
   int generation;
   Datatype();
   Datatype(const Datatype&);

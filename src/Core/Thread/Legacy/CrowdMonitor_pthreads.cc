@@ -28,22 +28,22 @@
 
 
 
-/*
- *  CrowdMonitor: Multiple reader/single writer locks, implementation
- *   for pthreads simply wrapping pthread_rwlock_t
- *
- *  Written by:
- *   Author:  Wayne Witzel
- *   Department of Computer Science
- *   University of Utah
- *   Date: March 2002
- *
- */
+///
+///@class CrowdMonitor
+///@brief Multiple reader/single writer locks, implementation
+///   for pthreads simply wrapping pthread_rwlock_t
+///
+///@author
+///       Wayne Witzel
+///       Department of Computer Science
+///       University of Utah
+///@date  March 2002
+///
 
 #include <Core/Thread/CrowdMonitor.h>
 #include <pthread.h>
 
-/*** WARNING: THIS IMPLEMENTATION HAS NOT BEEN TESTED - 3/6/2002 ***/
+/// WARNING: THIS IMPLEMENTATION HAS NOT BEEN TESTED - 3/6/2002 /// 
 
 namespace SCIRun {
 

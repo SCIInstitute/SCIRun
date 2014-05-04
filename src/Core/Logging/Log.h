@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Logging/Log.h
 
 #ifndef CORE_LOGGING_LOG_H
 #define CORE_LOGGING_LOG_H 
@@ -114,7 +115,7 @@ namespace SCIRun
   }
 }
 
-//TODO: log4cpp crashes on Mac more easily, just macro these out on that platform for now.
+/// @todo: log4cpp crashes on Mac more easily, just macro these out on that platform for now.
 #ifdef _WIN32
 #define LOG_DEBUG(str) SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
 #else

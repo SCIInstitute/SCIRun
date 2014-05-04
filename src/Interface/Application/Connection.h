@@ -35,6 +35,7 @@
 #include <boost/function.hpp>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Interface/Application/Port.h>
+#include <Interface/Application/Note.h>
 #include <Core/Utils/Exception.h>
 
 namespace SCIRun {
@@ -56,7 +57,7 @@ enum ConnectionDrawType
   MANHATTAN, EUCLIDEAN, CUBIC
 };
 
-class ConnectionLine : public QObject, public QGraphicsPathItem
+class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes, public NoteDisplayHelper, public NeedsScenePositionProvider
 {
   Q_OBJECT
 
@@ -68,10 +69,12 @@ public:
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
+  void updateNote(const Note& note);
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
 protected:
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+  virtual void setNoteGraphicsContext() override;
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
@@ -79,6 +82,7 @@ private:
   ConnectionDrawStrategyPtr drawer_;
   void destroy();
   bool destroyed_;
+  class ConnectionMenu* menu_;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};

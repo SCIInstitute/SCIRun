@@ -28,16 +28,16 @@
 
 
 
-/*
- *  Exception.h: Base exception class
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   March 2000
- *
- */
+///
+///@file  Exception.h
+///@brief Base exception class
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  March 2000
+///
 
 #include <Core/Exceptions/Exception.h>
 #include <errno.h>

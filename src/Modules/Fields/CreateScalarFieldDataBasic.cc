@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Fields/CreateScalarFieldDataBasic.cc
 
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -52,7 +53,7 @@ void CreateScalarFieldDataBasic::setStateDefaults()
   state->setValue(ValueFunc, std::string());
 }
 
-//TODO: expand this module and then move it to test module category. then it can be used with python to regression test many combinations of latvol visualization!
+/// @todo: expand this module and then move it to test module category. then it can be used with python to regression test many combinations of latvol visualization!
 void CreateScalarFieldDataBasic::execute()
 {
   auto field = getRequiredInput(InputField);
@@ -62,12 +63,9 @@ void CreateScalarFieldDataBasic::execute()
 
   if (vfield && vmesh)
   {
-    //std::cout << "Assuming values on nodes." << std::endl;
     {
       if (vmesh->is_latvolmesh())
       {
-        //std::cout << "Assuming latvol mesh" << std::endl;
-
         std::vector<index_type> dims;
         vmesh->get_dimensions(dims);
         auto nodesPerPlane = dims[0] * dims[1];
@@ -87,8 +85,6 @@ void CreateScalarFieldDataBasic::execute()
 
           VMesh::Node::index_type nodeID = *meshNodeIter;
           vfield->set_value(value, nodeID);
-
-          //std::cout << "Set value " << value << " at node " << nodeID << std::endl;
 
           // by node id
           auto valueFuncName = get_state()->getValue(ValueFunc).getString();
@@ -117,7 +113,6 @@ void CreateScalarFieldDataBasic::execute()
           }
           else if (valueFuncName == "sine")
           {
-            //int mult = get_state()->getValue(ValueFuncParam1).getInt();
             Point p;
             vmesh->get_point(p, nodeID);
             value = sin(Dot(p,p)*mult);

@@ -26,16 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+/// @author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+/// @date   July 1994
+/// 
 
 #include <Dataflow/Network/Ports/StringPort.h>
 #include <Core/Datatypes/String.h>

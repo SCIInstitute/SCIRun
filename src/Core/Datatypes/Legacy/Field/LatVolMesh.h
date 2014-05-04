@@ -30,8 +30,8 @@
 #ifndef CORE_DATATYPES_LATVOLMESH_H
 #define CORE_DATATYPES_LATVOLMESH_H 1
 
-//! Include what kind of support we want to have
-//! Need to fix this and couple it to sci-defs
+/// Include what kind of support we want to have
+/// Need to fix this and couple it to sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
@@ -57,21 +57,21 @@ namespace SCIRun {
 // Declarations for virtual interface
 
 
-//! Functions for creating the virtual interface
-//! Declare the functions that instantiate the virtual interface
+/// Functions for creating the virtual interface
+/// Declare the functions that instantiate the virtual interface
 template <class Basis>
 class LatVolMesh;
 
-//! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behavior will allow
-//! for dynamically compiling the interface if needed.
+/// make sure any other mesh other than the preinstantiate ones
+/// returns no virtual interface. Altering this behavior will allow
+/// for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVLatVolMesh(MESH*) { return (0); }
 
-//! These declarations are needed for a combined dynamic compilation as
-//! as well as virtual functions solution.
-//! Declare that these can be found in a library that is already
-//! precompiled. So dynamic compilation will not instantiate them again.
+/// These declarations are needed for a combined dynamic compilation as
+/// as well as virtual functions solution.
+/// Declare that these can be found in a library that is already
+/// precompiled. So dynamic compilation will not instantiate them again.
 
 #if (SCIRUN_LATVOL_SUPPORT > 0)
 
@@ -419,7 +419,7 @@ public:
   };
 
 
-  //! Index and Iterator types required for Mesh Concept.
+  /// Index and Iterator types required for Mesh Concept.
   struct Node {
     typedef NodeIndex                  index_type;
     typedef NodeIter                   iterator;
@@ -576,9 +576,9 @@ public:
     DEBUG_CONSTRUCTOR("LatVolMesh")   
     compute_jacobian();
 
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
+    /// Create a new virtual interface for this copy
+    /// all pointers have changed hence create a new
+    /// virtual interface class
     vmesh_.reset(CreateVLatVolMesh(this));
   }
   
@@ -598,9 +598,9 @@ public:
     DEBUG_CONSTRUCTOR("LatVolMesh")   
     compute_jacobian();  
     
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
+    /// Create a new virtual interface for this copy
+    /// all pointers have changed hence create a new
+    /// virtual interface class
     vmesh_.reset(CreateVLatVolMesh(this));
   }
   
@@ -619,9 +619,9 @@ public:
     transform_.compute_imat();
     compute_jacobian();  
 
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
+    /// Create a new virtual interface for this copy
+    /// all pointers have changed hence create a new
+    /// virtual interface class
     vmesh_.reset(CreateVLatVolMesh(this));   
   }
   
@@ -631,7 +631,7 @@ public:
     DEBUG_DESTRUCTOR("LatVolMesh")   
   }
 
-  //! Access point to virtual interface
+  /// Access point to virtual interface
   virtual VMesh* vmesh() { 
        return (vmesh_.get()); 
   }
@@ -646,8 +646,8 @@ public:
 
   Basis &get_basis() { return basis_; }
 
-  //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an edge.
+  /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an edge.
   void pwl_approx_edge(std::vector<std::vector<double> > &coords,
                        typename Elem::index_type /*ci*/,
                        unsigned int which_edge,
@@ -659,8 +659,8 @@ public:
     basis_.approx_edge(emap[which_edge], div_per_unit, coords);
   }
 
-  //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an face.
+  /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an face.
   void pwl_approx_face(std::vector<std::vector<std::vector<double> > > &coords,
                        typename Elem::index_type /*ci*/,
                        unsigned int which_face,
@@ -672,16 +672,16 @@ public:
     basis_.approx_face(fmap[which_face], div_per_unit, coords);
   }
 
-  //! Synchronize functions, as there is nothing to synchronize, these
-  //! functions always succeed
+  /// Synchronize functions, as there is nothing to synchronize, these
+  /// functions always succeed
 
   virtual bool synchronize(mask_type /*sync*/) { return (true); }
   virtual bool unsynchronize(mask_type /*sync*/) { return (true); }
   bool clear_synchronization() { return (true); }
 
-  //! Get the local coordinates for a certain point within an element
-  //! This function uses a couple of newton iterations to find the local
-  //! coordinate of a point
+  /// Get the local coordinates for a certain point within an element
+  /// This function uses a couple of newton iterations to find the local
+  /// coordinate of a point
   template<class VECTOR>
   bool get_coords(VECTOR &coords, const Core::Geometry::Point &p, typename Elem::index_type idx) const
   {
@@ -720,8 +720,8 @@ public:
     return (true);
   }
 
-  //! Find the location in the global coordinate system for a local coordinate
-  //! This function is the opposite of get_coords.
+  /// Find the location in the global coordinate system for a local coordinate
+  /// This function is the opposite of get_coords.
   template<class VECTOR>
   void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, typename Elem::index_type idx) const
   {
@@ -741,9 +741,9 @@ public:
 
   }
 
-  //! Interpolate the derivate of the function, This infact will return the
-  //! jacobian of the local to global coordinate transformation. This function
-  //! is mainly intended for the non linear elements
+  /// Interpolate the derivate of the function, This infact will return the
+  /// jacobian of the local to global coordinate transformation. This function
+  /// is mainly intended for the non linear elements
   template<class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, typename Elem::index_type idx, VECTOR2 &J) const
   {
@@ -763,17 +763,17 @@ public:
 
    }
 
-  //! Get the determinant of the jacobian, which is the local volume of an element
-  //! and is intended to help with the integration of functions over an element.
+  /// Get the determinant of the jacobian, which is the local volume of an element
+  /// and is intended to help with the integration of functions over an element.
   template<class VECTOR>
   double det_jacobian(const VECTOR& coords, typename Elem::index_type idx) const
   {
     return (det_jacobian_);
   }
 
-  //! Get the jacobian of the transformation. In case one wants the non inverted
-  //! version of this matrix. This is currentl here for completeness of the 
-  //! interface
+  /// Get the jacobian of the transformation. In case one wants the non inverted
+  /// version of this matrix. This is currentl here for completeness of the 
+  /// interface
   template<class VECTOR>
   void jacobian(const VECTOR& coords, typename Elem::index_type idx, double* J) const
   {  
@@ -788,9 +788,9 @@ public:
     J[8] = jacobian_[8];
   }
  
-  //! Get the inverse jacobian of the transformation. This one is needed to 
-  //! translate local gradients into global gradients. Hence it is crucial for
-  //! calculating gradients of fields, or constructing finite elements.             
+  /// Get the inverse jacobian of the transformation. This one is needed to 
+  /// translate local gradients into global gradients. Hence it is crucial for
+  /// calculating gradients of fields, or constructing finite elements.             
   template<class VECTOR>
   double inverse_jacobian(const VECTOR& /*coords*/, typename Elem::index_type /*idx*/, double* Ji) const
   {
@@ -813,7 +813,7 @@ public:
   double jacobian_metric(typename Elem::index_type /*idx*/) const
     { return (det_jacobian_); }
   
-  //! get the mesh statistics
+  /// get the mesh statistics
   index_type get_min_i() const { return min_i_; }
   index_type get_min_j() const { return min_j_; }
   index_type get_min_k() const { return min_k_; }
@@ -828,7 +828,7 @@ public:
   virtual void transform(const Core::Geometry::Transform &t);
   virtual void get_canonical_transform(Core::Geometry::Transform &t);
 
-  //! set the mesh statistics
+  /// set the mesh statistics
   void set_min_i(index_type i) {min_i_ = i; }
   void set_min_j(index_type j) {min_j_ = j; }
   void set_min_k(index_type k) {min_k_ = k; }
@@ -849,9 +849,9 @@ public:
   {
     nk_ = k;
   
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
+    /// Create a new virtual interface for this copy
+    /// all pointers have changed hence create a new
+    /// virtual interface class
     vmesh_.reset(CreateVLatVolMesh(this));  
   }
   virtual void set_dim(std::vector<size_type> dims);
@@ -878,7 +878,7 @@ public:
   { index = i; }
   void to_index(typename Cell::index_type &index, index_type i) const;
 
-  //! get the child elements of the given index
+  /// get the child elements of the given index
   void get_nodes(typename Node::array_type &, typename Edge::index_type) const;
   void get_nodes(typename Node::array_type &, typename Face::index_type) const;
   void get_nodes(typename Node::array_type &,
@@ -890,7 +890,7 @@ public:
   void get_faces(typename Face::array_type &,
                  const typename Cell::index_type &) const;
 
-  //! get the parent element(s) of the given index
+  /// get the parent element(s) of the given index
   void get_elems(typename Elem::array_type &result,
                  const typename Node::index_type &idx) const;
   void get_elems(typename Elem::array_type &result,
@@ -899,16 +899,16 @@ public:
                  const typename Face::index_type &idx) const;
 
 
-  //! Wrapper to get the derivative elements from this element.
+  /// Wrapper to get the derivative elements from this element.
   void get_delems(typename DElem::array_type &result,
                   const typename Elem::index_type &idx) const
   {
     get_faces(result, idx);
   }
 
-  //! return all cell_indecies that overlap the BBox in arr.
+  /// return all cell_indecies that overlap the BBox in arr.
   void get_cells(typename Cell::array_type &arr, const Core::Geometry::BBox &box);
-  //! returns the min and max indices that fall within or on the BBox
+  /// returns the min and max indices that fall within or on the BBox
   void get_cells(typename Cell::index_type &begin,
                  typename Cell::index_type &end,
                  const Core::Geometry::BBox &bbox);
@@ -920,13 +920,13 @@ public:
                     const typename Cell::index_type &from,
                     typename Face::index_type face) const;
 
-  //! get the center point (in object space) of an element
+  /// get the center point (in object space) of an element
   void get_center(Core::Geometry::Point &, const typename Node::index_type &) const;
   void get_center(Core::Geometry::Point &, typename Edge::index_type) const;
   void get_center(Core::Geometry::Point &, typename Face::index_type) const;
   void get_center(Core::Geometry::Point &, const typename Cell::index_type &) const;
 
-  //! Get the size of an elemnt (length, area, volume)
+  /// Get the size of an elemnt (length, area, volume)
   double get_size(const typename Node::index_type &idx) const;
   double get_size(typename Edge::index_type idx) const;
   double get_size(typename Face::index_type idx) const;
@@ -964,8 +964,8 @@ public:
                         const typename Elem::index_type &,
                         FieldRNG &rng) const;
 
-  //! This function will find the closest element and the location on that
-  //! element that is the closest
+  /// This function will find the closest element and the location on that
+  /// element that is the closest
   bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
                          typename Node::index_type &elem,
                          const Core::Geometry::Point &p) const;
@@ -974,8 +974,8 @@ public:
                          typename Node::index_type &elem,
                          const Core::Geometry::Point &p, double maxdist) const;
 
-  //! This function will find the closest element and the location on that
-  //! element that is the closest
+  /// This function will find the closest element and the location on that
+  /// element that is the closest
   template <class ARRAY>
   bool find_closest_elem(double& pdist, 
                          Core::Geometry::Point &result,
@@ -991,8 +991,8 @@ public:
   }
 
                            
-  //! This function will find the closest element and the location on that
-  //! element that is the closest
+  /// This function will find the closest element and the location on that
+  /// element that is the closest
   template <class ARRAY>
   bool find_closest_elem(double& pdist, 
                          Core::Geometry::Point &result,
@@ -1045,23 +1045,23 @@ public:
     return(find_closest_elem(pdist,result,coords,elem,p));
   }
                          
-  //! This function will return multiple elements if the closest point is
-  //! located on a node or edge. All bordering elements are returned in that 
-  //! case. 
+  /// This function will return multiple elements if the closest point is
+  /// located on a node or edge. All bordering elements are returned in that 
+  /// case. 
   bool find_closest_elems(double& pdist, Core::Geometry::Point &result, 
                           std::vector<typename Elem::index_type> &elem,
                           const Core::Geometry::Point &p) const;
 
   double get_epsilon() const;
 
-  //! Export this class using the old Pio system
+  /// Export this class using the old Pio system
   virtual void io(Piostream&);
-  //! These IDs are created as soon as this class will be instantiated
-  //! The first one is for Pio and the second for the virtual interface
-  //! These are currently different as they serve different needs.  static PersistentTypeID type_idts;
+  /// These IDs are created as soon as this class will be instantiated
+  /// The first one is for Pio and the second for the virtual interface
+  /// These are currently different as they serve different needs.  static PersistentTypeID type_idts;
 private:
   static PersistentTypeID latvol_typeid;
-  //! Core functionality for getting the name of a templated mesh class    
+  /// Core functionality for getting the name of a templated mesh class    
 
 public:
   static  const std::string type_name(int n = -1);
@@ -1080,8 +1080,8 @@ public:
   virtual int dimensionality() const { return 3; }
   virtual int topology_geometry() const { return (STRUCTURED | REGULAR); }
     
-  //! Type description, used for finding names of the mesh class for
-  //! dynamic compilation purposes. Some of this should be obsolete    
+  /// Type description, used for finding names of the mesh class for
+  /// dynamic compilation purposes. Some of this should be obsolete    
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* cell_type_description();
   static const TypeDescription* face_type_description();
@@ -1090,11 +1090,11 @@ public:
   static const TypeDescription* elem_type_description()
   { return cell_type_description(); }
 
-  //! This function returns a maker for Pio.
+  /// This function returns a maker for Pio.
   static Persistent *maker() { return new LatVolMesh(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<LatVolMesh>(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle latvol_maker(size_type x, size_type y, size_type z, const Core::Geometry::Point& min, const Core::Geometry::Point& max) 
   { 
     return boost::make_shared<LatVolMesh>(x,y,z,min,max); 
@@ -1104,10 +1104,10 @@ protected:
 
   void compute_jacobian();
 
-  //! the min_Node::index_type ( incase this is a subLattice )
+  /// the min_Node::index_type ( incase this is a subLattice )
   index_type min_i_, min_j_, min_k_;
-  //! the Node::index_type space extents of a LatVolMesh
-  //! (min=min_Node::index_type, max=min+extents-1)
+  /// the Node::index_type space extents of a LatVolMesh
+  /// (min=min_Node::index_type, max=min+extents-1)
   size_type ni_, nj_, nk_;
 
   Core::Geometry::Transform transform_;
@@ -1240,7 +1240,7 @@ LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
   transform_.compute_imat();
   compute_jacobian();  
   
-  //! Initialize the virtual interface when the mesh is created
+  /// Initialize the virtual interface when the mesh is created
   vmesh_.reset(CreateVLatVolMesh(this));
 }
 
@@ -1373,9 +1373,9 @@ LatVolMesh<Basis>::set_dim(std::vector<index_type> dim)
   nj_ = dim[1];
   nk_ = dim[2];
   
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   vmesh_.reset(CreateVLatVolMesh(this)); 
 }
 
@@ -1755,7 +1755,7 @@ LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
 }
 
 
-//! return all cell_indecies that overlap the BBox in arr.
+/// return all cell_indecies that overlap the BBox in arr.
 
 template <class Basis>
 void
@@ -1780,7 +1780,7 @@ LatVolMesh<Basis>::get_cells(typename Cell::array_type &arr, const Core::Geometr
 }
 
 
-//! Returns the min and max indices that fall within or on the BBox.
+/// Returns the min and max indices that fall within or on the BBox.
 
 // If the max index lies "in front of" (meaning that any of the
 // indexes are negative) then the max will be set to [0,0,0] and the

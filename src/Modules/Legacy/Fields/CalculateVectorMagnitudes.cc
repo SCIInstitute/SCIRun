@@ -28,6 +28,7 @@
    Author            : Moritz Dannhauer
    Last modification : 11/26/2013 ported from SCIRun4  
 */
+/// @todo Documentation Modules/Legacy/Fields/CalculateVectorMagnitudes.cc
 
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>

@@ -57,7 +57,7 @@ template <class Mesh, class Basis, class FData>
 class GenericField: public Field 
 {
 public:
-  //! Typedefs to support the Field concept.
+  /// Typedefs to support the Field concept.
   typedef GenericField<Mesh, Basis, FData>                 field_type;
   typedef typename FData::value_type                       value_type;
   typedef Mesh                                             mesh_type;
@@ -68,73 +68,73 @@ public:
   typedef SCIRun::index_type                               index_type;
   typedef SCIRun::size_type                                size_type;
 
-  //! only Pio should use this constructor
+  /// only Pio should use this constructor
   GenericField();
-  //! Use this constructor to actually have a field with a mesh
+  /// Use this constructor to actually have a field with a mesh
   GenericField(mesh_handle_type mesh);
   GenericField(const GenericField &copy);
 
   virtual ~GenericField();
 
-  //! Clone the field data, but not the mesh.
-  //! Use mesh_detach() first to clone the complete field
+  /// Clone the field data, but not the mesh.
+  /// Use mesh_detach() first to clone the complete field
   virtual GenericField<Mesh, Basis, FData> *clone() const;
 
-  //! Clone everything, field data and mesh.
+  /// Clone everything, field data and mesh.
   virtual GenericField<Mesh, Basis, FData> *deep_clone() const;
 
-  //! Obtain a Handle to the Mesh
+  /// Obtain a Handle to the Mesh
   virtual MeshHandle mesh() const;
   virtual VMesh*  vmesh() const;
   virtual VField* vfield() const;
   
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  //! Clone the mesh
+  /// Clone the mesh
   virtual void mesh_detach();
   #endif
 
-  //! Get the order of the field data
-  //! -1 = no data
-  //! 0 = constant data per element
-  //! 1 = linear data per element
-  //! >1 = non linear data per element
+  /// Get the order of the field data
+  /// -1 = no data
+  /// 0 = constant data per element
+  /// 1 = linear data per element
+  /// >1 = non linear data per element
   virtual int basis_order() const { return basis_.polynomial_order(); }
 
-  //! Get the classes on which this function relies:
-  //! Get the basis describing interpolation within an element
+  /// Get the classes on which this function relies:
+  /// Get the basis describing interpolation within an element
   Basis& get_basis()  { return basis_; }
   
-  //! Get the mesh describing how the elements fit together
+  /// Get the mesh describing how the elements fit together
   // const mesh_handle_type &get_typed_mesh() const;
 
-  //! Persistent I/O.
+  /// Persistent I/O.
   virtual void io(Piostream &stream);
   
-  //! Tag the constructor of this class and put it in the Pio DataBase
+  /// Tag the constructor of this class and put it in the Pio DataBase
   static  PersistentTypeID type_id;
 
-  //! Tag the constructor of this class and put it in the Field DataBase
+  /// Tag the constructor of this class and put it in the Field DataBase
   static  FieldTypeID field_id;
   
-  //! Function to retrieve the name of this field class
+  /// Function to retrieve the name of this field class
   static  const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return type_id.type; }
 
-  //! A different way of tagging a class. Currently two systems are used next
-  //! to each other: type_name and get_type_description. Neither is perfect
+  /// A different way of tagging a class. Currently two systems are used next
+  /// to each other: type_name and get_type_description. Neither is perfect
   virtual 
   const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const;
 
-  //! Static functions to instantiate the field from Pio or using CreateField()
+  /// Static functions to instantiate the field from Pio or using CreateField()
   static Persistent *maker();
   static FieldHandle field_maker();  
   static FieldHandle field_maker_mesh(MeshHandle mesh);
    
 protected:
 
-  //! A (generic) mesh.
+  /// A (generic) mesh.
   mesh_handle_type             mesh_;
-  //! Data container.
+  /// Data container.
   fdata_type                   fdata_;
   Basis                        basis_;
   
@@ -168,7 +168,7 @@ class VGenericField : public VField {
       for (size_t j=0; j<data_type_.size(); j++) 
         if(data_type_[j] == '_') data_type_[j] = ' ';
         
-      //! Create a fast way of checking scalar/pair/vector/tensor
+      /// Create a fast way of checking scalar/pair/vector/tensor
       is_scalar_ = false;
       is_vector_ = false;
       is_tensor_ = false;
@@ -469,8 +469,8 @@ GenericField<Mesh, Basis, FData>::get_type_description(td_info_e td) const
   };
 }
 
-//! These ended up here, due to the problem with the include order in get_typedescription.
-//! Once we have dismanteled that system this can go back to VFData
+/// These ended up here, due to the problem with the include order in get_typedescription.
+/// Once we have dismanteled that system this can go back to VFData
 template<class T, class MESH>
 inline VFData* CreateVFData(FData2d<T,MESH>& fdata, std::vector<T>& lfdata, std::vector<std::vector<T> >& hfdata)
 {

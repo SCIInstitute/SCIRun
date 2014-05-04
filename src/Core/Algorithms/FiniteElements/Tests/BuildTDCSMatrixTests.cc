@@ -33,7 +33,7 @@
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -46,7 +46,7 @@ namespace TDCSInputData
 {
   SparseRowMatrixHandle stiff()
   {
-    //TODO: MORITZ fill in values up to 5x5
+    /// @todo: MORITZ fill in values up to 5x5
     return MAKE_SPARSE_MATRIX_HANDLE(
       (1,0,0)
       (0,0,0)
@@ -60,7 +60,7 @@ namespace TDCSInputData
   
   DenseMatrixHandle ElectrodeElements()
   {
-    //TODO: MORITZ insert values as above.
+    /// @todo: MORITZ insert values as above.
     return MAKE_DENSE_MATRIX_HANDLE(
       (1,0)
       (0,1));
@@ -68,7 +68,7 @@ namespace TDCSInputData
   
   DenseMatrixHandle ElectrodeElementType()
   {
-    //TODO: MORITZ insert values as above.
+    /// @todo: MORITZ insert values as above.
     return MAKE_DENSE_MATRIX_HANDLE(
       (1,0)
       (0,1));
@@ -76,7 +76,7 @@ namespace TDCSInputData
   
   DenseMatrixHandle ElectrodeElementDefinition()
   {
-    //TODO: MORITZ insert values as above.
+    /// @todo: MORITZ insert values as above.
     return MAKE_DENSE_MATRIX_HANDLE(
       (1,0)
       (0,1));
@@ -84,7 +84,7 @@ namespace TDCSInputData
   
   DenseMatrixHandle contactimpedance()
   {
-    //TODO: MORITZ insert values as above.
+    /// @todo: MORITZ insert values as above.
     return MAKE_DENSE_MATRIX_HANDLE(
       (1,0)
       (0,1));
@@ -92,7 +92,7 @@ namespace TDCSInputData
   
   SparseRowMatrixHandle expectedOutput()
   {
-    //TODO: MORITZ insert values as above.
+    /// @todo: MORITZ insert values as above.
     return MAKE_SPARSE_MATRIX_HANDLE(
       (1,0)
       (0,1));
@@ -119,7 +119,7 @@ TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullMesh)
 
   //check on BuildTDCSMatrix.cc line 672
   EXPECT_FALSE(algo.run(stiff(), FieldHandle(), ElectrodeElements(), ElectrodeElementType(), ElectrodeElementDefinition(), contactimpedance(), output));
-  //TODO: consider throwing an exception instead of returning false
+  /// @todo: consider throwing an exception instead of returning false
 }
 
 TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullElectrodeElements)
@@ -130,10 +130,10 @@ TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullElectrodeElements)
 
   //check on BuildTDCSMatrix.cc line 679
   EXPECT_FALSE(algo.run(stiff(), mesh(), DenseMatrixHandle(), ElectrodeElementType(), ElectrodeElementDefinition(), contactimpedance(), output));
-  //TODO: consider throwing an exception instead of returning false
+  /// @todo: consider throwing an exception instead of returning false
 }
 
-//TODO first:
+/// @todo first:
 
 //TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullElectrodeElementType)  // line 686
   // use EXPECT_THROW (search code for examples)
@@ -143,5 +143,5 @@ TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullElectrodeElements)
 // etc for checks lines 567-575
 // cover as many error cases with tests as you can, there are a lot in TDCSMatrixBuilder::singlethread() but there may be reasonable conceptual groupings to simplify the test code (may also lead to simplifying/refactoring the algorithm code
 
-//TODO next: 
+/// @todo next: 
 //TEST(BuildTDCSMatrixAlgorithmTests, SuccessfulRunTest)  //here's where you pass in the real matrices/fields above and compare the output to an expected matrix.

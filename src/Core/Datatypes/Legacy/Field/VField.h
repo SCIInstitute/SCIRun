@@ -44,9 +44,9 @@ namespace SCIRun {
 // Define a handle to the virtual interface
 
 class SCISHARE VField {
-//! The FieldTypeInformation call introduces functions to check type of the field
-//! Like is_pointcloudmesh() is_lineardata() is_vector() etc.
-//! Check FieldInformation.h for a full list
+/// The FieldTypeInformation call introduces functions to check type of the field
+/// Like is_pointcloudmesh() is_lineardata() is_vector() etc.
+/// Check FieldInformation.h for a full list
 
 public:
 
@@ -74,7 +74,7 @@ public:
     DEBUG_DESTRUCTOR("VField")  
   }
   
-  //! Import a couple of useful typedefs from VMesh
+  /// Import a couple of useful typedefs from VMesh
   typedef VMesh::index_type           index_type;
   typedef VMesh::size_type            size_type;
   typedef VMesh::coords_type          coords_type;
@@ -84,25 +84,25 @@ public:
   typedef VMesh::weight_array_type    weight_array_type;
   typedef VMesh::dimension_type       dimension_type;
 
-  //! mesh() and vmesh() get the handle to the mesh and its virtual interface
+  /// mesh() and vmesh() get the handle to the mesh and its virtual interface
   inline MeshHandle mesh()  { return (MeshHandle(mesh_)); }
   inline VMesh*     vmesh() { return (vmesh_); }
   
-  //! get a handle to the field
+  /// get a handle to the field
   inline FieldHandle field() { return (FieldHandle(field_)); }
-  //! for completeness get a pointer to itself
+  /// for completeness get a pointer to itself
   inline VField* vfield() { return (this); }
     
-  //! Get the basis_order of the field data, -1 = nodata, 0 = constant, 1 = linear
-  //! 2 = quadratic 3 = cubic  
+  /// Get the basis_order of the field data, -1 = nodata, 0 = constant, 1 = linear
+  /// 2 = quadratic 3 = cubic  
   inline int basis_order() { return (basis_order_); }
   
-  //! get the number of values in the field (data at corner nodes of the elements)
+  /// get the number of values in the field (data at corner nodes of the elements)
   inline VMesh::size_type num_values() { return (vfdata_->fdata_size()); }
-  //! get the number of edge values in the field (for quadratic approximation)
+  /// get the number of edge values in the field (for quadratic approximation)
   inline VMesh::size_type num_evalues() { return (vfdata_->efdata_size()); }
   
-  //! resize the data fields to match the number of nodes/edges in the mesh
+  /// resize the data fields to match the number of nodes/edges in the mesh
   inline void resize_fdata() 
   { 
     if (basis_order_ == -1)
@@ -133,8 +133,8 @@ public:
     }
   }
   
-  //! same function but now uses the systematic naming 
-  //! (resize_fdata is the old call, SCIRun was using)
+  /// same function but now uses the systematic naming 
+  /// (resize_fdata is the old call, SCIRun was using)
   inline void resize_values() { resize_fdata(); }
 
   inline void get_values_dimension(dimension_type& dims)
@@ -160,20 +160,20 @@ public:
     }
   }
 
-  //! Get values from field (different varieties for different index types)
-  //! Unlike the direct interface, we do not check index_type here
-  //! all calls are rerouted to the same function call
+  /// Get values from field (different varieties for different index types)
+  /// Unlike the direct interface, we do not check index_type here
+  /// all calls are rerouted to the same function call
   
-  //! NOTE THE FOLLOWING TEMPLATES WILL COMPILE
-  //! Template T can be of the following types:
-  //! char, unsigned char, short, unsigned short, int, unsigned int, long,
-  //! unsigned long, long long, unsigned long long, float, double,
-  //! Vector, and Tensor
+  /// NOTE THE FOLLOWING TEMPLATES WILL COMPILE
+  /// Template T can be of the following types:
+  /// char, unsigned char, short, unsigned short, int, unsigned int, long,
+  /// unsigned long, long long, unsigned long long, float, double,
+  /// Vector, and Tensor
   
   template<class T> inline void get_value(T& val, index_type idx) const
   { vfdata_->get_value(val,idx); }  
-  //! evalue stands for edge value used in quadratic approximation, the latter
-  //! can be accessed using direct indices or ENode::index_type
+  /// evalue stands for edge value used in quadratic approximation, the latter
+  /// can be accessed using direct indices or ENode::index_type
   template<class T> inline void get_evalue(T& val, index_type idx) const
   { vfdata_->get_evalue(val,idx); }  
   template<class T>  inline void get_value(T& val, VMesh::Node::index_type idx) const
@@ -191,10 +191,10 @@ public:
   template<class T>  inline void get_value(T& val, VMesh::ENode::index_type idx) const
   { vfdata_->get_evalue(val,static_cast<VMesh::index_type>(idx)); }
 
-  //! Ensure compatibility with old field class, these are equivalent with get_value()
-  //! unlike the direct interface we do not use ASSERTs to check bounds and this function
-  //! calls are thus exactly the same. They are provided for compatibility with the old
-  //! classes
+  /// Ensure compatibility with old field class, these are equivalent with get_value()
+  /// unlike the direct interface we do not use ASSERTs to check bounds and this function
+  /// calls are thus exactly the same. They are provided for compatibility with the old
+  /// classes
   template<class T> inline bool value(T& val, index_type idx) const
   { vfdata_->get_value(val,idx); return (true); }  
   template<class T>  inline bool value(T& val, VMesh::Node::index_type idx) const
@@ -210,7 +210,7 @@ public:
   template<class T>  inline bool value(T& val, VMesh::DElem::index_type idx) const
   { vfdata_->get_value(val,static_cast<VMesh::index_type>(idx));return (true); }  
 
-  //! Functions for getting a weighted value
+  /// Functions for getting a weighted value
   template<class T> inline void get_weighted_value(T& val, const index_type* idx, const weight_type* w, size_type sz) const
   { vfdata_->get_weighted_value(val,idx,w,sz); }
   template<class T> inline void get_weighted_value(T& val, index_array_type idx, weight_array_type w) const
@@ -221,8 +221,8 @@ public:
   { vfdata_->get_weighted_value(val,&(idx[0]),&(w[0]),idx.size()); }
 
 
-  //! Insert values into field, for every get_value there is an equivalent set_value
-  //! likewise get_evalue is replaced by set set_evalue
+  /// Insert values into field, for every get_value there is an equivalent set_value
+  /// likewise get_evalue is replaced by set set_evalue
   template<class T> inline void set_value(const T& val, index_type idx)
   { vfdata_->set_value(val,idx); }
   template<class T> inline void set_evalue(const T& val, index_type idx)
@@ -242,7 +242,7 @@ public:
   template<class T>  inline void set_value(const T& val, VMesh::ENode::index_type idx)
   { vfdata_->set_evalue(val,static_cast<VMesh::index_type>(idx)); }  
 
-  //! Get/Set all values at once
+  /// Get/Set all values at once
   template<class T> inline void set_values(const std::vector<T>& values)
   { if (!values.empty()) vfdata_->set_values(&(values[0]),values.size(),0); }
   template<class T> inline void set_values(const T* data, size_type sz, index_type offset = 0)
@@ -279,11 +279,11 @@ public:
   template<class T,class ARRAY> inline void get_values(T* values, ARRAY& idx) const
   { vfdata_->get_values(values,&(idx[0]),idx.size()); }  
   
-  //! Set all values to a specific value
+  /// Set all values to a specific value
   template<class T> inline void set_all_values(const T val)
   { vfdata_->set_all_values(val); }
 
-  //! Functions for getting a weighted value
+  /// Functions for getting a weighted value
   template<class INDEX> inline void copy_weighted_value(VField* field, index_type* idx, weight_type* w, size_type sz, INDEX i) const
   { vfdata_->copy_weighted_value(field->vfdata_,idx,w,sz,index_type(i)); }
   template<class INDEX, class ARRAY> inline void copy_weighted_value(VField* field, ARRAY idx, weight_array_type w, INDEX i) const
@@ -293,15 +293,15 @@ public:
   template<class INDEX, class ARRAY> inline void copy_weighted_evalue(VField* field, ARRAY idx, weight_array_type w, INDEX i) const
   { vfdata_->copy_weighted_value(field->vfdata_,&(idx[0]),&(w[0]),idx.size(),index_type(i)); }
 
-  //! Set all values to zero or its equivalent, all none double data will be casted
-  //! to the proper value automatically. This way we do not need an additional
-  //! virtual function call 
+  /// Set all values to zero or its equivalent, all none double data will be casted
+  /// to the proper value automatically. This way we do not need an additional
+  /// virtual function call 
   inline void clear_all_values()
   { vfdata_->set_all_values(static_cast<double>(0)); }
   
-  //! The following cases are more specialized cases for copying entiry sets of
-  //! data. These functions need to know the size of the inserted data as they
-  //! perform a safety check on the length of the fdata array.
+  /// The following cases are more specialized cases for copying entiry sets of
+  /// data. These functions need to know the size of the inserted data as they
+  /// perform a safety check on the length of the fdata array.
   template<class T> inline void set_evalues(const std::vector<T>& values)
   { vfdata_->set_evalues(&(values[0]),values.size(),0); }
   template<class T> inline void set_evalues(const T* data, size_type sz, index_type offset=0)
@@ -316,18 +316,18 @@ public:
   template<class T> inline void get_evalues(T* data, size_type sz, index_type offset = 0) const
   { vfdata_->get_evalues(data,sz,offset); }  
 
-  //! Copy a value from one vfdata container to another, without having to know
-  //! its type. Often for geometric operations one only has to copy the data.
-  //! in tota this function will do to virtual function calls to move data from
-  //! one container to the next. It however does direct casting between types. 
-  //! call these functions from the destination field to import data from another field
+  /// Copy a value from one vfdata container to another, without having to know
+  /// its type. Often for geometric operations one only has to copy the data.
+  /// in tota this function will do to virtual function calls to move data from
+  /// one container to the next. It however does direct casting between types. 
+  /// call these functions from the destination field to import data from another field
   template<class INDEX1, class INDEX2> 
   inline void copy_value(VField* field, INDEX1 idx1, INDEX2 idx2)
   {
     vfdata_->copy_value(field->vfdata_,index_type(idx1),index_type(idx2));
   }
   
-  //! Same for edge values
+  /// Same for edge values
   template<class INDEX1, class INDEX2> 
   inline void copy_evalue(VField* field, INDEX1 idx1, INDEX2 idx2)
   {
@@ -341,7 +341,7 @@ public:
       vfdata_->copy_values(field->vfdata_,index_type(idx1),index_type(idx2),sz);
   }
   
-  //! Same for edge values
+  /// Same for edge values
   template<class INDEX1, class INDEX2> 
   inline void copy_evalues(VField* field, INDEX1 idx1, INDEX2 idx2, size_type sz)
   {
@@ -349,15 +349,15 @@ public:
       vfdata_->copy_evalues(field->vfdata_,index_type(idx1),index_type(idx2),sz);
   }
 
-  //! Copy all the values from one container to another container
-  //! call these functions from the destination field to import data from another field
+  /// Copy all the values from one container to another container
+  /// call these functions from the destination field to import data from another field
   inline void copy_values(VField* field)
   { vfdata_->copy_values(field->vfdata_); }
 
   inline void copy_evalues(VField* field)
   { vfdata_->copy_evalues(field->vfdata_); }
 
-  //! Maximum and minimum of values (with index to see where maximum is located)
+  /// Maximum and minimum of values (with index to see where maximum is located)
   inline bool min(double& mn,index_type& idx)
   { mn = 0.0; return(vfdata_->min(mn,idx)); }
   
@@ -369,7 +369,7 @@ public:
   inline bool max(double& mx) const
   { index_type idx; mx =0.0; return(vfdata_->max(mx,idx)); }
 
-  //! Combined min max for efficiency
+  /// Combined min max for efficiency
   inline bool minmax(double& mn, index_type& idxmn, 
                      double& mx, index_type idxmx) const
   { 
@@ -378,7 +378,7 @@ public:
     return(vfdata_->minmax(mn,idxmn,mx,idxmx)); 
   }  
   
-  //! version of minmax without indices
+  /// version of minmax without indices
   inline bool minmax(double& mn, double& mx) const
   { 
     index_type idxmn;
@@ -391,23 +391,23 @@ public:
   inline void size(VMesh::Node::size_type& sz) { sz = number_of_nodes_; }
   inline void size(VMesh::ENode::size_type& sz) { sz = number_of_enodes_; }
   
-  //! dimensions of the element 0 .. 3
+  /// dimensions of the element 0 .. 3
   inline int dimension() { return(element_dim_); }
-  //! number of degree of freedoms in each element type in the mesh
+  /// number of degree of freedoms in each element type in the mesh
   inline int dofs() { return(element_dofs_); }
 
 
-  //! NOTE FOR INTERPOLATE AND GRADIENT
-  //! Interpolate and Gradient functions are only available for the following
-  //! datatypes: double, Vector, and Tensor
+  /// NOTE FOR INTERPOLATE AND GRADIENT
+  /// Interpolate and Gradient functions are only available for the following
+  /// datatypes: double, Vector, and Tensor
 
-  //! General interpolation function. This function does at most two virtual
-  //! function calls per call. It first will retrieve proper interpolation
-  //! weights from the mesh and then will apply it to the data inside the
-  //! data container. All objects needed for interpolation are reserved on
-  //! the stack for efficiency.
-  //! Note that different data orders have different implementations as non linear
-  //! interpolation requires far more data, these are handled in separate classes
+  /// General interpolation function. This function does at most two virtual
+  /// function calls per call. It first will retrieve proper interpolation
+  /// weights from the mesh and then will apply it to the data inside the
+  /// data container. All objects needed for interpolation are reserved on
+  /// the stack for efficiency.
+  /// Note that different data orders have different implementations as non linear
+  /// interpolation requires far more data, these are handled in separate classes
 
   template<class ARRAY, class DATA>  
   inline void minterpolate(ARRAY& val,
@@ -520,9 +520,9 @@ public:
   template<class ARRAY> inline void minterpolate(ARRAY& val, const  VMesh::coords_array_type &coords, VMesh::DElem::index_type idx) const
   { minterpolate(val, coords, static_cast<VMesh::index_type>(idx)); }
 
-  //! Similar to interpolation, but now this one derives the first derivative of
-  //! the field (i.e. the gradient). Again the implementation is similar to the
-  //! implementation of interpolate
+  /// Similar to interpolation, but now this one derives the first derivative of
+  /// the field (i.e. the gradient). Again the implementation is similar to the
+  /// implementation of interpolate
   template<class T>  inline void gradient(StackVector<T,3>& val, const VMesh::coords_type &coords, VMesh::index_type idx,T def_value = (static_cast<T>(0))) const
   { 
     VMesh::ElemGradient eg;
@@ -579,7 +579,7 @@ public:
     vfdata_->mgradient(val,eg,def_value);
   }
 
-  //! Different versions for different index types
+  /// Different versions for different index types
   template<class T>  inline void gradient(StackVector<T,3>& val, const VMesh::coords_type &coords, VMesh::Edge::index_type idx) const
   { gradient(val, coords, static_cast<VMesh::index_type>(idx)); }
   template<class T>  inline void gradient(StackVector<T,3>& val, const VMesh::coords_type &coords, VMesh::Face::index_type idx) const
@@ -591,7 +591,7 @@ public:
   template<class T>  inline void gradient(StackVector<T,3>& val, const VMesh::coords_type &coords, VMesh::DElem::index_type idx) const
   { gradient(val, coords, static_cast<VMesh::index_type>(idx)); }
     
-  //! internal function - this one may change in the future
+  /// internal function - this one may change in the future
   void update_mesh_pointer(Mesh* mesh)
   {
     vmesh_ = mesh->vmesh();

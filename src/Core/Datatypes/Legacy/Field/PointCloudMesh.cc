@@ -29,7 +29,7 @@
 #include <Core/Datatypes/Legacy/Field/PointCloudMesh.h>
 #include <Core/Datatypes/Legacy/Field/VMeshShared.h>
 
-//! Only include this class if we included PointCloud Support
+/// Only include this class if we included PointCloud Support
 #if (SCIRUN_POINTCLOUD_SUPPORT > 0)
 
 using namespace SCIRun::Core::Basis;
@@ -37,8 +37,8 @@ using namespace SCIRun::Core::Geometry;
 
 namespace SCIRun {
 
-//! This class is not exposed to the general interface and only the VMesh class
-//! is accessed by other classes.
+/// This class is not exposed to the general interface and only the VMesh class
+/// is accessed by other classes.
 
 template<class MESH>
 class VPointCloudMesh : public VMeshShared<MESH> {
@@ -46,7 +46,7 @@ public:
 
   virtual bool is_pointcloudmesh()     { return (true); }
 
-  //! constructor and descructor
+  /// constructor and descructor
   VPointCloudMesh(MESH* mesh) : VMeshShared<MESH>(mesh)
   {
     DEBUG_CONSTRUCTOR("VPointCloudMesh")
@@ -190,18 +190,18 @@ public:
 
 };
 
-//! Functions for creating the virtual interface for specific mesh types
-//! These are similar to compare maker and only serve to instantiate the class
+/// Functions for creating the virtual interface for specific mesh types
+/// These are similar to compare maker and only serve to instantiate the class
 
-//! Currently there are only 3 variations of this mesh available
-//! 1) constant interpolation
+/// Currently there are only 3 variations of this mesh available
+/// 1) constant interpolation
 
 VMesh* CreateVPointCloudMesh(PointCloudMesh<ConstantBasis<Point> >* mesh)
 {
   return new VPointCloudMesh<PointCloudMesh<ConstantBasis<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID PointCloudMesh_MeshID1(
                   PointCloudMesh<ConstantBasis<Point> >::type_name(-1),
                   PointCloudMesh<ConstantBasis<Point> >::mesh_maker);

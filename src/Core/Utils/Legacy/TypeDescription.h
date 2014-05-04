@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : TypeDescription.h
-//    Author : Martin Cole
-//    Date   : Mon May 14 10:16:28 2001
+///    @file    TypeDescription.h
+///    @author  Martin Cole
+///    @date    Mon May 14 10:16:28 2001
 
 #if ! defined(Disclosure_TypeDescription_h)
 #define Disclosure_TypeDescription_h
@@ -69,8 +69,8 @@ public:
   td_vec* get_sub_type() const {
     return subtype_;
   }
-  //! The arguments determine how the templated types are separated.
-  //! default is "<" and "> "
+  /// The arguments determine how the templated types are separated.
+  /// default is "<" and "> "
   std::string get_name(const std::string & type_sep_start = "<", 
 		  const std::string & type_sep_end = "> ") const;
   std::string get_similar_name(const std::string &substitute,
@@ -90,7 +90,7 @@ public:
 
 //  void fill_compile_info(CompileInfo *ci) const;
 
-  //! convert a string that ends in .cc to end in .h
+  /// convert a string that ends in .cc to end in .h
   static std::string cc_to_h(const std::string &dot_cc);
   static std::string strip_absolute_path(const std::string &path);
   static const TypeDescription* lookup_type(const std::string&);

@@ -109,7 +109,7 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
     a << 1, 0, 3.5,
       -1, 2, 0;
 
-    //TODO: compare dense and sparse
+    /// @todo: compare dense and sparse
     //EXPECT_EQ(a, *mat);
     EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
   }
@@ -193,7 +193,7 @@ TEST(ReadMatrixAlgorithmTest, UnknownFileFormatThrows)
 
 TEST(ReadMatrixAlgorithmTest, DISABLED_ThrowsForMatlabFilesICantThemReadYet)
 {
-  //TODO: will hook up Matlab readers soon.
+  /// @todo: will hook up Matlab readers soon.
   ReadMatrixAlgorithm algo;
   auto matlabFile = TestResources::rootDir() / "CGDarrell" / "RHS.mat";
   if (boost::filesystem::exists(matlabFile))
@@ -206,7 +206,7 @@ TEST(ReadMatrixAlgorithmTest, DISABLED_ThrowsForMatlabFilesICantThemReadYet)
 
 TEST(ReadMatrixAlgorithmTest, DISABLED_NonMatrixTextFile)
 {
-  //TODO: will hook-up Importers soon.
+  /// @todo: will hook-up Importers soon.
   ReadMatrixAlgorithm algo;
   const boost::filesystem::path txt("E:/seg3d/trunk/src/Install.txt");
   if (boost::filesystem::exists(txt))
@@ -231,7 +231,7 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealBinaryMatFile)
 
     DenseMatrix a = DenseMatrix::Identity(3,3);
 
-    //TODO: compare dense and sparse
+    /// @todo: compare dense and sparse
     //EXPECT_EQ(a, *mat);
     EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
   }

@@ -149,7 +149,7 @@ protected:
   MeshHandle tetrahedronMesh_;
 };
 
-// TODO: move to utils file (duplicated in LatticeVolumeMeshFacadeTests.cc)
+/// @todo: move to utils file (duplicated in LatticeVolumeMeshFacadeTests.cc)
 namespace
 {
   template <typename T>

@@ -33,8 +33,8 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-//! Internal function to this algorithm: no need for this function to be
-//! public. It is called from the algorithm class only.
+/// Internal function to this algorithm: no need for this function to be
+/// public. It is called from the algorithm class only.
 
 template <class DATA> 
 bool 
@@ -42,7 +42,7 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
                             FieldHandle& input, 
                             FieldHandle& output);
 
-//! This is the basic algorithm behind the mapping algorithm
+/// This is the basic algorithm behind the mapping algorithm
 
 template <class DATA> 
 bool 
@@ -50,19 +50,19 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
                             FieldHandle& input, 
                             FieldHandle& output)
 {
-  //! Get the method the user selected.
-  //! Since we do a check of valid entries when then user sets the
-  //! algorithm, we can assume it is one of the specified ones
+  /// Get the method the user selected.
+  /// Since we do a check of valid entries when then user sets the
+  /// algorithm, we can assume it is one of the specified ones
   std::string method;
   algo->get_option("method",method);
 
-  //! Get pointers to the virtual interfaces of the fields
-  //! We need these to obtain the data values
+  /// Get pointers to the virtual interfaces of the fields
+  /// We need these to obtain the data values
   
   VField *ifield = input->vfield();
   VField *ofield = output->vfield();
   
-  //! Make sure that the data vector has the proper length  
+  /// Make sure that the data vector has the proper length  
   VMesh* mesh = input->vmesh();
 
   VMesh::Elem::array_type elems;
@@ -208,21 +208,21 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
     }
   }
   
-  //! Check whether algorithm was aborted
+  /// Check whether algorithm was aborted
   if (algo->check_abort())
   {
-    //! Data is not valid, hence purge it
+    /// Data is not valid, hence purge it
     output = 0;
-    //! Return an error status to the user
+    /// Return an error status to the user
     algo->algo_end(); return (false);
   }
   
-  //! Algorithm succeeded
+  /// Algorithm succeeded
   algo->algo_end(); return (true);
 }
 
 
-//! Actual Algorithm class
+/// Actual Algorithm class
 
 bool 
 MapFieldDataFromNodeToElemAlgo::
@@ -230,18 +230,18 @@ run(FieldHandle& input, FieldHandle& output)
 {
   algo_start("MapFieldData");
   
-  //! safety check
+  /// safety check
   if (input.get_rep() == 0)
   {
     error("No input source field");
     algo_end(); return (false);
   }
 
-  //! Get information about field types
+  /// Get information about field types
   FieldInformation fi(input);
   FieldInformation fo(input);
   
-  //! In case data is already on the elements
+  /// In case data is already on the elements
   if (fi.is_constantdata())
   {
     remark("Data is already at elements");
@@ -249,32 +249,32 @@ run(FieldHandle& input, FieldHandle& output)
     algo_end(); return (true);
   }
 
-  //! We need linear data to start with
+  /// We need linear data to start with
   if (!(fi.is_lineardata()))
   {
     error("This function needs to have data at the nodes");
     algo_end(); return (false);  
   }
 
-  //! Make sure output type has data on elements
+  /// Make sure output type has data on elements
   fo.make_constantdata();
   
-  //! Create output field
+  /// Create output field
   output = CreateField(fo,input->mesh());
  
-  //! Check whether output field was created
+  /// Check whether output field was created
   if (output.get_rep() == 0)
   {
     error("Could not create output field");
     algo_end(); return(false);
   } 
   
-  //! Simple table to deal with the various data type formats
-  //! Note that not every data type is handled, all char, shorts etc,
-  //! are automatically handled by the int, and unsigned int case, by
-  //! casting the data on input (these should be the less frequently
-  //! used datatypes and hence have no specific algorithm in place).
-  //! Similarly floats are casted to doubles.
+  /// Simple table to deal with the various data type formats
+  /// Note that not every data type is handled, all char, shorts etc,
+  /// are automatically handled by the int, and unsigned int case, by
+  /// casting the data on input (these should be the less frequently
+  /// used datatypes and hence have no specific algorithm in place).
+  /// Similarly floats are casted to doubles.
   
   if (input->vfield()->is_signed_integer()) 
     return (MapFieldDataFromNodeToElemT<int>(this,input,output));

@@ -28,7 +28,6 @@
 
 #include <Interface/Modules/Fields/SplitFieldByDomainDialog.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -42,25 +41,11 @@ SplitFieldByDomainDialog::SplitFieldByDomainDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  connect(sortBySizeCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(sortAscendingCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  addCheckBoxManager(sortBySizeCheckBox_, SplitFieldByDomainAlgo::SortBySize);
+  addCheckBoxManager(sortAscendingCheckBox_, SplitFieldByDomainAlgo::SortAscending);
 }
-
-void SplitFieldByDomainDialog::push()
-{
-  if (!pulling_)
-  {
-    state_->setValue(SplitFieldByDomainAlgo::SortAscending, sortAscendingCheckBox_->isChecked());
-    state_->setValue(SplitFieldByDomainAlgo::SortBySize, sortBySizeCheckBox_->isChecked());
-  }
-}
-
-//BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
 
 void SplitFieldByDomainDialog::pull()
 {
-  Pulling p(this);
-  
-  sortAscendingCheckBox_->setChecked(state_->getValue(SplitFieldByDomainAlgo::SortAscending).getBool());
-  sortBySizeCheckBox_->setChecked(state_->getValue(SplitFieldByDomainAlgo::SortBySize).getBool());
+  pull_newVersionToReplaceOld();
 }

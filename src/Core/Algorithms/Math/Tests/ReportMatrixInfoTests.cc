@@ -57,7 +57,7 @@ namespace
     m->insert(0,0) = 1;
     m->insert(1,2) = -1;
     m->insert(4,4) = 2;
-    //TODO: remove this when NonZeroIterator is ready
+    /// @todo: remove this when NonZeroIterator is ready
     m->makeCompressed();
     return m;
   }

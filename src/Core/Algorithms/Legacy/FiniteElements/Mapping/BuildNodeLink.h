@@ -29,13 +29,13 @@
 #ifndef CORE_ALGORITHMS_FINTEELEMENTS_BUILDNODELINKMATRIX_H
 #define CORE_ALGORITHMS_FINTEELEMENTS_BUILDNODELINKMATRIX_H 1
 
-//! Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/MatrixFwd.h>
 
-//! Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+// for Windows support
 #include <Core/Algorithms/FiniteElements/share.h>
 
 namespace SCIRunAlgo {

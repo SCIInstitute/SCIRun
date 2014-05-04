@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Utils/Legacy/Debug.cc
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
@@ -40,9 +41,9 @@ namespace SCIRun {
 Mutex* scirun_debug_object_mutex = 0;
 std::map<std::string,int>* scirun_debug_object_count_ = 0;
 
-// TODO:
-// Convert this utility to a Debug class which will eliminate the need
-// for this type of initialization.
+/// @todo
+/// Convert this utility to a Debug class which will eliminate the need
+/// for this type of initialization.
 
 void 
 debug_ensure_mutex()

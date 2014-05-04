@@ -29,16 +29,16 @@
 
 
 
-/*
- *  Thread_win32.cc: win32 threads implementation of the thread library
- *
- *  Written by:
- *   Author: Chris Moulding
- *   Department of Computer Science
- *   University of Utah
- *   Date: November 1999
- *
- */
+///
+///@file  Thread_win32.cc
+///@brief win32 threads implementation of the thread library
+///
+///@author
+///       Chris Moulding
+///       Department of Computer Science
+///       University of Utah
+///@date  November 1999
+///
 
 #include <Core/Thread/Legacy/Mutex.h>
 #include <Core/Thread/Legacy/Semaphore.h>

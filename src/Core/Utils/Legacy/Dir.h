@@ -27,7 +27,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef CORE_UTIL_DIR_H
 #define CORE_UTIL_DIR_H
 
@@ -50,7 +49,7 @@ namespace SCIRun {
    
    /**************************************
      
-     CLASS
+     @class
        Dir
       
        Short Description...
@@ -58,7 +57,7 @@ namespace SCIRun {
      GENERAL INFORMATION
       
        Dir.h
-      
+     @author 
        Steven G. Parker
        Department of Computer Science
        University of Utah

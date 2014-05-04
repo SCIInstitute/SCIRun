@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/CreateFieldData.cc
 
 #include <Modules/Legacy/Fields/CreateFieldData.h>
 #include <Core/Datatypes/String.h>
@@ -54,6 +55,9 @@ CreateFieldData::CreateFieldData() : Module(staticInfo_)
 void CreateFieldData::setStateDefaults()
 {
   auto state = get_state();
+  state->setValue(FunctionString, std::string("RESULT = 1;"));
+  state->setValue(FormatString, std::string("Scalar"));
+  state->setValue(BasisString, std::string("Linear"));
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -107,9 +111,9 @@ CreateFieldData::execute()
     engine.setLogger(this);
     
     std::string format = state->getValue(FormatString).getString();
-    if (format == "") format = "double";
+    if (format.empty()) format = "double";
     std::string basis = state->getValue(BasisString).getString();
-    if (basis == "") basis = "Linear";
+    if (basis.empty()) basis = "Linear";
 
     // Add as well the output object
     int basis_order = 0;

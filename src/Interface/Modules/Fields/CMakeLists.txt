@@ -33,6 +33,7 @@ SET(Interface_Modules_Fields_FORMS
   JoinFields.ui
   ReportFieldInfoDialog.ui
   SplitFieldByDomain.ui
+  CreateFieldData.ui
   InterfaceWithCleaverDialog.ui
   SetFieldDataDialog.ui
   MapFieldDataFromElemToNodeDialog.ui
@@ -41,6 +42,7 @@ SET(Interface_Modules_Fields_FORMS
 
 SET(Interface_Modules_Fields_HEADERS
   CreateLatVolDialog.h
+  CreateFieldDataDialog.h
   GetDomainBoundaryDialog.h
   JoinFieldsDialog.h
   ReportFieldInfoDialog.h
@@ -54,6 +56,7 @@ SET(Interface_Modules_Fields_HEADERS
 
 SET(Interface_Modules_Fields_SOURCES 
   CreateLatVolDialog.cc
+  CreateFieldDataDialog.cc
   GetDomainBoundaryDialog.cc
   JoinFieldsDialog.cc
   ReportFieldInfoDialog.cc

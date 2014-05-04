@@ -33,7 +33,7 @@
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
-//! for Windows support
+// for Windows support
 #include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
 namespace SCIRun {

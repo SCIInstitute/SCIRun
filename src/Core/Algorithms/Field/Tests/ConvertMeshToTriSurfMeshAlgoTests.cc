@@ -45,49 +45,10 @@ namespace
 {
   void runTest(...)
   {
-    //std::cout << "Basis # " << basis << std::endl;
-    //FieldInformation lfi("LatVolMesh", basis, "double");
-
-    //size_type sizex = 2, sizey = 3, sizez = 4;
-    //Point minb(-1.0, -1.0, -1.0);
-    //Point maxb(1.0, 1.0, 1.0);
-    //MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
-    //FieldHandle ofh = CreateField(lfi,mesh);
-    //ofh->vfield()->clear_all_values();
-
-    //GetFieldBoundaryAlgo algo;
-
-    //FieldHandle boundary;
-    //MatrixHandle mapping;
-    //algo.run(ofh, boundary, mapping);
-
-    //ASSERT_TRUE(boundary);
-
-    ////TODO: need assertions on boundary field
-
-    //if (basis != -1)
-    //{
-    //  ASSERT_TRUE(mapping);
-    //  EXPECT_EQ(expectedMatrixRows, mapping->nrows());
-    //  EXPECT_EQ(expectedMatrixColumns, mapping->ncols());
-    //  std::ostringstream ostr;
-    //  ostr << *mapping;
-    //  //std::cout << "expected\n" << expectedMatrixString << std::endl;
-    //  //std::cout << "actual\n" << ostr.str() << std::endl;
-    //  EXPECT_EQ(expectedMatrixString, ostr.str());
-    //}
   }
 }
 
 TEST(ConvertMeshToTriSurfAlgoTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
-  /*
-  EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point> > ,NoDataBasis<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > ", info.type);
-  EXPECT_EQ(0, info.dataMin);
-  EXPECT_EQ(0, info.dataMax);
-  EXPECT_EQ(0, info.numdata_);
-  EXPECT_EQ(sizex * sizey * sizez, info.numnodes_);
-  EXPECT_EQ((sizex-1) * (sizey-1) * (sizez-1), info.numelements_);
-  EXPECT_EQ("None (nodata basis)", info.dataLocation);*/
 }

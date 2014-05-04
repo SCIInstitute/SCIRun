@@ -29,11 +29,11 @@
 
 #include <Core/Algorithms/Fields/RefineMesh/RefineMesh.h>
 
-//! For mapping matrices
+/// For mapping matrices
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/FieldInformation.h>
 
-//! STL classes needed
+/// STL classes needed
 #include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
@@ -48,13 +48,13 @@ bool
 RefineMeshTetVolAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
                       std::string select, double isoval)
 {
-  //! Obtain information on what type of input field we have
+  /// Obtain information on what type of input field we have
   FieldInformation fi(input);
   
-  //! Alter the input so it will become a tetvol
+  /// Alter the input so it will become a tetvol
   fi.make_tetvolmesh();
   
-  //! Create the output field
+  /// Create the output field
   output = CreateField(fi);
   
   if (output.get_rep() == 0)
@@ -818,10 +818,10 @@ bool
 RefineMeshCurveAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
                        std::string select, double isoval)
 {
-  //! Obtain information on what type of input field we have
+  /// Obtain information on what type of input field we have
   FieldInformation fi(input);
   
-  //! Alter the input so it will become a QuadSurf
+  /// Alter the input so it will become a QuadSurf
   fi.make_curvemesh();
   output = CreateField(fi);
   
@@ -1001,10 +1001,10 @@ bool
 RefineMeshTriSurfAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
                        std::string select, double isoval)
 {
-  //! Obtain information on what type of input field we have
+  /// Obtain information on what type of input field we have
   FieldInformation fi(input);
   
-  //! Alter the input so it will become a QuadSurf
+  /// Alter the input so it will become a QuadSurf
   fi.make_trisurfmesh();
   output = CreateField(fi);
   

@@ -210,7 +210,7 @@ inline Point Max(const Point& p1, const Point& p2)
 
 }}
 
-// TODO: This one is obsolete when last part dynamic compilation is gone
+/// @todo: This one is obsolete when last part dynamic compilation is gone
 SCISHARE const std::string& Point_get_h_file_path();
 SCISHARE const SCIRun::TypeDescription* get_type_description(Core::Geometry::Point*);
 }

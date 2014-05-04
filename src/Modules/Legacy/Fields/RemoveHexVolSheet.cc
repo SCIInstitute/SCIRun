@@ -26,16 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  InsertHexSheet.cc:  Remove a layer of hexes.
- *
- *  Written by:
- *   Jason Shepherd
- *   Department of Computer Science
- *   University of Utah
- *   May 2006
- *
- */
+///
+///@file  InsertHexSheet.cc
+///@brief Remove a layer of hexes.
+///
+///@author
+///   Jason Shepherd
+///   Department of Computer Science
+///   University of Utah
+///@date  May 2006
+///
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/Field.h>
@@ -53,11 +53,11 @@ namespace SCIRun {
 
 
 
-//TODO: change vector param to ref
+/// @todo: change vector param to ref
 class RemoveHexVolSheetAlgo
 {
 public:
-    //! virtual interface. 
+    /// virtual interface. 
   void execute(
       ProgressReporter *reporter, 
       FieldHandle hexfieldh, 

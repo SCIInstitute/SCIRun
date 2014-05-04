@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Math/SolveLinearSystem.cc
 
 #include <iostream>
 #include <Modules/Math/SolveLinearSystem.h>
@@ -65,7 +66,7 @@ void SolveLinearSystemModule::execute()
 
   if (needToExecute())
   {
-    //TODO: why aren't these checks in the algo class?
+    /// @todo: why aren't these checks in the algo class?
     if (rhs->ncols() != 1)
       THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
     if (!matrix_is::sparse(A))

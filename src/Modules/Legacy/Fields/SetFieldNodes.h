@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Modules/Legacy/Fields/SetFieldNodes.h
+
 #ifndef MODULES_LEGACY_FIELDS_SETFIELDNODES_H__
 #define MODULES_LEGACY_FIELDS_SETFIELDNODES_H__
 
