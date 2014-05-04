@@ -148,10 +148,10 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
     h.reset(new SelectSubMatrixAlgorithm);   
   else if (moduleName == "ConvertMatrixType")
     h.reset(new ConvertMatrixTypeAlgorithm);  
+  else if (moduleName == "MapFieldDataFromNodeToElem")
+    h.reset(new MapFieldDataFromNodeToElemAlgo);    
   else if (moduleName == "MapFieldDataFromElemToNode")
     h.reset(new MapFieldDataFromElemToNodeAlgo);      
-  else if (moduleName == "MapFieldDataFromNodeToElem")
-    h.reset(new MapFieldDataFromNodeToElemAlgo);   
     
   if (h && algoCollaborator)
   {

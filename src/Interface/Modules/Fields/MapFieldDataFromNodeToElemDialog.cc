@@ -27,14 +27,13 @@
 */
 
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/Logging/Log.h>
 #include <boost/bimap.hpp>
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 
@@ -76,9 +75,9 @@ void MapFieldDataFromNodeToElemDialog::push()
     Core::Logging::Log::get() << Core::Logging::DEBUG_LOG << "GUI: METHOD SELECTED: " << method;
     Core::Logging::Log::get().flush();
     std::string methodOption = impl_->MethodNameLookup_.left.at(method);
-    if (methodOption != state_->getValue(Variables::Method).getString())
+    if (methodOption != state_->getValue(MapFieldDataFromNodeToElemAlgo::Method).getString())
       {
-        state_->setValue(Variables::Method, methodOption);
+        state_->setValue(MapFieldDataFromNodeToElemAlgo::Method, methodOption);
       }
   }
 }
@@ -89,7 +88,7 @@ void MapFieldDataFromNodeToElemDialog::pull()
 {
   Pulling p(this);
  
-  auto method = state_->getValue(Variables::Method).getString();
+  auto method = state_->getValue(MapFieldDataFromNodeToElemAlgo::Method).getString();
   
   auto it = impl_->MethodNameLookup_.right.find(method);
   if (it != impl_->MethodNameLookup_.right.end())

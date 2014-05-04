@@ -30,7 +30,6 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -227,7 +226,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
 
 MapFieldDataFromNodeToElemAlgo::MapFieldDataFromNodeToElemAlgo()
 {
-  add_option(Method,"interpolate","average|min|max|sum|median|none");
+  add_option(Method,"interpolation","interpolation|average|min|max|sum|median|none");
 }
 
 AlgorithmInputName MapFieldDataFromNodeToElemAlgo::InputField("InputField");
