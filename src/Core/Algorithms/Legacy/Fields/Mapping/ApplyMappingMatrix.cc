@@ -47,49 +47,28 @@
 #include <vector>
 #include <algorithm>
 
-//namespace SCIRunAlgo {
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
-<<<<<<< HEAD
-//! Internal function to this algorithm: no need for this function to be
-//! public. It is called from the algorithm class only.
 
-=======
 /// Internal function to this algorithm: no need for this function to be
 /// public. It is called from the algorithm class only.
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
->>>>>>> c2521af3852c84caa0e1e82b864408ff78ca7429
-template <class DATA> 
-/*bool 
-ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
-                    VField* input, VField* output,
-<<<<<<< HEAD
-                    SparseRowMatrix* mapping);*/
-		    
+/// This is the basic algorithm behind the mapping algorithm		    
 bool
 ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
                     const VField* input, VField* output,
                     SparseRowMatrixHandle mapping);
-		    
-//! This is the basic algorithm behind the mapping algorithm
-=======
-                    SparseRowMatrix* mapping);
 
 /// This is the basic algorithm behind the mapping algorithm
->>>>>>> c2521af3852c84caa0e1e82b864408ff78ca7429
 template <class DATA> 
 bool
 ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
                     const VField* input, VField* output,
                     SparseRowMatrixHandle mapping)
-/*bool 
-ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
-                    VField* input, VField* output,
-                    SparseRowMatrix* mapping)*/
+
 {
   double* vals = mapping->valuePtr();
   const index_type* rows = mapping->get_rows();
@@ -104,25 +83,20 @@ ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
   size_type  ss = rows[idx+1]-rows[idx];
   input->get_weighted_value(val,&(columns[rr]),&(vals[rr]),ss);
   
-<<<<<<< HEAD
   output->set_value(val,idx);
-  cnt++; if (cnt==400) {algo->update_progress((double)idx/m); cnt=0;}
-  
+  cnt++; if (cnt==400) {algo->update_progress((double)idx/m); cnt=0;}  
  }
 
   return true;
-=======
   /// Algorithm succeeded
-  algo->algo_end(); return (true);
->>>>>>> c2521af3852c84caa0e1e82b864408ff78ca7429
+
 }
 
 
 /// Actual Algorithm class
-
 ApplyMappingMatrixAlgo::ApplyMappingMatrixAlgo() 
 {
-<<<<<<< HEAD
+
 
 }
 
@@ -131,24 +105,14 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   FieldHandle output;
  
   if (!isrc)
-=======
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  algo_start("ApplyMappingMatrix");
-  
   /// safety check
-  if (isrc.get_rep() == 0)
->>>>>>> c2521af3852c84caa0e1e82b864408ff78ca7429
   {
     THROW_ALGORITHM_INPUT_ERROR("No input source field");
     return FieldHandle();
   }
 
-<<<<<<< HEAD
   if (!isrc)
-=======
   /// safety check
-  if (idst.get_rep() == 0)
->>>>>>> c2521af3852c84caa0e1e82b864408ff78ca7429
   {
     THROW_ALGORITHM_INPUT_ERROR("No input destination field");
     return FieldHandle();
@@ -171,13 +135,8 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   VField* ifsrc =  isrc->vfield();
   VField* ifdst =  idst->vfield();
   VMesh*  imdst =  idst->vmesh();
-<<<<<<< HEAD
-  
-  //! Get information about field types
-=======
 
   /// Get information about field types
->>>>>>> c2521af3852c84caa0e1e82b864408ff78ca7429
   FieldInformation fi(isrc);
   FieldInformation fo(idst);
 
@@ -215,30 +174,19 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
     THROW_ALGORITHM_INPUT_ERROR("The number of columns in the matrix does not match number of values in the source field");
     return FieldHandle();
   }
-<<<<<<< HEAD
-  
-  //! Create output field
-=======
 
-  /// Create output field
->>>>>>> c2521af3852c84caa0e1e82b864408ff78ca7429
   output = CreateField(fo,idst->mesh());
   
   VField* ofield = output->vfield();
   ofield->resize_values();  
   
-<<<<<<< HEAD
+
   if (!output)
-=======
-  /// Check whether output field was created
-  if (output.get_rep() == 0)
->>>>>>> c2521af3852c84caa0e1e82b864408ff78ca7429
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not create output field");
     return FieldHandle();
   } 
   
-<<<<<<< HEAD
   //! Simple table to deal with the various data type formats
   //! Note that not every data type is handled, all char, shorts etc,
   //! are automatically handled by the int, and unsigned int case, by
@@ -246,15 +194,7 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   //! used datatypes and hence have no specific algorithm in place).
   //! Similarly floats are casted to doubles.
        
-=======
-  /// Simple table to deal with the various data type formats
-  /// Note that not every data type is handled, all char, shorts etc,
-  /// are automatically handled by the int, and unsigned int case, by
-  /// casting the data on input (these should be the less frequently
-  /// used datatypes and hence have no specific algorithm in place).
-  /// Similarly floats are casted to doubles.
 
->>>>>>> c2521af3852c84caa0e1e82b864408ff78ca7429
   if (isrc->vfield()->is_char()) 
     if (ApplyMappingMatrixT<char>(this,ifsrc,ofield,matrix))
        return output;
@@ -317,5 +257,3 @@ AlgorithmOutput ApplyMappingMatrixAlgo::run_generic(const AlgorithmInput & input
  return output;
 }
 
-//ApplyMappingMatrixAlgo::~ApplyMappingMatrixAlgo() {}
-//} // namespace SCIRunAlgo
