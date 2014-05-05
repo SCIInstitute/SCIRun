@@ -57,6 +57,7 @@ using namespace SCIRun::Core::Geometry;
 /// Internal function to this algorithm: no need for this function to be
 /// public. It is called from the algorithm class only.
 /// This is the basic algorithm behind the mapping algorithm		    
+template <class DATA> 		    
 bool
 ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
                     const VField* input, VField* output,
@@ -68,7 +69,6 @@ bool
 ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
                     const VField* input, VField* output,
                     SparseRowMatrixHandle mapping)
-
 {
   double* vals = mapping->valuePtr();
   const index_type* rows = mapping->get_rows();
@@ -82,22 +82,18 @@ ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
   index_type rr = rows[idx];
   size_type  ss = rows[idx+1]-rows[idx];
   input->get_weighted_value(val,&(columns[rr]),&(vals[rr]),ss);
-  
+
   output->set_value(val,idx);
   cnt++; if (cnt==400) {algo->update_progress((double)idx/m); cnt=0;}  
  }
 
   return true;
-  /// Algorithm succeeded
-
 }
 
 
 /// Actual Algorithm class
 ApplyMappingMatrixAlgo::ApplyMappingMatrixAlgo() 
 {
-
-
 }
 
 FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping) const
@@ -175,25 +171,24 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
     return FieldHandle();
   }
 
+  /// Create output field
   output = CreateField(fo,idst->mesh());
   
   VField* ofield = output->vfield();
   ofield->resize_values();  
   
-
   if (!output)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not create output field");
     return FieldHandle();
   } 
   
-  //! Simple table to deal with the various data type formats
-  //! Note that not every data type is handled, all char, shorts etc,
-  //! are automatically handled by the int, and unsigned int case, by
-  //! casting the data on input (these should be the less frequently
-  //! used datatypes and hence have no specific algorithm in place).
-  //! Similarly floats are casted to doubles.
-       
+  /// Simple table to deal with the various data type formats
+  /// Note that not every data type is handled, all char, shorts etc,
+  /// are automatically handled by the int, and unsigned int case, by
+  /// casting the data on input (these should be the less frequently
+  /// used datatypes and hence have no specific algorithm in place).
+  /// Similarly floats are casted to doubles.
 
   if (isrc->vfield()->is_char()) 
     if (ApplyMappingMatrixT<char>(this,ifsrc,ofield,matrix))
