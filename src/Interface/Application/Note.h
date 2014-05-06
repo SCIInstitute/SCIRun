@@ -29,9 +29,17 @@
 #ifndef INTERFACE_APPLICATION_NOTE_H
 #define INTERFACE_APPLICATION_NOTE_H
 
+#include <Interface/Application/PositionProvider.h>
+#include <boost/shared_ptr.hpp>
 #include <QString>
 #include <QFont>
 #include <QColor>
+#include <QPointF>
+
+class QAction;
+class QGraphicsItem;
+class QGraphicsTextItem;
+class QGraphicsScene;
 
 namespace SCIRun {
 namespace Gui {
@@ -53,6 +61,56 @@ namespace Gui {
     NotePosition position_; 
   };
 
+  class HasNotes 
+  {
+  public:
+    HasNotes(const std::string& name, bool positionAdjustable);
+    virtual ~HasNotes();
+    void connectNoteEditorToAction(QAction* action);
+    void connectUpdateNote(QObject* obj);
+    void setCurrentNote(const Note& note) { currentNote_ = note; }
+  protected:
+    void destroy();
+  private:
+    class NoteEditor* noteEditor_;
+    Note currentNote_;
+    /// @todo: extract and make atomic
+    bool destroyed_;
+  };
+
+  class NoteDisplayStrategy
+  {
+  public:
+    virtual ~NoteDisplayStrategy() {}
+    virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const = 0;
+  };
+
+  typedef boost::shared_ptr<NoteDisplayStrategy> NoteDisplayStrategyPtr;
+  class ModuleWidgetNoteDisplayStrategy;
+  class ConnectionNoteDisplayStrategy;
+
+  class NoteDisplayHelper
+  {
+  public:
+    virtual ~NoteDisplayHelper();
+  protected:
+    explicit NoteDisplayHelper(NoteDisplayStrategyPtr display);
+    virtual void setNoteGraphicsContext() = 0;
+    void updateNoteImpl(const Note& note);
+    void updateNotePosition();
+    void setDefaultNotePositionImpl(NotePosition position);
+    QGraphicsItem* item_;
+    QGraphicsScene* scene_;
+    PositionProviderPtr positioner_;
+    void destroy();
+  private:
+    QGraphicsTextItem* note_;
+    NotePosition notePosition_, defaultNotePosition_;
+    NoteDisplayStrategyPtr displayStrategy_;
+    bool destroyed_;
+
+    QPointF relativeNotePosition();
+  };
 }
 }
 

@@ -48,6 +48,7 @@
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
 #include <Interface/Modules/Fields/SplitFieldByDomainDialog.h>
+#include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
@@ -132,6 +133,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new GetFieldsFromBundleDialog(moduleId, state, parentToUse_);
   if (moduleId.find("SplitFieldByDomain") != std::string::npos)
     return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("CreateFieldData") != std::string::npos)
+    return new CreateFieldDataDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

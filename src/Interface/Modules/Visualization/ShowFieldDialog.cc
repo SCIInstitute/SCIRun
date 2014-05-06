@@ -46,43 +46,29 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  connect(showNodesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
-  connect(showEdgesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
-  connect(showFacesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
-  connect(enableTransparencyNodesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
-  connect(enableTransparencyEdgesCheckBox_1, SIGNAL(stateChanged(int)), this, SLOT(push()));
-  connect(enableTransparencyFacesCheckBox_2, SIGNAL(stateChanged(int)), this, SLOT(push()));
-  connect(invertNormalsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  addCheckBoxManager(showNodesCheckBox_, ShowFieldModule::ShowNodes);
+  addCheckBoxManager(showEdgesCheckBox_, ShowFieldModule::ShowEdges);
+  addCheckBoxManager(showFacesCheckBox_, ShowFieldModule::ShowFaces);
+  addCheckBoxManager(enableTransparencyNodesCheckBox_, ShowFieldModule::NodeTransparency);
+  addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
+  addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
+  addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
   buttonBox->setVisible(false);
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 }
 
 void ShowFieldDialog::push()
 {
-  //TODO: idea: tell state_ directly, i'm in a scoped region of pushing/editing, don't signal while i edit. signal when done editing!
   if (!pulling_)
   {
-    state_->setValue(ShowFieldModule::ShowNodes, showNodesCheckBox_->isChecked());
-    state_->setValue(ShowFieldModule::ShowEdges, showEdgesCheckBox_->isChecked());
-    state_->setValue(ShowFieldModule::ShowFaces, showFacesCheckBox_->isChecked());
-    state_->setValue(ShowFieldModule::NodeTransparency, enableTransparencyNodesCheckBox_->isChecked());
-    state_->setValue(ShowFieldModule::EdgeTransparency, enableTransparencyEdgesCheckBox_1->isChecked());
-    state_->setValue(ShowFieldModule::FaceTransparency, enableTransparencyFacesCheckBox_2->isChecked());
-    state_->setValue(ShowFieldModule::FaceInvertNormals, invertNormalsCheckBox->isChecked());
     pushColor();
   }
 }
 
 void ShowFieldDialog::pull()
 {
+  pull_newVersionToReplaceOld();
   Pulling p(this);
-  showNodesCheckBox_->setChecked(state_->getValue(ShowFieldModule::ShowNodes).getBool());
-  showEdgesCheckBox_->setChecked(state_->getValue(ShowFieldModule::ShowEdges).getBool());
-  showFacesCheckBox_->setChecked(state_->getValue(ShowFieldModule::ShowFaces).getBool());
-  enableTransparencyNodesCheckBox_->setChecked(state_->getValue(ShowFieldModule::NodeTransparency).getBool());
-  enableTransparencyEdgesCheckBox_1->setChecked(state_->getValue(ShowFieldModule::EdgeTransparency).getBool());
-  enableTransparencyFacesCheckBox_2->setChecked(state_->getValue(ShowFieldModule::FaceTransparency).getBool());
-  invertNormalsCheckBox->setChecked(state_->getValue(ShowFieldModule::FaceInvertNormals).getBool());
   ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).getString());
   defaultMeshColor_ = QColor(color.r(), color.g(), color.b());
 }
@@ -93,6 +79,8 @@ void ShowFieldDialog::assignDefaultMeshColor()
   if (newColor.isValid())
   {
     defaultMeshColor_ = newColor;
+    //TODO: set color of button to this color
+    //defaultMeshColorButton_->set
     pushColor();
   }
 }

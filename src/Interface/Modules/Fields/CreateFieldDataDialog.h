@@ -26,25 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
+#ifndef INTERFACE_MODULES_CREATEFIELDDATA_H
+#define INTERFACE_MODULES_CREATEFIELDDATA_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::BrainStimulator;
+#include "Interface/Modules/Fields/ui_CreateFieldData.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-
-GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE CreateFieldDataDialog : public ModuleDialogGeneric, 
+  public Ui::CreateFieldData
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+	Q_OBJECT
+	
+public:
+  CreateFieldDataDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
+
+}
 }
 
-void GenerateROIStatisticsDialog::pull()
-{
-  //TODO
-}
-
+#endif

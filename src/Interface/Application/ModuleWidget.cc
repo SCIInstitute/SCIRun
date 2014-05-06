@@ -62,16 +62,6 @@ QPointF ProxyWidgetPosition::currentPosition() const
   return widget_->pos() + offset_;
 }
 
-QPointF ProxyWidgetPosition::mapToScene(const QPointF &point) const
-{
-  return widget_->mapToScene(point);
-}
-
-QPointF ProxyWidgetPosition::mapFromScene(const QPointF &point) const
-{
-  return widget_->mapFromScene(point);
-}
-
 namespace SCIRun {
 namespace Gui {
   class ModuleActionsMenu
@@ -121,9 +111,10 @@ namespace
 #endif
 }
 
+
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
   QWidget* parent /* = 0 */)
-  : QFrame(parent),
+  : QFrame(parent), HasNotes(theModule->get_id(), true),
   ports_(new PortWidgetManager),
   deletedFromGui_(true),
   colorLocked_(false),
@@ -180,10 +171,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
 
-  noteEditor_ = new NoteEditor(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
-  connect(actionsMenu_->getAction("Notes"), SIGNAL(triggered()), noteEditor_, SLOT(show()));
-  connect(actionsMenu_->getAction("Notes"), SIGNAL(triggered()), noteEditor_, SLOT(raise()));
-  connect(noteEditor_, SIGNAL(noteChanged(const Note&)), this, SLOT(updateNote(const Note&)));
+  connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
+  connectUpdateNote(this);
 
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
 
@@ -418,7 +407,6 @@ ModuleWidget::~ModuleWidget()
   }
   theModule_->setLogger(LoggerHandle());
   delete logWindow_;
-  delete noteEditor_;
 
   if (deletedFromGui_)
     Q_EMIT removeModule(ModuleId(moduleId_));
@@ -534,8 +522,8 @@ void ModuleWidget::launchDocumentation()
 
 void ModuleWidget::updateNote(const Note& note)
 {
-  currentNote_ = note;
-  noteUpdated(note);
+  setCurrentNote(note);
+  Q_EMIT noteUpdated(note);
 }
 
 void ModuleWidget::duplicate()

@@ -32,23 +32,19 @@
 
 using namespace SCIRun::Gui;
 
-namespace
-{
-  int moveIncrement = 30;
-}
-
-NoteEditor::NoteEditor(const QString& moduleName, QWidget* parent) : QDialog(parent), moduleName_(moduleName)
+NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidget* parent) : QDialog(parent), moduleName_(moduleName)
 {
   setupUi(this);
   setModal(false);
   setWindowTitle("Note for " + moduleName);
   setVisible(false);
-  moveIncrement += moveIncrement;
-  move(moveIncrement, moveIncrement);
 
   connect(chooseColorButton_, SIGNAL(clicked()), this, SLOT(changeTextColor()));
   connect(resetColorButton_, SIGNAL(clicked()), this, SLOT(resetTextColor()));
-  connect(positionComboBox_, SIGNAL(activated(int)), this, SLOT(changeNotePosition(int)));
+  if (positionAdjustable)
+    connect(positionComboBox_, SIGNAL(activated(int)), this, SLOT(changeNotePosition(int)));
+  else
+    positionComboBox_->setEnabled(false);
   connect(fontSizeComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeFontSize(const QString&)));
   //TODO: sloppy.
   //connect(alignmentComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeTextAlignment(const QString&)));
@@ -105,8 +101,6 @@ void NoteEditor::changeTextColor()
 
 void NoteEditor::resetText()
 {
-  //noteBackup_.html_ = textEdit_->toHtml();
-
   textEdit_->clear();
 }
 
@@ -127,8 +121,6 @@ void NoteEditor::cancel()
 {
   textEdit_->setHtml(noteHtmlBackup_);
   fontSizeComboBox_->setCurrentIndex(fontSizeBackup_);
-  //positionComboBox_->setCurrentIndex(positionBackup_);
-  //updateNote();
   hide();
 }
 
@@ -143,6 +135,5 @@ void NoteEditor::showEvent(QShowEvent* event)
 {
   noteHtmlBackup_ = textEdit_->toHtml();
   fontSizeBackup_ = fontSizeComboBox_->currentIndex();
-  //positionBackup_ = positionComboBox_->currentIndex();
   QDialog::showEvent(event);
 }

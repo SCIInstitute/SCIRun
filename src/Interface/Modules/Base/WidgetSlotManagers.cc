@@ -26,25 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
+#include <Interface/Modules/Base/WidgetSlotManagers.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::BrainStimulator;
 
-
-GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog) : state_(state), dialog_(dialog)
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
 }
 
-void GenerateROIStatisticsDialog::pull()
+WidgetSlotManager::~WidgetSlotManager() 
 {
-  //TODO
 }
 
+void WidgetSlotManager::push()
+{
+  //TODO: idea: tell state_ directly, i'm in a scoped region of pushing/editing, don't signal while i edit. signal when done editing!
+  if (!dialog_.isPulling())
+    pushImpl();
+}

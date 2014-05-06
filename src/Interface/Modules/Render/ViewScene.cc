@@ -188,8 +188,6 @@ public:
   {
     QStyleOptionViewItem& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
     refToNonConstOption.showDecorationSelected = false;
-    //refToNonConstOption.state &= ~QStyle::State_HasFocus & ~QStyle::State_MouseOver;
-
     QStyledItemDelegate::paint(painter, refToNonConstOption, index);
   }
 };

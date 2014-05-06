@@ -29,7 +29,6 @@
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -43,40 +42,15 @@ JoinFieldsDialog::JoinFieldsDialog(const std::string& name, ModuleStateHandle st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  connect(forcePointCloudCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(mergeDuplicateElementsCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(mergeDuplicateNodesCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(mergeMeshOnlyCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(onlyMergeSameValueCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(nodeToleranceDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(push()));
+  addCheckBoxManager(forcePointCloudCheckBox_, SCIRun::Modules::Fields::JoinFields::ForcePointCloud);
+  addCheckBoxManager(mergeDuplicateElementsCheckBox_, JoinFieldsAlgo::MergeElems);
+  addCheckBoxManager(mergeDuplicateNodesCheckBox_, JoinFieldsAlgo::MergeNodes);
+  addCheckBoxManager(mergeMeshOnlyCheckBox_, JoinFieldsAlgo::MakeNoData);
+  addCheckBoxManager(onlyMergeSameValueCheckBox_, JoinFieldsAlgo::MatchNodeValues);
+  addDoubleSpinBoxManager(nodeToleranceDoubleSpinBox_, JoinFieldsAlgo::Tolerance);
 }
-
-void JoinFieldsDialog::push()
-{
-  if (!pulling_)
-  {
-    state_->setValue(JoinFieldsAlgo::MergeNodes, mergeDuplicateNodesCheckBox_->isChecked());
-    state_->setValue(JoinFieldsAlgo::MergeElems, mergeDuplicateElementsCheckBox_->isChecked());
-    state_->setValue(SCIRun::Modules::Fields::JoinFields::ForcePointCloud, forcePointCloudCheckBox_->isChecked());
-    state_->setValue(JoinFieldsAlgo::MakeNoData, mergeMeshOnlyCheckBox_->isChecked());
-    state_->setValue(JoinFieldsAlgo::MatchNodeValues, onlyMergeSameValueCheckBox_->isChecked());
-    state_->setValue(JoinFieldsAlgo::Tolerance, nodeToleranceDoubleSpinBox_->value());
-  }
-}
-
-//BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
 
 void JoinFieldsDialog::pull()
 {
-  Pulling p(this);
-  
-  double newValue = state_->getValue(JoinFieldsAlgo::Tolerance).getDouble();
-  if (newValue != nodeToleranceDoubleSpinBox_->value())
-    nodeToleranceDoubleSpinBox_->setValue(newValue);
-
-  mergeDuplicateNodesCheckBox_->setChecked(state_->getValue(JoinFieldsAlgo::MergeNodes).getBool());
-  mergeDuplicateElementsCheckBox_->setChecked(state_->getValue(JoinFieldsAlgo::MergeElems).getBool());
-  mergeMeshOnlyCheckBox_->setChecked(state_->getValue(JoinFieldsAlgo::MakeNoData).getBool());
-  onlyMergeSameValueCheckBox_->setChecked(state_->getValue(JoinFieldsAlgo::MatchNodeValues).getBool());
-  forcePointCloudCheckBox_->setChecked(state_->getValue(SCIRun::Modules::Fields::JoinFields::ForcePointCloud).getBool());
+  pull_newVersionToReplaceOld();
 }

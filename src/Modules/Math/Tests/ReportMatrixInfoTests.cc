@@ -1,29 +1,29 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
+For more information, please see: http://software.sci.utah.edu
 
-   The MIT License
+The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
-   University of Utah.
+Copyright (c) 2012 Scientific Computing and Imaging Institute,
+University of Utah.
 
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
+License for the specific language governing rights and limitations under
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 */
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
@@ -100,17 +100,16 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
   ConnectionAddedSignalType addedSignal;
   ConnectionRemovedSignalType removeSignal;
   DynamicPortManager dpm(addedSignal, removeSignal, &controller);
-printInputPorts(hasDynamic);
+  printInputPorts(hasDynamic);
   auto oport = input1->outputPorts()[0];
-  std::cout << 0 << std::endl;
   {
     auto iport = hasDynamic->inputPorts()[0];
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
 
     Connection c(oport, iport, "test");
-  std::cout << 1 << std::endl;
-  printInputPorts(hasDynamic);
+    std::cout << 1 << std::endl;
+    printInputPorts(hasDynamic);
     ConnectionDescription desc(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
     addedSignal(desc);
@@ -123,18 +122,16 @@ printInputPorts(hasDynamic);
 
     removeSignal(ConnectionId::create(desc));
   }
-  std::cout << 2 << std::endl;
   printInputPorts(hasDynamic);
   ASSERT_EQ(1, hasDynamic->num_input_ports());
   EXPECT_EQ(0, hasDynamic->inputPorts()[0]->nconnections());
   EXPECT_EQ(0, oport->nconnections());
-  std::cout << 3 << std::endl;
   {
     auto iport = hasDynamic->inputPorts()[0];
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
     Connection c1(oport, iport, "test");
-  printInputPorts(hasDynamic);
+    printInputPorts(hasDynamic);
     ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
     addedSignal(desc1);
@@ -145,7 +142,7 @@ printInputPorts(hasDynamic);
     EXPECT_EQ(2, hasDynamic->findInputPortsWithName(viewScenePortName).size());
 
     Connection c2(oport, hasDynamic->inputPorts()[1], "test");
-  printInputPorts(hasDynamic);
+    printInputPorts(hasDynamic);
     ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->id()));
     addedSignal(desc2);
@@ -155,7 +152,6 @@ printInputPorts(hasDynamic);
     removeSignal(ConnectionId::create(desc1));
     removeSignal(ConnectionId::create(desc2));
   }
-  std::cout << 4 << std::endl;
   printInputPorts(hasDynamic);
   ASSERT_EQ(1, hasDynamic->num_input_ports());
   EXPECT_EQ(1, hasDynamic->findInputPortsWithName(viewScenePortName).size());
@@ -167,18 +163,15 @@ printInputPorts(hasDynamic);
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
     boost::shared_ptr<Connection> c1 = boost::make_shared<Connection>(oport, iport, "test");
-  printInputPorts(hasDynamic);
+    printInputPorts(hasDynamic);
     ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
     addedSignal(desc1);
     EXPECT_EQ(1, iport->nconnections());
     EXPECT_EQ(1, oport->nconnections());
-std::cout << 4.1 << std::endl;
     EXPECT_EQ(2, hasDynamic->num_input_ports());
     EXPECT_EQ(2, hasDynamic->findInputPortsWithName(viewScenePortName).size());
-std::cout << 4.2 << std::endl;
-  printInputPorts(hasDynamic);
-    std::cout << 4.21 << std::endl;
+    printInputPorts(hasDynamic);
     Connection c2(oport, hasDynamic->inputPorts()[1], "test");
     ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
       IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->id()));
@@ -186,16 +179,13 @@ std::cout << 4.2 << std::endl;
     EXPECT_EQ(2, oport->nconnections());
     EXPECT_EQ(3, hasDynamic->num_input_ports());
     EXPECT_EQ(3, hasDynamic->findInputPortsWithName(viewScenePortName).size());
-std::cout << 4.3 << std::endl;
     c1.reset();
     removeSignal(ConnectionId::create(desc1));
 
     EXPECT_EQ(1, oport->nconnections());
     EXPECT_EQ(2, hasDynamic->num_input_ports());
-std::cout << 4.4 << std::endl;
     removeSignal(ConnectionId::create(desc2));
   }
-  std::cout << 999 << std::endl;
   ASSERT_EQ(1, hasDynamic->num_input_ports());
   EXPECT_EQ(0, hasDynamic->inputPorts()[0]->nconnections());
   EXPECT_EQ(0, oport->nconnections());
