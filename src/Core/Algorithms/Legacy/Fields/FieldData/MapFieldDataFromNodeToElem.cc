@@ -43,8 +43,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun;
 
-//! Internal function to this algorithm: no need for this function to be
-//! public. It is called from the algorithm class only.
+/// Internal function to this algorithm: no need for this function to be
+/// public. It is called from the algorithm class only.
 
 template <class DATA> 
 bool 
@@ -52,7 +52,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
                             FieldHandle& input, 
                             FieldHandle& output);
 
-//! This is the basic algorithm behind the mapping algorithm
+/// This is the basic algorithm behind the mapping algorithm
 
 template <class DATA> 
 bool 
@@ -61,21 +61,17 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
                             FieldHandle& output)
 {
  
-  //! Get the method the user selected.
-  //! Since we do a check of valid entries when then user sets the
-  //! algorithm, we can assume it is one of the specified ones
+  /// Get the method the user selected.
+  /// Since we do a check of valid entries when then user sets the
+  /// algorithm, we can assume it is one of the specified ones
    std::string method = algo->get_option(MapFieldDataFromNodeToElemAlgo::Method);
-   std::cout << "method:" << method << std::endl;
-  //! Get pointers to the virtual interfaces of the fields
-  //! We need these to obtain the data values
+  /// Get pointers to the virtual interfaces of the fields
+  /// We need these to obtain the data values
   
   VField *ifield = input->vfield();
   VField *ofield = output->vfield();
   
-  //! Make sure that the data vector has the same length
-  ofield->resize_fdata();
-  
-  //! Make sure that the data vector has the proper length  
+  /// Make sure that the data vector has the proper length  
   VMesh* mesh = input->vmesh();
 
   VMesh::Elem::array_type elems;
@@ -103,6 +99,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
         val += tval;
       }
       
+      ofield->resize_fdata();
       val = static_cast<DATA>(val * static_cast<double>((1.0/static_cast<double>(nsize))));
       ofield->set_value(val,*it);
       ++it;
@@ -111,7 +108,6 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       { 
         cnt=0; c+=1000; 
 	algo->update_progress(c/sz); 
-        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
       }
     }
   }
@@ -139,7 +135,6 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       { 
         cnt=0; c+=1000; 
         algo->update_progress(c/sz); 
-        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
       }
     }
   }
@@ -167,7 +162,6 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       { 
         cnt=0; c+=1000; 
         algo->update_progress(c/sz); 
-        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
       }
     } 
   }
@@ -191,7 +185,6 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       { 
         cnt=0; c+=1000; 
 	algo->update_progress(c/sz); 
-        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
       }
     }
   }
@@ -216,7 +209,6 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       { 
         cnt=0; c+=1000; 
 	algo->update_progress(c/sz); 
-        //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
       }
     }
   } else return false;
@@ -259,6 +251,18 @@ FieldHandle MapFieldDataFromNodeToElemAlgo::run(FieldHandle input_field) const
    FieldInformation fo(input_field);
    
    fo.make_lineardata();
+   
+   if(fi.is_constantdata())
+   {
+    THROW_ALGORITHM_INPUT_ERROR(" Data is already at elements ");
+   }  
+   
+   if (!(fi.is_lineardata()))
+   {
+    THROW_ALGORITHM_INPUT_ERROR(" This function needs to have data at the nodes "); 
+   }
+   
+   fo.make_constantdata();
    
    output = CreateField(fo,input_field->mesh());
    

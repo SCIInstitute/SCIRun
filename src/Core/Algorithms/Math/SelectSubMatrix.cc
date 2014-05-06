@@ -110,7 +110,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
   index_type col_start = get(columnStartSpinBox).getInt();
   index_type col_end = get(columnEndSpinBox).getInt();
   
-  if ( !row_select && !col_select )  //pipe input through
+  if ( !row_select && !col_select )  ///pipe input through
    if ( !row_indices && !col_indices)
     { 
       if(!input_matrix) return input_matrix;
@@ -143,7 +143,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
       row_end=input_matrix->nrows();
       col_end=col_end-col_start+1;
     } else
-    {  //pass it through
+    {  ///pass it through
      row_start=0;
      col_start=0;
      row_end=input_matrix->nrows();
@@ -161,7 +161,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
     sub_matrix=get_sub_matrix(input_matrix,row_indices,col_indices);
     if (!sub_matrix) return MatrixHandle(); 
   } 
-  else  //GUI input only
+  else  ///GUI input only
   {    
      if(matrix_is::sparse(input_matrix))
      { 
@@ -265,7 +265,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
   {
 
    SparseRowMatrixFromMap::Values additionalData;
-   if (rows.size()>0 && cols.size()>0) //get only the indices intersection
+   if (rows.size()>0 && cols.size()>0) ///get only the indices intersection
    {
      m=rows.size();
      n=cols.size();
@@ -353,7 +353,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
       return output;
    }
    } else
-   if (matrix_is::column(input_matrix)) //@Spencer this stuff needs to be tested in UnitTest
+   if (matrix_is::column(input_matrix)) ///@Spencer this stuff needs to be tested in UnitTest
    { 
      if (input_matrix->ncols()!=1)
      {

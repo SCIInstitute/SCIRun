@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
 #include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

@@ -58,9 +58,9 @@ void SetFieldDataModule::execute()
 {
   auto input_field = getRequiredInput(InputField);
   auto input_matrix = getRequiredInput(InputMatrix);
-  //NO Nrrd support yet !!!
+  ///NO Nrrd support yet !!!
 
-  //inputs_changed_ || !oport_cached("Matrix Nodes")
+  ///inputs_changed_ || !oport_cached("Matrix Nodes")
   if (needToExecute())
   {    
     update_state(Executing);

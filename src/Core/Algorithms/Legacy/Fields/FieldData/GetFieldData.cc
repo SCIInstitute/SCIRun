@@ -38,8 +38,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-//! Namespace used for SCIRun Algorithmic layer
-//namespace SCIRunAlgo {
 
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
@@ -70,30 +68,30 @@ AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
   return output;
 }
 
-//! Function call to convert data from Field into Matrix data
+/// Function call to convert data from Field into Matrix data
 DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
 {
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   algo_start("GetFieldData");
   
-  //! Check whether we have a field.
+  /// Check whether we have a field.
   if (input.get_rep() == 0)
   {
     error("No input source field");
     algo_end(); return (false);
   }
   
-  //! Construct a class with all the type information of this field
+  /// Construct a class with all the type information of this field
   FieldInformation fi(input);
 
-  //! Check whether we have data
+  /// Check whether we have data
   if (fi.is_nodata())
   {
     error("Field does not contain any data");
     algo_end(); return (false);
   }
   
-  //! Depending on the data type select a sub algorithm
+  /// Depending on the data type select a sub algorithm
   if (fi.is_scalar())
     return(GetScalarFieldDataV(this,input,output));
 
@@ -109,11 +107,11 @@ DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
  
    DenseMatrixHandle output;
     
-  //! Construct a class with all the type information of this field
+  /// Construct a class with all the type information of this field
   //FieldInformation fi(input);
   VField* vfield1 = input_field->vfield();
 
-  //! Check whether we have data
+  /// Check whether we have data
   if (!input_field || !vfield1)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not obtain input field");
@@ -137,14 +135,14 @@ DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
 
 DenseMatrixHandle GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle& input) const
 {
-  //! Obtain virtual interface
+  /// Obtain virtual interface
   VField* vfield = input->vfield();
   
-  //! Obtain the number values in a field
+  /// Obtain the number values in a field
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
   
-  //! Create output object
+  /// Create output object
   DenseMatrixHandle output(new DenseMatrix(size+esize, 1));
   
   if (!output)
@@ -264,29 +262,29 @@ DenseMatrixHandle GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle& input) cons
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
-//! Function call to convert data from Field into Matrix data
+/// Function call to convert data from Field into Matrix data
 bool GetFieldDataAlgo::run(FieldHandle& input)
 {
   algo_start("GetFieldData");
   
-  //! Check whether we have a field.
+  /// Check whether we have a field.
   if (input.get_rep() == 0)
   {
     error("No input source field");
     algo_end(); return (false);
   }
   
-  //! Construct a class with all the type information of this field
+  /// Construct a class with all the type information of this field
   FieldInformation fi(input);
 
-  //! Check whether we have data
+  /// Check whether we have data
   if (fi.is_nodata())
   {
     error("Field does not contain any data");
     algo_end(); return (false);
   }
   
-  //! Depending on the data type select a sub algorithm
+  /// Depending on the data type select a sub algorithm
   if (fi.is_scalar())
     return(GetScalarFieldDataV(this,input,output));
 
@@ -303,14 +301,14 @@ bool GetFieldDataAlgo::run(FieldHandle& input)
 bool 
 GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
 {
-  //! Obtain virtual interface
+  /// Obtain virtual interface
   VField* vfield = input->vfield();
   
-  //! Obtain the number values in a field
+  /// Obtain the number values in a field
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
   
-  //! Create output object
+  /// Create output object
   output = new NrrdData();
 
   if (output.get_rep() == 0)

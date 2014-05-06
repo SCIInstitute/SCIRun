@@ -71,14 +71,14 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle& input_field, DenseMatrixHa
     numenodes = numnodes + imesh->num_edges();
   }
   
-  // try to see whether the matrix dimensions fit the field size
+  /// try to see whether the matrix dimensions fit the field size
   if ((data->nrows() == numnodes) ||
       (data->nrows() == numelems) ||
       (data->nrows() == numenodes))
   {
      size_type ncols = data->ncols();
   
-    // do we have a scalar, vector, or tensor
+    /// do we have a scalar, vector, or tensor
     if (ncols == 1) 
     {
      found = true;    
@@ -121,7 +121,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle& input_field, DenseMatrixHa
   {
     found = true;
     
-     // do we have a scalar, vector, or tensor  ?
+    /// do we have a scalar, vector, or tensor  ?
     if (data->nrows() == 1) 
     {     
      if (get(keepTypeCheckBox).getBool()) 
@@ -164,7 +164,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle& input_field, DenseMatrixHa
   }
   else
   {
-    // Do we have a constant that has to be fitted in every field position ?
+    /// Do we have a constant that has to be fitted in every field position ?
     if (data->nrows() == 1)
     {
       found = true;
@@ -249,7 +249,7 @@ bool SetFieldDataAlgo::setscalardata(VField* ofield, DenseMatrixHandle& data, si
 
 bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
 {
- // Handle Vector values
+    /// Handle Vector values
     if ((ncols == 3)&&(nrows == numvals))
     {
     Vector v;
@@ -299,8 +299,8 @@ bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle& data, si
 
 bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
 {
-  // Fill field with Tensor values
-    // Handle 6 by n data 
+    /// Fill field with Tensor values
+    /// Handle 6 by n data 
     if ((ncols == 6)&&(nrows == numvals))
     {
       Vector v[6];
@@ -344,7 +344,7 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle& data, si
       if ((ncols == 1)&&(nrows == 6)) {v[0]=(* data)(0,0); v[1]=(* data)(1,0); v[2]=(* data)(2,0); v[3]=(* data)(3,0); v[4]=(* data)(4,0); v[5]=(* data)(5,0);}
       ofield->set_all_values(v);
     }
-    // Handle 9 by n data 
+    /// Handle 9 by n data 
     else if ((ncols == 9)&&(nrows == numvals))
     {
      Vector v[9];
@@ -443,21 +443,6 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
 
   VField* ofield = output->vfield();
   
-  // Convert the matrix to a dense matrix if it is not
-  /* MatrixHandle densematrix;
-  if (!(matrix_is::dense(data)) && !(matrix_is::column(data)))
-  {
-    // store data in a new handle so it deallocates automatically
-    densematrix = data->dense();
-  }
-  else
-  {
-    // handle copy
-   //densematrix = data;
-  //}
-  
-  //double* matrixdata = densematrix->get_data_pointer();
-  */
   size_type nrows = data->nrows();
   size_type ncols = data->ncols(); 
   
@@ -588,7 +573,7 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
 
   FieldInformation fi(input);
 
-  // Get the virtual interface
+  /// Get the virtual interface
   VMesh* imesh = input->vmesh();
   
   VMesh::size_type numnodes = imesh->num_nodes();
@@ -608,7 +593,7 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
 
   index_type column_index = get_index("column_index");
   
-  // try to see whether the matrix dimensions fit the field size
+  /// try to see whether the matrix dimensions fit the field size
   if ((data->nrows() == numnodes) ||
       (data->nrows() == numelems) ||
       (data->nrows() == numenodes))
@@ -616,7 +601,7 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
     size_type ncols = data->ncols();
     if (column_index >= 0) ncols = 1;
   
-    // do we have a scalar, vector, or tensor
+    /// do we have a scalar, vector, or tensor
     if (ncols == 1) 
     {
       std::string scalardatatype = get_option("scalardatatype");     
@@ -659,7 +644,7 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
   {
     found = true;
     
-     // do we have a scalar, vector, or tensor  ?
+    /// do we have a scalar, vector, or tensor  ?
     if (data->nrows() == 1) 
     {
       std::string scalardatatype;
@@ -701,7 +686,7 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
   }
   else
   {
-    // Do we have a constant that has to be fitted in every field position ?
+    /// Do we have a constant that has to be fitted in every field position ?
     if (data->nrows() == 1)
     {
       found = true;
@@ -771,16 +756,16 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
 
   VField* ofield = output->vfield();
   
-  // Convert the matrix to a dense matrix if it is not
+  /// Convert the matrix to a dense matrix if it is not
   MatrixHandle densematrix;
   if (!(matrix_is::dense(data)) && !(matrix_is::column(data)))
   {
-    // store data in a new handle so it deallocates automatically
+    /// store data in a new handle so it deallocates automatically
     densematrix = data->dense();
   }
   else
   {
-    // handle copy
+    /// handle copy
     densematrix = data;
   }
   
@@ -827,7 +812,7 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
   }
   else if (fi.is_vector())
   {
-    // Handle Vector values
+    /// Handle Vector values
     if ((ncols == 3)&&(nrows == numvals))
     {
       int k =0;
@@ -870,8 +855,8 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
   }
   else if (fi.is_tensor())
   {
-    // Fill field with Tensor values
-    // Handle 6 by n data 
+    /// Fill field with Tensor values
+    /// Handle 6 by n data 
     if ((ncols == 6)&&(nrows == numvals))
     {
       int k = 0;
@@ -914,7 +899,7 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
                   matrixdata[3],matrixdata[4],matrixdata[5]);
       ofield->set_all_values(v);
     }
-    // Handle 9 by n data 
+    /// Handle 9 by n data 
     else if ((ncols == 9)&&(nrows == numvals))
     {
       int k = 0;
@@ -996,7 +981,7 @@ run(FieldHandle input, NrrdDataHandle data, FieldHandle& output)
 
   VMesh::size_type numvals = 0;
 
-  // If structured see if the nrrd looks like the mesh
+  /// If structured see if the nrrd looks like the mesh
   if( imesh->is_structuredmesh() ) 
   {
     VMesh::dimension_type dims;
@@ -1007,22 +992,22 @@ run(FieldHandle input, NrrdDataHandle data, FieldHandle& output)
     {
       numvals = 1;
 
-      // count number of entries, disregarding vector or tensor
-      // components
+      /// count number of entries, disregarding vector or tensor
+      /// components
       for (int d=data->nrrd_->dim-1, m=dims.size()-1; m>=0; d--, m--) 
       {
         numvals *= data->nrrd_->axis[d].size;
       }
 
-      // These are secondary checks and are not really needed but if
-      // the data is structured then it should match the mesh.
+      /// These are secondary checks and are not really needed but if
+      /// the data is structured then it should match the mesh.
 
-      // Node check
+      /// Node check
       if( numvals == numnodes ) 
       {
         fi.make_lineardata();
 
-        // check dimensions
+        /// check dimensions
         for (int d=data->nrrd_->dim-1, m=dims.size()-1; m>=0; d--, m--) 
         {
           if (static_cast<Mesh::size_type>(data->nrrd_->axis[d].size) !=
@@ -1034,12 +1019,12 @@ run(FieldHandle input, NrrdDataHandle data, FieldHandle& output)
         }
       }
 
-      // Element check
+      /// Element check
       else if( numvals == numelems ) 
       {
         fi.make_constantdata();
 
-        // check dimensions
+        /// check dimensions
         for (int d=data->nrrd_->dim-1, m=dims.size()-1; m>=0; d--, m--) 
         {
           if (static_cast<Mesh::size_type>(data->nrrd_->axis[d].size) != dims[m]-1) 
@@ -1049,7 +1034,7 @@ run(FieldHandle input, NrrdDataHandle data, FieldHandle& output)
           }
         }
       }
-      // No match
+      /// No match
       else 
       {
         numvals = 0;
@@ -1089,7 +1074,7 @@ run(FieldHandle input, NrrdDataHandle data, FieldHandle& output)
     }
   }
 
-  // If unstructured or a single list
+  /// If unstructured or a single list
   else
   {
     if( data->nrrd_->dim == 1 &&
@@ -1134,8 +1119,8 @@ run(FieldHandle input, NrrdDataHandle data, FieldHandle& output)
       }
     }
 
-    // Nrrd data dimensions do not match but there are enough values
-    // for the field so stuff them in anyways.
+    /// Nrrd data dimensions do not match but there are enough values
+    /// for the field so stuff them in anyways.
     else
     {
       numvals = 1;

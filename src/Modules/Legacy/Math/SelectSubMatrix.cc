@@ -177,6 +177,6 @@ SelectSubMatrix::execute()
   }
 }
 
-} // End namespace SCIRun
+} /// End namespace SCIRun
 
 

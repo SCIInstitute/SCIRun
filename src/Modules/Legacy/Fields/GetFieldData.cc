@@ -48,19 +48,19 @@ GetFieldDataModule::GetFieldDataModule()
 void GetFieldDataModule::execute()
 {
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    //! Define dataflow handles:
+    /// Define dataflow handles:
   FieldHandle input;
   MatrixHandle matrixdata(0);
   NrrdDataHandle nrrddata(0);
   
-  //! Get data from port:
+  /// Get data from port:
   if(!(get_input_handle("Field",input,true))) return;
 
-  //! Data is only computed if the output port is connected:
+  /// Data is only computed if the output port is connected:
   bool need_matrix_data = oport_connected("Matrix Data");
   bool need_nrrd_data   = oport_connected("Nrrd Data");
 
-  //! Only do work if needed:
+  /// Only do work if needed:
   if (inputs_changed_ ||
       (!oport_cached("Matrix Data") && need_matrix_data) ||
       (!oport_cached("Nrrd Data") && need_nrrd_data))
@@ -68,33 +68,34 @@ void GetFieldDataModule::execute()
     update_state(Executing);
     if( need_matrix_data) 
     {
-      //! Run algorithm
+      /// Run algorithm
       if(!(algo_.run(input,matrixdata))) return;
     }
 
     if(need_nrrd_data )
     {
-      //! Run algorithm
+      /// Run algorithm
       if(!(algo_.run(input,nrrddata))) return;
     }
 
-    //! If port is not connected at time of execute, send down a null handle
-    //! send data downstream:
+    /// If port is not connected at time of execute, send down a null handle
+    /// send data downstream:
     send_output_handle("Matrix Data", matrixdata);
     send_output_handle("Nrrd Data", nrrddata);
 
   }
   #endif
   
+  ///NO Nrrd support yet !!!
   FieldHandle input = getRequiredInput(InputField);
+  
+  ///inputs_changed_ || !oport_cached("Matrix Nodes")
+  if (needToExecute())
+  { 
+   update_state(Executing);  
+   
+   auto output = algo().run_generic(make_input((InputField, input)));
 
-  //NO Nrrd support yet !!!
-  //inputs_changed_ || !oport_cached("Matrix Nodes")
-  //if (needToExecute())
-  //{    
-  //  update_state(Executing);
-    auto output = algo().run_generic(make_input((InputField, input)));
-
-    sendOutputFromAlgorithm(OutputMatrix, output);
-  //}
+   sendOutputFromAlgorithm(OutputMatrix, output);
+  }
 }

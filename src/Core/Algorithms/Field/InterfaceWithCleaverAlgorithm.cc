@@ -27,9 +27,10 @@ DEALINGS IN THE SOFTWARE.
 
 Author            : Moritz Dannhauer
 Last modification : March 16 2014
+ToDo: Padding is always enabled because of exit() in cleaver lib
 */
 
-//TODO: fix include path to remove Externals/ part
+///TODO: fix include path to remove Externals/ part
 #include <Externals/cleaver/lib/FloatField.h>
 #include <Externals/cleaver/lib/Cleaver.h>
 #include <Externals/cleaver/lib/InverseField.h>
@@ -85,8 +86,8 @@ InterfaceWithCleaverAlgorithm::InterfaceWithCleaverAlgorithm()
 
 FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& input) const
 {
-  FieldHandle output;
-   
+  FieldHandle output;      
+     
   std::vector<FieldHandle> inputs;
   std::copy_if(input.begin(), input.end(), std::back_inserter(inputs), [](FieldHandle f) { return f; });
 
@@ -180,7 +181,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
     //PADDING IS ALWAYS ON SINCE THERE IS EXIT CALLS IN THE CLEAVER LIB !!!!      
     boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get(), get(VerboseCheckBox).getBool())); 
     
-    FieldInformation fi("TetVolMesh",0,"double");   //create output field
+    FieldInformation fi("TetVolMesh",0,"double");   ///create output field
 
     output = CreateField(fi);
     auto omesh = output->vmesh();
@@ -227,11 +228,10 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
 
 AlgorithmOutput InterfaceWithCleaverAlgorithm::run_generic(const AlgorithmInput& input) const
 { 
-  auto inputFields = input.getList<Field>(InputFields);
-  //ENSURE_ALGORITHM_INPUT_NOT_NULL(inputFields, "inputFields is not ready");
+  auto inputfields = input.getList<Field>(InputFields);
   
   FieldHandle output_fld;
-  output_fld=run(inputFields); 
+  output_fld=run(inputfields); 
   if ( !output_fld ) THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;

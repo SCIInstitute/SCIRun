@@ -41,9 +41,9 @@ using namespace SCIRun::Core::Datatypes;
 ConvertMatrixTypeAlgorithm::ConvertMatrixTypeAlgorithm()
 {
   addParameter(PassThrough, true);
-  addParameter(Convert2ColumnMatrix, false);
-  addParameter(Convert2DenseMatrix, false);
-  addParameter(Convert2SparseRowMatrix, false);
+  addParameter(ConvertToColumnMatrix, false);
+  addParameter(ConvertToDenseMatrix, false);
+  addParameter(ConvertToSparseRowMatrix, false);
 }
 
 MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
@@ -81,31 +81,31 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
   {
      return input_matrix;
   } else
-  if (get(Convert2ColumnMatrix).getBool() && !matrix_is::column(input_matrix))
+  if (get(ConvertToColumnMatrix).getBool() && !matrix_is::column(input_matrix))
   {
-  /*   if (input_matrix->ncols()!=1)
+     if (input_matrix->ncols()!=1)
      {
        THROW_ALGORITHM_INPUT_ERROR("Input matrix needs to have a single column to be converted to column matrix type.");  
-     }*/
-     DenseColumnMatrixHandle output = matrix_convert::to_column_md(input_matrix);
+     }
+     DenseColumnMatrixHandle output = matrix_convert::to_column(input_matrix);
      if (!output) 
       {
        THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix failed.");    
       }
       return output;
    } else
-   if (get(Convert2DenseMatrix).getBool() && !matrix_is::dense(input_matrix))
+   if (get(ConvertToDenseMatrix).getBool() && !matrix_is::dense(input_matrix))
    {
-     auto output = matrix_convert::to_dense_md(input_matrix);
+     auto output = matrix_convert::to_dense(input_matrix);
      if (!output) 
       {
        THROW_ALGORITHM_INPUT_ERROR("Conversion to dense matrix failed.");    
       }
      return output;
     } else
-    if (get(Convert2SparseRowMatrix).getBool() && !matrix_is::sparse(input_matrix))
+    if (get(ConvertToSparseRowMatrix).getBool() && !matrix_is::sparse(input_matrix))
     {
-     auto output = matrix_convert::to_sparse_md(input_matrix);
+     auto output = matrix_convert::to_sparse(input_matrix);
      if (!output) 
       {
        THROW_ALGORITHM_INPUT_ERROR("Conversion to sparse matrix failed.");    
@@ -122,9 +122,9 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
 AlgorithmInputName ConvertMatrixTypeAlgorithm::InputMatrix("InputMatrix");
 AlgorithmOutputName ConvertMatrixTypeAlgorithm::ResultMatrix("ResultMatrix");
 AlgorithmParameterName ConvertMatrixTypeAlgorithm::PassThrough("PassThrough");
-AlgorithmParameterName ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix("Convert2ColumnMatrix");
-AlgorithmParameterName ConvertMatrixTypeAlgorithm::Convert2DenseMatrix("Convert2DenseMatrix");
-AlgorithmParameterName ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix("Convert2SparseRowMatrix");
+AlgorithmParameterName ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix("ConvertToColumnMatrix");
+AlgorithmParameterName ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix("ConvertToDenseMatrix");
+AlgorithmParameterName ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix("ConvertToSparseRowMatrix");
 
 AlgorithmOutput ConvertMatrixTypeAlgorithm::run_generic(const AlgorithmInput& input) const
 {

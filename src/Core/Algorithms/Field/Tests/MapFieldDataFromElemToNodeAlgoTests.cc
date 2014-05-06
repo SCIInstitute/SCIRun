@@ -1,3 +1,4 @@
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -47,12 +48,12 @@ using namespace SCIRun::TestUtils;
   
   FieldHandle TetMesh1()
   {     
-   return loadFieldFromFile(TestResources::rootDir() / "mapfielddatafrom_/test_mapfielddatafromelemtonode.fld");
+   return loadFieldFromFile(TestResources::rootDir() / "test_mapfielddatafromelemtonode.fld");
   }
   
    FieldHandle TetMesh2()
   {     
-   return loadFieldFromFile(TestResources::rootDir() / "mapfielddatafrom_/test_mapfielddatafromnodetoelem.fld");
+   return loadFieldFromFile(TestResources::rootDir() / "test_mapfielddatafromnodetoelem.fld");
   } 
   
   DenseMatrixHandle test_mapfielddatafromelemtonodeFLD_Min()

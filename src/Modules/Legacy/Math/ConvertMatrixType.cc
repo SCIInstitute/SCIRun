@@ -121,4 +121,4 @@ ConvertMatrixType::execute()
   }
 }
 
-} // End namespace SCIRun
+} /// End namespace SCIRun

@@ -74,10 +74,10 @@ namespace Datatypes {
   class SCISHARE matrix_convert
   {
   public:
+    //static DenseColumnMatrixHandle to_column(const MatrixHandle& mh);
     static DenseColumnMatrixHandle to_column(const MatrixHandle& mh);
-    static DenseColumnMatrixHandle to_column_md(const MatrixHandle& mh);
-    static DenseMatrixHandle to_dense_md(const MatrixHandle& mh);
-    static SparseRowMatrixHandle to_sparse_md(const MatrixHandle& mh);
+    static DenseMatrixHandle to_dense(const MatrixHandle& mh);
+    static SparseRowMatrixHandle to_sparse(const MatrixHandle& mh);
   private:
     matrix_convert();
   };

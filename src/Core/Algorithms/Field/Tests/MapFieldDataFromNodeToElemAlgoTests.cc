@@ -46,9 +46,13 @@ using namespace SCIRun::TestUtils;
 
   FieldHandle CreateTetMesh1()
   {     
-   return loadFieldFromFile(TestResources::rootDir() / "mapfielddatafrom_/test_mapfielddatafromelemtonode.fld");
+   return loadFieldFromFile(TestResources::rootDir() / "mapfielddatafrom_/test_mapfielddatafromnodetoelem.fld");
   }
-
+  
+  FieldHandle CreateTetMesh2()
+  {     
+   return loadFieldFromFile(TestResources::rootDir() / "mapfielddatafrom_/test_mapfielddatafromnodetoelem.fld");
+  }
   
   DenseMatrixHandle test_MapFieldDataFromNodeToElemFLD_IntAvr()
   {
@@ -61,60 +65,90 @@ using namespace SCIRun::TestUtils;
       (3.783333333333333214909544,0));
   }
   
-  
-  DenseMatrixHandle test_MapFieldDataFromNodeToElemFLD_Min()
+  DenseMatrixHandle test_mapfielddatafromnodetoelemFLD_Min()
   {
     return MAKE_DENSE_MATRIX_HANDLE(
-      (1,0)
-      (3,0)
+      (2.5,0)
       (2,0)
-      (2,0)
-      (1,0)
-      (1,0)
-      (1,0)
-      (2,0));
+      (3.33333333333333333333333333,0)
+      (2.5,0)
+      (3.33333333333333333333333333,0)
+      (3.5,0));
   }
 
-  DenseMatrixHandle test_MapFieldDataFromNodeToElemFLD_Max()
+  DenseMatrixHandle test_mapfielddatafromnodetoelemFLD_Max()
   {
     return MAKE_DENSE_MATRIX_HANDLE(
-      (6,0)
-      (4,0)
-      (5,0)
-      (2,0)
-      (6,0)
-      (4,0)
-      (6,0)
-      (6,0));
+      (3.8,0)
+      (4.33333333333333333333333333,0)
+      (3.8,0)
+      (3.8,0)
+      (4.33333333333333333333333333,0)
+      (4.33333333333333333333333333,0));
   }
   
-  DenseMatrixHandle test_MapFieldDataFromNodeToElemFLD_Sum()
+  DenseMatrixHandle test_mapfielddatafromnodetoelemFLD_Sum()
   {
     return MAKE_DENSE_MATRIX_HANDLE(
-      (21,0)
-      (7,0)
-      (10,0)
-      (2,0)
-      (7,0)
-      (5,0)
-      (19,0)
-      (13,0));
+      (13.3,0)
+      (13.1666666666666666666666666,0)
+      (14.1333333333333333333333333,0)
+      (13.3,0)
+      (14.9666666666666666666666666,0)
+      (15.1333333333333333333333333,0));
   }
   
-  DenseMatrixHandle test_MapFieldDataFromNodeToElemFLD_Med()
+  DenseMatrixHandle test_mapfielddatafromnodetoelemFLD_Med()
   {
     return MAKE_DENSE_MATRIX_HANDLE(
-      (4,0)
-      (4,0)
-      (3,0)
-      (2,0)
-      (6,0)
-      (4,0)
-      (4,0)
-      (5,0));
+      (3.5,0)
+      (3.5,0)
+      (3.5,0)
+      (3.5,0)
+      (3.8,0)
+      (3.8,0));
   }
+   
   
-TEST(MapFieldDataFromNodeToElemTestIntAvr, TetMeshTest)
+TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
+{ 
+ MapFieldDataFromNodeToElemAlgo algo;
+ 
+ algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "average");
+
+ FieldHandle input=CreateTetMesh2();
+
+ FieldHandle result = algo.run(input);
+
+ DenseMatrixHandle expected=test_MapFieldDataFromNodeToElemFLD_IntAvr();
+
+ ASSERT_TRUE(result->vfield()->num_values() == 6);
+
+ for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ {
+   double tmp=0;
+   result->vfield()->get_value(tmp,idx);
+   EXPECT_NEAR( (*expected)(idx,0),tmp, 1e-5);
+ } 
+ 
+ algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "interpolation");
+ 
+ FieldHandle input2=CreateTetMesh2();
+ 
+ FieldHandle result2 = algo.run(input);
+ 
+ ASSERT_TRUE(result2->vfield()->num_values() == 6);
+ 
+ for (VMesh::Elem::index_type idx = 0; idx < result2->vfield()->num_values(); idx++)
+ {
+   double tmp=0;
+   result2->vfield()->get_value(tmp,idx);
+   EXPECT_NEAR( (*expected)(idx,0),tmp, 1e-5);
+ } 
+ 
+}
+  
+TEST(MapFieldDataFromNodeToElemAlgoTests, TestDataAlreadyOnNodes)
 {
 
  MapFieldDataFromNodeToElemAlgo algo;
@@ -123,76 +157,138 @@ TEST(MapFieldDataFromNodeToElemTestIntAvr, TetMeshTest)
 
  FieldHandle input=CreateTetMesh1();
 
+ FieldHandle result;
+ try
+ {
+  result = algo.run(input);
+ } catch (...) {}
+ 
+ std::cout <<  "  should throw  'Remark: Method is not implemented' !" << std::endl;
+ 
+}
+
+
+TEST(MapFieldDataFromNodeToElemAlgoTests, TestMin)
+{
+ MapFieldDataFromNodeToElemAlgo algo;
+ 
+ algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "min");
+
+ FieldHandle input=CreateTetMesh2();
+
  FieldHandle result = algo.run(input);
- 
- std::cout << result->vfield()->num_values() << std::endl;
 
- ASSERT_TRUE(result->vfield()->num_values() == 8);
- 
- DenseMatrixHandle output(new DenseMatrix(8, 1));
-
- for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
- { 
-   result->vfield()->get_value((*output)(idx, 0),idx);
- }
- 
- DenseMatrixHandle expected_result_min = test_MapFieldDataFromNodeToElemFLD_IntAvr();
+ DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Min();
+  
+ ASSERT_TRUE(result->vfield()->num_values() == 6);
  
  for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
  {
-   //double tmp = (*expected_result_min)(idx,0);
-   //EXPECT_NEAR( tmp,(*output)(idx, 0), 1e-5);
-   std::cout << (*output)(idx, 0) << std::endl;
+   double tmp=0;
+   result->vfield()->get_value(tmp,idx);
+   EXPECT_NEAR( (*expected)(idx,0),tmp, 1e-5);
+ } 
+  
+}
+
+
+TEST(MapFieldDataFromNodeToElemAlgoTests, TestMax)
+{
+ 
+ MapFieldDataFromNodeToElemAlgo algo;
+ 
+ algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "max");
+
+ FieldHandle input=CreateTetMesh2();
+
+ FieldHandle result = algo.run(input);
+
+ DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Max();
+  
+ ASSERT_TRUE(result->vfield()->num_values() == 6);
+ 
+ for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ {
+   double tmp=0;
+   result->vfield()->get_value(tmp,idx);
+   EXPECT_NEAR( (*expected)(idx,0),tmp, 1e-5);
+ }  
+ 
+}
+
+
+TEST(MapFieldDataFromNodeToElemAlgoTests, TestSum)
+{
+ 
+ MapFieldDataFromNodeToElemAlgo algo;
+ 
+ algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "sum");
+
+ FieldHandle input=CreateTetMesh2();
+
+ FieldHandle result = algo.run(input);
+
+ DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Sum();
+  
+ ASSERT_TRUE(result->vfield()->num_values() == 6);
+ 
+ for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ {
+   double tmp=0;
+   result->vfield()->get_value(tmp,idx);
+   EXPECT_NEAR( (*expected)(idx,0),tmp, 1e-5);
  } 
  
 }
 
 
-TEST(MapFieldDataFromNodeToElemTestMin, TetMeshTest)
+TEST(MapFieldDataFromNodeToElemAlgoTests, TestMedian)
 {
 
- 
- 
-}
-
-
-TEST(MapFieldDataFromNodeToElemTestMax, TetMeshTest)
-{
-
- 
- 
-}
-
-
-TEST(MapFieldDataFromNodeToElemTestSum, TetMeshTest)
-{
-
- 
-}
-
-
-TEST(MapFieldDataFromNodeToElemTestMed, TetMeshTest)
-{
-
-
- 
-}
-
-TEST(MapFieldDataFromNodeToElemTestNone, TetMeshTest)
-{
-
-
- 
-}
-
-TEST(MapFieldDataFromNodeToElemTestWrongInterpolationFunction, TetMeshTest)
-{
  MapFieldDataFromNodeToElemAlgo algo;
  
- algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "interpolation");
+ algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "median");
 
+ FieldHandle input=CreateTetMesh2();
+
+ FieldHandle result = algo.run(input);
+
+ DenseMatrixHandle expected=test_mapfielddatafromnodetoelemFLD_Med();
+  
+ ASSERT_TRUE(result->vfield()->num_values() == 6);
+ 
+ for (VMesh::Elem::index_type idx = 0; idx < result->vfield()->num_values(); idx++)
+ {
+   double tmp=0;
+   result->vfield()->get_value(tmp,idx);
+   EXPECT_NEAR( (*expected)(idx,0),tmp, 1e-5);
+ }
  
 }
+
+TEST(MapFieldDataFromNodeToElemAlgoTests, TestNone)
+{
+
+ MapFieldDataFromNodeToElemAlgo algo;
+ 
+ algo.set_option(MapFieldDataFromNodeToElemAlgo::Method, "none");
+
+ FieldHandle input=CreateTetMesh2();
+ 
+ FieldHandle result;
+ try
+ {
+  result = algo.run(input);
+ } catch (...) {}
+  
+ if(result)
+ {
+   std::cout << " ERROR: THIS MESSAGE SHOULD NOT APPEAR! " << std::endl;
+ }
+ 
+}
+
+
 
 
 

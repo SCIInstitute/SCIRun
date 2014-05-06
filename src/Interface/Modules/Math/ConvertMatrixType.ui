@@ -57,7 +57,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QRadioButton" name="Convert2ColumnMatrix_">
+     <widget class="QRadioButton" name="ConvertToColumnMatrix_">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -73,7 +73,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QRadioButton" name="Convert2DenseMatrix_">
+     <widget class="QRadioButton" name="ConvertToDenseMatrix_">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -89,7 +89,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QRadioButton" name="Convert2SparseRowMatrix_">
+     <widget class="QRadioButton" name="ConvertToSparseRowMatrix_">
       <property name="geometry">
        <rect>
         <x>10</x>

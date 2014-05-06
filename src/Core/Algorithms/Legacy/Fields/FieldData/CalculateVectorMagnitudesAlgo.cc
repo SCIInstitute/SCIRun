@@ -24,6 +24,9 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   
+   author: Moritz Dannhauer
+   last change: 11/26/13
 */
 
 
@@ -62,7 +65,7 @@ CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output) const
     return (false);    
   }
   
-  //check if number of field matches number of nodes,face or cell elements ????
+  /// check if number of field matches number of nodes,face or cell elements ????
   
   fi.make_scalar();
   fi.make_constantdata();

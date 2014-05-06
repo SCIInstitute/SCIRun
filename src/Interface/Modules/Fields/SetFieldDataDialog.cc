@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/Fields/SetFieldDataDialog.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -51,7 +51,7 @@ void SetFieldDataDialog::push()
   }
 }
 
-//BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
+///BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
 
 void SetFieldDataDialog::pull()
 {

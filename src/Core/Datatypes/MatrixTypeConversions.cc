@@ -78,6 +78,7 @@ std::string matrix_is::whatType(const MatrixHandle& mh)
   return typeid(*mh).name(); 
 }
 
+/* Old Code - disabled
 DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
 {
   auto col = matrix_cast::as_column(mh);
@@ -90,8 +91,9 @@ DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
 
   return DenseColumnMatrixHandle();
 }
+*/
 
-DenseColumnMatrixHandle matrix_convert::to_column_md(const MatrixHandle& mh)
+DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
 {
   auto col = matrix_cast::as_column(mh);
   if (col)
@@ -114,7 +116,7 @@ DenseColumnMatrixHandle matrix_convert::to_column_md(const MatrixHandle& mh)
   return DenseColumnMatrixHandle();
 }
 
-DenseMatrixHandle matrix_convert::to_dense_md(const MatrixHandle& mh)
+DenseMatrixHandle matrix_convert::to_dense(const MatrixHandle& mh)
 {
   auto dense = matrix_cast::as_dense(mh);
   if (dense)
@@ -148,7 +150,7 @@ DenseMatrixHandle matrix_convert::to_dense_md(const MatrixHandle& mh)
   return DenseMatrixHandle();
 }
 
-SparseRowMatrixHandle matrix_convert::to_sparse_md(const MatrixHandle& mh)
+SparseRowMatrixHandle matrix_convert::to_sparse(const MatrixHandle& mh)
 {
  auto sparse = matrix_cast::as_sparse(mh);
  if (sparse)

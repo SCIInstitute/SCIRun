@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Math/SelectSubMatrix.h>
 

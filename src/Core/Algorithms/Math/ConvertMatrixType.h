@@ -45,9 +45,9 @@ namespace Math {
     static AlgorithmInputName InputMatrix;
     static AlgorithmOutputName ResultMatrix;    
     static AlgorithmParameterName PassThrough;
-    static AlgorithmParameterName Convert2ColumnMatrix;
-    static AlgorithmParameterName Convert2DenseMatrix;
-    static AlgorithmParameterName Convert2SparseRowMatrix;
+    static AlgorithmParameterName ConvertToColumnMatrix;
+    static AlgorithmParameterName ConvertToDenseMatrix;
+    static AlgorithmParameterName ConvertToSparseRowMatrix;
     Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix) const; 
     ConvertMatrixTypeAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;

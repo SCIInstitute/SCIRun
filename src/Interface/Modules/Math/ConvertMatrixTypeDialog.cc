@@ -46,9 +46,9 @@ ConvertMatrixTypeDialog::ConvertMatrixTypeDialog(const std::string& name, Module
   fixSize();
   
   connect(PassThrough_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(Convert2ColumnMatrix_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(Convert2DenseMatrix_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(Convert2SparseRowMatrix_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(ConvertToColumnMatrix_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(ConvertToDenseMatrix_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(ConvertToSparseRowMatrix_, SIGNAL(clicked()), this, SLOT(push()));
 }
 
 void ConvertMatrixTypeDialog::push()
@@ -56,9 +56,9 @@ void ConvertMatrixTypeDialog::push()
   if (!pulling_)
   {
    state_->setValue(ConvertMatrixTypeAlgorithm::PassThrough, PassThrough_->isChecked());
-   state_->setValue(ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix, Convert2ColumnMatrix_->isChecked());
-   state_->setValue(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, Convert2DenseMatrix_->isChecked());
-   state_->setValue(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, Convert2SparseRowMatrix_->isChecked());
+   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix, ConvertToColumnMatrix_->isChecked());
+   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, ConvertToDenseMatrix_->isChecked());
+   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, ConvertToSparseRowMatrix_->isChecked());
   }
 }
 
@@ -67,9 +67,9 @@ void ConvertMatrixTypeDialog::pull()
   Pulling p(this);
   
   PassThrough_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::PassThrough).getBool()); 
-  Convert2ColumnMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix).getBool());
-  Convert2DenseMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix).getBool());
-  Convert2SparseRowMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix).getBool());
+  ConvertToColumnMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix).getBool());
+  ConvertToDenseMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix).getBool());
+  ConvertToSparseRowMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix).getBool());
   
 }
 

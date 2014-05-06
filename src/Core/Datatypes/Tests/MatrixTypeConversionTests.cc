@@ -143,7 +143,7 @@ TEST(MatrixTypeConversionTest, dense2sparse)
 {
    DenseMatrixHandle from(CreateDenseMatrix_2());
     
-   SparseRowMatrixHandle result =  matrix_convert::to_sparse_md(from);
+   SparseRowMatrixHandle result =  matrix_convert::to_sparse(from);
    
    if (!result)
    {
@@ -165,7 +165,7 @@ TEST(MatrixTypeConversionTest, colvector2sparse)
 {  
   DenseColumnMatrixHandle from(CreateColumnMatrix());
 
-  SparseRowMatrixHandle result =  matrix_convert::to_sparse_md(from);
+  SparseRowMatrixHandle result =  matrix_convert::to_sparse(from);
   
   if (!result)
    {
@@ -191,7 +191,7 @@ TEST(MatrixTypeConversionTest, sparse2col)
 {  
   SparseRowMatrixHandle from = CreateSparseMatrix(); 
   
-  DenseColumnMatrixHandle result =  matrix_convert::to_column_md(from);
+  DenseColumnMatrixHandle result =  matrix_convert::to_column(from);
   
   if (!result)
   {
@@ -213,7 +213,7 @@ TEST(MatrixTypeConversionTest, sparse2dense)
 {  
   SparseRowMatrixHandle from = CreateSparseMatrix(); 
   
-  DenseMatrixHandle result =  matrix_convert::to_dense_md(from);
+  DenseMatrixHandle result =  matrix_convert::to_dense(from);
   
   if (!result)
   {
@@ -236,7 +236,7 @@ TEST(MatrixTypeConversionTest, col2dense)
 {
  DenseColumnMatrixHandle from(CreateColumnMatrix()); 
  
- DenseMatrixHandle result =  matrix_convert::to_dense_md(from);
+ DenseMatrixHandle result =  matrix_convert::to_dense(from);
 
  if (!result)
  {

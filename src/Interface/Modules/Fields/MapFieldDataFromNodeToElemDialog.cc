@@ -28,12 +28,11 @@
 
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
 #include <boost/bimap.hpp>
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 
@@ -82,7 +81,7 @@ void MapFieldDataFromNodeToElemDialog::push()
   }
 }
 
-//BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
+///BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
 
 void MapFieldDataFromNodeToElemDialog::pull()
 {

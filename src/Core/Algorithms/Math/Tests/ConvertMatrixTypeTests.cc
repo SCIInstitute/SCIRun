@@ -154,9 +154,9 @@ TEST(ConvertMatrixTests, PassInputThrough)
   ConvertMatrixTypeAlgorithm algo;
   
   algo.set(ConvertMatrixTypeAlgorithm::PassThrough, true);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, false);
   
   MatrixHandle input1(CreateDenseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -201,9 +201,9 @@ TEST(ConvertMatrixTests, DenseToColumnMatrix)
   ConvertMatrixTypeAlgorithm algo;
   
   algo.set(ConvertMatrixTypeAlgorithm::PassThrough, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix, true);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix, true);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, false);
 
   MatrixHandle input1(CreateDenseMatrix_2());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -225,9 +225,9 @@ TEST(ConvertMatrixTests, DenseToSparseMatrix)
   ConvertMatrixTypeAlgorithm algo;
   
   algo.set(ConvertMatrixTypeAlgorithm::PassThrough, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, true);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, true);
 
   MatrixHandle input1(CreateDenseMatrix_2());
   MatrixHandle output_matrix1 = algo.run(input1); 
@@ -249,9 +249,9 @@ TEST(ConvertMatrixTests, ColumnToDenseMatrix)
   ConvertMatrixTypeAlgorithm algo;
   
   algo.set(ConvertMatrixTypeAlgorithm::PassThrough, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, true);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, true);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, false);
   
   MatrixHandle input1(CreateColumnMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -272,9 +272,9 @@ TEST(ConvertMatrixTests, ColumnToSparseMatrix)
   ConvertMatrixTypeAlgorithm algo;
   
   algo.set(ConvertMatrixTypeAlgorithm::PassThrough, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, true);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, true);
   
   MatrixHandle input1(CreateColumnMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -295,9 +295,9 @@ TEST(ConvertMatrixTests, SparseToColumnMatrix)
   ConvertMatrixTypeAlgorithm algo;
   
   algo.set(ConvertMatrixTypeAlgorithm::PassThrough, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix, true);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix, true);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, false);
 
   MatrixHandle input1(CreateSparseMatrixWithOneColumn());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -319,9 +319,9 @@ TEST(ConvertMatrixTests, SparseToDenseMatrix)
   ConvertMatrixTypeAlgorithm algo;
   
   algo.set(ConvertMatrixTypeAlgorithm::PassThrough, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2ColumnMatrix, false);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2DenseMatrix, true);
-  algo.set(ConvertMatrixTypeAlgorithm::Convert2SparseRowMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix, false);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, true);
+  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, false);
 
   MatrixHandle input1(CreateSparseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);

@@ -66,7 +66,7 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
   VField *ifield = input->vfield();
   VField *ofield = output->vfield();
 
-  //! Make sure that the data vector has the same length
+  /// Make sure that the data vector has the same length
   ofield->resize_fdata();
   
   VMesh* mesh = input->vmesh();
@@ -110,7 +110,6 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
     { 
      cnt=0; c+=1000; 
      algo->update_progress(c/sz); 
-     //if (algo->check_abort()) break;  //check_abort seems not to be implemented right
     }   
    }
    
@@ -139,7 +138,6 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
       { 
         cnt=0; c+=1000; 
         algo->update_progress(c/sz); 
-        //if (algo->check_abort()) break; //check_abort seems not to be implemented right
       }
     }
   } else
@@ -167,7 +165,6 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
       { 
         cnt=0; c+=1000; 
         algo->update_progress(c/sz); 
-        //if (algo->check_abort()) break; //check_abort seems not to be implemented right
       }
     }
   } else
@@ -190,8 +187,7 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
       if (cnt==1000) 
       { 
         cnt=0; c+=1000; 
-         algo->update_progress(c/sz); 
-        //if (algo->check_abort()) break; //check_abort seems not to be implemented right
+        algo->update_progress(c/sz); 
       }
     }
   } else
@@ -215,13 +211,13 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
       if (cnt==1000) 
       { 
         cnt=0; c+=1000; 
-         algo->update_progress(c/sz); 
-        //if (algo->check_abort()) break; //check_abort seems not to be implemented right
+        algo->update_progress(c/sz); 
       }
     }
   } else
   {
    algo->remark("Method is not implemented!"); 
+   return false;
   }
   			    
   return true;
@@ -250,7 +246,7 @@ AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run_generic(const AlgorithmInput
   return output;
 }
 
-//! Function call to convert data from Field into Matrix data
+/// Function call to convert data from Field into Matrix data
 FieldHandle MapFieldDataFromElemToNodeAlgo::run(FieldHandle input_field) const
 {   
    FieldHandle output;
@@ -263,6 +259,16 @@ FieldHandle MapFieldDataFromElemToNodeAlgo::run(FieldHandle input_field) const
    FieldInformation fi(input_field);
    FieldInformation fo(input_field);
    
+   if (fi.is_lineardata())
+   {
+    THROW_ALGORITHM_INPUT_ERROR("Data is already located at nodes"); 
+   }
+   
+   if (!(fi.is_constantdata()))
+   {
+    THROW_ALGORITHM_INPUT_ERROR("The input data needs to be located at the elements");
+   }
+     
    fo.make_lineardata();
    
    output = CreateField(fo,input_field->mesh());

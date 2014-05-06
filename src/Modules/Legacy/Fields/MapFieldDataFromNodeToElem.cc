@@ -34,7 +34,6 @@
 #include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun::Modules::Fields;
-//using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
