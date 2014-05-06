@@ -310,9 +310,9 @@ public:
   /// determine the number of nodes, edges etc. These are just shortcuts to
   /// make porgrams more readable
 =======
-  //! We have been using the num_#type#() in other functions as well to
-  //! determine the number of nodes, edges etc. These are just shortcuts to
-  //! make programs more readable
+  /// We have been using the num_#type#() in other functions as well to
+  /// determine the number of nodes, edges etc. These are just shortcuts to
+  /// make programs more readable
 >>>>>>> 4091d597b6b287c054388c87cf822f69dfefee83
   inline size_type num_nodes() const
     { Node::index_type s; size(s); return(static_cast<size_t>(s)); }
