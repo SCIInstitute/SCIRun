@@ -37,7 +37,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/FieldInformation.h>
 
-/// for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {

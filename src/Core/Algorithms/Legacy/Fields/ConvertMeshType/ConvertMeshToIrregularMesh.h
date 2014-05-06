@@ -32,7 +32,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
-/// for Windows support
+// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {

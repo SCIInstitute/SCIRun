@@ -211,10 +211,5 @@ INSTANTIATE_TEST_CASE_P(
   );
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
-<<<<<<< HEAD
-//
-#endif 
-=======
 
 #endif 
->>>>>>> 4091d597b6b287c054388c87cf822f69dfefee83

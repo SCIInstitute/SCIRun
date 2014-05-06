@@ -30,17 +30,17 @@
 #ifndef CORE_ALGORITHMS_FIELDS_MAPPING_FINDCLOSESTNODESFROMPOINTFIELD_H
 #define CORE_ALGORITHMS_FIELDS_MAPPING_FINDCLOSESTNODESFROMPOINTFIELD_H 1
 
-/// STL classes to include
+// STL classes to include
 #include <algorithm>
 
-/// SCIRun Datatypes to use
+// SCIRun Datatypes to use
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 
-/// Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-/// for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {

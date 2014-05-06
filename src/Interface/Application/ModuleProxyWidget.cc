@@ -35,19 +35,86 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
+
+namespace SCIRun
+{
+  namespace Gui
+  {
+    class ModuleWidgetNoteDisplayStrategy : public NoteDisplayStrategy
+    {
+    public:
+      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const
+      {
+        const int noteMargin = 2;
+        auto noteRect = note->boundingRect();
+        auto thisRect = item->boundingRect();
+
+        switch (position)
+        {
+        case None:
+          {
+            break;
+          }
+        case Top:
+          {
+            auto noteBottomMidpoint = (noteRect.bottomRight() + noteRect.bottomLeft()) / 2;
+            auto noteBottomMidpointShift = noteRect.topLeft() - noteBottomMidpoint;
+            auto moduleTopHalfLength = thisRect.width() / 2;
+            noteBottomMidpointShift.rx() += moduleTopHalfLength;
+            noteBottomMidpointShift.ry() -= noteMargin;
+            return noteBottomMidpointShift;
+          }
+        case Bottom:
+          {
+            auto noteTopMidpoint = (noteRect.topRight() + noteRect.topLeft()) / 2;
+            auto noteTopMidpointShift = noteRect.topLeft() - noteTopMidpoint;
+            auto moduleTopHalfLength = thisRect.width() / 2;
+            noteTopMidpointShift.rx() += moduleTopHalfLength;
+            noteTopMidpointShift.ry() += thisRect.height() + noteMargin;
+            return noteTopMidpointShift;
+          }
+        case Left:
+          {
+            auto noteRightMidpoint = (noteRect.topRight() + noteRect.bottomRight()) / 2;
+            auto noteRightMidpointShift = noteRect.topLeft() - noteRightMidpoint;
+            auto moduleSideHalfLength = thisRect.height() / 2;
+            noteRightMidpointShift.rx() -= noteMargin;
+            noteRightMidpointShift.ry() += moduleSideHalfLength;
+            return noteRightMidpointShift;
+          }
+        case Right:
+          {
+            auto noteLeftMidpoint = (noteRect.topLeft() + noteRect.bottomLeft()) / 2;
+            auto noteLeftMidpointShift = noteRect.topLeft() - noteLeftMidpoint;
+            auto moduleSideHalfLength = thisRect.height() / 2;
+            noteLeftMidpointShift.rx() += thisRect.width() + noteMargin;
+            noteLeftMidpointShift.ry() += moduleSideHalfLength;
+            return noteLeftMidpointShift;
+          }
+        case Tooltip:
+          item->setToolTip(note->toHtml());
+          break;
+        case Default:
+          break;
+        }
+        return QPointF();
+      }
+    };
+  }
+}
 
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
-  : QGraphicsProxyWidget(parent),
+  : QGraphicsProxyWidget(parent), 
+  NoteDisplayHelper(boost::make_shared<ModuleWidgetNoteDisplayStrategy>()),
   module_(module),
   grabbedByWidget_(false),
   isSelected_(false),
-  pressedSubWidget_(0),
-  note_(0),
-  notePosition_(Default),
-  defaultNotePosition_(Top) //TODO
+  pressedSubWidget_(0)
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
@@ -58,7 +125,6 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
-  delete note_;
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
@@ -185,85 +251,24 @@ void ModuleProxyWidget::createPortPositionProviders()
 
 void ModuleProxyWidget::updateNote(const Note& note)
 {
-  if (!note_)
-  {
-    note_ = new QGraphicsTextItem("", 0, scene());
-  }
-
-  note_->setHtml(note.html_);
-  notePosition_ = note.position_;
-  updateNotePosition();
-  note_->setZValue(zValue() - 1);
+  updateNoteImpl(note);
 }
 
-QPointF ModuleProxyWidget::relativeNotePosition()
+PassThroughPositioner::PassThroughPositioner(const QGraphicsProxyWidget* widget) : widget_(widget) {}
+
+QPointF PassThroughPositioner::currentPosition() const 
 {
-  if (note_)
-  {
-    const int noteMargin = 2;
-    auto noteRect = note_->boundingRect();
-    auto thisRect = boundingRect();
-    auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
-    note_->setVisible(!(Tooltip == position || None == position));
-    this->setToolTip("");
-    switch (position)
-    {
-      case None:
-      {
-         break;
-      }
-      case Top:
-      {
-        auto noteBottomMidpoint = (noteRect.bottomRight() + noteRect.bottomLeft()) / 2;
-        auto noteBottomMidpointShift = noteRect.topLeft() - noteBottomMidpoint;
-        auto moduleTopHalfLength = thisRect.width() / 2;
-        noteBottomMidpointShift.rx() += moduleTopHalfLength;
-        noteBottomMidpointShift.ry() -= noteMargin;
-        return noteBottomMidpointShift;
-      }
-      case Bottom:
-      {
-        auto noteTopMidpoint = (noteRect.topRight() + noteRect.topLeft()) / 2;
-        auto noteTopMidpointShift = noteRect.topLeft() - noteTopMidpoint;
-        auto moduleTopHalfLength = thisRect.width() / 2;
-        noteTopMidpointShift.rx() += moduleTopHalfLength;
-        noteTopMidpointShift.ry() += thisRect.height() + noteMargin;
-        return noteTopMidpointShift;
-      }
-      case Left:
-      {
-        auto noteRightMidpoint = (noteRect.topRight() + noteRect.bottomRight()) / 2;
-        auto noteRightMidpointShift = noteRect.topLeft() - noteRightMidpoint;
-        auto moduleSideHalfLength = thisRect.height() / 2;
-        noteRightMidpointShift.rx() -= noteMargin;
-        noteRightMidpointShift.ry() += moduleSideHalfLength;
-        return noteRightMidpointShift;
-      }
-      case Right:
-      {
-        auto noteLeftMidpoint = (noteRect.topLeft() + noteRect.bottomLeft()) / 2;
-        auto noteLeftMidpointShift = noteRect.topLeft() - noteLeftMidpoint;
-        auto moduleSideHalfLength = thisRect.height() / 2;
-        noteLeftMidpointShift.rx() += thisRect.width() + noteMargin;
-        noteLeftMidpointShift.ry() += moduleSideHalfLength;
-        return noteLeftMidpointShift;
-      }
-      case Tooltip:
-        this->setToolTip(note_->toHtml());
-        break;
-    }
-  }
-  return QPointF();
+  return widget_->pos();
+}
+
+void ModuleProxyWidget::setNoteGraphicsContext()
+{
+  scene_ = scene();
+  item_ = this;
+  positioner_ = boost::make_shared<PassThroughPositioner>(this);
 }
 
 void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 {
-  defaultNotePosition_ = position;
-  updateNotePosition();
-}
-
-void ModuleProxyWidget::updateNotePosition()
-{
-  if (note_)
-    note_->setPos(pos() + relativeNotePosition());
+  setDefaultNotePositionImpl(position);
 }

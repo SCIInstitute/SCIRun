@@ -35,6 +35,7 @@ SET(Interface_Modules_Base_HEADERS
   ModuleDialogBasic.h
   ModuleDialogGeneric.h
   RemembersFileDialogDirectory.h
+  WidgetSlotManagers.h
   share.h
 )
 
@@ -42,6 +43,7 @@ SET(Interface_Modules_Base_SOURCES
   ModuleDialogBasic.cc
   ModuleDialogGeneric.cc
   RemembersFileDialogDirectory.cc
+  WidgetSlotManagers.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Base_FORMS_HEADERS ${Interface_Modules_Base_FORMS})
@@ -55,6 +57,8 @@ ADD_LIBRARY(Interface_Modules_Base
 )
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Base
+  Algorithms_Base
+  Core_Logging
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )

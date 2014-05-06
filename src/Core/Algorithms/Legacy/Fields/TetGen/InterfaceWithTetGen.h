@@ -30,14 +30,14 @@
 #ifndef CORE_ALGORITHMS_FIELDS_TETGEN_INTERFACEWITHTETGEN_H
 #define CORE_ALGORITHMS_FIELDS_TETGEN_INTERFACEWITHTETGEN_H 1
 
-/// Datatypes used
+// Datatypes used
 #include <Core/Datatypes/Field.h>
 #include <vector>
 
-/// Base for algorithm
+// Base for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-/// for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {

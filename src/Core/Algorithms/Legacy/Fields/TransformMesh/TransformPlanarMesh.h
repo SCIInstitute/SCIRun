@@ -35,7 +35,7 @@
 
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-/// for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {

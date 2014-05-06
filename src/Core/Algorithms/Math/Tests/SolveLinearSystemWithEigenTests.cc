@@ -230,7 +230,7 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
 
   std::string contents = converter.getMatrixContentsLine(matStr).get_value_or("");
 
-  ASSERT_EQ("2 3 4 {8 0 2 4 }{8 0 2 0 1 }{1 3.5 -1 2 }}", contents);
+  EXPECT_EQ("2 3 4 {8 0 2 4 }{8 0 2 0 1 }{1 3.5 -1 2 }}", contents);
 
   auto rawOpt = converter.parseSparseMatrixString(contents);
   ASSERT_TRUE(rawOpt);

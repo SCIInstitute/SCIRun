@@ -43,11 +43,6 @@ GetFieldsFromBundleDialog::GetFieldsFromBundleDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  //connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
-  //connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  //connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  //buttonBox->setVisible(false);
 }
 
 void GetFieldsFromBundleDialog::pull()

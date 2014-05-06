@@ -30,15 +30,15 @@
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H 1
 
-/// Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Matrix.h>
 
-/// Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-/// for Windows support
+// for Windows support
 #include <Core/Algorithms/FiniteElements/share.h>
 
 namespace SCIRunAlgo {

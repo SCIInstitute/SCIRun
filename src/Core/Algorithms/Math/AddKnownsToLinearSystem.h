@@ -30,11 +30,11 @@
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_AddKnownsToLinearSystem_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_AddKnownsToLinearSystem_H 1
 
-/// Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/MatrixFwd.h>
-/// Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-/// for Windows support
+// for Windows support
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {

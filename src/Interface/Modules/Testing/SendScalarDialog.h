@@ -38,7 +38,6 @@ namespace SCIRun {
 namespace Gui {
   
 class SCISHARE SendScalarDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
   public Ui::SendScalar
 {
 	Q_OBJECT
@@ -48,8 +47,6 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
-private Q_SLOTS:
-  void pushScalarValueToState(const QString& str);
 };
 
 }
