@@ -1,21 +1,24 @@
-![alt text](http://www.sci.utah.edu/images/banners/splash-scirun.png)
+.. image::  http://www.sci.utah.edu/images/banners/splash-scirun.png
+   :height: 245 px
+   :width:  495 px
+   :align: right
 
 ==================
 SCIRun 5 Prototype
 ==================
 
-[https://github.com/SCIInstitute/SCIRunGUIPrototype]
+https://github.com/SCIInstitute/SCIRunGUIPrototype
 
 .. contents::
 
 Summary
 =======
 
-|:  **Warning**  :|:  SCIRun 5 is pre-alpha software, do not use for real science yet.    :|
+| **Warning** |  SCIRun 5 is pre-alpha software, do not use for real science yet.  |
 
 Download Location
 -----------------
-[http://sci.utah.edu/devbuilds/scirun5/]
+http://sci.utah.edu/devbuilds/scirun5/
 
 Goals
 =====
@@ -27,115 +30,157 @@ Features
 ========
 
 * File
-    - Load
-    - Save
-    - Save as...
-    - Clear Network
-    - Execute All
-    - "Load Recent" option	Labels from connected regions	
+
+  - Load
+  - Save
+  - Save as...
+  - Clear Network
+  - Execute All
+  - "Load Recent" option
+
+* Labels from connected regions	
 * Ability to change background color in Seg3D.	
 * Seg3D and ImageVis3D common session files
 * ChooseString module request	
 * Template matrix classes	
 * Add Sparse matrix support to CollectMatrices	
 
-###Recently Added Features
+Recently Added Features
+-----------------------
 
 * File 
-    - Recent Files
-* Edit
-    - Cut/Copy/Paste
-    - Undo/Redo
-    - Directly edit network XML (either in part or in whole)
-* Modules
-    - SCIRun
-	+ Shortening this menu seems like a good idea. Add another layer of submenu?
-	+ Could try a tree widget view for all modules instead of menu, then have a menu of tagged/favorite modules. 
-    - Tagged/Favorite modules
-* Subnets
-    - Common templates
-* Top of window
-    - Module Search box
-        + Many ideas here: turn into "awesome box" that searches by keyword/auto-complete, displays sample nets, help, links to doxygen source code comments, etc, etc. 
-* Bottom of Window
-    - Halt/Kill Network/Module
-* Network Editor Panel
-    - Tabbed interface? For multiple documents of subnets?
-* Miniview
-    - Zoom in/out
 
+  - Recent Files
+
+* Edit
+
+  - Cut/Copy/Paste
+  - Undo/Redo
+  - Directly edit network XML (either in part or in whole)
+
+* Modules
+
+  - SCIRun
+
+    + Shortening this menu seems like a good idea. Add another layer of submenu?
+    + Could try a tree widget view for all modules instead of menu, then have a menu of tagged/favorite modules. 
+
+  - Tagged/Favorite modules
+
+ * Subnets
+
+  - Common templates
+
+ * Top of window
+
+  - Module Search box
+
+    + Many ideas here: turn into "awesome box" that searches by keyword/auto-complete, displays sample nets, help, links to doxygen source code comments, etc, etc. 
+
+ * Bottom of Window
+
+  - Halt/Kill Network/Module
+
+ * Network Editor Panel
+
+  - Tabbed interface? For multiple documents of subnets?
+
+ * Miniview
+
+  - Zoom in/out
 
 User Requests 
 =============
 * General
-    - key parameters in networks, environment need to be findable and available in UI
-    - expose network XML, or at least key network info (modules, file paths, gui vars...)
-        + better network parameter editing
-        + maybe a network wizard?
-        + show what files are being used, network file name 
-    - more example nets
-    - more documentation, more sample networks (very useful for demonstrating module functionality)
-    - undo
-    - must work with clipboard (through Qt support?)
-    - search modules, networks for keywords
-        + see Matlab descriptors at the top of source files as an example
-        + when searching for modules, can we have the option of searching within the module text (i.e. search module GUI component names, variable names etc.) 
-    - error reporting should not kill SCIRun
-        + For example, if you end up with an empty field in your network, and you have a bounding box displayed for that field, the bounding box calculation asserts that the diagonal is zero and aborts the program, which is bad. Instead, an error should be displayed and the user should be able to change the network to fix the problem. 
-    - port colors: change intensities, not just colors
-        + get updated palette from Nathan 
-    - standardize field names etc.
-        + i.e. interpolation: source -> target, object -> target, source -> object 
-    - support for transparent background in images or movies (image library)
-    - image or movie resolution options (can we generate higher resolution images than displayed?)
-    - first time use window 
-    - Nifti reader for SCIRun	
-    - STL file support
-    - Add preset location for saving SCIRun network files
-    - Parser modules need better error reporting
-    - Actually implement ColorMap2DSemantics module
-    - list field properties	
-    - if statement module
-    - SCIRun should be able to read "obj" format meshes
-    - Simple importer for 1D colormaps
+
+  - key parameters in networks, environment need to be findable and available in UI
+
+  - expose network XML, or at least key network info (modules, file paths, gui vars...)
+
+    + better network parameter editing
+    + maybe a network wizard?
+    + show what files are being used, network file name 
+    + better network parameter editing
+
+  - more example nets
+  - more documentation, more sample networks (very useful for demonstrating module functionality)
+  - undo
+  - must work with clipboard (through Qt support?)
+  - search modules, networks for keywords
+
+    + see Matlab descriptors at the top of source files as an example
+    + when searching for modules, can we have the option of searching within the module text (i.e. search module GUI component names, variable names etc.) 
+
+  - error reporting should not kill SCIRun
+
+    + For example, if you end up with an empty field in your network, and you have a bounding box displayed for that field, the bounding box calculation asserts that the diagonal is zero and aborts the program, which is bad. Instead, an error should be displayed and the user should be able to change the network to fix the problem. 
+
+  - port colors: change intensities, not just colors
+    + get updated palette from Nathan 
+  - standardize field names etc.
+    + i.e. interpolation: source -> target, object -> target, source -> object 
+  - support for transparent background in images or movies (image library)
+  - image or movie resolution options (can we generate higher resolution images than displayed?)
+  - first time use window 
+  - Nifti reader for SCIRun	
+  - STL file support
+  - Add preset location for saving SCIRun network files
+  - Parser modules need better error reporting
+  - Actually implement ColorMap2DSemantics module
+  - list field properties	
+  - if statement module
+  - SCIRun should be able to read "obj" format meshes
+  - Simple importer for 1D colormaps
+
 * UI
-    - select (highlight with mouse?) and copy multiple modules - connections between modules will have to be propagated as well
-    - adjust GUI scale so it doesn't flow over bottom of screen
-    - collapse network preview window
-    - zoom or center network in editor
-    - hover or hot key to expose some module parameters
-    - side pane to expose some module parameters
-        + expose important dataset parameters too (size, dims, data info etc.) 
-    - easier way to do notes
-        + copy notes with modules
-        + easy way to edit or clear notes
-        + easy way to manipulate note location
-        + render text on top of pipes 
-    - better graph layout algorithms?
-        + look into graphviz, others?
-        + line up modules
-        + expose-like (OS X) 
-    - Change exponential widget behavior to be more intuitive	
-    - Add GUI element for indicating result of "Clear Output" button of module CollectMatrices
-    - Add string port to Read / Write Nrrd	
-    - Add support for newer Matlab file format
-    - Add cylinder to vector glyph types
-    - ShowMatrix module should detect matrix dimensions
-    - reinterpret_cast from pointer-to-object to pointer-to-function not portable
-    - IO plugin for Meshalyzer binary mesh format
-    - IO plugin for a binary node index matrix
+
+  - select (highlight with mouse?) and copy multiple modules - connections between modules will have to be propagated as well
+  - adjust GUI scale so it doesn't flow over bottom of screen
+  - collapse network preview window
+  - zoom or center network in editor
+  - hover or hot key to expose some module parameters
+  - side pane to expose some module parameters
+
+    + expose important dataset parameters too (size, dims, data info etc.) 
+
+  - easier way to do notes
+
+    + copy notes with modules
+    + easy way to edit or clear notes
+    + easy way to manipulate note location
+    + render text on top of pipes 
+
+  - better graph layout algorithms?
+
+    + look into graphviz, others?
+    + line up modules
+    + expose-like (OS X) 
+
+  - Change exponential widget behavior to be more intuitive	
+  - Add GUI element for indicating result of "Clear Output" button of module CollectMatrices
+  - Add string port to Read / Write Nrrd	
+  - Add support for newer Matlab file format
+  - Add cylinder to vector glyph types
+  - ShowMatrix module should detect matrix dimensions
+  - reinterpret_cast from pointer-to-object to pointer-to-function not portable
+  - IO plugin for Meshalyzer binary mesh format
+  - IO plugin for a binary node index matrix
+
 * Networks
-    - halt network without killing SCIRun
-    - stop module in network 
+
+  - halt network without killing SCIRun
+  - stop module in network 
 * Subnets
-    - subnets must work (currently broken) - should be an easy select and create operation in GUI
-    - offer common network fragments as subnets (i.e. ShowField, ColorMap etc., ViewScene)
-    - better views for subnets: dockable widgets, tabs etc.
-    - duplicate entire subnet
-    - import network into other network
-        + choice to import as subnet or register network
-        + choice to save subnet as separate file 
-    - 'Duplicate' should work on multiply-selected modules
+  - subnets must work (currently broken) - should be an easy select and create operation in GUI
+  - offer common network fragments as subnets (i.e. ShowField, ColorMap etc., ViewScene)
+  - better views for subnets: dockable widgets, tabs etc.
+  - duplicate entire subnet
+  - import network into other network
+
+    + choice to import as subnet or register network
+    + choice to save subnet as separate file 
+
+  - 'Duplicate' should work on multiply-selected modules
 
 Known Bugs
 ==========
@@ -268,14 +313,14 @@ Build requirements
   - Visual Studio C++ 2010
   - Qt 4.8 
   
-    + Build from source (see [http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:Building_Releases#Installing_Qt_on_your_system_and_building_from_scratch] for instructions), but be sure to download [http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz].
+    + Build from source (see http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:Building_Releases#Installing_Qt_on_your_system_and_building_from_scratch for instructions), but be sure to download http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz.
 
 * Linux (tested on Ubuntu 12.10)
 
   - gcc 4.6, 4.7
   - Qt 4.8 
   
-    + Build from source ([http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz]), or use system libraries if available.
+    + Build from source (http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz), or use system libraries if available.
 
 * All platforms
 
@@ -314,17 +359,17 @@ Unix Makefiles notes
 Documentation
 ================
 
-For documentation, please see: [http://sciinstitute.github.io/SCIRunGUIPrototype/]
+For documentation, please see: http://sciinstitute.github.io/SCIRunGUIPrototype/
 
 Questions and Answers
 =====================
 
-For help, email the testing mailing list at [scirun5-testers@sci.utah.edu].
+For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
 
 License and Credits
 ===================
 
-  For more information, please see: [http://software.sci.utah.edu]
+  For more information, please see: http://software.sci.utah.edu
  
   The MIT License
  
