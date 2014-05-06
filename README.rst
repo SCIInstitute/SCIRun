@@ -14,7 +14,9 @@ https://github.com/SCIInstitute/SCIRunGUIPrototype
 Summary
 =======
 
-| **Warning** |  SCIRun 5 is pre-alpha software, do not use for real science yet.  |
++---------------+----------------------------------------------------------------------+
+|  **Warning**  |  SCIRun 5 is pre-alpha software, do not use for real science yet.    |
++---------------+----------------------------------------------------------------------+
 
 Download Location
 -----------------
@@ -67,25 +69,25 @@ Recently Added Features
 
   - Tagged/Favorite modules
 
- * Subnets
+* Subnets
 
   - Common templates
 
- * Top of window
+* Top of window
 
   - Module Search box
 
     + Many ideas here: turn into "awesome box" that searches by keyword/auto-complete, displays sample nets, help, links to doxygen source code comments, etc, etc. 
 
- * Bottom of Window
+* Bottom of Window
 
   - Halt/Kill Network/Module
 
- * Network Editor Panel
+* Network Editor Panel
 
   - Tabbed interface? For multiple documents of subnets?
 
- * Miniview
+* Miniview
 
   - Zoom in/out
 
@@ -116,9 +118,13 @@ User Requests
     + For example, if you end up with an empty field in your network, and you have a bounding box displayed for that field, the bounding box calculation asserts that the diagonal is zero and aborts the program, which is bad. Instead, an error should be displayed and the user should be able to change the network to fix the problem. 
 
   - port colors: change intensities, not just colors
+
     + get updated palette from Nathan 
+
   - standardize field names etc.
+
     + i.e. interpolation: source -> target, object -> target, source -> object 
+
   - support for transparent background in images or movies (image library)
   - image or movie resolution options (can we generate higher resolution images than displayed?)
   - first time use window 
@@ -170,7 +176,9 @@ User Requests
 
   - halt network without killing SCIRun
   - stop module in network 
+
 * Subnets
+
   - subnets must work (currently broken) - should be an easy select and create operation in GUI
   - offer common network fragments as subnets (i.e. ShowField, ColorMap etc., ViewScene)
   - better views for subnets: dockable widgets, tabs etc.
@@ -306,7 +314,7 @@ Build requirements
   - Apple clang 4.1
   - Qt 4.8
   
-    + Download from [http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg].
+    + Download from http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg.
 
 * Windows (tested on Windows 7)
 
