@@ -42,7 +42,7 @@ class InsertDataIntoBundleModuleTest : public ModuleTest
 
 TEST_F(InsertDataIntoBundleModuleTest, ThrowsForNullBundles)
 {
-  auto sls = makeModule("InsertMatricesIntoBundle");
+  auto sls = makeModule("InsertFieldsIntoBundle");
   BundleHandle nullBundle;
   stubPortNWithThisData(sls, 0, nullBundle);
 
