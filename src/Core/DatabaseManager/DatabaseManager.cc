@@ -32,15 +32,21 @@
 #include <Core/Utils/Lockable.h>
 #include <sqlite/sqlite3.h>
 
-namespace Seg3D
+using namespace SCIRun::Core::Database;
+
+namespace SCIRun
 {
+  namespace Core
+  {
+    namespace Database
+    {
 
 class DatabaseManagerPrivate : public SCIRun::Core::RecursiveLockable 
 {
 public:
 	sqlite3* database_;
 };
-
+    }}}
 
 DatabaseManager::DatabaseManager() :
 	private_( new DatabaseManagerPrivate )
@@ -319,5 +325,3 @@ std::string DatabaseManager::EscapeQuotes( const std::string& str )
 
 	return result;
 }
-
-} // end namespace seg3D

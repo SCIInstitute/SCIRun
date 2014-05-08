@@ -30,7 +30,7 @@
 #include <Core/DatabaseManager/DatabaseManager.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
-using namespace Seg3D;
+using namespace SCIRun::Core::Database;
 using namespace SCIRun::TestUtils;
 
 namespace
@@ -63,7 +63,7 @@ namespace
 
 TEST(BasicDatabaseTests, CanCreateDatabase)
 {
-  Seg3D::DatabaseManager db;
+  DatabaseManager db;
   std::string error;
   EXPECT_TRUE(db.load_database(TestResources::rootDir() / "empty.db", error));
   EXPECT_TRUE(error.empty());
@@ -71,20 +71,20 @@ TEST(BasicDatabaseTests, CanCreateDatabase)
 
 TEST(BasicDatabaseTests, CanCreateTable)
 {
-  Seg3D::DatabaseManager db;
+  DatabaseManager db;
   EXPECT_TRUE(createTable(db));
 }
 
 TEST(BasicDatabaseTests, CanInsertIntoTable)
 {
-  Seg3D::DatabaseManager db;
+  DatabaseManager db;
   createTable(db);
   EXPECT_TRUE(insertRows(db));
 }
 
 TEST(BasicDatabaseTests, CanCountRows)
 {
-  Seg3D::DatabaseManager db;
+  DatabaseManager db;
   createTable(db);
   insertRows(db);
   EXPECT_EQ(2, countRows(db));
@@ -92,7 +92,7 @@ TEST(BasicDatabaseTests, CanCountRows)
 
 TEST(BasicDatabaseTests, CanSelectFromTable)
 {
-  Seg3D::DatabaseManager db;
+  DatabaseManager db;
   createTable(db);
   insertRows(db);
 
@@ -113,7 +113,7 @@ TEST(BasicDatabaseTests, CanSelectFromTable)
 
 TEST(BasicDatabaseTests, ErrorsForWrongTable)
 {
-  Seg3D::DatabaseManager db;
+  DatabaseManager db;
   createTable(db);
   insertRows(db);
 
@@ -126,7 +126,7 @@ TEST(BasicDatabaseTests, ErrorsForWrongTable)
 
 TEST(BasicDatabaseTests, CanSelectFromTableFiltered)
 {
-  Seg3D::DatabaseManager db;
+  DatabaseManager db;
   createTable(db);
   insertRows(db);
 
@@ -160,7 +160,7 @@ TEST(BasicDatabaseTests, CanSelectFromTableFiltered)
 
 TEST(BasicDatabaseTests, CanUpdateRows)
 {
-  Seg3D::DatabaseManager db;
+  DatabaseManager db;
 
   createTable(db);
   insertRows(db);
@@ -181,7 +181,7 @@ TEST(BasicDatabaseTests, CanUpdateRows)
 
 TEST(BasicDatabaseTests, CanDeleteRows)
 {
-  Seg3D::DatabaseManager db;
+  DatabaseManager db;
 
   createTable(db);
   insertRows(db);

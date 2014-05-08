@@ -40,8 +40,12 @@
 #include <boost/noncopyable.hpp>
 #include <Core/DatabaseManager/share.h>
 
-namespace Seg3D
+namespace SCIRun
 {
+  namespace Core
+  {
+    namespace Database
+    {
 
 typedef std::vector< std::map< std::string, boost::any > > ResultSet;
 typedef boost::shared_ptr<ResultSet> ResultSetHandle;
@@ -99,7 +103,9 @@ public:
 	static std::string EscapeQuotes( const std::string& str );
 };
 
-} // end namespace seg3d
+    }
+  }
+}
 
 #endif
 
