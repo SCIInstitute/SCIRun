@@ -127,9 +127,7 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
   ENDIF()
 
   IF(WIN32)
-    # See cmake-2.8/Modules/FindBoost.cmake
-    #SET(boost_LIB_PREFIX "lib")
-    SET(boost_LIB_PREFIX "")
+    SET(boost_LIB_PREFIX "lib")
   ELSE()
     SET(boost_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
   ENDIF()
