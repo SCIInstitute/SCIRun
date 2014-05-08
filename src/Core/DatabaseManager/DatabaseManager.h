@@ -44,17 +44,16 @@ namespace Seg3D
 {
 
 typedef std::vector< std::map< std::string, boost::any > > ResultSet;
+typedef boost::shared_ptr<ResultSet> ResultSetHandle;
 
-class DatabaseManager;
-typedef boost::shared_ptr< DatabaseManager > DatabaseManagerHandle;
-class DatabaseManagerPrivate;
+typedef boost::shared_ptr< class DatabaseManager > DatabaseManagerHandle;
 
 class SCISHARE DatabaseManager : boost::noncopyable
 {
 public:
 	DatabaseManager();
   
-	virtual ~DatabaseManager();
+	~DatabaseManager();
 	
 public:
 	/// RUN_SQL_STATEMENT:
@@ -92,7 +91,7 @@ public:
 		int* not_null = 0, int* primary_key = 0, int* auto_inc = 0 ); 
 
 private:
-	boost::shared_ptr< DatabaseManagerPrivate > private_;
+	boost::shared_ptr< class DatabaseManagerPrivate > private_;
 
 public:
 	/// ESCAPEQUOTES:
