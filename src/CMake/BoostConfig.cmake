@@ -29,6 +29,8 @@
 # and code borrowed from ITK4 HDFMacros.cmake
 
 MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
+  # disable auto linking
+  ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB=1)
 
   SET(boost_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Externals/boost")
   SET(boost_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/boost")
@@ -50,6 +52,12 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
 
   IF(BUILD_WITH_PYTHON)
     ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB=1)
+  ENDIF()
+
+  # TODO: set up 64-bit build detection
+  # Boost Jam needs to have 64-bit build explicitly configured
+  IF(WIN32)
+    SET(FORCE_64BIT_BUILD ON)
   ENDIF()
 
   IF(${compress_type} MATCHES "GIT")
@@ -79,6 +87,7 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
         -DSCI_PYTHON_INCLUDE:PATH=${SCI_PYTHON_INCLUDE}
         -DSCI_PYTHON_LIBRARY:FILEPATH=${SCI_PYTHON_LIBRARY}
         -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+        -DFORCE_64BIT_BUILD:BOOL=${FORCE_64BIT_BUILD}
     )
   ELSEIF(${compress_type} MATCHES "ZIP")
     MESSAGE(STATUS "ZIP compress_type NOT implemented")
