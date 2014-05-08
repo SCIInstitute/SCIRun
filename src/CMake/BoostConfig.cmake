@@ -23,39 +23,38 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
-# code borrowed from ITK4 HDFMacros.cmake
+
+# Borrowed CMake code from the MaidSafe Boost CMake build
+# found at https://github.com/maidsafe/MaidSafe/blob/master/cmake_modules/add_boost.cmake
+# and code borrowed from ITK4 HDFMacros.cmake
 
 MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
-
-  ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB=1)
 
   SET(boost_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Externals/boost")
   SET(boost_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/boost")
 
   SET(SCI_BOOST_INCLUDE ${boost_SOURCE_DIR} CACHE INTERNAL "Boost include directories." FORCE)
-  SET(SCI_BOOST_LIBRARY boost CACHE INTERNAL "Boost library name." FORCE)
-
-  IF(WIN32)
-    # See cmake-2.8/Modules/FindBoost.cmake
-    #SET(boost_LIB_PREFIX "lib")
-    SET(boost_LIB_PREFIX "")
-  ELSE()
-    SET(boost_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
-  ENDIF()
+  SET(SCI_BOOST_LIBRARY
+        boost_atomic-mt
+        boost_date_time-mt
+        boost_exception-mt
+        boost_filesystem-mt
+        boost_graph-mt
+        boost_program_options-mt
+        boost_regex-mt
+        boost_serialization-mt
+        boost_system-mt
+        boost_thread-mt
+        boost_wserialization-mt
+      CACHE INTERNAL "Boost library name." FORCE)
 
   IF(BUILD_WITH_PYTHON)
     ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB=1)
   ENDIF()
 
-  SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  # other configuration options are RELWITHDEBINFO and MINSIZEREL
-  SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/Release/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-
   IF(${compress_type} MATCHES "GIT")
 
-    SET(boost_GIT_TAG "origin/master")
+    SET(boost_GIT_TAG "origin/boost_1_55_0_bjam")
 
     # TODO: fix install step
     #
@@ -75,11 +74,11 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
       #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${boost_BINARY_DIR}"
       CMAKE_CACHE_ARGS
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-        -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
         -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
         -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
         -DSCI_PYTHON_INCLUDE:PATH=${SCI_PYTHON_INCLUDE}
         -DSCI_PYTHON_LIBRARY:FILEPATH=${SCI_PYTHON_LIBRARY}
+        -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     )
   ELSEIF(${compress_type} MATCHES "ZIP")
     MESSAGE(STATUS "ZIP compress_type NOT implemented")
@@ -121,30 +120,61 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
   #  SET (JPEG_LIBRARIES ${JPEG_LIBRARY})
   #  SET (JPEG_INCLUDE_DIRS ${JPEG_INCLUDE_DIR_GEN} ${JPEG_INCLUDE_DIR})
 
-  ADD_LIBRARY(${SCI_BOOST_LIBRARY} STATIC IMPORTED GLOBAL)
+  IF(WIN32)
+    SET(DEBUG_POSTFIX "-gd")
+  ELSE()
+    SET(DEBUG_POSTFIX "-d")
+  ENDIF()
+
+  IF(WIN32)
+    # See cmake-2.8/Modules/FindBoost.cmake
+    #SET(boost_LIB_PREFIX "lib")
+    SET(boost_LIB_PREFIX "")
+  ELSE()
+    SET(boost_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
+  ENDIF()
 
   # adding Boost as a build target and dependency
   #
   # TODO: how to make boost include dependent on Boost_external?
-  ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} Boost_external)
-  ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} ${SCI_BOOST_INCLUDE})
+  FOREACH(lib ${SCI_BOOST_LIBRARY})
+    ADD_LIBRARY(${lib} STATIC IMPORTED GLOBAL)
+    ADD_DEPENDENCIES(${lib} Boost_external)
+    ADD_DEPENDENCIES(${lib} ${SCI_BOOST_INCLUDE})
+
+    MESSAGE(STATUS "Configure Boost library ${lib}")
+
+    IF(CMAKE_GENERATOR MATCHES "Makefiles" AND CMAKE_BUILD_TYPE MATCHES "Debug")
+      SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/lib/${boost_LIB_PREFIX}${lib}${DEBUG_POSTFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    ELSE()
+      SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/lib/${boost_LIB_PREFIX}${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    ENDIF()
+
+    # other configuration options are RELWITHDEBINFO and MINSIZEREL
+    #
+    # TODO: debug and release builds are building in the same location - FIX THIS!!!
+    SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/lib/${boost_LIB_PREFIX}${lib}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/lib/${boost_LIB_PREFIX}${lib}${DEBUG_POSTFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+
+    IF (CMAKE_GENERATOR MATCHES "Makefiles")
+      SET_TARGET_PROPERTIES(${lib}
+        PROPERTIES
+          IMPORTED_LOCATION ${boost_LIBRARY_PATH}
+      )
+    ELSE() # IDEs: Xcode, VS, others...
+      SET_TARGET_PROPERTIES(${lib}
+        PROPERTIES
+          IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
+          IMPORTED_LOCATION_RELEASE ${boost_LIBRARY_PATH_RELEASE}
+          IMPORTED_LOCATION_DEBUG ${boost_LIBRARY_PATH_DEBUG}
+      )
+    ENDIF()
+  ENDFOREACH()
 
   IF(BUILD_WITH_PYTHON)
     ADD_DEPENDENCIES(Boost_external Python_external)
   ENDIF()
 
-  IF (CMAKE_GENERATOR MATCHES "Makefiles")
-    SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
-      PROPERTIES
-        IMPORTED_LOCATION ${boost_LIBRARY_PATH}
-    )
-  ELSE() # IDEs: Xcode, VS, others...
-    SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
-      PROPERTIES
-        IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
-        IMPORTED_LOCATION_RELEASE ${boost_LIBRARY_PATH_RELEASE}
-        IMPORTED_LOCATION_DEBUG ${boost_LIBRARY_PATH_DEBUG}
-    )
-  ENDIF()
 
 ENDMACRO()
+
