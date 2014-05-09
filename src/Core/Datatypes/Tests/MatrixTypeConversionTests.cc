@@ -107,7 +107,7 @@ DenseMatrixHandle CreateDenseMatrix()
     return m;
 }
  
-TEST(MatrixTypeConversionTests, dense2column)
+TEST(MatrixTypeConversionTests, denseTocolumn)
 {
    DenseMatrixHandle from(CreateDenseMatrix());
     
@@ -122,7 +122,7 @@ TEST(MatrixTypeConversionTests, dense2column)
 	   
 }
 
-TEST(MatrixTypeConversionTest, dense2column2)
+TEST(MatrixTypeConversionTests, denseTocolumn2)
 {
    DenseMatrixHandle from(CreateDenseMatrix_2());
     
@@ -139,7 +139,7 @@ TEST(MatrixTypeConversionTest, dense2column2)
     
 }
 
-TEST(MatrixTypeConversionTest, dense2sparse)
+TEST(MatrixTypeConversionTests, denseTosparse)
 {
    DenseMatrixHandle from(CreateDenseMatrix_2());
     
@@ -161,7 +161,7 @@ TEST(MatrixTypeConversionTest, dense2sparse)
 	
 }
 
-TEST(MatrixTypeConversionTest, colvector2sparse)
+TEST(MatrixTypeConversionTests, colvectorTosparse)
 {  
   DenseColumnMatrixHandle from(CreateColumnMatrix());
 
@@ -187,7 +187,7 @@ TEST(MatrixTypeConversionTest, colvector2sparse)
         EXPECT_EQ(expected_result->coeff(i, j),result->coeff(i, j));
 }
 
-TEST(MatrixTypeConversionTest, sparse2col)
+TEST(MatrixTypeConversionTests, sparseTocol)
 {  
   SparseRowMatrixHandle from = CreateSparseMatrix(); 
   
@@ -209,7 +209,7 @@ TEST(MatrixTypeConversionTest, sparse2col)
 	
 }
 
-TEST(MatrixTypeConversionTest, sparse2dense)
+TEST(MatrixTypeConversionTests, sparseTodense)
 {  
   SparseRowMatrixHandle from = CreateSparseMatrix(); 
   
@@ -232,7 +232,7 @@ TEST(MatrixTypeConversionTest, sparse2dense)
 }
 
 
-TEST(MatrixTypeConversionTest, col2dense)
+TEST(MatrixTypeConversionTests, colTodense)
 {
  DenseColumnMatrixHandle from(CreateColumnMatrix()); 
  

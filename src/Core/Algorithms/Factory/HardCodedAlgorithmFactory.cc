@@ -27,8 +27,8 @@
 */
 
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromElemToNode.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>

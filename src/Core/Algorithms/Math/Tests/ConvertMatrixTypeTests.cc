@@ -205,10 +205,10 @@ TEST(ConvertMatrixTests, DenseToColumnMatrix)
   algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, false);
   algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, false);
 
-  MatrixHandle input1(CreateDenseMatrix_2());
+  MatrixHandle input1(CreateDenseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
       
-  auto expected_result = CreateColumnMatrix_2();
+  auto expected_result = CreateColumnMatrix();
   auto out1 = matrix_cast::as_column(output_matrix1);
   
   EXPECT_EQ(expected_result->nrows(), out1->nrows());
@@ -232,15 +232,24 @@ TEST(ConvertMatrixTests, DenseToSparseMatrix)
   MatrixHandle input1(CreateDenseMatrix_2());
   MatrixHandle output_matrix1 = algo.run(input1); 
   
-  auto expected_result = CreateSparseMatrix();
-  auto out1 = matrix_cast::as_sparse(output_matrix1); 
+  DenseMatrixHandle input=matrix_cast::as_dense(input1);
+  auto output = matrix_cast::as_sparse(output_matrix1);
   
-  EXPECT_EQ(expected_result->nrows(), out1->nrows());
-  EXPECT_EQ(expected_result->ncols(), out1->ncols()); 
-  
- for (int i = 0; i < out1->nrows(); i++)
-   for (int j = 0; j < out1->ncols(); j++)
-        EXPECT_EQ(expected_result->coeff(i, j),out1->coeff(i, j));   
+  EXPECT_EQ(input->nrows(), output->nrows());
+  EXPECT_EQ(input->ncols(), output->ncols());   
+ 
+  int count_dense=0;
+  for (int i = 0; i < input->nrows(); i++)
+   for (int j = 0; j < input->ncols(); j++)
+        if ((*input)(i,j)!=0) count_dense++;
+ 
+  EXPECT_EQ(count_dense, output->nonZeros());
+ 
+  for (index_type row = 0; row < output->outerSize(); row++)
+    {
+      for (SparseRowMatrix::InnerIterator it(*output,row); it; ++it)
+        EXPECT_EQ(it.value(),(*input)(row, it.index()));   
+    }
   
 }
 

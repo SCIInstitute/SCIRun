@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromElemToNode.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
 #include <boost/bimap.hpp>

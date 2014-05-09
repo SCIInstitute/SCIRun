@@ -104,20 +104,17 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   /// safety check
   {
     THROW_ALGORITHM_INPUT_ERROR("No input source field");
-    return FieldHandle();
   }
 
   if (!isrc)
   /// safety check
   {
     THROW_ALGORITHM_INPUT_ERROR("No input destination field");
-    return FieldHandle();
   }
   
   if (!isrc)
   {
     THROW_ALGORITHM_INPUT_ERROR("No input mapping field");
-    return FieldHandle();
   }
   
   auto matrix = matrix_cast::as_sparse(mapping); 
@@ -125,7 +122,6 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   if (!matrix)
   {
     THROW_ALGORITHM_INPUT_ERROR("Mapping matrix needs to be sparse");
-    return FieldHandle();
   }
   
   VField* ifsrc =  isrc->vfield();
@@ -160,7 +156,6 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   else
   {
     THROW_ALGORITHM_INPUT_ERROR("The number of columns in the matrix does not match number of nodes or elements in the destination field");
-    return FieldHandle();
   }
   
   if (src_num_values != n)
@@ -168,7 +163,6 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
     std::cerr << "n="<<n<<"\n";
     std::cerr << "num_values="<<src_num_values<<"\n";
     THROW_ALGORITHM_INPUT_ERROR("The number of columns in the matrix does not match number of values in the source field");
-    return FieldHandle();
   }
 
   /// Create output field
@@ -180,7 +174,6 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   if (!output)
   {
     THROW_ALGORITHM_INPUT_ERROR("Could not create output field");
-    return FieldHandle();
   } 
   
   /// Simple table to deal with the various data type formats
@@ -238,17 +231,16 @@ AlgorithmOutputName ApplyMappingMatrixAlgo::Output("Output");
 
 AlgorithmOutput ApplyMappingMatrixAlgo::run_generic(const AlgorithmInput & input) const
 {
- AlgorithmOutput output;
+  AlgorithmOutput output;
  
   auto src = input.get<Field>(Source);
   auto dest = input.get<Field>(Destination);
   auto mapp = input.get<Matrix>(Mapping);
- 
-  FieldHandle output_field;
-  output_field = run(src,dest,mapp);
   
+  FieldHandle output_field;
+  output_field = run(src,dest,mapp);  
   output[Output] = output_field;
-
+  
  return output;
 }
 

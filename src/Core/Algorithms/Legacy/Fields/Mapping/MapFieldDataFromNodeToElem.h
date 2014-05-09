@@ -1,3 +1,4 @@
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -26,42 +27,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H
+#define CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H 1
 
-#ifndef CORE_ALGORITHMS_FIELDS_MAPFIELDDATAFROMNODETOELEM_H
-#define CORE_ALGORITHMS_FIELDS_MAPFIELDDATAFROMNODETOELEM_H 1
 
-// STL classes to include
-#include <algorithm>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// SCIRun Datatypes to use
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE MapFieldDataFromNodeToElemAlgo : public AlgoBase
+class SCISHARE MapFieldDataFromNodeToElemAlgo : public AlgorithmBase
 {
   public:
+    MapFieldDataFromNodeToElemAlgo();
+    
+    static AlgorithmInputName InputField;
+    static AlgorithmOutputName OutputField;
+    static AlgorithmParameterName Method;
+    FieldHandle run(FieldHandle input_field) const; 
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 
-    /// Set default parameters
-    MapFieldDataFromNodeToElemAlgo()
-    {
-      /// Add option for how to do map data from nodes to element
-      add_option("method","average","interpolate|average|min|max|sum|median|mostcommon");
-    }
-
-    /// Functions
-    bool run(FieldHandle& input,FieldHandle& output);
 };
 
-} // namespace SCIRunAlgo
-
+}}}}
 #endif

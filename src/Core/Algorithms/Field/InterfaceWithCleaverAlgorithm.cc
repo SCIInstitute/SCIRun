@@ -67,11 +67,6 @@ AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X("Vo
 AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y("VolumeScalingSpinBox_Y");
 AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z("VolumeScalingSpinBox_Z");
 
-/*void cleaverScirunExit(int code)
-{
-  BOOST_THROW_EXCEPTION(SCIRun::Core::AlgorithmProcessingExcepion() << SCIRun::Core::ErrorMessage("Cleaver exited with error code..."));
-}*/
-
 InterfaceWithCleaverAlgorithm::InterfaceWithCleaverAlgorithm()
 {
   addParameter(VerboseCheckBox,true);
@@ -177,9 +172,9 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
       THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
     }
    
-    //boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(get(PaddingCheckBox).getBool() ?  ((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get() : volume.get(), get(VerboseCheckBox).getBool()));    
-    //PADDING IS ALWAYS ON SINCE THERE IS EXIT CALLS IN THE CLEAVER LIB !!!!      
-    boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get(), get(VerboseCheckBox).getBool())); 
+    /// Padding is now optional! 
+    boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(get(PaddingCheckBox).getBool() ?  ((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get() : volume.get(), get(VerboseCheckBox).getBool()));        
+    //boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get(), get(VerboseCheckBox).getBool())); 
     
     FieldInformation fi("TetVolMesh",0,"double");   ///create output field
 
@@ -215,13 +210,15 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
     ofield->resize_values();
     ofield->set_values(values);
     mesh->computeAngles();
-    std::ostringstream ostr1,ostr2,ostr3,ostr4,ostr5;
-    ostr1 << "Number of tetrahedral elements:" << ofield->vmesh()->num_elems();
-    ostr2 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes();
-    ostr3 << "Worst Angle (min):" <<  mesh->min_angle;
-    ostr4 << "Worst Angle (max):" <<  mesh->max_angle;
-    ostr5 << "Volume:" << volume->size().toString();
-    remark(ostr1.str()); remark(ostr2.str()); remark(ostr3.str()); remark(ostr4.str()); remark(ostr5.str());
+    std::ostringstream ostr1;
+    ostr1 << "Number of tetrahedral elements:" << ofield->vmesh()->num_elems() <<  std::endl;
+    ostr1 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes() << std::endl;
+    ostr1 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes() << std::endl;
+    ostr1 << "Worst Angle (min):" <<  mesh->min_angle << std::endl;
+    ostr1 << "Worst Angle (max):" <<  mesh->max_angle << std::endl;
+    ostr1 << "Volume:" << volume->size().toString() << std::endl;
+    
+    remark(ostr1.str()); 
 
   return output;
 }

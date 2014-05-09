@@ -31,7 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -46,7 +46,7 @@ using namespace SCIRun::TestUtils;
 
   FieldHandle CreateTetMesh1()
   {     
-   return loadFieldFromFile(TestResources::rootDir() / "mapfielddatafrom_/test_mapfielddatafromnodetoelem.fld");
+   return loadFieldFromFile(TestResources::rootDir() / "mapfielddatafrom_/test_mapfielddatafromelemtonode.fld");
   }
   
   FieldHandle CreateTetMesh2()
@@ -148,7 +148,7 @@ TEST(MapFieldDataFromNodeToElemAlgoTests,TestInterpolationAverage)
  
 }
   
-TEST(MapFieldDataFromNodeToElemAlgoTests, TestDataAlreadyOnNodes)
+TEST(MapFieldDataFromNodeToElemAlgoTests, TestDataAlreadyOnElems)
 {
 
  MapFieldDataFromNodeToElemAlgo algo;
@@ -162,8 +162,6 @@ TEST(MapFieldDataFromNodeToElemAlgoTests, TestDataAlreadyOnNodes)
  {
   result = algo.run(input);
  } catch (...) {}
- 
- std::cout <<  "  should throw  'Remark: Method is not implemented' !" << std::endl;
  
 }
 

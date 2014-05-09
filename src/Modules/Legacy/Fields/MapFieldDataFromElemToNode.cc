@@ -27,7 +27,7 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/MapFieldDataFromElemToNode.cc
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromElemToNode.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -55,11 +55,15 @@ void MapFieldDataFromElemToNodeModule::setStateDefaults()
 void MapFieldDataFromElemToNodeModule::execute()
 { 
   FieldHandle input = getRequiredInput(InputField);
-
-  algo().set_option(MapFieldDataFromElemToNodeAlgo::Method, get_state()->getValue(MapFieldDataFromElemToNodeAlgo::Method).getString());
   
-  auto output = algo().run_generic(make_input((InputField, input)));
+  if (needToExecute())
+  {
+   update_state(Executing);
   
-  sendOutputFromAlgorithm(OutputField, output);
-
+   algo().set_option(MapFieldDataFromElemToNodeAlgo::Method, get_state()->getValue(MapFieldDataFromElemToNodeAlgo::Method).getString());
+  
+   auto output = algo().run_generic(make_input((InputField, input)));
+  
+   sendOutputFromAlgorithm(OutputField, output);
+  }
 }

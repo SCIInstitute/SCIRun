@@ -29,7 +29,7 @@
    TODO: Nrrd aoutput
 */
 
-#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromElemToNode.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -89,7 +89,7 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
     algo->remark("Interpolation of piecewise constant data is done by averaging adjoining values");
   }
   
-  if ((method == "interpolate")||(method == "average"))
+  if ((method == "interpolation")||(method == "average"))
   {
    while (it != eit)
    {

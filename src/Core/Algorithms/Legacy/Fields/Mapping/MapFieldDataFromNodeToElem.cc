@@ -26,11 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/Mapping/MapFieldDataFromNodeToElem.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-namespace SCIRunAlgo {
-
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun;
 
 /// Internal function to this algorithm: no need for this function to be
@@ -38,7 +48,7 @@ using namespace SCIRun;
 
 template <class DATA> 
 bool 
-MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
+MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
                             FieldHandle& input, 
                             FieldHandle& output);
 
@@ -46,16 +56,15 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
 
 template <class DATA> 
 bool 
-MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
+MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
                             FieldHandle& input, 
                             FieldHandle& output)
 {
+ 
   /// Get the method the user selected.
   /// Since we do a check of valid entries when then user sets the
   /// algorithm, we can assume it is one of the specified ones
-  std::string method;
-  algo->get_option("method",method);
-
+   std::string method = algo->get_option(MapFieldDataFromNodeToElemAlgo::Method);
   /// Get pointers to the virtual interfaces of the fields
   /// We need these to obtain the data values
   
@@ -76,10 +85,9 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
   mesh->size(sz);
   index_type cnt = 0, c = 0;
 
-  if ((method == "average") || (method == "interpolate"))
+  if ((method == "average") || (method == "interpolation"))
   {
     DATA tval(0);
-    
     while (it != eit)
     {
       mesh->get_nodes(nodearray, *it);
@@ -90,6 +98,8 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
         ifield->get_value(tval,nodearray[p]);
         val += tval;
       }
+      
+      ofield->resize_fdata();
       val = static_cast<DATA>(val * static_cast<double>((1.0/static_cast<double>(nsize))));
       ofield->set_value(val,*it);
       ++it;
@@ -97,8 +107,7 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
       if (cnt==1000) 
       { 
         cnt=0; c+=1000; 
-        algo->update_progress(c,sz); 
-        if (algo->check_abort()) break;
+	algo->update_progress(c/sz); 
       }
     }
   }
@@ -125,8 +134,7 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
       if (cnt==1000) 
       { 
         cnt=0; c+=1000; 
-        algo->update_progress(c,sz); 
-        if (algo->check_abort()) break;
+        algo->update_progress(c/sz); 
       }
     }
   }
@@ -153,8 +161,7 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
       if (cnt==1000) 
       { 
         cnt=0; c+=1000; 
-        algo->update_progress(c,sz); 
-        if (algo->check_abort()) break;
+        algo->update_progress(c/sz); 
       }
     } 
   }
@@ -177,8 +184,7 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
       if (cnt==1000) 
       { 
         cnt=0; c+=1000; 
-        algo->update_progress(c,sz); 
-        if (algo->check_abort()) break;
+	algo->update_progress(c/sz); 
       }
     }
   }
@@ -202,97 +208,113 @@ MapFieldDataFromNodeToElemT(MapFieldDataFromNodeToElemAlgo* algo,
       if (cnt==1000) 
       { 
         cnt=0; c+=1000; 
-        algo->update_progress(c,sz); 
-        if (algo->check_abort()) break;
+	algo->update_progress(c/sz); 
       }
     }
-  }
+  } else return false;
   
-  /// Check whether algorithm was aborted
-  if (algo->check_abort())
-  {
-    /// Data is not valid, hence purge it
-    output = 0;
-    /// Return an error status to the user
-    algo->algo_end(); return (false);
-  }
-  
-  /// Algorithm succeeded
-  algo->algo_end(); return (true);
+  return true;
 }
 
-
-/// Actual Algorithm class
-
-bool 
-MapFieldDataFromNodeToElemAlgo::
-run(FieldHandle& input, FieldHandle& output)
+MapFieldDataFromNodeToElemAlgo::MapFieldDataFromNodeToElemAlgo()
 {
-  algo_start("MapFieldData");
-  
-  /// safety check
-  if (input.get_rep() == 0)
-  {
-    error("No input source field");
-    algo_end(); return (false);
-  }
-
-  /// Get information about field types
-  FieldInformation fi(input);
-  FieldInformation fo(input);
-  
-  /// In case data is already on the elements
-  if (fi.is_constantdata())
-  {
-    remark("Data is already at elements");
-    output = input;
-    algo_end(); return (true);
-  }
-
-  /// We need linear data to start with
-  if (!(fi.is_lineardata()))
-  {
-    error("This function needs to have data at the nodes");
-    algo_end(); return (false);  
-  }
-
-  /// Make sure output type has data on elements
-  fo.make_constantdata();
-  
-  /// Create output field
-  output = CreateField(fo,input->mesh());
- 
-  /// Check whether output field was created
-  if (output.get_rep() == 0)
-  {
-    error("Could not create output field");
-    algo_end(); return(false);
-  } 
-  
-  /// Simple table to deal with the various data type formats
-  /// Note that not every data type is handled, all char, shorts etc,
-  /// are automatically handled by the int, and unsigned int case, by
-  /// casting the data on input (these should be the less frequently
-  /// used datatypes and hence have no specific algorithm in place).
-  /// Similarly floats are casted to doubles.
-  
-  if (input->vfield()->is_signed_integer()) 
-    return (MapFieldDataFromNodeToElemT<int>(this,input,output));
-
-  if (input->vfield()->is_unsigned_integer()) 
-    return (MapFieldDataFromNodeToElemT<unsigned int>(this,input,output));
-
-  if (input->vfield()->is_scalar()) 
-    return (MapFieldDataFromNodeToElemT<double>(this,input,output));
-  
- if (input->vfield()->is_vector()) 
-    return (MapFieldDataFromNodeToElemT<Vector>(this,input,output));
- 
-  if (input->vfield()->is_tensor()) 
-    return (MapFieldDataFromNodeToElemT<Tensor>(this,input,output));
-
-  error("Encountered an unknown data type");
-  algo_end(); return (false);
+  add_option(Method,"interpolation","interpolation|average|min|max|sum|median|none");
 }
 
-} // namespace SCIRunAlgo
+AlgorithmInputName MapFieldDataFromNodeToElemAlgo::InputField("InputField");
+AlgorithmOutputName MapFieldDataFromNodeToElemAlgo::OutputField("OutputField");
+AlgorithmParameterName MapFieldDataFromNodeToElemAlgo::Method("Method");
+
+AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto input_field = input.get<Field>(InputField);
+  
+  FieldHandle output_field;
+  output_field = run(input_field);
+  
+  AlgorithmOutput output;
+  output[OutputField] = output_field;
+
+  return output;
+}
+
+FieldHandle MapFieldDataFromNodeToElemAlgo::run(FieldHandle input_field) const
+{   
+   FieldHandle output;
+
+   if (!input_field)
+   {
+     THROW_ALGORITHM_INPUT_ERROR("Input field is not allocated");
+   } 
+    
+   FieldInformation fi(input_field);
+   FieldInformation fo(input_field);
+   
+   fo.make_lineardata();
+   
+   if(fi.is_constantdata())
+   {
+    THROW_ALGORITHM_INPUT_ERROR(" Data is already at elements ");
+   }  
+   
+   if (!(fi.is_lineardata()))
+   {
+    THROW_ALGORITHM_INPUT_ERROR(" This function needs to have data at the nodes "); 
+   }
+   
+   fo.make_constantdata();
+   
+   output = CreateField(fo,input_field->mesh());
+   
+   if (!output)
+   {
+     THROW_ALGORITHM_INPUT_ERROR("output field cannot be allocated");
+   } 
+   
+   if (input_field->vfield()->is_signed_integer())
+    {
+       if(!MapFieldDataFromNodeToElemT<int>(this,input_field,output))
+          {
+	    THROW_ALGORITHM_INPUT_ERROR("output int field cannot be allocated");
+	  } 
+    } else 
+    	  
+  if (input_field->vfield()->is_unsigned_integer()) 
+   {
+     if(!MapFieldDataFromNodeToElemT<unsigned int>(this,input_field,output))
+     {
+      THROW_ALGORITHM_INPUT_ERROR("output uint field cannot be allocated");
+     }
+   } else
+    
+  if (input_field->vfield()->is_scalar())
+   {
+     if (!MapFieldDataFromNodeToElemT<double>(this,input_field,output))
+     { 
+      THROW_ALGORITHM_INPUT_ERROR("output scalar field cannot be allocated");
+     }
+   } else
+  
+  if (input_field->vfield()->is_vector()) 
+  {
+    if (!MapFieldDataFromNodeToElemT<Vector>(this,input_field,output))
+    {
+     THROW_ALGORITHM_INPUT_ERROR("output vector field cannot be allocated");    
+    }
+  } else
+  
+  if (input_field->vfield()->is_tensor()) 
+  {
+    if (!MapFieldDataFromNodeToElemT<Tensor>(this,input_field,output))
+    {
+     THROW_ALGORITHM_INPUT_ERROR("output tensor field cannot be allocated"); 
+    }
+  } else
+  {
+    THROW_ALGORITHM_INPUT_ERROR(" Unknown field data type ");  
+  }     
+   
+   return output;
+}
+
+
