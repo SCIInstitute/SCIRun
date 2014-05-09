@@ -33,6 +33,8 @@
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
+  class NewArrayMathEngine;
+
   namespace Modules {
     namespace Fields {
 
@@ -50,6 +52,12 @@ namespace SCIRun {
         INPUT_PORT(1, Function, String);
         INPUT_PORT_DYNAMIC(2, InputArrays, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
+
+        static Core::Algorithms::AlgorithmParameterName FunctionString;
+        static Core::Algorithms::AlgorithmParameterName FormatString;
+        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        bool addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int index) const;
       };
 
     }
