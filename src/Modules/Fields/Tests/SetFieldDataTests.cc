@@ -32,13 +32,17 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::TestUtils;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -48,6 +52,65 @@ class SetFieldDataModuleTests : public ModuleTest
 {
 
 };
+
+namespace
+{
+  FieldHandle CreateTriSurfScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+  }
+  FieldHandle CreatePointCloudeScalar()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/point_cloud/scalar/pts_scalar.fld");
+  }
+}
+
+TEST_F(SetFieldDataModuleTests, TriSurfOnPortZeroSparseMatrixOnPortOne)
+{
+  auto test = makeModule("SetFieldData");
+	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+	m->insert(0,0) = 1;
+	m->insert(0,1) = 7;
+	m->insert(0,2) = 3;
+	m->insert(1,0) = 7;
+	m->insert(1,1) = 4;
+	m->insert(1,2) = -5;
+	m->insert(2,0) = 3;
+	m->insert(2,1) = -5;
+	m->insert(2,2) = 6;
+	m->makeCompressed();
+  FieldHandle f = CreateTriSurfScalarOnNode();
+  stubPortNWithThisData(test, 0, f);
+  stubPortNWithThisData(test, 1, m);
+	EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(SetFieldDataModuleTests, TetMeshOnPortZeroDenseColumnMatrixOnPortOne)
+{
+  auto test = makeModule("SetFieldData");
+	DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+	m->setZero();
+  FieldHandle f = CreateTetMeshScalarOnNode();
+  stubPortNWithThisData(test, 0, f);
+  stubPortNWithThisData(test, 1, m);
+	EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(SetFieldDataModuleTests, CloudMeshOnPortZeroDenseMatrixOnPortOne)
+{
+  auto test = makeModule("SetFieldData");
+	DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
+	for (int i=0; i<3; i++)
+		(*m)(i, 0) = 1;
+  FieldHandle f = CreatePointCloudeScalar();
+  stubPortNWithThisData(test, 0, f);
+  stubPortNWithThisData(test, 1, m);
+	EXPECT_NO_THROW(test->execute());
+}
 
 TEST_F(SetFieldDataModuleTests, ThrowsForNullInput)
 {

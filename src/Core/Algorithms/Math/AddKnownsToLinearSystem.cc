@@ -87,7 +87,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 	// Checking if x matrix was given and that the dimenions agree with the stiff matrix
   if (!x)
 	{
-		THROW_ALGORITHM_INPUT_ERROR("No x vector was given");
+  THROW_ALGORITHM_INPUT_ERROR("No x vector was given");
 	}
 	else if ( !(((x->ncols() == m) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == m))) )
 	{

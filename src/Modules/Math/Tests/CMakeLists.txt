@@ -36,7 +36,7 @@ SET(Modules_Math_Tests_SRCS
   SolveMinNormLeastSqSystemTests.cc
   ConvertMatrixTypeTests.cc
   SelectSubMatrixTests.cc
-  #AddKnownsToLinearSystemTests.cc
+  AddKnownsToLinearSystemTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS

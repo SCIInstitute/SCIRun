@@ -26,7 +26,8 @@
    DEALINGS IN THE SOFTWARE.
    
    author: Moritz Dannhauer
-   last change: 11/26/13
+   author: Spencer Frisby
+   last change: 5/8/2014
 */
 
 
@@ -45,37 +46,23 @@ bool
 CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "CalculateVectorMagnitudes");
+  
   if (!input)
-  {
-    error("No input field");
-    return (false);
-  }
+    THROW_ALGORITHM_INPUT_ERROR("No input field");
  
   FieldInformation fi(input);
   
   if (fi.is_nodata())
-  {
-    error("Input field does not have data associated with it");
-    return (false);    
-  }
+    THROW_ALGORITHM_INPUT_ERROR("Input field does not have data associated with it");   
   
   if (!fi.is_vector())
-  {
-    error("The data needs to be of vector type to calculate vector magnitudes");
-    return (false);    
-  }
-  
-  /// check if number of field matches number of nodes,face or cell elements ????
+    THROW_ALGORITHM_INPUT_ERROR("The data needs to be of vector type to calculate vector magnitudes");
   
   fi.make_scalar();
   fi.make_constantdata();
   output = CreateField(fi,input->mesh());
-  
   if (!output)
-  {
-    error("Could not allocate output field");
-    return (false);      
-  }
+    THROW_ALGORITHM_PROCESSING_ERROR("Could not allocate output field");
   
   StackVector<double,3> grad;
   VField* ifield = input->vfield();
@@ -86,26 +73,17 @@ CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output) const
   VField::size_type num_nodes = imesh->num_nodes();
   VField::size_type num_fielddata = ifield->num_values();
   
-  if ( num_fielddata!=num_nodes &&  num_fielddata!=num_elems)
-  {
-    error("Input data inconsistent");
-    return (false);
-  }
+  if (num_fielddata!=num_nodes &&  num_fielddata!=num_elems)
+    THROW_ALGORITHM_INPUT_ERROR("Input data inconsistent");
   
   Vector* vec = reinterpret_cast<Vector*>(ifield->get_values_pointer());
   double* mag = reinterpret_cast<double*>(ofield->get_values_pointer());
   
   if (!vec)
-  {
-   error("Could not acces input field pointer");
-   return (false); 
-  }
+   THROW_ALGORITHM_INPUT_ERROR("Could not acces input field pointer");
   
   if (!mag)
-  {
-   error("Could not acces output field pointer");
-   return (false); 
-  }
+   THROW_ALGORITHM_INPUT_ERROR("Could not access output field pointer");
   
   int cnt = 0;
   for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
@@ -118,7 +96,6 @@ CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output) const
         update_progress_max(idx,num_elems); 
       }
   }
-
   return (true);
 }
 
@@ -131,7 +108,7 @@ AlgorithmOutput CalculateVectorMagnitudesAlgo::run_generic(const AlgorithmInput&
 
   FieldHandle vectormagnitude;
   if (!run(field, vectormagnitude))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+    THROW_ALGORITHM_PROCESSING_ERROR("An input or processing error has occurred.");
 
   AlgorithmOutput output;
   output[ScalarField] = vectormagnitude;

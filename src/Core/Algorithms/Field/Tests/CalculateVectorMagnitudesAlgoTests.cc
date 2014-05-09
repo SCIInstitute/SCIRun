@@ -27,8 +27,7 @@
 */
  
 #include <gtest/gtest.h>
-
-#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -36,14 +35,14 @@
 #include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
 using namespace SCIRun::TestUtils;
 
-namespace
-{
+namespace {
   FieldHandle TetMeshWithoutFieldData()
   {
     FieldInformation fi("TetVolMesh", 1, "double");
@@ -77,19 +76,27 @@ namespace
   }
   
   /*** TRI SURFs ***/
-  FieldHandle CreateTriSurfScalarOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
-  }
   FieldHandle CreateTriSurfVectorOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
+  }
+  FieldHandle CreateTriSurfVectorOnNodeSCIRun4Output()
+  {
+    return loadFieldFromFile("/Users/spencer/Desktop/SCIRun/CalculatedVectorMagnitudesForTriSurfVectorOnNodeFromSCIRun4.fld");
+  }
+  FieldHandle CreateTriSurfScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
   }
 
   /*** TET MESHs ***/
   FieldHandle CreateTetMeshVectorOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
+  }
+  FieldHandle CreateTetMeshVectorOnNodeSCIRun4Output()
+  {
+    return loadFieldFromFile("/Users/spencer/Desktop/SCIRun/CalculatedVectorMagnitudesForTetMeshVectorOnNodeFromSCIRun4.fld");
   }
   FieldHandle CreateTetMeshScalarOnNode()
   {
@@ -99,95 +106,88 @@ namespace
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.fld");
   }
-  
-  /*** CLOUD POINT ***/
-  FieldHandle CreatePointClodeScalar()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/point_cloud/scalar/pts_scalar.fld");
-  }
 }
 
-//TEST(CalculateGradientsAlgoTests, TriSurfScalarOnNodeAsInput)
-//{
-//  //FAIL() << "TODO"; // SEG FAULT
-//  FieldHandle in = CreateTriSurfScalarOnNode();
-//  FieldHandle out;
-//  CalculateGradientsAlgo algo;
-//  EXPECT_EQ(algo.run(in, out), true);
-//  // TODO: compare values from SCIRun 4
-//}
-TEST(CalculateGradientsAlgoTests, DISABLED_TriSurfScalarOnNodeAsInput)
-{
-  FAIL() << "TODO"; // SEG FAULT
-  FieldHandle in = CreateTriSurfScalarOnNode();
-  FieldHandle out;
-  CalculateGradientsAlgo algo;
-  EXPECT_EQ(algo.run(in, out), true);
-  // TODO: compare values from SCIRun 4
-}
-TEST(CalculateGradientsAlgoTests, TriSurfVectorOnNodeAsInput)
+TEST(CalculateVectorMagnitudesAlgoTests, CompareTriSurfVectorOnNodeToSCIRun4)
 {
   FieldHandle in = CreateTriSurfVectorOnNode();
   FieldHandle out;
-  CalculateGradientsAlgo algo;
+  CalculateVectorMagnitudesAlgo algo;
+  algo.run(in, out);
+  
+  FieldHandle SCIRUN4out = CreateTriSurfVectorOnNodeSCIRun4Output();
+  VField* expected_vals = SCIRUN4out->vfield(); // what is to be expected
+  VField* outputed_vals = out->vfield(); // the output
+  double* expected_mag = reinterpret_cast<double*>(expected_vals->get_values_pointer());
+  double* outputed_mag = reinterpret_cast<double*>(outputed_vals->get_values_pointer());
+  
+  // getting the number of things to compare
+  VMesh*  imesh  = in->vmesh();
+  VField::size_type num_elems = imesh->num_elems();
+  
+  for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
+    EXPECT_EQ(expected_mag[idx],outputed_mag[idx]);
+}
+
+TEST(CalculateVectorMagnitudesAlgoTests, TriSurfScalarOnNodeAsInput)
+{
+  FieldHandle in = CreateTriSurfScalarOnNode();
+  FieldHandle out;
+  CalculateVectorMagnitudesAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
 }
-TEST(CalculateGradientsAlgoTests, TetMeshScalarOnNodeAsInput)
-{
-//  FAIL() << "TODO"; // SEG FAULT
-  FieldHandle in = CreateTetMeshScalarOnNode();
-  FieldHandle out;
-  CalculateGradientsAlgo algo;
-  EXPECT_EQ(algo.run(in, out), true);
-  // TODO: compare values from SCIRun 4
-}
-//TEST(CalculateGradientsAlgoTests, DISABLED_TetMeshScalarOnNodeAsInput)
-//{
-//  FAIL() << "TODO"; // SEG FAULT
-//  FieldHandle in = CreateTetMeshScalarOnNode();
-//  FieldHandle out;
-//  CalculateGradientsAlgo algo;
-//  EXPECT_EQ(algo.run(in, out), true);
-//  // TODO: compare values from SCIRun 4
-//}
-TEST(CalculateGradientsAlgoTests, TetMeshTensorOnNodeAsInput)
-{
-  FieldHandle in = CreateTetMeshTensorOnNode();
-  FieldHandle out;
-  CalculateGradientsAlgo algo;
-  EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
-}
-TEST(CalculateGradientsAlgoTests, TetMeshVectorOnNodeAsInput)
+
+TEST(CalculateVectorMagnitudesAlgoTests, TetMeshVectorOnNodeAsInput)
 {
   FieldHandle in = CreateTetMeshVectorOnNode();
   FieldHandle out;
-  CalculateGradientsAlgo algo;
-  EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
+  CalculateVectorMagnitudesAlgo algo;
+  algo.run(in, out);
+  // TODO: compare values from SCIRun 4  
+  
+  FieldHandle SCIRUN4out = CreateTetMeshVectorOnNodeSCIRun4Output();
+  VField* expected_vals = SCIRUN4out->vfield(); // what is to be expected
+  VField* outputed_vals = out->vfield(); // the output
+  double* expected_mag = reinterpret_cast<double*>(expected_vals->get_values_pointer());
+  double* outputed_mag = reinterpret_cast<double*>(outputed_vals->get_values_pointer());
+  
+  // getting the number of things to compare
+  VMesh*  imesh  = in->vmesh();
+  VField::size_type num_elems = imesh->num_elems();
+  
+  for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
+    EXPECT_EQ(expected_mag[idx],outputed_mag[idx]);
 }
 
-TEST(CalculateGradientsAlgoTests, PointCloudScalarOnNodeAsInput)
+TEST(CalculateVectorMagnitudesAlgoTests, TetMeshScalarOnNodeAsInput)
 {
-  FieldHandle in = CreatePointClodeScalar();
+  FieldHandle in = CreateTetMeshScalarOnNode();
   FieldHandle out;
-  CalculateGradientsAlgo algo;
+  CalculateVectorMagnitudesAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
 }
 
-TEST(CalculateGradientsAlgoTests, NullFieldHandleInput)
+TEST(CalculateVectorMagnitudesAlgoTests, TetMeshTensorOnNodeAsInput)
+{
+  /***** TEST HAS UNKOWN FILE FAILURE */
+  FieldHandle in = CreateTetMeshTensorOnNode();
+  FieldHandle out;
+  CalculateVectorMagnitudesAlgo algo;
+  EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
+}
+
+TEST(CalculateVectorMagnitudesAlgoTests, NullFieldHandleInput)
 {
   FieldHandle in;
   FieldHandle out;
-  CalculateGradientsAlgo algo;
+  CalculateVectorMagnitudesAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
 }
 
-TEST(CalculateGradientsAlgoTests, NoFieldDataInput)
+TEST(CalculateVectorMagnitudesAlgoTests, NoFieldDataInput)
 {
   FieldHandle in = TetMeshWithoutFieldData();
   FieldHandle out;
-  CalculateGradientsAlgo algo;
+  CalculateVectorMagnitudesAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
 }
-
-
-

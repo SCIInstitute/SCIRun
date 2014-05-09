@@ -36,7 +36,6 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
-#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;

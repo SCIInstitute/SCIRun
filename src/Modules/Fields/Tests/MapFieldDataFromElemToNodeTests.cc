@@ -32,13 +32,22 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/GeometryPrimitives/Vector.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::TestUtils;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -48,6 +57,141 @@ class MapFieldDataFromElemToNodeModuleTests : public ModuleTest
 {
 
 };
+
+namespace
+{
+  FieldHandle CreateTriSurfScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTriSurfVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+  }
+  FieldHandle CreatePointCloudeScalar()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/point_cloud/scalar/pts_scalar.fld");
+  }
+  FieldHandle CreateTensor()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_elem.fld");
+  }
+  
+  void ShowWhatFieldHandleIsMadeOf(FieldHandle input)
+  {
+    VField* vfield = input->vfield();
+    if (vfield->is_nodata())
+      std::cout << "There is not data contained in the field" << std::endl;
+    else
+    {
+      // show the number of values of the field, if greater than zero print them out
+      VMesh::size_type n = vfield->vfield()->num_values();
+      std::cout << "Field contains " << n << " values" << std::endl;
+      if (n > 0)
+      {
+        if (vfield->is_vector())
+        {
+          Vector val;
+          for (VMesh::index_type idx = 0; idx<n; idx++)
+          {
+            vfield->get_value(val,idx);
+            std::cout << "x = " << val.x() << ", y = " << val.y() << ", z = " << val.z() << std::endl;
+          }
+        }
+      }
+      // TODO: commented out because the loadFieldFromFile currently does not work with Tensors
+      /*if (vfield->is_tensor())
+      {
+        Tensor val;
+        for (VMesh::index_type idx = 0; idx<n; idx++)
+        {
+          vfield->get_value(val,idx);
+          std::cout << static_cast<double>(val.mat_[idx][0]) << std::endl;
+        }
+      }*/
+      if (vfield->is_scalar())
+      {
+        double val = 0;
+        for (VMesh::index_type idx = 0; idx<n; idx++)
+        {
+          vfield->get_value(val,idx);
+          std::cout << val << ((idx == (n-1)) ? "\n" : " ");
+        }
+      }
+    }
+  }
+}
+
+// loadFieldFromFile cannot yet load tensors
+TEST_F(MapFieldDataFromElemToNodeModuleTests, DISABLED_TensorOnPortZero)
+{
+  FAIL(); // TODO;
+  auto test = makeModule("MapFieldDataFromElemToNode");
+  FieldHandle f = CreateTensor();
+  
+  ShowWhatFieldHandleIsMadeOf(f);
+  
+  stubPortNWithThisData(test, 0, f);
+  connectDummyOutputConnection(test, 0);
+  
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(MapFieldDataFromElemToNodeModuleTests, PointCloudScalarOnPortZero)
+{
+  auto test = makeModule("MapFieldDataFromElemToNode");
+  FieldHandle f = CreatePointCloudeScalar();
+  ShowWhatFieldHandleIsMadeOf(f);
+  
+  stubPortNWithThisData(test, 0, f);
+  connectDummyOutputConnection(makeModule(""), 0);
+  
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(MapFieldDataFromElemToNodeModuleTests, TetMeshScalarOnPortZero)
+{
+  auto test = makeModule("MapFieldDataFromElemToNode");
+  FieldHandle f = CreateTetMeshScalarOnElem();
+  ShowWhatFieldHandleIsMadeOf(f);
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(MapFieldDataFromElemToNodeModuleTests, TetMeshVectorOnPortZero)
+{
+  auto test = makeModule("MapFieldDataFromElemToNode");
+  FieldHandle f = CreateTetMeshVectorOnElem();
+  ShowWhatFieldHandleIsMadeOf(f);
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(MapFieldDataFromElemToNodeModuleTests, TriSurfScalarOnPortZero)
+{
+  auto test = makeModule("MapFieldDataFromElemToNode");
+  FieldHandle f = CreateTriSurfScalarOnElem();
+  ShowWhatFieldHandleIsMadeOf(f);
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(MapFieldDataFromElemToNodeModuleTests, TriSurfVectorOnPortZero)
+{
+  auto test = makeModule("MapFieldDataFromElemToNode");
+  FieldHandle f = CreateTriSurfVectorOnElem();
+  ShowWhatFieldHandleIsMadeOf(f);
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_NO_THROW(test->execute());
+}
 
 TEST_F(MapFieldDataFromElemToNodeModuleTests, ThrowsForNullInput)
 {
@@ -60,7 +204,6 @@ TEST_F(MapFieldDataFromElemToNodeModuleTests, ThrowsForNullInput)
 
   EXPECT_THROW(test->execute(), NullHandleOnPortException);
 }
-
 
 TEST_F(MapFieldDataFromElemToNodeModuleTests, ThrowForDenseMatrixInPort)
 {

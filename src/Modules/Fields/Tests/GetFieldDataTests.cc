@@ -32,13 +32,17 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::TestUtils;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -48,6 +52,58 @@ class GetFieldDataModuleTests : public ModuleTest
 {
 
 };
+
+namespace
+{
+  FieldHandle CreateTriSurfScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+  }
+  FieldHandle CreateTriSurfScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+  }
+  FieldHandle CreatePointCloudeScalar()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/point_cloud/scalar/pts_scalar.fld");
+  }
+}
+
+TEST_F(GetFieldDataModuleTests, TriSurfNodeElemOnPortZero)
+{
+  auto test = makeModule("GetFieldData");
+  FieldHandle f = CreateTriSurfScalarOnElem();
+  stubPortNWithThisData(test, 0, f);
+	EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(GetFieldDataModuleTests, TriSurfOnPortZero)
+{
+  auto test = makeModule("GetFieldData");
+  FieldHandle f = CreateTriSurfScalarOnNode();
+  stubPortNWithThisData(test, 0, f);
+	EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(GetFieldDataModuleTests, TetMeshOnPortZero)
+{
+  auto test = makeModule("GetFieldData");
+  FieldHandle f = CreateTetMeshScalarOnNode();
+  stubPortNWithThisData(test, 0, f);
+	EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(GetFieldDataModuleTests, CloudMeshOnPortZero)
+{
+  auto test = makeModule("GetFieldData");
+  FieldHandle f = CreatePointCloudeScalar();
+  stubPortNWithThisData(test, 0, f);
+	EXPECT_NO_THROW(test->execute());
+}
 
 TEST_F(GetFieldDataModuleTests, ThrowsForNullInput)
 {
