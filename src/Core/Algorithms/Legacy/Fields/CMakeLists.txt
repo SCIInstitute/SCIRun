@@ -42,6 +42,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/SetFieldData.h
   #FieldData/SetFieldDataToConstantValue.h
   #FieldData/SmoothVecFieldMedian.h
+  Mapping/BuildMappingMatrixAlgo.h
   DomainFields/GetDomainBoundaryAlgo.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
@@ -99,7 +100,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FindNodes/FindClosestNode.cc
   #FindNodes/FindClosestNodeByValue.cc
   #Mapping/ApplyMappingMatrix.cc
-  #Mapping/BuildMappingMatrix.cc
+  Mapping/BuildMappingMatrixAlgo.cc
   #Mapping/MapFieldDataFromElemToNode.cc
   #Mapping/MapFieldDataFromNodeToElem.cc
   #Mapping/MapFieldDataFromSourceToDestination.cc

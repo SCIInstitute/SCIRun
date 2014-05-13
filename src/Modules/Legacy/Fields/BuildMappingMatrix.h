@@ -43,15 +43,14 @@ namespace SCIRun {
       public:
         BuildMappingMatrix();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         INPUT_PORT(0, Source, LegacyField);
         INPUT_PORT(1, Destination, LegacyField);
         OUTPUT_PORT(0, Mapping, Matrix);
 
-        //static Core::Algorithms::AlgorithmParameterName FunctionString;
-        //static Core::Algorithms::AlgorithmParameterName FormatString;
+        static const Core::Algorithms::AlgorithmParameterName MapSourceToSingleDestination;
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 

@@ -26,10 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+const AlgorithmParameterName BuildMappingMatrixAlgo::MaxDistance("MaxDistance");
+const AlgorithmParameterName BuildMappingMatrixAlgo::Method("Method");
+
+BuildMappingMatrixAlgo::BuildMappingMatrixAlgo()
+{
+  addParameter(MaxDistance, -1.0);
+  add_option(Method, "interpolateddata","interpolateddata|closestdata|singledestination");
+}
+
+bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination, MatrixHandle& output) const
+{
+  throw "not implemented";
+}
+
+AlgorithmOutput BuildMappingMatrixAlgo::run_generic(const AlgorithmInput& input) const
+{
+  throw "not implemented";
+}
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Thread/Thread.h>
 #include <Core/Thread/Barrier.h>
 
-#include <Core/Algorithms/Fields/Mapping/BuildMappingMatrix.h>
+
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
@@ -38,6 +65,8 @@
 
 // for Windows support
 #include <Core/Algorithms/Fields/share.h>
+
+
 
 namespace SCIRunAlgo {
 
@@ -671,3 +700,4 @@ run(FieldHandle source, FieldHandle destination, MatrixHandle& output)
 
 
 } // end namespace SCIRunAlgo
+#endif

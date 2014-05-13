@@ -30,35 +30,29 @@
 #ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_BUILDMAPPINGMATRIX_H
 #define CORE_ALGORTIHMS_FIELDS_MAPPING_BUILDMAPPINGMATRIX_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE BuildMappingMatrixAlgo : public AlgoBase
+class SCISHARE BuildMappingMatrixAlgo : public AlgorithmBase
 {
   public:
-    /// Set defaults
-    BuildMappingMatrixAlgo()
-    {
-      add_scalar("max_distance",-1.0);
-      add_option("method","interpolateddata","interpolateddata|closestdata|singledestination");
-    }
+    BuildMappingMatrixAlgo();
 
-    /// run the algorithm
-    bool run(FieldHandle source, FieldHandle destination, MatrixHandle& output);
+    bool runImpl(FieldHandle source, FieldHandle destination, Datatypes::MatrixHandle& output) const;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+
+    static const AlgorithmInputName Source;
+    static const AlgorithmInputName Destination;
+    static const AlgorithmOutputName Mapping;
+    static const AlgorithmParameterName MaxDistance;
+    static const AlgorithmParameterName Method;
 };
 
-} //namespace
+}}}}
 
 #endif 
