@@ -39,6 +39,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 
 DenseColumnMatrixHandle CreateColumnMatrix()  
 {
@@ -113,39 +114,8 @@ DenseMatrixHandle CreateDenseMatrix()
 TEST(ConvertMatrixTests, EmptyInput)
 {
   ConvertMatrixTypeAlgorithm algo;
-  
-  MatrixHandle output_matrix1;
-  
-  try
-  {
-   output_matrix1 = algo.run(0);
-  }
-  catch(...)
-  {
-  
-  }
-  
-  if (!output_matrix1)
-  {
-   FAIL() << "ERROR: zero input for ConvertMatrixTypeAlgorithm does not work." << std::endl;
-
-  }
-  
-  MatrixHandle output_matrix2;
-  try
-  {
-    output_matrix2 = algo.run(MatrixHandle());
-  }
-  catch(...)
-  {
-  
-  }
-  
-  if (!output_matrix2)
-  {
-   FAIL() << "ERROR: MatrixHandle input for ConvertMatrixTypeAlgorithm does not work." << std::endl;
-  }
-  
+  EXPECT_THROW(algo.run(0), AlgorithmInputException);
+  EXPECT_THROW(algo.run(MatrixHandle()), AlgorithmInputException);
 }
 
 TEST(ConvertMatrixTests, PassInputThrough)
