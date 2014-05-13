@@ -86,7 +86,7 @@ namespace
   {
     DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 3));
 
-    (*m)(0, 0) = NAN;
+    (*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
     (*m)(1, 0) = -3;
      
     return m;

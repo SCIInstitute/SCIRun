@@ -30,7 +30,7 @@
 #define MODULES_MATH_CONVERTMATRIXTYPE_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <Modules/Legacy/Math/share.h>
 
 namespace SCIRun {
 namespace Modules {

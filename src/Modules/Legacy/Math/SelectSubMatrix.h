@@ -30,7 +30,7 @@
 #define MODULES_LEGACY_MATH_SELECTSUBMATRIX_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <Modules/Legacy/Math/share.h>
 
 namespace SCIRun {
 namespace Modules {
