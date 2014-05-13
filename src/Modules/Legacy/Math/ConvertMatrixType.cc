@@ -44,10 +44,10 @@ ConvertMatrixTypeModule::ConvertMatrixTypeModule() : Module(ModuleLookupInfo("Co
 
 void ConvertMatrixTypeModule::setStateDefaults()
 {
- setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::PassThrough);
- setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix);
- setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix);
- setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix);
+ setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::PassThrough());
+ setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix());
+ setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix());
+ setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix());
 }
 
 
@@ -60,10 +60,10 @@ void ConvertMatrixTypeModule::execute()
   if (needToExecute())
   {
    update_state(Executing);
-   algo().set(ConvertMatrixTypeAlgorithm::PassThrough,get_state()->getValue(ConvertMatrixTypeAlgorithm::PassThrough).getBool());
-   algo().set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix,get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix).getBool());  
-   algo().set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix,get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix).getBool());  
-   algo().set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix,get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix).getBool());  
+   algo().set(ConvertMatrixTypeAlgorithm::PassThrough(),get_state()->getValue(ConvertMatrixTypeAlgorithm::PassThrough()).getBool());
+   algo().set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix()).getBool());  
+   algo().set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix()).getBool());  
+   algo().set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix()).getBool());  
    auto output = algo().run_generic(make_input((InputMatrix, input_matrix)));
  
    sendOutputFromAlgorithm(ResultMatrix, output);
