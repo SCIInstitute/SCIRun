@@ -33,8 +33,11 @@ MESSAGE(STATUS "Configuring External Packages")
 ##################################################
 
 # TODO: move to external repository
-MESSAGE(STATUS "Configuring google-mock")
-ADD_SUBDIRECTORY(gmock)
+IF(BUILD_TESTING)
+  MESSAGE(STATUS "Configuring google-mock")
+  ADD_SUBDIRECTORY(gmock)
+ENDIF()
+
 #MESSAGE(STATUS "Configuring eigen")
 #ADD_SUBDIRECTORY(eigen)
 
