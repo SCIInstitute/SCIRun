@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/SetFieldOrMeshStringProperty.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 ///
 ///@class SetFieldOrMeshStringProperty
 ///@brief Set a property for a Field (or its Mesh)
@@ -90,3 +94,4 @@ SetFieldOrMeshStringProperty::execute()
 }
 
 } // End namespace SCIRun
+#endif

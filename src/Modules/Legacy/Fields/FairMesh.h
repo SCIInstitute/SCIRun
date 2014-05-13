@@ -26,38 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_CALCULATEFIELDDATA5_H__
-#define MODULES_LEGACY_FIELDS_CALCULATEFIELDDATA5_H__
+#ifndef MODULES_LEGACY_FIELDS_FAIRMESH_H__
+#define MODULES_LEGACY_FIELDS_FAIRMESH_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-  class NewArrayMathEngine;
-
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE CalculateFieldData : public Dataflow::Networks::Module,
-        public Has3InputPorts<DynamicPortTag<FieldPortTag>, StringPortTag, DynamicPortTag<MatrixPortTag>>,
+      class SCISHARE FairMesh : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
-        CalculateFieldData();
+        FairMesh();
 
         virtual void execute();
         virtual void setStateDefaults();
 
-        INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
-        INPUT_PORT(1, Function, String);
-        INPUT_PORT_DYNAMIC(2, InputArrays, Matrix);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        INPUT_PORT(0, Input_Mesh, LegacyField);
+        OUTPUT_PORT(0, Faired_Mesh, LegacyField);
 
-        static Core::Algorithms::AlgorithmParameterName FunctionString;
-        static Core::Algorithms::AlgorithmParameterName FormatString;
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      private:
-        bool addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int index) const;
       };
 
     }

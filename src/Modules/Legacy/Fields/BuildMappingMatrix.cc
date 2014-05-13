@@ -27,6 +27,10 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/BuildMappingMatrix.cc
 
+#include <Modules/Legacy/Fields/BuildMappingMatrix.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Core/Algorithms/Fields/Mapping/BuildMappingMatrix.h>
 
 #include <Dataflow/GuiInterface/GuiVar.h>
@@ -102,3 +106,4 @@ BuildMappingMatrix::execute()
 }
 
 } // End namespace SCIRun
+#endif

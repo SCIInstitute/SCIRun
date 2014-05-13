@@ -39,7 +39,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   ConvertFieldDataType.h
   FairMesh.h
   ProjectPointsOntoMesh.h
-  RegisterWithCorrespondence.h
+  RegisterWithCorrespondences.h
   ResampleRegularMesh.h
   ScaleFieldMeshAndData.h
   SetFieldOrMeshStringProperty.h

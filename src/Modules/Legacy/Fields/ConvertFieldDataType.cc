@@ -27,6 +27,10 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/ConvertFieldDatatypes.cc
 	
+#include <Modules/Legacy/Fields/ConvertFieldDataType.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 // Include the algorithm
 #include <Core/Algorithms/Fields/FieldData/ConvertFieldDataType.h>
 
@@ -106,3 +110,4 @@ ConvertFieldDataType::execute()
 }
 
 } // End namespace SCIRun
+#endif

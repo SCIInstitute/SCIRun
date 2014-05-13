@@ -25,6 +25,9 @@
  */
 /// @todo Documentation Modules/Legacy/Fields/ResampleRegularMesh.cc
 
+#include <Modules/Legacy/Fields/ResampleRegularMesh.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Util/StringUtil.h>
 
 #include <Core/Datatypes/Field.h>
@@ -184,3 +187,4 @@ ResampleRegularMesh::execute()
 } // End namespace SCIRun
 
 
+#endif
