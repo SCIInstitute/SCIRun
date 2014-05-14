@@ -109,7 +109,7 @@ using namespace SCIRun::TestUtils;
   }
   
 
-TEST(MapFieldDataFromElemToNodeTestInterpolateWithFile, TetMeshTest)
+TEST(MapFieldDataFromElemToNode, TetMeshTestInterpolateWithFile)
 {
  
  MapFieldDataFromElemToNodeAlgo algo;
@@ -138,7 +138,7 @@ TEST(MapFieldDataFromElemToNodeTestInterpolateWithFile, TetMeshTest)
  
 }
 
-TEST(MapFieldDataFromElemToNodeTestMin, TetMeshTest)
+TEST(MapFieldDataFromElemToNode, TetMeshTestMin)
 {
 
  MapFieldDataFromElemToNodeAlgo algo;
@@ -167,7 +167,7 @@ TEST(MapFieldDataFromElemToNodeTestMin, TetMeshTest)
 }
 
 
-TEST(MapFieldDataFromElemToNodeTestMax, TetMeshTest)
+TEST(MapFieldDataFromElemToNode, TetMeshTestMax)
 {
 
  MapFieldDataFromElemToNodeAlgo algo;
@@ -196,7 +196,7 @@ TEST(MapFieldDataFromElemToNodeTestMax, TetMeshTest)
 }
 
 
-TEST(MapFieldDataFromElemToNodeTestSum, TetMeshTest)
+TEST(MapFieldDataFromElemToNode, TetMeshTestSum)
 {
 
  MapFieldDataFromElemToNodeAlgo algo;
@@ -225,7 +225,7 @@ TEST(MapFieldDataFromElemToNodeTestSum, TetMeshTest)
 }
 
 
-TEST(MapFieldDataFromElemToNodeTestMed, TetMeshTest)
+TEST(MapFieldDataFromElemToNode, TetMeshTestMed)
 {
 
  MapFieldDataFromElemToNodeAlgo algo;
