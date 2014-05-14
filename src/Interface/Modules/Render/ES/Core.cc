@@ -26,18 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include "Core.hpp"
+#include "Core.h"
 
 #include <es-fs/Registration.hpp>
 #include <es-general/Registration.hpp>
 #include <es-render/Registration.hpp>
 
-#include "Registration.hpp"
+#include "Registration.h"
 
 namespace SCIRun {
 namespace Render {
 
-Core::Core()
+ESCore::ESCore()
 {
   // Register common systems.
   gen::registerAll(*this);
@@ -46,8 +46,13 @@ Core::Core()
   rendererRegisterAll(*this);
 }
 
-Core::~Core()
+ESCore::~ESCore()
 {
+}
+
+void ESCore::execute(double currentTime, double constantFrameTime)
+{
+
 }
 
 } // namespace Render

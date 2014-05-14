@@ -38,6 +38,8 @@
 #include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/namespaces.h>
 
+#include "Core.h"
+
 // CPM Modules
 #include <gl-state/GLState.hpp>
 #include <glm/glm.hpp>
@@ -178,6 +180,8 @@ private:
   std::unique_ptr<SRCamera>       mCamera;          ///< Primary camera.
   std::vector<SRObject>           mSRObjects;       ///< All SCIRun objects.
   Core::Geometry::BBox            mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
+
+  ESCore                          mES;              ///< Entity system core.
 
   std::string                     mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
   std::string                     mArrowIBOName;    ///< IBO for one axis of the coordinate axes.

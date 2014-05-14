@@ -49,6 +49,8 @@ SET(Interface_Modules_Render_SOURCES
   ES/SRCamera.cc
   ES/SRInterface.cc
   ES/SRUtil.cc
+  ES/Core.cc
+  ES/Registration.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})

@@ -38,12 +38,13 @@ namespace SCIRun {
 namespace Render {
 
 /// Entity system core sitting on top of Acorn.
-class Core : public CPM_ES_ACORN_NS::Acorn
+class ESCore : public CPM_ES_ACORN_NS::Acorn
 {
 public:
-  Core();
-  virtual ~Core();
-  
+  ESCore();
+  virtual ~ESCore();
+
+  void execute(double currentTime, double constantFrameTime);
 };
 
 } // namespace Render

@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include "Registration.hpp"
+#include "Registration.h"
 
 namespace SCIRun {
 namespace Render {

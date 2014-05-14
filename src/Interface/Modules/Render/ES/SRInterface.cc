@@ -51,6 +51,8 @@ SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
 {
   // Create default colormaps.
   generateColormaps();
+
+  // Construct ESCore.
 }
 
 //------------------------------------------------------------------------------
