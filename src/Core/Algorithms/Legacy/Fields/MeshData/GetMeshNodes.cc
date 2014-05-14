@@ -113,7 +113,6 @@ AlgorithmOutputName GetMeshNodesAlgo::MatrixNodes("MatrixNodes");
 AlgorithmOutput GetMeshNodesAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
-
   DenseMatrixHandle nodes;
   if (!run(inputField, nodes))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");

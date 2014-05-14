@@ -35,6 +35,7 @@ SET(Core_Datatypes_Tests_SRCS
   SparseRowMatrixTests.cc
   StringTests.cc
   SparseRowMatrixFromMapTest.cc
+  MatrixTypeConversionTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Tests

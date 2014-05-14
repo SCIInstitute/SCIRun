@@ -42,18 +42,15 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
     
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODE_TRIANGULATION("ELECTRODE_TRIANGULATION");
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODE_TRIANGULATION2("ELECTRODE_TRIANGULATION2");
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::COIL("COIL");
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::COIL2("COIL2");
+const AlgorithmInputName ElectrodeCoilSetupAlgorithm::INPUTFIELDS("INPUTFIELDS");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::COILS_FIELD("COILS_FIELD");
 
 
 AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
+  auto inputFields = input.getList<Field>(INPUTFIELDS);
+  /*auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
   auto tri2 = input.get<Field>(ELECTRODE_TRIANGULATION2);
   auto coil = input.get<Field>(COIL);
@@ -62,7 +59,7 @@ AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& i
   ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");*/
   //old-style run call, just put algorithm code here
   //auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).getInt()));
   // CODE HERE
@@ -70,9 +67,9 @@ AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& i
 
   //Algorithm starts here:
   //VField* vfield = elc_coil_pos_and_normal->vfield();
-   VMesh*  vmesh  = pos_orient->vmesh();
+  // VMesh*  vmesh  = pos_orient->vmesh();
  
-   std::cout << "a: " << vmesh->num_nodes() << std::endl;
+   //std::cout << "a: " << vmesh->num_nodes() << std::endl;
    //for (int i=0;i<vmesh->num_nodes();;i++)
    //{
    
