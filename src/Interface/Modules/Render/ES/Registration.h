@@ -29,6 +29,8 @@
 #ifndef INTERFACE_MODULES_RENDER_ES_REGISTRATION_H
 #define INTERFACE_MODULES_RENDER_ES_REGISTRATION_H
 
+#include <es-cereal/CerealCore.hpp>
+
 namespace SCIRun {
 namespace Render {
 
