@@ -27,7 +27,7 @@
 */
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Modules/Math/SelectSubMatrix.h>
+#include <Modules/Legacy/Math/SelectSubMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>

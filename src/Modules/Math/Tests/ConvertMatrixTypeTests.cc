@@ -25,14 +25,12 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-#include <Modules/Math/ConvertMatrixType.h>
+#include <Core/Algorithms/Math/ConvertMatrixType.h>
+#include <Modules/Legacy/Math/ConvertMatrixType.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Modules/Math/ConvertMatrixType.h>
-#include <Core/Algorithms/Math/ConvertMatrixType.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 
 using namespace SCIRun;
