@@ -29,8 +29,8 @@
 #ifndef POSITION_PROVIDER_H
 #define POSITION_PROVIDER_H
 
+#include <boost/shared_ptr.hpp>
 #include <QPointF>
-#include <iostream>
 
 class QGraphicsProxyWidget;
 
@@ -42,8 +42,6 @@ class PositionProvider
 public:
   virtual ~PositionProvider() {}
   virtual QPointF currentPosition() const = 0;
-  virtual QPointF mapToScene(const QPointF &point) const = 0;
-  virtual QPointF mapFromScene(const QPointF &point) const = 0;
 };
 
 typedef boost::shared_ptr<PositionProvider> PositionProviderPtr;
@@ -65,12 +63,28 @@ class ProxyWidgetPosition : public PositionProvider
 {
 public:
   explicit ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset = QPointF());
-  virtual QPointF currentPosition() const;
-  virtual QPointF mapToScene(const QPointF &point) const;
-  virtual QPointF mapFromScene(const QPointF &point) const;
+  virtual QPointF currentPosition() const override;
 private:
   QGraphicsProxyWidget* widget_;
   QPointF offset_;
+};
+
+class MidpointPositioner : public PositionProvider
+{
+public:
+  MidpointPositioner(PositionProviderPtr p1, PositionProviderPtr p2);
+  virtual QPointF currentPosition() const override;
+private:
+  PositionProviderPtr p1_, p2_;
+};
+
+class PassThroughPositioner : public PositionProvider
+{
+public:
+  explicit PassThroughPositioner(const QGraphicsProxyWidget* widget);
+  virtual QPointF currentPosition() const override;
+private:
+  const QGraphicsProxyWidget* widget_;
 };
 
 }

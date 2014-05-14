@@ -40,7 +40,7 @@ class GetDataFromBundleModuleTest : public ModuleTest
 {
 };
 
-TEST_F(GetDataFromBundleModuleTest, ThrowsForNullBundlesMatrix)
+TEST_F(GetDataFromBundleModuleTest, DISABLED_ThrowsForNullBundlesMatrix)
 {
   auto sls = makeModule("GetMatricesFromBundle");
   BundleHandle nullBundle;

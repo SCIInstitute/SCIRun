@@ -47,6 +47,7 @@ SET(Interface_Application_SOURCES
   ProvenanceWindow.cc
   SCIRunMainWindow.cc
   Node.cc
+  Note.cc
   NoteEditor.cc
   Port.cc
   PreferencesWindow.cc

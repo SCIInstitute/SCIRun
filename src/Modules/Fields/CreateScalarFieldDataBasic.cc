@@ -63,12 +63,9 @@ void CreateScalarFieldDataBasic::execute()
 
   if (vfield && vmesh)
   {
-    //std::cout << "Assuming values on nodes." << std::endl;
     {
       if (vmesh->is_latvolmesh())
       {
-        //std::cout << "Assuming latvol mesh" << std::endl;
-
         std::vector<index_type> dims;
         vmesh->get_dimensions(dims);
         auto nodesPerPlane = dims[0] * dims[1];
@@ -88,8 +85,6 @@ void CreateScalarFieldDataBasic::execute()
 
           VMesh::Node::index_type nodeID = *meshNodeIter;
           vfield->set_value(value, nodeID);
-
-          //std::cout << "Set value " << value << " at node " << nodeID << std::endl;
 
           // by node id
           auto valueFuncName = get_state()->getValue(ValueFunc).getString();
@@ -118,7 +113,6 @@ void CreateScalarFieldDataBasic::execute()
           }
           else if (valueFuncName == "sine")
           {
-            //int mult = get_state()->getValue(ValueFuncParam1).getInt();
             Point p;
             vmesh->get_point(p, nodeID);
             value = sin(Dot(p,p)*mult);

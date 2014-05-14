@@ -34,6 +34,8 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
+#include <Core/Logging/Log.h>
+#include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
 
@@ -102,8 +104,49 @@ public:
   }
 };
 
+namespace SCIRun
+{
+  namespace Gui
+  {
+    const QString deleteAction("Delete");
+    const QString insertModuleAction("Insert Module->*");
+    const QString disableEnableAction("Disable*");
+    const QString editNotesAction("Edit Notes...");
+  
+    class ConnectionMenu : public QMenu
+    {
+    public:
+      ConnectionMenu(QWidget* parent = 0) : QMenu(parent)
+      {
+        addAction(deleteAction);
+        addAction(insertModuleAction)->setDisabled(true);
+        addAction(disableEnableAction)->setDisabled(true);
+        notesAction_ = addAction(editNotesAction);
+      }
+      QAction* notesAction_;
+    };
+  }
+}
+
+namespace SCIRun
+{
+  namespace Gui
+  {
+    class ConnectionLineNoteDisplayStrategy : public NoteDisplayStrategy
+    {
+    public:
+      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const
+      {
+        return QPointF(0,0);
+      }
+    };
+  }
+}
+
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
-  : fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer)
+  : HasNotes(id, false), 
+  NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
+  fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer), menu_(0)
 {
   if (fromPort_)
   {
@@ -111,14 +154,14 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
     fromPort_->turn_on_light();
   }
   else
-    std::cout << "NULL FROM PORT: " << id_.id_ << std::endl;
+    LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
   if (toPort_)
   {
     toPort_->addConnection(this);
     toPort_->turn_on_light();
   }
   else
-    std::cout << "NULL TO PORT: " << id_.id_ << std::endl;
+    LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
 
   if (fromPort_ && toPort_)
     setColor(fromPort_->color());
@@ -128,29 +171,40 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   setZValue(1); 
   setToolTip("Left - Highlight*\nDouble-Left - Menu");
 
+  menu_ = new ConnectionMenu();
+  connectNoteEditorToAction(menu_->notesAction_);
+  connectUpdateNote(this);
+
+  setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
+
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
 }
 
 ConnectionLine::~ConnectionLine()
 {
-  if (!destroyed_)
-    destroy();
+  destroy();
 }
 
 void ConnectionLine::destroy() 
 {
-  if (fromPort_ && toPort_)
+  if (!destroyed_)
   {
-    fromPort_->removeConnection(this);
-    fromPort_->turn_off_light();
-    toPort_->removeConnection(this);
-    toPort_->turn_off_light();
+    delete menu_;
+    if (fromPort_ && toPort_)
+    {
+      fromPort_->removeConnection(this);
+      fromPort_->turn_off_light();
+      toPort_->removeConnection(this);
+      toPort_->turn_off_light();
+    }
+    drawer_.reset();
+    Q_EMIT deleted(id_);
+    GuiLogger::Instance().log("Connection deleted.");
+    HasNotes::destroy();
+    NoteDisplayHelper::destroy();
+    destroyed_ = true;
   }
-  drawer_.reset();
-  Q_EMIT deleted(id_);
-  GuiLogger::Instance().log("Connection deleted.");
-  destroyed_ = true;
 }
 
 void ConnectionLine::setColor(const QColor& color)
@@ -165,10 +219,10 @@ QColor ConnectionLine::color() const
 
 void ConnectionLine::trackNodes()
 {
-  //std::cout << "trackNodes " << id_.id_ << std::endl;
   if (fromPort_ && toPort_)
   {
     drawer_->draw(this, fromPort_->position(), toPort_->position());
+    updateNotePosition();
   }
   else
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
@@ -183,35 +237,30 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
   }
 }
 
-namespace
-{
-  const QString deleteAction("Delete");
-  const QString insertModuleAction("Insert Module->*");
-  const QString disableEnableAction("Disable*");
-  const QString editNotesAction("Edit Notes...*");
-}
-
-class ConnectionMenu : public QMenu
-{
-public:
-  ConnectionMenu()
-  {
-    addAction(deleteAction);
-    addAction(insertModuleAction)->setDisabled(true);
-    addAction(disableEnableAction)->setDisabled(true);
-    addAction(editNotesAction)->setDisabled(true);
-  }
-};
-
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-  ConnectionMenu menu;
-  auto a = menu.exec(event->screenPos());
-  if (a && a->text() == deleteAction)
+  auto action = menu_->exec(event->screenPos());
+  if (action && action->text() == deleteAction)
   {
     scene()->removeItem(this);
     destroy();
   }
+  else if (action && action->text() == editNotesAction)
+  {
+    //std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
+  }
+}
+
+void ConnectionLine::setNoteGraphicsContext() 
+{
+  scene_ = scene();
+  item_ = this;
+  positioner_ = getPositionObject();
+}
+
+void ConnectionLine::updateNote(const Note& note)
+{
+  updateNoteImpl(note);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)
@@ -250,6 +299,16 @@ void ConnectionInProgressManhattan::update(const QPointF& end)
     drawStrategy_->draw(this, fromPort_->position(), end);
 }
 
+MidpointPositioner::MidpointPositioner(PositionProviderPtr p1, PositionProviderPtr p2) : p1_(p1), p2_(p2)
+{
+  ENSURE_NOT_NULL(p1, "port1");
+  ENSURE_NOT_NULL(p2, "port2");
+}
+
+QPointF MidpointPositioner::currentPosition() const
+{
+  return (p1_->currentPosition() + p2_->currentPosition()) / 2;
+}
 
 ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene), 
   euclidean_(new EuclideanDrawStrategy), 
