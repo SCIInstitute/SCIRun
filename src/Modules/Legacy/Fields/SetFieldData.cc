@@ -27,81 +27,46 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/SetFieldData.cc
 
-#include <Core/Algorithms/Fields/FieldData/SetFieldData.h>
-#include <Core/Datatypes/Field.h>
+#include <Modules/Legacy/Fields/SetFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Matrix.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
+ModuleLookupInfo SetFieldDataModule::staticInfo_("SetFieldData", "ChangeFieldData", "SCIRun");
 
-namespace SCIRun {
-
-class SetFieldData : public Module {
-  public:
-    SetFieldData(GuiContext*);
-    virtual ~SetFieldData() {}
-    virtual void execute();
-
-  protected:
-    GuiInt gui_keepscalartype_;
-    SCIRunAlgo::SetFieldDataAlgo algo_;
-};
-
-
-DECLARE_MAKER(SetFieldData)
-SetFieldData::SetFieldData(GuiContext* ctx)
-  : Module("SetFieldData", ctx, Source, "ChangeFieldData", "SCIRun"),
-  gui_keepscalartype_(ctx->subVar("keepscalartype"))
+SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(OutputField);
 }
 
-void
-SetFieldData::execute()
+void SetFieldDataModule::setStateDefaults()
 {
-  FieldHandle field_input_handle;
-  if(!(get_input_handle("Field",field_input_handle,true))) return;
+ setStateBoolFromAlgo(SetFieldDataAlgo::keepTypeCheckBox);
+}
 
-  MatrixHandle matrix_input_handle;
-  get_input_handle("Matrix Data",matrix_input_handle,false);
+void SetFieldDataModule::execute()
+{
+  auto input_field = getRequiredInput(InputField);
+  auto input_matrix = getRequiredInput(InputMatrix);
+  ///NO Nrrd support yet !!!
 
-  NrrdDataHandle nrrddata_input_handle;  
-  get_input_handle("Nrrd Data",nrrddata_input_handle,false);
-  
-  if (inputs_changed_ ||
-      gui_keepscalartype_.changed() ||
-      !oport_cached("Field"))
-  {
+  ///inputs_changed_ || !oport_cached("Matrix Nodes")
+  if (needToExecute())
+  {    
     update_state(Executing);
 
-    FieldHandle field_output_handle;
+    auto output = algo().run_generic(make_input((InputField, input_field)(InputMatrix, input_matrix)));
 
-    if( matrix_input_handle.get_rep() )
-    {
-      if (gui_keepscalartype_.get()) 
-        algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());    
-    
-      if(!(algo_.run(field_input_handle,matrix_input_handle,
-			     field_output_handle))) return;
-    }
-    else if( nrrddata_input_handle.get_rep() )
-    {
-      if (gui_keepscalartype_.get()) 
-        algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());    
-
-      if(!(algo_.run(field_input_handle,nrrddata_input_handle,
-			     field_output_handle))) return;
-    }
-    else
-    {
-      error( "No input Matrix or Nrrd." );
-      return;
-    }
-
-    send_output_handle("Field", field_output_handle);
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
-
-} // End namespace SCIRun

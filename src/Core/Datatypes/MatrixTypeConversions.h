@@ -75,8 +75,11 @@ namespace Datatypes {
   {
   public:
     static DenseColumnMatrixHandle to_column(const MatrixHandle& mh);
+    static DenseMatrixHandle to_dense(const MatrixHandle& mh);
+    static SparseRowMatrixHandle to_sparse(const MatrixHandle& mh);
   private:
     matrix_convert();
+    static const double zero_threshold;  /// defines a threshold below that its a zero matrix element (sparsematrix)
   };
 
 }}}

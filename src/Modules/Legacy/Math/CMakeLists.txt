@@ -40,7 +40,7 @@ SET(Modules_Legacy_Math_SRCS
   #CreateGeometricTransform.cc
   #ChooseMatrix.cc
   #ComputeSVD.cc
-  #ConvertMatrixType.cc
+  ConvertMatrixType.cc
   #CollectMatrices.cc
   #ReportColumnMatrixMisfit.cc
   #EvaluateLinAlgBinary.cc
@@ -61,7 +61,7 @@ SET(Modules_Legacy_Math_SRCS
   #ReorderMatrixByCuthillMcKee.cc
   #ReorderMatrixByReverseCuthillMcKee.cc
   #ResizeMatrix.cc
-  #SelectSubMatrix.cc
+  SelectSubMatrix.cc
 )
 
 SET(Modules_Legacy_Math_HEADERS
@@ -76,7 +76,7 @@ SET(Modules_Legacy_Math_HEADERS
   #CreateGeometricTransform.h
   #ChooseMatrix.h
   #ComputeSVD.h
-  #ConvertMatrixType.h
+  ConvertMatrixType.h
   #CollectMatrices.h
   #ReportColumnMatrixMisfit.h
   #EvaluateLinAlgBinary.h
@@ -97,7 +97,7 @@ SET(Modules_Legacy_Math_HEADERS
   #ReorderMatrixByCuthillMcKee.h
   #ReorderMatrixByReverseCuthillMcKee.h
   #ResizeMatrix.h
-  #SelectSubMatrix.h
+  SelectSubMatrix.h
   share.h
 )
 
@@ -106,6 +106,7 @@ ADD_LIBRARY(Modules_Legacy_Math ${Modules_Legacy_Math_HEADERS} ${Modules_Legacy_
 TARGET_LINK_LIBRARIES(Modules_Legacy_Math
   Core_Datatypes
   Core_Math
+  Algorithms_Math
   #Core_Parser
   #Core_Persistent
   #Core_Thread

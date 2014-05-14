@@ -37,6 +37,7 @@ ENDIF()
 
 MESSAGE(STATUS "Configuring log4cpp")
 ADD_SUBDIRECTORY(log4cpp)
+ADD_SUBDIRECTORY(cleaver)
 
 MESSAGE(STATUS "Configuring sqlite")
 ADD_SUBDIRECTORY(sqlite)
