@@ -26,27 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_CONVERTMATRIXTYPE_H
-#define MODULES_MATH_CONVERTMATRIXTYPE_H
+#ifndef MODULES_LEGACY_MATH_SELECTSUBMATRIX_H
+#define MODULES_LEGACY_MATH_SELECTSUBMATRIX_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <Modules/Legacy/Math/share.h>
 
 namespace SCIRun {
 namespace Modules {
 namespace Math {
 
-  class SCISHARE ConvertMatrixTypeModule : public Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
+  class SCISHARE SelectSubMatrixModule : public SCIRun::Dataflow::Networks::Module,
+    public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
     public Has1OutputPort<MatrixPortTag>
   {
   public:
-    ConvertMatrixTypeModule();
+    SelectSubMatrixModule();
     virtual void execute();
     virtual void setStateDefaults();
 
-     INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, ResultMatrix, Matrix);
+    INPUT_PORT(0, InputMatrix, DenseMatrix);
+    INPUT_PORT(1, RowIndicies, DenseMatrix);
+    INPUT_PORT(2, ColumnIndicies, DenseMatrix);
+    OUTPUT_PORT(0, ResultMatrix, DenseMatrix);
   };
 }}}
 

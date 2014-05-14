@@ -40,10 +40,10 @@ using namespace SCIRun::Core::Datatypes;
 
 ConvertMatrixTypeAlgorithm::ConvertMatrixTypeAlgorithm()
 {
-  addParameter(PassThrough, true);
-  addParameter(ConvertToColumnMatrix, false);
-  addParameter(ConvertToDenseMatrix, false);
-  addParameter(ConvertToSparseRowMatrix, false);
+  addParameter(PassThrough(), true);
+  addParameter(ConvertToColumnMatrix(), false);
+  addParameter(ConvertToDenseMatrix(), false);
+  addParameter(ConvertToSparseRowMatrix(), false);
 }
 
 MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
@@ -77,11 +77,11 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
   
   remark(ostr2.str());
   
-  if (get(PassThrough).getBool()) 
+  if (get(PassThrough()).getBool()) 
   {
      return input_matrix;
   } else
-  if (get(ConvertToColumnMatrix).getBool() && !matrix_is::column(input_matrix))
+  if (get(ConvertToColumnMatrix()).getBool() && !matrix_is::column(input_matrix))
   {
      if (input_matrix->ncols()!=1)
      {
@@ -94,7 +94,7 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
       }
       return output;
    } else
-   if (get(ConvertToDenseMatrix).getBool() && !matrix_is::dense(input_matrix))
+   if (get(ConvertToDenseMatrix()).getBool() && !matrix_is::dense(input_matrix))
    {
      auto output = matrix_convert::to_dense(input_matrix);
      if (!output) 
@@ -103,7 +103,7 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
       }
      return output;
     } else
-    if (get(ConvertToSparseRowMatrix).getBool() && !matrix_is::sparse(input_matrix))
+    if (get(ConvertToSparseRowMatrix()).getBool() && !matrix_is::sparse(input_matrix))
     {
      auto output = matrix_convert::to_sparse(input_matrix);
      if (!output) 
@@ -121,10 +121,10 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
 
 AlgorithmInputName ConvertMatrixTypeAlgorithm::InputMatrix("InputMatrix");
 AlgorithmOutputName ConvertMatrixTypeAlgorithm::ResultMatrix("ResultMatrix");
-AlgorithmParameterName ConvertMatrixTypeAlgorithm::PassThrough("PassThrough");
-AlgorithmParameterName ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix("ConvertToColumnMatrix");
-AlgorithmParameterName ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix("ConvertToDenseMatrix");
-AlgorithmParameterName ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix("ConvertToSparseRowMatrix");
+AlgorithmParameterName ConvertMatrixTypeAlgorithm::PassThrough() { return AlgorithmParameterName("PassThrough"); }
+AlgorithmParameterName ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix() { return AlgorithmParameterName("ConvertToColumnMatrix"); }
+AlgorithmParameterName ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix() { return AlgorithmParameterName("ConvertToDenseMatrix"); }
+AlgorithmParameterName ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix() { return AlgorithmParameterName("ConvertToSparseRowMatrix"); }
 
 AlgorithmOutput ConvertMatrixTypeAlgorithm::run_generic(const AlgorithmInput& input) const
 {

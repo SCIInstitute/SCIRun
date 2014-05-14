@@ -61,21 +61,16 @@ void InterfaceWithCleaverModule::setStateDefaults()
 void InterfaceWithCleaverModule::execute()
 {
   auto fields = getRequiredDynamicInputs(InputFields);
-
-  auto state = get_state();
   
   setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::VerboseCheckBox);
-  //setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::PaddingCheckBox);
+  setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::PaddingCheckBox);
   setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton);
   setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton);
   setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X);
   setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y);
   setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z);
 
-  algo().set(InterfaceWithCleaverAlgorithm::PaddingCheckBox, true);
-
   auto output = algo().run_generic(make_input((InputFields, fields)));
-  //auto output = algo().run_generic(make_input((InputField1, field1)(InputField2, field2)));
   
   sendOutputFromAlgorithm(OutputField,output);
 }

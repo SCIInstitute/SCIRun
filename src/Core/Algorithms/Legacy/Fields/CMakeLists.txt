@@ -54,8 +54,8 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   DomainFields/SplitFieldByDomainAlgo.h
   #MeshData/GetMeshData.h
   FieldData/GetFieldData.h
-  FieldData/MapFieldDataFromElemToNode.h
-  FieldData/MapFieldDataFromNodeToElem.h
+  Mapping/MapFieldDataFromElemToNode.h
+  Mapping/MapFieldDataFromNodeToElem.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -103,8 +103,8 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FindNodes/FindClosestNode.cc
   #FindNodes/FindClosestNodeByValue.cc
   #Mapping/BuildMappingMatrix.cc
-  FieldData/MapFieldDataFromElemToNode.cc
-  #Mapping/MapFieldDataFromNodeToElem.cc
+  Mapping/MapFieldDataFromElemToNode.cc
+  Mapping/MapFieldDataFromNodeToElem.cc
   #Mapping/MapFieldDataFromSourceToDestination.cc
   #Mapping/MappingDataSource.cc
   #Mapping/MapFieldDataOntoNodes.cc
@@ -156,7 +156,6 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
   #TracePoints/TracePoints.cc  
-  FieldData/MapFieldDataFromNodeToElem.cc
 )
 
 IF(WITH_TETGEN)
@@ -195,3 +194,5 @@ ENDIF(WITH_TETGEN)
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Fields)
 ENDIF(BUILD_SHARED_LIBS)
+
+ADD_DEPENDENCIES(Core_Algorithms_Legacy_Fields Boost_external)

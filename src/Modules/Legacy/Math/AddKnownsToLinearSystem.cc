@@ -61,10 +61,14 @@ void AddKnownsToLinearSystem::execute()
   auto rhs = getOptionalInput(RHS_Vector);
   x=getRequiredInput(X_Vector);
  
-  auto output = algo().run_generic(make_input((LHS_Matrix,lhs)(RHS_Vector, optionalAlgoInput(rhs))(X_Vector,x)));
+  if (needToExecute())
+  {
+   update_state(Executing);
+   auto output = algo().run_generic(make_input((LHS_Matrix,lhs)(RHS_Vector, optionalAlgoInput(rhs))(X_Vector,x)));
 
-  sendOutputFromAlgorithm(OutPutLHSMatrix,output);
-  sendOutputFromAlgorithm(OutPutRHSVector,output);
+   sendOutputFromAlgorithm(OutPutLHSMatrix,output);
+   sendOutputFromAlgorithm(OutPutRHSVector,output);
+  }
 }
 
 

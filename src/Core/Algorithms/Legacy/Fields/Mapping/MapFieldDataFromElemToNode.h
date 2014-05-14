@@ -26,33 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromElemToNode_H
+#define CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromElemToNode_H 1
 
-#ifndef CORE_ALGORITHMS_FIELDS_MAPPING_MAPFIELDDATAELEMTONODE_H
-#define CORE_ALGORITHMS_FIELDS_MAPPING_MAPFIELDDATAELEMTONODE_H 1
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Algorithms/Util/AlgoBase.h>
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-namespace SCIRunAlgo {
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-using namespace SCIRun;
-
-class SCISHARE MapFieldDataFromElemToNodeAlgo : public AlgoBase
+class SCISHARE MapFieldDataFromElemToNodeAlgo : public AlgorithmBase
 {
   public:
-    // Algorithm defaults
-    MapFieldDataFromElemToNodeAlgo()
-    {
-      /// Add option for how to do map data from elements to node
-      add_option("method","average","interpolate|average|min|max|sum|median");
-    }
+    MapFieldDataFromElemToNodeAlgo();
+    
+    static AlgorithmInputName InputField;
+    static AlgorithmOutputName OutputField;
+    static AlgorithmParameterName Method;
+    FieldHandle run(FieldHandle input_field) const; 
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 
-  public:
-    // Algorithm Functions
-    bool run(FieldHandle& input, FieldHandle& output);   
 };
 
-} // namespace SCIRunAlgo
-
+}}}}
 #endif

@@ -70,8 +70,8 @@
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
-#include <Modules/Math/SelectSubMatrix.h>
-#include <Modules/Math/ConvertMatrixType.h>
+#include <Modules/Legacy/Math/SelectSubMatrix.h>
+#include <Modules/Legacy/Math/ConvertMatrixType.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>

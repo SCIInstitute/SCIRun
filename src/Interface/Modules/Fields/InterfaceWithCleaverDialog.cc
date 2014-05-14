@@ -58,8 +58,7 @@ void InterfaceWithCleaverDialog::push()
  if (!pulling_)
   {
    state_->setValue(InterfaceWithCleaverAlgorithm::VerboseCheckBox, VerboseCheckBox_->isChecked());
-   //state_->setValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox, PaddingCheckBox_->isChecked());
-   state_->setValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox,true);
+   state_->setValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox, PaddingCheckBox_->isChecked());
    state_->setValue(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton, AbsoluteVolumeScalingRadioButton_->isChecked()); 
    state_->setValue(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton, RelativeVolumeScalingRadioButton_->isChecked());  
    state_->setValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X, VolumeScalingSpinBox_X_->value());
@@ -88,8 +87,7 @@ void InterfaceWithCleaverDialog::pull()
     VolumeScalingSpinBox_Z_->setValue(newValue);    
   
   VerboseCheckBox_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::VerboseCheckBox).getBool());  
-  //PaddingCheckBox_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox).getBool());
-  PaddingCheckBox_->setChecked(true);
+  PaddingCheckBox_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox).getBool());
   AbsoluteVolumeScalingRadioButton_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton).getBool());
   RelativeVolumeScalingRadioButton_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton).getBool());
     

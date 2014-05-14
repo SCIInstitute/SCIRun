@@ -40,12 +40,12 @@ using namespace SCIRun::Core::Datatypes;
 
 SelectSubMatrixAlgorithm::SelectSubMatrixAlgorithm()
 {
-  addParameter(rowCheckBox, false);
-  addParameter(columnCheckBox, false);
-  addParameter(rowStartSpinBox, 0);
-  addParameter(columnStartSpinBox, 0);
-  addParameter(columnEndSpinBox, 0);
-  addParameter(rowEndSpinBox, 0);
+  addParameter(rowCheckBox(), false);
+  addParameter(columnCheckBox(), false);
+  addParameter(rowStartSpinBox(), 0);
+  addParameter(columnStartSpinBox(), 0);
+  addParameter(columnEndSpinBox(), 0);
+  addParameter(rowEndSpinBox(), 0);
 }
 
 
@@ -103,12 +103,12 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
   }
    
   MatrixHandle sub_matrix;
-  bool row_select = get(rowCheckBox).getBool();
-  bool col_select = get(columnCheckBox).getBool();
-  index_type row_start = get(rowStartSpinBox).getInt();
-  index_type row_end = get(rowEndSpinBox).getInt();
-  index_type col_start = get(columnStartSpinBox).getInt();
-  index_type col_end = get(columnEndSpinBox).getInt();
+  bool row_select = get(rowCheckBox()).getBool();
+  bool col_select = get(columnCheckBox()).getBool();
+  index_type row_start = get(rowStartSpinBox()).getInt();
+  index_type row_end = get(rowEndSpinBox()).getInt();
+  index_type col_start = get(columnStartSpinBox()).getInt();
+  index_type col_end = get(columnEndSpinBox()).getInt();
   
   if ( !row_select && !col_select )  ///pipe input through
    if ( !row_indices && !col_indices)
@@ -414,12 +414,12 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
 
 AlgorithmInputName SelectSubMatrixAlgorithm::RowIndicies("RowIndicies");
 AlgorithmInputName SelectSubMatrixAlgorithm::ColumnIndicies("ColumnIndicies");
-AlgorithmParameterName SelectSubMatrixAlgorithm::rowCheckBox("rowCheckBox");
-AlgorithmParameterName SelectSubMatrixAlgorithm::columnCheckBox("columnCheckBox");
-AlgorithmParameterName SelectSubMatrixAlgorithm::rowStartSpinBox("rowStartSpinBox");
-AlgorithmParameterName SelectSubMatrixAlgorithm::columnStartSpinBox("columnStartSpinBox");
-AlgorithmParameterName SelectSubMatrixAlgorithm::columnEndSpinBox("columnEndSpinBox");
-AlgorithmParameterName SelectSubMatrixAlgorithm::rowEndSpinBox("rowEndSpinBox");
+AlgorithmParameterName SelectSubMatrixAlgorithm::rowCheckBox() { return AlgorithmParameterName("rowCheckBox"); }
+AlgorithmParameterName SelectSubMatrixAlgorithm::columnCheckBox() { return AlgorithmParameterName("columnCheckBox"); }
+AlgorithmParameterName SelectSubMatrixAlgorithm::rowStartSpinBox() { return AlgorithmParameterName("rowStartSpinBox"); }
+AlgorithmParameterName SelectSubMatrixAlgorithm::columnStartSpinBox() { return AlgorithmParameterName("columnStartSpinBox"); }
+AlgorithmParameterName SelectSubMatrixAlgorithm::columnEndSpinBox() { return AlgorithmParameterName("columnEndSpinBox"); }
+AlgorithmParameterName SelectSubMatrixAlgorithm::rowEndSpinBox() { return AlgorithmParameterName("rowEndSpinBox"); }
     
 AlgorithmOutput SelectSubMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {

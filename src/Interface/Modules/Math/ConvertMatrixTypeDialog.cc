@@ -55,10 +55,10 @@ void ConvertMatrixTypeDialog::push()
 {
   if (!pulling_)
   {
-   state_->setValue(ConvertMatrixTypeAlgorithm::PassThrough, PassThrough_->isChecked());
-   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix, ConvertToColumnMatrix_->isChecked());
-   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix, ConvertToDenseMatrix_->isChecked());
-   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix, ConvertToSparseRowMatrix_->isChecked());
+   state_->setValue(ConvertMatrixTypeAlgorithm::PassThrough(), PassThrough_->isChecked());
+   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), ConvertToColumnMatrix_->isChecked());
+   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), ConvertToDenseMatrix_->isChecked());
+   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), ConvertToSparseRowMatrix_->isChecked());
   }
 }
 
@@ -66,10 +66,10 @@ void ConvertMatrixTypeDialog::pull()
 {
   Pulling p(this);
   
-  PassThrough_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::PassThrough).getBool()); 
-  ConvertToColumnMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix).getBool());
-  ConvertToDenseMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix).getBool());
-  ConvertToSparseRowMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix).getBool());
+  PassThrough_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::PassThrough()).getBool()); 
+  ConvertToColumnMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix()).getBool());
+  ConvertToDenseMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix()).getBool());
+  ConvertToSparseRowMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix()).getBool());
   
 }
 

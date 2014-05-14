@@ -86,7 +86,7 @@ namespace
   {
     DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2, 3));
 
-    (*m)(0, 0) = NAN;
+    (*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
     (*m)(1, 0) = -3;
      
     return m;
@@ -379,9 +379,9 @@ TEST(SelectSubMatrixTests, BoundaryChecksGUI)
   
   int col_from=0, col_to=10;
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, true);
-  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox, col_from);
-  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox, col_to);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), true);
+  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox(), col_from);
+  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox(), col_to);
   DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
   
   if (result1)
@@ -392,10 +392,10 @@ TEST(SelectSubMatrixTests, BoundaryChecksGUI)
   
   int row_from=0, row_to=10;
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);
-  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox, row_from);
-  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox, row_to);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), true);
+  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), row_from);
+  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to);
   
   DenseMatrixHandle result2 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
 
@@ -405,12 +405,12 @@ TEST(SelectSubMatrixTests, BoundaryChecksGUI)
   }
   
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, true);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);
-  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox, col_from);
-  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox, col_to);  
-  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox, row_from);
-  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox, row_to);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), true);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), true);
+  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox(), col_from);
+  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox(), col_to);  
+  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), row_from);
+  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to);
   
   DenseMatrixHandle result3 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
   
@@ -426,8 +426,8 @@ TEST(SelectSubMatrixTests, BoundaryChecksInputMatrices)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false);
   
   DenseMatrixHandle index_rows(index_matrix1());
   
@@ -448,8 +448,8 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_1)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false); 
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false); 
   
   DenseMatrixHandle index_rows(index_matrix_outside1());
   DenseMatrixHandle result1;
@@ -490,8 +490,8 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_2)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false); 
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false); 
   
   DenseMatrixHandle index_rows(index_matrix_outside2());
   DenseMatrixHandle result1; 
@@ -510,8 +510,8 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_2)
    std::cout << "ERROR: This error message should not occur - SelectSubMatrix might seriously be broken (IndexMatricesOutOfBound_2 - first)." << std::endl;
   }
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false); 
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false); 
   
   DenseMatrixHandle index_cols(index_matrix_outside2());
   DenseMatrixHandle result2; 
@@ -536,8 +536,8 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_3)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false); 
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false); 
   
   DenseMatrixHandle index_rows(index_matrix_outside3());
   DenseMatrixHandle result1;   
@@ -580,8 +580,8 @@ TEST(SelectSubMatrixTests, IndexMatricesOutOfBound_4)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false); 
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false); 
   
   DenseMatrixHandle index_rows(index_matrix_outside4());
   DenseMatrixHandle result1; 
@@ -624,14 +624,14 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_rowsandcolumns_passinputthrough)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, true);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), true);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), true);
   
   int row_from=0,row_to=7,col_from=0,col_to=2;
-  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox, col_from);
-  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox, col_to);  
-  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox, row_from);
-  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox, row_to); 
+  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox(), col_from);
+  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox(), col_to);  
+  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), row_from);
+  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to); 
   
   DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
     
@@ -652,12 +652,12 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_rowsonly)
   SelectSubMatrixAlgorithm algo;
   
   DenseMatrixHandle m1(matrix3());
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), true);
   int row_from=0,row_to=6;
   
-  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox, row_from);
-  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox, row_to);  
+  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), row_from);
+  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to);  
 
   
   DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
@@ -682,12 +682,12 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_columnsonly)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, true);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), true);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false);
   int col_from=1,col_to=2;
   
-  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox, col_from);
-  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox, col_to);  
+  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox(), col_from);
+  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox(), col_to);  
 
   DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
  
@@ -712,14 +712,14 @@ TEST(SelectSubMatrixTests, Gui_Submatrix_rowsandcolumns)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, true);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), true);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), true);
   
   int row_from=1,row_to=5,col_from=1,col_to=2;
-  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox, col_from);
-  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox, col_to);  
-  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox, row_from);
-  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox, row_to); 
+  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox(), col_from);
+  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox(), col_to);  
+  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), row_from);
+  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), row_to); 
   
   DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),DenseMatrixHandle()));
     
@@ -738,12 +738,12 @@ TEST(SelectSubMatrixTests, Pipe_InputMatrix_through)
 {
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox, -100);
-  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox, 1000);  
-  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox, -1000);
-  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox, 10000);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::columnStartSpinBox(), -100);
+  algo.set(SelectSubMatrixAlgorithm::columnEndSpinBox(), 1000);  
+  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), -1000);
+  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), 10000);
   
   DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,0,0)); 
   
@@ -777,8 +777,8 @@ TEST(SelectSubMatrixTests, InputMatrix_rowsonly)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix3());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false);
   
   DenseMatrixHandle index_rows(index_matrix1());
   
@@ -805,8 +805,8 @@ TEST(SelectSubMatrixTests, InputMatrix_columnsonly)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix2());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false);
   
   DenseMatrixHandle index_cols(index_matrix2());
   
@@ -832,8 +832,8 @@ TEST(SelectSubMatrixTests, InputMatrix_rowsandcolumns)
   SelectSubMatrixAlgorithm algo;
   DenseMatrixHandle m1(matrix1());
   
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, false);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), false);
   
   DenseMatrixHandle index_rows(index_matrix4());
   DenseMatrixHandle index_cols(index_matrix3());
@@ -858,8 +858,8 @@ TEST(SelectSubMatrixTests, NOGUI_DenseColumnMatrixCols)
   SelectSubMatrixAlgorithm algo;
   DenseColumnMatrixHandle m1(densecolumnmatrix());
 
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), true);
  
   DenseMatrixHandle index_cols(index_matrix2());
   
@@ -886,8 +886,8 @@ TEST(SelectSubMatrixTests, NOGUI_DenseColumnMatrixRows)
   SelectSubMatrixAlgorithm algo;
   DenseColumnMatrixHandle m1(densecolumnmatrix());
 
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), true);
  
   DenseMatrixHandle index_cols(index_matrix2());
   
@@ -925,11 +925,11 @@ TEST(SelectSubMatrixTests, GUI_DenseColumnMatrixRows)
    
   int from=1, to=3; 
 
-  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
-  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);   
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox(), false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox(), true);   
    
-  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox, from);
-  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox, to);
+  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox(), from);
+  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox(), to);
   
   DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,0,0)); 
   

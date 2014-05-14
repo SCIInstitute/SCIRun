@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,63 +25,39 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Math/SelectSubMatrix.cc
 
-#include <Core/Algorithms/Math/SelectMatrix/SelectSubMatrix.h>
-#include <Core/Algorithms/Math/SelectMatrix/SelectMatrixRows.h>
-#include <Core/Algorithms/Math/SelectMatrix/SelectMatrixColumns.h>
-#include <Core/Datatypes/Matrix.h> 
+#include <Modules/Legacy/Math/SelectSubMatrix.h>
+#include <Core/Algorithms/Math/SelectSubMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Math;
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
-
-namespace SCIRun {
-
-using namespace SCIRun;
-
-class SelectSubMatrix : public Module {
-  public:
-    SelectSubMatrix(GuiContext*);
-    virtual ~SelectSubMatrix() {}
-
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::SelectSubMatrixAlgo sub_algo_;
-    SCIRunAlgo::SelectMatrixRowsAlgo rows_algo_;
-    SCIRunAlgo::SelectMatrixColumnsAlgo columns_algo_;
-
-    GuiInt row_select_;
-    GuiInt row_start_;
-    GuiInt row_end_;
-    
-    GuiInt col_select_;
-    GuiInt col_start_;
-    GuiInt col_end_;
-};
-
-
-DECLARE_MAKER(SelectSubMatrix)
-
-SelectSubMatrix::SelectSubMatrix(GuiContext* ctx) :
-  Module("SelectSubMatrix", ctx, Source, "Math", "SCIRun"),
-  row_select_(get_ctx()->subVar("row-select"),0),
-  row_start_(get_ctx()->subVar("row-start"),-1),
-  row_end_(get_ctx()->subVar("row-end"),-1),
-  col_select_(get_ctx()->subVar("col-select"),0),
-  col_start_(get_ctx()->subVar("col-start"),-1),
-  col_end_(get_ctx()->subVar("col-end"),-1)
+SelectSubMatrixModule::SelectSubMatrixModule() : Module(ModuleLookupInfo("SelectSubMatrix", "Math", "SCIRun")) 
 {
-  sub_algo_.set_progress_reporter(this);
-  rows_algo_.set_progress_reporter(this);
-  columns_algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(RowIndicies);
+  INITIALIZE_PORT(ColumnIndicies);
+  INITIALIZE_PORT(ResultMatrix);
 }
 
-
-void
-SelectSubMatrix::execute()
+void SelectSubMatrixModule::setStateDefaults()
 {
+ setStateBoolFromAlgo(SelectSubMatrixAlgorithm::rowCheckBox());
+ setStateBoolFromAlgo(SelectSubMatrixAlgorithm::columnCheckBox()); 
+ setStateIntFromAlgo(SelectSubMatrixAlgorithm::rowStartSpinBox());
+ setStateIntFromAlgo(SelectSubMatrixAlgorithm::columnStartSpinBox());
+ setStateIntFromAlgo(SelectSubMatrixAlgorithm::columnEndSpinBox());
+ setStateIntFromAlgo(SelectSubMatrixAlgorithm::rowEndSpinBox());
+}
+
+void SelectSubMatrixModule::execute()
+{
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   MatrixHandle matrix, row_indices, column_indices, sub_matrix;
   
   get_input_handle("Matrix",matrix,true);
@@ -175,8 +151,24 @@ SelectSubMatrix::execute()
         
     send_output_handle("SubMatrix",sub_matrix,true);
   }
+  #endif
+ 
+  auto input_matrix = getRequiredInput(InputMatrix);
+  auto rowindicies = getOptionalInput(RowIndicies);
+  auto columnindicies = getOptionalInput(ColumnIndicies);
+  
+  if (needToExecute())
+  {
+   update_state(Executing);
+   algo().set(SelectSubMatrixAlgorithm::rowCheckBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowCheckBox()).getBool());
+   algo().set(SelectSubMatrixAlgorithm::columnCheckBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnCheckBox()).getBool());
+   algo().set(SelectSubMatrixAlgorithm::rowStartSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowStartSpinBox()).getInt());
+   algo().set(SelectSubMatrixAlgorithm::rowEndSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowEndSpinBox()).getInt());  
+   algo().set(SelectSubMatrixAlgorithm::columnStartSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnStartSpinBox()).getInt());
+   algo().set(SelectSubMatrixAlgorithm::columnEndSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnEndSpinBox()).getInt());  
+  
+   auto output = algo().run_generic(make_input((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
+
+   sendOutputFromAlgorithm(ResultMatrix, output);
+  }
 }
-
-} /// End namespace SCIRun
-
-

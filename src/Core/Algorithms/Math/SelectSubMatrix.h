@@ -28,10 +28,9 @@
 
 #ifndef ALGORITHMS_MATH_SELECTSUBMATRIX_H
 #define ALGORITHMS_MATH_SELECTSUBMATRIX_H
-#include <Core/Datatypes/DenseMatrix.h>
+
+#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
@@ -44,12 +43,12 @@ namespace Math {
   public:
     static AlgorithmInputName RowIndicies;
     static AlgorithmInputName ColumnIndicies;
-    static AlgorithmParameterName rowCheckBox;
-    static AlgorithmParameterName columnCheckBox;
-    static AlgorithmParameterName rowStartSpinBox;
-    static AlgorithmParameterName columnStartSpinBox;
-    static AlgorithmParameterName columnEndSpinBox;
-    static AlgorithmParameterName rowEndSpinBox;
+    static AlgorithmParameterName rowCheckBox();
+    static AlgorithmParameterName columnCheckBox();
+    static AlgorithmParameterName rowStartSpinBox();
+    static AlgorithmParameterName columnStartSpinBox();
+    static AlgorithmParameterName columnEndSpinBox();
+    static AlgorithmParameterName rowEndSpinBox();
     Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle rows, Datatypes::DenseMatrixHandle columns) const; 
     SelectSubMatrixAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;

@@ -54,9 +54,13 @@ void ApplyMappingMatrixModule::execute()
   auto src = getRequiredInput(Source);
   auto dest = getRequiredInput(Destination);
   auto mapp = getRequiredInput(Mapping);
-
-  auto out = algo().run_generic(make_input((Source, src)(Destination, dest)(Mapping, mapp)));
  
-  sendOutputFromAlgorithm(Output, out);
-  
+  if (needToExecute())
+  {
+   update_state(Executing);
+   
+   auto out = algo().run_generic(make_input((Source, src)(Destination, dest)(Mapping, mapp)));
+ 
+   sendOutputFromAlgorithm(Output, out);
+  }
 }
