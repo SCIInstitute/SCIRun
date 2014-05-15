@@ -82,7 +82,7 @@ namespace {
   }
   FieldHandle CreateTriSurfVectorOnNodeSCIRun4Output()
   {
-    return loadFieldFromFile("/Users/spencer/Desktop/SCIRun/CalculatedVectorMagnitudesForTriSurfVectorOnNodeFromSCIRun4.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/CalculatedVectorMagnitudesForTriSurfVectorOnNodeFromSCIRun4.fld");
   }
   FieldHandle CreateTriSurfScalarOnNode()
   {
@@ -96,7 +96,7 @@ namespace {
   }
   FieldHandle CreateTetMeshVectorOnNodeSCIRun4Output()
   {
-    return loadFieldFromFile("/Users/spencer/Desktop/SCIRun/CalculatedVectorMagnitudesForTetMeshVectorOnNodeFromSCIRun4.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/CalculatedVectorMagnitudesForTetMeshVectorOnNodeFromSCIRun4.fld");
   }
   FieldHandle CreateTetMeshScalarOnNode()
   {
@@ -167,9 +167,9 @@ TEST(CalculateVectorMagnitudesAlgoTests, TetMeshScalarOnNodeAsInput)
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
 }
 
-TEST(CalculateVectorMagnitudesAlgoTests, TetMeshTensorOnNodeAsInput)
+TEST(CalculateVectorMagnitudesAlgoTests, DISABLED_TetMeshTensorOnNodeAsInput)
 {
-  /***** TEST HAS UNKOWN FILE FAILURE */
+  FAIL(); // TODO: Enable test when tensors can be read
   FieldHandle in = CreateTetMeshTensorOnNode();
   FieldHandle out;
   CalculateVectorMagnitudesAlgo algo;

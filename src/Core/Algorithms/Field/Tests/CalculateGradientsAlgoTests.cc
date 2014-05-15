@@ -107,18 +107,8 @@ namespace
   }
 }
 
-//TEST(CalculateGradientsAlgoTests, TriSurfScalarOnNodeAsInput)
-//{
-//  //FAIL() << "TODO"; // SEG FAULT
-//  FieldHandle in = CreateTriSurfScalarOnNode();
-//  FieldHandle out;
-//  CalculateGradientsAlgo algo;
-//  EXPECT_EQ(algo.run(in, out), true);
-//  // TODO: compare values from SCIRun 4
-//}
-TEST(CalculateGradientsAlgoTests, DISABLED_TriSurfScalarOnNodeAsInput)
+TEST(CalculateGradientsAlgoTests, TriSurfScalarOnNodeAsInput)
 {
-  FAIL() << "TODO"; // SEG FAULT
   FieldHandle in = CreateTriSurfScalarOnNode();
   FieldHandle out;
   CalculateGradientsAlgo algo;
@@ -141,15 +131,6 @@ TEST(CalculateGradientsAlgoTests, TetMeshScalarOnNodeAsInput)
   EXPECT_EQ(algo.run(in, out), true);
   // TODO: compare values from SCIRun 4
 }
-//TEST(CalculateGradientsAlgoTests, DISABLED_TetMeshScalarOnNodeAsInput)
-//{
-//  FAIL() << "TODO"; // SEG FAULT
-//  FieldHandle in = CreateTetMeshScalarOnNode();
-//  FieldHandle out;
-//  CalculateGradientsAlgo algo;
-//  EXPECT_EQ(algo.run(in, out), true);
-//  // TODO: compare values from SCIRun 4
-//}
 TEST(CalculateGradientsAlgoTests, TetMeshTensorOnNodeAsInput)
 {
   FieldHandle in = CreateTetMeshTensorOnNode();
