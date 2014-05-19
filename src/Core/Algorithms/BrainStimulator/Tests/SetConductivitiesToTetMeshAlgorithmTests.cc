@@ -33,16 +33,29 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::TestUtils;
 
-TEST(SetConductivitiesToTetMeshAlgorithm, DISABLED_Foo)
+FieldHandle CreateTetMeshScalarOnNode()
+{
+  return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithm, spanks_test)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
-  FAIL() << "Insert code here for the most basic test cases !"; 
+  
+  algo.set(SetConductivitiesToTetMeshAlgorithm::skin(),     16);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::skull(),    12);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),       2);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::GM(),        3);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::WM(),        4);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::electrode(), 5);
+  
+  algo.run(CreateTetMeshScalarOnNode());
 }

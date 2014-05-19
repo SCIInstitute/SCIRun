@@ -67,7 +67,7 @@
                     </rect>
                   </property>
                   <property name="text">
-                    <string>CSF</string>
+                    <string>CSF:</string>
                   </property>
                 </widget>
                 <widget class="QDoubleSpinBox" name="doubleSpinBox">
