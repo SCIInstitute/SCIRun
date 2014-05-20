@@ -48,6 +48,53 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::skin("skin");  
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::skull("skull"); 
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF("CSF");
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM("GM"); 
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM("WM");  
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::electrode("electrode");
+
+AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::MESH("MESH");
+AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::INHOMOGENEOUS_SKULL("INHOMOGENEOUS_SKULL");
+AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::ANISOTROPIC_WM("ANISOTROPIC_WM");
+AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH");
+
+SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
+{
+  addParameter(skin,      0.0);
+  /*  addParameter(skull,     0.0);
+   addParameter(CSF,       0.0);
+   addParameter(GM,        0.0);
+   addParameter(WM,        0.0);
+   addParameter(electrode, 0.0);*/
+}
+
+AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
+{
+  auto mesh  = input.get<Field>(MESH);
+  auto skull = input.get<Matrix>(INHOMOGENEOUS_SKULL);
+  auto wm    = input.get<Matrix>(ANISOTROPIC_WM);
+
+ /* ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");*/
+ 
+  AlgorithmOutput output;
+  //output[OUTPUTMESH] = out1;
+
+  return output;
+}
+
+
+
+
+
+
+
+
 //void ShowWhatFieldHandleIsMadeOf(FieldHandle input)
 //{
 //  VField* vfield = input->vfield();
@@ -81,17 +128,6 @@ using namespace SCIRun;
 //    }
 //  }
 //}
-
-SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
-{
-  addParameter(skin(),      0);
-  addParameter(skull(),     0);
-  addParameter(CSF(),       0);
-  addParameter(GM(),        0);
-  addParameter(WM(),        0);
-  addParameter(electrode(), 0);
-}
-
 //bool row_select = get(rowCheckBox()).getBool();
 //bool col_select = get(columnCheckBox()).getBool();
 //index_type row_start = get(rowStartSpinBox()).getInt();
@@ -124,10 +160,10 @@ void SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh)
     if (i == 0) std::cout << "elements: ";
     std::cout << val << ((vfield->vmesh()->num_elems() == (i+1)) ? "\n" : " ");
   }
-
+  
   // array holding conductivies
   int size = 6;
-  double conductivies [] = {get(skin()).getDouble(), get(skull()).getDouble(), get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(electrode()).getDouble()};
+  double conductivies [] = {get(skin).getDouble(), get(skull).getDouble(), get(CSF).getDouble(), get(GM).getDouble(), get(WM).getDouble(), get(electrode).getDouble()};
   for (int i=0; i<size; i++)
   {
     if (i == 0) std::cout << "conductivities: ";
@@ -137,35 +173,5 @@ void SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh)
   
   // TODO: Replace field value with conductivity value
   
-
-}
-
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::skin()      { return AlgorithmParameterName("skin");  }
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::skull()     { return AlgorithmParameterName("skull"); }
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF()       { return AlgorithmParameterName("CSF");   }
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM()        { return AlgorithmParameterName("GM");    }
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM()        { return AlgorithmParameterName("WM");    }
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::electrode() { return AlgorithmParameterName("electrode"); }
-
-AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::MESH("MESH");
-AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::INHOMOGENEOUS_SKULL("INHOMOGENEOUS_SKULL");
-AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::ANISOTROPIC_WM("ANISOTROPIC_WM");
-AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH");
-
-AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
-{
-  auto mesh  = input.get<Field>(MESH);
-  auto skull = input.get<Matrix>(INHOMOGENEOUS_SKULL);
-  auto wm    = input.get<Matrix>(ANISOTROPIC_WM);
-
- /* ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");*/
- 
-  AlgorithmOutput output;
-  //output[OUTPUTMESH] = out1;
-
-  return output;
+  
 }

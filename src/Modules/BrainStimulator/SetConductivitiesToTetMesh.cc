@@ -49,12 +49,12 @@ SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(Mo
 
 void SetConductivitiesToTetMeshModule::setStateDefaults()
 {
-  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::skin());
-  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::skull());
-  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF());
-  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM());
-  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM());
-  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::electrode());
+  //setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::skin);
+/*  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::skull);
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF);
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM);
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM);
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::electrode);*/
 }
 
 void SetConductivitiesToTetMeshModule::execute()
@@ -69,16 +69,13 @@ void SetConductivitiesToTetMeshModule::execute()
   //algorithm parameter
   //algo_->set(Variables::AppendMatrixOption, param);
  
-  if (needToExecute())
-  {
-    update_state(Executing);
-    algo().set(SetConductivitiesToTetMeshAlgorithm::skin(),  get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::skin()).getInt());
-    algo().set(SetConductivitiesToTetMeshAlgorithm::skull(), get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::skull()).getInt());
-    algo().set(SetConductivitiesToTetMeshAlgorithm::CSF(),   get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::CSF()).getInt());
-    algo().set(SetConductivitiesToTetMeshAlgorithm::GM(),    get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::GM()).getInt());
-    algo().set(SetConductivitiesToTetMeshAlgorithm::WM(),    get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::WM()).getInt());
-    algo().set(SetConductivitiesToTetMeshAlgorithm::electrode(), get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::electrode()).getInt());
-  }
+  //setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::skin);
+  /*   algo().set(SetConductivitiesToTetMeshAlgorithm::skull, get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::skull).getDouble());
+  algo().set(SetConductivitiesToTetMeshAlgorithm::CSF,   get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::CSF).getDouble());
+  algo().set(SetConductivitiesToTetMeshAlgorithm::GM,    get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::GM).getDouble());
+  algo().set(SetConductivitiesToTetMeshAlgorithm::WM,    get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::WM).getDouble());
+  algo().set(SetConductivitiesToTetMeshAlgorithm::electrode, get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::electrode).getDouble());*/
+
   
   //algorithm input and run
   auto output = algo().run_generic(make_input((MESH, mesh)(INHOMOGENEOUS_SKULL, optionalAlgoInput(skull))(ANISOTROPIC_WM, optionalAlgoInput(wm))));

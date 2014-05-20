@@ -50,13 +50,13 @@ FieldHandle CreateTetMeshScalarOnNode()
 TEST(SetConductivitiesToTetMeshAlgorithm, spanks_test)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
-  
+ /*
   algo.set(SetConductivitiesToTetMeshAlgorithm::skin(),     16);
   algo.set(SetConductivitiesToTetMeshAlgorithm::skull(),    12);
   algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),       2);
   algo.set(SetConductivitiesToTetMeshAlgorithm::GM(),        3);
   algo.set(SetConductivitiesToTetMeshAlgorithm::WM(),        4);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::electrode(), 5);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::electrode(), 5);*/
   
   algo.run(CreateTetMeshScalarOnNode());
 }

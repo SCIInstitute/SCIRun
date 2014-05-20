@@ -28,6 +28,7 @@
 
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h> 
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -40,26 +41,25 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  connect(skin_,  SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(skull_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(CSF_,   SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(GM_,    SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(WM_,    SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(electrode_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  //connect(doubleSpinBox,  SIGNAL(valueChanged(double)), this, SLOT(push()));
+ /* connect(skull_, SIGNAL(valueChanged(double)), this, SLOT(push()));
+  connect(CSF_,   SIGNAL(valueChanged(double)), this, SLOT(push()));
+  connect(GM_,    SIGNAL(valueChanged(double)), this, SLOT(push()));
+  connect(WM_,    SIGNAL(valueChanged(double)), this, SLOT(push()));
+  connect(electrode_, SIGNAL(valueChanged(double)), this, SLOT(push()));*/
 }
 
 void SetConductivitiesToTetMeshDialog::push()
 {
   if (!pulling_)
   {
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::skin(), skin_->value());
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::skull(), skull_->value());
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::CSF(), CSF_->value());
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::GM(), GM_->value());
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::WM(), WM_->value());
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::electrode(), electrode_->value());
-  } 
+    //state_->setValue(SetConductivitiesToTetMeshAlgorithm::skin, doubleSpinBox->value());
+    /*state_->setValue(SetConductivitiesToTetMeshAlgorithm::skull, skull_->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::CSF, CSF_->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::GM, GM_->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::WM, WM_->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::electrode, electrode_->value()); */
+  }
 }
 
 void SetConductivitiesToTetMeshDialog::pull()
