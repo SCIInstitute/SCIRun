@@ -160,6 +160,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
   actionDelete_->setShortcut(QKeySequence::Delete);
 
+  connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
+
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
 #endif
@@ -864,4 +866,10 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->resizeColumnToContents(0);
   moduleSelectorTreeWidget_->resizeColumnToContents(1);
   moduleSelectorTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
+}
+
+void SCIRunMainWindow::displayAcknowledgement()
+{
+  QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment", 
+    "CIBC software and the data sets provided on this web site are Open Source software projects that are principally funded through the SCI Institute's NIH/NCRR CIBC. For us to secure the funding that allows us to continue providing this software, we must have evidence of its utility. Thus we ask users of our software and data to acknowledge us in their publications and inform us of these publications. Please use the following acknowledgment and send us references to any publications, presentations, or successful funding applications that make use of the NIH/NCRR CIBC software or data sets we provide. <p> <i>This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545.</i>");
 }
