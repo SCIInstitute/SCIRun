@@ -33,9 +33,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -52,7 +49,12 @@ SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(Mo
 
 void SetConductivitiesToTetMeshModule::setStateDefaults()
 {
-  /// @todo
+  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::skin());
+  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::skull());
+  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF());
+  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM());
+  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM());
+  setStateIntFromAlgo(SetConductivitiesToTetMeshAlgorithm::electrode());
 }
 
 void SetConductivitiesToTetMeshModule::execute()
@@ -60,17 +62,27 @@ void SetConductivitiesToTetMeshModule::execute()
   auto mesh = getRequiredInput(MESH);
   auto skull = getOptionalInput(INHOMOGENEOUS_SKULL);
   auto wm = getOptionalInput(ANISOTROPIC_WM);
+  
    // UI input
   //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
 
   //algorithm parameter
   //algo_->set(Variables::AppendMatrixOption, param);
  
+  if (needToExecute())
+  {
+    update_state(Executing);
+    algo().set(SetConductivitiesToTetMeshAlgorithm::skin(),  get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::skin()).getInt());
+    algo().set(SetConductivitiesToTetMeshAlgorithm::skull(), get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::skull()).getInt());
+    algo().set(SetConductivitiesToTetMeshAlgorithm::CSF(),   get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::CSF()).getInt());
+    algo().set(SetConductivitiesToTetMeshAlgorithm::GM(),    get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::GM()).getInt());
+    algo().set(SetConductivitiesToTetMeshAlgorithm::WM(),    get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::WM()).getInt());
+    algo().set(SetConductivitiesToTetMeshAlgorithm::electrode(), get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::electrode()).getInt());
+  }
   
   //algorithm input and run
   auto output = algo().run_generic(make_input((MESH, mesh)(INHOMOGENEOUS_SKULL, optionalAlgoInput(skull))(ANISOTROPIC_WM, optionalAlgoInput(wm))));
 
   //algorithm output
   sendOutputFromAlgorithm(OUTPUTMESH, output);
-
 }

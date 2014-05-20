@@ -111,6 +111,8 @@ void SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh)
   if (vfield->is_nodata())
     THROW_ALGORITHM_INPUT_ERROR("Field contained no data");
   
+  // TODO: make sure the data is on the elements and not the nodes
+  
   std::cout << "fields: " << vfield->num_values() << std::endl;
   
   // # of elems = vfield->vmesh()->num_elems()
@@ -133,7 +135,7 @@ void SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh)
   }
   
   
-  // How to get every element that have same field value
+  // TODO: Replace field value with conductivity value
   
 
 }
@@ -152,9 +154,9 @@ AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH"
 
 AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto mesh = input.get<Field>(MESH);
+  auto mesh  = input.get<Field>(MESH);
   auto skull = input.get<Matrix>(INHOMOGENEOUS_SKULL);
-  auto wm = input.get<Matrix>(ANISOTROPIC_WM);
+  auto wm    = input.get<Matrix>(ANISOTROPIC_WM);
 
  /* ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");

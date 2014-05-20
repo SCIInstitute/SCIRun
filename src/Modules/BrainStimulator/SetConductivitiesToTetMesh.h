@@ -31,12 +31,10 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/BrainStimulator/share.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+
 namespace SCIRun {
-  namespace Modules {
-    namespace BrainStimulator {
+namespace Modules {
+namespace BrainStimulator {
 
 class SCISHARE SetConductivitiesToTetMeshModule : public SCIRun::Dataflow::Networks::Module,
   public Has3InputPorts<FieldPortTag, MatrixPortTag, MatrixPortTag>,
@@ -52,7 +50,6 @@ class SCISHARE SetConductivitiesToTetMeshModule : public SCIRun::Dataflow::Netwo
     INPUT_PORT(1, INHOMOGENEOUS_SKULL, Matrix);
     INPUT_PORT(2, ANISOTROPIC_WM, Matrix);   
     OUTPUT_PORT(0, OUTPUTMESH, LegacyField);
-
 };
 
 }}}
