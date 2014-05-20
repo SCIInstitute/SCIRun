@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
 ///
 ///@file  TransformPlanarMesh.cc
 ///
@@ -51,6 +49,8 @@
 
 namespace SCIRun {
 
+/// @class TransformPlanarMesh
+/// @brief Non-interactive geometric transform of a field. 
 
 class TransformPlanarMesh : public Module
 {

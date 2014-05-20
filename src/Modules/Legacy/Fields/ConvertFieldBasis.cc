@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ConvertFieldBasis.cc
 
 // Include the algorithm
 #include <Core/Algorithms/Fields/FieldData/ConvertFieldBasisType.h>
@@ -38,6 +37,9 @@
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
 namespace SCIRun {
+
+/// @class ConvertFieldBasis
+/// @brief ConvertFieldBasis can modify the location of data in the input field.
 
 class ConvertFieldBasis : public Module {
   public:

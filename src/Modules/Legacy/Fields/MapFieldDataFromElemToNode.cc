@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/MapFieldDataFromElemToNode.cc
 
 // Include the algorithm
 #include <Core/Algorithms/Fields/Mapping/MapFieldDataFromElemToNode.h>
@@ -38,6 +37,10 @@
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
 namespace SCIRun {
+
+/// @class MapFieldDataFromElemToNode
+/// @brief This module contains several filters for converting data that is
+/// stored in the elements to data that is stored in the nodes.
 
 class MapFieldDataFromElemToNode : public Module {
   public:

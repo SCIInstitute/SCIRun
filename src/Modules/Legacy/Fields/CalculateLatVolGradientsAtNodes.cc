@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateLatVolGradientsAtNodes.cc
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Algorithms/Fields/FieldData/CalculateLatVolGradientsAtNodes.h>
@@ -34,6 +33,9 @@
 #include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
+
+/// @class CalculateLatVolGradientsAtNodes
+/// @brief Compute the derivative of a scalar lattice and output it as a vector lattice.
 
 class CalculateLatVolGradientsAtNodes : public Module
 {

@@ -33,6 +33,9 @@
 
 using namespace SCIRun;
 
+/// @class InsertBundlesIntoBundle
+/// @brief This module inserts a bundle object into a bundle. 
+
 class InsertBundlesIntoBundle : public Module {
 public:
   InsertBundlesIntoBundle(GuiContext*);

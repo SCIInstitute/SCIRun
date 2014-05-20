@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/MapFieldDataOntoNodesRadialbasis.cc
 
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
@@ -52,12 +51,14 @@ namespace SCIRun {
 // documentation needed
 // move calculation to algorithm class
 
+/// @class MapFieldDataOntoNodesRadialbasis
+/// @brief Maps data centered on the nodes to another set of nodes using a radial basis.
+
 class MapFieldDataOntoNodesRadialbasis : public Module {
   public:
     MapFieldDataOntoNodesRadialbasis(GuiContext*);
     virtual ~MapFieldDataOntoNodesRadialbasis() {}
 	
-
     virtual void execute();
 
   private:

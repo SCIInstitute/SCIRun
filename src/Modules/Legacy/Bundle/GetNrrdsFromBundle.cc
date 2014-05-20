@@ -35,6 +35,9 @@
 
 using namespace SCIRun;
 
+/// @class GetNrrdsFromBundle
+/// @brief This module retrieves a nrrd object from a bundle.
+
 class GetNrrdsFromBundle : public Module {
 public:
   GetNrrdsFromBundle(GuiContext*);

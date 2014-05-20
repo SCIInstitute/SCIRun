@@ -32,8 +32,6 @@
 /// @author
 ///    jeroen
 ///   
-///  TODAY'S DATE HERE
-/// 
 
 #include <fstream>
 #include <string>
@@ -43,6 +41,9 @@
 #include <Dataflow/Modules/DataIO/GenericReader.h>
 
 namespace SCIRun {
+
+/// @class ReadString
+/// @This module reads a string from file (an ASCII text file).
 
 class ReadString : public GenericReader<StringHandle> {
   public:

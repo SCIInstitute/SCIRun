@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/BuildMappingMatrix.cc
 
 #include <Core/Algorithms/Fields/Mapping/BuildMappingMatrix.h>
 
@@ -36,6 +35,10 @@
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
 namespace SCIRun {
+
+/// @class BuildMappingMatrix
+/// @brief Build a mapping matrix -- a matrix that says how to project the data
+/// from one field onto the data of a second field. 
 
 class BuildMappingMatrix : public Module
 {

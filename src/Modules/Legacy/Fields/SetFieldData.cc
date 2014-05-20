@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/SetFieldData.cc
 
 #include <Core/Algorithms/Fields/FieldData/SetFieldData.h>
 #include <Core/Datatypes/Field.h>
@@ -35,8 +34,11 @@
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
-
 namespace SCIRun {
+
+/// @class SetFieldData
+/// @brief This module allows you to set the scalar, vector, or tensor entries
+/// of an array or single column matrix to the nodes or elements of a mesh. 
 
 class SetFieldData : public Module {
   public:

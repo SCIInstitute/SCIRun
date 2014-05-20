@@ -29,7 +29,8 @@
 
 ///
 ///@file  SolveMinNormLeastSqSystem
-///@brief Select a row or column of a matrix
+///@brief This module computes the minimal norm, least squared solution to a nx3
+/// linear system.  
 ///
 ///@author
 ///   David Weinstein

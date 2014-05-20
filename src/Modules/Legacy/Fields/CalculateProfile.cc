@@ -25,7 +25,6 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
-/// @todo Documentation Modules/Legacy/Fields/CalculateProfile.cc
 
 #include <Core/Datatypes/FieldInformation.h>
 #include <Core/Datatypes/Field.h>
@@ -47,7 +46,9 @@
 namespace SCIRunAlgo {
 	
 	using namespace SCIRun;
-	
+
+	/// @class CalculateProfile
+	/// @brief Samples image data surrounding mesh generated from segmentation. 	
 	class CalculateProfile : public Module {
 	public:
 		CalculateProfile(GuiContext*);

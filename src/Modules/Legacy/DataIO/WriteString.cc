@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/DataIO/WriteString.cc
 
 #include <fstream>
 #include <string>
@@ -36,6 +35,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class WriteString
+/// @brief This module writes a string to file (an ASCII text file).
 
 class WriteString : public GenericWriter<StringHandle> {
   public:

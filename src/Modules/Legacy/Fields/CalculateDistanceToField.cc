@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateDistanceToField.cc
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Field.h>
@@ -36,6 +35,9 @@
 #include <Core/Algorithms/Fields/DistanceField/CalculateDistanceField.h>
 
 namespace SCIRun {
+
+/// @class CalculateDistanceToField 
+/// @brief Calculate the distance field to a mesh. 
 
 class CalculateDistanceToField : public Module 
 {

@@ -28,9 +28,6 @@
 
 
 ///
-///@class  SwapNodeLocationsWithMatrixEntries:
-///@brief  Store/retrieve values from an input matrix to/from the nodes of a field.
-///
 ///@author
 ///   Michael Callahan
 ///   Department of Computer Science
@@ -49,6 +46,9 @@
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
 namespace SCIRun {
+
+///@class  SwapNodeLocationsWithMatrixEntries
+///@brief  Store/retrieve values from an input matrix to/from the nodes of a field.
 
 class SwapNodeLocationsWithMatrixEntries : public Module
 {

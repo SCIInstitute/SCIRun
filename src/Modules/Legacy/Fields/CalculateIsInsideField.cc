@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateIsInsideField.cc
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
@@ -36,6 +35,9 @@
 #include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
+
+/// @class CalculateIsInsideField
+/// @brief Calculate whether an element of one field is inside the domain of another field. 
 
 class CalculateIsInsideField : public Module 
 {

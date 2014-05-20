@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Field/ApplyMappingMatrix.cc
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
 //#include <Core/Algorithms/Fields/Mapping/ApplyMappingMatrix.h>
@@ -39,6 +38,9 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
+
+/// @class ApplyMappingMatrix
+/// @brief Apply a mapping matrix to project the data from one field onto the mesh of another field. 
 
 ApplyMappingMatrix::ApplyMappingMatrix()
   : Module(ModuleLookupInfo("ApplyMappingMatrix","Fields", "SCIRun"), false)

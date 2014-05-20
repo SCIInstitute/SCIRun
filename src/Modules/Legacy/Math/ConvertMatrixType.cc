@@ -26,17 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
-///@class ConvertMatrixType
-///@brief Unary matrix operations -- transpose, negate
-///
 ///@author
 ///   David Weinstein
 ///   Department of Computer Science
 ///   University of Utah
 ///@date  June 1999
-///
 
 #include <Core/Datatypes/ColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -51,6 +45,11 @@
 #include <sstream>
 
 namespace SCIRun {
+
+/// @class ConvertMatrixType
+/// @brief Unary matrix operations -- transpose, negate
+///
+/// This module casts a matrix into a different type. 
 
 class ConvertMatrixType : public Module {
   GuiString oldtype_;

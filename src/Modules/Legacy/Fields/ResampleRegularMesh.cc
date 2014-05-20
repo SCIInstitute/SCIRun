@@ -23,7 +23,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-/// @todo Documentation Modules/Legacy/Fields/ResampleRegularMesh.cc
 
 #include <Core/Util/StringUtil.h>
 
@@ -38,6 +37,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class ResampleRegularMesh
+/// @brief Resample a regular mesh, such as a LatVol. 
 
 class ResampleRegularMesh : public Module {
   public:

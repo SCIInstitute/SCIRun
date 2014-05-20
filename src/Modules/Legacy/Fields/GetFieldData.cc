@@ -39,6 +39,10 @@
 
 namespace SCIRun {
 
+/// @class GetFieldData
+/// @brief This module will get the data associated with the nodes or the
+/// elements of a field and put them in a matrix.
+
 class GetFieldData : public Module {
   public:
     /// constructor and execute function

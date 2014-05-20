@@ -26,18 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///
-///@file  ClipVolumeByIsovalue.cc
-///@brief Clip out parts of a field.
-///
 ///@author
 ///   Allen R. Sanderson
 ///   Michael Callahan
 ///   Department of Computer Science
 ///   University of Utah
 ///@date  March 2001
-///
-
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -46,6 +40,9 @@
 #include <iostream>
 
 namespace SCIRun {
+
+/// @class ClipVolumeByIsovalue
+/// @brief Clip out parts of a field.
 
 class ClipVolumeByIsovalue : public Module
 {

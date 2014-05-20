@@ -25,7 +25,6 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  *  DEALINGS IN THE SOFTWARE.
  */
-/// @todo Documentation Modules/Legacy/String/ReportStringInfo.cc  
 
 #include <Core/Datatypes/String.h>
 #include <Dataflow/Network/Ports/StringPort.h>
@@ -34,6 +33,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class ReportStringInfo
+/// @brief This module can be used to display the contents of a string. 
 
 class ReportStringInfo : public Module {
 public:

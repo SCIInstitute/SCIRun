@@ -26,11 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Legacy/Fields/RegisterWithCorrespondences.cc
 
 ///
 ///@file  RegisterWithCorrespondences.cc
-///
 ///@author
 ///   darrell
 ///  
@@ -46,6 +44,9 @@ namespace SCIRun {
 
 using namespace SCIRun;
 
+/// @class RegisterWithCorrespondences
+/// @brief This module allows you to morph using a thin plate spline algorithm
+/// one point set or mesh to another point set or mesh. 
 
 class RegisterWithCorrespondences : public Module {
 public:

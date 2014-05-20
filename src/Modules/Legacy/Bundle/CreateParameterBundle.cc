@@ -26,11 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- * FILE: CreateParameterBundle.cc
- * AUTH: Jeroen G Stinstra
- * DATE: 17 SEP 2005
- */ 
+/// @file   CreateParameterBundle.cc
+/// @author Jeroen G Stinstra
+/// @date   17 SEP 2005
  
 #include <Core/Algorithms/Regression/RegressionAlgo.h> 
 
@@ -48,6 +46,9 @@
 #include <vector>
 
 namespace SCIRun {
+
+/// @class CreateParameterBundle
+/// @brief Sets several parameters and collects them as a single bundle.
 
 class CreateParameterBundle : public Module {
 public:

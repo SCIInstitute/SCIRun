@@ -29,7 +29,6 @@
 
 ///
 /// @file  ReadPath.cc
-/// @brief Read a persistent camera path from a file
 /// 
 /// @author
 ///    Steven G. Parker
@@ -44,6 +43,9 @@
 namespace SCIRun {
 
 template class GenericReader<PathHandle>;
+
+/// @class ReadPath
+/// @brief This module reads a camera path from file (a SCIRun .path file).
 
 class ReadPath : public GenericReader<PathHandle> {
   public:

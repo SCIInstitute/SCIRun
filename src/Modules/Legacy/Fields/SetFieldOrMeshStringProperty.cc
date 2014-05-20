@@ -26,10 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///
-///@class SetFieldOrMeshStringProperty
-///@brief Set a property for a Field (or its Mesh)
-///
 ///@author
 ///   David Weinstein
 ///   Department of Computer Science
@@ -45,6 +41,9 @@
 #include <sstream>
 
 namespace SCIRun {
+
+/// @class SetFieldOrMeshStringProperty
+/// @brief Set a property for a Field (or its Mesh)
 
 class SetFieldOrMeshStringProperty : public Module {
   public:
