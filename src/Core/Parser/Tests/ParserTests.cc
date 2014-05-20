@@ -137,7 +137,7 @@ TEST_F(BasicParserTests, CreateFieldDataDuplicate)
   EXPECT_EQ(3, max);
 }
 
-TEST(BasicParserTests, CreateField_Parenthesis_Unbalanced)
+TEST_F(BasicParserTests, CreateField_Parenthesis_Unbalanced)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
