@@ -170,7 +170,7 @@ TEST(BasicParserTests, CreateField_Parenthesis_Unbalanced)
   auto ovfield = ofield->vfield();
 }
 
-TEST(BasicParserTests, CreateField_Brackets_Unbalanced)
+TEST_F(BasicParserTests, CreateField_Brackets_Unbalanced)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -203,7 +203,7 @@ TEST(BasicParserTests, CreateField_Brackets_Unbalanced)
   auto ovfield = ofield->vfield();
 }
 
-TEST(BasicParserTests, CreateFieldData_Arithmetic)
+TEST_F(BasicParserTests, CreateFieldData_Arithmetic)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -245,7 +245,7 @@ TEST(BasicParserTests, CreateFieldData_Arithmetic)
   EXPECT_NEAR(6, max,1e-1);
 }
 
-TEST(BasicParserTests, CreateFieldData_add)
+TEST_F(BasicParserTests, CreateFieldData_add)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -283,7 +283,7 @@ TEST(BasicParserTests, CreateFieldData_add)
   EXPECT_EQ(101, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_sub)
+TEST_F(BasicParserTests, CreateFieldData_sub)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -325,7 +325,7 @@ TEST(BasicParserTests, CreateFieldData_sub)
   EXPECT_EQ( 2, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_mult)
+TEST_F(BasicParserTests, CreateFieldData_mult)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -367,7 +367,7 @@ TEST(BasicParserTests, CreateFieldData_mult)
   EXPECT_EQ( 1, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_div)
+TEST_F(BasicParserTests, CreateFieldData_div)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -409,7 +409,7 @@ TEST(BasicParserTests, CreateFieldData_div)
   EXPECT_EQ( 0.01, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_exp)
+TEST_F(BasicParserTests, CreateFieldData_exp)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -451,7 +451,7 @@ TEST(BasicParserTests, CreateFieldData_exp)
   EXPECT_NEAR(20.08, max, 1e-1);
 }
 
-TEST(BasicParserTests, CreateFieldData_log)
+TEST_F(BasicParserTests, CreateFieldData_log)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -493,7 +493,7 @@ TEST(BasicParserTests, CreateFieldData_log)
   EXPECT_NEAR(2.30259, max, 1e-3);
 }
 
-TEST(BasicParserTests, CreateFieldData_ln)
+TEST_F(BasicParserTests, CreateFieldData_ln)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -535,7 +535,7 @@ TEST(BasicParserTests, CreateFieldData_ln)
   EXPECT_NEAR(4.60517, max, 1e-3);
 }
 
-TEST(BasicParserTests, CreateFieldData_log2)
+TEST_F(BasicParserTests, CreateFieldData_log2)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -577,7 +577,7 @@ TEST(BasicParserTests, CreateFieldData_log2)
   EXPECT_EQ(4, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_log10)
+TEST_F(BasicParserTests, CreateFieldData_log10)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -622,7 +622,7 @@ TEST(BasicParserTests, CreateFieldData_log10)
   //EXPECT_EQ(2.0, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_sin)
+TEST_F(BasicParserTests, CreateFieldData_sin)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -664,7 +664,7 @@ TEST(BasicParserTests, CreateFieldData_sin)
   EXPECT_NEAR(0, max, 1e-8);
 }
 
-TEST(BasicParserTests, CreateFieldData_asin)
+TEST_F(BasicParserTests, CreateFieldData_asin)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -704,7 +704,7 @@ TEST(BasicParserTests, CreateFieldData_asin)
 
 #ifdef WIN32
   //check for NaN, if should be true
-  //this test should checks NaN or specifically: -1.#IND
+  //this TEST should checks NaN or specifically: -1.#IND
   if(min != min && max != max)
 	    EXPECT_EQ(1 , 1);
   else
@@ -715,7 +715,7 @@ TEST(BasicParserTests, CreateFieldData_asin)
 #endif
 }
 
-TEST(BasicParserTests, CreateFieldData_sinh)
+TEST_F(BasicParserTests, CreateFieldData_sinh)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -757,7 +757,7 @@ TEST(BasicParserTests, CreateFieldData_sinh)
   EXPECT_NEAR(267.745, max, 1e-3);
 }
 
-TEST(BasicParserTests, CreateFieldData_asinh)
+TEST_F(BasicParserTests, CreateFieldData_asinh)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -799,7 +799,7 @@ TEST(BasicParserTests, CreateFieldData_asinh)
   EXPECT_NEAR(2.5373, max, 1e-4);
 }
 
-TEST(BasicParserTests, CreateFieldData_cos)
+TEST_F(BasicParserTests, CreateFieldData_cos)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -844,7 +844,7 @@ TEST(BasicParserTests, CreateFieldData_cos)
   //EXPECT_NEAR(0, max, 1e-8);
 }
 
-TEST(BasicParserTests, CreateFieldData_acos)
+TEST_F(BasicParserTests, CreateFieldData_acos)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -899,7 +899,7 @@ TEST(BasicParserTests, CreateFieldData_acos)
   //EXPECT_NEAR(0, max, 1e-8);
 }
 
-TEST(BasicParserTests, CreateFieldData_acosh)
+TEST_F(BasicParserTests, CreateFieldData_acosh)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -944,7 +944,7 @@ TEST(BasicParserTests, CreateFieldData_acosh)
   EXPECT_NEAR(2.52463, max, 1e-5);
 }
 
-TEST(BasicParserTests, CreateFieldData_tan)
+TEST_F(BasicParserTests, CreateFieldData_tan)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -989,7 +989,7 @@ TEST(BasicParserTests, CreateFieldData_tan)
   EXPECT_NEAR(0, max, 1e-8);
 }
 
-TEST(BasicParserTests, CreateFieldData_atan)
+TEST_F(BasicParserTests, CreateFieldData_atan)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1031,7 +1031,7 @@ TEST(BasicParserTests, CreateFieldData_atan)
   EXPECT_NEAR(1.41297, max, 1e-5);
 }
 
-TEST(BasicParserTests, CreateFieldData_pow)
+TEST_F(BasicParserTests, CreateFieldData_pow)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1073,7 +1073,7 @@ TEST(BasicParserTests, CreateFieldData_pow)
   EXPECT_NEAR(5.65685, max, 1e-5);
 }
 
-TEST(BasicParserTests, CreateFieldData_ceil)
+TEST_F(BasicParserTests, CreateFieldData_ceil)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1115,7 +1115,7 @@ TEST(BasicParserTests, CreateFieldData_ceil)
   EXPECT_EQ(6, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_floor)
+TEST_F(BasicParserTests, CreateFieldData_floor)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1157,7 +1157,7 @@ TEST(BasicParserTests, CreateFieldData_floor)
   EXPECT_NEAR(4, max, 1e-3);
 }
 
-TEST(BasicParserTests, CreateFieldData_round)
+TEST_F(BasicParserTests, CreateFieldData_round)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1199,7 +1199,7 @@ TEST(BasicParserTests, CreateFieldData_round)
   EXPECT_NEAR(5, max, 1e-3);
 }
 
-TEST(BasicParserTests, CreateFieldData_boolean)
+TEST_F(BasicParserTests, CreateFieldData_boolean)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1241,7 +1241,7 @@ TEST(BasicParserTests, CreateFieldData_boolean)
   EXPECT_NEAR(1, max, 1e-3);
 }
 
-TEST(BasicParserTests, CreateFieldData_norm)
+TEST_F(BasicParserTests, CreateFieldData_norm)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1283,7 +1283,7 @@ TEST(BasicParserTests, CreateFieldData_norm)
   EXPECT_NEAR(2.9, max, 1e-3);
 }
 
-TEST(BasicParserTests, CreateFieldData_isnan)
+TEST_F(BasicParserTests, CreateFieldData_isnan)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1325,7 +1325,7 @@ TEST(BasicParserTests, CreateFieldData_isnan)
   EXPECT_EQ(0, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_isfinite)
+TEST_F(BasicParserTests, CreateFieldData_isfinite)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1367,7 +1367,7 @@ TEST(BasicParserTests, CreateFieldData_isfinite)
   EXPECT_EQ(0, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_isinfinite)
+TEST_F(BasicParserTests, CreateFieldData_isinfinite)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1409,7 +1409,7 @@ TEST(BasicParserTests, CreateFieldData_isinfinite)
   EXPECT_EQ(1, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_select)
+TEST_F(BasicParserTests, CreateFieldData_select)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1451,7 +1451,7 @@ TEST(BasicParserTests, CreateFieldData_select)
   EXPECT_EQ(10, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_sign)
+TEST_F(BasicParserTests, CreateFieldData_sign)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1493,7 +1493,7 @@ TEST(BasicParserTests, CreateFieldData_sign)
   EXPECT_EQ(1, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_sqrt)
+TEST_F(BasicParserTests, CreateFieldData_sqrt)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1535,7 +1535,7 @@ TEST(BasicParserTests, CreateFieldData_sqrt)
   EXPECT_NEAR(1.9748, max, 1e-3);
 }
 
-TEST(BasicParserTests, CreateFieldData_not)
+TEST_F(BasicParserTests, CreateFieldData_not)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1576,7 +1576,7 @@ TEST(BasicParserTests, CreateFieldData_not)
   EXPECT_NEAR(0, min, 1e-3);
 }
 
-TEST(BasicParserTests, CreateFieldData_inv)
+TEST_F(BasicParserTests, CreateFieldData_inv)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1618,7 +1618,7 @@ TEST(BasicParserTests, CreateFieldData_inv)
   EXPECT_EQ(10, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_abs)
+TEST_F(BasicParserTests, CreateFieldData_abs)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1660,7 +1660,7 @@ TEST(BasicParserTests, CreateFieldData_abs)
   EXPECT_EQ(10, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_and)
+TEST_F(BasicParserTests, CreateFieldData_and)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1701,7 +1701,7 @@ TEST(BasicParserTests, CreateFieldData_and)
   EXPECT_EQ(0, min);
 }
 
-TEST(BasicParserTests, CreateFieldData_or)
+TEST_F(BasicParserTests, CreateFieldData_or)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1742,7 +1742,7 @@ TEST(BasicParserTests, CreateFieldData_or)
   EXPECT_EQ(1, min);
 }
 
-TEST(BasicParserTests, CreateFieldData_eq)
+TEST_F(BasicParserTests, CreateFieldData_eq)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1783,7 +1783,7 @@ TEST(BasicParserTests, CreateFieldData_eq)
   EXPECT_EQ(1, max);
 }
 
-TEST(BasicParserTests, CreateFieldData_neq)
+TEST_F(BasicParserTests, CreateFieldData_neq)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1825,7 +1825,7 @@ TEST(BasicParserTests, CreateFieldData_neq)
   EXPECT_EQ(1, max); 
 }
 
-TEST(BasicParserTests, CreateFieldData_dot)
+TEST_F(BasicParserTests, CreateFieldData_dot)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1867,7 +1867,7 @@ TEST(BasicParserTests, CreateFieldData_dot)
   EXPECT_EQ(6, max); 
 }
 
-TEST(BasicParserTests, CreateFieldData_cross)
+TEST_F(BasicParserTests, CreateFieldData_cross)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1909,7 +1909,7 @@ TEST(BasicParserTests, CreateFieldData_cross)
   EXPECT_NEAR(7.34847, max,1e-3); 
 }
 
-TEST(BasicParserTests, CreateFieldData_normalize)
+TEST_F(BasicParserTests, CreateFieldData_normalize)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1951,7 +1951,7 @@ TEST(BasicParserTests, CreateFieldData_normalize)
   EXPECT_NEAR(1, max,1e-3); 
 }
 
-TEST(BasicParserTests, CreateFieldData_find_normal1)
+TEST_F(BasicParserTests, CreateFieldData_find_normal1)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -1993,7 +1993,7 @@ TEST(BasicParserTests, CreateFieldData_find_normal1)
   EXPECT_EQ(1, max); 
 }
 
-TEST(BasicParserTests, CreateFieldData_find_normal2)
+TEST_F(BasicParserTests, CreateFieldData_find_normal2)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -2035,7 +2035,7 @@ TEST(BasicParserTests, CreateFieldData_find_normal2)
   EXPECT_NEAR(19.4422, max,1e-4); 
 }
 
-TEST(BasicParserTests, CreateFieldData_quality)
+TEST_F(BasicParserTests, CreateFieldData_quality)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -2078,7 +2078,7 @@ TEST(BasicParserTests, CreateFieldData_quality)
 }
 //Run these tests when the functions below are implemented 
 #if 0 
-TEST(BasicParserTests, CreateFieldData_trace)
+TEST_F(BasicParserTests, CreateFieldData_trace)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -2120,7 +2120,7 @@ TEST(BasicParserTests, CreateFieldData_trace)
   EXPECT_NEAR(11, max,1e-4); 
 }
 
-TEST(BasicParserTests, CreateFieldData_det)
+TEST_F(BasicParserTests, CreateFieldData_det)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -2162,7 +2162,7 @@ TEST(BasicParserTests, CreateFieldData_det)
   EXPECT_NEAR(-1, max,1e-4); 
 }
 
-TEST(BasicParserTests, CreateFieldData_frobenius)
+TEST_F(BasicParserTests, CreateFieldData_frobenius)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -2204,7 +2204,7 @@ TEST(BasicParserTests, CreateFieldData_frobenius)
   EXPECT_NEAR(11.3578, max,1e-4); 
 }
 
-TEST(BasicParserTests, CreateFieldData_frobenius2)
+TEST_F(BasicParserTests, CreateFieldData_frobenius2)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
@@ -2246,7 +2246,7 @@ TEST(BasicParserTests, CreateFieldData_frobenius2)
   EXPECT_NEAR(129, max,1e-4); 
 }
 
-TEST(BasicParserTests, CreateFieldData_fracanisotropy)
+TEST_F(BasicParserTests, CreateFieldData_fracanisotropy)
 {
   FieldHandle field(CreateEmptyLatVol());
   auto ivfield = field->vfield();
