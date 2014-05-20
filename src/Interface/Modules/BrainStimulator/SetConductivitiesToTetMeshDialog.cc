@@ -32,6 +32,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 
 SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::string& name, ModuleStateHandle state,
@@ -41,7 +42,8 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //connect(doubleSpinBox,  SIGNAL(valueChanged(double)), this, SLOT(push()));
+  
+  connect(Skin_, SIGNAL(valueChanged(double)), this, SLOT(push()));
  /* connect(skull_, SIGNAL(valueChanged(double)), this, SLOT(push()));
   connect(CSF_,   SIGNAL(valueChanged(double)), this, SLOT(push()));
   connect(GM_,    SIGNAL(valueChanged(double)), this, SLOT(push()));
@@ -53,7 +55,7 @@ void SetConductivitiesToTetMeshDialog::push()
 {
   if (!pulling_)
   {
-    //state_->setValue(SetConductivitiesToTetMeshAlgorithm::skin, doubleSpinBox->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Skin, Skin_->value()); // Compile fails when enables
     /*state_->setValue(SetConductivitiesToTetMeshAlgorithm::skull, skull_->value());
     state_->setValue(SetConductivitiesToTetMeshAlgorithm::CSF, CSF_->value());
     state_->setValue(SetConductivitiesToTetMeshAlgorithm::GM, GM_->value());
@@ -65,6 +67,7 @@ void SetConductivitiesToTetMeshDialog::push()
 void SetConductivitiesToTetMeshDialog::pull()
 {
   Pulling p(this);
+  
   //keepTypeCheckBox_->setChecked(state_->getValue(SetFieldDataAlgo::keepTypeCheckBox).getBool());
   
 }

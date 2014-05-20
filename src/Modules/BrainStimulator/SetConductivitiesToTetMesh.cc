@@ -49,7 +49,7 @@ SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(Mo
 
 void SetConductivitiesToTetMeshModule::setStateDefaults()
 {
-  //setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::skin);
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skin); // Compile fails when enabled
 /*  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::skull);
   setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF);
   setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM);
@@ -69,7 +69,8 @@ void SetConductivitiesToTetMeshModule::execute()
   //algorithm parameter
   //algo_->set(Variables::AppendMatrixOption, param);
  
-  //setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::skin);
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin); // Compile fails when enabled
+//  algo().set(SetConductivitiesToTetMeshAlgorithm::Skin, get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::Skin).getDouble());
   /*   algo().set(SetConductivitiesToTetMeshAlgorithm::skull, get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::skull).getDouble());
   algo().set(SetConductivitiesToTetMeshAlgorithm::CSF,   get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::CSF).getDouble());
   algo().set(SetConductivitiesToTetMeshAlgorithm::GM,    get_state()->getValue(SetConductivitiesToTetMeshAlgorithm::GM).getDouble());

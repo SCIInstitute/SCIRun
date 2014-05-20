@@ -48,12 +48,12 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::skin("skin");  
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::skull("skull"); 
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF("CSF");
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM("GM"); 
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM("WM");  
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::electrode("electrode");
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skin("Skin");
+//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::skull("skull"); 
+//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF("CSF");
+//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM("GM"); 
+//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM("WM");  
+//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::electrode("electrode");
 
 AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::MESH("MESH");
 AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::INHOMOGENEOUS_SKULL("INHOMOGENEOUS_SKULL");
@@ -62,7 +62,7 @@ AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH"
 
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
-  addParameter(skin,      0.0);
+  addParameter(Skin,      0.0);
   /*  addParameter(skull,     0.0);
    addParameter(CSF,       0.0);
    addParameter(GM,        0.0);
@@ -137,6 +137,7 @@ AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const Algorithm
 
 void SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh)
 {
+  /*
   // making sure the field is not null
   if (!fh)
     THROW_ALGORITHM_INPUT_ERROR("Field was null");
@@ -161,7 +162,7 @@ void SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh)
     std::cout << val << ((vfield->vmesh()->num_elems() == (i+1)) ? "\n" : " ");
   }
   
-  // array holding conductivies
+  // array holding conductivities
   int size = 6;
   double conductivies [] = {get(skin).getDouble(), get(skull).getDouble(), get(CSF).getDouble(), get(GM).getDouble(), get(WM).getDouble(), get(electrode).getDouble()};
   for (int i=0; i<size; i++)
@@ -172,6 +173,6 @@ void SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh)
   
   
   // TODO: Replace field value with conductivity value
-  
+  */
   
 }
