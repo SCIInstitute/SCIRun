@@ -40,6 +40,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::TestUtils;
+using namespace SCIRun::Core::Algorithms;
 
 FieldHandle CreateTetMeshScalarOnNode()
 {
@@ -58,4 +59,12 @@ TEST(SetConductivitiesToTetMeshAlgorithm, spanks_test)
   algo.set(SetConductivitiesToTetMeshAlgorithm::electrode(), 5);
   
   algo.run(CreateTetMeshScalarOnNode());
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithm, nullFieldForInput)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  FieldHandle nullField;
+  
+  EXPECT_THROW(algo.run(nullField), AlgorithmInputException);
 }

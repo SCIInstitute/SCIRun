@@ -101,19 +101,40 @@ SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 
 void SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh)
 {
+  // making sure the field is not null
+  if (!fh)
+    THROW_ALGORITHM_INPUT_ERROR("Field was null");
+  
   VField* vfield = fh->vfield();
+  
+  // making sure the field contained data
   if (vfield->is_nodata())
     THROW_ALGORITHM_INPUT_ERROR("Field contained no data");
   
-  // the total number of fields the array has
-  VMesh::size_type total_fields = vfield->vfield()->num_values();
+  std::cout << "fields: " << vfield->num_values() << std::endl;
   
-  // array to hold the conductivies, first index will relate to the first material and so on
+  // # of elems = vfield->vmesh()->num_elems()
+  // displaying the field value of the elements
+  double val = 0;
+  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++)
+  {
+    vfield->get_value(val, i);
+    if (i == 0) std::cout << "elements: ";
+    std::cout << val << ((vfield->vmesh()->num_elems() == (i+1)) ? "\n" : " ");
+  }
+
+  // array holding conductivies
+  int size = 6;
   double conductivies [] = {get(skin()).getDouble(), get(skull()).getDouble(), get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(electrode()).getDouble()};
+  for (int i=0; i<size; i++)
+  {
+    if (i == 0) std::cout << "conductivities: ";
+    std::cout << conductivies[i] << ((size == (i+1)) ? "\n" : " ");
+  }
   
-  // now fill in the array from the provided conductivities
-  for (int i=0; i<total_fields; i++)
-    std::cout << conductivies[i] << std::endl;
+  
+  // How to get every element that have same field value
+  
 
 }
 
