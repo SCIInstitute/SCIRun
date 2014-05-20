@@ -27,8 +27,6 @@
 */
 
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

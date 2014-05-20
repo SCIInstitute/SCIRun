@@ -41,6 +41,8 @@
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
+#include <Interface/Modules/Math/SelectSubMatrixDialog.h>
+#include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
@@ -48,6 +50,11 @@
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
 #include <Interface/Modules/Fields/SplitFieldByDomainDialog.h>
+#include <Interface/Modules/Fields/SetFieldDataDialog.h>
+#include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
+#include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
+#include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
+#include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
@@ -132,6 +139,26 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new GetFieldsFromBundleDialog(moduleId, state, parentToUse_);
   if (moduleId.find("SplitFieldByDomain") != std::string::npos)
     return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("CreateFieldData") != std::string::npos)
+    return new CreateFieldDataDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("SetFieldData") != std::string::npos)
+    return new SetFieldDataDialog(moduleId, state, parentToUse_);   
+  if (moduleId.find("InterfaceWithCleaver") != std::string::npos)
+    return new InterfaceWithCleaverDialog(moduleId, state, parentToUse_);   
+  if (moduleId.find("SelectSubMatrix") != std::string::npos)
+    return new SelectSubMatrixDialog(moduleId, state, parentToUse_);  
+  if (moduleId.find("MapFieldDataFromElemToNode") != std::string::npos)
+    return new MapFieldDataFromElemToNodeDialog(moduleId, state, parentToUse_);            
+  if (moduleId.find("InsertFieldsIntoBundle") != std::string::npos)
+    return new InsertFieldsIntoBundleDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("GetFieldsFromBundle") != std::string::npos)
+    return new GetFieldsFromBundleDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("SplitFieldByDomain") != std::string::npos)
+    return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("ConvertMatrixType") != std::string::npos)
+    return new ConvertMatrixTypeDialog(moduleId, state, parentToUse_);  
+  if (moduleId.find("MapFieldDataFromNodeToElem") != std::string::npos)
+    return new MapFieldDataFromNodeToElemDialog(moduleId, state, parentToUse_);  
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

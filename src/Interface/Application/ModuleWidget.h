@@ -55,7 +55,7 @@ class NetworkEditor;
 class PortWidgetManager;
 
 class ModuleWidget : public QFrame, 
-  public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module
+  public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module, public HasNotes
 {
 	Q_OBJECT
 	
@@ -141,9 +141,6 @@ private:
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
 
   class ModuleLogWindow* logWindow_;
-  class NoteEditor* noteEditor_;
-  Note currentNote_;
-
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;

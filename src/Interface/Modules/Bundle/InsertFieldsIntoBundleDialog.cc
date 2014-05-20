@@ -42,11 +42,6 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  //connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
-  //connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
-  //connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  //buttonBox->setVisible(false);
 }
 
 void InsertFieldsIntoBundleDialog::pull()

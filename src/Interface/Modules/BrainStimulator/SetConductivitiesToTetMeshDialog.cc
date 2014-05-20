@@ -28,7 +28,6 @@
 
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -42,10 +41,20 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  //connect(keepTypeCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+}
+
+void SetConductivitiesToTetMeshDialog::push()
+{
+  if (!pulling_)
+  {
+   //state_->setValue(SetFieldDataAlgo::keepTypeCheckBox, keepTypeCheckBox_->isChecked());
+  } 
 }
 
 void SetConductivitiesToTetMeshDialog::pull()
 {
-  //TODO
+  Pulling p(this);
+  //keepTypeCheckBox_->setChecked(state_->getValue(SetFieldDataAlgo::keepTypeCheckBox).getBool()); 
 }
 
