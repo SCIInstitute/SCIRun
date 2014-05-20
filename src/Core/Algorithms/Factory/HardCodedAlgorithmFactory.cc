@@ -27,7 +27,8 @@
 */
 
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
-
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
@@ -36,6 +37,8 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
@@ -44,6 +47,8 @@
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/AppendMatrix.h>
+#include <Core/Algorithms/Math/SelectSubMatrix.h>
+#include <Core/Algorithms/Math/ConvertMatrixType.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
@@ -56,6 +61,8 @@
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
+#include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -125,10 +132,26 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
     h.reset(new BuildFEMatrixAlgo);
   else if (moduleName == "GetDomainBoundary")
     h.reset(new GetDomainBoundaryAlgo);
+  else if (moduleName == "InterfaceWithCleaver")
+    h.reset(new InterfaceWithCleaverAlgorithm);      
+  else if (moduleName == "GetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+    h.reset(new GetFieldDataAlgo);
+  else if (moduleName == "SetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+    h.reset(new SetFieldDataAlgo);    
   else if (moduleName == "JoinFields")
     h.reset(new JoinFieldsAlgo);
   else if (moduleName == "SplitFieldByDomain")
     h.reset(new SplitFieldByDomainAlgo);
+  else if (moduleName == "ApplyMappingMatrix")
+    h.reset(new ApplyMappingMatrixAlgo); 
+  else if (moduleName == "SelectSubMatrix")
+    h.reset(new SelectSubMatrixAlgorithm);   
+  else if (moduleName == "ConvertMatrixType")
+    h.reset(new ConvertMatrixTypeAlgorithm);  
+  else if (moduleName == "MapFieldDataFromNodeToElem")
+    h.reset(new MapFieldDataFromNodeToElemAlgo);    
+  else if (moduleName == "MapFieldDataFromElemToNode")
+    h.reset(new MapFieldDataFromElemToNodeAlgo);      
     
   if (h && algoCollaborator)
   {

@@ -28,15 +28,18 @@
 #
 
 SET(Interface_Modules_Math_FORMS
+  SelectSubMatrix.ui
   AppendMatrix.ui
   CreateMatrix.ui
   EvaluateLinearAlgebraBinary.ui
   EvaluateLinearAlgebraUnary.ui
   ReportMatrixInfo.ui
   SolveLinearSystem.ui
+  ConvertMatrixType.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
+  SelectSubMatrixDialog.h
   AppendMatrixDialog.h
   CreateMatrixDialog.h
   EvaluateLinearAlgebraBinaryDialog.h
@@ -44,15 +47,18 @@ SET(Interface_Modules_Math_HEADERS
   ReportMatrixInfoDialog.h
   share.h
   SolveLinearSystemDialog.h
+  ConvertMatrixTypeDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES 
+  SelectSubMatrixDialog.cc
   AppendMatrixDialog.cc
   CreateMatrixDialog.cc
   EvaluateLinearAlgebraBinaryDialog.cc
   EvaluateLinearAlgebraUnaryDialog.cc
   ReportMatrixInfoDialog.cc
   SolveLinearSystemDialog.cc
+  ConvertMatrixTypeDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})

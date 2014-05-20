@@ -26,42 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SETFIELDDATA_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SETFIELDDATA_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/NrrdData.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE SetFieldDataAlgo : public AlgoBase
+class SCISHARE SetFieldDataAlgo : public AlgorithmBase
 {
   public:
-    /// Set defaults
-    SetFieldDataAlgo()
-    {
-      /// keep scalar type defines whether we convert to double or not
-      add_option("scalardatatype","double","char|unsigned char|short|unsigned short|int|unsigned int");
-      add_index("column_index",-1);
-    }
-  
-    bool run(FieldHandle input, MatrixHandle data, FieldHandle& output);
-    bool run(FieldHandle input, NrrdDataHandle data, FieldHandle& output);
+    SetFieldDataAlgo();
+    FieldHandle run(FieldHandle input_field, Datatypes::DenseMatrixHandle input_matrix) const; 
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+    bool GetScalarFieldDataV( FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
+    bool GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const; 
+    bool GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
+    #endif
+    bool verify_input_data(FieldHandle& input_field, Datatypes::DenseMatrixHandle& data, size_type& numvals,FieldInformation& fi) const;
+    bool setscalardata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
+    bool setvectordata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
+    bool settensordata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
+    static AlgorithmInputName InputField;
+    static AlgorithmInputName InputMatrix;
+    static AlgorithmOutputName OutputField;
+    static AlgorithmParameterName keepTypeCheckBox;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif
-

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,98 +26,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@author
-///   David Weinstein
-///   Department of Computer Science
-///   University of Utah
-///@date  June 1999
+#include <Modules/Legacy/Math/ConvertMatrixType.h>
+#include <Core/Algorithms/Math/ConvertMatrixType.h>
+#include <Core/Datatypes/Matrix.h>
 
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/DenseColMajMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Core/Util/StringUtil.h>
-#include <iostream>
-#include <sstream>
-
-namespace SCIRun {
-
-/// @class ConvertMatrixType
-/// @brief Unary matrix operations -- transpose, negate
-///
-/// This module casts a matrix into a different type. 
-
-class ConvertMatrixType : public Module {
-  GuiString oldtype_;
-  GuiString newtype_;
-  GuiString nrow_;
-  GuiString ncol_;
-public:
-  ConvertMatrixType(GuiContext* ctx);
-  virtual ~ConvertMatrixType() {}
-  virtual void execute();
-};
-
-DECLARE_MAKER(ConvertMatrixType)
-ConvertMatrixType::ConvertMatrixType(GuiContext* ctx)
-: Module("ConvertMatrixType", ctx, Filter,"Math", "SCIRun"),
-  oldtype_(get_ctx()->subVar("oldtype"), "Same"),
-  newtype_(get_ctx()->subVar("newtype"), "Unknown"),
-  nrow_(get_ctx()->subVar("nrow"), "??"),
-  ncol_(get_ctx()->subVar("ncol"), "??")
+ConvertMatrixTypeModule::ConvertMatrixTypeModule() : Module(ModuleLookupInfo("ConvertMatrixType", "Math", "SCIRun")) 
 {
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(ResultMatrix);
 }
 
-void
-ConvertMatrixType::execute()
+void ConvertMatrixTypeModule::setStateDefaults()
 {
-  update_state(NeedData);
+ setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::PassThrough());
+ setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix());
+ setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix());
+ setStateBoolFromAlgo(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix());
+}
 
-  MatrixHandle imH;
-  get_input_handle("Input", imH, true);
 
-  if (inputs_changed_ || !oport_cached("Output") || newtype_.changed())
+
+void ConvertMatrixTypeModule::execute()
+{
+ 
+  auto input_matrix = getRequiredInput(InputMatrix);
+  
+  if (needToExecute())
   {
-    nrow_.set(to_string(imH->nrows()));
-    ncol_.set(to_string(imH->ncols()));
-
-    oldtype_.set(imH->dynamic_type_name());
-
-    std::string newtype = newtype_.get();
-    MatrixHandle omH;
-
-    if (newtype == "DenseMatrix") 
-    {
-      omH = imH->dense();
-    } 
-    else if (newtype == "DenseColMajMatrix") 
-    {
-      omH = imH->dense_col_maj();
-    } 
-    else if (newtype == "SparseRowMatrix") 
-    {
-      omH = imH->sparse();
-    } 
-    else if (newtype == "ColumnMatrix") 
-    {
-      omH = imH->column();
-    } 
-    else if (newtype == "Same") 
-    {
-      omH = imH;
-    } 
-    else 
-    {
-      error("ConvertMatrixType: unknown cast type "+newtype);
-      return;
-    }
-
-    send_output_handle("Output", omH);
+   update_state(Executing);
+   algo().set(ConvertMatrixTypeAlgorithm::PassThrough(),get_state()->getValue(ConvertMatrixTypeAlgorithm::PassThrough()).getBool());
+   algo().set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix()).getBool());  
+   algo().set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix()).getBool());  
+   algo().set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix()).getBool());  
+   auto output = algo().run_generic(make_input((InputMatrix, input_matrix)));
+ 
+   sendOutputFromAlgorithm(ResultMatrix, output);
   }
 }
-
-} // End namespace SCIRun

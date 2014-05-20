@@ -35,7 +35,6 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
-
 #include <Modules/Basic/ReceiveScalar.h>
 #include <Modules/Basic/SendScalar.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
@@ -50,6 +49,9 @@
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
 #include <Modules/Fields/ReportFieldInfo.h>
+#include <Modules/Fields/InterfaceWithCleaver.h>
+#include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
+#include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
@@ -63,7 +65,13 @@
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Fields/CreateFieldData.h>
+#include <Modules/Legacy/Fields/SplitFieldByDomain.h>
+#include <Modules/Legacy/Fields/GetFieldData.h>
+#include <Modules/Legacy/Fields/SetFieldData.h>
+#include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
+#include <Modules/Legacy/Math/SelectSubMatrix.h>
+#include <Modules/Legacy/Math/ConvertMatrixType.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
@@ -87,7 +95,6 @@
 #include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
-
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/share.h>
 
@@ -167,6 +174,11 @@ namespace SCIRun {
           addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
           addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
           addModuleDesc<CreateFieldData>("Real ported module", "...");
+          //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
+          //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
+          addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+          addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
+          addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
 
           /// @todo: possibly use different build setting for these.
           if (includeTestingModules_)
@@ -188,8 +200,16 @@ namespace SCIRun {
           addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
           addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", " in progress ", " adds knowns to linear systems ");        
           addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+          addModuleDesc<GetFieldDataModule>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+          addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New Module to interact with cleaver", "...");
+	  addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+	  addModuleDesc<SelectSubMatrixModule>("SelectSubMatrix", "Math", "SCIRun", "in progress", "...");
+	  addModuleDesc<MapFieldDataFromElemToNodeModule>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "in progress", "...");
+	  addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "in progress", "...");
+	  addModuleDesc<ConvertMatrixTypeModule>("ConvertMatrixType", "Math", "SCIRun", "in progress", "...");
+	  addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "in progress", "...");
 
-        }
+	}
 
         ModuleDescriptionMap descMap_;
 

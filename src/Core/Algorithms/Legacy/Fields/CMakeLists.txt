@@ -29,6 +29,7 @@
 SET(Core_Algorithms_Legacy_Fields_HEADERS
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
+  Mapping/ApplyMappingMatrix.h
   #Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h         
   #FieldData/ConvertIndicesToFieldData.h
@@ -39,7 +40,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/ConvertFieldBasisType.h            
   #FieldData/CalculateLatVolGradientsAtNodes.h  
   #FieldData/GetFieldData.h
-  #FieldData/SetFieldData.h
+  FieldData/SetFieldData.h
   #FieldData/SetFieldDataToConstantValue.h
   #FieldData/SmoothVecFieldMedian.h
   DomainFields/GetDomainBoundaryAlgo.h
@@ -51,10 +52,13 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/GetMeshNodes.h
   MergeFields/JoinFieldsAlgo.h
   DomainFields/SplitFieldByDomainAlgo.h
+  #MeshData/GetMeshData.h
+  FieldData/GetFieldData.h
+  Mapping/MapFieldDataFromElemToNode.h
+  Mapping/MapFieldDataFromNodeToElem.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
-  Mapping/ApplyMappingMatrix.cc
   #RegisterWithCorrespondences.cc
   #MeshData/FlipSurfaceNormals.cc
   #Cleanup/CleanupTetMesh.cc
@@ -90,7 +94,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
-  #FieldData/SetFieldData.cc
+  FieldData/SetFieldData.cc
   FieldData/SetFieldDataToConstantValue.cc
   #FieldData/SmoothVecFieldMedian.cc
   #FilterFieldData/DilateFieldData.cc
@@ -98,10 +102,9 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FilterFieldData/TriSurfPhaseFilter.cc
   #FindNodes/FindClosestNode.cc
   #FindNodes/FindClosestNodeByValue.cc
-  #Mapping/ApplyMappingMatrix.cc
   #Mapping/BuildMappingMatrix.cc
-  #Mapping/MapFieldDataFromElemToNode.cc
-  #Mapping/MapFieldDataFromNodeToElem.cc
+  Mapping/MapFieldDataFromElemToNode.cc
+  Mapping/MapFieldDataFromNodeToElem.cc
   #Mapping/MapFieldDataFromSourceToDestination.cc
   #Mapping/MappingDataSource.cc
   #Mapping/MapFieldDataOntoNodes.cc
@@ -124,6 +127,9 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   MergeFields/JoinFieldsAlgo.cc
   MeshData/GetMeshNodes.cc
   MeshData/SetMeshNodes.cc
+  #MeshData/GetMeshData.cc
+  FieldData/GetFieldData.cc
+  Mapping/ApplyMappingMatrix.cc
   #MeshData/GetSurfaceNodeNormals.cc
   #MeshData/GetSurfaceElemNormals.cc
   #MeshData/GetMeshQualityField.cc
@@ -149,7 +155,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #TransformMesh/ProjectPointsOntoMesh.cc
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
-  #TracePoints/TracePoints.cc
+  #TracePoints/TracePoints.cc  
 )
 
 IF(WITH_TETGEN)

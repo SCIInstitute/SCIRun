@@ -26,71 +26,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Include the algorithm
-#include <Core/Algorithms/Fields/Mapping/MapFieldDataFromNodeToElem.h>
+#include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
 
-// The module class
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-// We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-
-namespace SCIRun {
-
-/// @class MapFieldDataFromNodeToElem
 /// @brief This module contains several filters for converting data that is
 /// stored in the nodes to data that is stored in the elements. 
 
-class MapFieldDataFromNodeToElem : public Module {
-  public:
-    MapFieldDataFromNodeToElem(GuiContext*);
-    virtual ~MapFieldDataFromNodeToElem() {}
-    
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::MapFieldDataFromNodeToElemAlgo algo_;
-
-    GuiString method_;
-};
-
-
-DECLARE_MAKER(MapFieldDataFromNodeToElem)
-
-MapFieldDataFromNodeToElem::MapFieldDataFromNodeToElem(GuiContext* ctx)
-  : Module("MapFieldDataFromNodeToElem", ctx, Source, "ChangeFieldData", "SCIRun"),
-    method_(get_ctx()->subVar("method"))
+MapFieldDataFromNodeToElemModule::MapFieldDataFromNodeToElemModule()
+  : Module(ModuleLookupInfo("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun"), true)
 {
-  /// Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
 }
 
-
-void
-MapFieldDataFromNodeToElem::execute()
+void MapFieldDataFromNodeToElemModule::setStateDefaults()
 {
-  /// define input/output handles:
-  FieldHandle input;
-  FieldHandle output;
+  auto state = get_state();
+  state->setValue(MapFieldDataFromNodeToElemAlgo::Method, std::string("interpolation"));
+}
+
+void MapFieldDataFromNodeToElemModule::execute()
+{ 
+  FieldHandle input = getRequiredInput(InputField);
   
-  /// get data from ports:
-  if (!(get_input_handle("Field",input,true))) return;
-  
-  // Only do work if needed:
-  if (inputs_changed_ || method_.changed() || !oport_cached("Field"))
+  if (needToExecute())
   {
-    update_state(Executing);
-    /// Set the method to use
-    algo_.set_option("method",method_.get());
-    
-    /// Run the algorithm
-    if (!(algo_.run(input,output))) return;
- 
-    /// send data downstream:
-    send_output_handle("Field", output); 
+   update_state(Executing);
+   
+   algo().set_option(MapFieldDataFromNodeToElemAlgo::Method, get_state()->getValue(MapFieldDataFromNodeToElemAlgo::Method).getString());
+  
+   auto output = algo().run_generic(make_input((InputField, input)));
+  
+   sendOutputFromAlgorithm(OutputField, output); 
   }
 }
-
-} // End namespace SCIRun
-

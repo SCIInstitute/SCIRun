@@ -37,12 +37,18 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   ConvertQuadSurfToTriSurf.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
+  SetFieldData.h
+  GetFieldData.h
   GetDomainBoundary.h
   GetFieldNodes.h
   JoinFields.h
   SplitFieldByDomain.h
   CreateFieldData.h
+  SplitFieldByDomain.h
   #ApplyMappingMatrix.h
+  ApplyMappingMatrix.h
+  MapFieldDataFromElemToNode.h
+  MapFieldDataFromNodeToElem.h
 )
 
 SET(Dataflow_Modules_Legacy_Fields_SRCS
@@ -66,7 +72,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #ProjectPointsOntoMesh.cc
   #GetMeshQualityField.cc
   #ApplyFilterToFieldData.cc
-  #ApplyMappingMatrix.cc
+  ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
   #BuildMappingMatrix.cc
   #BuildMatrixOfSurfaceNormals.cc
@@ -146,6 +152,9 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   CreateFieldData.cc
   #GetFieldData.cc
   #SetFieldData.cc
+  #CreateFieldData.cc
+  GetFieldData.cc
+  SetFieldData.cc
   GetFieldNodes.cc
   SetFieldNodes.cc
   #MapFieldDataFromElemToNode.cc
@@ -159,6 +168,8 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CollectFields.cc
   #ScaleFieldMeshAndData.cc
   #CalculateProfile.cc
+  MapFieldDataFromElemToNode.cc  
+  MapFieldDataFromNodeToElem.cc
 )
 
 IF(WITH_TETGEN)
