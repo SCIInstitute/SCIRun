@@ -26,7 +26,8 @@
    DEALINGS IN THE SOFTWARE.
    
    Author            : Moritz Dannhauer
-   Last modification : 11/26/2013 ported from SCIRun4  
+   Author            : Spencer Frisby
+   Last modification : 5/20/14
 */
 /// @todo Documentation Modules/Legacy/Fields/CalculateVectorMagnitudes.cc
 
