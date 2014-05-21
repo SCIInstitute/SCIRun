@@ -69,8 +69,8 @@ void HasNotes::connectUpdateNote(QObject* obj)
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : note_(0), notePosition_(Default),
   defaultNotePosition_(Top), //TODO
-  displayStrategy_(display),
   item_(0),
+  displayStrategy_(display),
   scene_(0),
   destroyed_(false)
 {
