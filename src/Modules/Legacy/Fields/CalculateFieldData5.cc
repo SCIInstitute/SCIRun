@@ -59,6 +59,10 @@ AlgorithmParameterName CalculateFieldData::FormatString("FormatString");
 CalculateFieldData::CalculateFieldData()
   : Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputFields);
+  INITIALIZE_PORT(Function);
+  INITIALIZE_PORT(InputArrays);
+  INITIALIZE_PORT(OutputField);
   //count_ = new DenseMatrix(0.0);
 }
 
