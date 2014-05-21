@@ -91,24 +91,24 @@ Recently Added Features
 
   - Zoom in/out
 
-User Requests 
+User Requests
 =============
+
 * General
 
   - key parameters in networks, environment need to be findable and available in UI
-
   - expose network XML, or at least key network info (modules, file paths, gui vars...)
 
     + better network parameter editing
     + maybe a network wizard?
     + show what files are being used, network file name 
-    + better network parameter editing
+    + better network parameter editing 
 
   - more example nets
   - more documentation, more sample networks (very useful for demonstrating module functionality)
   - undo
   - must work with clipboard (through Qt support?)
-  - search modules, networks for keywords
+  - search modules, networks for keywords 
 
     + see Matlab descriptors at the top of source files as an example
     + when searching for modules, can we have the option of searching within the module text (i.e. search module GUI component names, variable names etc.) 
@@ -160,7 +160,7 @@ User Requests
 
     + look into graphviz, others?
     + line up modules
-    + expose-like (OS X) 
+    + expose-like (OS X)   
 
   - Change exponential widget behavior to be more intuitive	
   - Add GUI element for indicating result of "Clear Output" button of module CollectMatrices
@@ -189,6 +189,107 @@ User Requests
     + choice to save subnet as separate file 
 
   - 'Duplicate' should work on multiply-selected modules
+  
+Qt Migration 
+============
+
+* Basic GUI Redesign
+
+  - Determine overall look and feel.
+
+    + Background color of network editor
+    + Placement of main window widgets--match current design at first? 
+    
+  - Redesigning major parts of the main window.
+
+    + Menu bar
+    + Context menus
+    + Toolbars
+    + Status bar
+    + Configuration panel
+    + Module Search
+    + Module progress indicators
+    + Module general settings: port caching, info on ports, general info: available in "drawer" subwidget
+    + Tooltips
+    + Command window 
+
+  - CIBC:Documentation:SCIRun:DevTasks:SCIRunGuiFeatureList 
+
+* Major Development Milestones 
+
+  - All menu options/preferences work 
+  - Can walk through entire SCIRun tutorial!
+  - At this point, all essential modules should be converted. Can begin converting other individual modules. 
+
+* Core
+
+  - Discuss memory model for Matrix/Arrays/etc.
+  - Move namespace SCIRunAlgo into SCIRun::Algo to remove need for using directives in headers.
+  - Replace Thread library with Boost.
+  - Boost threading notes. 
+
+* IO
+
+  - is there a way we can display a brief blurb describing file importer and exporter plugin information (i.e. show a short description of the file types supported, file extensions etc.)?
+  - change file importer and exporter plugin function pointer table to functors 
+
+* Dataflow
+
+  - Execute all button in network editor: triggers execution even if network is currently executing. Queue (or block?) request for execution until current execution is done. 
+
+* Graphics and Visualization
+
+  - Be able to select or click on objects in renderer and get information i.e. node index, position etc. 
+
+* OpenGL
+
+  - move all OpenGL code into Core (and intermediate layer as needed) 
+
+* Externals
+
+  - verify that libpng and zlib are still needed, if so, update
+  - better XML parsing library (libxml2 is overly complex and buggy) 
+
+* Boost
+
+  - Boost is an external project in the CMake build
+  - In case Boost needs to be built outside of SCIRun: Boost build notes 
+
+* Build
+
+  - merge all generated headers into a single generated header file 
+
+* Testing
+
+  - Add regression testing feature to diff numerical output, either through text files or of matrix objects directly. 
+
+* Core
+
+  - Isosurface algorithm is very slow and should be rewritten 
+
+* Error Handling and Exceptions
+
+  - SCIRun exceptions could use an overhaul.
+  - SCIRun assertions could also use an overhaul.
+  - The same kind of assertions need to be used throughout the code. Currently, we're using:
+
+    + assert from cassert
+    + SCIRun's custom ASSERT macros
+    + Boost static assert (perhaps it would be best to replace all other asserts with Boost assert utilities?) 
+
+* Modules
+
+  - Possible Problem Modules
+
+    + ShowMatrix: this module should be completely rewritten
+    + CreateMatrix: bug #327
+    + GeneratePointSamplesFromFieldOrWidget: spinner boxes in both tabs are not editable. This is really annoying if one wants to generate a large number of samples.
+    + GeneratePointSamplesFromField: The execution pattern for this module should be improved. Also, SCIRun test networks are using GeneratePointSamplesFromFieldOrWidget, so there are no tests for this module.
+    + CreateAndEditColorMap: the GUI is not very usable and can be difficult to navigate. 
+
+  - Module Improvements
+
+    + See if it's possible to encapsulate common functionality in Matlab Importer modules in a parent class. Same with Exporter modules. 
 
 Known Bugs
 ==========
@@ -251,7 +352,6 @@ Known Bugs
 * ExportNrrdsToMatlab doens't preserve header information
 * ViewSlices module not ported properly from SCIRun 3
 * TriSurf mesh get_edges with nodes argument broken
-
 
 Resolved Bugs
 =============
@@ -402,5 +502,3 @@ License and Credits
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
   DEALINGS IN THE SOFTWARE.
-
-
