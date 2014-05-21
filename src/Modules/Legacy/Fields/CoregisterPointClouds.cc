@@ -26,16 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///
-///@file  CoregisterPointClouds.cc
-///@brief CoregisterPointClouds two point clouds
-///
 ///@author
 ///   David Weinstein
 ///   Department of Computer Science
 ///   University of Utah
 ///@date  March 2001
-///
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -49,6 +44,9 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace SCIRun {
+
+/// @class CoregisterPointClouds
+/// @brief CoregisterPointClouds the first three points of two PointCloudFields
 
 class CoregisterPointClouds : public Module
 {

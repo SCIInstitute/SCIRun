@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ConvertFieldDatatypes.cc
 	
 #include <Modules/Legacy/Fields/ConvertFieldDataType.h>
 
@@ -40,8 +39,11 @@
 // We need to define the ports used
 #include <Dataflow/Network/Ports/FieldPort.h>
 
-
 namespace SCIRun {
+
+/// @class ConvertFieldDataType
+/// @brief ConvertFieldDataType is used to change the type of data associated
+/// with the field elements. 
 
 class ConvertFieldDataType : public Module {
   public:

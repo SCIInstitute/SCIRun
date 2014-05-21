@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ClipFieldByMesh.cc
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Matrix.h>
@@ -36,8 +35,10 @@
 #include <Core/Algorithms/Fields/ClipMesh/ClipMeshBySelection.h>
 #include <Core/Algorithms/Fields/DistanceField/CalculateIsInsideField.h>
 
-
 namespace SCIRun {
+
+/// @class ClipFieldByMesh
+/// @brief Clip a mesh to another mesh. 
 
 class ClipFieldByMesh : public Module {
   public:

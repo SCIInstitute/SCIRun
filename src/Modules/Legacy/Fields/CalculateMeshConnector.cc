@@ -23,7 +23,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-/// @todo Documentation Modules/Legacy/Fields/CalculateMeshConnector.cc
 
 #include <Core/Algorithms/Fields/MeshDerivatives/CalculateMeshConnector.h>
 
@@ -35,6 +34,10 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class CalculateMeshConnector
+/// @brief This module computes a connection between two meshes based on the
+/// minimal spatial distance between their nodes. 
 
 class CalculateMeshConnector : public Module {
   public:

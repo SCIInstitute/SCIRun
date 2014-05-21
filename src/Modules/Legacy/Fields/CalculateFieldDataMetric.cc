@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateFieldDataMetric.cc
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
@@ -39,8 +38,11 @@
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/StringPort.h>
 
-
 namespace SCIRun {
+
+/// @class CalculateFieldDataMetric
+/// @brief Reads in a field file(s), allows parser edits to the data, and
+/// exports 1 of 7 metrics selected by the user as a matrix file. 
 
 class CalculateFieldDataMetric : public Module {
   public:

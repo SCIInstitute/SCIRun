@@ -29,10 +29,6 @@
 #ifndef MODULES_LEGACY_FIELDS_CREATELATVOL_H__
 #define MODULES_LEGACY_FIELDS_CREATELATVOL_H__
 
-///
-///@file  CreateLatVol.cc
-///@brief Make an ImageField that fits the source field.
-///
 ///@author
 ///   Michael Callahan
 ///   Department of Computer Science
@@ -46,6 +42,9 @@
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
+
+	///@class CreateLatVol
+	///@brief Make an LatVolField that fits the source field.
 
       class SCISHARE CreateLatVol : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, MatrixPortTag>,

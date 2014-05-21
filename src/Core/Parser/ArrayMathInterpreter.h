@@ -264,7 +264,7 @@ class SCISHARE ArrayMathProgramVariable
     double*     data_;
 };
 
- //TODO replace with boost::variant
+ /// @todo replace with boost::variant
 class SCISHARE ArrayMathProgramSource {
 
   public:
@@ -382,7 +382,7 @@ class SCISHARE ArrayMathProgram {
     { buffer_.resize(size); return buffer_.empty() ? 0 : (&(buffer_[0])); } 
 
     // Set variables which we use as temporal information structures
-    // TODO: need to remove them at some point
+    /// @todo: need to remove them at some point
     void set_const_variable(size_t j, ArrayMathProgramVariableHandle handle)
       { const_variables_[j] = handle; }
     void set_single_variable(size_t j, ArrayMathProgramVariableHandle handle)

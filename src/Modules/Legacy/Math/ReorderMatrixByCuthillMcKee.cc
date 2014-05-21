@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Math/ReorderMatrixByCuthillMcKee.cc
 
 #include <Core/Algorithms/Math/ReorderMatrix/ReorderMatrix.h>
 
@@ -33,6 +32,9 @@
 #include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
+
+/// @class ReorderMatrixByCuthillMcKee
+/// @brief This module reorders a matrix to reduce the average bandwidth of the matrix.  
 
 class ReorderMatrixByCuthillMcKee : public Module {
   public:

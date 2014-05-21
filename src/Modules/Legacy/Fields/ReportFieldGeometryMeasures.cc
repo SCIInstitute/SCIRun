@@ -26,9 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-///
 ///@file  ReportFieldGeometryMeasures.cc 
 ///
 ///@author
@@ -36,7 +33,6 @@
 ///   Department of Computer Science
 ///   University of Utah
 ///@date  March 2001
-///
 
 #include <Core/Datatypes/ColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -49,6 +45,10 @@
 #include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
+
+/// @class ReportFieldGeometryMeasures
+/// @brief Build a densematrix, where each row is a particular measure of the
+/// input Field (e.g. the x-values, or the element size). 
 
 class ReportFieldGeometryMeasures : public Module
 {

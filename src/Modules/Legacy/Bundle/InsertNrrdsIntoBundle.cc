@@ -35,6 +35,9 @@
 
 using namespace SCIRun;
 
+/// @class InsertNrrdsIntoBundle
+/// @brief This module inserts a nrrd object into a bundle. 
+
 class InsertNrrdsIntoBundle : public Module {
 public:
   InsertNrrdsIntoBundle(GuiContext*);

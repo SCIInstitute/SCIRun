@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CleanupTetMesh.cc
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Algorithms/Fields/Cleanup/CleanupTetMesh.h>
@@ -36,6 +35,10 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class CleanupTetMesh
+/// @brief This module tidies up node orientation and removes degenerate
+/// tetrahedral elements on a given tetrahedral mesh. 
 
 class CleanupTetMesh : public Module {
   public:

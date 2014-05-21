@@ -609,7 +609,7 @@ DatatypeHandle Bundle::get(const std::string& name) const
   return DatatypeHandle();
 }
 
-//TODO: extract into teplate impl, but do it here to avoid including every type in Bundle.h
+/// @todo: extract into teplate impl, but do it here to avoid including every type in Bundle.h
 
 FieldHandle Bundle::getField(const std::string& name) const
 {

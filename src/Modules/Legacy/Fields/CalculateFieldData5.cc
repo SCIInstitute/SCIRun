@@ -39,6 +39,9 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
+/// @brief Calculate new data for the field given a function that uses field
+/// data, node location and element properties as input.
+
 /*
   private:
     GuiInt    gui_cache_;

@@ -31,9 +31,6 @@
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 ///
-///@class SetFieldOrMeshStringProperty
-///@brief Set a property for a Field (or its Mesh)
-///
 ///@author
 ///   David Weinstein
 ///   Department of Computer Science
@@ -49,6 +46,9 @@
 #include <sstream>
 
 namespace SCIRun {
+
+/// @class SetFieldOrMeshStringProperty
+/// @brief Set a property for a Field (or its Mesh)
 
 class SetFieldOrMeshStringProperty : public Module {
   public:

@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/BuildMappingMatrix.cc
 
 #include <Modules/Legacy/Fields/BuildMappingMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -40,6 +39,10 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 ModuleLookupInfo BuildMappingMatrix::staticInfo_("BuildMappingMatrix", "MiscField", "SCIRun");
 const AlgorithmParameterName BuildMappingMatrix::MapSourceToSingleDestination("MapSourceToSingleDestination");
+
+/// @class BuildMappingMatrix
+/// @brief Build a mapping matrix -- a matrix that says how to project the data
+/// from one field onto the data of a second field. 
 
 BuildMappingMatrix::BuildMappingMatrix() : Module(staticInfo_)
 {

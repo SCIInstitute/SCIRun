@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CollectFields.cc
 
 #include <Modules/Legacy/Fields/CollectFields.h>
 
@@ -42,8 +41,10 @@
 
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class CollectFields
+/// @brief This module collects and joins fields while iterating over a dataflow loop. 
 
 class CollectFields : public Module {
   public:

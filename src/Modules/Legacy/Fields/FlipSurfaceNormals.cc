@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/FlipSurfaceNormals.cc
 
 #include <Core/Algorithms/Fields/MeshData/FlipSurfaceNormals.h>
 
@@ -37,6 +36,10 @@
 namespace SCIRun {
 
 //using namespace SCIRun;
+
+/// @class FlipSurfaceNormals
+/// @brief Changes the normal of the face of an element on a surface mesh by
+/// reordering how the nodes are ordered in the face definition.
 
 class FlipSurfaceNormals : public Module 
 {
