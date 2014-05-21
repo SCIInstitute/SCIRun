@@ -26,15 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
-///@file  WriteColorMap2.cc
-///@brief Save persistent representation of a colormap to a file
 ///
 ///@author
-///   Michael Callahan
-///   Department of Computer Science
-///   University of Utah
+///   Michael Callahan,
+///   Department of Computer Science,
+///   University of Utah.
 ///@date  September 2004
 ///
 
@@ -44,6 +40,9 @@
 namespace SCIRun {
 
 template class GenericWriter<ColorMap2Handle>;
+
+/// @class WriteColorMap2D
+/// @brief This module writes a colormap2D to file (a SCIRun .cmap2 file).  
 
 class WriteColorMap2D : public GenericWriter<ColorMap2Handle> {
   protected:

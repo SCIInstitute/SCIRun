@@ -26,11 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
-///@file  ChooseField.cc
-///@brief Choose one input field to be passed downstream
-///
 ///@author
 ///   David Weinstein
 ///   Department of Computer Science
@@ -42,6 +37,10 @@
 #include <Dataflow/Network/Ports/FieldPort.h>
 
 namespace SCIRun {
+
+/// @class ChooseField
+/// @brief ChooseField takes in an arbitrary number of input fields, and pass
+/// one of them downstream, based on the port index typed in the UI.  
 
 class ChooseField : public ChooseModule< FieldHandle > {
 public:

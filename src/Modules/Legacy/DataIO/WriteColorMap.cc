@@ -27,16 +27,13 @@
 */
 
 
-/*
- *  WriteColorMap.cc: Save persistent representation of a colormap to a file
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+///@author
+///   Steven G. Parker,
+///   Department of Computer Science,
+///   University of Utah.
+///@date July 1994
+///
 
 #include <Dataflow/Network/Ports/ColorMapPort.h>
 #include <Dataflow/Modules/DataIO/GenericWriter.h>
@@ -45,6 +42,9 @@
 namespace SCIRun {
 
 template class GenericWriter<ColorMapHandle>;
+
+/// @class WriteColorMap
+/// @brief This module writes a colormap to file (a SCIRun .cmap file). 
 
 class WriteColorMap : public GenericWriter<ColorMapHandle> {
   protected:

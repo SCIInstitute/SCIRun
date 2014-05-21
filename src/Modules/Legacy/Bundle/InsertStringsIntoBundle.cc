@@ -35,6 +35,9 @@
 
 using namespace SCIRun;
 
+/// @class InsertStringIntoBundle
+/// @brief This module inserts a string object into a bundle. 
+
 class InsertStringsIntoBundle : public Module {
 public:
   InsertStringsIntoBundle(GuiContext*);

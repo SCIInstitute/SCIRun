@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/MapFieldDataFromNodeToElem.cc
+
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
 #include <Core/Datatypes/Matrix.h>
@@ -38,6 +38,9 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
+
+/// @brief This module contains several filters for converting data that is
+/// stored in the nodes to data that is stored in the elements. 
 
 MapFieldDataFromNodeToElemModule::MapFieldDataFromNodeToElemModule()
   : Module(ModuleLookupInfo("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun"), true)

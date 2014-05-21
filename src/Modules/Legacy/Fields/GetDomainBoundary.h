@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/GetFieldDomainBoundary.h
 
 #ifndef MODULES_LEGACY_FIELDS_GETDOMAINBOUNDARY_H__
 #define MODULES_LEGACY_FIELDS_GETDOMAINBOUNDARY_H__
@@ -36,6 +35,9 @@
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
+
+	/// @class GetDomainBoundary
+	/// @brief This module extracts the boundaries of the different regions in a label map. 
 
       class SCISHARE GetDomainBoundary : public Dataflow::Networks::Module,
         public Has4InputPorts<FieldPortTag, ScalarPortTag, ScalarPortTag, MatrixPortTag>,

@@ -26,11 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
 ///
 ///@file  CreateLatVol.cc
-///@brief Make an ImageField that fits the source field.
+///@brief Make an LatVolField that fits the source field.
 ///
 ///@author
 ///   Michael Callahan

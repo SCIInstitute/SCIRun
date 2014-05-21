@@ -25,7 +25,6 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  *  DEALINGS IN THE SOFTWARE.
  */
-/// @todo Documentation Modules/Legacy/String/JoinStrings.cc  
  
 #include <Core/Datatypes/String.h>
 
@@ -38,6 +37,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class JoinStrings
+/// This module merges multiple strings into one string. 
 
 class JoinStrings : public Module {
   public:

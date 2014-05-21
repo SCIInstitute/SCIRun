@@ -25,6 +25,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+/// @brief This module will get the data associated with the nodes or the
+/// elements of a field and put them in a matrix.
+
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Datatypes/Matrix.h>

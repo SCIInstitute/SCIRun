@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Legacy/Fields/AlignMeshBoundingBoxes.cc
-
 #include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Matrix.h>

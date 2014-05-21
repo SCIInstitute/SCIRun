@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ConvertMeshToPointCloud.cc
 
 // Include the algorithm
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
@@ -40,6 +39,9 @@
 #include <Dataflow/Modules/Fields/share.h>
 
 namespace SCIRun {
+
+/// @class ConvertMeshToPointCloud
+/// @brief Convert a structured field into an unstructured field for editing. 
 
 class ConvertMeshToPointCloud : public Module
 {

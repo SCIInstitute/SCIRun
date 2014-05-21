@@ -814,6 +814,8 @@ private:
 const int hex_normal_edges[6][2] = { 
   {0, 5}, {2, 6}, {10, 6}, {9, 7}, {1, 11}, {2, 9}};
 
+///@class InsertHexVolSheetAlongSurfaceAlgo
+/// @brief This module inserts a layer of hexes corresponding to the input TriSurfMesh. 
 
 class InsertHexVolSheetAlongSurfaceAlgo
 {

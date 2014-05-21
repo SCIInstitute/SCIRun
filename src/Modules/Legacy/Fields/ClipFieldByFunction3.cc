@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ClipFieldByFunction3.cc
 
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
@@ -40,8 +39,11 @@
 #include <Dataflow/Network/Ports/StringPort.h>
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class ClipFieldByFunction3
+/// @brief This module selects a subset of one or more (up to three) fields
+/// using a function. 
 
 class ClipFieldByFunction3 : public Module {
   public:

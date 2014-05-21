@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Math/AppendMatrix.cc
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Math/AppendMatrix/AppendMatrix.h>
@@ -33,6 +32,9 @@
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
 namespace SCIRun {
+
+/// @class AppendMatrix
+/// @brief Append the rows or columns of a matrix to a base matrix. 
 
 class AppendMatrix : public Module {
   public:

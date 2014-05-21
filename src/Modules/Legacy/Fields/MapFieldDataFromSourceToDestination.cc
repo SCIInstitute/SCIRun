@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.cc
 
 #include <Core/Algorithms/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 
@@ -34,7 +33,14 @@
 
 namespace SCIRun {
 
-
+/// @class MapFieldDataFromSourceToDestination
+/// @brief MapFieldDataFromSourceToDestination takes a field and finds data
+/// values for the destination geometry and outputs the resulting Field. 
+///
+/// @detail The MapFieldDataFromSourceToDestination module takes two Fields as
+/// input, the first of which, Source, contains geometry and data values;
+/// the second, Destination, contains geometry only.
+ 
 class MapFieldDataFromSourceToDestination : public Module
 {
   public:

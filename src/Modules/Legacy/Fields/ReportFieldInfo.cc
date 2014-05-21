@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ReportFieldInfo.cc
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/Field.h>
@@ -40,6 +39,9 @@
 namespace ModelCreation {
 
 using namespace SCIRun;
+
+/// @class ReportFieldInfo
+/// @brief ReportFieldInfo is used to view the attributes of fields. 
 
 class ReportFieldInfo : public Module {
   public:

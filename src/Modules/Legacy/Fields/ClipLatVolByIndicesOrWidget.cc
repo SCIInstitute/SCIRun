@@ -26,11 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
 ///
 ///@file  ClipLatVolByIndicesOrWidget.cc
-///@brief Rotate and flip field to get it into "standard" view
 ///
 ///@author
 ///   Michael Callahan
@@ -50,6 +47,9 @@
 #include <iostream>
 
 namespace SCIRun {
+
+/// @class ClipLatVolByIndicesOrWidget
+/// @brief Rotate and flip field to get it into "standard" view
 
 class ClipLatVolByIndicesOrWidget : public Module
 {

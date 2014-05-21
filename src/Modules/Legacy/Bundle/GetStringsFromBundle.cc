@@ -36,6 +36,9 @@
 
 using namespace SCIRun;
 
+/// @class GetStringsFromBundle
+/// @brief This module retrieves a string object from a bundle.
+
 class GetStringsFromBundle : public Module {
 public:
   GetStringsFromBundle(GuiContext*);

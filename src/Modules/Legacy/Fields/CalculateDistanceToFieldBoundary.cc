@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.cc
 
 #include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
 
@@ -41,6 +40,9 @@
 #include <Core/Algorithms/Fields/MeshDerivatives/GetFieldBoundary.h>
 
 namespace SCIRun {
+
+/// @class CalculateDistanceToFieldBoundary
+/// @brief Calculate the distance field to a boundary of a given mesh. 
 
 class CalculateDistanceToFieldBoundary : public Module 
 {

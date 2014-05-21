@@ -26,17 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
-///@file  ReportScalarFieldStats 
-///@brief Store/retrieve values from an input matrix to/from the data of a field
-///
 ///@author
 ///   Michael Callahan
 ///   Department of Computer Science
 ///   University of Utah
 ///@date  February 2001
-///
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
@@ -52,6 +46,8 @@
 
 namespace SCIRun {
 
+/// @class ReportScalarFieldStats 
+/// @brief Analyze data from a scalarfield. 
 
 class SCISHARE ReportScalarFieldStats : public Module
 {
