@@ -31,7 +31,6 @@ DEALINGS IN THE SOFTWARE.
 #include <iostream>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
-#include <boost/functional/factory.hpp>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
@@ -96,7 +95,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
-#include <Modules/Factory/share.h>
+#include <Modules/Factory/ModuleDescriptionLookup.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -113,154 +112,104 @@ using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Modules::Bundles;
 using namespace boost::assign;
 
+ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(false)
+{
+  /// @todo: is BUILD_TESTING off when we build releases?
+#ifdef BUILD_TESTING
+  includeTestingModules_ = true;
+#endif
+  /// @todo: make EVEN MORE generic...macros? xml?
+  /// @todo: at least remove duplication of Name,Package,Category here since we should be able to infer from header somehow.
+
+  addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+  addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
+  addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+  addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
+  addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
+  addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
+  addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
+  addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
+  addModuleDesc<EvaluateLinearAlgebraUnaryModule>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
+  addModuleDesc<EvaluateLinearAlgebraBinaryModule>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
+  addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
+  addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
+  addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
+  //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
+  addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
+  addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
+  //addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
+  addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
+
+  addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
+  addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun", "Second real ported module", "...");
+  addModuleDesc<CalculateGradients>("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<ConvertQuadSurfToTriSurf>("ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun", "Real ported module", "...");
+  addModuleDesc<AlignMeshBoundingBoxes>("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun", "Real ported module", "...");
+  addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
+  addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
+  addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
+  addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
+  addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress", "...");
+  addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
+  addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
+  //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
+  //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
+  addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+  addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
+  addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
+  addModuleDesc<CreateFieldData>("Real ported module", "...");
+  addBundleModules();
+
+  /// @todo: possibly use different build setting for these.
+  if (includeTestingModules_)
+  {
+    addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+    addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
+    addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
+    addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
+    addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
+    addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
+    addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
+  }
+
+  addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
+  addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates stiffness matrix ");
+  addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
+  addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", " in progress ", " Sets conveniently conductivity profile for tetrahedral mesh ");
+  addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
+  addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
+  addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", " in progress ", " adds knowns to linear systems ");        
+  addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<GetFieldDataModule>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New Module to interact with cleaver", "...");
+  addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<SelectSubMatrixModule>("SelectSubMatrix", "Math", "SCIRun", "in progress", "...");
+  addModuleDesc<MapFieldDataFromElemToNodeModule>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "in progress", "...");
+  addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "in progress", "...");
+  addModuleDesc<ConvertMatrixTypeModule>("ConvertMatrixType", "Math", "SCIRun", "in progress", "...");
+  addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "in progress", "...");
+
+}
+
+
+ModuleDescription ModuleDescriptionLookup::lookupDescription(const ModuleLookupInfo& info) const
+{
+  auto iter = lookup_.find(info);
+  if (iter == lookup_.end())
+  {
+    /// @todo: log
+    std::ostringstream ostr;
+    ostr << "Error: Undefined module \"" << info.module_name_ << "\"";
+    THROW_INVALID_ARGUMENT(ostr.str());
+  }
+  return iter->second;
+}
+
+
+
 namespace SCIRun {
   namespace Modules {
     namespace Factory {
-
-      struct ModuleLookupInfoLess
-      {
-        bool operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const
-        {
-          return lhs.module_name_ < rhs.module_name_;
-        }
-      };
-
-      class ModuleDescriptionLookup
-      {
-      public:
-        ModuleDescriptionLookup() : includeTestingModules_(false)
-        {
-          /// @todo: is BUILD_TESTING off when we build releases?
-#ifdef BUILD_TESTING
-          includeTestingModules_ = true;
-#endif
-          /// @todo: make EVEN MORE generic...macros? xml?
-          /// @todo: at least remove duplication of Name,Package,Category here since we should be able to infer from header somehow.
-
-          addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-          addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
-          addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-          addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
-          addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
-          addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
-          addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
-          addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
-          addModuleDesc<EvaluateLinearAlgebraUnaryModule>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
-          addModuleDesc<EvaluateLinearAlgebraBinaryModule>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
-          addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
-          addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
-          addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
-          //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
-          addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
-          addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
-          //addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
-          addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
-
-          addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
-          addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun", "Second real ported module", "...");
-          addModuleDesc<CalculateGradients>("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-          addModuleDesc<ConvertQuadSurfToTriSurf>("ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun", "Real ported module", "...");
-          addModuleDesc<AlignMeshBoundingBoxes>("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun", "Real ported module", "...");
-          addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
-          addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
-          addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
-          addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-          addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress", "...");
-          addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
-          addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
-          //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
-          //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
-          addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
-          addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
-          addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
-          addModuleDesc<CreateFieldData>("Real ported module", "...");
-          //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
-          //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
-          addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
-          addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
-          addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
-
-          /// @todo: possibly use different build setting for these.
-          if (includeTestingModules_)
-          {
-            addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-            addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
-            addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
-            addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
-            addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
-            addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
-            addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
-          }
-
-          addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
-          addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates stiffness matrix ");
-          addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
-          addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", " in progress ", " Sets conveniently conductivity profile for tetrahedral mesh ");
-          addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
-          addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
-          addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", " in progress ", " adds knowns to linear systems ");        
-          addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-          addModuleDesc<GetFieldDataModule>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-          addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New Module to interact with cleaver", "...");
-          addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-          addModuleDesc<SelectSubMatrixModule>("SelectSubMatrix", "Math", "SCIRun", "in progress", "...");
-          addModuleDesc<MapFieldDataFromElemToNodeModule>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "in progress", "...");
-          addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "in progress", "...");
-          addModuleDesc<ConvertMatrixTypeModule>("ConvertMatrixType", "Math", "SCIRun", "in progress", "...");
-          addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "in progress", "...");
-
-        }
-
-        ModuleDescriptionMap descMap_;
-
-        ModuleDescription lookupDescription(const ModuleLookupInfo& info)
-        {
-          auto iter = lookup_.find(info);
-          if (iter == lookup_.end())
-          {
-            /// @todo: log
-            std::ostringstream ostr;
-            ostr << "Error: Undefined module \"" << info.module_name_ << "\"";
-            THROW_INVALID_ARGUMENT(ostr.str());
-          }
-          return iter->second;
-        }
-      private:
-        typedef std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> Lookup;
-        Lookup lookup_;
-        bool includeTestingModules_;
-
-        /// @todo: remove this function and use static MLI from each module
-        template <class ModuleType>
-        void addModuleDesc(const std::string& name, const std::string& category, const std::string& package, const std::string& status, const std::string& desc)
-        {
-          ModuleLookupInfo info(name, category, package);
-          addModuleDesc<ModuleType>(info, status, desc);
-        }
-
-        template <class ModuleType>
-        void addModuleDesc(const ModuleLookupInfo& info, const std::string& status, const std::string& desc)
-        {
-          ModuleDescription description;
-          description.lookupInfo_ = info;
-
-          description.input_ports_ = IPortDescriber<ModuleType::NumIPorts, ModuleType>::inputs();
-          description.output_ports_ = OPortDescriber<ModuleType::NumOPorts, ModuleType>::outputs();
-          description.maker_ = boost::factory<ModuleType*>();
-          description.moduleStatus_ = status;
-          description.moduleInfo_ = desc;
-
-          lookup_[info] = description;
-
-          descMap_[info.package_name_][info.category_name_][info.module_name_] = description;
-        }
-
-        template <class ModuleType>
-        void addModuleDesc(const std::string& status, const std::string& desc)
-        {
-          addModuleDesc<ModuleType>(ModuleType::staticInfo_, status, desc);
-        }
-      };
 
       class HardCodedModuleFactoryImpl
       {
