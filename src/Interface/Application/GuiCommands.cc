@@ -93,7 +93,7 @@ bool ShowSplashScreenGui::execute()
 
 void ShowSplashScreenGui::initSplashScreen()
 {
-  splash_ = new QSplashScreen(0, QPixmap(":/gear/splash-scirun.png"),  Qt::WindowStaysOnTopHint);
+  splash_ = new QSplashScreen(0, QPixmap(":/gear/splash-scirun.png").scaled(990, 490),  Qt::WindowStaysOnTopHint);
   splashTimer_ = new QTimer;
   splashTimer_->setSingleShot( true );
   splashTimer_->setInterval( 5000 );
