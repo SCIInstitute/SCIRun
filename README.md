@@ -1,35 +1,25 @@
-.. image::  http://www.sci.utah.edu/images/banners/splash-scirun.png
-   :height: 245 px
-   :width:  495 px
-   :align: right
+![alt text](http://www.sci.utah.edu/images/banners/splash-scirun.png "")
 
-==================
-SCIRun 5 Prototype
-==================
+# SCIRun 5 Prototype
 
 https://github.com/SCIInstitute/SCIRunGUIPrototype
 
-.. contents::
+## Summary
 
-Summary
-=======
-
-+---------------+----------------------------------------------------------------------+
+________________________________________________________________________________________
 |  **Warning**  |  SCIRun 5 is pre-alpha software, do not use for real science yet.    |
-+---------------+----------------------------------------------------------------------+
+________________________________________________________________________________________
 
-Download Location
------------------
+###Download Location
+
 http://sci.utah.edu/devbuilds/scirun5/
 
-Goals
-=====
+##Goals
 
 SCIRun 5 is a complete rewrite of the GUI front end and graphical components of SCIRun 4, including a more stable and 
 efficient middle layer, with support for Python scripting.
 
-Features
-========
+## Features
 
 * File
 
@@ -47,8 +37,8 @@ Features
 * Template matrix classes	
 * Add Sparse matrix support to CollectMatrices	
 
-Recently Added Features
------------------------
+## Recently Added Features
+
 
 * File 
 
@@ -91,30 +81,26 @@ Recently Added Features
 
   - Zoom in/out
 
-In Progress
-===========
+##In Progress
 
 * Python console, to allow scripted network editing
 
-Planned Features for Next Release
-================
+##Planned Features for Next Release
 
 * Saving module notes.
 * Connection notes.
 * Full Python support on all platforms, including ability to run headless without building Qt.
 * Better geometry rendering, coloring and shading.
 
-Limitations
-===========
+## Limitations
 
 * Cannot load SCIRun 4 network files
 * Limited set of modules at the moment
 
-Platform Notes
-==============
+## Platform Notes
 
-Build requirements
-------------------
+### Build requirements
+
 * OS X (tested on 10.7 and 10.8)
 
   - Apple clang 4.1
@@ -146,8 +132,7 @@ Build requirements
     + BUILD_WITH_PYTHON works on Windows, not yet (easily) on MacOS.
   
 
-CMake Build Generators
-----------------------
+### CMake Build Generators
 
 * Windows
 
@@ -161,8 +146,7 @@ CMake Build Generators
 
   - Unix Makefiles
 
-Unix Makefiles notes
---------------------
+### Unix Makefiles notes
 
 * Boost must be built before the SCIRun libraries.
 * Parallel make builds can be used as long the Boost target is built first, for example:
@@ -170,18 +154,16 @@ Unix Makefiles notes
   - make -j4 Boost_external && make -j4
 
 
-Documentation
-================
+## Documentation
+
 
 For documentation, please see: http://sciinstitute.github.io/SCIRunGUIPrototype/
 
-Questions and Answers
-=====================
+## Questions and Answers
 
 For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
 
-License and Credits
-===================
+## License and Credits
 
   For more information, please see: http://software.sci.utah.edu
  
