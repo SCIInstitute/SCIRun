@@ -90,8 +90,7 @@ void CalculateFieldData::execute()
     }
   }
 
-  auto matrices = //getOptionalDynamicInputs
-    getRequiredDynamicInputs(InputArrays);
+  auto matrices = getOptionalDynamicInputs(InputArrays);
 
 //   if (inputs_changed_ || guifunction_.changed() || 
 //       guiformat_.changed() || !oport_cached("Field"))

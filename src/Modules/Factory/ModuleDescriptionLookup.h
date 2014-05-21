@@ -30,6 +30,7 @@
 #define MODULE_DESCRIPTION_LOOKUP_H
 
 #include <Dataflow/Network/ModuleDescription.h>
+#include <Dataflow/Network/Module.h>
 #include <boost/functional/factory.hpp>
 #include <Modules/Factory/share.h>
 

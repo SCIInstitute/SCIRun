@@ -34,6 +34,7 @@ SET(Modules_Factory_SRCS
 
 SET(Modules_Factory_HEADERS
   HardCodedModuleFactory.h
+  ModuleDescriptionLookup.h
   share.h
 )
 

@@ -175,6 +175,9 @@ namespace Networks {
     template <class T, size_t N>
     std::vector<boost::shared_ptr<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
 
+    template <class T, size_t N>
+    std::vector<boost::shared_ptr<T>> getOptionalDynamicInputs(const DynamicPortName<T,N>& port);
+
     template <class T, class D, size_t N>
     void sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data);
 
@@ -305,6 +308,17 @@ namespace Networks {
     std::transform(handleOptions.begin(), end, std::back_inserter(handles), check);
     if (handles.empty())
       MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port " + port.id_.name);
+    return handles;
+  }
+
+  template <class T, size_t N>
+  std::vector<boost::shared_ptr<T>> Module::getOptionalDynamicInputs(const DynamicPortName<T,N>& port)
+  {
+    auto handleOptions = get_dynamic_input_handles(port.id_);
+    std::vector<boost::shared_ptr<T>> handles;
+    auto check = [&, this](SCIRun::Core::Datatypes::DatatypeHandleOption opt) { return this->checkInput<T>(opt, port.id_); };
+    auto end = handleOptions.end() - 1; //leave off empty final port
+    std::transform(handleOptions.begin(), end, std::back_inserter(handles), check);
     return handles;
   }
 

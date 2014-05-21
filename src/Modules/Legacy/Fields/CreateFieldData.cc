@@ -84,7 +84,7 @@ CreateFieldData::execute()
   {
     get_state()->setValue(FunctionString, (*func)->value());
   }
-  auto matrices = getRequiredDynamicInputs(DataArray);
+  auto matrices = getOptionalDynamicInputs(DataArray);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   TCLInterface::eval(get_id()+" update_text");

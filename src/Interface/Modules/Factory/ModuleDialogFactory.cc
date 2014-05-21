@@ -55,6 +55,7 @@
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Interface/Modules/Fields/CreateFieldDataDialog.h>
+#include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
@@ -141,6 +142,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
   if (moduleId.find("CreateFieldData") != std::string::npos)
     return new CreateFieldDataDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("CalculateFieldData") != std::string::npos)
+    return new CalculateFieldDataDialog(moduleId, state, parentToUse_);
   if (moduleId.find("SetFieldData") != std::string::npos)
     return new SetFieldDataDialog(moduleId, state, parentToUse_);   
   if (moduleId.find("InterfaceWithCleaver") != std::string::npos)
