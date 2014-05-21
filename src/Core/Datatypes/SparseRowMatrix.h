@@ -32,7 +32,9 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Math/MiscMath.h>
+#define register
 #include <Eigen/SparseCore>
+#undef register
 
 namespace SCIRun {
 namespace Core {
