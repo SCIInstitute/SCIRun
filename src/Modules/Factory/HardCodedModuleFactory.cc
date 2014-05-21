@@ -34,82 +34,13 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
-#include <Modules/Basic/ReceiveTestMatrix.h>
-#include <Modules/Basic/SendTestMatrix.h>
-#include <Modules/Basic/PrintDatatype.h>
-#include <Modules/Basic/DynamicPortTester.h>
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
-#include <Modules/Math/EvaluateLinearAlgebraBinary.h>
-#include <Modules/Math/ReportMatrixInfo.h>
-#include <Modules/Math/AppendMatrix.h>
-#include <Modules/Math/CreateMatrix.h>
-#include <Modules/Math/SolveLinearSystem.h>
-#include <Modules/Fields/CreateScalarFieldDataBasic.h>
-#include <Modules/Fields/ReportFieldInfo.h>
-#include <Modules/Fields/InterfaceWithCleaver.h>
-#include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
-#include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
-#include <Modules/Legacy/Fields/CreateLatVol.h>
-#include <Modules/Legacy/Fields/GetFieldBoundary.h>
-#include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
-#include <Modules/Legacy/Fields/CalculateGradients.h>
-#include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
-#include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
-#include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
-#include <Modules/Legacy/Fields/GetFieldNodes.h>
-#include <Modules/Legacy/Fields/SetFieldNodes.h>
-#include <Modules/Legacy/Fields/GetDomainBoundary.h>
-#include <Modules/Legacy/Fields/JoinFields.h>
-#include <Modules/Legacy/Fields/SplitFieldByDomain.h>
-#include <Modules/Legacy/Fields/CreateFieldData.h>
-#include <Modules/Legacy/Fields/SplitFieldByDomain.h>
-#include <Modules/Legacy/Fields/GetFieldData.h>
-#include <Modules/Legacy/Fields/SetFieldData.h>
-#include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
-#include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
-#include <Modules/Legacy/Math/SelectSubMatrix.h>
-#include <Modules/Legacy/Math/ConvertMatrixType.h>
-#include <Modules/Fields/FieldToMesh.h>
-#include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
-#include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
-#include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
-#include <Modules/Legacy/Bundle/InsertMatricesIntoBundle.h>
-#include <Modules/DataIO/ReadMatrix.h>
-#include <Modules/DataIO/WriteMatrix.h>
-#include <Modules/DataIO/ReadField.h>
-#include <Modules/DataIO/WriteField.h>
-#include <Modules/String/CreateString.h>
-#include <Modules/Visualization/ShowString.h>
-#include <Modules/Visualization/ShowField.h>
-#include <Modules/Visualization/MatrixAsVectorField.h>
-#include <Modules/Visualization/CreateBasicColorMap.h>
-#include <Modules/FiniteElements/TDCSSimulator.h>
-#include <Modules/Render/ViewScene.h>
-#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
-#include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
-#include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
-#include <Modules/BrainStimulator/GenerateROIStatistics.h>
-#include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
-#include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
-#include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::Factory;
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Modules::FiniteElements;
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Modules::StringProcessing;
-using namespace SCIRun::Modules::BrainStimulator;
-using namespace SCIRun::Modules::Visualization;
-using namespace SCIRun::Modules::Render;
-using namespace SCIRun::Modules::Bundles;
+//
 using namespace boost::assign;
 
 ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(false)
@@ -121,74 +52,18 @@ ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(fals
   /// @todo: make EVEN MORE generic...macros? xml?
   /// @todo: at least remove duplication of Name,Package,Category here since we should be able to infer from header somehow.
 
-  addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-  addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
-  addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-  addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
-  addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
-  addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
-  addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
-  addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
-  addModuleDesc<EvaluateLinearAlgebraUnaryModule>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
-  addModuleDesc<EvaluateLinearAlgebraBinaryModule>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
-  addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
-  addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
-  addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
-  //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
-  addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
-  addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
-  //addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
-  addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
+  addEssentialModules();
 
-  addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
-  addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun", "Second real ported module", "...");
-  addModuleDesc<CalculateGradients>("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<ConvertQuadSurfToTriSurf>("ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun", "Real ported module", "...");
-  addModuleDesc<AlignMeshBoundingBoxes>("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun", "Real ported module", "...");
-  addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
-  addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
-  addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
-  addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress", "...");
-  addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
-  addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
-  //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
-  //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
-  addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
-  addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
-  addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
-  addModuleDesc<CreateFieldData>("Real ported module", "...");
   addBundleModules();
 
   /// @todo: possibly use different build setting for these.
   if (includeTestingModules_)
   {
-    addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-    addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
-    addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
-    addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
-    addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
-    addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
-    addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
+    addTestingModules();
   }
 
-  addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
-  addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates stiffness matrix ");
-  addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
-  addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", " in progress ", " Sets conveniently conductivity profile for tetrahedral mesh ");
-  addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
-  addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
-  addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", " in progress ", " adds knowns to linear systems ");        
-  addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<GetFieldDataModule>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New Module to interact with cleaver", "...");
-  addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<SelectSubMatrixModule>("SelectSubMatrix", "Math", "SCIRun", "in progress", "...");
-  addModuleDesc<MapFieldDataFromElemToNodeModule>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "in progress", "...");
-  addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "in progress", "...");
-  addModuleDesc<ConvertMatrixTypeModule>("ConvertMatrixType", "Math", "SCIRun", "in progress", "...");
-  addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "in progress", "...");
-
+  addBrainSpecificModules();
+  addMoreModules();
 }
 
 
@@ -204,8 +79,6 @@ ModuleDescription ModuleDescriptionLookup::lookupDescription(const ModuleLookupI
   }
   return iter->second;
 }
-
-
 
 namespace SCIRun {
   namespace Modules {

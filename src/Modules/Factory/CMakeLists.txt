@@ -29,6 +29,7 @@
 SET(Modules_Factory_SRCS
   HardCodedModuleFactory.cc
   ModuleFactoryImpl1.cc
+  ModuleFactoryImpl2.cc
 )
 
 SET(Modules_Factory_HEADERS

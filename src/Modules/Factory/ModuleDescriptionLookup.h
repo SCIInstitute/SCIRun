@@ -88,7 +88,11 @@ namespace SCIRun {
           addModuleDesc<ModuleType>(ModuleType::staticInfo_, status, desc);
         }
 
+        void addEssentialModules();
+        void addTestingModules();
         void addBundleModules();
+        void addBrainSpecificModules();
+        void addMoreModules();
       };
     }
   }
