@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/CollectFields.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Thread/Mutex.h>
@@ -153,3 +157,4 @@ CollectFields::tcl_command(GuiArgs& args, void* userdata)
 } // End namespace SCIRun
 
 
+#endif

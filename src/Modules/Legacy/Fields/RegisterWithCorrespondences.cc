@@ -26,14 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
 
-///
-///@file  RegisterWithCorrespondences.cc
-///@author
-///   darrell
-///  
-/// TODAY'S DATE HERE
-///
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Field.h>
@@ -114,3 +109,4 @@ RegisterWithCorrespondences::execute()
 } // End namespace SCIRun
 
 
+#endif

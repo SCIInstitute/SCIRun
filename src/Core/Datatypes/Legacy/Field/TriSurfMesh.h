@@ -256,7 +256,7 @@ public:
         // Sync node neighbors
         if (sync_ & Mesh::ELEM_NEIGHBORS_E) mesh_->compute_edge_neighbors();
         if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_->compute_node_neighbors();
-        if (sync_ & Mesh::EDGES_E) mesh_->compute_edges();
+        if (sync_ & Mesh::EDGES_E) mesh_->compute_edges_bugfix();
         if (sync_ & Mesh::NORMALS_E) mesh_->compute_normals();
         if (sync_ & Mesh::BOUNDING_BOX_E) mesh_->compute_bounding_box();
         
@@ -1477,6 +1477,7 @@ protected:
   }
 
 
+  // Fixes bug #887 (gforge)
   template<class ARRAY, class INDEX>
   inline void get_edges_from_node(ARRAY& array, INDEX idx) const
   {
@@ -1490,9 +1491,9 @@ protected:
     typename ARRAY::value_type edge;
     for (size_t i=0; i<faces.size(); i++)
     {
-      for (index_type j=0; j<4; j++)
+      for (index_type j=0; j<3; j++)
       {
-        edge = halfedge_to_edge_[faces[i]*4+j]; 
+        edge = halfedge_to_edge_[faces[i]*3+j];
         size_t k=0;
         for (; k<array.size(); k++)
           if (array[k] == edge) break;
@@ -1501,6 +1502,24 @@ protected:
     }
   }
 
+  template<class ARRAY, class INDEX>
+  inline void get_edges_from_node_bugfix(ARRAY& array, INDEX idx) const
+  {
+    ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
+      "Must call synchronize NODE_NEIGHBORS_E on TriSurfMesh first");
+
+    array.clear();
+    int n=edge_on_node_[idx].size();
+    typename ARRAY::value_type edge;
+    for(int i=0; i<n; i++)
+    {
+      edge = edge_on_node_[idx][i];
+      size_t k=0;
+      for (; k<array.size(); k++)
+        if (array[k] == edge) break;
+      if (k == array.size()) array.push_back(edge);
+    }
+  }
 
   template <class ARRAY, class INDEX>
   inline void set_nodes_by_elem(ARRAY &array, INDEX idx)
@@ -1885,6 +1904,8 @@ protected:
   void compute_normals();
   void compute_node_neighbors();
   void compute_edges();
+  // Fixes bug #887 (gforge)
+  void compute_edges_bugfix();
   void compute_edge_neighbors();
 
   void compute_node_grid();
@@ -1913,6 +1934,7 @@ protected:
   std::vector<index_type>    edge_neighbors_;      // Neighbor connectivity
   std::vector<Core::Geometry::Vector>        normals_;             // normalized per node normal.
   std::vector<std::vector<index_type> > node_neighbors_; // Node neighbor connectivity
+  std::vector<std::vector<index_type> > edge_on_node_; // Edges emanating from a node
 
   boost::shared_ptr<SearchGridT<index_type> > node_grid_; // Lookup table for nodes
   boost::shared_ptr<SearchGridT<index_type> > elem_grid_; // Lookup table for elements
@@ -3172,6 +3194,56 @@ TriSurfMesh<Basis>::compute_edges()
   synchronize_lock_.unlock();
 }
 
+// Fixes bug #887 (gforge)
+template <class Basis>
+void
+TriSurfMesh<Basis>::compute_edges_bugfix()
+{
+  EdgeMapType2 edge_map;
+
+  size_type num_faces = static_cast<index_type>(faces_.size())/3;
+  for (index_type i=0; i < num_faces; i++)
+  {
+    index_type n0 = faces_[3*i];
+    index_type n1 = faces_[3*i+1];
+    index_type n2 = faces_[3*i+2];
+
+    if (n0 > n1) edge_map[std::pair<index_type, index_type>(n1,n0)].push_back(i<<2);
+    else  edge_map[std::pair<index_type, index_type>(n0,n1)].push_back(i<<2);
+
+    if (n1 > n2) edge_map[std::pair<index_type, index_type>(n2,n1)].push_back((i<<2)+1);
+    else  edge_map[std::pair<index_type, index_type>(n1,n2)].push_back((i<<2)+1);
+
+    if (n2 > n0) edge_map[std::pair<index_type, index_type>(n0,n2)].push_back((i<<2)+2);
+    else  edge_map[std::pair<index_type, index_type>(n2,n0)].push_back((i<<2)+2);
+  }
+
+  typename EdgeMapType2::iterator itr;
+  edges_.clear();
+  edges_.resize(edge_map.size());
+  halfedge_to_edge_.resize(faces_.size());
+  edge_on_node_.clear();
+  edge_on_node_.resize(points_.size());
+
+  size_t k=0;
+  for (itr = edge_map.begin(); itr != edge_map.end(); ++itr)
+  {
+    const std::vector<index_type >& hedges = (*itr).second;
+    for (size_t j=0; j<hedges.size(); j++)
+    {
+      index_type h = hedges[j];
+      edges_[k].push_back(h);
+      halfedge_to_edge_[(h>>2)*3 + (h&0x3)] = k;
+    }
+    edge_on_node_[(*itr).first.first].push_back(k);
+    edge_on_node_[(*itr).first.second].push_back(k);
+    k++;
+  }
+
+  synchronize_lock_.lock();
+  synchronized_ |= (Mesh::EDGES_E);
+  synchronize_lock_.unlock();
+}
 
 template <class Basis>
 typename TriSurfMesh<Basis>::Node::index_type

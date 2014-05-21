@@ -32,7 +32,9 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/GeometryPrimitives/Transform.h> /// @todo
+#define register
 #include <Eigen/Dense>
+#undef register
 
 namespace SCIRun {
 namespace Core {

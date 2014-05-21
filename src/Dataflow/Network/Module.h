@@ -303,6 +303,8 @@ namespace Networks {
     auto check = [&, this](SCIRun::Core::Datatypes::DatatypeHandleOption opt) { return this->checkInput<T>(opt, port.id_); };
     auto end = handleOptions.end() - 1; //leave off empty final port
     std::transform(handleOptions.begin(), end, std::back_inserter(handles), check);
+    if (handles.empty())
+      MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port " + port.id_.name);
     return handles;
   }
 

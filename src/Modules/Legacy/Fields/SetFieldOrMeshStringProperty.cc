@@ -26,6 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/SetFieldOrMeshStringProperty.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+///
 ///@author
 ///   David Weinstein
 ///   Department of Computer Science
@@ -89,3 +94,4 @@ SetFieldOrMeshStringProperty::execute()
 }
 
 } // End namespace SCIRun
+#endif

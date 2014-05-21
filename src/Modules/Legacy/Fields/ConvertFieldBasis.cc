@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/ConvertFieldBasis.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 // Include the algorithm
 #include <Core/Algorithms/Fields/FieldData/ConvertFieldBasisType.h>
 
@@ -131,3 +135,4 @@ ConvertFieldBasis::execute()
 } // End namespace Moulding
 
 
+#endif

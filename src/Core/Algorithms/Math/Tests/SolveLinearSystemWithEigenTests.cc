@@ -37,7 +37,9 @@
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/MatrixIO.h>
+#define register
 #include <Eigen/Sparse>
+#undef register
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 

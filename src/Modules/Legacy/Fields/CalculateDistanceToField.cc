@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/CalculateDistanceToField.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
@@ -117,3 +121,4 @@ CalculateDistanceToField::execute()
 } // End namespace SCIRun
 
 
+#endif

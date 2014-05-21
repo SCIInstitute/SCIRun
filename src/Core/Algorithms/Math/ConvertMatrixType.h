@@ -27,7 +27,8 @@
 */
 
 #ifndef ALGORITHMS_MATH_CONVERTMATRIXTYPE_H
-#define ALGORITHMS_MATH_CONVERTMATRIXTYPE_H_1
+#define ALGORITHMS_MATH_CONVERTMATRIXTYPE_H
+
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>

@@ -26,39 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Include all code for the dynamic engine
+#include <Modules/Legacy/Fields/CalculateFieldData5.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Parser/ArrayMathEngine.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-namespace SCIRun {
-
-/// @class CalculateFieldData5
 /// @brief Calculate new data for the field given a function that uses field
-/// data, node location and element properties as input, with input ports for
-/// four additional fields. 
+/// data, node location and element properties as input.
 
-class CalculateFieldData5 : public Module 
-{
-  public:
-    CalculateFieldData5(GuiContext*);
-    virtual ~CalculateFieldData5() {}
-
-    virtual void execute();
-    virtual void presave();
-    virtual void post_read();
-    virtual void tcl_command(GuiArgs& args, void* userdata);
-    
+/*
   private:
-    GuiString guifunction_;     // function code
-    GuiString guiformat_;       // scalar, vector, or tensor ?
     GuiInt    gui_cache_;
     GuiInt    gui_count_;
     
@@ -68,53 +53,52 @@ class CalculateFieldData5 : public Module
     MatrixHandle count_;
     FieldHandle  cache_;    
 };
+*/
 
+ModuleLookupInfo CalculateFieldData::staticInfo_("CalculateFieldData", "ChangeFieldData", "SCIRun");
+AlgorithmParameterName CalculateFieldData::FunctionString("FunctionString");
+AlgorithmParameterName CalculateFieldData::FormatString("FormatString");
 
-DECLARE_MAKER(CalculateFieldData5)
-CalculateFieldData5::CalculateFieldData5(GuiContext* ctx)
-  : Module("CalculateFieldData5", ctx, Source, "ChangeFieldData", "SCIRun"),
-  guifunction_(get_ctx()->subVar("function")),
-  guiformat_(get_ctx()->subVar("format")),
-  gui_cache_(get_ctx()->subVar("cache"), 0),
-  gui_count_(get_ctx()->subVar("count", 0), 0),
-  old_version_(false)  
+CalculateFieldData::CalculateFieldData()
+  : Module(staticInfo_)
 {
-  count_ = new DenseMatrix(0.0);
+  //count_ = new DenseMatrix(0.0);
 }
 
-void CalculateFieldData5::execute()
+void CalculateFieldData::setStateDefaults()
 {
-  // Define input handles:
-  FieldHandle field, field2, field3, field4, field5;
-  StringHandle func;
-  std::vector<MatrixHandle> matrices;
-  
-  // Get data from input ports:
-  get_input_handle("Field1",field,true);
-  get_input_handle("Field2",field2,false);
-  get_input_handle("Field3",field3,false);
-  get_input_handle("Field4",field4,false);
-  get_input_handle("Field5",field5,false);
+  auto state = get_state();
+  state->setValue(FunctionString, std::string("RESULT = abs(DATA1);"));
+  state->setValue(FormatString, std::string("Scalar"));
+/*
+gui_cache_(get_ctx()->subVar("cache"), 0),
+gui_count_(get_ctx()->subVar("count", 0), 0),
+*/
+}
 
-  if (get_input_handle("Function",func,false))
+void CalculateFieldData::execute()
+{
+  auto fields = getRequiredDynamicInputs(InputFields);
+  auto func = getOptionalInput(Function);
+  auto state = get_state();
+  if (func)
   {
-    if (func.get_rep())
+    if (*func)
     {
-      guifunction_.set(func->get());
-      get_ctx()->reset();  
+      get_state()->setValue(FunctionString, (*func)->value());
     }
   }
-  get_dynamic_input_handles("Array",matrices,false);
 
-  // Force TCL to update variables:
-  TCLInterface::eval(get_id()+" update_text");
-  
-  if (inputs_changed_ || guifunction_.changed() || 
-      guiformat_.changed() || !oport_cached("Field"))
+  auto matrices = //getOptionalDynamicInputs
+    getRequiredDynamicInputs(InputArrays);
+
+//   if (inputs_changed_ || guifunction_.changed() || 
+//       guiformat_.changed() || !oport_cached("Field"))
+  if (needToExecute())
   {
-    // Inform module that execution started
     update_state(Executing);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // If not caching set the field and count to zero.
     if( !(gui_cache_.get()) ) 
     {
@@ -123,7 +107,7 @@ void CalculateFieldData5::execute()
       gui_count_.reset();
     }
     
-    if (cache_.get_rep() == 0)
+    if (!cache_)
     {
       // Create a dummy field with one value as default
       FieldInformation fi(field);
@@ -135,7 +119,8 @@ void CalculateFieldData5::execute()
     }
     
     count_->put(0,0,static_cast<double>(gui_count_.get()));
-    
+#endif
+
     // Get number of matrix ports with data (the last one is always empty)
     size_t numinputs = matrices.size();
     
@@ -146,8 +131,9 @@ void CalculateFieldData5::execute()
     }
 
     NewArrayMathEngine engine;
-    engine.set_progress_reporter(this);
+    engine.setLogger(this);
 
+    auto field = fields[0];
     // Create the DATA object for the function
     // DATA is the data on the field
     if(!(engine.add_input_fielddata("DATA",field))) return;
@@ -175,6 +161,7 @@ void CalculateFieldData5::execute()
     if(!(engine.add_input_fielddata_element("ELEMENT",field))) return;
     if(!(engine.add_input_fielddata_element("ELEMENT1",field))) return;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // Caching method
     if(!(engine.add_input_matrix("COUNT",count_))) return;
     if(!(engine.add_input_fielddata("RESULT",cache_))) return;
@@ -183,62 +170,17 @@ void CalculateFieldData5::execute()
     if(!(engine.add_input_matrix("count",count_))) return;
     if(!(engine.add_input_fielddata("result",cache_))) return;    
     ///-----------------------
+#endif
 
-    if (field2.get_rep())
-    {
-      if(!(engine.add_input_fielddata("DATA2",field2))) return;
-      if(!(engine.add_input_fielddata("v1",field2))) return;
-
-      // Create the POS, X,Y,Z, data location objects.  
-
-      if(!(engine.add_input_fielddata_location("POS2",field2))) return;
-      if(!(engine.add_input_fielddata_coordinates("X2","Y2","Z2",field2))) return;
-
-      // Create the ELEMENT object describing element properties
-      if(!(engine.add_input_fielddata_element("ELEMENT2",field2))) return;
-    }
-
-    if (field3.get_rep())
-    {
-      if(!(engine.add_input_fielddata("DATA3",field3))) return;
-      if(!(engine.add_input_fielddata("v2",field3))) return;
-
-      // Create the POS, X,Y,Z, data location objects.  
-
-      if(!(engine.add_input_fielddata_location("POS3",field3))) return;
-      if(!(engine.add_input_fielddata_coordinates("X3","Y3","Z3",field3))) return;
-
-      // Create the ELEMENT object describing element properties
-      if(!(engine.add_input_fielddata_element("ELEMENT3",field3))) return;
-    }
-
-    if (field4.get_rep())
-    {
-      if(!(engine.add_input_fielddata("DATA4",field4))) return;
-      if(!(engine.add_input_fielddata("v3",field4))) return;
-
-      // Create the POS, X,Y,Z, data location objects.  
-
-      if(!(engine.add_input_fielddata_location("POS4",field4))) return;
-      if(!(engine.add_input_fielddata_coordinates("X4","Y4","Z4",field4))) return;
-
-      // Create the ELEMENT object describing element properties
-      if(!(engine.add_input_fielddata_element("ELEMENT4",field4))) return;
-    }
-
-    if (field5.get_rep())
-    {
-      if(!(engine.add_input_fielddata("DATA5",field5))) return;
-      if(!(engine.add_input_fielddata("v4",field5))) return;
-
-      // Create the POS, X,Y,Z, data location objects.  
-
-      if(!(engine.add_input_fielddata_location("POS5",field5))) return;
-      if(!(engine.add_input_fielddata_coordinates("X5","Y5","Z5",field5))) return;
-
-      // Create the ELEMENT object describing element properties
-      if(!(engine.add_input_fielddata_element("ELEMENT5",field5))) return;
-    }
+    //TODO: increase this past 5
+    if (!addFieldVariableIfPresent(fields, engine, 2))
+      return;
+    if (!addFieldVariableIfPresent(fields, engine, 3))
+      return;
+    if (!addFieldVariableIfPresent(fields, engine, 4))
+      return;
+    if (!addFieldVariableIfPresent(fields, engine, 5))
+      return;
     
      // Loop through all matrices and add them to the engine as well
     char mname = 'A';
@@ -246,7 +188,7 @@ void CalculateFieldData5::execute()
     
     for (size_t p = 0; p < numinputs; p++)
     {
-      if (matrices[p].get_rep() == 0)
+      if (!matrices[p])
       {
         error("No matrix was found on input port.");
         return;      
@@ -258,10 +200,10 @@ void CalculateFieldData5::execute()
 
     int basis_order = field->vfield()->basis_order();
     
-    std::string format = guiformat_.get();
-    if (format == "") format = "double";
+    std::string format = state->getValue(FormatString).getString();
+    if (format.empty()) format = "double";
 
-    std::string function = guifunction_.get();    
+    std::string function = state->getValue(FunctionString).getString();
     bool has_RESULT = true;
     if (function.find("RESULT") != std::string::npos)
     {
@@ -290,23 +232,13 @@ void CalculateFieldData5::execute()
 
     if (!(engine.run()))
     {
-      ///-----------------------
-      // Backwards compatibility with version 3.0.2
-      if (old_version_)
-      {
-        error("This module does not fully support backwards compatibility:");
-        error("C++/C functions are not supported in by this module anymore.");
-        error("Please review documentation to explore available functionality and grammar of this module.");
-        error("We are sorry for this inconvenience, but we do not longer support dynamically compiling code in SCIRun.");
-      }
-      ///-----------------------
-      
+      error("Error in parser."); //todo: improve
       return;
     }
 
     // Get the result from the engine
     FieldHandle ofield;    
-    if(has_RESULT)
+    if (has_RESULT)
     {
       engine.get_field("RESULT",ofield);
     }
@@ -319,8 +251,9 @@ void CalculateFieldData5::execute()
     }
 
     // send new output if there is any: 
-    send_output_handle("Field", ofield);
+    sendOutput(OutputField, ofield);
     
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if( (gui_cache_.get()) )
     {
       int count = static_cast<int>(count_->get(0,0)); count++;
@@ -332,65 +265,37 @@ void CalculateFieldData5::execute()
     {
       cache_ = 0;
     }
+#endif
 
   }
 }
 
-void 
-CalculateFieldData5::tcl_command(GuiArgs& args, void* userdata)
+bool CalculateFieldData::addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int index) const
 {
-  if(args.count() < 2)
+  if (fields.size() >= index)
   {
-    args.error("CalculateFieldData needs a minor command");
-    return;
-  }
+    auto field = fields[index-1];
+    if (field) //this should always be true since dynamic values are filtered for nulls
+    {
+      auto indexStr = boost::lexical_cast<std::string>(index);
+      auto vStr = boost::lexical_cast<std::string>(index - 1);
 
-  if (args[1] == "clear") 
-  {
-    gui_count_.set(0);
-    gui_count_.reset();
-    cache_ = 0;
-  } 
-  else 
-  {
-    Module::tcl_command(args, userdata);
+      if(!engine.add_input_fielddata("DATA" + indexStr, field)) 
+        return false;
+      if(!engine.add_input_fielddata("v" + vStr, field))
+        return false;
+
+      // Create the POS, X,Y,Z, data location objects.  
+
+      if(!engine.add_input_fielddata_location("POS" + indexStr, field))
+        return false;
+      if(!engine.add_input_fielddata_coordinates("X" + indexStr,"Y" + indexStr,"Z" + indexStr,field))
+        return false;
+
+      // Create the ELEMENT object describing element properties
+      if(!engine.add_input_fielddata_element("ELEMENT" + indexStr, field))
+        return false;
+    }
   }
+  return true;
 }
-
-void
-CalculateFieldData5::presave()
-{
-  // update gui_function_ before saving.
-  TCLInterface::execute(get_id() + " update_text");
-}
-
-void
-CalculateFieldData5::post_read()
-{
-  // Compatibility with version 3.0.2
-  std::string old_module_name = get_old_modulename();
-  if (old_module_name == "CalculateFieldDataCompiled3" || old_module_name == "TransformData3")
-  {
-    old_version_ = true;
-  }
-
-  const std::string modName = get_ctx()->getfullname() + "-";
-  std::string val;
-  
-  ///-----------------------
-  // Backwards compatibility with intermediate version
-
-  if( TCLInterface::get(modName+"outputdatatype", val, get_ctx()) )
-  {
-    if (val == "input 0 port") val = "same as input";
-    if (val == "input 1 port") val = "same as input";
-
-      // Set the current values for the new names
-    TCLInterface::set(modName+"format", val, get_ctx());
-  }
-  ///-----------------------
-
-}
-
-} // End namespace SCIRun
-
