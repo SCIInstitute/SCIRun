@@ -54,7 +54,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Visualization
   Modules_Legacy_Math
   Modules_Legacy_Bundle
-  Dataflow_Modules_Legacy_Fields
+  Modules_Legacy_Fields
 )
 
 IF(BUILD_SHARED_LIBS)

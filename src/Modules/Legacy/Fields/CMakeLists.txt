@@ -28,7 +28,7 @@
 
 # CMakeLists.txt for Dataflow/Modules/Fields
 
-SET(Dataflow_Modules_Legacy_Fields_HEADERS
+SET(Modules_Legacy_Fields_HEADERS
   CreateLatVol.h
   GetFieldBoundary.h
   BuildMappingMatrix.h
@@ -64,7 +64,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   MapFieldDataFromNodeToElem.h
 )
 
-SET(Dataflow_Modules_Legacy_Fields_SRCS
+SET(Modules_Legacy_Fields_SRCS
   #FlipSurfaceNormals.cc
   #GenerateElectrode.cc
   #PadRegularMesh.cc
@@ -186,16 +186,16 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
 )
 
 IF(WITH_TETGEN)
-  SET(Dataflow_Modules_Legacy_Fields_SRCS ${Dataflow_Modules_Legacy_Fields_SRCS}
+  SET(Modules_Legacy_Fields_SRCS ${Modules_Legacy_Fields_SRCS}
     InterfaceWithTetGen.cc)
 ENDIF(WITH_TETGEN)
     
-ADD_LIBRARY(Dataflow_Modules_Legacy_Fields 
-  ${Dataflow_Modules_Legacy_Fields_HEADERS}
-  ${Dataflow_Modules_Legacy_Fields_SRCS}
+ADD_LIBRARY(Modules_Legacy_Fields 
+  ${Modules_Legacy_Fields_HEADERS}
+  ${Modules_Legacy_Fields_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
+TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   Dataflow_Network
   #Dataflow_Widgets
   #Dataflow_GuiInterface
@@ -228,11 +228,11 @@ TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
 )
 
 IF(WITH_TETGEN)
-  TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
+  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
     ${SCI_TETGEN_LIBRARY})
 ENDIF(WITH_TETGEN)
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Dataflow_Modules_Legacy_Fields)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Fields)
 ENDIF(BUILD_SHARED_LIBS)
 

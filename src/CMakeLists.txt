@@ -700,7 +700,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Render_Tests   PROPERTY FOLDER "Modules/Render")
   SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
-  SET_PROPERTY(TARGET Dataflow_Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
+  SET_PROPERTY(TARGET Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
 ENDIF()
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")

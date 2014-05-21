@@ -81,7 +81,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Fields
   Algorithms_Field
   Modules_Fields
   Interface_Modules_Base
-  Dataflow_Modules_Legacy_Fields
+  Modules_Legacy_Fields
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
