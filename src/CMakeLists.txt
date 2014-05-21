@@ -776,3 +776,14 @@ IF(APPLE)
 ENDIF()
 
 INCLUDE(CPack)
+
+########################################################################
+#GCov
+
+OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
+MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
+
+IF(ENABLE_GCOV_DATA_FILES)
+ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF(ENABLE_GCOV_DATA_FILES)
