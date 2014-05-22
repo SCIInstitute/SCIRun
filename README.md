@@ -1,21 +1,40 @@
 ![alt text](http://www.sci.utah.edu/images/banners/splash-scirun.png "")
 
-# SCIRun 5 Prototype
+## SCIRun 5 Prototype
 https://github.com/SCIInstitute/SCIRunGUIPrototype
 
-## Summary
+##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
+
+- [SCIRun 5 Prototype](#user-content-scirun-5-prototype)
+	- [Summary](#user-content-summary)
+		- [Download Location](#user-content-download-location)
+	- [Goals](#user-content-goals)
+	- [Features](#user-content-features)
+	- [Recently Added Features](#user-content-recently-added-features)
+	- [In Progress](#user-content-in-progress)
+	- [Planned Features for Next Release](#user-content-planned-features-for-next-release)
+	- [Limitations](#user-content-limitations)
+	- [Platform Notes](#user-content-platform-notes)
+		- [Build requirements](#user-content-build-requirements)
+		- [CMake Build Generators](#user-content-cmake-build-generators)
+		- [Unix Makefiles notes](#user-content-unix-makefiles-notes)
+	- [Documentation](#user-content-documentation)
+	- [Questions and Answers](#user-content-questions-and-answers)
+	- [License and Credits](#user-content-license-and-credits)
+
+### Summary
 
 | Warning! |  SCIRun 5 is pre-alpha software, do not use for real science yet.  |
 |:--------:|:------------------------------------------------------------------:|
 
-###Download Location
+####Download Location
 http://sci.utah.edu/devbuilds/scirun5/
 
-##Goals
+###Goals
 SCIRun 5 is a complete rewrite of the GUI front end and graphical components of SCIRun 4, including a more stable and 
 efficient middle layer, with support for Python scripting.
 
-## Features
+### Features
 * File
   - Load
   - Save
@@ -30,7 +49,7 @@ efficient middle layer, with support for Python scripting.
 * Template matrix classes	
 * Add Sparse matrix support to CollectMatrices	
 
-## Recently Added Features
+### Recently Added Features
 * File 
   - Recent Files
 * Edit
@@ -54,22 +73,21 @@ efficient middle layer, with support for Python scripting.
 * Miniview
   - Zoom in/out
 
-##In Progress
+###In Progress
 * Python console, to allow scripted network editing
 
-##Planned Features for Next Release
+###Planned Features for Next Release
 * Saving module notes.
 * Connection notes.
 * Full Python support on all platforms, including ability to run headless without building Qt.
 * Better geometry rendering, coloring and shading.
 
-## Limitations
+### Limitations
 * Cannot load SCIRun 4 network files
 * Limited set of modules at the moment
 
-## Platform Notes
-
-### Build requirements
+### Platform Notes
+#### Build requirements
 * OS X (tested on 10.7 and 10.8)
   - Apple clang 4.1
   - Qt 4.8
@@ -89,7 +107,7 @@ efficient middle layer, with support for Python scripting.
     + Make sure BUILD_SHARED_LIBS is on (default setting).
     + BUILD_WITH_PYTHON works on Windows, not yet (easily) on MacOS.
 
-### CMake Build Generators
+#### CMake Build Generators
 * Windows
   - Visual Studio 2010 C++
 * OS X (tested on 10.7 and 10.8)
@@ -97,18 +115,18 @@ efficient middle layer, with support for Python scripting.
 * Linux (tested on Ubuntu 12.10)
   - Unix Makefiles
 
-### Unix Makefiles notes
+#### Unix Makefiles notes
 * Boost must be built before the SCIRun libraries.
 * Parallel make builds can be used as long the Boost target is built first, for example:
   - make -j4 Boost_external && make -j4
 
-## Documentation
+### Documentation
 For documentation, please see: http://sciinstitute.github.io/SCIRunGUIPrototype/
 
-## Questions and Answers
+### Questions and Answers
 For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
 
-## License and Credits
+### License and Credits
   For more information, please see: http://software.sci.utah.edu
  
   The MIT License
