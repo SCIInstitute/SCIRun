@@ -28,6 +28,7 @@
 
 SET(Core_DatabaseManager_Tests_SRCS
   BasicDatabaseTests.cc
+  ModuleDatabaseQueries.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_DatabaseManager_Tests

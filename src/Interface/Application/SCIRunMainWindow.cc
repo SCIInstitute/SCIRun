@@ -828,15 +828,16 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
   BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
   {
     const std::string& packageName = package.first;
-    auto p = new QTreeWidgetItem();
-    p->setText(0, QString::fromStdString(packageName));
-    tree->addTopLevelItem(p);
+    auto packageItem = new QTreeWidgetItem();
+    packageItem->setText(0, QString::fromStdString(packageName));
+    tree->addTopLevelItem(packageItem);
+    size_t totalModules = 0;
     BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
     {
       const std::string& categoryName = category.first;
-      auto c = new QTreeWidgetItem();
-      c->setText(0, QString::fromStdString(categoryName));
-      p->addChild(c);
+      auto categoryItem = new QTreeWidgetItem();
+      categoryItem->setText(0, QString::fromStdString(categoryName));
+      packageItem->addChild(categoryItem);
       BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
       {
         const std::string& moduleName = module.first;
@@ -844,9 +845,12 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
         m->setText(0, QString::fromStdString(moduleName));
         m->setText(1, QString::fromStdString(module.second.moduleStatus_));
         m->setText(2, QString::fromStdString(module.second.moduleInfo_));
-        c->addChild(m);
+        categoryItem->addChild(m);
+        totalModules++;
       }
+      categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
     }
+    packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
   }
 }
 }
@@ -860,7 +864,6 @@ void SCIRunMainWindow::fillModuleSelector()
 
   GrabNameAndSetFlags visitor;
   visitTree(moduleSelectorTreeWidget_, visitor);
-  //std::for_each(visitor.nameList_.begin(), visitor.nameList_.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
 
   moduleSelectorTreeWidget_->expandAll();
   moduleSelectorTreeWidget_->resizeColumnToContents(0);

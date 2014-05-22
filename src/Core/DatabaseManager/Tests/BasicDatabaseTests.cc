@@ -65,7 +65,7 @@ TEST(BasicDatabaseTests, CanCreateDatabase)
 {
   DatabaseManager db;
   std::string error;
-  EXPECT_TRUE(db.load_database(TestResources::rootDir() / "empty.db", error));
+  EXPECT_TRUE(db.load_database(TestResources::rootDir() / "databases" / "empty.db", error));
   EXPECT_TRUE(error.empty());
 }
 
