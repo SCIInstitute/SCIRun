@@ -235,6 +235,15 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
     drawer_ = cds;
     trackNodes();
   }
+} 
+void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	this-> setColor(placeHoldingColor); 
+}
+void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+	placeHoldingColor = this->color();
+	this -> setColor(Qt::red);
 }
 
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

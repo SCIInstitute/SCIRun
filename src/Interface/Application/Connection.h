@@ -66,6 +66,7 @@ public:
   ~ConnectionLine();
   void setColor(const QColor& color);
   QColor color() const;
+  QColor placeHoldingColor;
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
@@ -73,6 +74,9 @@ public Q_SLOTS:
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
 protected:
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event); 
+  void mousePressEvent(QGraphicsSceneMouseEvent *event);
+
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
   virtual void setNoteGraphicsContext() override;
 private:
