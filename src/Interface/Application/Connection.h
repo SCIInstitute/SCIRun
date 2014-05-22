@@ -66,7 +66,7 @@ public:
   ~ConnectionLine();
   void setColor(const QColor& color);
   QColor color() const;
-  QColor placeHoldingColor;
+  QColor placeHoldingColor_;
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);

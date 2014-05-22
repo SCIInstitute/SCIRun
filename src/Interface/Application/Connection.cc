@@ -238,11 +238,11 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 } 
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	this-> setColor(placeHoldingColor); 
+	this-> setColor(placeHoldingColor_);
 }
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	placeHoldingColor = this->color();
+	placeHoldingColor_ = this -> color();
 	this -> setColor(Qt::red);
 }
 
