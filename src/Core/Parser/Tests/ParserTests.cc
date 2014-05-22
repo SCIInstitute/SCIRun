@@ -2035,6 +2035,9 @@ TEST_F(BasicParserTests, CreateFieldData_find_normal2)
   EXPECT_NEAR(19.4422, max,1e-4); 
 }
 
+
+//Run these tests when the functions below are implemented 
+/*
 TEST_F(BasicParserTests, CreateFieldData_quality)
 {
   FieldHandle field(CreateEmptyLatVol());
@@ -2076,8 +2079,7 @@ TEST_F(BasicParserTests, CreateFieldData_quality)
   EXPECT_NEAR(14.7778, min,1e-4);
   EXPECT_NEAR(14.7778, max,1e-4); 
 }
-//Run these tests when the functions below are implemented 
-#if 0 
+
 TEST_F(BasicParserTests, CreateFieldData_trace)
 {
   FieldHandle field(CreateEmptyLatVol());
@@ -2288,5 +2290,5 @@ TEST_F(BasicParserTests, CreateFieldData_fracanisotropy)
   EXPECT_NEAR(1.0154, max,1e-4); 
 }
 
-#endif
+*/
 
