@@ -26,36 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MODULEDIALOGFACTORY_H
-#define INTERFACE_MODULES_MODULEDIALOGFACTORY_H
+#include <Interface/Modules/Factory/ModuleDialogFactory.h>
+#include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
+#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
+#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
+#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
+#include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
 
-#include <QWidget>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Interface/Modules/Factory/share.h>
+#include <boost/assign.hpp>
+#include <boost/functional/factory.hpp>
 
-namespace SCIRun
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace boost::assign;
+
+void ModuleDialogFactory::addDialogsToMakerMap2()
 {
-  namespace Gui
-  {
-    class ModuleDialogGeneric;
-
-    class SCISHARE ModuleDialogFactory
-    {
-    public:
-      explicit ModuleDialogFactory(QWidget* parentToUse);
-      ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state);
-    private:
-      QWidget* parentToUse_;
-      typedef boost::function<ModuleDialogGeneric*(const std::string&, SCIRun::Dataflow::Networks::ModuleStateHandle, QWidget*)> DialogMaker;
-      typedef std::map<std::string, DialogMaker> DialogMakerMap;
-      DialogMakerMap dialogMakerMap_;
-      void addDialogsToMakerMap1();
-      void addDialogsToMakerMap2();
-    };
-  }
+  insert(dialogMakerMap_)
+    ADD_MODULE_DIALOG(tDCSSimulator, TDCSSimulatorDialog)
+    ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
+    ADD_MODULE_DIALOG(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshDialog)
+    ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
+    ADD_MODULE_DIALOG(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSDialog)      
+  ;
 }
-
-#define ADD_MODULE_DIALOG(module, dialog) (#module, boost::factory<dialog*>())
-
-#endif
