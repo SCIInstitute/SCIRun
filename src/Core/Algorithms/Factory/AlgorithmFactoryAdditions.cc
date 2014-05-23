@@ -26,31 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef HARD_CODED_ALGORITHM_FACTORY_H
-#define HARD_CODED_ALGORITHM_FACTORY_H
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
+#include <boost/functional/factory.hpp>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Factory/share.h>
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 
-namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      
-      class SCISHARE HardCodedAlgorithmFactory : public SCIRun::Core::Algorithms::AlgorithmFactory
-      {
-      public:
-        HardCodedAlgorithmFactory();
-        virtual SCIRun::Core::Algorithms::AlgorithmHandle create(const std::string& moduleName, const AlgorithmCollaborator* algoCollaborator) const;
-      private:
-        typedef boost::function<AlgorithmBase*()> AlgoMaker;
-        typedef std::map<std::string, AlgoMaker> AlgoMakerMap;
-        AlgoMakerMap factoryMap_;
-        void addToMakerMap();
-        void addToMakerMap2(); // @todo: temporary
-      };
+#define ADD_MODULE_ALGORITHM(module, algorithm) factoryMap_[#module] = boost::factory<algorithm*>()
 
-    }
-  }
+void HardCodedAlgorithmFactory::addToMakerMap2()
+{
+  ADD_MODULE_ALGORITHM(BuildTDCSMatrix, BuildTDCSMatrixAlgo);
 }
-
-#endif
