@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <sci_debug.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>

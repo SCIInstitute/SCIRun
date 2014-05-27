@@ -27,7 +27,6 @@
 */
 
 #include <Testing/Utils/SCIRunUnitTests.h>
-#include <sci_debug.h>
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
