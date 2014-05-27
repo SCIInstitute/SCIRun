@@ -32,6 +32,7 @@
 #include "Interface/Modules/BrainStimulator/ui_SetConductivitiesToTetMeshDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/BrainStimulator/share.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -45,11 +46,10 @@ public:
   SetConductivitiesToTetMeshDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-
-  virtual void pull();  
   
   private Q_SLOTS:
   void push();
+  void pull();  
 };
 
 }

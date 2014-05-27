@@ -67,10 +67,10 @@
                     </rect>
                   </property>
                   <property name="text">
-                    <string>CSF</string>
+                    <string>CSF:</string>
                   </property>
                 </widget>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox">
+                <widget class="QDoubleSpinBox" name="Skin_">
                   <property name="geometry">
                     <rect>
                       <x>120</x>
