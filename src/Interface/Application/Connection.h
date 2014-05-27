@@ -66,7 +66,6 @@ public:
   ~ConnectionLine();
   void setColor(const QColor& color);
   QColor color() const;
-  QColor placeHoldingColor_;
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
@@ -87,6 +86,7 @@ private:
   void destroy();
   bool destroyed_;
   class ConnectionMenu* menu_;
+  QColor placeHoldingColor_;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};
