@@ -27,7 +27,7 @@
 */
 
 #include <Testing/Utils/SCIRunUnitTests.h>
-
+#include <sci_debug.h>
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
@@ -109,9 +109,10 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
     a << 1, 0, 3.5,
       -1, 2, 0;
 
-    /// @todo: compare dense and sparse
-    //EXPECT_EQ(a, *mat);
+    EXPECT_EQ(a, *matrix_convert::to_dense(matrix));
+#if !DEBUG
     EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
+#endif
   }
   else
     FAIL() << "file does not exist, skipping test." << std::endl;
@@ -231,9 +232,10 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealBinaryMatFile)
 
     DenseMatrix a = DenseMatrix::Identity(3,3);
 
-    /// @todo: compare dense and sparse
-    //EXPECT_EQ(a, *mat);
+    EXPECT_EQ(a, *matrix_convert::to_dense(matrix));
+#if !DEBUG
     EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
+#endif
   }
   else
     FAIL() << "file does not exist, skipping test." << std::endl;
@@ -315,7 +317,11 @@ void CallLegacyPio(const boost::filesystem::path& filename, const DenseMatrix& e
     EXPECT_EQ(expected.ncols(), matrix->ncols());
 
     std::cout << *matrix << std::endl;
-    EXPECT_EQ(to_string(*matrix), to_string(expected));
+
+    EXPECT_EQ(expected, *matrix_convert::to_dense(matrix));
+#if !DEBUG
+    EXPECT_EQ(to_string(expected), to_string(*matrix));
+#endif
   }
   else
     FAIL() << "file does not exist, skipping test." << std::endl;
