@@ -30,10 +30,11 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Testing;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun::Modules::Fields;
@@ -52,21 +53,40 @@ class CalculateVectorMagnitudesModuleTests : public ModuleTest
 
 namespace
 {
-  FieldHandle CreateTriSurfScalarOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
-  }
+  // should accept as input
   FieldHandle CreateTriSurfVectorOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
+  }
+  FieldHandle CreateTetMeshVectorOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
+  }
+  FieldHandle CreateTriSurfVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+  }
+  
+  // should not accept as input
+  FieldHandle CreateTriSurfScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTetMesScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
   }
   FieldHandle CreateTetMeshScalarOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
   }
-  FieldHandle CreateTetMeshVectorOnNode()
+  FieldHandle CreateTriSurfScalarOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
   }
   FieldHandle CreatePointCloudeScalar()
   {
@@ -74,12 +94,97 @@ namespace
   }
 }
 
+TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnElemVectorInput)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+  FieldHandle f = CreateTriSurfVectorOnElem();
+  stubPortNWithThisData(test, 0, f);
+//  EXPECT_NO_THROW(test->execute());
+  EXPECT_THROW(test->execute(), DataPortException);
+}
+TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnElemVectorInput)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+  FieldHandle f = CreateTetMeshVectorOnElem();
+  stubPortNWithThisData(test, 0, f);
+//  EXPECT_NO_THROW(test->execute());
+  EXPECT_THROW(test->execute(), DataPortException);
+}
+TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnNodeVectorInput)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+  FieldHandle f = CreateTetMeshVectorOnNode();
+  stubPortNWithThisData(test, 0, f);
+//  EXPECT_NO_THROW(test->execute());
+  EXPECT_THROW(test->execute(), DataPortException);
+}
+TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnNodeVectorInput)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+  FieldHandle f = CreateTriSurfVectorOnNode();
+  stubPortNWithThisData(test, 0, f);
+//  EXPECT_NO_THROW(test->execute());
+  EXPECT_THROW(test->execute(), DataPortException);
+}
+
+TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnElemScalarInput)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+  FieldHandle f = CreateTriSurfScalarOnElem();
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_THROW(test->execute(), DataPortException);
+}
+
+TEST_F(CalculateVectorMagnitudesModuleTests, SparseRowMatrixInput)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+	m->insert(0,0) = 1;
+	m->insert(0,1) = 7;
+	m->insert(0,2) = 3;
+	m->insert(1,0) = 7;
+	m->insert(1,1) = 4;
+	m->insert(1,2) = -5;
+	m->insert(2,0) = 3;
+	m->insert(2,1) = -5;
+	m->insert(2,2) = 6;
+	m->makeCompressed();
+  stubPortNWithThisData(test, 0, m);
+  //	EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
+  EXPECT_THROW(test->execute(), DataPortException);
+}
+TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnElemScalarInput)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+  FieldHandle f = CreateTetMesScalarOnElem();
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_THROW(test->execute(), DataPortException);
+}
+TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForCloudPointScalar)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+  FieldHandle f = CreatePointCloudeScalar();
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_THROW(test->execute(), DataPortException);
+}
+TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForTetMeshScalar)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+  FieldHandle f = CreateTetMeshScalarOnNode();
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_THROW(test->execute(), DataPortException);
+}
+TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForTriSurfScalar)
+{
+  auto test = makeModule("CalculateVectorMagnitudes");
+  FieldHandle f = CreateTriSurfScalarOnNode();
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_THROW(test->execute(), DataPortException);
+}
 TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForNullInput)
 {
   auto test = makeModule("CalculateVectorMagnitudes");
   FieldHandle nullField;
   stubPortNWithThisData(test, 0, nullField);
-
-  EXPECT_THROW(test->execute(), NullHandleOnPortException);
+  EXPECT_THROW(test->execute(), DataPortException);
 }
-

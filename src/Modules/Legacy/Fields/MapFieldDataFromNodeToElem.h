@@ -33,25 +33,23 @@
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace Modules {
+namespace Fields {
 
-      class SCISHARE MapFieldDataFromNodeToElemModule : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        MapFieldDataFromNodeToElemModule();
+  class SCISHARE MapFieldDataFromNodeToElemModule : public Dataflow::Networks::Module,
+    public Has1InputPort<FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
+  {
+  public:
+    MapFieldDataFromNodeToElemModule();
 
-        virtual void execute();
-        virtual void setStateDefaults();
-        
-	INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
-      };
+    virtual void execute();
+    virtual void setStateDefaults();
+    
+    INPUT_PORT(0, InputField, LegacyField);
+    OUTPUT_PORT(0, OutputField, LegacyField);
+  };
 
-    }
-  }
-}
+}}}
 
 #endif

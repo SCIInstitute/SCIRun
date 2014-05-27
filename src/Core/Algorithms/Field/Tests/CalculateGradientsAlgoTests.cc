@@ -131,7 +131,7 @@ TEST(CalculateGradientsAlgoTests, TetMeshScalarOnNodeAsInput)
   EXPECT_EQ(algo.run(in, out), true);
   // TODO: compare values from SCIRun 4
 }
-TEST(CalculateGradientsAlgoTests, TetMeshTensorOnNodeAsInput)
+TEST(CalculateGradientsAlgoTests, DISABLED_TetMeshTensorOnNodeAsInput)
 {
   FieldHandle in = CreateTetMeshTensorOnNode();
   FieldHandle out;
