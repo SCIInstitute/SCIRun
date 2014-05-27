@@ -42,31 +42,94 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun::Core::Algorithms;
 
-FieldHandle CreateTetMeshScalarOnNode()
+namespace
 {
-  return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+  FieldHandle CreateTetMeshVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+  }
 }
 
-TEST(SetConductivitiesToTetMeshAlgorithm, spanks_test)
+TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshVector)
 {
-  /* SetConductivitiesToTetMeshAlgorithm algo;
+  SetConductivitiesToTetMeshAlgorithm algo;
+  EXPECT_THROW(algo.run(CreateTetMeshVectorOnElem()), AlgorithmInputException);
+}
 
-  algo.set(SetConductivitiesToTetMeshAlgorithm::skin(),     16);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::skull(),    12);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),       2);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::GM(),        3);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::WM(),        4);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::electrode(), 5);
+TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalar)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
   
-  algo.run(CreateTetMeshScalarOnNode());
-
-   */
+  double conductivities[] = {9.25, 25.1988, 3.5, 5.1988, 5.22, 22.2013};
+  
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Skin,  conductivities[0]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Skull, conductivities[1]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF,   conductivities[2]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::GM,    conductivities[3]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::WM,    conductivities[4]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Electrode, conductivities[5]);
+  
+  FieldHandle input  = CreateTetMeshScalarOnElem();
+  FieldHandle output = algo.run(CreateTetMeshScalarOnElem());
+  
+  VField* ivfield = input->vfield();
+  VField* ovfield = output->vfield();
+  int ival = 0;
+  double oval = 0;
+  for (VMesh::Elem::index_type i=0; i < ivfield->vmesh()->num_elems(); i++)
+  {
+    ivfield->get_value(ival, i);
+    switch (ival)
+    {
+      case 1:
+        ovfield->get_value(oval, i);
+        EXPECT_EQ(oval, conductivities[0]);
+        break;
+      case 2:
+        ovfield->get_value(oval, i);
+        EXPECT_EQ(oval, conductivities[1]);
+        break;
+      case 3:
+        ovfield->get_value(oval, i);
+        EXPECT_EQ(oval, conductivities[2]);
+        break;
+      case 4:
+        ovfield->get_value(oval, i);
+        EXPECT_EQ(oval, conductivities[3]);
+        break;
+      case 5:
+        ovfield->get_value(oval, i);
+        EXPECT_EQ(oval, conductivities[4]);
+        break;
+      case 6:
+        ovfield->get_value(oval, i);
+        EXPECT_EQ(oval, conductivities[5]);
+        break;
+      default:
+        std::cout << "default switch statement executed, unknown error occurred " << std::endl;
+        FAIL();
+        break;
+    }
+  }
 }
 
-TEST(SetConductivitiesToTetMeshAlgorithm, nullFieldForInput)
+TEST(SetConductivitiesToTetMeshAlgorithm, ThrowsForDataOnNode)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  EXPECT_THROW(algo.run(CreateTetMeshScalarOnNode()), AlgorithmInputException);
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithm, ThrowsForNullInput)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   FieldHandle nullField;
-  
   EXPECT_THROW(algo.run(nullField), AlgorithmInputException);
 }

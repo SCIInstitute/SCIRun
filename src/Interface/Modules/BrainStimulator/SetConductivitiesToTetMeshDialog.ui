@@ -83,7 +83,7 @@
                     <double>0.330000000000000</double>
                   </property>
                 </widget>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+                <widget class="QDoubleSpinBox" name="Skull_">
                   <property name="geometry">
                     <rect>
                       <x>120</x>
@@ -96,7 +96,7 @@
                     <double>0.010000000000000</double>
                   </property>
                 </widget>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+                <widget class="QDoubleSpinBox" name="CSF_">
                   <property name="geometry">
                     <rect>
                       <x>120</x>
@@ -122,7 +122,7 @@
                     <string>Electrode:</string>
                   </property>
                 </widget>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+                <widget class="QDoubleSpinBox" name="Electrode_">
                   <property name="geometry">
                     <rect>
                       <x>120</x>
@@ -161,7 +161,7 @@
                     <string>GM:</string>
                   </property>
                 </widget>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
+                <widget class="QDoubleSpinBox" name="GM_">
                   <property name="geometry">
                     <rect>
                       <x>120</x>
@@ -187,7 +187,7 @@
                     <string>WM:</string>
                   </property>
                 </widget>
-                <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
+                <widget class="QDoubleSpinBox" name="WM_">
                   <property name="geometry">
                     <rect>
                       <x>120</x>

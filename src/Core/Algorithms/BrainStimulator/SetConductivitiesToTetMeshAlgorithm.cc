@@ -49,11 +49,11 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skin("Skin");
-//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::skull("skull"); 
-//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF("CSF");
-//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM("GM"); 
-//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM("WM");  
-//AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::electrode("electrode");
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skull("Skull");
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF("CSF");
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM("GM"); 
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM("WM");  
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Electrode("Electrode");
 
 AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::MESH("MESH");
 AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::INHOMOGENEOUS_SKULL("INHOMOGENEOUS_SKULL");
@@ -63,11 +63,11 @@ AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH"
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
   addParameter(Skin,      0.0);
-  /*  addParameter(skull,     0.0);
-   addParameter(CSF,       0.0);
-   addParameter(GM,        0.0);
-   addParameter(WM,        0.0);
-   addParameter(electrode, 0.0);*/
+  addParameter(Skull,     0.0);
+  addParameter(CSF,       0.0);
+  addParameter(GM,        0.0);
+  addParameter(WM,        0.0);
+  addParameter(Electrode, 0.0);
 }
 
 AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
@@ -83,96 +83,78 @@ AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const Algorithm
   ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");*/
  
   AlgorithmOutput output;
-  //output[OUTPUTMESH] = out1;
+  
+  FieldHandle output_field = run(mesh);
+  
+  output[OUTPUTMESH] = output_field;;
 
   return output;
 }
 
-
-
-
-
-
-
-
-//void ShowWhatFieldHandleIsMadeOf(FieldHandle input)
-//{
-//  VField* vfield = input->vfield();
-//  if (vfield->is_nodata())
-//    std::cout << "There is not data contained in the field" << std::endl;
-//  else
-//  {
-//    // show the number of values of the field, if greater than zero print them out
-//    VMesh::size_type n = vfield->vfield()->num_values();
-//    std::cout << "Field contains " << n << " values" << std::endl;
-//    if (n > 0)
-//    {
-//      if (vfield->is_vector())
-//      {
-//        Vector val;
-//        for (VMesh::index_type idx = 0; idx<n; idx++)
-//        {
-//          vfield->get_value(val,idx);
-//          std::cout << "x = " << val.x() << ", y = " << val.y() << ", z = " << val.z() << std::endl;
-//        }
-//      }
-//    }
-//    if (vfield->is_scalar())
-//    {
-//      double val = 0;
-//      for (VMesh::index_type idx = 0; idx<n; idx++)
-//      {
-//        vfield->get_value(val,idx);
-//        std::cout << val << ((idx == (n-1)) ? "\n" : " ");
-//      }
-//    }
-//  }
-//}
-//bool row_select = get(rowCheckBox()).getBool();
-//bool col_select = get(columnCheckBox()).getBool();
-//index_type row_start = get(rowStartSpinBox()).getInt();
-//index_type row_end = get(rowEndSpinBox()).getInt();
-//index_type col_start = get(columnStartSpinBox()).getInt();
-//index_type col_end = get(columnEndSpinBox()).getInt();
-
-void SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh)
+FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
 {
-  /*
   // making sure the field is not null
   if (!fh)
-    THROW_ALGORITHM_INPUT_ERROR("Field was null");
+    THROW_ALGORITHM_INPUT_ERROR("Field supplied is empty ");
   
+  // making sure the data is on the elem and not the nodes
+  FieldInformation fi(fh);
+  if (!fi.is_constantdata())
+    THROW_ALGORITHM_INPUT_ERROR("This function requires the data to be on the elements ");
+  
+  // making sure the field contains data
   VField* vfield = fh->vfield();
-  
-  // making sure the field contained data
   if (vfield->is_nodata())
-    THROW_ALGORITHM_INPUT_ERROR("Field contained no data");
+    THROW_ALGORITHM_INPUT_ERROR("Field supplied contained no data ");
   
-  // TODO: make sure the data is on the elements and not the nodes
+  // making sure the field is not in vector format
+  if (vfield->is_vector())
+    THROW_ALGORITHM_INPUT_ERROR("Function is not setup to work with vectors at this time ");
   
-  std::cout << "fields: " << vfield->num_values() << std::endl;
-  
-  // # of elems = vfield->vmesh()->num_elems()
-  // displaying the field value of the elements
-  double val = 0;
+  // making sure no field value (from the input) is outside the range 1-6
+  double ival = 0;
   for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++)
   {
-    vfield->get_value(val, i);
-    if (i == 0) std::cout << "elements: ";
-    std::cout << val << ((vfield->vmesh()->num_elems() == (i+1)) ? "\n" : " ");
+    vfield->get_value(ival, i);
+    if (ival > 6 || ival < 1)
+      THROW_ALGORITHM_INPUT_ERROR("Field values were outside the range 1-6 ");
   }
   
   // array holding conductivities
-  int size = 6;
-  double conductivies [] = {get(skin).getDouble(), get(skull).getDouble(), get(CSF).getDouble(), get(GM).getDouble(), get(WM).getDouble(), get(electrode).getDouble()};
-  for (int i=0; i<size; i++)
+  double conductivies[] = {get(Skin).getDouble(),
+    get(Skull).getDouble(), get(CSF).getDouble(),
+    get(GM).getDouble(), get(WM).getDouble(),
+    get(Electrode).getDouble()};
+  
+  // replacing field value with conductivity value
+  FieldHandle output = CreateField(fi, fh->mesh());
+  VField* ofield = output->vfield();
+  int val = 0;
+  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++)
   {
-    if (i == 0) std::cout << "conductivities: ";
-    std::cout << conductivies[i] << ((size == (i+1)) ? "\n" : " ");
+    vfield->get_value(val, i);
+    switch (val)
+    {
+      case 1:
+        ofield->set_value(conductivies[0], i);
+        break;
+      case 2:
+        ofield->set_value(conductivies[1], i);
+        break;
+      case 3:
+        ofield->set_value(conductivies[2], i);
+        break;
+      case 4:
+        ofield->set_value(conductivies[3], i);
+        break;
+      case 5:
+        ofield->set_value(conductivies[4], i);
+        break;
+      case 6:
+        ofield->set_value(conductivies[5], i);
+        break;
+    }
   }
-  
-  
-  // TODO: Replace field value with conductivity value
-  */
-  
+
+  return output;
 }

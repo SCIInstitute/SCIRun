@@ -43,24 +43,24 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  connect(Skin_, SIGNAL(valueChanged(double)), this, SLOT(push()));
- /* connect(skull_, SIGNAL(valueChanged(double)), this, SLOT(push()));
+  connect(Skin_,  SIGNAL(valueChanged(double)), this, SLOT(push()));
+  connect(Skull_, SIGNAL(valueChanged(double)), this, SLOT(push()));
   connect(CSF_,   SIGNAL(valueChanged(double)), this, SLOT(push()));
   connect(GM_,    SIGNAL(valueChanged(double)), this, SLOT(push()));
   connect(WM_,    SIGNAL(valueChanged(double)), this, SLOT(push()));
-  connect(electrode_, SIGNAL(valueChanged(double)), this, SLOT(push()));*/
+  connect(Electrode_, SIGNAL(valueChanged(double)), this, SLOT(push()));
 }
 
 void SetConductivitiesToTetMeshDialog::push()
 {
   if (!pulling_)
   {
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Skin, Skin_->value()); // Compile fails when enables
-    /*state_->setValue(SetConductivitiesToTetMeshAlgorithm::skull, skull_->value());
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::CSF, CSF_->value());
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::GM, GM_->value());
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::WM, WM_->value());
-    state_->setValue(SetConductivitiesToTetMeshAlgorithm::electrode, electrode_->value()); */
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Skin,  Skin_->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Skull, Skull_->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::CSF,   CSF_->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::GM,    GM_->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::WM,    WM_->value());
+    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Electrode, Electrode_->value());
   }
 }
 

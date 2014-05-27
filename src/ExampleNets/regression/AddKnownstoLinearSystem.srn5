@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="0">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>6</count>
+			<count>7</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AddKnownsToLinearSystem:0</first>
@@ -240,13 +240,41 @@ NaN
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ReportMatrixInfo:16</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ConvertMatrixType:11</moduleId1_>
+				<moduleId1_>AddKnownsToLinearSystem:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>OutPutLHSMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:16</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertMatrixType:11</moduleId1_>
+				<port1_>
 					<name>ResultMatrix</name>
 					<id>0</id>
 				</port1_>
@@ -307,48 +335,55 @@ NaN
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>6</count>
+		<count>7</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1819</first>
-				<second>-1106</second>
+				<first>-1720</first>
+				<second>-1007</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertMatrixType:11</first>
 			<second>
-				<first>-1769</first>
-				<second>-1269</second>
+				<first>-1681</first>
+				<second>-1185</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertMatrixType:9</first>
 			<second>
-				<first>-2055</first>
-				<second>-1268</second>
+				<first>-1967</first>
+				<second>-1184</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:10</first>
 			<second>
-				<first>-1738</first>
-				<second>-1390</second>
+				<first>-1650</first>
+				<second>-1306</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:7</first>
 			<second>
-				<first>-2025</first>
-				<second>-1391</second>
+				<first>-1937</first>
+				<second>-1307</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:8</first>
 			<second>
-				<first>-1486</first>
-				<second>-1231</second>
+				<first>-1398</first>
+				<second>-1147</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:16</first>
+			<second>
+				<first>-1729</first>
+				<second>-866</second>
 			</second>
 		</item>
 	</modulePositions>
