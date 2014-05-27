@@ -42,6 +42,7 @@ SET(Algorithms_Field_Tests_SRCS
   GetFieldDataAlgoTests.cc
   SetFieldDataAlgoTests.cc
   LoadFieldsForAlgoCoreTests.cc
+  LoadFieldsForAlgoCoreTests.h
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
