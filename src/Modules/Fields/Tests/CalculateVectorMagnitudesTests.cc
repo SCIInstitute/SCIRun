@@ -30,9 +30,12 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::TestUtils;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -78,14 +81,5 @@ TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForNullInput)
   stubPortNWithThisData(test, 0, nullField);
 
   EXPECT_THROW(test->execute(), NullHandleOnPortException);
-}
-
-TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForNullInput)
-{
-  auto test = makeModule("CalculateVectorMagnitudes");
-  FieldHandle nullField;
-  stubPortNWithThisData(test, 0, nullField);
-  
-  EXPECT_NO_THROW(test->execute(), NullHandleOnPortException);
 }
 
