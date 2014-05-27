@@ -26,9 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/GeometryPrimitives/ BBox.cc/.h GeomFwd.h
-///  Plane.cc/.h Point.cc/.h PointVectorOperators.h SearchGridT.h 
-///  Transform.cc/.h Vector.cc/.h
+/// @todo Documentation Core/GeometryPrimitives/BBox.h
 
 #ifndef CORE_GEOMETRY_BBOX_H
 #define CORE_GEOMETRY_BBOX_H 1

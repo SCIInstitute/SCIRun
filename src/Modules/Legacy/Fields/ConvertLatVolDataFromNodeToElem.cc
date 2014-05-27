@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ConvertLatVolDataFromNodeToElem.cc
 
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertLatVolDataFromNodeToElem.h>
 
@@ -33,6 +32,9 @@
 #include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
+
+/// @class ConvertLatVolDataFromNodeToElem
+/// @brief Make a new field with data at elements instead of nodes. 
 
 class ConvertLatVolDataFromNodeToElem : public Module
 {

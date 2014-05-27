@@ -25,7 +25,6 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
-/// @todo Documentation Modules/Legacy/Math/ReportRootMeanSquareError.cc
 
 #include <Core/Algorithms/Math/RootMeanSquareError/RootMeanSquareError.h>
 
@@ -36,6 +35,10 @@
 #include <Core/Datatypes/MatrixTypeConverter.h>
 
 namespace SCIRun {
+
+/// @class ReportRootMeanSquareError
+/// @brief This module computes the Root Mean Square Error from two input
+/// matrices and stores the result in the output matrix. 
 
 class ReportRootMeanSquareError : public Module
 {

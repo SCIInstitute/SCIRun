@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Basis/TriSamplingSchemes.h
+
 #ifndef CORE_BASIS_TRISAMPLINGSCHEMES_H
 #define CORE_BASIS_TRISAMPLINGSCHEMES_H 1
 

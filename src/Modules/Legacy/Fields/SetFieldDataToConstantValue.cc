@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/SetFieldDataToConstantValue.cc
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 
@@ -35,6 +34,10 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class SetFieldDataToConstantValue
+/// @brief Sets field data to a given scalar value on a new output field based
+/// on the input field geometry. 
 
 class SetFieldDataToConstantValue : public Module {
   public:

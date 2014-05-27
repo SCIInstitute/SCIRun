@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/SelectAndSetFieldData3.cc
 
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
@@ -37,6 +36,12 @@
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/StringPort.h>
+
+/// @class SelectAndSetFieldData3
+/// @brief This module selects a function based on the input values of the field
+/// and then applies this function to assign a new value to the field. This
+/// module contains two additional field ports to be used for selecting and
+/// setting data values. 
 
 namespace SCIRun {
 

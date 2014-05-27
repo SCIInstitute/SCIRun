@@ -26,12 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-///
-///@file  CreateImage.cc
-///@brief Make an ImageField that fits the source field.
-///
 ///@author
 ///   Michael Callahan
 ///   Department of Computer Science
@@ -49,6 +43,9 @@
 #include <iostream>
 
 namespace SCIRun {
+
+/// @class CreateImage
+/// @brief Make an ImageField that fits the source field.
 
 class CreateImage : public Module
 {

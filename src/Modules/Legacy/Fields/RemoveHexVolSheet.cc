@@ -26,16 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///
 ///@file  InsertHexSheet.cc
-///@brief Remove a layer of hexes.
 ///
 ///@author
-///   Jason Shepherd
-///   Department of Computer Science
+///   Jason Shepherd,
+///   Department of Computer Science,
 ///   University of Utah
 ///@date  May 2006
-///
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/Field.h>
@@ -51,7 +48,8 @@
 
 namespace SCIRun {
 
-
+/// @class RemoveHexVolSheetAlgo
+/// @brief This module removes a layer of hexes corresponding to the input edge ids. 
 
 /// @todo: change vector param to ref
 class RemoveHexVolSheetAlgo

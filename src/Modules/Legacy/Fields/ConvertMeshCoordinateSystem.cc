@@ -26,10 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
-///@file  ConvertMeshCoordinateSystem.cc
-///@brief Take in fields and add all of their points into one field
 ///
 ///@author
 ///   David Weinstein
@@ -44,8 +40,10 @@
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+///@class ConvertMeshCoordinateSystem
+///@brief Take in fields and add all of their points into one field
 
 class ConvertMeshCoordinateSystem : public Module {
   public:

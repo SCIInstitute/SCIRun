@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/DataIO/WriteBundle.cc
 
 #include <Core/Datatypes/Bundle.h>
 
@@ -37,7 +36,8 @@
 
 using namespace SCIRun;
 
-
+/// @class WriteBundle
+/// @brief This module writes a bundle to file (a SCIRun .bdl file). 
 
 class WriteBundle  : public GenericWriter<BundleHandle> {
   public:

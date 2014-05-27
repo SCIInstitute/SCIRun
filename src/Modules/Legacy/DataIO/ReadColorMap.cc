@@ -29,7 +29,6 @@
 
 ///
 /// @file  ReadColorMap.cc
-/// @brief Read a persistent colormap from a file
 ///
 /// @author
 ///    Steven G. Parker
@@ -45,6 +44,9 @@
 namespace SCIRun {
 
 template class GenericReader<ColorMapHandle>;
+
+/// @class ReadColorMap
+/// @brief Read a persistent colormap from a file (a SCIRun .cmap file)
 
 class ReadColorMap : public GenericReader<ColorMapHandle> {
   protected:

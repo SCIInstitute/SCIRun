@@ -397,7 +397,7 @@ void NetworkEditor::updateActions()
   const bool hasSelection = !scene_->selectedItems().isEmpty();
   const bool isNode = (selectedModule() != 0);
   const bool isLink = (selectedLink() != 0);
-  const bool isNodePair = (selectedModulePair() != ModulePair());
+  //const bool isNodePair = (selectedModulePair() != ModulePair());
 
   //cutAction_->setEnabled(isNode);
   //copyAction_->setEnabled(isNode);

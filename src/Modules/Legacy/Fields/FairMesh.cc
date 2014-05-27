@@ -28,6 +28,10 @@
 
 /// @todo Documentation Modules/Legacy/Fields/FairMesh.cc
 
+#include <Modules/Legacy/Fields/FairMesh.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Core/Algorithms/Fields/SmoothMesh/FairMesh.h>
 
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -89,3 +93,4 @@ void FairMesh::execute()
 }
 
 } // End namespace SCIRun
+#endif

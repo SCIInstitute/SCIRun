@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///
-///@cless CollectMatrices
 ///@brief Matrix operations -- concatenate, replace
 ///
 ///@author
@@ -36,7 +34,6 @@
 ///   Department of Computer Science
 ///   University of Utah
 ///@date  July 2002
-///
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -52,6 +49,10 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace SCIRun {
+
+/// @class CollectMatrices
+/// @detail This module appends/replaces rows or columns of a matrix while
+/// looping through a network. 
 
 class CollectMatrices : public Module 
 {

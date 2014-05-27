@@ -52,6 +52,9 @@ namespace SCIRun {
 using std::endl;
 using std::pair;
 
+/// @class EditMeshBoundingBox
+/// @brief EditMeshBoundingBox is used to transform the field geometry.
+
 class EditMeshBoundingBox : public Module {
   public:
     EditMeshBoundingBox(GuiContext* ctx);

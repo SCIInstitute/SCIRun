@@ -29,7 +29,6 @@
 
 ///
 /// @file  ReadField.cc
-/// @brief Read a persistent field from a file
 /// 
 /// @author
 ///    Steven G. Parker
@@ -45,6 +44,11 @@
 namespace SCIRun {
 
 template class GenericReader<FieldHandle>;
+
+/// @class ReadField
+/// @brief This module reads a field from file 
+///
+/// (a SCIRun .fld file and various other formats using a plugin system).  
 
 class ReadField : public GenericReader<FieldHandle> {
   protected:

@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/GeometryPrimitives/GeomFwd.h
+
 #ifndef CORE_GEOMETRY_GEOMFWD_H
 #define CORE_GEOMETRY_GEOMFWD_H 
 

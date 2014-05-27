@@ -26,8 +26,6 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
-/// @todo Documentation Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.cc
-
 #include <Core/Algorithms/Fields/MeshData/GetSurfaceNodeNormals.h>
 
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -36,6 +34,9 @@
 
 
 namespace SCIRun {
+
+/// @class BuildMatrixOfSurfaceNormals
+/// @brief The BuildMatrixOfSurfaceNormals calculates area weighted normal Vectors per node. 
 
 class BuildMatrixOfSurfaceNormals : public Module {
   public:

@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateGradients.h
 
 #ifndef MODULES_LEGACY_FIELDS_CALCULATEGRADIENTS_H__
 #define MODULES_LEGACY_FIELDS_CALCULATEGRADIENTS_H__
@@ -36,6 +35,9 @@
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
+
+      /// @class CalculateGradients
+      /// @brief Compute the derivative of a scalar field and output it as a vector field. 
 
       class SCISHARE CalculateGradients : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,

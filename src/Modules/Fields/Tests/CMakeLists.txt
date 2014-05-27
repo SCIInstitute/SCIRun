@@ -28,6 +28,7 @@
 
 SET(Modules_Fields_Tests_SRCS
   CreateLatVolTests.cc
+  CalculateFieldDataTests.cc
   CalculateGradientsTests.cc
   CalculateVectorMagnitudesTests.cc
   CalculateSignedDistanceToFieldTests.cc

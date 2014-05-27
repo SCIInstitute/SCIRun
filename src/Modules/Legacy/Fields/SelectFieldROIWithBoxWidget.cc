@@ -26,18 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
-    @file    SelectFieldROIWithBoxWidget.h
-    @author  Michael Callahan
-    @date    August 2001
- */
+/// @file    SelectFieldROIWithBoxWidget.h
+/// @author  Michael Callahan
+/// @date    August 2001
+
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/FieldInformation.h>
 
 #include <Core/Thread/CrowdMonitor.h>
-
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -46,11 +44,13 @@
 #include <Core/Datatypes/Clipper.h>
 #include <Dataflow/GuiInterface/GuiVar.h>
 
-
 #include <iostream>
 #include <stdio.h>
 
 namespace SCIRun {
+
+/// @class SelectFieldROIWithBoxWidget
+/// @brief Select data from a field. 
 
 class SelectFieldROIWithBoxWidget : public Module
 {

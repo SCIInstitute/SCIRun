@@ -35,6 +35,9 @@
 namespace SCIRun {
   namespace Modules {
     namespace Bundles {
+      
+      /// @class GetFieldsFromBundle
+      /// @brief This module retrieves a field object from a bundle.
 
       class SCISHARE GetFieldsFromBundle : public Dataflow::Networks::Module,
         public Has1InputPort<BundlePortTag>,

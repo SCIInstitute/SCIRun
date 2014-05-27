@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ConvertHexVolToTetVol.cc
 
 // Include the algorithm
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
@@ -40,6 +39,9 @@
 #include <Dataflow/Modules/Fields/share.h>
 
 namespace SCIRun {
+
+/// @class ConvertHexVolToTetVol
+/// @brief Convert a HexVolField into a TetVolField.
 
 class SCISHARE ConvertHexVolToTetVol : public Module {
   public:

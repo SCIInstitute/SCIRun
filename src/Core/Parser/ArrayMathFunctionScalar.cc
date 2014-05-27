@@ -755,7 +755,7 @@ bool min_ss(SCIRun::ArrayMathProgramCode& pc)
 }
 
 
-//TODO:
+/// @todo:
 // replace with boost/std random number generators
 
 Mutex RandomMutex("Mutex for rand() and random() functions");
