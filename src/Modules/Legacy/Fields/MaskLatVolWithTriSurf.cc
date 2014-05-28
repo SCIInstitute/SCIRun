@@ -30,7 +30,8 @@
 
 ///
 ///@file  MaskLatVolWithTriSurf.cc 
-///@brief MaskLatVolWithTriSurf two point clouds
+///@brief Convert a LatVolField into a MaskedLatVolField and apply the given
+/// function to mask it out.  
 ///
 ///@author
 ///   David Weinstein

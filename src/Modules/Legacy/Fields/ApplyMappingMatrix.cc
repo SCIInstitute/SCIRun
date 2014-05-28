@@ -27,7 +27,6 @@
 */
 
 #include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
-/// @todo Documentation Modules/Legacy/Field/ApplyMappingMatrix.cc
 #include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -39,6 +38,8 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
+
+/// @brief Apply a mapping matrix to project the data from one field onto the mesh of another field. 
 
 ApplyMappingMatrixModule::ApplyMappingMatrixModule()
   : Module(ModuleLookupInfo("ApplyMappingMatrix", "ChangeFieldData", "SCIRun"), false)

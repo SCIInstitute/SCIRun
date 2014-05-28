@@ -26,11 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
 ///
 ///@file  ClipFieldToFieldOrWidget.cc
-///@brief Rotate and flip field to get it into "standard" view
 ///
 ///@author
 ///   Michael Callahan
@@ -57,6 +54,9 @@
 namespace SCIRun {
 
 using std::stack;
+
+/// @class ClipFieldToFieldOrWidget
+/// @brief This module selects a subset of a field using a field or a widget. 
 
 class ClipFieldToFieldOrWidget : public Module
 {

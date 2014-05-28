@@ -458,6 +458,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_SOURCE_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
+  ${SCIRun5Prototype_SOURCE_DIR}/Externals/
   ${SCIRun5Prototype_BINARY_DIR}/
   ${SCIRun5Prototype_BINARY_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen
@@ -603,6 +604,7 @@ SET_PROPERTY(TARGET Core_Datatypes_Legacy_Field         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Bundle         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Basis         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Persistent         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_DatabaseManager         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Logging         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_ConsoleApplication         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_CommandLine         PROPERTY FOLDER "Core")
@@ -680,6 +682,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_Thread_Tests   PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Utils_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Parser_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Core_DatabaseManager_Tests         PROPERTY FOLDER "Core/Tests")
 
   SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
   SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
@@ -697,13 +700,14 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Render_Tests   PROPERTY FOLDER "Modules/Render")
   SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
-  SET_PROPERTY(TARGET Dataflow_Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
+  SET_PROPERTY(TARGET Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
 ENDIF()
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${CPM_LIBRARIES} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
-
+SET_PROPERTY(TARGET sqlite PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
@@ -776,3 +780,14 @@ IF(APPLE)
 ENDIF()
 
 INCLUDE(CPack)
+
+########################################################################
+#GCov
+
+OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
+MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
+
+IF(ENABLE_GCOV_DATA_FILES)
+ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF(ENABLE_GCOV_DATA_FILES)

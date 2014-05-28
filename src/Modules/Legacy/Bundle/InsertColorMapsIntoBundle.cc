@@ -35,6 +35,9 @@
 
 using namespace SCIRun;
 
+/// @class InsertColorMapsIntoBundle
+/// @brief This module inserts a colormap object into a bundle. 
+
 class InsertColorMapsIntoBundle : public Module {
 public:
   InsertColorMapsIntoBundle(GuiContext*);

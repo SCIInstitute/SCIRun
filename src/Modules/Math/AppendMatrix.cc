@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// TODO @todo Documentation Modules/Math/AppendMatrix.cc
- 
 #include <Modules/Math/AppendMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>

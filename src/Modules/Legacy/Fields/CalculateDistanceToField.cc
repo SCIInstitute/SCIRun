@@ -25,7 +25,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateDistanceToField.cc
+
+#include <Modules/Legacy/Fields/CalculateDistanceToField.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Field.h>
@@ -36,6 +39,9 @@
 #include <Core/Algorithms/Fields/DistanceField/CalculateDistanceField.h>
 
 namespace SCIRun {
+
+/// @class CalculateDistanceToField 
+/// @brief Calculate the distance field to a mesh. 
 
 class CalculateDistanceToField : public Module 
 {
@@ -115,3 +121,4 @@ CalculateDistanceToField::execute()
 } // End namespace SCIRun
 
 
+#endif

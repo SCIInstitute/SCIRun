@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateVectorMagnitudes.h
 
 #ifndef MODULES_LEGACY_FIELDS_CalculateVectorMagnitudes_H__
 #define MODULES_LEGACY_FIELDS_CalculateVectorMagnitudes_H__
@@ -36,6 +35,9 @@
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
+
+      /// @class CalculateVectorMagnitudes
+      /// @brief Computes the gradient of a field. 
 
       class SCISHARE CalculateVectorMagnitudes : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,

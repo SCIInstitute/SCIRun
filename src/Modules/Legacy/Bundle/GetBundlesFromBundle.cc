@@ -33,6 +33,9 @@
 
 using namespace SCIRun;
 
+/// @class GetBundlesFromBundle
+/// @brief This module retrieves a bundle object from a bundle.
+
 class GetBundlesFromBundle : public Module {
 public:
   GetBundlesFromBundle(GuiContext*);

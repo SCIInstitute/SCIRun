@@ -25,7 +25,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CollectFields.cc
+
+#include <Modules/Legacy/Fields/CollectFields.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
@@ -38,8 +41,10 @@
 
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class CollectFields
+/// @brief This module collects and joins fields while iterating over a dataflow loop. 
 
 class CollectFields : public Module {
   public:
@@ -152,3 +157,4 @@ CollectFields::tcl_command(GuiArgs& args, void* userdata)
 } // End namespace SCIRun
 
 
+#endif

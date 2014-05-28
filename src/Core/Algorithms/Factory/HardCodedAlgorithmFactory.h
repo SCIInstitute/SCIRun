@@ -41,6 +41,12 @@ namespace SCIRun {
       public:
         HardCodedAlgorithmFactory();
         virtual SCIRun::Core::Algorithms::AlgorithmHandle create(const std::string& moduleName, const AlgorithmCollaborator* algoCollaborator) const;
+      private:
+        typedef boost::function<AlgorithmBase*()> AlgoMaker;
+        typedef std::map<std::string, AlgoMaker> AlgoMakerMap;
+        AlgoMakerMap factoryMap_;
+        void addToMakerMap();
+        void addToMakerMap2(); // @todo: temporary
       };
 
     }

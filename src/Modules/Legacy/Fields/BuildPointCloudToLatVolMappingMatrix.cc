@@ -26,18 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-///
-///@file  BuildPointCloudToLatVolMappingMatrix.cc  
-///@brief Builds mapping matrix that projects data from a PointCloud to a LatVol
-///
 ///@author
-///   McKay Davis
-///   Scientific Computing and Imaging INstitute
+///   McKay Davis,
+///   Scientific Computing and Imaging INstitute,
 ///   University of Utah
 ///@date  May 2005
-///
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
@@ -54,6 +47,10 @@
 #include <map>
 
 namespace SCIRun {
+
+///@file  BuildPointCloudToLatVolMappingMatrix.cc  
+///@class BuildPointCloudToLatVolMappingMatrix
+///@brief Builds mapping matrix that projects data from a PointCloud to a LatVol
 
 class BuildPointCloudToLatVolMappingMatrix : public Module
 {

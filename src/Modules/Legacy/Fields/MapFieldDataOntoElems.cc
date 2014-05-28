@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/MapFieldDataOntoElems.cc
 
 #include <Core/Algorithms/Fields/Mapping/MapFieldDataOntoElems.h>
 
@@ -36,6 +35,10 @@
 #include <float.h>
 
 namespace SCIRun {
+
+/// @class MapFieldDataOntoElems
+/// @brief Maps data from one mesh to another mesh. The output mesh will have
+/// the data located on the elements. 
 
 using namespace SCIRun;
 

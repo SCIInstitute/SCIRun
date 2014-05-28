@@ -1,4 +1,3 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -38,6 +37,8 @@
 
 using namespace SCIRun;
 
+/// @class GetColorMapsFromBundle
+/// @brief This module retrieves a colormap object from a bundle.
 class GetColorMapsFromBundle : public Module {
 public:
   GetColorMapsFromBundle(GuiContext*);

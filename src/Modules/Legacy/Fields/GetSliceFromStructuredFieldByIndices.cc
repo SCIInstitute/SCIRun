@@ -49,6 +49,9 @@
 
 namespace SCIRun {
 
+/// @class GetSliceFromStructuredFieldByIndices
+/// @brief This module reduces the dimension of a topologically regular field by 1 dimension. 
+
 class GetSliceFromStructuredFieldByIndices : public Module {
   public:
     GetSliceFromStructuredFieldByIndices(GuiContext *context);

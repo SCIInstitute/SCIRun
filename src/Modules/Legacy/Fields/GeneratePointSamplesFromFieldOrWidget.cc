@@ -26,17 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
 ///@file  GeneratePointSamplesFromFieldOrWidget.cc
-///@brief From a mesh, seed some number of dipoles
 ///
 ///@author
 ///   David Weinstein
 ///   University of Utah
 ///@date  October 2000
-///
- 
+
 #include <Core/Algorithms/Fields/SampleField/GeneratePointSamplesFromField.h>
 
 #include <Core/Datatypes/Field.h>
@@ -57,6 +53,10 @@
 #include <vector>
 
 namespace SCIRun {
+
+/// @class GeneratePointSamplesFromFieldOrWidget
+/// @brief This module generates samples from any type of input field and
+/// outputs the samples as a PointCloudField field. 
 
 class GeneratePointSamplesFromFieldOrWidget : public Module
 {

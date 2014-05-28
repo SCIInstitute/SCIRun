@@ -27,15 +27,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///
-///@class ConvertMaskVectorToMappingMatrix
-///
 ///@author
 ///   McKay Davis
 ///   School of Computing
 ///   University of Utah
 ///@date  August, 2005
-///
 
 #include <Dataflow/Network/Module.h>
 
@@ -47,6 +43,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class ConvertMaskVectorToMappingMatrix
+/// @brief This module converts a Mask Vector to a Mapping Matrix.
 
 class ConvertMaskVectorToMappingMatrix : public Module {
 public:

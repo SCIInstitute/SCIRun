@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ConvertMeshToUnstructuredMesh.cc
 
 // Include the algorithm
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
@@ -39,8 +38,10 @@
 // For Windows support
 #include <Dataflow/Modules/Fields/share.h>
 
-
 namespace SCIRun {
+
+/// @class ConvertMeshToUnstructuredMesh
+/// @brief Convert a structured field into an unstructured field for editing.
 
 class SCISHARE ConvertMeshToUnstructuredMesh : public Module 
 {

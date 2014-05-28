@@ -27,8 +27,7 @@
 */
 
 ///
-/// @file  ReadColorMap2.cc
-/// @brief Read a persistent colormap from a file
+/// @file  ReadColorMap2D.cc
 /// 
 /// @author
 ///    Michael Callahan
@@ -43,6 +42,9 @@
 namespace SCIRun {
 
 template class GenericReader<ColorMap2Handle>;
+
+/// @class ReadColorMap2D
+/// @brief This module reads a colormap2D from file (a SCIRun .cmap2 file).
 
 class ReadColorMap2D : public GenericReader<ColorMap2Handle> {
   protected:

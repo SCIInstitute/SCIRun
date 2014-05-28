@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Render/ViewScene.h
-
 #ifndef MODULES_RENDER_VIEWSCENE_H
 #define MODULES_RENDER_VIEWSCENE_H
 
@@ -37,6 +35,14 @@
 namespace SCIRun {
 namespace Modules {
 namespace Render {
+
+/// @class ViewScene
+/// @brief The ViewScene displays interactive graphical output to the computer screen.
+///
+/// Use the ViewScene to see a geometry, or spatial data. The ViewScene
+/// provides access to many simulation parameters and controls, thus,
+/// indirectly initiates new iterations of the simulation steps important to
+/// computational steering. 
 
   class SCISHARE ViewScene : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<DynamicPortTag<GeometryPortTag>>,

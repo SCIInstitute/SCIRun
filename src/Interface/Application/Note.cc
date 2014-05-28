@@ -67,11 +67,11 @@ void HasNotes::connectUpdateNote(QObject* obj)
   QObject::connect(noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
 }
 
-NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : note_(0), notePosition_(Default),
+NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : 
+  item_(0), scene_(0), note_(0), 
+  notePosition_(Default),
   defaultNotePosition_(Top), //TODO
   displayStrategy_(display),
-  item_(0),
-  scene_(0),
   destroyed_(false)
 {
 }

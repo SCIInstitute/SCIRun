@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/GenerateSinglePointProbeFromField.cc
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
@@ -48,6 +47,9 @@
 namespace SCIRun {
 
 using std::stack;
+
+/// @class GenerateSinglePointProbeFromField
+/// @brief This module generates a single probe. 
 
 class GenerateSinglePointProbeFromField : public Module
 {
