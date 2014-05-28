@@ -32,7 +32,6 @@
 
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
@@ -47,10 +46,6 @@ CalculateVectorMagnitudesModule::CalculateVectorMagnitudesModule()
 void CalculateVectorMagnitudesModule::execute()
 {
   FieldHandle input = getRequiredInput(VectorField);
-
-  FieldInformation fi(input);
-  if (!fi.is_vector())
-    THROW_INVALID_ARGUMENT("Field needs to be a vector type ");
   
   if(needToExecute())
   {

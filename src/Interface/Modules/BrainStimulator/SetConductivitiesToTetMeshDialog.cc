@@ -69,6 +69,5 @@ void SetConductivitiesToTetMeshDialog::pull()
   Pulling p(this);
   
   //keepTypeCheckBox_->setChecked(state_->getValue(SetFieldDataAlgo::keepTypeCheckBox).getBool());
-  
 }
 

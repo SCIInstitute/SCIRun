@@ -62,12 +62,12 @@ AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH"
 
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
-  addParameter(Skin,      0.0);
-  addParameter(Skull,     0.0);
-  addParameter(CSF,       0.0);
-  addParameter(GM,        0.0);
-  addParameter(WM,        0.0);
-  addParameter(Electrode, 0.0);
+  addParameter(Skin,      0.33);
+  addParameter(Skull,     0.01);
+  addParameter(CSF,       1.79);
+  addParameter(GM,        0.33);
+  addParameter(WM,        0.14);
+  addParameter(Electrode, 1.4);
 }
 
 AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const

@@ -53,7 +53,6 @@ class CalculateVectorMagnitudesModuleTests : public ModuleTest
 
 namespace
 {
-  // should accept as input
   FieldHandle CreateTriSurfVectorOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
@@ -71,27 +70,7 @@ namespace
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
   }
   
-  // should not accept as input
-  FieldHandle CreateTriSurfScalarOnElem()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld");
-  }
-  FieldHandle CreateTetMesScalarOnElem()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
-  }
-  FieldHandle CreateTetMeshScalarOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
-  }
-  FieldHandle CreateTriSurfScalarOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
-  }
-  FieldHandle CreatePointCloudeScalar()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/point_cloud/scalar/pts_scalar.fld");
-  }
+  // scalar tests are covered at the algorithm level
 }
 
 TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnElemVectorInput)
@@ -100,7 +79,6 @@ TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnElemVectorInput)
   connectDummyOutputConnection(cvm, 0);
   stubPortNWithThisData(cvm, 0, CreateTriSurfVectorOnElem());
   EXPECT_NO_THROW(cvm->execute());
-//  EXPECT_THROW(cvm->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnElemVectorInput)
 {
@@ -108,7 +86,6 @@ TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnElemVectorInput)
   connectDummyOutputConnection(cvm, 0);
   stubPortNWithThisData(cvm, 0, CreateTetMeshVectorOnElem());
   EXPECT_NO_THROW(cvm->execute());
-//  EXPECT_THROW(cvm->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnNodeVectorInput)
 {
@@ -116,7 +93,6 @@ TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnNodeVectorInput)
   connectDummyOutputConnection(cvm, 0);
   stubPortNWithThisData(cvm, 0, CreateTetMeshVectorOnNode());
   EXPECT_NO_THROW(cvm->execute());
-//  EXPECT_THROW(cvm->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnNodeVectorInput)
 {
@@ -124,17 +100,7 @@ TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnNodeVectorInput)
   connectDummyOutputConnection(cvm, 0);
   stubPortNWithThisData(cvm, 0, CreateTriSurfVectorOnNode());
   EXPECT_NO_THROW(cvm->execute());
-//  EXPECT_THROW(cvm->execute(), DataPortException);
 }
-
-TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnElemScalarInput)
-{
-  auto cvm = makeModule("CalculateVectorMagnitudes");
-  FieldHandle f = CreateTriSurfScalarOnElem();
-  stubPortNWithThisData(cvm, 0, f);
-  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
-}
-
 TEST_F(CalculateVectorMagnitudesModuleTests, SparseRowMatrixInput)
 {
   auto cvm = makeModule("CalculateVectorMagnitudes");
@@ -151,34 +117,6 @@ TEST_F(CalculateVectorMagnitudesModuleTests, SparseRowMatrixInput)
 	m->makeCompressed();
   stubPortNWithThisData(cvm, 0, m);
   EXPECT_THROW(cvm->execute(), WrongDatatypeOnPortException);
-}
-TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnElemScalarInput)
-{
-  auto cvm = makeModule("CalculateVectorMagnitudes");
-  FieldHandle f = CreateTetMesScalarOnElem();
-  stubPortNWithThisData(cvm, 0, f);
-  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
-}
-TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForCloudPointScalar)
-{
-  auto cvm = makeModule("CalculateVectorMagnitudes");
-  FieldHandle f = CreatePointCloudeScalar();
-  stubPortNWithThisData(cvm, 0, f);
-  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
-}
-TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForTetMeshScalar)
-{
-  auto cvm = makeModule("CalculateVectorMagnitudes");
-  FieldHandle f = CreateTetMeshScalarOnNode();
-  stubPortNWithThisData(cvm, 0, f);
-  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
-}
-TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForTriSurfScalar)
-{
-  auto cvm = makeModule("CalculateVectorMagnitudes");
-  FieldHandle f = CreateTriSurfScalarOnNode();
-  stubPortNWithThisData(cvm, 0, f);
-  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForNullInput)
 {
