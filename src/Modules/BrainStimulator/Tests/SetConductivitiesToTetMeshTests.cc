@@ -37,6 +37,7 @@ using namespace SCIRun::Testing;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::BrainStimulator;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
@@ -83,11 +84,18 @@ TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarOnElem)
   EXPECT_NO_THROW(test->execute());
 }
 
+TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarOnNode)
+{
+  auto test = makeModule("SetConductivitiesToTetMesh");
+  stubPortNWithThisData(test, 0, CreateTetMeshScalarOnNode());
+  EXPECT_THROW(test->execute(), InvalidArgumentException);
+}
+
 TEST_F(SetConductivitiesToTetMeshTests, TetMeshVectorOnElem)
 {
   auto test = makeModule("SetConductivitiesToTetMesh");
   stubPortNWithThisData(test, 0, CreateTetMeshVectorOnElem());
-  EXPECT_NO_THROW(test->execute());
+  EXPECT_THROW(test->execute(), InvalidArgumentException);
 }
 
 TEST_F(SetConductivitiesToTetMeshTests, ThrowsForNullInput)

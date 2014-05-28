@@ -24,6 +24,9 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   
+   Author: Spencer Frisby
+   Date:   May 2014
 */
 #include <iostream>
 #include <Core/Datatypes/String.h>
@@ -32,6 +35,7 @@
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
@@ -68,6 +72,13 @@ void SetConductivitiesToTetMeshModule::execute()
 
   //algorithm parameter
   //algo_->set(Variables::AppendMatrixOption, param);
+  
+  FieldInformation info(mesh);
+  if (info.is_vector())
+    THROW_INVALID_ARGUMENT("Vector type fields are currently not supported ");
+  if (!info.is_constantdata())
+    THROW_INVALID_ARGUMENT("This function requires the data to be on the elements ");
+  
  
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin);
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skull);

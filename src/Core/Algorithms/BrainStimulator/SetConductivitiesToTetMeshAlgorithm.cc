@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 
-   Author            : Spencer Frisby
-   Last modification : May 2014
+   Author : Spencer Frisby
+   Date   : May 2014
 */
 
 #include <Core/Datatypes/DenseMatrix.h>
