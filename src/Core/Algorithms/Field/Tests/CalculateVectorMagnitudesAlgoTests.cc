@@ -142,8 +142,7 @@ TEST(CalculateVectorMagnitudesAlgoTests, TetMeshVectorOnNodeAsInput)
   FieldHandle in = CreateTetMeshVectorOnNode();
   FieldHandle out;
   CalculateVectorMagnitudesAlgo algo;
-  algo.run(in, out);
-  // TODO: compare values from SCIRun 4  
+  algo.run(in, out); 
   
   FieldHandle SCIRUN4out = CreateTetMeshVectorOnNodeSCIRun4Output();
   VField* expected_vals = SCIRUN4out->vfield(); // what is to be expected
@@ -155,6 +154,7 @@ TEST(CalculateVectorMagnitudesAlgoTests, TetMeshVectorOnNodeAsInput)
   VMesh*  imesh  = in->vmesh();
   VField::size_type num_elems = imesh->num_elems();
   
+  // comparing every value
   for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
     EXPECT_EQ(expected_mag[idx],outputed_mag[idx]);
 }

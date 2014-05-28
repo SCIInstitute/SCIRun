@@ -96,48 +96,48 @@ namespace
 
 TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnElemVectorInput)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
-  FieldHandle f = CreateTriSurfVectorOnElem();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_NO_THROW(test->execute());
-//  EXPECT_THROW(test->execute(), DataPortException);
+  auto cvm = makeModule("CalculateVectorMagnitudes");
+  connectDummyOutputConnection(cvm, 0);
+  stubPortNWithThisData(cvm, 0, CreateTriSurfVectorOnElem());
+  EXPECT_NO_THROW(cvm->execute());
+//  EXPECT_THROW(cvm->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnElemVectorInput)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
-  FieldHandle f = CreateTetMeshVectorOnElem();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_NO_THROW(test->execute());
-//  EXPECT_THROW(test->execute(), DataPortException);
+  auto cvm = makeModule("CalculateVectorMagnitudes");
+  connectDummyOutputConnection(cvm, 0);
+  stubPortNWithThisData(cvm, 0, CreateTetMeshVectorOnElem());
+  EXPECT_NO_THROW(cvm->execute());
+//  EXPECT_THROW(cvm->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnNodeVectorInput)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
-  FieldHandle f = CreateTetMeshVectorOnNode();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_NO_THROW(test->execute());
-//  EXPECT_THROW(test->execute(), DataPortException);
+  auto cvm = makeModule("CalculateVectorMagnitudes");
+  connectDummyOutputConnection(cvm, 0);
+  stubPortNWithThisData(cvm, 0, CreateTetMeshVectorOnNode());
+  EXPECT_NO_THROW(cvm->execute());
+//  EXPECT_THROW(cvm->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnNodeVectorInput)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
-  FieldHandle f = CreateTriSurfVectorOnNode();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_NO_THROW(test->execute());
-//  EXPECT_THROW(test->execute(), DataPortException);
+  auto cvm = makeModule("CalculateVectorMagnitudes");
+  connectDummyOutputConnection(cvm, 0);
+  stubPortNWithThisData(cvm, 0, CreateTriSurfVectorOnNode());
+  EXPECT_NO_THROW(cvm->execute());
+//  EXPECT_THROW(cvm->execute(), DataPortException);
 }
 
 TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnElemScalarInput)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
+  auto cvm = makeModule("CalculateVectorMagnitudes");
   FieldHandle f = CreateTriSurfScalarOnElem();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_THROW(test->execute(), DataPortException);
+  stubPortNWithThisData(cvm, 0, f);
+  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
 }
 
 TEST_F(CalculateVectorMagnitudesModuleTests, SparseRowMatrixInput)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
+  auto cvm = makeModule("CalculateVectorMagnitudes");
 	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
 	m->insert(0,0) = 1;
 	m->insert(0,1) = 7;
@@ -149,41 +149,41 @@ TEST_F(CalculateVectorMagnitudesModuleTests, SparseRowMatrixInput)
 	m->insert(2,1) = -5;
 	m->insert(2,2) = 6;
 	m->makeCompressed();
-  stubPortNWithThisData(test, 0, m);
-  EXPECT_THROW(test->execute(), DataPortException);
+  stubPortNWithThisData(cvm, 0, m);
+  EXPECT_THROW(cvm->execute(), WrongDatatypeOnPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnElemScalarInput)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
+  auto cvm = makeModule("CalculateVectorMagnitudes");
   FieldHandle f = CreateTetMesScalarOnElem();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_THROW(test->execute(), DataPortException);
+  stubPortNWithThisData(cvm, 0, f);
+  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForCloudPointScalar)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
+  auto cvm = makeModule("CalculateVectorMagnitudes");
   FieldHandle f = CreatePointCloudeScalar();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_THROW(test->execute(), DataPortException);
+  stubPortNWithThisData(cvm, 0, f);
+  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForTetMeshScalar)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
+  auto cvm = makeModule("CalculateVectorMagnitudes");
   FieldHandle f = CreateTetMeshScalarOnNode();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_THROW(test->execute(), DataPortException);
+  stubPortNWithThisData(cvm, 0, f);
+  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForTriSurfScalar)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
+  auto cvm = makeModule("CalculateVectorMagnitudes");
   FieldHandle f = CreateTriSurfScalarOnNode();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_THROW(test->execute(), DataPortException);
+  stubPortNWithThisData(cvm, 0, f);
+  EXPECT_THROW(cvm->execute(), InvalidArgumentException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, ThrowsForNullInput)
 {
-  auto test = makeModule("CalculateVectorMagnitudes");
+  auto cvm = makeModule("CalculateVectorMagnitudes");
   FieldHandle nullField;
-  stubPortNWithThisData(test, 0, nullField);
-  EXPECT_THROW(test->execute(), DataPortException);
+  stubPortNWithThisData(cvm, 0, nullField);
+  EXPECT_THROW(cvm->execute(), NullHandleOnPortException);
 }

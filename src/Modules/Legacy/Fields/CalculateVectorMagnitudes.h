@@ -44,7 +44,7 @@ namespace SCIRun {
         CalculateVectorMagnitudesModule();
 
         virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void setStateDefaults() {};
 
         INPUT_PORT(0, VectorField, LegacyField);
         OUTPUT_PORT(0, ScalarField, LegacyField);

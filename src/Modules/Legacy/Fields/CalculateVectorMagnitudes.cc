@@ -25,14 +25,14 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
    
-   Author            : Moritz Dannhauer
-   Author            : Spencer Frisby
-   Last modification : 5/20/14
+   Author : Moritz Dannhauer
+   Author : Spencer Frisby
+   Date   : May 2014
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateVectorMagnitudes.cc
 
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
@@ -46,15 +46,18 @@ CalculateVectorMagnitudesModule::CalculateVectorMagnitudesModule()
 
 void CalculateVectorMagnitudesModule::execute()
 {
-  FieldHandle input = getRequiredInput(ScalarField);
+  FieldHandle input = getRequiredInput(VectorField);
 
-  //inputs_changed_ || !oport_cached("Field")
+  FieldInformation fi(input);
+  if (!fi.is_vector())
+    THROW_INVALID_ARGUMENT("Field needs to be a vector type ");
+  
   if(needToExecute())
   {
     update_state(Executing);
 
-    auto output = algo().run_generic(make_input((ScalarField, input)));
+    auto output = algo().run_generic(make_input((VectorField, input)));
 
-    sendOutputFromAlgorithm(VectorField, output);
+    sendOutputFromAlgorithm(ScalarField, output);
   }
 }

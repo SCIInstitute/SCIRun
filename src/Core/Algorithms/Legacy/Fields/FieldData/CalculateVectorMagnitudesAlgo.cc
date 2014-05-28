@@ -27,7 +27,7 @@
    
    author: Moritz Dannhauer
    author: Spencer Frisby
-   last change: 5/8/2014
+   date: May 2014
 */
 
 
@@ -44,9 +44,7 @@ using namespace SCIRun::Core::Algorithms;
 
 bool
 CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output) const
-{
-  ScopedAlgorithmStatusReporter asr(this, "CalculateVectorMagnitudes");
-  
+{  
   if (!input)
     THROW_ALGORITHM_INPUT_ERROR("No input field");
  
@@ -54,9 +52,9 @@ CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output) const
   
   if (fi.is_nodata())
     THROW_ALGORITHM_INPUT_ERROR("Input field does not have data associated with it");   
-  
+
   if (!fi.is_vector())
-    THROW_ALGORITHM_INPUT_ERROR("The data needs to be of vector type to calculate vector magnitudes");
+    THROW_ALGORITHM_INPUT_ERROR("The data needs to be vector type to calculate vector magnitudes");
   
   fi.make_scalar();
   fi.make_constantdata();
