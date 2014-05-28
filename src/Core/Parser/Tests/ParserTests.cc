@@ -180,18 +180,8 @@ TEST_F(BasicParserTests, CreateField_Brackets_Unbalanced)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
+
   std::string function = "RESULT = [;";
   ASSERT_TRUE(engine.add_expressions(function));
   ASSERT_FALSE(engine.run());
@@ -213,21 +203,7 @@ TEST_F(BasicParserTests, CreateFieldData_Arithmetic)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = 1/Y + 2*X - Z;";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -255,17 +231,7 @@ TEST_F(BasicParserTests, CreateFieldData_add)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = add(X,100);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -293,21 +259,7 @@ TEST_F(BasicParserTests, CreateFieldData_sub)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =sub(X,Y);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -335,21 +287,7 @@ TEST_F(BasicParserTests, CreateFieldData_mult)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =mult(X,Y);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -377,21 +315,7 @@ TEST_F(BasicParserTests, CreateFieldData_div)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =div(X,100);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -419,21 +343,7 @@ TEST_F(BasicParserTests, CreateFieldData_exp)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =exp(3);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -461,21 +371,7 @@ TEST_F(BasicParserTests, CreateFieldData_log)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =log(10);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -503,21 +399,7 @@ TEST_F(BasicParserTests, CreateFieldData_ln)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =ln(100);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -545,21 +427,7 @@ TEST_F(BasicParserTests, CreateFieldData_log2)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =log2(16);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -587,21 +455,7 @@ TEST_F(BasicParserTests, CreateFieldData_log10)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = log10(50*2);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -632,21 +486,7 @@ TEST_F(BasicParserTests, CreateFieldData_sin)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =sin(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -674,21 +514,7 @@ TEST_F(BasicParserTests, CreateFieldData_asin)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =asin(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -725,21 +551,7 @@ TEST_F(BasicParserTests, CreateFieldData_sinh)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = sinh(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -767,21 +579,7 @@ TEST_F(BasicParserTests, CreateFieldData_asinh)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = asinh(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -809,21 +607,7 @@ TEST_F(BasicParserTests, CreateFieldData_cos)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =cos(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -854,21 +638,7 @@ TEST_F(BasicParserTests, CreateFieldData_acos)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = acos(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -909,21 +679,7 @@ TEST_F(BasicParserTests, CreateFieldData_acosh)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = acosh(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -954,21 +710,7 @@ TEST_F(BasicParserTests, CreateFieldData_tan)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =tan(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -999,21 +741,7 @@ TEST_F(BasicParserTests, CreateFieldData_atan)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =atan(2*pi);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1041,21 +769,7 @@ TEST_F(BasicParserTests, CreateFieldData_pow)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = pow(2,2.5);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1083,21 +797,7 @@ TEST_F(BasicParserTests, CreateFieldData_ceil)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = ceil(2.3) + ceil(2.9);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1125,21 +825,7 @@ TEST_F(BasicParserTests, CreateFieldData_floor)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = floor(2.3) + floor(2.9);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1167,21 +853,7 @@ TEST_F(BasicParserTests, CreateFieldData_round)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = round(2.3) + round(2.9);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1209,21 +881,7 @@ TEST_F(BasicParserTests, CreateFieldData_boolean)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =boolean(0) + boolean(1);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1251,21 +909,7 @@ TEST_F(BasicParserTests, CreateFieldData_norm)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = norm(2.9*X);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1293,21 +937,7 @@ TEST_F(BasicParserTests, CreateFieldData_isnan)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = isnan(div(1,0));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1335,21 +965,7 @@ TEST_F(BasicParserTests, CreateFieldData_isfinite)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = isfinite(div(1,0));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1377,21 +993,7 @@ TEST_F(BasicParserTests, CreateFieldData_isinfinite)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = isinfinite(div(1,0));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1419,21 +1021,7 @@ TEST_F(BasicParserTests, CreateFieldData_select)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = select(X>2,1,10);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1461,21 +1049,7 @@ TEST_F(BasicParserTests, CreateFieldData_sign)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = sign(X);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1503,21 +1077,7 @@ TEST_F(BasicParserTests, CreateFieldData_sqrt)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = sqrt(2.9-X);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1545,21 +1105,7 @@ TEST_F(BasicParserTests, CreateFieldData_not)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = not(1);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1586,21 +1132,7 @@ TEST_F(BasicParserTests, CreateFieldData_inv)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = inv(1/10);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1628,21 +1160,7 @@ TEST_F(BasicParserTests, CreateFieldData_abs)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = abs(-9*X+1);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1670,21 +1188,7 @@ TEST_F(BasicParserTests, CreateFieldData_and)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT =  and(1,0);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1711,21 +1215,7 @@ TEST_F(BasicParserTests, CreateFieldData_or)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = or(1,0);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1752,21 +1242,7 @@ TEST_F(BasicParserTests, CreateFieldData_eq)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = eq(1, X);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1793,21 +1269,7 @@ TEST_F(BasicParserTests, CreateFieldData_neq)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = neq(5,Y);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1835,21 +1297,7 @@ TEST_F(BasicParserTests, CreateFieldData_dot)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = dot(vector(1,1,1),vector(2,2,2));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1877,21 +1325,7 @@ TEST_F(BasicParserTests, CreateFieldData_cross)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = cross(vector(1,2,3),vector(4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1919,21 +1353,7 @@ TEST_F(BasicParserTests, CreateFieldData_normalize)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = normalize(vector(1,2,3));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -1961,21 +1381,7 @@ TEST_F(BasicParserTests, CreateFieldData_find_normal1)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = find_normal1(vector(1,2,3));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -2003,21 +1409,7 @@ TEST_F(BasicParserTests, CreateFieldData_find_normal2)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = find_normal2(vector(1,2,3));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -2048,21 +1440,7 @@ TEST_F(BasicParserTests, CreateFieldData_quality)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "A = tensor(1,2,3,4,5,6); RESULT = quality(A);";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -2090,21 +1468,7 @@ TEST_F(BasicParserTests, CreateFieldData_trace)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = trace(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -2132,21 +1496,7 @@ TEST_F(BasicParserTests, CreateFieldData_det)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = det(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -2174,21 +1524,7 @@ TEST_F(BasicParserTests, CreateFieldData_frobenius)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = frobenius(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -2216,21 +1552,7 @@ TEST_F(BasicParserTests, CreateFieldData_frobenius2)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = frobenius2(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
@@ -2258,21 +1580,7 @@ TEST_F(BasicParserTests, CreateFieldData_fracanisotropy)
   EXPECT_EQ(0, max);
   
   NewArrayMathEngine engine;
-  
-  std::string format = "double";
-  std::string basis = "Linear";
-  int basis_order = 1;
-  
-  ASSERT_TRUE(engine.add_input_fielddata_location("POS",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_input_fielddata_element("ELEMENT",field,basis_order));
-  
-  ASSERT_TRUE(engine.add_output_fielddata("RESULT",field,basis_order,format));
-  
-  ASSERT_TRUE(engine.add_index("INDEX"));
-  ASSERT_TRUE(engine.add_size("SIZE"));
+  setupEngine(engine, field);
   
   std::string function = "RESULT = fracanisotropy(tensor(1,2,3,4,5,6));";
   ASSERT_TRUE(engine.add_expressions(function));
