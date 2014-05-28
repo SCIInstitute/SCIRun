@@ -99,32 +99,32 @@ TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnElemVectorInput)
   auto test = makeModule("CalculateVectorMagnitudes");
   FieldHandle f = CreateTriSurfVectorOnElem();
   stubPortNWithThisData(test, 0, f);
-//  EXPECT_NO_THROW(test->execute());
-  EXPECT_THROW(test->execute(), DataPortException);
+  EXPECT_NO_THROW(test->execute());
+//  EXPECT_THROW(test->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnElemVectorInput)
 {
   auto test = makeModule("CalculateVectorMagnitudes");
   FieldHandle f = CreateTetMeshVectorOnElem();
   stubPortNWithThisData(test, 0, f);
-//  EXPECT_NO_THROW(test->execute());
-  EXPECT_THROW(test->execute(), DataPortException);
+  EXPECT_NO_THROW(test->execute());
+//  EXPECT_THROW(test->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnNodeVectorInput)
 {
   auto test = makeModule("CalculateVectorMagnitudes");
   FieldHandle f = CreateTetMeshVectorOnNode();
   stubPortNWithThisData(test, 0, f);
-//  EXPECT_NO_THROW(test->execute());
-  EXPECT_THROW(test->execute(), DataPortException);
+  EXPECT_NO_THROW(test->execute());
+//  EXPECT_THROW(test->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnNodeVectorInput)
 {
   auto test = makeModule("CalculateVectorMagnitudes");
   FieldHandle f = CreateTriSurfVectorOnNode();
   stubPortNWithThisData(test, 0, f);
-//  EXPECT_NO_THROW(test->execute());
-  EXPECT_THROW(test->execute(), DataPortException);
+  EXPECT_NO_THROW(test->execute());
+//  EXPECT_THROW(test->execute(), DataPortException);
 }
 
 TEST_F(CalculateVectorMagnitudesModuleTests, TriSurfOnElemScalarInput)
@@ -150,7 +150,6 @@ TEST_F(CalculateVectorMagnitudesModuleTests, SparseRowMatrixInput)
 	m->insert(2,2) = 6;
 	m->makeCompressed();
   stubPortNWithThisData(test, 0, m);
-  //	EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
   EXPECT_THROW(test->execute(), DataPortException);
 }
 TEST_F(CalculateVectorMagnitudesModuleTests, TetMeshOnElemScalarInput)

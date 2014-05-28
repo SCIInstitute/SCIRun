@@ -29,37 +29,73 @@
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::TestUtils;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
-using ::testing::Mock;
 
 class SetConductivitiesToTetMeshTests : public ModuleTest
 {
 
 };
 
-TEST_F(SetConductivitiesToTetMeshTests, ThrowsForNullInput)
+namespace
 {
-  auto tdcs = makeModule("SetConductivitiesToTetMesh");
-  ASSERT_TRUE(tdcs != nullptr);
-  FieldHandle nullField;
-  stubPortNWithThisData(tdcs, 0, nullField);
-  stubPortNWithThisData(tdcs, 1, nullField);
-
-  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
+  FieldHandle CreateTetMeshVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshSevenElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh_7elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+  }
 }
 
-TEST_F(SetConductivitiesToTetMeshTests, DISABLED_Foo)
+TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarSevenElem)
 {
-  FAIL() << "TODO";
+  auto test = makeModule("SetConductivitiesToTetMesh");
+  stubPortNWithThisData(test, 0, CreateTetMeshSevenElem());
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarOnElem)
+{
+  auto test = makeModule("SetConductivitiesToTetMesh");
+  stubPortNWithThisData(test, 0, CreateTetMeshScalarOnElem());
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(SetConductivitiesToTetMeshTests, TetMeshVectorOnElem)
+{
+  auto test = makeModule("SetConductivitiesToTetMesh");
+  stubPortNWithThisData(test, 0, CreateTetMeshVectorOnElem());
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(SetConductivitiesToTetMeshTests, ThrowsForNullInput)
+{
+  auto test = makeModule("SetConductivitiesToTetMesh");
+  ASSERT_TRUE(test != nullptr);
+  FieldHandle nullField;
+  stubPortNWithThisData(test, 0, nullField);
+  stubPortNWithThisData(test, 1, nullField);
+  EXPECT_THROW(test->execute(), NullHandleOnPortException);
 }

@@ -76,9 +76,12 @@ void SetConductivitiesToTetMeshModule::execute()
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::WM);
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Electrode);
   
-  //algorithm input and run
-  auto output = algo().run_generic(make_input((MESH, mesh)(INHOMOGENEOUS_SKULL, optionalAlgoInput(skull))(ANISOTROPIC_WM, optionalAlgoInput(wm))));
-
-  //algorithm output
-  sendOutputFromAlgorithm(OUTPUTMESH, output);
+  if (needToExecute())
+  {
+    //algorithm input and run
+    auto output = algo().run_generic(make_input((MESH, mesh)(INHOMOGENEOUS_SKULL, optionalAlgoInput(skull))(ANISOTROPIC_WM, optionalAlgoInput(wm))));
+    
+    //algorithm output
+    sendOutputFromAlgorithm(OUTPUTMESH, output);
+  }
 }

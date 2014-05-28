@@ -48,6 +48,10 @@ namespace
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
   }
+  FieldHandle CreateTetMeshScalarSevenElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh_7elem.fld");
+  }
   FieldHandle CreateTetMeshScalarOnElem()
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
@@ -58,13 +62,7 @@ namespace
   }
 }
 
-TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshVector)
-{
-  SetConductivitiesToTetMeshAlgorithm algo;
-  EXPECT_THROW(algo.run(CreateTetMeshVectorOnElem()), AlgorithmInputException);
-}
-
-TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalar)
+TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalarSevenElem)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   
@@ -77,8 +75,8 @@ TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalar)
   algo.set(SetConductivitiesToTetMeshAlgorithm::WM,    conductivities[4]);
   algo.set(SetConductivitiesToTetMeshAlgorithm::Electrode, conductivities[5]);
   
-  FieldHandle input  = CreateTetMeshScalarOnElem();
-  FieldHandle output = algo.run(CreateTetMeshScalarOnElem());
+  FieldHandle input  = CreateTetMeshScalarSevenElem();
+  FieldHandle output = algo.run(CreateTetMeshScalarSevenElem());
   
   VField* ivfield = input->vfield();
   VField* ovfield = output->vfield();
@@ -119,6 +117,53 @@ TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalar)
         break;
     }
   }
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalarThreeElem)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  double conductivities[] = {9.25, 25.1988, 3.5, 5.1988, 5.22, 22.2013};
+  
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Skin,  conductivities[0]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Skull, conductivities[1]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF,   conductivities[2]);
+  
+  FieldHandle input  = CreateTetMeshScalarOnElem();
+  FieldHandle output = algo.run(CreateTetMeshScalarOnElem());
+  
+  VField* ivfield = input->vfield();
+  VField* ovfield = output->vfield();
+  int ival = 0;
+  double oval = 0;
+  for (VMesh::Elem::index_type i=0; i < ivfield->vmesh()->num_elems(); i++)
+  {
+    ivfield->get_value(ival, i);
+    switch (ival)
+    {
+      case 1:
+        ovfield->get_value(oval, i);
+        EXPECT_EQ(oval, conductivities[0]);
+        break;
+      case 2:
+        ovfield->get_value(oval, i);
+        EXPECT_EQ(oval, conductivities[1]);
+        break;
+      case 3:
+        ovfield->get_value(oval, i);
+        EXPECT_EQ(oval, conductivities[2]);
+        break;
+      default:
+        std::cout << "default switch statement executed, unknown error occurred " << std::endl;
+        FAIL();
+        break;
+    }
+  }
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshVector)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  EXPECT_THROW(algo.run(CreateTetMeshVectorOnElem()), AlgorithmInputException);
 }
 
 TEST(SetConductivitiesToTetMeshAlgorithm, ThrowsForDataOnNode)
