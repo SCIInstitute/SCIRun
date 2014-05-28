@@ -239,11 +239,13 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	this-> setColor(placeHoldingColor_);
+  QGraphicsPathItem::mouseReleaseEvent(event);
 }
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	placeHoldingColor_ = this -> color();
 	this -> setColor(Qt::red);
+  QGraphicsPathItem::mousePressEvent(event);
 }
 
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -258,6 +260,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
     //std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
   }
+  QGraphicsPathItem::mouseDoubleClickEvent(event);
 }
 
 void ConnectionLine::setNoteGraphicsContext() 
