@@ -28,6 +28,7 @@
 
 #include <gtest/gtest.h>
 
+#include <sci_debug.h>
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
@@ -147,6 +148,7 @@ TEST(DenseMatrixBinaryOperationTests, CanSubtract)
   EXPECT_EQ(m - m, Zero);
 }
 
+#if !DEBUG
 /// @todo: compare to v4.
 TEST(DenseMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
 {
@@ -155,6 +157,7 @@ TEST(DenseMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
   std::cout << sum.cols() << std::endl;
   PRINT_MATRIX(sum);
 }
+#endif
 
 TEST(DenseMatrixTests, CanConstructFromTransform)
 {

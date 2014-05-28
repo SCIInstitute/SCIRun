@@ -146,7 +146,21 @@ TEST(WriteMatrixTest, CanPrintSparseMatrix)
 
   std::ostringstream ostr;
   ostr << m.castForPrinting();
+#if !DEBUG
   EXPECT_EQ("1 0 0 \n0 0 -1.4 \n0 0 0 \n", ostr.str());
+#else
+  const std::string debugSparse = 
+    "Nonzero entries:\n"
+    "(1,0) (_,_) (-1.4,2) (_,_) (_,_) (_,_) \n\n"
+    "Outer pointers:\n"
+    "0 2 4  $\n"
+    "Inner non zeros:\n"
+    "1 1 0  $\n\n"
+    "1 0 0 \n"
+    "0 0 -1.4 \n"
+    "0 0 0 \n";
+  EXPECT_EQ(debugSparse, ostr.str());
+#endif
 }
 
 TEST(WriteMatrixTest, CanPrintColumnMatrix)
