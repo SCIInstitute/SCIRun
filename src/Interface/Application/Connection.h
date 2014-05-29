@@ -86,6 +86,7 @@ private:
   void destroy();
   bool destroyed_;
   class ConnectionMenu* menu_;
+  bool menuOpen_; 
   QColor placeHoldingColor_;
 };
 

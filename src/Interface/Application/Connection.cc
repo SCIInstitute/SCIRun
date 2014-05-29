@@ -239,20 +239,23 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	this-> setColor(placeHoldingColor_);
+	menuOpen_ = false; 
   QGraphicsPathItem::mouseReleaseEvent(event);
 }
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-	this -> setAcceptedMouseButtons(Qt::LeftButton); 
-	placeHoldingColor_ = this -> color();
-	this -> setColor(Qt::red);
-	
+{	 
+	if(!menuOpen_)
+	{
+		placeHoldingColor_ = this -> color();
+		this -> setColor(Qt::red); 
+	}
   QGraphicsPathItem::mousePressEvent(event);
 }
 
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   auto action = menu_->exec(event->screenPos());
+  menuOpen_ = true; 
   if (action && action->text() == deleteAction)
   {
     scene()->removeItem(this);
@@ -263,7 +266,6 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     //std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
   }
   QGraphicsPathItem::mouseDoubleClickEvent(event);
-  this->mouseReleaseEvent(event); //mouseDoubleClickEvent calls mousePressEvent. This call required to revert color change 
   }
 
 void ConnectionLine::setNoteGraphicsContext() 
