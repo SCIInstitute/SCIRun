@@ -26,6 +26,12 @@
   DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
+
+using namespace SCIRun;
+
+IEPluginManagerManager::IEPluginManagerManager() {}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
 
 #include <Core/Thread/Mutex.h>

@@ -100,7 +100,7 @@ TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerField)
 
 TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerColorMap)
 {
-  ColorMapIEPlugin dummy("dummy", ".color", "123", creaderDummy, cwriterDummy);
+  ColorMapIEPluginLegacyAdapter dummy("dummy", ".color", "123", creaderDummy, cwriterDummy);
 
   ColorMapIEPluginManager manager;
   std::vector<std::string> importers;

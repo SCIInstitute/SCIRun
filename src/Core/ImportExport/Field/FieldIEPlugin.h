@@ -179,7 +179,11 @@ bool IEPluginLegacyAdapter<Data>::operator==(const IEPluginLegacyAdapter<Data>& 
     filewriter_ == other.filewriter_);
 }
 
-
+class SCISHARE IEPluginManagerManager
+{
+public:
+  IEPluginManagerManager();
+};
 
 }
 

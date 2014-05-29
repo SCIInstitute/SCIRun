@@ -42,51 +42,19 @@
 #ifndef SCI_project_ColorMapIEPlugin_h
 #define SCI_project_ColorMapIEPlugin_h 1
 
-#include <Core/Logging/LoggerFwd.h>
+#include <Core/ImportExport/GenericIEPlugin.h>
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Datatypes/ColorMap.h>
-
-#include <map>
-
-
 #include <Core/ImportExport/share.h>
 
 namespace SCIRun {
 
-//----------------------------------------------------------------------
-class SCISHARE ColorMapIEPlugin {
-public:
-  const std::string pluginname;
+  typedef GenericIEPluginInterface<Core::Datatypes::ColorMap> ColorMapIEPlugin;
 
-  const std::string fileextension;
-  const std::string filemagic;
+  typedef IEPluginLegacyAdapter<Core::Datatypes::ColorMap> ColorMapIEPluginLegacyAdapter;
 
-  Core::Datatypes::ColorMapHandle (*filereader)(Core::Logging::Log& pr, const char *filename);
-  bool (*filewriter)(Core::Logging::Log& pr,
-		     Core::Datatypes::ColorMapHandle f, const char *filename);
+  typedef GenericIEPluginManager<Core::Datatypes::ColorMap> ColorMapIEPluginManager;
 
-  ColorMapIEPlugin(const std::string &name,
-		   const std::string &fileextension,
-		   const std::string &filemagic,
-		   Core::Datatypes::ColorMapHandle (*freader)(Core::Logging::Log& pr,
-					     const char *filename) = 0,
-		   bool (*fwriter)(Core::Logging::Log& pr, Core::Datatypes::ColorMapHandle f,
-				   const char *filename) = 0);
-
-  ~ColorMapIEPlugin();
-
-  bool operator==(const ColorMapIEPlugin &other) const;
-};
-
-
-
-class SCISHARE ColorMapIEPluginManager {
-public:
-  void get_importer_list(std::vector<std::string> &results);
-  void get_exporter_list(std::vector<std::string> &results);
-  ColorMapIEPlugin *get_plugin(const std::string &name);
-};
-
-
-} // End namespace SCIRun
+}
 
 #endif
