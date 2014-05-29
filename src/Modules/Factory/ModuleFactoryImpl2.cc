@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
+#include <Modules/Legacy/Fields/CalculateGradients.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
@@ -65,6 +66,7 @@ void ModuleDescriptionLookup::addMoreModules()
 {
   addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", " in progress ", " adds knowns to linear systems ");        
   addModuleDesc<CalculateVectorMagnitudesModule>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<CalculateGradients >("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldDataModule>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New Module to interact with cleaver", "...");
   addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
