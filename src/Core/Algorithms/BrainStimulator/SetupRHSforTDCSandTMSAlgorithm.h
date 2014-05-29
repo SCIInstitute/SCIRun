@@ -32,9 +32,9 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+
+using namespace SCIRun::Core::Datatypes;
+
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
@@ -46,16 +46,20 @@ namespace BrainStimulator {
     //Outputs run(const Inputs& input, const Parameters& params = 0) const;
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    DenseMatrixHandle run(FieldHandle fh, MatrixHandle elc) const;
+    
+    static AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
+    static AlgorithmInputName ELECTRODE_COUNT;
+    static AlgorithmOutputName RHS;
+    
+//    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
+//    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
+//    static const AlgorithmInputName COIL;
+//    static const AlgorithmInputName COIL2;
+//    static const AlgorithmOutputName ELECTRODES_FIELD;
+//    static const AlgorithmOutputName COILS_FIELD;
 
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
-  private:
+//  private:
   
     
   };

@@ -1,5 +1,2141 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+  <class>SetupRHSforTDCSandTMSDialog</class>
+  <widget class="QWidget" name="SetupRHSforTDCSandTMSDialog">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>669</width>
+        <height>269</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>SetupRHSforTDCSandTMSDialog</string>
+    </property>
+    <widget class="QTabWidget" name="tabWidget">
+      <property name="geometry">
+        <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>650</width>
+          <height>251</height>
+        </rect>
+      </property>
+      <property name="currentIndex">
+        <number>0</number>
+      </property>
+      <widget class="QWidget" name="Simulation">
+        <property name="whatsThis">
+          <string>Simulation</string>
+        </property>
+        <property name="accessibleName">
+          <string/>
+        </property>
+        <attribute name="title">
+          <string>Simulation</string>
+        </attribute>
+        <widget class="QWidget" name="verticalLayoutWidget_5">
+          <property name="geometry">
+            <rect>
+              <x>10</x>
+              <y>0</y>
+              <width>201</width>
+              <height>111</height>
+            </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+              <widget class="QGroupBox" name="groupBox_6">
+                <property name="title">
+                  <string>Solve simulation for ...</string>
+                </property>
+                <widget class="QRadioButton" name="radioButton_6">
+                  <property name="geometry">
+                    <rect>
+                      <x>30</x>
+                      <y>50</y>
+                      <width>102</width>
+                      <height>20</height>
+                    </rect>
+                  </property>
+                  <property name="text">
+                    <string> tDCS alone</string>
+                  </property>
+                  <property name="checkable">
+                    <bool>true</bool>
+                  </property>
+                  <property name="checked">
+                    <bool>true</bool>
+                  </property>
+                </widget>
+                <widget class="QRadioButton" name="radioButton_7">
+                  <property name="enabled">
+                    <bool>false</bool>
+                  </property>
+                  <property name="geometry">
+                    <rect>
+                      <x>30</x>
+                      <y>70</y>
+                      <width>102</width>
+                      <height>20</height>
+                    </rect>
+                  </property>
+                  <property name="text">
+                    <string>TMS alone</string>
+                  </property>
+                </widget>
+                <widget class="QRadioButton" name="radioButton_8">
+                  <property name="enabled">
+                    <bool>false</bool>
+                  </property>
+                  <property name="geometry">
+                    <rect>
+                      <x>30</x>
+                      <y>30</y>
+                      <width>121</width>
+                      <height>20</height>
+                    </rect>
+                  </property>
+                  <property name="text">
+                    <string>tDCS and TMS</string>
+                  </property>
+                  <property name="checkable">
+                    <bool>true</bool>
+                  </property>
+                </widget>
+              </widget>
+            </item>
+          </layout>
+        </widget>
+        <widget class="QWidget" name="verticalLayoutWidget_6">
+          <property name="geometry">
+            <rect>
+              <x>220</x>
+              <y>0</y>
+              <width>421</width>
+              <height>211</height>
+            </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+              <widget class="QGroupBox" name="groupBox_7">
+                <property name="title">
+                  <string>Injected Current Pattern (right hand side)</string>
+                </property>
+                <widget class="QTableWidget" name="tableWidget_5">
+                  <property name="geometry">
+                    <rect>
+                      <x>0</x>
+                      <y>20</y>
+                      <width>411</width>
+                      <height>91</height>
+                    </rect>
+                  </property>
+                  <row>
+                    <property name="text">
+                      <string>1</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>2</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>3</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>4</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>5</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>7</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>8</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>9</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>10</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>11</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>12</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>13</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>14</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>15</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>16</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>17</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>18</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>19</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>20</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>21</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>22</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>23</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>24</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>25</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>26</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>27</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>28</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>29</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>30</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>31</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>32</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>33</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>34</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>35</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>36</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>37</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>38</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>39</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>40</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>41</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>42</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>43</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>44</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>45</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>46</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>47</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>48</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>49</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>50</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>51</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>52</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>53</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>54</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>55</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>56</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>57</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>58</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>59</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>60</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>61</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>62</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>63</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>64</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>65</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>66</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>67</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>68</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>69</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>70</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>71</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>72</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>73</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>74</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>75</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>76</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>77</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>78</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>79</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>80</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>81</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>82</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>83</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>84</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>85</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>86</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>87</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>88</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>89</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>90</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>91</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>92</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>93</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>94</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>95</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>96</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>97</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>98</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>99</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>100</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>101</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>102</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>103</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>104</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>105</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>106</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>107</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>108</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>109</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>110</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>111</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>112</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>113</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>114</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>115</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>116</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>117</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>118</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>119</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>120</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>121</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>122</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>123</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>124</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>125</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>126</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>127</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>128</string>
+                    </property>
+                  </row>
+                  <column>
+                    <property name="text">
+                      <string>Electrode</string>
+                    </property>
+                  </column>
+                  <column>
+                    <property name="text">
+                      <string>Current intensity [mA]</string>
+                    </property>
+                  </column>
+                  <item row="0" column="0">
+                    <property name="text">
+                      <string>elc1</string>
+                    </property>
+                  </item>
+                  <item row="0" column="1">
+                    <property name="text">
+                      <string>1</string>
+                    </property>
+                  </item>
+                  <item row="1" column="0">
+                    <property name="text">
+                      <string>elc2</string>
+                    </property>
+                  </item>
+                  <item row="1" column="1">
+                    <property name="text">
+                      <string>-1</string>
+                    </property>
+                  </item>
+                  <item row="2" column="0">
+                    <property name="text">
+                      <string>elc3</string>
+                    </property>
+                  </item>
+                  <item row="2" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="3" column="0">
+                    <property name="text">
+                      <string>elc4</string>
+                    </property>
+                  </item>
+                  <item row="3" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="4" column="0">
+                    <property name="text">
+                      <string>elc5</string>
+                    </property>
+                  </item>
+                  <item row="4" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="5" column="0">
+                    <property name="text">
+                      <string>elc7</string>
+                    </property>
+                  </item>
+                  <item row="5" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="6" column="0">
+                    <property name="text">
+                      <string>elc8</string>
+                    </property>
+                  </item>
+                  <item row="6" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="7" column="0">
+                    <property name="text">
+                      <string>elc9</string>
+                    </property>
+                  </item>
+                  <item row="7" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="8" column="0">
+                    <property name="text">
+                      <string>elc10</string>
+                    </property>
+                  </item>
+                  <item row="8" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="9" column="0">
+                    <property name="text">
+                      <string>elc11</string>
+                    </property>
+                  </item>
+                  <item row="9" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="10" column="0">
+                    <property name="text">
+                      <string>elc12</string>
+                    </property>
+                  </item>
+                  <item row="10" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="11" column="0">
+                    <property name="text">
+                      <string>elc13</string>
+                    </property>
+                  </item>
+                  <item row="11" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="12" column="0">
+                    <property name="text">
+                      <string>elc14</string>
+                    </property>
+                  </item>
+                  <item row="12" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="13" column="0">
+                    <property name="text">
+                      <string>elc15</string>
+                    </property>
+                  </item>
+                  <item row="13" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="14" column="0">
+                    <property name="text">
+                      <string>elc16</string>
+                    </property>
+                  </item>
+                  <item row="14" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="15" column="0">
+                    <property name="text">
+                      <string>elc17</string>
+                    </property>
+                  </item>
+                  <item row="15" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="16" column="0">
+                    <property name="text">
+                      <string>elc18</string>
+                    </property>
+                  </item>
+                  <item row="16" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="17" column="0">
+                    <property name="text">
+                      <string>elc19</string>
+                    </property>
+                  </item>
+                  <item row="17" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="18" column="0">
+                    <property name="text">
+                      <string>elc20</string>
+                    </property>
+                  </item>
+                  <item row="18" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="19" column="0">
+                    <property name="text">
+                      <string>elc21</string>
+                    </property>
+                  </item>
+                  <item row="19" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="20" column="0">
+                    <property name="text">
+                      <string>elc22</string>
+                    </property>
+                  </item>
+                  <item row="20" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="21" column="0">
+                    <property name="text">
+                      <string>elc23</string>
+                    </property>
+                  </item>
+                  <item row="21" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="22" column="0">
+                    <property name="text">
+                      <string>elc24</string>
+                    </property>
+                  </item>
+                  <item row="22" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="23" column="0">
+                    <property name="text">
+                      <string>elc25</string>
+                    </property>
+                  </item>
+                  <item row="23" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="24" column="0">
+                    <property name="text">
+                      <string>elc26</string>
+                    </property>
+                  </item>
+                  <item row="24" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="25" column="0">
+                    <property name="text">
+                      <string>elc27</string>
+                    </property>
+                  </item>
+                  <item row="25" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="26" column="0">
+                    <property name="text">
+                      <string>elc28</string>
+                    </property>
+                  </item>
+                  <item row="26" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="27" column="0">
+                    <property name="text">
+                      <string>elc29</string>
+                    </property>
+                  </item>
+                  <item row="27" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="28" column="0">
+                    <property name="text">
+                      <string>elc30</string>
+                    </property>
+                  </item>
+                  <item row="28" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="29" column="0">
+                    <property name="text">
+                      <string>elc31</string>
+                    </property>
+                  </item>
+                  <item row="29" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="30" column="0">
+                    <property name="text">
+                      <string>elc32</string>
+                    </property>
+                  </item>
+                  <item row="30" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="31" column="0">
+                    <property name="text">
+                      <string>elc33</string>
+                    </property>
+                  </item>
+                  <item row="31" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="32" column="0">
+                    <property name="text">
+                      <string>elc34</string>
+                    </property>
+                  </item>
+                  <item row="32" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="33" column="0">
+                    <property name="text">
+                      <string>elc35</string>
+                    </property>
+                  </item>
+                  <item row="33" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="34" column="0">
+                    <property name="text">
+                      <string>elc36</string>
+                    </property>
+                  </item>
+                  <item row="34" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="35" column="0">
+                    <property name="text">
+                      <string>elc37</string>
+                    </property>
+                  </item>
+                  <item row="35" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="36" column="0">
+                    <property name="text">
+                      <string>elc38</string>
+                    </property>
+                  </item>
+                  <item row="36" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="37" column="0">
+                    <property name="text">
+                      <string>elc39</string>
+                    </property>
+                  </item>
+                  <item row="37" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="38" column="0">
+                    <property name="text">
+                      <string>elc40</string>
+                    </property>
+                  </item>
+                  <item row="38" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="39" column="0">
+                    <property name="text">
+                      <string>elc41</string>
+                    </property>
+                  </item>
+                  <item row="39" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="40" column="0">
+                    <property name="text">
+                      <string>elc42</string>
+                    </property>
+                  </item>
+                  <item row="40" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="41" column="0">
+                    <property name="text">
+                      <string>elc43</string>
+                    </property>
+                  </item>
+                  <item row="41" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="42" column="0">
+                    <property name="text">
+                      <string>elc44</string>
+                    </property>
+                  </item>
+                  <item row="42" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="43" column="0">
+                    <property name="text">
+                      <string>elc45</string>
+                    </property>
+                  </item>
+                  <item row="43" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="44" column="0">
+                    <property name="text">
+                      <string>elc46</string>
+                    </property>
+                  </item>
+                  <item row="44" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="45" column="0">
+                    <property name="text">
+                      <string>elc47</string>
+                    </property>
+                  </item>
+                  <item row="45" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="46" column="0">
+                    <property name="text">
+                      <string>elc48</string>
+                    </property>
+                  </item>
+                  <item row="46" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="47" column="0">
+                    <property name="text">
+                      <string>elc49</string>
+                    </property>
+                  </item>
+                  <item row="47" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="48" column="0">
+                    <property name="text">
+                      <string>elc50</string>
+                    </property>
+                  </item>
+                  <item row="48" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="49" column="0">
+                    <property name="text">
+                      <string>elc51</string>
+                    </property>
+                  </item>
+                  <item row="49" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="50" column="0">
+                    <property name="text">
+                      <string>elc52</string>
+                    </property>
+                  </item>
+                  <item row="50" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="51" column="0">
+                    <property name="text">
+                      <string>elc53</string>
+                    </property>
+                  </item>
+                  <item row="51" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="52" column="0">
+                    <property name="text">
+                      <string>elc54</string>
+                    </property>
+                  </item>
+                  <item row="52" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="53" column="0">
+                    <property name="text">
+                      <string>elc55</string>
+                    </property>
+                  </item>
+                  <item row="53" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="54" column="0">
+                    <property name="text">
+                      <string>elc56</string>
+                    </property>
+                  </item>
+                  <item row="54" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="55" column="0">
+                    <property name="text">
+                      <string>elc57</string>
+                    </property>
+                  </item>
+                  <item row="55" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="56" column="0">
+                    <property name="text">
+                      <string>elc58</string>
+                    </property>
+                  </item>
+                  <item row="56" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="57" column="0">
+                    <property name="text">
+                      <string>elc59</string>
+                    </property>
+                  </item>
+                  <item row="57" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="58" column="0">
+                    <property name="text">
+                      <string>elc60</string>
+                    </property>
+                  </item>
+                  <item row="58" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="59" column="0">
+                    <property name="text">
+                      <string>elc61</string>
+                    </property>
+                  </item>
+                  <item row="59" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="60" column="0">
+                    <property name="text">
+                      <string>elc62</string>
+                    </property>
+                  </item>
+                  <item row="60" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="61" column="0">
+                    <property name="text">
+                      <string>elc63</string>
+                    </property>
+                  </item>
+                  <item row="61" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="62" column="0">
+                    <property name="text">
+                      <string>elc64</string>
+                    </property>
+                  </item>
+                  <item row="62" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="63" column="0">
+                    <property name="text">
+                      <string>elc65</string>
+                    </property>
+                  </item>
+                  <item row="63" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="64" column="0">
+                    <property name="text">
+                      <string>elc66</string>
+                    </property>
+                  </item>
+                  <item row="64" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="65" column="0">
+                    <property name="text">
+                      <string>elc67</string>
+                    </property>
+                  </item>
+                  <item row="65" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="66" column="0">
+                    <property name="text">
+                      <string>elc68</string>
+                    </property>
+                  </item>
+                  <item row="66" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="67" column="0">
+                    <property name="text">
+                      <string>elc69</string>
+                    </property>
+                  </item>
+                  <item row="67" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="68" column="0">
+                    <property name="text">
+                      <string>elc70</string>
+                    </property>
+                  </item>
+                  <item row="68" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="69" column="0">
+                    <property name="text">
+                      <string>elc71</string>
+                    </property>
+                  </item>
+                  <item row="69" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="70" column="0">
+                    <property name="text">
+                      <string>elc72</string>
+                    </property>
+                  </item>
+                  <item row="70" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="71" column="0">
+                    <property name="text">
+                      <string>elc73</string>
+                    </property>
+                  </item>
+                  <item row="71" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="72" column="0">
+                    <property name="text">
+                      <string>elc74</string>
+                    </property>
+                  </item>
+                  <item row="72" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="73" column="0">
+                    <property name="text">
+                      <string>elc75</string>
+                    </property>
+                  </item>
+                  <item row="73" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="74" column="0">
+                    <property name="text">
+                      <string>elc76</string>
+                    </property>
+                  </item>
+                  <item row="74" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="75" column="0">
+                    <property name="text">
+                      <string>elc77</string>
+                    </property>
+                  </item>
+                  <item row="75" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="76" column="0">
+                    <property name="text">
+                      <string>elc78</string>
+                    </property>
+                  </item>
+                  <item row="76" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="77" column="0">
+                    <property name="text">
+                      <string>elc79</string>
+                    </property>
+                  </item>
+                  <item row="77" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="78" column="0">
+                    <property name="text">
+                      <string>elc80</string>
+                    </property>
+                  </item>
+                  <item row="78" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="79" column="0">
+                    <property name="text">
+                      <string>elc81</string>
+                    </property>
+                  </item>
+                  <item row="79" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="80" column="0">
+                    <property name="text">
+                      <string>elc82</string>
+                    </property>
+                  </item>
+                  <item row="80" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="81" column="0">
+                    <property name="text">
+                      <string>elc83</string>
+                    </property>
+                  </item>
+                  <item row="81" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="82" column="0">
+                    <property name="text">
+                      <string>elc84</string>
+                    </property>
+                  </item>
+                  <item row="82" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="83" column="0">
+                    <property name="text">
+                      <string>elc85</string>
+                    </property>
+                  </item>
+                  <item row="83" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="84" column="0">
+                    <property name="text">
+                      <string>elc86</string>
+                    </property>
+                  </item>
+                  <item row="84" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="85" column="0">
+                    <property name="text">
+                      <string>elc87</string>
+                    </property>
+                  </item>
+                  <item row="85" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="86" column="0">
+                    <property name="text">
+                      <string>elc88</string>
+                    </property>
+                  </item>
+                  <item row="86" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="87" column="0">
+                    <property name="text">
+                      <string>elc89</string>
+                    </property>
+                  </item>
+                  <item row="87" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="88" column="0">
+                    <property name="text">
+                      <string>elc90</string>
+                    </property>
+                  </item>
+                  <item row="88" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="89" column="0">
+                    <property name="text">
+                      <string>elc91</string>
+                    </property>
+                  </item>
+                  <item row="89" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="90" column="0">
+                    <property name="text">
+                      <string>elc92</string>
+                    </property>
+                  </item>
+                  <item row="90" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="91" column="0">
+                    <property name="text">
+                      <string>elc93</string>
+                    </property>
+                  </item>
+                  <item row="91" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="92" column="0">
+                    <property name="text">
+                      <string>elc94</string>
+                    </property>
+                  </item>
+                  <item row="92" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="93" column="0">
+                    <property name="text">
+                      <string>elc95</string>
+                    </property>
+                  </item>
+                  <item row="93" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="94" column="0">
+                    <property name="text">
+                      <string>elc96</string>
+                    </property>
+                  </item>
+                  <item row="94" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="95" column="0">
+                    <property name="text">
+                      <string>elc97</string>
+                    </property>
+                  </item>
+                  <item row="95" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="96" column="0">
+                    <property name="text">
+                      <string>elc98</string>
+                    </property>
+                  </item>
+                  <item row="96" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="97" column="0">
+                    <property name="text">
+                      <string>elc99</string>
+                    </property>
+                  </item>
+                  <item row="97" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="98" column="0">
+                    <property name="text">
+                      <string>elc100</string>
+                    </property>
+                  </item>
+                  <item row="98" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="99" column="0">
+                    <property name="text">
+                      <string>elc101</string>
+                    </property>
+                  </item>
+                  <item row="99" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="100" column="0">
+                    <property name="text">
+                      <string>elc102</string>
+                    </property>
+                  </item>
+                  <item row="100" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="101" column="0">
+                    <property name="text">
+                      <string>elc103</string>
+                    </property>
+                  </item>
+                  <item row="101" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="102" column="0">
+                    <property name="text">
+                      <string>elc104</string>
+                    </property>
+                  </item>
+                  <item row="102" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="103" column="0">
+                    <property name="text">
+                      <string>elc105</string>
+                    </property>
+                  </item>
+                  <item row="103" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="104" column="0">
+                    <property name="text">
+                      <string>elc106</string>
+                    </property>
+                  </item>
+                  <item row="104" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="105" column="0">
+                    <property name="text">
+                      <string>elc107</string>
+                    </property>
+                  </item>
+                  <item row="105" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="106" column="0">
+                    <property name="text">
+                      <string>elc108</string>
+                    </property>
+                  </item>
+                  <item row="106" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="107" column="0">
+                    <property name="text">
+                      <string>elc109</string>
+                    </property>
+                  </item>
+                  <item row="107" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="108" column="0">
+                    <property name="text">
+                      <string>elc110</string>
+                    </property>
+                  </item>
+                  <item row="108" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="109" column="0">
+                    <property name="text">
+                      <string>elc111</string>
+                    </property>
+                  </item>
+                  <item row="109" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="110" column="0">
+                    <property name="text">
+                      <string>elc112</string>
+                    </property>
+                  </item>
+                  <item row="110" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="111" column="0">
+                    <property name="text">
+                      <string>elc113</string>
+                    </property>
+                  </item>
+                  <item row="111" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="112" column="0">
+                    <property name="text">
+                      <string>elc114</string>
+                    </property>
+                  </item>
+                  <item row="112" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="113" column="0">
+                    <property name="text">
+                      <string>elc115</string>
+                    </property>
+                  </item>
+                  <item row="113" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="114" column="0">
+                    <property name="text">
+                      <string>elc116</string>
+                    </property>
+                  </item>
+                  <item row="114" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="115" column="0">
+                    <property name="text">
+                      <string>elc117</string>
+                    </property>
+                  </item>
+                  <item row="115" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="116" column="0">
+                    <property name="text">
+                      <string>elc118</string>
+                    </property>
+                  </item>
+                  <item row="116" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="117" column="0">
+                    <property name="text">
+                      <string>elc119</string>
+                    </property>
+                  </item>
+                  <item row="117" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="118" column="0">
+                    <property name="text">
+                      <string>elc120</string>
+                    </property>
+                  </item>
+                  <item row="118" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="119" column="0">
+                    <property name="text">
+                      <string>elc121</string>
+                    </property>
+                  </item>
+                  <item row="119" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="120" column="0">
+                    <property name="text">
+                      <string>elc122</string>
+                    </property>
+                  </item>
+                  <item row="120" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="121" column="0">
+                    <property name="text">
+                      <string>elc123</string>
+                    </property>
+                  </item>
+                  <item row="121" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="122" column="0">
+                    <property name="text">
+                      <string>elc124</string>
+                    </property>
+                  </item>
+                  <item row="122" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="123" column="0">
+                    <property name="text">
+                      <string>elc125</string>
+                    </property>
+                  </item>
+                  <item row="123" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="124" column="0">
+                    <property name="text">
+                      <string>elc126</string>
+                    </property>
+                  </item>
+                  <item row="124" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="125" column="0">
+                    <property name="text">
+                      <string>elc127</string>
+                    </property>
+                  </item>
+                  <item row="125" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                  <item row="126" column="0">
+                    <property name="text">
+                      <string>elc128</string>
+                    </property>
+                  </item>
+                  <item row="126" column="1">
+                    <property name="text">
+                      <string>0</string>
+                    </property>
+                  </item>
+                </widget>
+                <widget class="QTableWidget" name="tableWidget_6">
+                  <property name="enabled">
+                    <bool>false</bool>
+                  </property>
+                  <property name="geometry">
+                    <rect>
+                      <x>0</x>
+                      <y>110</y>
+                      <width>411</width>
+                      <height>91</height>
+                    </rect>
+                  </property>
+                  <row>
+                    <property name="text">
+                      <string>1</string>
+                    </property>
+                  </row>
+                  <row>
+                    <property name="text">
+                      <string>2</string>
+                    </property>
+                  </row>
+                  <column>
+                    <property name="text">
+                      <string>Coil</string>
+                    </property>
+                  </column>
+                  <column>
+                    <property name="text">
+                      <string>Injecting?</string>
+                    </property>
+                  </column>
+                  <column>
+                    <property name="text">
+                      <string>Current [A/mus]</string>
+                    </property>
+                  </column>
+                  <item row="0" column="0">
+                    <property name="text">
+                      <string>Coil1</string>
+                    </property>
+                  </item>
+                  <item row="0" column="1">
+                    <property name="text">
+                      <string/>
+                    </property>
+                    <property name="checkState">
+                      <enum>Checked</enum>
+                    </property>
+                  </item>
+                  <item row="0" column="2">
+                    <property name="text">
+                      <string>2</string>
+                    </property>
+                  </item>
+                  <item row="1" column="0">
+                    <property name="text">
+                      <string>Coil2</string>
+                    </property>
+                  </item>
+                  <item row="1" column="1">
+                    <property name="text">
+                      <string/>
+                    </property>
+                    <property name="checkState">
+                      <enum>Checked</enum>
+                    </property>
+                  </item>
+                  <item row="1" column="2">
+                    <property name="text">
+                      <string>-2</string>
+                    </property>
+                  </item>
+                </widget>
+              </widget>
+            </item>
+          </layout>
+        </widget>
+      </widget>
+    </widget>
+  </widget>
+  <layoutdefault spacing="6" margin="11"/>
+  <resources/>
+  <connections/>
+</ui>
+
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>SetupRHSforTDCSandTMSDialog</class>
  <widget class="QWidget" name="SetupRHSforTDCSandTMSDialog">
   <property name="geometry">
@@ -273,4 +2409,4 @@
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
-</ui>
+</ui> -->

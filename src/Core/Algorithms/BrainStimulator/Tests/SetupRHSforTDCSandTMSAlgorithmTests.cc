@@ -33,16 +33,45 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+#include <Testing/Utils/MatrixTestUtilities.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
 
-TEST(SetupRHSforTDCSandTMSAlgorithm, DISABLED_Foo)
+namespace
+{
+  FieldHandle CreateTetMeshVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarSevenElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh_7elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+  }
+}
+
+TEST(SetupRHSforTDCSandTMSAlgorithm, testing)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
-  FAIL() << "Insert code here for the most basic test cases !"; 
+  
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+  (*m)(0,0) = 16;
+  (*m)(1,0) = 2;
+  (*m)(2,0) = 3;
+  
+  algo.run(CreateTetMeshScalarOnElem(), m);
+  
+  FAIL();
 }

@@ -33,9 +33,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
@@ -44,34 +41,59 @@ using namespace SCIRun::Dataflow::Networks;
 SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookupInfo("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION2);
- INITIALIZE_PORT(COIL);
- INITIALIZE_PORT(COIL2);
- INITIALIZE_PORT(ELECTRODES_FIELD);
- INITIALIZE_PORT(COILS_FIELD);
+ INITIALIZE_PORT(ELECTRODE_COUNT);
+ INITIALIZE_PORT(RHS);
+  
+// INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
+// INITIALIZE_PORT(ELECTRODE_TRIANGULATION2);
+// INITIALIZE_PORT(COIL);
+// INITIALIZE_PORT(COIL2);
+// INITIALIZE_PORT(ELECTRODES_FIELD);
+// INITIALIZE_PORT(COILS_FIELD);
 }
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
   /// @todo
+  
+//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skin);
+//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skull);
+//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF);
+//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM);
+//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM);
+//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Electrode);
 }
 
 void SetupRHSforTDCSandTMSModule::execute()
 {
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
-   // UI input
+  auto elc_count = getRequiredInput(ELECTRODE_COUNT);
+
+//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin);
+//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skull);
+//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::CSF);
+//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::GM);
+//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::WM);
+//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Electrode);
+
+  
+  //  auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
+  
+  // UI input
   //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
 
   //algorithm parameter
   //algo_->set(Variables::AppendMatrixOption, param);
  
   
-  //algorithm input and run
-  auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_TRIANGULATION, elc_tri_mesh)));
-
-  //algorithm output
-  sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
-  sendOutputFromAlgorithm(COILS_FIELD, output);
+  if (needToExecute())
+  {
+    //algorithm input and run
+    auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_COUNT, elc_count)));
+    
+    //algorithm output
+//    sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
+//    sendOutputFromAlgorithm(COILS_FIELD, output);
+    sendOutputFromAlgorithm(RHS, output);
+  }
 }

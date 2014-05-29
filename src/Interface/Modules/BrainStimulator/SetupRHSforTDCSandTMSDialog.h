@@ -45,7 +45,10 @@ public:
   SetupRHSforTDCSandTMSDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+  
+  private Q_SLOTS:
+  void pull();
+  void push();
 };
 
 }
