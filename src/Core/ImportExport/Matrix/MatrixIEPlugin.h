@@ -42,50 +42,20 @@
 #ifndef SCI_project_MatrixIEPlugin_h
 #define SCI_project_MatrixIEPlugin_h 1
 
-#include <Core/Logging/LoggerFwd.h>
+#include <Core/ImportExport/GenericIEPlugin.h>
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Datatypes/MatrixFwd.h>
-
-#include <map>
 
 #include <Core/ImportExport/share.h>
 
 namespace SCIRun {
 
-//----------------------------------------------------------------------
-class SCISHARE MatrixIEPlugin {
-public:
-  const std::string pluginname_;
+  typedef GenericIEPluginInterface<Core::Datatypes::Matrix> MatrixIEPlugin;
 
-  const std::string fileExtension_;
-  const std::string fileMagic_;
+  typedef IEPluginLegacyAdapter<Core::Datatypes::Matrix> MatrixIEPluginLegacyAdapter;
 
-  Core::Datatypes::MatrixHandle (*fileReader_)(Core::Logging::Log& pr, const char *filename);
-  bool (*fileWriter_)(Core::Logging::Log& pr,
-		     Core::Datatypes::MatrixHandle f, const char *filename);
+  typedef GenericIEPluginManager<Core::Datatypes::Matrix> MatrixIEPluginManager;
 
-  MatrixIEPlugin(const std::string &name,
-		 const std::string &fileextension,
-		 const std::string &filemagic,
-		 Core::Datatypes::MatrixHandle (*freader)(Core::Logging::Log& pr,
-					 const char *filename) = 0,
-		 bool (*fwriter)(Core::Logging::Log& pr, Core::Datatypes::MatrixHandle f,
-				 const char *filename) = 0);
-
-  ~MatrixIEPlugin();
-
-  bool operator==(const MatrixIEPlugin &other) const;
-};
-
-
-
-class SCISHARE MatrixIEPluginManager {
-public:
-  void get_importer_list(std::vector<std::string> &results);
-  void get_exporter_list(std::vector<std::string> &results);
-  MatrixIEPlugin *get_plugin(const std::string &name);
-};
-
-
-} // End namespace SCIRun
+}
 
 #endif

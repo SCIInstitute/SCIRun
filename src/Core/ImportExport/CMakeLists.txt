@@ -29,9 +29,6 @@
 # Sources of Core/ImportExport classes
 
 SET(Core_ImportExport_SRCS
-  ColorMap/ColorMapIEPlugin.cc
-  Matrix/MatrixIEPlugin.cc
-  Field/FieldIEPlugin.cc 
   Nrrd/NrrdIEPlugin.cc
 )
 
