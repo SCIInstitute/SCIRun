@@ -28,9 +28,6 @@
 
 # Sources of Core/ImportExport classes
 
-# NOTE: source files are all in sub directories ColorMap, Matrix, Field,
-# and Nrrd
-
 SET(Core_ImportExport_SRCS
   ColorMap/ColorMapIEPlugin.cc
   Matrix/MatrixIEPlugin.cc
@@ -50,14 +47,8 @@ SET(Core_ImportExport_HEADERS
 ADD_LIBRARY(Core_ImportExport ${Core_ImportExport_SRCS} ${Core_ImportExport_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_ImportExport 
-  #Core_Persistent 
-  #Core_Exceptions 
   Core_Thread 
-  #Core_Geometry 
   Core_Logging
-  #Core_Math 
-  #Core_Util
-  #Core_Matlab 
   Core_Datatypes
 )
 

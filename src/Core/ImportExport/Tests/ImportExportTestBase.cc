@@ -28,14 +28,25 @@
 
 #include <gtest/gtest.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/ImportExport/ColorMap/ColorMapIEPlugin.h>
+#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 
 TEST(ImportExportPluginManagerTest, CanCreate)
 {
   FieldIEPluginManager manager;
   std::vector<std::string> importers;
   manager.get_importer_list(importers);
+  EXPECT_TRUE(importers.empty());
+
+  ColorMapIEPluginManager manager2;
+  manager2.get_importer_list(importers);
+  EXPECT_TRUE(importers.empty());
+
+  MatrixIEPluginManager manager3;
+  manager3.get_importer_list(importers);
   EXPECT_TRUE(importers.empty());
 }
 
@@ -49,11 +60,27 @@ namespace
   {
     return false;
   }
+  ColorMapHandle creaderDummy(Core::Logging::Log& pr, const char *filename)
+  {
+    return ColorMapHandle();
+  }
+  bool cwriterDummy(Core::Logging::Log& pr, ColorMapHandle f, const char *filename)
+  {
+    return false;
+  }
+  MatrixHandle mreaderDummy(Core::Logging::Log& pr, const char *filename)
+  {
+    return MatrixHandle();
+  }
+  bool mwriterDummy(Core::Logging::Log& pr, MatrixHandle f, const char *filename)
+  {
+    return false;
+  }
 }
 
-TEST(ImportExportPluginManagerTest, PluginsAddSelfToManager)
+TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerField)
 {
-  FieldIEPlugin dummy("dummy", ".fld", "123", freaderDummy, fwriterDummy);
+  FieldIEPluginLegacyAdapter dummy("dummy", ".fld", "123", freaderDummy, fwriterDummy);
 
   FieldIEPluginManager manager;
   std::vector<std::string> importers;
@@ -64,4 +91,109 @@ TEST(ImportExportPluginManagerTest, PluginsAddSelfToManager)
   EXPECT_EQ(1, exporters.size());
   auto plugin = manager.get_plugin("dummy");
   EXPECT_EQ(&dummy, plugin);
+
+  //ColorMapIEPluginManager cmanager;
+  //EXPECT_EQ(0, cmanager.numPlugins());
+  //MatrixIEPluginManager mmanager;
+  //EXPECT_EQ(0, mmanager.numPlugins());
+}
+
+TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerColorMap)
+{
+  ColorMapIEPlugin dummy("dummy", ".color", "123", creaderDummy, cwriterDummy);
+
+  ColorMapIEPluginManager manager;
+  std::vector<std::string> importers;
+  manager.get_importer_list(importers);
+  EXPECT_EQ(1, importers.size());
+  std::vector<std::string> exporters;
+  manager.get_exporter_list(exporters);
+  EXPECT_EQ(1, exporters.size());
+  auto plugin = manager.get_plugin("dummy");
+  EXPECT_EQ(&dummy, plugin);
+
+  FieldIEPluginManager fmanager;
+  EXPECT_EQ(0, fmanager.numPlugins());
+  //MatrixIEPluginManager mmanager;
+  //EXPECT_EQ(0, mmanager.numPlugins());
+}
+
+TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerMatrix)
+{
+  MatrixIEPlugin dummy("dummy", ".mat", "123", mreaderDummy, mwriterDummy);
+
+  MatrixIEPluginManager manager;
+  std::vector<std::string> importers;
+  manager.get_importer_list(importers);
+  EXPECT_EQ(1, importers.size());
+  std::vector<std::string> exporters;
+  manager.get_exporter_list(exporters);
+  EXPECT_EQ(1, exporters.size());
+  auto plugin = manager.get_plugin("dummy");
+  EXPECT_EQ(&dummy, plugin);
+
+  //ColorMapIEPluginManager cmanager;
+  //EXPECT_EQ(0, cmanager.numPlugins());
+  FieldIEPluginManager fmanager;
+  EXPECT_EQ(0, fmanager.numPlugins());
+}
+
+TEST(ImportExportPluginManagerTest, CanAddMultiple)
+{
+  FieldIEPluginLegacyAdapter dummy1("dummy1", ".fld", "123", freaderDummy, fwriterDummy);
+  FieldIEPluginLegacyAdapter dummy2("dummy2", ".dot", "123", freaderDummy, fwriterDummy);
+
+  FieldIEPluginManager manager;
+  std::vector<std::string> importers;
+  manager.get_importer_list(importers);
+  EXPECT_EQ(2, importers.size());
+  std::vector<std::string> exporters;
+  manager.get_exporter_list(exporters);
+  EXPECT_EQ(2, exporters.size());
+  auto plugin = manager.get_plugin("dummy1");
+  EXPECT_EQ(&dummy1, plugin);
+  plugin = manager.get_plugin("dummy2");
+  EXPECT_EQ(&dummy2, plugin);
+
+  EXPECT_EQ(2, manager.numPlugins());
+}
+
+TEST(ImportExportPluginManagerTest, ExactDuplicatesDoNotGetAddedToManager)
+{
+  FieldIEPluginLegacyAdapter dummy1("dummy1", ".fld", "123", freaderDummy, fwriterDummy);
+  FieldIEPluginLegacyAdapter dummy1a("dummy1", ".fld", "123", freaderDummy, fwriterDummy);
+
+  FieldIEPluginManager manager;
+  std::vector<std::string> importers;
+  manager.get_importer_list(importers);
+  EXPECT_EQ(1, importers.size());
+  std::vector<std::string> exporters;
+  manager.get_exporter_list(exporters);
+  EXPECT_EQ(1, exporters.size());
+  auto plugin = manager.get_plugin("dummy1");
+  EXPECT_EQ(&dummy1, plugin);
+  plugin = manager.get_plugin("dummy1(2)");
+  EXPECT_EQ(0, plugin);
+
+  EXPECT_EQ(1, manager.numPlugins());
+}
+
+TEST(ImportExportPluginManagerTest, DuplicatesByNameGetAddedUnderIncrementedName)
+{
+  FieldIEPluginLegacyAdapter dummy1("dummy1", ".obj", "321", freaderDummy, fwriterDummy);
+  FieldIEPluginLegacyAdapter dummy1a("dummy1", ".fld", "123", freaderDummy, fwriterDummy);
+
+  FieldIEPluginManager manager;
+  std::vector<std::string> importers;
+  manager.get_importer_list(importers);
+  EXPECT_EQ(2, importers.size());
+  std::vector<std::string> exporters;
+  manager.get_exporter_list(exporters);
+  EXPECT_EQ(2, exporters.size());
+  auto plugin = manager.get_plugin("dummy1");
+  EXPECT_EQ(&dummy1, plugin);
+  plugin = manager.get_plugin("dummy1(2)");
+  EXPECT_EQ(&dummy1a, plugin);
+
+  EXPECT_EQ(2, manager.numPlugins());
 }
