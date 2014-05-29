@@ -26,15 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
-///@class ConvertMatricesToMesh
-///@brief Store/retrieve values from an input matrix to/from 
-///            the data of a field
 ///
 ///@author
-///   Michael Callahan
-///   Department of Computer Science
+///   Michael Callahan,
+///   Department of Computer Science,
 ///   University of Utah
 ///@date  February 2001
 ///
@@ -50,6 +45,9 @@
 
 namespace SCIRun {
 
+/// @class ConvertMatricesToMesh
+/// @brief This module constructs a mesh from raw matrix data. 
+ 
 class ConvertMatricesToMesh : public Module
 {
 private:

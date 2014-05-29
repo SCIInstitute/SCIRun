@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/MapFieldDataOntoNodes.cc
 
 #include <Core/Algorithms/Fields/Mapping/MapFieldDataOntoNodes.h>
 
@@ -38,6 +37,10 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class MapFieldDataOntoNodes
+/// @brief Maps data from one mesh or point cloud to another mesh or point
+/// cloud. The output mesh will have the data located at the nodes.
 
 class MapFieldDataOntoNodes : public Module {
   public:

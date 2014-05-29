@@ -434,7 +434,7 @@
                 <bool>true</bool>
                </property>
                <attribute name="buttonGroup">
-                <string>moduleSizeButtonGroup_</string>
+                <string notr="true">moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -447,7 +447,7 @@
                 <string>Small</string>
                </property>
                <attribute name="buttonGroup">
-                <string>moduleSizeButtonGroup_</string>
+                <string notr="true">moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -846,7 +846,7 @@
   </action>
   <action name="actionAbout_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>About...</string>

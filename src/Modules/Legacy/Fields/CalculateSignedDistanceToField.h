@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateSignedDistanceToField.h
 
 #ifndef MODULES_LEGACY_FIELDS_CALCULATESIGNEDDISTANCETOFIELD_H__
 #define MODULES_LEGACY_FIELDS_CALCULATESIGNEDDISTANCETOFIELD_H__
@@ -36,6 +35,10 @@
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
+
+      /// @class CalculateSignedDistanceToField
+      /// @brief Calculate the distance to a surface mesh and use the normal of
+      /// the surface to determine on which side of the surface the element is located. 
 
       class SCISHARE CalculateSignedDistanceToField : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, FieldPortTag>,

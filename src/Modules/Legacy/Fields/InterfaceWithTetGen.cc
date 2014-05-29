@@ -55,6 +55,9 @@ namespace SCIRun {
 
 Mutex TetGenMutex("Protect TetGen from running in parallel");
 
+/// @class InterfaceWithTetGen
+/// @brief This module interfaces with TetGen. 
+
 class InterfaceWithTetGen : public Module
 {
   public:

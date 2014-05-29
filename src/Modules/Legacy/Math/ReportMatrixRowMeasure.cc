@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Math/ReportMatrixRowMeasure.cc
 
 #include <Core/Datatypes/Matrix.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
@@ -33,6 +32,10 @@
 #include <Core/Algorithms/Math/MathAlgo.h>
 
 namespace SCIRun {
+
+/// @class ReportMatrixRowMeasure
+/// @brief This module computes a measure on each row of the input matrix and
+/// stores the result in the output matrix. 
 
 class ReportMatrixRowMeasure : public Module {
 public:

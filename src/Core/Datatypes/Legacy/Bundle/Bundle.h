@@ -36,7 +36,7 @@ namespace SCIRun {
   namespace Core {
     namespace Datatypes {
 
-      //TODO:
+      /// @todo:
       // 0. Bundle I/O
       // 1. Store ColorMaps, Nrrds, and Bundles
       // 2. Matrix <-> Nrrd interop. Should go in separate class.

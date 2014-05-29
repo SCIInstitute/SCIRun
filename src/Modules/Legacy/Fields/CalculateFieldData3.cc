@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CalculateFieldData3.cc
 
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
@@ -40,6 +39,11 @@
 #include <Dataflow/Network/Ports/StringPort.h>
 
 namespace SCIRun {
+
+/// @class CalculateFieldData3
+/// @brief Calculate new data for the field given a function that uses field 
+/// data, node location and element properties as input, with a second and 
+/// third input port for two additional fields. 
 
 class CalculateFieldData3 : public Module 
 {

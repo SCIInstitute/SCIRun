@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/CreateFieldData.cc
 
 #include <Modules/Legacy/Fields/CreateFieldData.h>
 #include <Core/Datatypes/String.h>
@@ -84,7 +83,7 @@ CreateFieldData::execute()
   {
     get_state()->setValue(FunctionString, (*func)->value());
   }
-  auto matrices = getRequiredDynamicInputs(DataArray);
+  auto matrices = getOptionalDynamicInputs(DataArray);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   TCLInterface::eval(get_id()+" update_text");

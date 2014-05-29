@@ -34,25 +34,40 @@ SET(Interface_Modules_Fields_FORMS
   ReportFieldInfoDialog.ui
   SplitFieldByDomain.ui
   CreateFieldData.ui
+  CalculateFieldData.ui
+  InterfaceWithCleaverDialog.ui
+  SetFieldDataDialog.ui
+  MapFieldDataFromElemToNodeDialog.ui
+  MapFieldDataFromNodeToElemDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
   CreateLatVolDialog.h
   CreateFieldDataDialog.h
+  CalculateFieldDataDialog.h
   GetDomainBoundaryDialog.h
   JoinFieldsDialog.h
   ReportFieldInfoDialog.h
   SplitFieldByDomainDialog.h
+  InterfaceWithCleaverDialog.h
+  SetFieldDataDialog.h
+  MapFieldDataFromElemToNodeDialog.h
+  MapFieldDataFromNodeToElemDialog.h
   share.h
 )
 
 SET(Interface_Modules_Fields_SOURCES 
   CreateLatVolDialog.cc
   CreateFieldDataDialog.cc
+  CalculateFieldDataDialog.cc
   GetDomainBoundaryDialog.cc
   JoinFieldsDialog.cc
   ReportFieldInfoDialog.cc
   SplitFieldByDomainDialog.cc
+  InterfaceWithCleaverDialog.cc
+  SetFieldDataDialog.cc
+  MapFieldDataFromElemToNodeDialog.cc
+  MapFieldDataFromNodeToElemDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})
@@ -69,7 +84,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Fields
   Algorithms_Field
   Modules_Fields
   Interface_Modules_Base
-  Dataflow_Modules_Legacy_Fields
+  Modules_Legacy_Fields
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )

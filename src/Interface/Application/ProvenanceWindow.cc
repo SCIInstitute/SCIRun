@@ -41,11 +41,10 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
-ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QWidget* parent /* = 0 */) : 
+ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QWidget* parent /* = 0 */) : QDockWidget(parent),
   provenanceManager_(provenanceManager),
   lastUndoRow_(-1),
-  networkEditor_(provenanceManager->networkIO()),
-  QDockWidget(parent) 
+  networkEditor_(provenanceManager->networkIO())
 {
   setupUi(this);
   networkXMLTextEdit_->setTabStopWidth(15);

@@ -73,6 +73,9 @@ public Q_SLOTS:
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
 protected:
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override; 
+  void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
   virtual void setNoteGraphicsContext() override;
 private:
@@ -83,6 +86,7 @@ private:
   void destroy();
   bool destroyed_;
   class ConnectionMenu* menu_;
+  QColor placeHoldingColor_;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};

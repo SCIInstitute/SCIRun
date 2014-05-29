@@ -27,46 +27,12 @@
 */
 
 
-///
 ///@file  ReportColumnMatrixMisfit.cc
-///@brief Compute and visualize error between two vectors
 ///
 ///@author
 ///   David Weinstein
 ///   University of Utah
 ///@date  June 1999
-///
-
-
-
-/***************************************************************
-CLASS
- ReportColumnMatrixMisfit
- 
-   The ReportColumnMatrixMisfit class is used to compute and visualize error 
-   between two vectors
-
-GENERAL INFORMATION
-  ErrorMetic.cc - ReportColumnMatrixMisfit class declaration and method definitions
-
-  Author: David Weinstein (dmw@cs.utah.edu)
-
-  Creation Date: June 1999
-  
-KEYWORDS: 
-  Vector_Error
-  
-PATTERNS: 
-  None
-
-WARNINGS:
-  None
-
-POSSIBLE REVISIONS:
-  None
-
-  ************************************************************/
-
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/ColumnMatrix.h>
@@ -76,6 +42,9 @@ POSSIBLE REVISIONS:
 #include <sstream>
 
 namespace SCIRun {
+
+/// @class ReportColumnMatrixMisfit
+/// @brief This module computes and visualizes the error between two vectors. 
 
 class ReportColumnMatrixMisfit : public Module 
 {

@@ -215,13 +215,13 @@ public:
       typedef VMesh::size_type     size_type;      
       int                          basis_order; // which order was created
       index_type                   elem_index; // which element
-      StackVector<index_type,8>    node_index; // nodes that span the element
+      StackBasedVector<index_type,8>    node_index; // nodes that span the element
       StackVector<index_type,12>   edge_index; // edges that span the element
       size_type                    num_hderivs; // Number of derivatives per point
       StackBasedVector<double,64>  weights;    // weights for given points
 
       size_type                    num_derivs; // Number of derivatives in topology   
-      StackVector<double,9>        inverse_jacobian; // Inverse jacobian, for local to global tranformation
+      StackVector<double,9>        inverse_jacobian; // Inverse jacobian, for local to global transformation
       coords_type                  coords;
   };  
 

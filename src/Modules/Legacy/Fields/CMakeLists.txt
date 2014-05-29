@@ -28,32 +28,51 @@
 
 # CMakeLists.txt for Dataflow/Modules/Fields
 
-SET(Dataflow_Modules_Legacy_Fields_HEADERS
+SET(Modules_Legacy_Fields_HEADERS
   CreateLatVol.h
   GetFieldBoundary.h
+  BuildMappingMatrix.h
+  CalculateDistanceToField.h
+  CalculateDistanceToFieldBoundary.h
+  CollectFields.h
+  ConvertFieldBasis.h
+  ConvertFieldDataType.h
+  FairMesh.h
+  ProjectPointsOntoMesh.h
+  RegisterWithCorrespondences.h
+  ResampleRegularMesh.h
+  ScaleFieldMeshAndData.h
+  SetFieldOrMeshStringProperty.h
+  CalculateFieldData5.h
   CalculateGradients.h
   CalculateVectorMagnitudes.h
   CalculateSignedDistanceToField.h
   ConvertQuadSurfToTriSurf.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
+  SetFieldData.h
+  GetFieldData.h
   GetDomainBoundary.h
   GetFieldNodes.h
   JoinFields.h
   SplitFieldByDomain.h
   CreateFieldData.h
+  SplitFieldByDomain.h
   #ApplyMappingMatrix.h
+  ApplyMappingMatrix.h
+  MapFieldDataFromElemToNode.h
+  MapFieldDataFromNodeToElem.h
 )
 
-SET(Dataflow_Modules_Legacy_Fields_SRCS
+SET(Modules_Legacy_Fields_SRCS
   #FlipSurfaceNormals.cc
   #GenerateElectrode.cc
   #PadRegularMesh.cc
-  #ResampleRegularMesh.cc
+  ResampleRegularMesh.cc
   #CalculateMeshConnector.cc
   #CalculateMeshCenter.cc
   #GetDomainStructure.cc
-  #RegisterWithCorrespondences.cc
+  RegisterWithCorrespondences.cc
   #SmoothVecFieldMedian.cc
   #SetFieldDataToConstantValue.cc
   #RemoveUnusedNodes.cc
@@ -63,17 +82,17 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #MatchDomainLabels.cc
   SplitFieldByDomain.cc
   AlignMeshBoundingBoxes.cc
-  #ProjectPointsOntoMesh.cc
+  ProjectPointsOntoMesh.cc
   #GetMeshQualityField.cc
   #ApplyFilterToFieldData.cc
-  #ApplyMappingMatrix.cc
+  ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
-  #BuildMappingMatrix.cc
+  BuildMappingMatrix.cc
   #BuildMatrixOfSurfaceNormals.cc
   #GetCentroidsFromMesh.cc
   #ConvertMeshCoordinateSystem.cc
-  #ConvertFieldBasis.cc
-  #ConvertFieldDataType.cc
+  ConvertFieldBasis.cc
+  ConvertFieldDataType.cc
   #ChooseField.cc
   #ClipFieldByFunction.cc
   #ClipFieldByFunction2.cc
@@ -90,7 +109,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #MapFieldDataFromSourceToDestination.cc
   #MaskLatVolWithTriSurf.cc
   #RemoveHexVolSheet.cc
-  #FairMesh.cc
+  FairMesh.cc
   #GetAllSegmentationBoundaries.cc
   GetFieldBoundary.cc
   #ReportFieldInfo.cc
@@ -122,7 +141,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #ReportScalarFieldStats.cc
   #GeneratePointSamplesFromField.cc
   #SelectFieldROIWithBoxWidget.cc
-  #SetFieldOrMeshStringProperty.cc
+  SetFieldOrMeshStringProperty.cc
   #ConvertMeshToPointCloud.cc
   #ConvertMeshToIrregularMesh.cc
   #ConvertMeshToUnstructuredMesh.cc
@@ -130,15 +149,15 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CalculateFieldData2.cc
   #CalculateFieldData3.cc
   #CalculateFieldData4.cc
-  #CalculateFieldData5.cc
+  CalculateFieldData5.cc
   #CalculateFieldDataMetric.cc
   #CalculateMeshNodes.cc
   #QueryFieldData.cc
   #TransformMeshWithTransform.cc
   CalculateVectorMagnitudes.cc
   #GenerateLinearSegments.cc
-  #CalculateDistanceToField.cc
-  #CalculateDistanceToFieldBoundary.cc
+  CalculateDistanceToField.cc
+  CalculateDistanceToFieldBoundary.cc
   CalculateSignedDistanceToField.cc
   #CalculateIsInsideField.cc
   #CalculateInsideWhichField.cc
@@ -146,6 +165,9 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   CreateFieldData.cc
   #GetFieldData.cc
   #SetFieldData.cc
+  #CreateFieldData.cc
+  GetFieldData.cc
+  SetFieldData.cc
   GetFieldNodes.cc
   SetFieldNodes.cc
   #MapFieldDataFromElemToNode.cc
@@ -156,22 +178,24 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #SplitNodesByDomain.cc
   #SplitFieldByConnectedRegion.cc
   GetDomainBoundary.cc
-  #CollectFields.cc
-  #ScaleFieldMeshAndData.cc
+  CollectFields.cc
+  ScaleFieldMeshAndData.cc
   #CalculateProfile.cc
+  MapFieldDataFromElemToNode.cc  
+  MapFieldDataFromNodeToElem.cc
 )
 
 IF(WITH_TETGEN)
-  SET(Dataflow_Modules_Legacy_Fields_SRCS ${Dataflow_Modules_Legacy_Fields_SRCS}
+  SET(Modules_Legacy_Fields_SRCS ${Modules_Legacy_Fields_SRCS}
     InterfaceWithTetGen.cc)
 ENDIF(WITH_TETGEN)
     
-ADD_LIBRARY(Dataflow_Modules_Legacy_Fields 
-  ${Dataflow_Modules_Legacy_Fields_HEADERS}
-  ${Dataflow_Modules_Legacy_Fields_SRCS}
+ADD_LIBRARY(Modules_Legacy_Fields 
+  ${Modules_Legacy_Fields_HEADERS}
+  ${Modules_Legacy_Fields_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
+TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   Dataflow_Network
   #Dataflow_Widgets
   #Dataflow_GuiInterface
@@ -204,11 +228,11 @@ TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
 )
 
 IF(WITH_TETGEN)
-  TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
+  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
     ${SCI_TETGEN_LIBRARY})
 ENDIF(WITH_TETGEN)
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Dataflow_Modules_Legacy_Fields)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Fields)
 ENDIF(BUILD_SHARED_LIBS)
 

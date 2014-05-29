@@ -28,7 +28,6 @@
 
 ///
 ///@file  MergeFields.cc
-///@brief Insert a field into a TetVolMesh
 ///
 ///@author
 ///   Michael Callahan
@@ -57,6 +56,8 @@
 
 namespace SCIRun {
 
+/// @class MergeFields
+/// @brief This module insers the elements from a field into a TetVol or TriSurf field. 
 
 class MergeFields : public Module
 {

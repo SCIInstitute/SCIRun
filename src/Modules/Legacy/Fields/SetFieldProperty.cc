@@ -26,21 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///
-///@class SetFieldProperty
-///@brief Set a property for a Field
-///
 ///@author
-///   David Weinstein
-///   Department of Computer Science
+///   David Weinstein,
+///   Department of Computer Science,
 ///   University of Utah
 ///@date  June 1999
-///
 
 #include <Dataflow/Network/SetPropertyModule.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
 
 namespace SCIRun {
+
+/// @class SetFieldProperty
+/// @brief Set a property for a Field
 
 class SetFieldProperty : public SetPropertyModule< FieldHandle > {
 public:

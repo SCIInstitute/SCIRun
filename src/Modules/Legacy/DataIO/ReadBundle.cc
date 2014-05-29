@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Legacy/DataIO/ReadBundle.cc 
-
 #include <Core/Datatypes/Bundle.h>
 
 #include <Dataflow/Network/Ports/BundlePort.h>
@@ -38,6 +36,8 @@
 
 using namespace SCIRun;
 
+/// @class ReadBundle
+/// @brief This module reads a bundle from file (a SCIRun .bdl file).
 
 class ReadBundle : public GenericReader<BundleHandle> {
   public:

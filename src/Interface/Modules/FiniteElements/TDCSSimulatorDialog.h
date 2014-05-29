@@ -37,7 +37,7 @@ namespace SCIRun {
 namespace Gui {
   
 class SCISHARE TDCSSimulatorDialog : public ModuleDialogGeneric, 
-  public Ui::tDCSSimulator
+  public Ui::tDCSSimulatorDialog
 {
 	Q_OBJECT
 	

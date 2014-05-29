@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ClipFieldByFunction.cc
 
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
@@ -40,8 +39,10 @@
 #include <Dataflow/Network/Ports/StringPort.h>
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class ClipFieldByFunction
+/// @brief This module selects a subset of a field using a function. 
 
 class ClipFieldByFunction : public Module {
   public:
@@ -121,7 +122,7 @@ void ClipFieldByFunction::execute()
 
     int field_basis_order = field->vfield()->basis_order();
 
-    ///-----------------------
+    //-----------------------
     /// Backwards compatiblity
     if (get_old_version() == "1.0")
     {
@@ -129,7 +130,7 @@ void ClipFieldByFunction::execute()
 //      else if (method == "element") method ="allnodes";
       guimethod_.set(method);
     }
-    ///-----------------------
+    //-----------------------
 
     if (field.get_rep()) if (field->vmesh()->is_pointcloudmesh()) method = "element";
 
@@ -146,11 +147,11 @@ void ClipFieldByFunction::execute()
     {
       if(!(engine.add_input_fielddata("DATA",field))) return;
 
-      ///-----------------------
+      //-----------------------
       // Backwards compatibility with version 3.0.2
       if(!(engine.add_input_fielddata("v0",field))) return;
       if(!(engine.add_input_fielddata("v",field))) return;
-      ///-----------------------
+      //-----------------------
     }
     else
     {
@@ -171,10 +172,10 @@ void ClipFieldByFunction::execute()
     if(!(engine.add_input_fielddata_location("POS",field,basis_order))) return;
     if(!(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order))) return;
 
-    ///-----------------------
+    //-----------------------
     // Backwards compatibility with version 3.0.2
     if(!(engine.add_input_fielddata_coordinates("x","y","z",field,basis_order))) return;
-    ///-----------------------
+    //-----------------------
 
     // Create the ELEMENT object describing element properties
     if(!(engine.add_input_fielddata_element("ELEMENT",field,basis_order))) return;
@@ -208,11 +209,11 @@ void ClipFieldByFunction::execute()
     }
     else
     {
-      ///-----------------------
+      //-----------------------
       // Backwards compatibility with version 3.0.2
       if(!(engine.add_output_fielddata("result",field,basis_order,"char"))) return;
       has_RESULT = false;
-      ///-----------------------
+      //-----------------------
     }
 
     // Add an object for getting the index and size of the array.
@@ -231,7 +232,7 @@ void ClipFieldByFunction::execute()
 
     if (!(engine.run()))
     {
-      ///-----------------------
+      //-----------------------
       // Backwards compatibility with version 3.0.2
       if (old_version_)
       {
@@ -240,7 +241,7 @@ void ClipFieldByFunction::execute()
         error("Please review documentation to explore available functionality and grammar of this module.");
         error("We are sorry for this inconvenience, but we do not longer support dynamically compiling code in SCIRun.");
       }
-      ///-----------------------
+      //-----------------------
       
       return;
     }
@@ -254,10 +255,10 @@ void ClipFieldByFunction::execute()
     }
     else
     {
-      ///-----------------------
+      //-----------------------
       // Backwards compatibility with version 3.0.2
       engine.get_field("result",sfield);
-      ///-----------------------
+      //-----------------------
     }
 
     clipping_algo_.set_option("method",method);
@@ -290,14 +291,14 @@ ClipFieldByFunction::post_read()
   const std::string modName = get_ctx()->getfullname() + "-";
   std::string val;
   
-  ///-----------------------
+  //-----------------------
   // Backwards compatibility with intermediate version....
 
   if( TCLInterface::get(modName+"mode", val, get_ctx()) )
   {
     TCLInterface::set(modName+"method", val, get_ctx());
   }
-  ///-----------------------
+  //-----------------------
   
   std::string function;
   TCLInterface::get(modName+"function", function, get_ctx());
