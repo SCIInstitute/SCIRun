@@ -48,8 +48,8 @@ public:
   virtual std::string fileExtension() const = 0;
   virtual std::string fileMagic() const = 0;
 
-  virtual boost::shared_ptr<Data> readFile(ProgressReporter *pr, const char *filename) const = 0;
-  virtual bool writeFile(ProgressReporter *pr, boost::shared_ptr<Data> f, const char *filename) const = 0;
+  virtual boost::shared_ptr<Data> readFile(Core::Logging::Log& pr, const char *filename) const = 0;
+  virtual bool writeFile(Core::Logging::Log& pr, boost::shared_ptr<Data> f, const char *filename) const = 0;
   virtual bool equals(const GenericIEPluginInterface<Data>& other) const = 0;
 };
 

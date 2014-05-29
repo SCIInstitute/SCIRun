@@ -39,19 +39,17 @@
  */
 
 #include <Core/Thread/Mutex.h>
-#include <Core/Util/Legacy/StringUtil.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 
 #include <map>
 
-
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Datatypes;
 
 namespace SCIRun {
 
-// Use Core/Util/share.h.
-// Core_Util is the first library to be loaded at runtime.
-#include <Core/Util/share.h>
-extern SCISHARE Mutex matrixIEPluginMutex;
+static Mutex matrixIEPluginMutex("matrixIE");
 
 static std::map<std::string, MatrixIEPlugin *> *matrix_plugin_table = 0;
 
@@ -60,9 +58,9 @@ static std::map<std::string, MatrixIEPlugin *> *matrix_plugin_table = 0;
 MatrixIEPlugin::MatrixIEPlugin(const std::string& pname,
                                const std::string& fextension,
                                const std::string& fmagic,
-                               MatrixHandle (*freader)(ProgressReporter *pr,
+                               MatrixHandle (*freader)(Core::Logging::Log& pr,
                                                        const char *filename),
-                               bool (*fwriter)(ProgressReporter *pr,
+                               bool (*fwriter)(Core::Logging::Log& pr,
                                                MatrixHandle f,
                                                const char *filename))
   : pluginname_(pname),

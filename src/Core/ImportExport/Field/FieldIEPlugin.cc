@@ -39,20 +39,19 @@
  */
 
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Thread/Mutex.h>
 
 #include <map>
 
-
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 
 namespace SCIRun {
 
-// Use Core/Util/share.h.
-// Core_Util is the first library to be loaded at runtime.
-#include <Core/Util/share.h>
-extern SCISHARE Mutex fieldIEPluginMutex;
+static Mutex fieldIEPluginMutex("fieldIE");
 
 static std::map<std::string, FieldIEPlugin *> *field_plugin_table = 0;
 
@@ -60,9 +59,9 @@ static std::map<std::string, FieldIEPlugin *> *field_plugin_table = 0;
 FieldIEPlugin::FieldIEPlugin(const std::string& pname,
 			     const std::string& fextension,
 			     const std::string& fmagic,
-			     FieldHandle (*freader)(ProgressReporter *pr,
+			     FieldHandle (*freader)(Core::Logging::Log& pr,
 						    const char *filename),
-			     bool (*fwriter)(ProgressReporter *pr,
+			     bool (*fwriter)(Core::Logging::Log& pr,
 					     FieldHandle f,
 					     const char *filename))
   : pluginname(pname),
@@ -71,7 +70,7 @@ FieldIEPlugin::FieldIEPlugin(const std::string& pname,
     filereader(freader),
     filewriter(fwriter)
 {
-  fieldIEPluginMutex.lock();
+  Guard s(fieldIEPluginMutex.get());
 
   if (!field_plugin_table)
   {
@@ -95,33 +94,29 @@ FieldIEPlugin::FieldIEPlugin(const std::string& pname,
       break;
     }
 
-    std::cout << "WARNING: Multiple FieldIEPlugins with '" << pluginname
-	 << "' name.\n";
+    std::cout << "WARNING: Multiple FieldIEPlugins with '" << pluginname << "' name.\n";
     tmppname = pluginname + "(" + to_string(counter) + ")";
     counter++;
   }
-
-  fieldIEPluginMutex.unlock();
 }
 
 
 
 FieldIEPlugin::~FieldIEPlugin()
 {
-  if (field_plugin_table == NULL)
+  if (!field_plugin_table)
   {
     std::cerr << "WARNING: FieldIEPlugin.cc: ~FieldIEPlugin(): field_plugin_table is NULL\n";
     std::cerr << "         For: " << pluginname << "\n";
     return;
   }
 
-  fieldIEPluginMutex.lock();
+  Guard s(fieldIEPluginMutex.get());
 
   std::map<std::string, FieldIEPlugin *>::iterator iter = field_plugin_table->find(pluginname);
   if (iter == field_plugin_table->end())
   {
-    std::cerr << "WARNING: FieldIEPlugin " << pluginname << 
-      " not found in database for removal.\n";
+    std::cerr << "WARNING: FieldIEPlugin " << pluginname << " not found in database for removal.\n";
   }
   else
   {
@@ -133,8 +128,6 @@ FieldIEPlugin::~FieldIEPlugin()
     delete field_plugin_table;
     field_plugin_table = 0;
   }
-
-  fieldIEPluginMutex.unlock();
 }
 
 
@@ -153,9 +146,12 @@ FieldIEPlugin::operator==(const FieldIEPlugin &other) const
 void
 FieldIEPluginManager::get_importer_list(std::vector<std::string> &results)
 {
-  if (field_plugin_table == 0) return;
+  if (!field_plugin_table) 
+  {
+    return;
+  }
 
-  fieldIEPluginMutex.lock();
+  Guard s(fieldIEPluginMutex.get());
   std::map<std::string, FieldIEPlugin *>::const_iterator itr = field_plugin_table->begin();
   while (itr != field_plugin_table->end())
   {
@@ -165,16 +161,18 @@ FieldIEPluginManager::get_importer_list(std::vector<std::string> &results)
     }
     ++itr;
   }
-  fieldIEPluginMutex.unlock();
 }
 
 
 void
 FieldIEPluginManager::get_exporter_list(std::vector<std::string> &results)
 {
-  if (field_plugin_table == 0) return;
+  if (!field_plugin_table) 
+  {
+    return;
+  }
 
-  fieldIEPluginMutex.lock();
+  Guard s(fieldIEPluginMutex.get());
   std::map<std::string, FieldIEPlugin *>::const_iterator itr = field_plugin_table->begin();
   while (itr != field_plugin_table->end())
   {
@@ -184,15 +182,16 @@ FieldIEPluginManager::get_exporter_list(std::vector<std::string> &results)
     }
     ++itr;
   }
-  fieldIEPluginMutex.unlock();
 }
 
  
 FieldIEPlugin *
 FieldIEPluginManager::get_plugin(const std::string &name)
 {
-  if (field_plugin_table == 0) return NULL;
+  if (!field_plugin_table)
+    return 0;
 
+  Guard s(fieldIEPluginMutex.get());
   // Should check for invalid name.
   std::map<std::string, FieldIEPlugin *>::iterator loc = field_plugin_table->find(name);
   if (loc == field_plugin_table->end())

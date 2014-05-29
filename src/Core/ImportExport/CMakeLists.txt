@@ -33,9 +33,7 @@
 
 SET(Core_ImportExport_SRCS
   ColorMap/ColorMapIEPlugin.cc
-  ColorMap/ColorMapExecConverter.cc
   Matrix/MatrixIEPlugin.cc
-  Field/FieldExecConverter.cc 
   Field/FieldIEPlugin.cc 
   Nrrd/NrrdIEPlugin.cc
 )
@@ -47,18 +45,18 @@ SET(Core_ImportExport_HEADERS
   Nrrd/NrrdIEPlugin.h
   share.h
   GenericIEPlugin.h
-  ExecConverter.h
 )
 
 ADD_LIBRARY(Core_ImportExport ${Core_ImportExport_SRCS} ${Core_ImportExport_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_ImportExport 
-  Core_Persistent 
-  Core_Exceptions 
+  #Core_Persistent 
+  #Core_Exceptions 
   Core_Thread 
-  Core_Geometry 
-  Core_Math 
-  Core_Util
+  #Core_Geometry 
+  Core_Logging
+  #Core_Math 
+  #Core_Util
   #Core_Matlab 
   Core_Datatypes
 )

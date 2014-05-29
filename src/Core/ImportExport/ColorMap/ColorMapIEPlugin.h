@@ -42,7 +42,7 @@
 #ifndef SCI_project_ColorMapIEPlugin_h
 #define SCI_project_ColorMapIEPlugin_h 1
 
-#include <Core/Util/ProgressReporter.h>
+#include <Core/Logging/LoggerFwd.h>
 #include <Core/Datatypes/ColorMap.h>
 
 #include <map>
@@ -60,16 +60,16 @@ public:
   const std::string fileextension;
   const std::string filemagic;
 
-  ColorMapHandle (*filereader)(ProgressReporter *pr, const char *filename);
-  bool (*filewriter)(ProgressReporter *pr,
-		     ColorMapHandle f, const char *filename);
+  Core::Datatypes::ColorMapHandle (*filereader)(Core::Logging::Log& pr, const char *filename);
+  bool (*filewriter)(Core::Logging::Log& pr,
+		     Core::Datatypes::ColorMapHandle f, const char *filename);
 
   ColorMapIEPlugin(const std::string &name,
 		   const std::string &fileextension,
 		   const std::string &filemagic,
-		   ColorMapHandle (*freader)(ProgressReporter *pr,
+		   Core::Datatypes::ColorMapHandle (*freader)(Core::Logging::Log& pr,
 					     const char *filename) = 0,
-		   bool (*fwriter)(ProgressReporter *pr, ColorMapHandle f,
+		   bool (*fwriter)(Core::Logging::Log& pr, Core::Datatypes::ColorMapHandle f,
 				   const char *filename) = 0);
 
   ~ColorMapIEPlugin();

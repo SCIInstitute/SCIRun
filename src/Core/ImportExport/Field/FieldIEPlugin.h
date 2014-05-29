@@ -42,8 +42,8 @@
 #ifndef SCI_project_FieldIEPlugin_h
 #define SCI_project_FieldIEPlugin_h 1
 
-#include <Core/Datatypes/Field.h>
-
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Logging/LoggerFwd.h>
 #include <map>
 
 #include <Core/ImportExport/share.h>
@@ -58,16 +58,16 @@ public:
   const std::string fileextension;
   const std::string filemagic;
 
-  FieldHandle (*filereader)(ProgressReporter *pr, const char *filename);
-  bool (*filewriter)(ProgressReporter *pr,
+  FieldHandle (*filereader)(Core::Logging::Log& pr, const char *filename);
+  bool (*filewriter)(Core::Logging::Log& pr,
 		     FieldHandle f, const char *filename);
 
   FieldIEPlugin(const std::string &name,
 		const std::string &fileextension,
 		const std::string &filemagic,
-		FieldHandle (*freader)(ProgressReporter *pr,
+		FieldHandle (*freader)(Core::Logging::Log& pr,
 				       const char *filename) = 0,
-		bool (*fwriter)(ProgressReporter *pr, FieldHandle f,
+		bool (*fwriter)(Core::Logging::Log& pr, FieldHandle f,
 				const char *filename) = 0);
 
   ~FieldIEPlugin();

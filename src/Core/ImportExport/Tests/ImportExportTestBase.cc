@@ -27,3 +27,41 @@
 */
 
 #include <gtest/gtest.h>
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
+
+using namespace SCIRun;
+
+TEST(ImportExportPluginManagerTest, CanCreate)
+{
+  FieldIEPluginManager manager;
+  std::vector<std::string> importers;
+  manager.get_importer_list(importers);
+  EXPECT_TRUE(importers.empty());
+}
+
+namespace
+{
+  FieldHandle freaderDummy(Core::Logging::Log& pr, const char *filename)
+  {
+    return FieldHandle();
+  }
+  bool fwriterDummy(Core::Logging::Log& pr, FieldHandle f, const char *filename)
+  {
+    return false;
+  }
+}
+
+TEST(ImportExportPluginManagerTest, PluginsAddSelfToManager)
+{
+  FieldIEPlugin dummy("dummy", ".fld", "123", freaderDummy, fwriterDummy);
+
+  FieldIEPluginManager manager;
+  std::vector<std::string> importers;
+  manager.get_importer_list(importers);
+  EXPECT_EQ(1, importers.size());
+  std::vector<std::string> exporters;
+  manager.get_exporter_list(exporters);
+  EXPECT_EQ(1, exporters.size());
+  auto plugin = manager.get_plugin("dummy");
+  EXPECT_EQ(&dummy, plugin);
+}

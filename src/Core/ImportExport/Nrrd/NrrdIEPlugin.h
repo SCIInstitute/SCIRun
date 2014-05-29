@@ -39,11 +39,12 @@
  *
  */
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #ifndef SCI_project_NrrdIEPlugin_h
 #define SCI_project_NrrdIEPlugin_h 1
 
-#include <Core/Util/Assert.h>
-#include <Core/Util/ProgressReporter.h>
+#include <Core/Logging/LoggerFwd.h>
 #include <Core/Datatypes/NrrdData.h>
 
 #include <Core/ImportExport/share.h>
@@ -58,16 +59,16 @@ public:
   const std::string fileextension;
   const std::string filemagic;
 
-  NrrdDataHandle (*fileReader_)(ProgressReporter *pr, const char *filename);
-  bool (*fileWriter_)(ProgressReporter *pr,
+  NrrdDataHandle (*fileReader_)(Core::Logging::Log& pr, const char *filename);
+  bool (*fileWriter_)(Core::Logging::Log& pr,
 		     NrrdDataHandle f, const char *filename);
 
   NrrdIEPlugin(const std::string &name,
 		 const std::string &fileextension,
 		 const std::string &filemagic,
-		 NrrdDataHandle (*freader)(ProgressReporter *pr,
+		 NrrdDataHandle (*freader)(Core::Logging::Log& pr,
 					 const char *filename) = 0,
-		 bool (*fwriter)(ProgressReporter *pr, NrrdDataHandle f,
+		 bool (*fwriter)(Core::Logging::Log& pr, NrrdDataHandle f,
 				 const char *filename) = 0);
 
   ~NrrdIEPlugin();
@@ -87,4 +88,5 @@ public:
 
 } // End namespace SCIRun
 
+#endif
 #endif

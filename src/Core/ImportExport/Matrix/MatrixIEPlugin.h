@@ -42,9 +42,8 @@
 #ifndef SCI_project_MatrixIEPlugin_h
 #define SCI_project_MatrixIEPlugin_h 1
 
-#include <Core/Util/Assert.h>
-#include <Core/Util/ProgressReporter.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Logging/LoggerFwd.h>
+#include <Core/Datatypes/MatrixFwd.h>
 
 #include <map>
 
@@ -60,16 +59,16 @@ public:
   const std::string fileExtension_;
   const std::string fileMagic_;
 
-  MatrixHandle (*fileReader_)(ProgressReporter *pr, const char *filename);
-  bool (*fileWriter_)(ProgressReporter *pr,
-		     MatrixHandle f, const char *filename);
+  Core::Datatypes::MatrixHandle (*fileReader_)(Core::Logging::Log& pr, const char *filename);
+  bool (*fileWriter_)(Core::Logging::Log& pr,
+		     Core::Datatypes::MatrixHandle f, const char *filename);
 
   MatrixIEPlugin(const std::string &name,
 		 const std::string &fileextension,
 		 const std::string &filemagic,
-		 MatrixHandle (*freader)(ProgressReporter *pr,
+		 Core::Datatypes::MatrixHandle (*freader)(Core::Logging::Log& pr,
 					 const char *filename) = 0,
-		 bool (*fwriter)(ProgressReporter *pr, MatrixHandle f,
+		 bool (*fwriter)(Core::Logging::Log& pr, Core::Datatypes::MatrixHandle f,
 				 const char *filename) = 0);
 
   ~MatrixIEPlugin();

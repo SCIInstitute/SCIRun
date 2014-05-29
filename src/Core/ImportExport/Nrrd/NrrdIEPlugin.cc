@@ -26,32 +26,20 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  Persistent.h: Base class for persistent objects...
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   May 2004
- *
- */
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
 
 #include <Core/Thread/Mutex.h>
-#include <Core/Util/Legacy/StringUtil.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 #include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
 
 #include <map>
-
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Datatypes;
 
 
 namespace SCIRun {
 
-// Use Core/Util/share.h.
-// Core_Util is the first library to be loaded at runtime.
-#include <Core/Util/share.h>
-extern SCISHARE Mutex nrrdIEPluginMutex;
+static Mutex nrrdIEPluginMutex;
 
 static std::map<std::string, NrrdIEPlugin *> *matrix_plugin_table = 0;
 
@@ -60,9 +48,9 @@ static std::map<std::string, NrrdIEPlugin *> *matrix_plugin_table = 0;
 NrrdIEPlugin::NrrdIEPlugin(const std::string& pname,
                            const std::string& fextension,
                            const std::string& fmagic,
-                           NrrdDataHandle (*freader)(ProgressReporter *pr,
+                           NrrdDataHandle (*freader)(Core::Logging::Log& pr,
                                                  const char *filename),
-                           bool (*fwriter)(ProgressReporter *pr,
+                           bool (*fwriter)(Core::Logging::Log& pr,
                                            NrrdDataHandle f,
                                            const char *filename))
   : pluginname(pname),
@@ -210,3 +198,4 @@ NrrdIEPluginManager::get_plugin(const std::string &name)
 } // End namespace SCIRun
 
 
+#endif
