@@ -34,42 +34,45 @@
  * 
  */
 
-#include <Core/Algorithms/DataIO/ObjToFieldReader.h>
+#include <Core/Algorithms/Legacy/DataIO/ObjToFieldReader.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Logging/Log.h>
+
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms;
 
 namespace SCIRun {
 
-FieldHandle ObjToField_reader(ProgressReporter *pr, const char *filename);
-
-FieldHandle ObjToField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle ObjToField_reader(Log& pr, const char *filename)
 {
-  FieldHandle result = 0;
-  SCIRunAlgo::ObjToFieldReader reader(pr);
+  FieldHandle result;
+  ObjToFieldReader reader(pr);
   std::string fn(filename);
   if (! reader.read(fn, result))
   {
-    if (pr) pr->error("Convert Obj to field failed.");
+    pr << ERROR_LOG << "Convert Obj to field failed." << std::endl;
     return (result);
   }
 
   return result;
 }
 
-bool FieldToObj_writer(ProgressReporter *pr, FieldHandle fh,
+bool FieldToObj_writer(Log& pr, FieldHandle fh,
                        const char* filename)
 {
-  SCIRunAlgo::ObjToFieldReader writer(pr);
+  ObjToFieldReader writer(pr);
 
-  if(!writer.write(std::string(filename), fh)) {
-    if(pr) pr->error("Converting field to Obj failed.");
+  if(!writer.write(std::string(filename), fh))
+  {
+    pr << ERROR_LOG << "Converting field to Obj failed." << std::endl;
     return false;
   }
 
   return true;
 }
 
-static FieldIEPlugin ObjToField_plugin("ObjToField", "{.obj}", "",
+static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "{.obj}", "",
                                        ObjToField_reader, FieldToObj_writer);
 
 }

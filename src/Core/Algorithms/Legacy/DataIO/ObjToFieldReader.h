@@ -30,10 +30,8 @@
 #ifndef CORE_ALGORITHMS_DATAIO_OBJTOFIELDREADER_H
 #define CORE_ALGORITHMS_DATAIO_OBJTOFIELDREADER_H 1
 
-#include <string>
-
-#include <Core/Algorithms/Util/AlgoLibrary.h>
-#include <Core/Algorithms/DataIO/share.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/DataIO/share.h>
 
 /*
  * Implementation notes:
@@ -43,20 +41,25 @@
  * The intended use of this reader is for reading ImageVis3D obj files.
  */
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE ObjToFieldReader : public AlgoLibrary {
-public:
-  ObjToFieldReader(ProgressReporter* pr = 0);
-  ~ObjToFieldReader();
-
-  bool read(const std::string& filename, FieldHandle& field_handle);
-
-  bool write(const std::string& filename, const FieldHandle& field);
-};
-
+namespace SCIRun
+{
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      class SCISHARE ObjToFieldReader : public AlgorithmBase
+      {
+      public:
+        explicit ObjToFieldReader(Logging::Log& log);
+        bool read(const std::string& filename, FieldHandle& field_handle);
+        bool write(const std::string& filename, const FieldHandle& field);
+        virtual AlgorithmOutput run_generic(const AlgorithmInput&) const override
+      { throw "not implemented"; }
+      private:
+        Logging::Log& log_;
+      };
+    }
+  }
 }
 
 #endif // CORE_ALGORITHMS_DATAIO_OBJTOFIELDREADER_H

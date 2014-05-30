@@ -54,7 +54,9 @@ ADD_LIBRARY(Core_Algorithms_Legacy_DataIO
 
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO 
   #Core_Algorithms_Util
+  Algorithms_Base
   Core_Datatypes 
+  Core_Datatypes_Legacy_Field
   #Core_Thread 
   #Core_Exceptions 
   #Core_Geometry 

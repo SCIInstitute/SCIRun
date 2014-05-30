@@ -26,26 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/DataIO/ObjToFieldReader.h>
+#include <Core/Algorithms/Legacy/DataIO/ObjToFieldReader.h>
 
-#include <Core/Datatypes/Field.h> 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Datatypes/Mesh.h> 
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-#include <Core/Util/StringUtil.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Logging/Log.h>
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
-namespace SCIRunAlgo {
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 
-ObjToFieldReader::ObjToFieldReader(ProgressReporter* pr)
-  : AlgoLibrary(pr)
-{
-}
-
-ObjToFieldReader::~ObjToFieldReader() {}
+ObjToFieldReader::ObjToFieldReader(Log& log) : log_(log) {}
 
 bool
 ObjToFieldReader::read(const std::string& filename, FieldHandle& field_handle)
@@ -54,7 +56,7 @@ ObjToFieldReader::read(const std::string& filename, FieldHandle& field_handle)
   inputfile.open(filename.c_str());
   if (! inputfile)
   {
-    error("Failed to open input file " + filename);
+    log_ << ERROR_LOG << "Failed to open input file " << filename;
     return false;
   }
 
@@ -90,7 +92,7 @@ ObjToFieldReader::read(const std::string& filename, FieldHandle& field_handle)
       lss >> str >> x >> y >> z;
     }
     catch (...) {
-      error("Parsing line " + line + " failed.");
+      log_ << ERROR_LOG << "Parsing line " << line << " failed.";
       return false;
     }
 
@@ -151,7 +153,4 @@ ObjToFieldReader::write(const std::string& filename, const FieldHandle& field)
   os.close();
 
   return true;
-}
-
-
 }
