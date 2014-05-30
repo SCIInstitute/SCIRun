@@ -76,7 +76,7 @@ protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override; 
   void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
-  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
   virtual void setNoteGraphicsContext() override;
 private:
   PortWidget* fromPort_;
@@ -86,6 +86,7 @@ private:
   void destroy();
   bool destroyed_;
   class ConnectionMenu* menu_;
+  bool menuOpen_; 
   QColor placeHoldingColor_;
 };
 
