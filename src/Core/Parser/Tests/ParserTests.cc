@@ -536,8 +536,8 @@ TEST_F(BasicParserTests, CreateFieldData_asin)
   else
 	  EXPECT_EQ(0, 1); 
 #else
-  EXPECT_EQ(nan, min);
-  EXPECT_EQ(nan, max); 
+  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), min);
+  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), max); 
 #endif
 }
 
@@ -662,8 +662,8 @@ TEST_F(BasicParserTests, CreateFieldData_acos)
   else
 	  EXPECT_EQ(1,0); 
 #else
-  EXPECT_EQ(nan, min);
-  EXPECT_EQ(nan, max); 
+  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), min);
+  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), max); 
 #endif
   //EXPECT_NEAR(0, min, 1e-8);
   //EXPECT_NEAR(0, max, 1e-8);
