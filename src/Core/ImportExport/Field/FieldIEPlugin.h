@@ -48,13 +48,13 @@
 
 namespace SCIRun 
 {
-
   typedef GenericIEPluginInterface<Field> FieldIEPlugin;
 
   typedef IEPluginLegacyAdapter<Field> FieldIEPluginLegacyAdapter;
 
   typedef GenericIEPluginManager<Field> FieldIEPluginManager;
 
+  /// @TODO: blank class needed for Windows export lib...otherwise library is all template now
   class SCISHARE IEPluginManagerManager
   {
   public:
