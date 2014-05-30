@@ -44,9 +44,6 @@
 
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/ImportExport/GenericIEPlugin.h>
-#include <Core/Thread/Mutex.h>
-#include <boost/lexical_cast.hpp>
-
 #include <Core/ImportExport/share.h>
 
 namespace SCIRun 

@@ -32,6 +32,7 @@
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Thread/Mutex.h>
 #include <map>
+#include <boost/lexical_cast.hpp>
 #include <Core/ImportExport/share.h>
 
 namespace SCIRun {
