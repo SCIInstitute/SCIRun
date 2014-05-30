@@ -92,10 +92,10 @@ TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerField)
   auto plugin = manager.get_plugin("dummy");
   EXPECT_EQ(&dummy, plugin);
 
-  //ColorMapIEPluginManager cmanager;
-  //EXPECT_EQ(0, cmanager.numPlugins());
-  //MatrixIEPluginManager mmanager;
-  //EXPECT_EQ(0, mmanager.numPlugins());
+  ColorMapIEPluginManager cmanager;
+  EXPECT_EQ(0, cmanager.numPlugins());
+  MatrixIEPluginManager mmanager;
+  EXPECT_EQ(0, mmanager.numPlugins());
 }
 
 TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerColorMap)
@@ -112,10 +112,10 @@ TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerColorMap)
   auto plugin = manager.get_plugin("dummy");
   EXPECT_EQ(&dummy, plugin);
 
-  //FieldIEPluginManager fmanager;
-  //EXPECT_EQ(0, fmanager.numPlugins());
-  //MatrixIEPluginManager mmanager;
-  //EXPECT_EQ(0, mmanager.numPlugins());
+  FieldIEPluginManager fmanager;
+  EXPECT_EQ(0, fmanager.numPlugins());
+  MatrixIEPluginManager mmanager;
+  EXPECT_EQ(0, mmanager.numPlugins());
 }
 
 TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerMatrix)
@@ -132,10 +132,10 @@ TEST(ImportExportPluginManagerTest, PluginsAddSelfToManagerMatrix)
   auto plugin = manager.get_plugin("dummy");
   EXPECT_EQ(&dummy, plugin);
 
-  //ColorMapIEPluginManager cmanager;
-  //EXPECT_EQ(0, cmanager.numPlugins());
-  //FieldIEPluginManager fmanager;
-  //EXPECT_EQ(0, fmanager.numPlugins());
+  ColorMapIEPluginManager cmanager;
+  EXPECT_EQ(0, cmanager.numPlugins());
+  FieldIEPluginManager fmanager;
+  EXPECT_EQ(0, fmanager.numPlugins());
 }
 
 TEST(ImportExportPluginManagerTest, CanAddMultiple)

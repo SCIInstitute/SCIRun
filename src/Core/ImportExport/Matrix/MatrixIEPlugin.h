@@ -43,12 +43,12 @@
 #define SCI_project_MatrixIEPlugin_h 1
 
 #include <Core/ImportExport/GenericIEPlugin.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Datatypes/MatrixFwd.h>
 
 #include <Core/ImportExport/share.h>
 
-namespace SCIRun {
+namespace SCIRun 
+{
 
   typedef GenericIEPluginInterface<Core::Datatypes::Matrix> MatrixIEPlugin;
 

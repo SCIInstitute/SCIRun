@@ -43,11 +43,11 @@
 #define SCI_project_ColorMapIEPlugin_h 1
 
 #include <Core/ImportExport/GenericIEPlugin.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/ImportExport/share.h>
 
-namespace SCIRun {
+namespace SCIRun 
+{
 
   typedef GenericIEPluginInterface<Core::Datatypes::ColorMap> ColorMapIEPlugin;
 
