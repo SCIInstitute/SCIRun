@@ -3,6 +3,8 @@
 ## SCIRun 5 Prototype
 https://github.com/SCIInstitute/SCIRunGUIPrototype
 
+[![Build Status](https://travis-ci.org/SCIInstitute/SCIRunGUIPrototype.svg)](https://travis-ci.org/SCIInstitute/SCIRunGUIPrototype)
+
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
 
 - [SCIRun 5 Prototype](#user-content-scirun-5-prototype)
