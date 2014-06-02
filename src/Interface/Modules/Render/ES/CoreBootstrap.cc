@@ -121,7 +121,6 @@ public:
     gen::StaticCamera cam;
     float aspect = static_cast<float>(800) / static_cast<float>(600);
 
-    //                                     fovy   aspect  znear zfar
     float perspFOVY = 0.59f;
     float perspZNear = 1.0f;
     float perspZFar = 2000.0f;

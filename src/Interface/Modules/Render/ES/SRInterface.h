@@ -163,9 +163,16 @@ private:
     boost::optional<std::string>    mColorMap;
   };
 
+  // Sets up ESCore.
+  void setupCore();
+
   // Begins the frame.
   void beginFrame();
 
+  // Places mCamera's transform into our static camera component.
+  void updateCamera();
+
+  // Generates the various colormaps that we use for rendering SCIRun geometry.
   void generateColormaps();
 
   MouseMode                       mMouseMode;       ///< Current mouse mode.

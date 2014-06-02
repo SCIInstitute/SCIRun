@@ -27,6 +27,7 @@
 */
 
 #include "Registration.h"
+#include "CoreBootstrap.h"
 
 namespace SCIRun {
 namespace Render {
@@ -34,6 +35,7 @@ namespace Render {
 void rendererRegisterAll(CPM_ES_CEREAL_NS::CerealCore& core)
 {
   // Register systems
+  registerSystem_CoreBootstrap();
 
   // Register components
 }

@@ -32,8 +32,12 @@
 
 #include <Core/Application/Application.h>
 
+#include "CoreBootstrap.h"
+
 // CPM modules.
 #include <gl-state/GLState.hpp>
+
+#include <es-general/comp/StaticCamera.hpp>
 
 using namespace std::placeholders;
 
@@ -54,7 +58,7 @@ SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
 
   // Construct ESCore. We will need to bootstrap the core. We should also
   // probably add utility static classes.
-
+  setupCore();
 }
 
 //------------------------------------------------------------------------------
@@ -62,6 +66,37 @@ SRInterface::~SRInterface()
 {
   glDeleteTextures(1, &mRainbowCMap);
   glDeleteTextures(1, &mGrayscaleCMap);
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::setupCore()
+{
+  mCore.addUserSystem(getSystemName_CoreBootstrap());
+
+  // // Add screen height / width static component.
+  // {
+  //   gen::StaticScreenDims dims;
+  //   dims.width = static_cast<uint32_t>(gScreenWidth);
+  //   dims.height = static_cast<uint32_t>(gScreenHeight);
+  //   gGameCore->addStaticComponent(dims);
+  // }
+
+
+  // // Be exceptionally careful with non-serializable components. They must be
+  // // created outside of the normal bootstrap. They cannot depend on anything
+  // // being serialized correctly. In this circumstance, the filesystem component
+  // // is system dependent and cannot be reliably serialized, so we add it and
+  // // mark it as non-serializable.
+  // {
+  //   // Generate synchronous filesystem, manually add its static component,
+  //   // then mark it as non-serializable.
+  //   fs::StaticFS fileSystem(
+  //       std::shared_ptr<fs::FilesystemSync>(new fs::FilesystemSync(filesystemRoot)));
+  //   gGameCore->addStaticComponent(fileSystem);
+  //   gGameCore->disableComponentSerialization<fs::StaticFS>();
+  // }
+
+  /// \todo Add static mouse and keyboard inputs, if necessary.
 }
 
 //------------------------------------------------------------------------------
@@ -168,20 +203,34 @@ void SRInterface::doFrame(double currentTime, double constantDeltaTime)
     return;
 
   beginFrame();
+  updateCamera();
 
-  // Ensure we have an appropriate camera transform.
-  mCamera->applyTransform();
-  glm::mat4 viewToWorld = mCamera->getViewToWorld();
 
   mSceneBBox.reset();
 
   // Set directional light source (in world space).
-  glm::vec3 viewDir = viewToWorld[2].xyz();
-  viewDir = -viewDir; // Cameras look down -Z.
+  // glm::vec3 viewDir = viewToWorld[2].xyz();
+  // viewDir = -viewDir; // Cameras look down -Z.
   //mSpire->addGlobalUniform("uLightDirWorld", viewDir);
 
   // Render the coordinate axes.
 }
+
+//------------------------------------------------------------------------------
+void SRInterface::updateCamera()
+{
+  // Update the static camera with the appropriate world to view transform.
+  mCamera->applyTransform();
+  glm::mat4 viewToWorld = mCamera->getViewToWorld();
+
+  gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
+  if (camera)
+  {
+    camera->data.setView(viewToWorld);
+  }
+}
+  
+  // Manually update the StaticCamera.
 
 float rainbowRaw[] =
 {
