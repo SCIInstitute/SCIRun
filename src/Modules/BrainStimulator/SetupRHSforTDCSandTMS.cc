@@ -56,7 +56,8 @@ void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
   /// @todo
   
-//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skin);
+  setStateDoubleFromAlgo(SetupRHSforTDCSandTMSAlgorithm::Test);
+  
 //  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skull);
 //  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF);
 //  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM);
@@ -69,7 +70,8 @@ void SetupRHSforTDCSandTMSModule::execute()
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_count = getRequiredInput(ELECTRODE_COUNT);
 
-//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin);
+  setAlgoDoubleFromState(SetupRHSforTDCSandTMSAlgorithm::Test);
+  
 //  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skull);
 //  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::CSF);
 //  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::GM);

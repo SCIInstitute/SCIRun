@@ -47,7 +47,20 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
-    
+
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::Test("Test");
+
+SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
+{
+  addParameter(Test,      0.33);
+  
+//  addParameter(Skull,     0.01);
+//  addParameter(CSF,       1.79);
+//  addParameter(GM,        0.33);
+//  addParameter(WM,        0.14);
+//  addParameter(Electrode, 1.4);
+}
+
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COUNT("ELECTRODE_COUNT");
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
@@ -90,6 +103,8 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, MatrixHand
   // DEBUG: displaying vector created
   for (int i=0; i<output->nrows(); i++)
     std::cout << i << " " << output->coeff(i,0) << std::endl;
+  
+  std::cout << get(Test).getDouble() << std::endl;
   
   return output;
 }

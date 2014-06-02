@@ -42,7 +42,13 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-//  connect(tableWidget_5,  SIGNAL(valueChanged(double)), this, SLOT(push()));
+//  QVarient test = tableWidget_5->item(0,1)->text().toDouble(); // I think this is accessing row 0 col 1 == 1
+
+  // connecting all electrodes
+//  for (int i=0; i<126; i++)
+//  {
+      connect(tableWidget_5, SIGNAL(cellChanged(int,int)), this, SLOT(push())); // cellSelected(int, int)
+//  }
   
   //  connect(Skull_, SIGNAL(valueChanged(double)), this, SLOT(push()));
   //  connect(CSF_,   SIGNAL(valueChanged(double)), this, SLOT(push()));
@@ -53,17 +59,18 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
 
 void SetupRHSforTDCSandTMSDialog::push()
 {
-  //TODO
-  
-  //  if (!pulling_)
-  //  {
-  //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Skin,  Skin_->value());
+  if (!pulling_)
+  {
+    
+    double test = tableWidget_5->item(0,1)->text().toDouble();
+ //   state_->setValue(SetupRHSforTDCSandTMSAlgorithm::Test, test); //tableWidget_5->item(0,1)-
+//    state_->setValue(SetupRHSforTDCSandTMSAlgorithm::Test, qvariant_cast<QObject*>(test)); //tableWidget_5->item(0,1)->text().toDouble()
   //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Skull, Skull_->value());
   //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::CSF,   CSF_->value());
   //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::GM,    GM_->value());
   //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::WM,    WM_->value());
   //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Electrode, Electrode_->value());
-  //  }
+  }
 }
 
 void SetupRHSforTDCSandTMSDialog::pull()
