@@ -43,7 +43,6 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
  INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
  INITIALIZE_PORT(ELECTRODE_COUNT);
  INITIALIZE_PORT(RHS);
-  
 // INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
 // INITIALIZE_PORT(ELECTRODE_TRIANGULATION2);
 // INITIALIZE_PORT(COIL);
@@ -54,15 +53,12 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
-  /// @todo
+  setStateDoubleFromAlgo(SetupRHSforTDCSandTMSAlgorithm::Row0Col1);
+  setStateDoubleFromAlgo(SetupRHSforTDCSandTMSAlgorithm::Row1Col1);
+  setStateDoubleFromAlgo(SetupRHSforTDCSandTMSAlgorithm::Row2Col1);
+  setStateDoubleFromAlgo(SetupRHSforTDCSandTMSAlgorithm::Row3Col1);
+  setStateDoubleFromAlgo(SetupRHSforTDCSandTMSAlgorithm::Row4Col1);
   
-  setStateDoubleFromAlgo(SetupRHSforTDCSandTMSAlgorithm::Test);
-  
-//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skull);
-//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF);
-//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM);
-//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM);
-//  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Electrode);
 }
 
 void SetupRHSforTDCSandTMSModule::execute()
@@ -70,32 +66,26 @@ void SetupRHSforTDCSandTMSModule::execute()
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_count = getRequiredInput(ELECTRODE_COUNT);
 
-  setAlgoDoubleFromState(SetupRHSforTDCSandTMSAlgorithm::Test);
-  
-//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skull);
-//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::CSF);
-//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::GM);
-//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::WM);
-//  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Electrode);
+  setAlgoDoubleFromState(SetupRHSforTDCSandTMSAlgorithm::Row0Col1);
+  setAlgoDoubleFromState(SetupRHSforTDCSandTMSAlgorithm::Row1Col1);
+  setAlgoDoubleFromState(SetupRHSforTDCSandTMSAlgorithm::Row2Col1);
+  setAlgoDoubleFromState(SetupRHSforTDCSandTMSAlgorithm::Row3Col1);
+  setAlgoDoubleFromState(SetupRHSforTDCSandTMSAlgorithm::Row4Col1);
 
-  
   //  auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
-  
   // UI input
   //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
-
   //algorithm parameter
   //algo_->set(Variables::AppendMatrixOption, param);
  
-  
   if (needToExecute())
   {
-    //algorithm input and run
+    //algorithm input
     auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_COUNT, elc_count)));
     
     //algorithm output
-//    sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
-//    sendOutputFromAlgorithm(COILS_FIELD, output);
     sendOutputFromAlgorithm(RHS, output);
+    // sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
+    // sendOutputFromAlgorithm(COILS_FIELD, output);
   }
 }

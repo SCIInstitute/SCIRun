@@ -66,10 +66,12 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, testing)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   
+  algo.set(SetupRHSforTDCSandTMSAlgorithm::Row0Col1, 5.321);
+  
   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
-  (*m)(0,0) = 16;
-  (*m)(1,0) = 2;
-  (*m)(2,0) = 3;
+  (*m)(0,0) = 4;
+  (*m)(1,0) = 1;
+  (*m)(2,0) = 1;
   
   algo.run(CreateTetMeshScalarOnElem(), m);
   

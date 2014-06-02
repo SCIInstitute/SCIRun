@@ -49,7 +49,11 @@ namespace BrainStimulator {
     DenseMatrixHandle run(FieldHandle fh, MatrixHandle elc) const;
     SetupRHSforTDCSandTMSAlgorithm();
     
-    static AlgorithmParameterName Test;
+    static AlgorithmParameterName Row0Col1;
+    static AlgorithmParameterName Row1Col1;
+    static AlgorithmParameterName Row2Col1;
+    static AlgorithmParameterName Row3Col1;
+    static AlgorithmParameterName Row4Col1;
     
     static AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
     static AlgorithmInputName ELECTRODE_COUNT;

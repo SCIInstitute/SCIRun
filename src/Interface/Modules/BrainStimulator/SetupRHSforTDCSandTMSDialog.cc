@@ -28,11 +28,11 @@
 
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
+#include <iostream>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
-
 
 SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,35 +41,24 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-//  QVarient test = tableWidget_5->item(0,1)->text().toDouble(); // I think this is accessing row 0 col 1 == 1
 
-  // connecting all electrodes
-//  for (int i=0; i<126; i++)
-//  {
-      connect(tableWidget_5, SIGNAL(cellChanged(int,int)), this, SLOT(push())); // cellSelected(int, int)
-//  }
-  
-  //  connect(Skull_, SIGNAL(valueChanged(double)), this, SLOT(push()));
-  //  connect(CSF_,   SIGNAL(valueChanged(double)), this, SLOT(push()));
-  //  connect(GM_,    SIGNAL(valueChanged(double)), this, SLOT(push()));
-  //  connect(WM_,    SIGNAL(valueChanged(double)), this, SLOT(push()));
-  //  connect(Electrode_, SIGNAL(valueChanged(double)), this, SLOT(push()));
+  // connecting all electrodes values (and text) contained in the table
+  connect(tableWidget_5, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }
 
 void SetupRHSforTDCSandTMSDialog::push()
 {
   if (!pulling_)
   {
+    state_->setValue(SetupRHSforTDCSandTMSAlgorithm::Row0Col1, tableWidget_5->item(0,1)->text().toDouble());
+    state_->setValue(SetupRHSforTDCSandTMSAlgorithm::Row1Col1, tableWidget_5->item(1,1)->text().toDouble());
+    state_->setValue(SetupRHSforTDCSandTMSAlgorithm::Row2Col1, tableWidget_5->item(2,1)->text().toDouble());
+    state_->setValue(SetupRHSforTDCSandTMSAlgorithm::Row3Col1, tableWidget_5->item(3,1)->text().toDouble());
+    state_->setValue(SetupRHSforTDCSandTMSAlgorithm::Row4Col1, tableWidget_5->item(4,1)->text().toDouble());
     
-    double test = tableWidget_5->item(0,1)->text().toDouble();
- //   state_->setValue(SetupRHSforTDCSandTMSAlgorithm::Test, test); //tableWidget_5->item(0,1)-
-//    state_->setValue(SetupRHSforTDCSandTMSAlgorithm::Test, qvariant_cast<QObject*>(test)); //tableWidget_5->item(0,1)->text().toDouble()
+    
+    
   //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Skull, Skull_->value());
-  //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::CSF,   CSF_->value());
-  //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::GM,    GM_->value());
-  //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::WM,    WM_->value());
-  //    state_->setValue(SetConductivitiesToTetMeshAlgorithm::Electrode, Electrode_->value());
   }
 }
 

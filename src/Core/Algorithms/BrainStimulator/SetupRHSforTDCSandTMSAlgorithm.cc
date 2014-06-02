@@ -48,23 +48,24 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::Test("Test");
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::Row0Col1("Row0Col1");
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::Row1Col1("Row1Col1");
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::Row2Col1("Row2Col1");
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::Row3Col1("Row3Col1");
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::Row4Col1("Row4Col1");
 
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
-  addParameter(Test,      0.33);
-  
-//  addParameter(Skull,     0.01);
-//  addParameter(CSF,       1.79);
-//  addParameter(GM,        0.33);
-//  addParameter(WM,        0.14);
-//  addParameter(Electrode, 1.4);
+  addParameter(Row0Col1, 1.0);
+  addParameter(Row1Col1, -1.0);
+  addParameter(Row2Col1, 0.0);
+  addParameter(Row3Col1, 0.0);
+  addParameter(Row4Col1, 0.0);
 }
 
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COUNT("ELECTRODE_COUNT");
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
-
 //const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_TRIANGULATION("ELECTRODE_TRIANGULATION");
 //const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_TRIANGULATION2("ELECTRODE_TRIANGULATION2");
 //const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::COIL("COIL");
@@ -74,18 +75,17 @@ AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
 
 DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, MatrixHandle elc) const
 {
-  // converting matrix to obtain number of electrodes
+  std::cout << "Elec1 = " << get(Row0Col1).getDouble() << std::endl;
+  std::cout << "Elec2 = " << get(Row1Col1).getDouble() << std::endl;
+  std::cout << "Elec3 = " << get(Row2Col1).getDouble() << std::endl;
+  std::cout << "Elec4 = " << get(Row3Col1).getDouble() << std::endl;
+  std::cout << "Elec5 = " << get(Row4Col1).getDouble() << std::endl;
+  
+  // converting elc matrix handle to dense matrix to obtain number of electrodes
   DenseMatrixHandle elc_dense (new DenseMatrix(matrix_cast::as_dense(elc)->block(0,0,elc->nrows(),elc->ncols())));
 
   // converting field to be virtual to obtain number of nodes
   VField* vfield = fh->vfield();
-  
-//  std::cout << "# of nodes: " << vfield->vmesh()->num_nodes() << std::endl;
-//  std::cout << "# of electrodes: " << elc_dense->coeff(0,0) << std::endl;
-//  DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
-//  for (int i = 0; i < m->rows(); ++ i)
-//    for (int j = 0; j < m->cols(); ++ j)
-//      (*m)(i, j) = i+3;
   
   int total_elements = vfield->vmesh()->num_nodes() + elc_dense->coeff(0,0);
   int node_elements  = vfield->vmesh()->num_nodes();
@@ -96,15 +96,13 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, MatrixHand
   {
     if (i < node_elements)
       (*output)(i,0) = 0;
-    else // TODO: get value of electrodes
-      (*output)(i,0) = 1.0/1000;
+    else // TODO: replace 1.0 with value of electrodes (mAmps)
+      (*output)(i,0) = 1.0/1000.0; // (Amps)
   }
   
   // DEBUG: displaying vector created
   for (int i=0; i<output->nrows(); i++)
     std::cout << i << " " << output->coeff(i,0) << std::endl;
-  
-  std::cout << get(Test).getDouble() << std::endl;
   
   return output;
 }
@@ -114,7 +112,7 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto num_of_elc = input.get<Matrix>(ELECTRODE_COUNT);
 
-  //  auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
+//  auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
 //  auto tri2 = input.get<Field>(ELECTRODE_TRIANGULATION2);
 //  auto coil = input.get<Field>(COIL);
 //  auto coil2 = input.get<Field>(COIL2);
