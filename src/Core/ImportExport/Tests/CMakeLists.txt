@@ -26,26 +26,17 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(Basis)
-ADD_SUBDIRECTORY(Command)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(ConsoleApplication)
-ADD_SUBDIRECTORY(Containers)
-ADD_SUBDIRECTORY(DatabaseManager)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(Exceptions)
-ADD_SUBDIRECTORY(GeometryPrimitives)
-ADD_SUBDIRECTORY(ImportExport)
-#ADD_SUBDIRECTORY(IEPlugin)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Persistent)
-ADD_SUBDIRECTORY(Utils)
-ADD_SUBDIRECTORY(Thread)
-ADD_SUBDIRECTORY(Parser)
+SET(Core_ImportExport_Tests_SRCS
+  ImportExportTestBase.cc
+)
 
-IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
-ENDIF()
+SCIRUN_ADD_UNIT_TEST(Core_ImportExport_Tests
+  ${Core_ImportExport_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Core_ImportExport_Tests
+  Core_ImportExport
+  gtest_main
+  gtest
+  gmock
+)
