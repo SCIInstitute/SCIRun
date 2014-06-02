@@ -39,10 +39,7 @@
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
-#include <Interface/Modules/Render/ES/SRInterface.h>
-
 #include <Interface/Modules/Render/namespaces.h>
-#include <Interface/Modules/Render/GLWidget.h>
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
@@ -51,7 +48,12 @@ class QStandardItemModel;
 class QStandardItem;
 
 namespace SCIRun {
+
+namespace Render { class SRInterface; }
+
 namespace Gui {
+
+class GLWidget;
 
 class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, 
   public Ui::ViewScene

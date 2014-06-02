@@ -30,6 +30,9 @@
 #include <Core/Application/Preferences.h>
 #include <Core/Logging/Log.h>
 
+#include <Interface/Modules/Render/GLWidget.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
+
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
