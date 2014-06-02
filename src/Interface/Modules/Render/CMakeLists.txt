@@ -39,6 +39,8 @@ SET(Interface_Modules_Render_HEADERS
   ES/SRCamera.h
   ES/SRInterface.h
   ES/SRUtil.h
+  ES/Core.h
+  ES/CoreBootstrap.h
 )
 
 SET(Interface_Modules_Render_SOURCES 
@@ -50,6 +52,7 @@ SET(Interface_Modules_Render_SOURCES
   ES/SRInterface.cc
   ES/SRUtil.cc
   ES/Core.cc
+  ES/CoreBootstrap.cc
   ES/Registration.cc
 )
 

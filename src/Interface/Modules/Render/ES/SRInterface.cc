@@ -52,7 +52,9 @@ SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
   // Create default colormaps.
   generateColormaps();
 
-  // Construct ESCore.
+  // Construct ESCore. We will need to bootstrap the core. We should also
+  // probably add utility static classes.
+
 }
 
 //------------------------------------------------------------------------------
@@ -154,6 +156,9 @@ void SRInterface::beginFrame()
 //------------------------------------------------------------------------------
 void SRInterface::doFrame(double currentTime, double constantDeltaTime)
 {
+  /// \todo Only render a frame if something has changed (new or deleted
+  ///       objects, or the view point has changed).
+
   mContext->makeCurrent();
 
   // Do not even attempt to render if the framebuffer is not complete.
@@ -174,6 +179,8 @@ void SRInterface::doFrame(double currentTime, double constantDeltaTime)
   glm::vec3 viewDir = viewToWorld[2].xyz();
   viewDir = -viewDir; // Cameras look down -Z.
   //mSpire->addGlobalUniform("uLightDirWorld", viewDir);
+
+  // Render the coordinate axes.
 }
 
 float rainbowRaw[] =

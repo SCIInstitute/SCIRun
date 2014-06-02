@@ -181,7 +181,7 @@ private:
   std::vector<SRObject>           mSRObjects;       ///< All SCIRun objects.
   Core::Geometry::BBox            mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
 
-  ESCore                          mES;              ///< Entity system core.
+  ESCore                          mCore;            ///< Entity system core.
 
   std::string                     mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
   std::string                     mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
