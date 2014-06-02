@@ -66,10 +66,11 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, testing)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   
-  algo.set(SetupRHSforTDCSandTMSAlgorithm::Row0Col1, 5.321);
+  algo.set(SetupRHSforTDCSandTMSAlgorithm::Elc0, 5.321);
+  algo.set(SetupRHSforTDCSandTMSAlgorithm::Elc2, 3.5);
   
   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
-  (*m)(0,0) = 4;
+  (*m)(0,0) = 8;
   (*m)(1,0) = 1;
   (*m)(2,0) = 1;
   
