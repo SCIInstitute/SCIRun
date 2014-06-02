@@ -1,32 +1,32 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
+For more information, please see: http://software.sci.utah.edu
 
-   The MIT License
+The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
-   University of Utah.
+Copyright (c) 2012 Scientific Computing and Imaging Institute,
+University of Utah.
 
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
+License for the specific language governing rights and limitations under
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
-   
-   author: Moritz Dannhauer
-   last change: 04/10/2014
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+author: Moritz Dannhauer
+last change: 04/10/2014
 */
 
 
@@ -39,6 +39,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Utils/StringUtil.h>
+#include <Core/Algorithms/Field/Tests/LoadFieldsForAlgoCoreTests.h>
 
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -47,314 +48,211 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 TEST(SetFieldDataTest, TetMeshOnNodeVectorMat)
 {
- SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTet();
- 
- DenseMatrixHandle matrix = TetMeshOnNodeVectorMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTet();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-    
+  DenseMatrixHandle matrix = TetMeshOnNodeVectorMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
 TEST(SetFieldDataTest, TetMeshOnNodeScalarMat)
 {
- SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTet();
- 
- DenseMatrixHandle matrix = TetMeshOnNodeScalarMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTet();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-    
+  DenseMatrixHandle matrix = TetMeshOnNodeScalarMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
-TEST(SetFieldDataTest, TetMeshOnNodeTensorMat)
+TEST(SetFieldDataTest, DISABLED_TetMeshOnNodeTensorMat)
 {
- /*SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTet();
- 
- DenseMatrixHandle matrix = TetMeshOnNodeTensorMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTet();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-   */ 
+  DenseMatrixHandle matrix = TetMeshOnNodeTensorMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
 
 TEST(SetFieldDataTest, TetMeshOnElemScalarMat)
 {
- SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTet();
- 
- DenseMatrixHandle matrix = TetMeshOnElemScalarMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTet();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-    
+  DenseMatrixHandle matrix = TetMeshOnElemScalarMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
 TEST(SetFieldDataTest, TetMeshOnElemVectorMat)
 {
- SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTet();
- 
- DenseMatrixHandle matrix = TetMeshOnElemVectorMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTet();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-    
+  DenseMatrixHandle matrix = TetMeshOnElemVectorMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
 
-TEST(SetFieldDataTest, TetMeshOnElemTensorMat)
+TEST(SetFieldDataTest, DISABLED_TetMeshOnElemTensorMat)
 {
-/* SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTet();
- 
- DenseMatrixHandle matrix = TetMeshOnElemTensorMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTet();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-  */  
+  DenseMatrixHandle matrix = TetMeshOnElemTensorMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
 
 TEST(SetFieldDataTest, TriSurfOnNodeVectorMat)
 {
- SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTri();
- 
- DenseMatrixHandle matrix = TriSurfOnNodeVectorMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTri();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-    
+  DenseMatrixHandle matrix = TriSurfOnNodeVectorMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
 
 TEST(SetFieldDataTest, TriSurfOnNodeScalarMat)
 {
- SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTri();
- 
- DenseMatrixHandle matrix = TriSurfOnNodeScalarMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTri();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-    
+  DenseMatrixHandle matrix = TriSurfOnNodeScalarMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
-TEST(SetFieldDataTest, TriSurfOnNodeTensorMat)
+TEST(SetFieldDataTest, DISABLED_TriSurfOnNodeTensorMat)
 {
-/* SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTri();
- 
- DenseMatrixHandle matrix = TriSurfOnNodeTensorMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTri();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-  */  
+  DenseMatrixHandle matrix = TriSurfOnNodeTensorMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
-
-
-
-
-
-
-
 
 TEST(SetFieldDataTest, TriSurfOnElemVectorMat)
 {
- SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTri();
- 
- DenseMatrixHandle matrix = TriSurfOnElemVectorMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTri();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-    
+  DenseMatrixHandle matrix = TriSurfOnElemVectorMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
 
 TEST(SetFieldDataTest, TriSurfOnElemScalarMat)
 {
- SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTri();
- 
- DenseMatrixHandle matrix = TriSurfOnElemScalarMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTri();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-    
+  DenseMatrixHandle matrix = TriSurfOnElemScalarMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
-TEST(SetFieldDataTest, TriSurfOnElemTensorMat)
+TEST(SetFieldDataTest, DISABLED_TriSurfOnElemTensorMat)
 {
-/* SetFieldDataAlgo algo;
- 
- FieldHandle tetmesh = LoadTri();
- 
- DenseMatrixHandle matrix = TriSurfOnNodeTensorMat();
- 
- FieldHandle result = algo.run(tetmesh, matrix);
-  
- GetFieldDataAlgo algo1;
- 
- DenseMatrixHandle resultmatrix = algo1.run(result);
+  SetFieldDataAlgo algo;
 
- ASSERT_TRUE(matrix->nrows() == resultmatrix->nrows());
- ASSERT_TRUE(matrix->ncols() == resultmatrix->ncols());
+  FieldHandle tetmesh = LoadTri();
 
- for(VMesh::Elem::index_type i = 0; i < matrix->ncols(); i++)
-   for (VMesh::Elem::index_type j = 0; j < matrix->nrows(); j++)
-    {
-     EXPECT_NEAR( (*matrix)(i,j), (*resultmatrix)(i,j), 1e-16);
-    }
-  */  
+  DenseMatrixHandle matrix = TriSurfOnNodeTensorMat();
+
+  FieldHandle result = algo.run(tetmesh, matrix);
+
+  GetFieldDataAlgo algo1;
+
+  DenseMatrixHandle resultmatrix = algo1.run(result);
+
+  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
 }
 
 

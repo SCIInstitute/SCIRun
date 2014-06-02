@@ -26,36 +26,16 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Algorithms_Field_Tests_SRCS
-  CalculateVectorMagnitudesAlgoTests.cc
-  CalculateGradientsAlgoTests.cc
-  GetDomainBoundaryTests.cc
-  GetFieldBoundaryTests.cc
-  ReportFieldInfoTests.cc
-  ConvertMeshToTriSurfMeshAlgoTests.cc
-  ConvertMeshToPointCloudMeshAlgoTests.cc
-  AlignMeshBoundingBoxesAlgoTests.cc
-  SetGetFieldNodesAlgoTests.cc
-  InterfaceWithCleaverAlgorithmTests.cc
-  JoinFieldsAlgoTests.cc
-  MapFieldDataFromElemToNodeAlgoTests.cc
-  MapFieldDataFromNodeToElemAlgoTests.cc
-  GetFieldDataAlgoTests.cc
-  SetFieldDataAlgoTests.cc
-  LoadFieldsForAlgoCoreTests.cc
-  LoadFieldsForAlgoCoreTests.h
+SET(Core_Basis_Tests_SRCS
+  BasisTests.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
-  ${Algorithms_Field_Tests_SRCS}
+SCIRUN_ADD_UNIT_TEST(Core_Basis_Tests
+  ${Core_Basis_Tests_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Algorithms_Field_Tests
-  Algorithms_DataIO
-  Algorithms_Field
-  Core_Datatypes_Legacy_Field
-  Core_Algorithms_Legacy_Fields
-  Testing_Utils
+TARGET_LINK_LIBRARIES(Core_Basis_Tests
+  Core_Basis
   gtest_main
   gtest
   gmock

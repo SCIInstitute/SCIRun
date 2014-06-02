@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2010 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,28 +26,50 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef TESTING_UTIL_SCIRUNUNITTESTS
-#define TESTING_UTIL_SCIRUNUNITTESTS
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <boost/filesystem.hpp>
-#include <sci_debug.h>
-#include <Testing/Utils/share.h>
+/*
+ * Implementation notes:
+ *
+ * This reader does not read textures, just geometry.
+ * 
+ */
 
-namespace SCIRun 
-{ 
+#include <Core/Algorithms/DataIO/ObjToFieldReader.h>
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/Datatypes/MatrixTypeConverter.h>
 
-namespace TestUtils
+namespace SCIRun {
+
+FieldHandle ObjToField_reader(ProgressReporter *pr, const char *filename);
+
+FieldHandle ObjToField_reader(ProgressReporter *pr, const char *filename)
 {
-
-  struct SCISHARE TestResources
+  FieldHandle result = 0;
+  SCIRunAlgo::ObjToFieldReader reader(pr);
+  std::string fn(filename);
+  if (! reader.read(fn, result))
   {
-    static boost::filesystem::path rootDir();
-  };
-  
+    if (pr) pr->error("Convert Obj to field failed.");
+    return (result);
+  }
+
+  return result;
 }
 
+bool FieldToObj_writer(ProgressReporter *pr, FieldHandle fh,
+                       const char* filename)
+{
+  SCIRunAlgo::ObjToFieldReader writer(pr);
+
+  if(!writer.write(std::string(filename), fh)) {
+    if(pr) pr->error("Converting field to Obj failed.");
+    return false;
+  }
+
+  return true;
 }
 
-#endif
+static FieldIEPlugin ObjToField_plugin("ObjToField", "{.obj}", "",
+                                       ObjToField_reader, FieldToObj_writer);
+
+}

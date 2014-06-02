@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,28 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef TESTING_UTIL_SCIRUNUNITTESTS
-#define TESTING_UTIL_SCIRUNUNITTESTS
+#undef SCISHARE
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <boost/filesystem.hpp>
-#include <sci_debug.h>
-#include <Testing/Utils/share.h>
-
-namespace SCIRun 
-{ 
-
-namespace TestUtils
-{
-
-  struct SCISHARE TestResources
-  {
-    static boost::filesystem::path rootDir();
-  };
-  
-}
-
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_ImportExport
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

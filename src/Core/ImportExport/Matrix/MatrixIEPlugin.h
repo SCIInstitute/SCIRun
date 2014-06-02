@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,27 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef TESTING_UTIL_SCIRUNUNITTESTS
-#define TESTING_UTIL_SCIRUNUNITTESTS
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <boost/filesystem.hpp>
-#include <sci_debug.h>
-#include <Testing/Utils/share.h>
+
+/*
+ *  MatrixIEPlugin:  Data structure needed to make a SCIRun MatrixIE Plugin
+ *
+ *  Written by:
+ *   Michael Callahan
+ *   Department of Computer Science
+ *   University of Utah
+ *   May 2004
+ *
+ */
+
+#ifndef SCI_project_MatrixIEPlugin_h
+#define SCI_project_MatrixIEPlugin_h 1
+
+#include <Core/ImportExport/GenericIEPlugin.h>
+#include <Core/Datatypes/MatrixFwd.h>
+
+#include <Core/ImportExport/share.h>
 
 namespace SCIRun 
-{ 
-
-namespace TestUtils
 {
 
-  struct SCISHARE TestResources
-  {
-    static boost::filesystem::path rootDir();
-  };
-  
-}
+  typedef GenericIEPluginInterface<Core::Datatypes::Matrix> MatrixIEPlugin;
+
+  typedef IEPluginLegacyAdapter<Core::Datatypes::Matrix> MatrixIEPluginLegacyAdapter;
+
+  typedef GenericIEPluginManager<Core::Datatypes::Matrix> MatrixIEPluginManager;
 
 }
 

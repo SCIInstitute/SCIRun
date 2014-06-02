@@ -32,6 +32,7 @@
 
 #include <sstream>
 #include <vector>
+#include <iterator>
 #include <boost/shared_ptr.hpp>
 #include <Core/Utils/share.h>
 

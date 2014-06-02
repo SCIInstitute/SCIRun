@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,28 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef TESTING_UTIL_SCIRUNUNITTESTS
-#define TESTING_UTIL_SCIRUNUNITTESTS
+#include <Core/Algorithms/DataIO/MRCReader.h>
+#include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <boost/filesystem.hpp>
-#include <sci_debug.h>
-#include <Testing/Utils/share.h>
+namespace SCIRun {
 
-namespace SCIRun 
-{ 
+NrrdDataHandle MRCToNrrd_reader(ProgressReporter *pr, const char *filename);
 
-namespace TestUtils
+NrrdDataHandle MRCToNrrd_reader(ProgressReporter *pr, const char *filename)
 {
-
-  struct SCISHARE TestResources
+  NrrdDataHandle nrrd = 0;
+  SCIRunAlgo::MRCReader reader(pr);
+  std::string fn(filename);
+  if (! reader.read(fn, nrrd))
   {
-    static boost::filesystem::path rootDir();
-  };
-  
+    if (pr) pr->error("Convert MRC file to NRRD format failed.");
+    return (nrrd);
+  }
+  return (nrrd);
 }
 
-}
+static NrrdIEPlugin MRCToNrrd_plugin("MRCFile","{.mrc}", "", MRCToNrrd_reader, 0);
 
-#endif
+}

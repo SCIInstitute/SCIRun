@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,27 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef TESTING_UTIL_SCIRUNUNITTESTS
-#define TESTING_UTIL_SCIRUNUNITTESTS
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <boost/filesystem.hpp>
-#include <sci_debug.h>
-#include <Testing/Utils/share.h>
+
+/*
+ *  FieldIEPlugin:  Data structure needed to make a SCIRun FieldIE Plugin
+ *
+ *  Written by:
+ *   Michael Callahan
+ *   Department of Computer Science
+ *   University of Utah
+ *   May 2004
+ *
+ */
+
+#ifndef SCI_project_FieldIEPlugin_h
+#define SCI_project_FieldIEPlugin_h 1
+
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/ImportExport/GenericIEPlugin.h>
+#include <Core/ImportExport/share.h>
 
 namespace SCIRun 
-{ 
-
-namespace TestUtils
 {
+  typedef GenericIEPluginInterface<Field> FieldIEPlugin;
 
-  struct SCISHARE TestResources
+  typedef IEPluginLegacyAdapter<Field> FieldIEPluginLegacyAdapter;
+
+  typedef GenericIEPluginManager<Field> FieldIEPluginManager;
+
+  /// @TODO: blank class needed for Windows export lib...otherwise library is all template now
+  class SCISHARE IEPluginManagerManager
   {
-    static boost::filesystem::path rootDir();
+  public:
+    IEPluginManagerManager();
   };
-  
-}
 
 }
 

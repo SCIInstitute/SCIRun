@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,37 +26,33 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Algorithms_Field_Tests_SRCS
-  CalculateVectorMagnitudesAlgoTests.cc
-  CalculateGradientsAlgoTests.cc
-  GetDomainBoundaryTests.cc
-  GetFieldBoundaryTests.cc
-  ReportFieldInfoTests.cc
-  ConvertMeshToTriSurfMeshAlgoTests.cc
-  ConvertMeshToPointCloudMeshAlgoTests.cc
-  AlignMeshBoundingBoxesAlgoTests.cc
-  SetGetFieldNodesAlgoTests.cc
-  InterfaceWithCleaverAlgorithmTests.cc
-  JoinFieldsAlgoTests.cc
-  MapFieldDataFromElemToNodeAlgoTests.cc
-  MapFieldDataFromNodeToElemAlgoTests.cc
-  GetFieldDataAlgoTests.cc
-  SetFieldDataAlgoTests.cc
-  LoadFieldsForAlgoCoreTests.cc
-  LoadFieldsForAlgoCoreTests.h
+# Sources of Core/ImportExport classes
+
+SET(Core_ImportExport_SRCS
+  Nrrd/NrrdIEPlugin.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
-  ${Algorithms_Field_Tests_SRCS}
+SET(Core_ImportExport_HEADERS
+  ColorMap/ColorMapIEPlugin.h
+  Field/FieldIEPlugin.h
+  Matrix/MatrixIEPlugin.h
+  Nrrd/NrrdIEPlugin.h
+  share.h
+  GenericIEPlugin.h
 )
 
-TARGET_LINK_LIBRARIES(Algorithms_Field_Tests
-  Algorithms_DataIO
-  Algorithms_Field
-  Core_Datatypes_Legacy_Field
-  Core_Algorithms_Legacy_Fields
-  Testing_Utils
-  gtest_main
-  gtest
-  gmock
+ADD_LIBRARY(Core_ImportExport ${Core_ImportExport_SRCS} ${Core_ImportExport_HEADERS})
+
+TARGET_LINK_LIBRARIES(Core_ImportExport 
+  Core_Thread 
+  Core_Logging
+  Core_Datatypes
 )
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_ImportExport)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_DEPENDENCIES(Core_ImportExport Boost_external)
+
+SCIRUN_ADD_TEST_DIR(Tests)

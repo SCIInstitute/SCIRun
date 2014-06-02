@@ -1030,7 +1030,7 @@ Parser::get_binary_priority(std::string& binary_operator, int& priority)
 bool
 Parser::scan_variable_name(std::string& expression, std::string& var_name)
 {
-  size_t esize = expression.size();
+  const size_t esize = expression.size();
   if ((esize > 0) &&((expression[0] == '_') || (expression[0] >= 'a' && expression[0] <= 'z')
       || (expression[0] >= 'A' && expression[0] <= 'Z')) )
   {
@@ -1046,7 +1046,7 @@ Parser::scan_variable_name(std::string& expression, std::string& var_name)
         (expression[idx] == '\n') || (expression[idx] == '\r'))) idx++;
   
     // Check whether it is a function name
-    if (expression[idx] == '(') return (false);
+    if (idx < esize && expression[idx] == '(') return (false);
     else
     {
       expression = expression.substr(vidx);
