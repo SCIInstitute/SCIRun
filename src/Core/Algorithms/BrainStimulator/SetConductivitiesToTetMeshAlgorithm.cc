@@ -130,6 +130,7 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   FieldHandle output = CreateField(fi, fh->mesh());
   VField* ofield = output->vfield();
   int val = 0;
+  int cnt = 0;
   for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++)
   {
     vfield->get_value(val, i);
@@ -153,6 +154,13 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
       case 6:
         ofield->set_value(conductivies[5], i);
         break;
+    }
+    
+    cnt++;
+    if (cnt == 1000)
+    {
+      cnt = 0;
+      update_progress_max(i,vfield->vmesh()->num_elems());
     }
   }
 
