@@ -25,19 +25,18 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::TestUtils;
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
@@ -50,18 +49,132 @@ class SetupRHSforTDCSandTMSTests : public ModuleTest
 
 };
 
+namespace
+{
+  FieldHandle CreateTetMeshVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshVectorOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+  }
+  
+  FieldHandle CreateTriSurfVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld");
+  }
+  FieldHandle CreateTriSurfVectorOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
+  }
+  FieldHandle CreateTriSurfScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTriSurfScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+  }
+}
+
+TEST_F(SetupRHSforTDCSandTMSTests, TetMeshVectorOnElem)
+{
+  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 4;
+  stubPortNWithThisData(tdcs, 0, CreateTetMeshVectorOnElem());
+  stubPortNWithThisData(tdcs, 1, m);
+  EXPECT_NO_THROW(tdcs->execute());
+}
+TEST_F(SetupRHSforTDCSandTMSTests, TetMeshVectorOnNode)
+{
+  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 4;
+  stubPortNWithThisData(tdcs, 0, CreateTetMeshVectorOnNode());
+  stubPortNWithThisData(tdcs, 1, m);
+  EXPECT_NO_THROW(tdcs->execute());
+}
+TEST_F(SetupRHSforTDCSandTMSTests, TetMeshScalarOnElem)
+{
+  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 4;
+  stubPortNWithThisData(tdcs, 0, CreateTetMeshScalarOnElem());
+  stubPortNWithThisData(tdcs, 1, m);
+  EXPECT_NO_THROW(tdcs->execute());
+}
+TEST_F(SetupRHSforTDCSandTMSTests, TetMeshScalarOnNode)
+{
+  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 4;
+  stubPortNWithThisData(tdcs, 0, CreateTetMeshScalarOnNode());
+  stubPortNWithThisData(tdcs, 1, m);
+  EXPECT_NO_THROW(tdcs->execute());
+}
+
+TEST_F(SetupRHSforTDCSandTMSTests, TriSurfVectorOnElem)
+{
+  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 4;
+  stubPortNWithThisData(tdcs, 0, CreateTriSurfVectorOnElem());
+  stubPortNWithThisData(tdcs, 1, m);
+  EXPECT_NO_THROW(tdcs->execute());
+}
+TEST_F(SetupRHSforTDCSandTMSTests, TriSurfVectorOnNode)
+{
+  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 4;
+  stubPortNWithThisData(tdcs, 0, CreateTriSurfVectorOnNode());
+  stubPortNWithThisData(tdcs, 1, m);
+  EXPECT_NO_THROW(tdcs->execute());
+}
+TEST_F(SetupRHSforTDCSandTMSTests, TriSurfScalarOnElem)
+{
+  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 4;
+  stubPortNWithThisData(tdcs, 0, CreateTriSurfScalarOnElem());
+  stubPortNWithThisData(tdcs, 1, m);
+  EXPECT_NO_THROW(tdcs->execute());
+}
+TEST_F(SetupRHSforTDCSandTMSTests, TriSurfScalarOnNode)
+{
+  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 4;
+  stubPortNWithThisData(tdcs, 0, CreateTriSurfScalarOnNode());
+  stubPortNWithThisData(tdcs, 1, m);
+  EXPECT_NO_THROW(tdcs->execute());
+}
+
+TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForMatrixInput)
+{
+  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 40;
+  stubPortNWithThisData(tdcs, 0, m);
+  stubPortNWithThisData(tdcs, 1, m);
+  EXPECT_THROW(tdcs->execute(), WrongDatatypeOnPortException);
+}
+
 TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForNullInput)
 {
   auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  ASSERT_TRUE(tdcs != nullptr);
   FieldHandle nullField;
   stubPortNWithThisData(tdcs, 0, nullField);
   stubPortNWithThisData(tdcs, 1, nullField);
-
   EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
-}
-
-TEST_F(SetupRHSforTDCSandTMSTests, DISABLED_Foo)
-{
-  FAIL() << "TODO";
 }

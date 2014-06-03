@@ -31,16 +31,14 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/BrainStimulator/share.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+
 namespace SCIRun {
   namespace Modules {
     namespace BrainStimulator {
 
 class SCISHARE SetupRHSforTDCSandTMSModule : public SCIRun::Dataflow::Networks::Module,
-  public Has5InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag>,
-  public Has2OutputPorts<FieldPortTag, FieldPortTag>
+  public Has2InputPorts<FieldPortTag, MatrixPortTag>,
+  public Has1OutputPort<MatrixPortTag>
 {
   public:
     SetupRHSforTDCSandTMSModule();
@@ -49,13 +47,15 @@ class SCISHARE SetupRHSforTDCSandTMSModule : public SCIRun::Dataflow::Networks::
     virtual void setStateDefaults();
 
     INPUT_PORT(0, ELECTRODE_COIL_POSITIONS_AND_NORMAL, LegacyField);
-    INPUT_PORT(1, ELECTRODE_TRIANGULATION, LegacyField);
-    INPUT_PORT(2, ELECTRODE_TRIANGULATION2, LegacyField);
-    INPUT_PORT(3, COIL, LegacyField);
-    INPUT_PORT(4, COIL2, LegacyField);
-    
-    OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
-    OUTPUT_PORT(1, COILS_FIELD, LegacyField);
+    INPUT_PORT(1, ELECTRODE_COUNT, Matrix);
+//    INPUT_PORT(1, ELECTRODE_TRIANGULATION, LegacyField);
+//    INPUT_PORT(2, ELECTRODE_TRIANGULATION2, LegacyField);
+//    INPUT_PORT(3, COIL, LegacyField);
+//    INPUT_PORT(4, COIL2, LegacyField);
+
+    OUTPUT_PORT(0, RHS, Matrix);
+//    OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
+//    OUTPUT_PORT(1, COILS_FIELD, LegacyField);
 };
 
 }}}
