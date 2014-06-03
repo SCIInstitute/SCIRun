@@ -176,9 +176,7 @@ GenericReader<HType, PortTag>::execute()
 #endif
       )
   {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);  
-#endif
     old_filemodification_ = new_filemodification;
 
     HType handle;

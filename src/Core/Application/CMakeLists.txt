@@ -49,6 +49,7 @@ TARGET_LINK_LIBRARIES(Core_Application
   Algorithms_Factory
   Dataflow_State
   Core_Logging
+  Core_IEPlugin
   ${SCI_BOOST_LIBRARY}
 )
 

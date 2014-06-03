@@ -37,6 +37,7 @@
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Logging/Log.h>
+#include <Core/IEPlugin/IEPluginInit.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::CommandLine;
@@ -99,6 +100,9 @@ NetworkEditorControllerHandle Application::controller()
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
     private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory));
+
+    /// @todo: sloppy way to initialize this but similar to v4, oh well
+    IEPluginManager::Initialize();
   }
   return private_->controller_;
 }

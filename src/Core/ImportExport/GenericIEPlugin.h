@@ -97,7 +97,7 @@ public:
 };
 
 template <class Data>
-class GenericIEPluginManager 
+class GenericIEPluginManager
 {
 public:
   static Core::Thread::Mutex& getLock();
@@ -301,6 +301,43 @@ bool IEPluginLegacyAdapter<Data>::operator==(const IEPluginLegacyAdapter<Data>& 
     filemagic_ == other.filemagic_ &&
     filereader_ == other.filereader_ &&
     filewriter_ == other.filewriter_);
+}
+
+template <class Data>
+std::string defaultTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
+{
+  return "";
+}
+
+template <>
+std::string defaultTypeForFile(const GenericIEPluginManager<Field>* mgr)
+{
+  return "{{SCIRun Field File} {.fld} } ";
+}
+
+template <class Data>
+std::string makeGuiTypesList(const GenericIEPluginManager<Data>& mgr)
+{
+  std::vector<std::string> importers;
+  mgr.get_importer_list(importers);
+
+  std::string importtypes = "{" + defaultTypeForFile(&mgr);
+
+  for (size_t i = 0; i < importers.size(); i++)
+  {
+    auto pl = mgr.get_plugin(importers[i]);
+    if (pl->fileExtension() != "")
+    {
+      importtypes += "{{" + importers[i] + "} {" + pl->fileExtension() + "} } ";
+    }
+    else
+    {
+      importtypes += "{{" + importers[i] + "} {.*} } ";
+    }
+  }
+
+  importtypes += "}";
+  return importtypes;
 }
 
 }

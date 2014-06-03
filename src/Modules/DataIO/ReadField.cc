@@ -40,15 +40,12 @@
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/DataIO/ReadField.h>
-
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::DataIO;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
-
-
 class ReadField : public GenericReader<FieldHandle> {
   protected:
     GuiString gui_types_;
@@ -80,28 +77,13 @@ ReadFieldModule::ReadFieldModule()
 {
   INITIALIZE_PORT(Field);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
-  std::vector<std::string> importers;
-  mgr.get_importer_list(importers);
-  
-  std::string importtypes = "{";
-  importtypes += "{{SCIRun Field File} {.fld} } ";
+  auto types = makeGuiTypesList(mgr);
+  std::cout << "in ReadField" << std::endl;
+  std::cout << types << std::endl;
 
-  for (unsigned int i = 0; i < importers.size(); i++)
-  {
-    FieldIEPlugin *pl = mgr.get_plugin(importers[i]);
-    if (pl->fileextension != "")
-    {
-      importtypes += "{{" + importers[i] + "} {" + pl->fileextension + "} } ";
-    }
-    else
-    {
-      importtypes += "{{" + importers[i] + "} {.*} } ";
-    }
-  }
 
-  importtypes += "}";
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
 
   gui_types_.set(importtypes);
 #endif

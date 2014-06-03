@@ -53,6 +53,7 @@ SET(Core_IEPlugin_SRCS
 
 SET(Core_IEPlugin_HEADERS
   share.h
+  IEPluginInit.h
   #BYUSurfField_Plugin.h
   #CVRTIFileToMatrix_Plugin.h
   #CurveField_Plugin.h

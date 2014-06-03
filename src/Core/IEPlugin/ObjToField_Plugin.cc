@@ -37,8 +37,8 @@
 #include <Core/IEPlugin/ObjToField_Plugin.h>
 #include <Core/Algorithms/Legacy/DataIO/ObjToFieldReader.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Logging/Log.h>
+#include <Core/IEPlugin/IEPluginInit.h>
 
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
@@ -72,7 +72,14 @@ bool FieldToObj_writer(Log& pr, FieldHandle fh, const char* filename)
   return true;
 }
 
-static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "{.obj}", "",
-                                       ObjToField_reader, FieldToObj_writer);
+template class GenericIEPluginManager<Field>;
+
+/// @todo: split out into separate file
+void IEPluginManager::Initialize()
+{
+  static FieldIEPluginManager fieldManager;
+  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "{.obj}", "",
+    ObjToField_reader, FieldToObj_writer);
+}
 
 }
