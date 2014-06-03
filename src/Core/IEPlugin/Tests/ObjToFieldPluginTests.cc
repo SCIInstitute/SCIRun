@@ -28,3 +28,13 @@
 
 #include <gtest/gtest.h>
 #include <Core/IEPlugin/ObjToField_Plugin.h>
+
+TEST(ObjToFieldPluginTests, CanRead)
+{
+  FAIL() << "todo";
+}
+
+TEST(ObjToFieldPluginTests, CanWrite)
+{
+  FAIL() << "todo";
+}
