@@ -62,7 +62,7 @@ namespace
   }
 }
 
-TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalarSevenElem)
+TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   
@@ -112,14 +112,13 @@ TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalarSevenElem)
         EXPECT_EQ(oval, conductivities[5]);
         break;
       default:
-        std::cout << "default switch statement executed, unknown error occurred " << std::endl;
-        FAIL();
+        FAIL() << "default switch statement executed, unknown error occurred " << std::endl;
         break;
     }
   }
 }
 
-TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalarThreeElem)
+TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarThreeElem)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   double conductivities[] = {9.25, 25.1988, 3.5, 5.1988, 5.22, 22.2013};
@@ -153,26 +152,25 @@ TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshScalarThreeElem)
         EXPECT_EQ(oval, conductivities[2]);
         break;
       default:
-        std::cout << "default switch statement executed, unknown error occurred " << std::endl;
-        FAIL();
+        FAIL() << "default switch statement executed, unknown error occurred " << std::endl;
         break;
     }
   }
 }
 
-TEST(SetConductivitiesToTetMeshAlgorithm, TetMeshVector)
+TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshVector)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   EXPECT_THROW(algo.run(CreateTetMeshVectorOnElem()), AlgorithmInputException);
 }
 
-TEST(SetConductivitiesToTetMeshAlgorithm, ThrowsForDataOnNode)
+TEST(SetConductivitiesToTetMeshAlgorithmTest, ThrowsForDataOnNode)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   EXPECT_THROW(algo.run(CreateTetMeshScalarOnNode()), AlgorithmInputException);
 }
 
-TEST(SetConductivitiesToTetMeshAlgorithm, ThrowsForNullInput)
+TEST(SetConductivitiesToTetMeshAlgorithmTest, ThrowsForNullInput)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   FieldHandle nullField;
