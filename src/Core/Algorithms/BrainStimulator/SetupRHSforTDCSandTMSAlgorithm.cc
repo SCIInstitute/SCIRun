@@ -74,8 +74,9 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, MatrixHand
     THROW_ALGORITHM_INPUT_ERROR("Input field was not allocated ");
   
   VField* vfield = fh->vfield();
-  
+  std::cout << "# of nodes: " << vfield->vmesh()->num_nodes() << std::endl;
   DenseMatrixHandle elc_dense (new DenseMatrix(matrix_cast::as_dense(elc)->block(0,0,elc->nrows(),elc->ncols())));
+  
   int elc_elem = elc_dense->coeff(0,0);
   
   if (elc_elem > 128) {
