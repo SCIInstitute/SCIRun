@@ -69,7 +69,7 @@ protected:
 
   time_t old_filemodification_;
 
-  bool importing_;
+  bool useCustomImporter_;
 
   virtual bool call_importer(const std::string &filename, HType & handle);
 
@@ -86,7 +86,7 @@ GenericReader<HType, PortTag>::GenericReader(const std::string &name,
     //gui_from_env_(get_ctx()->subVar("from-env"),""),
     objectPortName_(SCIRun::Dataflow::Networks::PortId(0, objectPortName)),
     old_filemodification_(0),
-    importing_(false)
+    useCustomImporter_(false)
 {
   INITIALIZE_PORT(Filename);
   INITIALIZE_PORT(FileLoaded);
@@ -149,7 +149,7 @@ GenericReader<HType, PortTag>::execute()
   } 
   else if (!file_exists(filename_)) 
   {
-    if (!importing_)
+    if (!useCustomImporter_)
     {
       error("File '" + filename_ + "' not found.");
       return;
@@ -183,7 +183,7 @@ GenericReader<HType, PortTag>::execute()
 
     remark("loading file " +filename_);
     
-    if (importing_)
+    if (useCustomImporter_)
     {
       if (!call_importer(filename_, handle))
       {

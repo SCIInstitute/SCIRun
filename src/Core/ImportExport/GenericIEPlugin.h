@@ -327,7 +327,7 @@ std::string makeGuiTypesList(const GenericIEPluginManager<Data>& mgr)
   for (size_t i = 0; i < importers.size(); i++)
   {
     auto pl = mgr.get_plugin(importers[i]);
-    importtypes << " ;; " << importers[i];
+    importtypes << ";;" << importers[i];
     if (!pl->fileExtension().empty())
     {
        importtypes << " (*." << pl->fileExtension() << ")";

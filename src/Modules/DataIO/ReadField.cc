@@ -110,16 +110,10 @@ ReadFieldModule::execute()
 {     
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
-
-
-  const std::string ftpre = gui_filetype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-
-  importing_ = !(ft == "" ||
-		 ft == "SCIRun Field File" ||
-		 ft == "SCIRun Field Any");
 #endif
+  const std::string guiFiletype = get_state()->getValue(Variables::FileExtension).getString();
+
+  useCustomImporter_ = guiFiletype != ".fld";
 
   my_base::execute();
 }
