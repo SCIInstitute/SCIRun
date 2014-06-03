@@ -110,10 +110,6 @@ IF(WIN32)
   ADD_DEFINITIONS("/wd4251 /wd4275 -D_CRT_SECURE_NO_WARNINGS") 
 ENDIF(WIN32)
 
-IF(UNIX)
-  ADD_DEFINITIONS("-lrt")
-ENDIF(UNIX)
-
 ########################################################################
 # Configure test support
 
@@ -174,7 +170,8 @@ IF(UNIX)
     ENDIF()
   ENDIF()
 
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG} -Wall")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG} -Wall -lrt")
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lrt")
 ENDIF()
 
 IF(APPLE)
