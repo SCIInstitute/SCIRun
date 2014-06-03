@@ -85,43 +85,17 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
   for (VMesh::Elem::index_type i=0; i < ivfield->vmesh()->num_elems(); i++)
   {
     ivfield->get_value(ival, i);
-    switch (ival)
-    {
-      case 1:
-        ovfield->get_value(oval, i);
-        EXPECT_EQ(oval, conductivities[0]);
-        break;
-      case 2:
-        ovfield->get_value(oval, i);
-        EXPECT_EQ(oval, conductivities[1]);
-        break;
-      case 3:
-        ovfield->get_value(oval, i);
-        EXPECT_EQ(oval, conductivities[2]);
-        break;
-      case 4:
-        ovfield->get_value(oval, i);
-        EXPECT_EQ(oval, conductivities[3]);
-        break;
-      case 5:
-        ovfield->get_value(oval, i);
-        EXPECT_EQ(oval, conductivities[4]);
-        break;
-      case 6:
-        ovfield->get_value(oval, i);
-        EXPECT_EQ(oval, conductivities[5]);
-        break;
-      default:
-        FAIL() << "default switch statement executed, unknown error occurred " << std::endl;
-        break;
-    }
+    if (ival != 1 && ival != 2 && ival != 3 && ival != 4 && ival !=5 && ival !=6)
+      FAIL() << "field value outside of range obtained " << std::endl;
+    ovfield->get_value(oval, i);
+    EXPECT_EQ(oval, conductivities[ival-1]);
   }
 }
 
 TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarThreeElem)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
-  double conductivities[] = {9.25, 25.1988, 3.5, 5.1988, 5.22, 22.2013};
+  double conductivities[] = {9.25, 25.1988, 3.5};
   
   algo.set(SetConductivitiesToTetMeshAlgorithm::Skin,  conductivities[0]);
   algo.set(SetConductivitiesToTetMeshAlgorithm::Skull, conductivities[1]);
@@ -137,24 +111,10 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarThreeElem)
   for (VMesh::Elem::index_type i=0; i < ivfield->vmesh()->num_elems(); i++)
   {
     ivfield->get_value(ival, i);
-    switch (ival)
-    {
-      case 1:
-        ovfield->get_value(oval, i);
-        EXPECT_EQ(oval, conductivities[0]);
-        break;
-      case 2:
-        ovfield->get_value(oval, i);
-        EXPECT_EQ(oval, conductivities[1]);
-        break;
-      case 3:
-        ovfield->get_value(oval, i);
-        EXPECT_EQ(oval, conductivities[2]);
-        break;
-      default:
-        FAIL() << "default switch statement executed, unknown error occurred " << std::endl;
-        break;
-    }
+    if (ival != 1 && ival != 2 && ival != 3)
+      FAIL() << "field value outside of range obtained " << std::endl;
+    ovfield->get_value(oval, i);
+    EXPECT_EQ(oval, conductivities[ival-1]);
   }
 }
 
