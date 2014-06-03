@@ -110,6 +110,10 @@ IF(WIN32)
   ADD_DEFINITIONS("/wd4251 /wd4275 -D_CRT_SECURE_NO_WARNINGS") 
 ENDIF(WIN32)
 
+IF(UNIX)
+  ADD_DEFINITIONS("-lrt")
+ENDIF(UNIX)
+
 ########################################################################
 # Configure test support
 
