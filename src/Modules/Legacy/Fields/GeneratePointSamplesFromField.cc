@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
 ///
 ///@file  GeneratePointSamplesFromField.cc
 ///
@@ -60,6 +58,9 @@
 using std::ostringstream;
 
 namespace SCIRun {
+
+/// @class GeneratePointSamplesFromField
+/// @brief This module places seed points in a field. 
 
 class GeneratePointSamplesFromField : public Module
 {

@@ -26,17 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  MergeTriSurfs.cc: Take in fields and append them into one field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   July 2004
- *
- */
+/// @author
+///   Michael Callahan,
+///   Department of Computer Science,
+///   University of Utah
+/// @date  July 2004
 
 #include <Core/Geometry/CompGeom.h>
 
@@ -51,6 +45,9 @@
 #include <iostream>
 
 namespace SCIRun {
+
+/// @class MergeTriSurfsAlgo
+/// @brief This module self intersects all the triangles in a trisurf with each other so that none overlap. 
 
 class MergeTriSurfsAlgo
 {

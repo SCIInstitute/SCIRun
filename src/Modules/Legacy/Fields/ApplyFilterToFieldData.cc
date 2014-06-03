@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Field/ApplyFilterToFieldData.cc
 
 #include <Core/Algorithms/Fields/FilterFieldData/DilateFieldData.h>
 #include <Core/Algorithms/Fields/FilterFieldData/ErodeFieldData.h>
@@ -37,6 +36,9 @@ namespace SCIRun {
 
 using namespace SCIRun;
 using namespace SCIRunAlgo;
+
+/// @class ApplyFilterToFieldData
+/// @brief Applies a dilate or erode filter to a regular mesh. 
 
 class ApplyFilterToFieldData : public Module {
   public:

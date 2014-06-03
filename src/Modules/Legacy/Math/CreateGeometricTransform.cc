@@ -27,16 +27,13 @@
 */
 
 
-///
 ///@file  CreateGeometricTransform.cc
-///@brief Build a 4x4 geometric transformation matrix
 ///
 ///@author
 ///   David Weinstein
 ///   Department of Computer Science
 ///   University of Utah
 ///@date  March 1999
-///
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Ports/GeometryPort.h>
@@ -57,6 +54,9 @@
 #include <stdio.h>
 
 namespace SCIRun {
+
+/// @class CreateGeometricTransform
+/// @brief This module builds a 4x4 geometric transformation matrix
 
 class CreateGeometricTransform : public Module {
   GuiDouble rotate_x_gui_;

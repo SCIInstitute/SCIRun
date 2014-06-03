@@ -1,0 +1,2 @@
+move q-seg stuff into tenEstimate, and add tenEstimateModelSet()
+

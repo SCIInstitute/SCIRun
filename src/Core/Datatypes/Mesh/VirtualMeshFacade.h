@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Mesh/VirtualMeshFacade.h
+
 #ifndef CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H
 #define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H 
 

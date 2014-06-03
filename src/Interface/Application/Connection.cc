@@ -146,7 +146,7 @@ namespace SCIRun
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false), 
   NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
-  fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer), menu_(0)
+  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(0)
 {
   if (fromPort_)
   {
@@ -235,11 +235,27 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
     drawer_ = cds;
     trackNodes();
   }
+} 
+void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	this-> setColor(placeHoldingColor_);
+	menuOpen_ = false; 
+  QGraphicsPathItem::mouseReleaseEvent(event);
+}
+void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{	 
+	if(!menuOpen_)
+	{
+		placeHoldingColor_ = this -> color();
+		this -> setColor(Qt::red); 
+	}
+  QGraphicsPathItem::mousePressEvent(event);
 }
 
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   auto action = menu_->exec(event->screenPos());
+  menuOpen_ = true; 
   if (action && action->text() == deleteAction)
   {
     scene()->removeItem(this);
@@ -249,7 +265,8 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
     //std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
   }
-}
+  QGraphicsPathItem::mouseDoubleClickEvent(event);
+  }
 
 void ConnectionLine::setNoteGraphicsContext() 
 {

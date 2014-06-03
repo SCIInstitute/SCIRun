@@ -26,17 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
-///@file  WriteMatrix.cc
-///@brief Save persistent representation of a matrix to a file
-///
 ///@author
 ///   Steven G. Parker
 ///   Department of Computer Science
 ///   University of Utah
 ///@date  July 1994
-///
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Modules/DataIO/GenericWriter.h>
@@ -45,6 +39,11 @@
 namespace SCIRun {
 
 template class GenericWriter<MatrixHandle>;
+
+/// @class WriteMatrix
+/// @brief This module writes a matrix to file 
+///
+/// (a SCIRun .mat file and various other file formats using a plugin system). 
 
 class WriteMatrix : public GenericWriter<MatrixHandle> {
   protected:

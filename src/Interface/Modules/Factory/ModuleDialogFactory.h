@@ -47,8 +47,15 @@ namespace SCIRun
       ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state);
     private:
       QWidget* parentToUse_;
+      typedef boost::function<ModuleDialogGeneric*(const std::string&, SCIRun::Dataflow::Networks::ModuleStateHandle, QWidget*)> DialogMaker;
+      typedef std::map<std::string, DialogMaker> DialogMakerMap;
+      DialogMakerMap dialogMakerMap_;
+      void addDialogsToMakerMap1();
+      void addDialogsToMakerMap2();
     };
   }
 }
+
+#define ADD_MODULE_DIALOG(module, dialog) (#module, boost::factory<dialog*>())
 
 #endif

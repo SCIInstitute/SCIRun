@@ -236,7 +236,7 @@ namespace Algorithms {
     */
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
-    virtual void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) = 0;
+    virtual bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) = 0;
     virtual const AlgorithmParameter& get(const AlgorithmParameterName& key) const = 0;
   };
 
@@ -245,14 +245,14 @@ namespace Algorithms {
   {
   public:
     AlgorithmParameterList();
-    void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
+    bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
     const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
 
     bool set_option(const AlgorithmParameterName& key, const std::string& value);
     bool get_option(const AlgorithmParameterName& key, std::string& value) const;
     std::string get_option(const AlgorithmParameterName& key) const;
 
-    virtual void keyNotFoundPolicy(const AlgorithmParameterName& key);
+    virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key);
 
   protected:
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);

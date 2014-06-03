@@ -28,10 +28,13 @@
 
 SET(Modules_Factory_SRCS
   HardCodedModuleFactory.cc
+  ModuleFactoryImpl1.cc
+  ModuleFactoryImpl2.cc
 )
 
 SET(Modules_Factory_HEADERS
   HardCodedModuleFactory.h
+  ModuleDescriptionLookup.h
   share.h
 )
 
@@ -54,7 +57,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Visualization
   Modules_Legacy_Math
   Modules_Legacy_Bundle
-  Dataflow_Modules_Legacy_Fields
+  Modules_Legacy_Fields
 )
 
 IF(BUILD_SHARED_LIBS)

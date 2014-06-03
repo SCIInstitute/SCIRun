@@ -27,6 +27,10 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/ScaleFieldMeshAndData.cc
 
+#include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Fields/TransformMesh/ScaleFieldMeshAndData.h>
@@ -102,3 +106,4 @@ void ScaleFieldMeshAndData::execute()
 
 } // End namespace ModelCreation
 
+#endif

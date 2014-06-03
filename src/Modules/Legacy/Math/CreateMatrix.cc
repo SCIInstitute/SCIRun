@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Math/CreateMatrix.cc
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/Matrix.h>
@@ -39,6 +38,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class CreateMatrix
+/// @brief This module lets the user create a small dense matrix manually. 
 
 class CreateMatrix : public Module
 {

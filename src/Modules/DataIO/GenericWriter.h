@@ -63,7 +63,7 @@ protected:
   HType       handle_;
   std::string filename_, filetype_;
   Core::Algorithms::AlgorithmParameterName stateFilename_;
-  StaticPortName<typename HType::element_type, 0> objectPortName_;
+  StaticPortName<typename HType::element_type, 0>* objectPortName_;
 
   //GuiFilename filename_;
   //GuiString   filetype_;
@@ -84,6 +84,7 @@ GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std:
     //confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
 		//confirm_once_(get_ctx()->subVar("confirm-once"),0),
     stateFilename_(stateFilename),
+    objectPortName_(0),
     exporting_(false)
 {
   INITIALIZE_PORT(Filename);
@@ -136,7 +137,12 @@ GenericWriter<HType, PortTag>::execute()
     filename_ = path.string();
   }
 
-  handle_ = getRequiredInput(objectPortName_);
+  if (!objectPortName_)
+  {
+    error("Logical error: object port name not specified.");
+    return;
+  }
+  handle_ = getRequiredInput(*objectPortName_);
   
   if (filename_.empty())
   {

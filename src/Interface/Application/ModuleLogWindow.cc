@@ -34,11 +34,6 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
-namespace
-{
-  int moveIncrement = 40;
-}
-
 ModuleLogWindow::ModuleLogWindow(const QString& moduleName, QWidget* parent) : QDialog(parent), moduleName_(moduleName)
 {
   setupUi(this);

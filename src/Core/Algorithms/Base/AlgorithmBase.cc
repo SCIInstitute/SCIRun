@@ -126,12 +126,13 @@ void AlgorithmLogger::status(const std::string& status) const
 
 AlgorithmParameterList::AlgorithmParameterList() {}
 
-void AlgorithmParameterList::set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value)
+bool AlgorithmParameterList::set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value)
 {
   auto iter = parameters_.find(key);
   if (iter == parameters_.end())
-    keyNotFoundPolicy(key);
+    return keyNotFoundPolicy(key);
   iter->second.value_ = value;
+  return true;
 }
 
 const AlgorithmParameter& AlgorithmParameterList::get(const AlgorithmParameterName& key) const
@@ -182,7 +183,7 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
   auto paramIt = parameters_.find(key);
 
   if (paramIt == parameters_.end())
-    keyNotFoundPolicy(key);
+    return keyNotFoundPolicy(key);
   
   AlgoOption param = paramIt->second.getOption();
   std::string valueLower = boost::to_lower_copy(value);
@@ -195,7 +196,7 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
   return true;
 }
 
-void AlgorithmParameterList::keyNotFoundPolicy(const AlgorithmParameterName& key)
+bool AlgorithmParameterList::keyNotFoundPolicy(const AlgorithmParameterName& key)
 {
   BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Algorithm has no parameter/option with name " + key.name_));
 }

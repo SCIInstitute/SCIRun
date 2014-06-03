@@ -26,14 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Legacy/String/GetFileName.
 ///
 ///@file  GetFileName.cc
 ///
 ///@author
 ///   jeroen
-///   
-///   TODAY'S DATE HERE
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/StringPort.h>
@@ -44,6 +41,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class GetFileName
+/// @brief This Module gets a filename and stores it in a string. 
 
 class GetFileName : public Module {
 public:

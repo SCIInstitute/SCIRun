@@ -26,17 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
-///@class GetSubmatrix
-///@brief Clip out a subregion from a Matrix
-///
 ///@author
-///   Michael Callahan
-///   Department of Computer Science
+///   Michael Callahan,
+///   Department of Computer Science,
 ///   University of Utah
 ///@date  January 2002
-///
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Module.h>
@@ -45,6 +39,9 @@
 #include <Core/Util/StringUtil.h>
 
 namespace SCIRun {
+
+///@class GetSubmatrix
+///@brief This module selects a subset of a matrix.  
 
 class GetSubmatrix : public Module
 {

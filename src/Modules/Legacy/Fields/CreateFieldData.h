@@ -36,6 +36,11 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+      /// @class CreateFieldData
+      /// @brief This module assigns a value to each element or node of the mesh
+      /// based on a given function, that is based on the location of nodes and
+      /// elements and properties of the elements. 
+
       class SCISHARE CreateFieldData : public Dataflow::Networks::Module,
         public Has3InputPorts<FieldPortTag, StringPortTag, DynamicPortTag<MatrixPortTag>>,
         public Has1OutputPort<FieldPortTag>

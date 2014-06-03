@@ -26,19 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///
-/// @file  WriteField.cc
-/// @brief Save persistent representation of a field to a file
-/// 
 /// @author
-///    Elisha R. Hughes
-///    CVRTI
-///    University of Utah
+///    Elisha R. Hughes,
+///    CVRTI,
+///    University of Utah,
 ///   based on:
-///    Steven G. Parker
-///    Department of Computer Science
-///    University of Utah
+///    Steven G. Parker,
+///    Department of Computer Science,
+///    University of Utah.
 ///    July 1994
 /// 
 /// @date  November 2004
@@ -50,6 +45,11 @@
 namespace SCIRun {
 
 template class GenericWriter<FieldHandle>;
+
+/// @class WriteField
+/// @brief This module writes a field to file
+///
+/// (a SCIRun .fld file and various other file formats using a plugin system). 
 
 class WriteField : public GenericWriter<FieldHandle> {
 protected:

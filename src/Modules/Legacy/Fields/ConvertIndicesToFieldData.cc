@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ConvertIndicesToFieldData.cc
 
 #include <Core/Algorithms/Fields/FieldData/ConvertIndicesToFieldData.h>
 
@@ -34,8 +33,11 @@
 
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class ConvertIndicesToFieldData
+/// @brief Convert a field with indices as data values into a field with values
+/// assigned to each index using a lookup table.
 
 class ConvertIndicesToFieldData : public Module {
   public:

@@ -136,6 +136,7 @@ private Q_SLOTS:
   void showPythonWarning(bool visible);
   void makeModulesLargeSize();
   void makeModulesSmallSize();
+  void displayAcknowledgement();
   void exitApplication(int code);
 };
 

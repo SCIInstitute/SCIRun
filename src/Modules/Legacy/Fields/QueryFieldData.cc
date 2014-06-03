@@ -27,9 +27,6 @@
 */
 
 ///
-///@class QueryFieldData
-///@brief Field data operations
-///
 ///@author
 ///   Allen R. Sanderson
 ///   Michael Callahan
@@ -50,6 +47,9 @@
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
 namespace SCIRun {
+
+///@class QueryFieldData
+///@brief Query field data using a function.  
 
 class QueryFieldData : public Module
 {

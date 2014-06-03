@@ -26,16 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///
-///@file  BuildNoiseColumnMatrix
-///@brief Add BuildNoiseColumnMatrix to a matrix
-///
 ///@author
 ///   David Weinstein
 ///   Department of Computer Science
 ///   University of Utah
 ///@date  June 1999
-///
 
 #include <Core/Datatypes/ColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -50,6 +45,9 @@
 #include <sstream>
 
 namespace SCIRun {
+
+///@class BuildNoiseColumnMatrix
+///@brief This module creates a noise vector. 
 
 class BuildNoiseColumnMatrix : public Module {
   MusilRNG musil;

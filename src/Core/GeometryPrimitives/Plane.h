@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/GeometryPrimitives/Plane.h
+
 #ifndef CORE_GEOMETRY_PLANE_H
 #define CORE_GEOMETRY_PLANE_H 1
 
