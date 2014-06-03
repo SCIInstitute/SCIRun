@@ -319,30 +319,37 @@ AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
 
 DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, MatrixHandle elc) const
 {
-  // storing all the electrode values, only the indicies determined by the matrix are used
+  // storing all the electrode values, only the number of indicies indicated by the matrix elc are used
   double electrod_values[128] = {get(Elc0).getDouble(),get(Elc1).getDouble(),get(Elc2).getDouble(),get(Elc3).getDouble(),get(Elc4).getDouble(),get(Elc5).getDouble(),get(Elc6).getDouble(),get(Elc7).getDouble(),get(Elc8).getDouble(),get(Elc9).getDouble(),get(Elc10).getDouble(),get(Elc11).getDouble(),get(Elc12).getDouble(),get(Elc13).getDouble(),get(Elc14).getDouble(),get(Elc15).getDouble(),get(Elc16).getDouble(),get(Elc17).getDouble(),get(Elc18).getDouble(),get(Elc19).getDouble(),get(Elc20).getDouble(),get(Elc21).getDouble(),get(Elc22).getDouble(),get(Elc23).getDouble(),get(Elc24).getDouble(),get(Elc25).getDouble(),get(Elc26).getDouble(),get(Elc27).getDouble(),get(Elc28).getDouble(),get(Elc29).getDouble(),get(Elc30).getDouble(),get(Elc31).getDouble(),get(Elc32).getDouble(),get(Elc33).getDouble(),get(Elc34).getDouble(),get(Elc35).getDouble(),get(Elc36).getDouble(),get(Elc37).getDouble(),get(Elc38).getDouble(),get(Elc39).getDouble(),get(Elc40).getDouble(),get(Elc41).getDouble(),get(Elc42).getDouble(),get(Elc43).getDouble(),get(Elc44).getDouble(),get(Elc45).getDouble(),get(Elc46).getDouble(),get(Elc47).getDouble(),get(Elc48).getDouble(),get(Elc49).getDouble(),get(Elc50).getDouble(),get(Elc51).getDouble(),get(Elc52).getDouble(),get(Elc53).getDouble(),get(Elc54).getDouble(),get(Elc55).getDouble(),get(Elc56).getDouble(),get(Elc57).getDouble(),get(Elc58).getDouble(),get(Elc59).getDouble(),get(Elc60).getDouble(),get(Elc61).getDouble(),get(Elc62).getDouble(),get(Elc63).getDouble(),get(Elc64).getDouble(),get(Elc65).getDouble(),get(Elc66).getDouble(),get(Elc67).getDouble(),get(Elc68).getDouble(),get(Elc69).getDouble(),get(Elc70).getDouble(),get(Elc71).getDouble(),get(Elc72).getDouble(),get(Elc73).getDouble(),get(Elc74).getDouble(),get(Elc75).getDouble(),get(Elc76).getDouble(),get(Elc77).getDouble(),get(Elc78).getDouble(),get(Elc79).getDouble(),get(Elc80).getDouble(),get(Elc81).getDouble(),get(Elc82).getDouble(),get(Elc83).getDouble(),get(Elc84).getDouble(),get(Elc85).getDouble(),get(Elc86).getDouble(),get(Elc87).getDouble(),get(Elc88).getDouble(),get(Elc89).getDouble(),get(Elc90).getDouble(),get(Elc91).getDouble(),get(Elc92).getDouble(),get(Elc93).getDouble(),get(Elc94).getDouble(),get(Elc95).getDouble(),get(Elc96).getDouble(),get(Elc97).getDouble(),get(Elc98).getDouble(),get(Elc99).getDouble(),get(Elc100).getDouble(),get(Elc101).getDouble(),get(Elc102).getDouble(),get(Elc103).getDouble(),get(Elc104).getDouble(),get(Elc105).getDouble(),get(Elc106).getDouble(),get(Elc107).getDouble(),get(Elc108).getDouble(),get(Elc109).getDouble(),get(Elc110).getDouble(),get(Elc111).getDouble(),get(Elc112).getDouble(),get(Elc113).getDouble(),get(Elc114).getDouble(),get(Elc115).getDouble(),get(Elc116).getDouble(),get(Elc117).getDouble(),get(Elc118).getDouble(),get(Elc119).getDouble(),get(Elc120).getDouble(),get(Elc121).getDouble(),get(Elc122).getDouble(),get(Elc123).getDouble(),get(Elc124).getDouble(),get(Elc125).getDouble(),get(Elc126).getDouble()};
   
   // converting elc matrix handle to dense matrix to obtain number of electrodes to copy
   // converting field to be virtual to obtain number of nodes
   DenseMatrixHandle elc_dense (new DenseMatrix(matrix_cast::as_dense(elc)->block(0,0,elc->nrows(),elc->ncols())));
   VField* vfield = fh->vfield();
+  
+  if (elc_dense->coeff(0,0) > 128)
+    THROW_ALGORITHM_INPUT_ERROR("Electrode number exceeds what is possible ");
+  
   int total_elements = vfield->vmesh()->num_nodes() + elc_dense->coeff(0,0);
   int node_elements  = vfield->vmesh()->num_nodes();
   DenseMatrixHandle output (boost::make_shared<DenseMatrix>(total_elements,1));
   
   // giving output its values
+  int cnt = 0;
   for (int i=0; i < total_elements; i++)
   {
     if (i < node_elements)
       (*output)(i,0) = 0.0;
     else
       (*output)(i,0) = electrod_values[i-node_elements]/1000.00; // Amps
+    
+    cnt++;
+    if (cnt == 32)
+    {
+      cnt = 0;
+      update_progress_max(i,total_elements);
+    }
   }
-  
-  // DEBUG: displaying vector created
-  for (int i=0; i<output->nrows(); i++)
-    std::cout << i << " " << output->coeff(i,0) << std::endl;
-  
   return output;
 }
 
@@ -360,17 +367,6 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
 //  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
 //  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
 //  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");
-//old-style run call, just put algorithm code here
-//auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).getInt()));
-// CODE HERE
-//  FieldHandle out1,out2;
-//  //Algorithm starts here:
-//  //VField* vfield = elc_coil_pos_and_normal->vfield();
-//   VMesh*  vmesh  = pos_orient->vmesh();
-//   std::cout << "a: " << vmesh->num_nodes() << std::endl;
-//   //for (int i=0;i<vmesh->num_nodes();;i++)
-//   //{
-//   //}
   
   DenseMatrixHandle vector = run(pos_orient, num_of_elc);
     

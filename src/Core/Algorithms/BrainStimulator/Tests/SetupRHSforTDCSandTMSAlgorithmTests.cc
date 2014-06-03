@@ -74,7 +74,19 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, testing)
   (*m)(1,0) = 1;
   (*m)(2,0) = 1;
   
-  algo.run(CreateTetMeshScalarOnElem(), m);
+  auto output = algo.run(CreateTetMeshScalarOnElem(), m);
   
-  FAIL();
+  // DEBUG: displaying vector created
+  for (int i=0; i<output->nrows(); i++)
+    std::cout << i << " " << output->coeff(i,0) << std::endl;
+}
+
+//TODO: test all the way up to 128 electrodes. There seems to be 1 missing because of 0 to 126 and 1 to 128
+
+TEST(SetupRHSforTDCSandTMSAlgorithm, ElectrodeNumberExceedsWhatIsPossible)
+{
+  SetupRHSforTDCSandTMSAlgorithm algo;
+  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
+  (*m)(0,0) = 360;
+  EXPECT_THROW(algo.run(CreateTetMeshScalarOnElem(), m), AlgorithmInputException);
 }
