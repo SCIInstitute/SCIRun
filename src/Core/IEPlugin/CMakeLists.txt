@@ -51,8 +51,33 @@ SET(Core_IEPlugin_SRCS
   #TetVolField_Plugin.cc
 )
 
+SET(Core_IEPlugin_HEADERS
+  share.h
+  #BYUSurfField_Plugin.h
+  #CVRTIFileToMatrix_Plugin.h
+  #CurveField_Plugin.h
+  #DIF_Plugin.h
+  #EcgsimFileToMatrix_Plugin.h
+  #EcgsimFileToTriSurf_Plugin.h
+  #HexVolField_Plugin.h
+  #MRC_Plugin.h
+  #MTextFileToTriSurf_Plugin.h
+  #MatlabFiles_Plugin.h
+  #NrrdField_Plugin.h
+  #NrrdToMatrix_Plugin.h
+  ObjToField_Plugin.h
+  #PointCloudField_Plugin.h
+  #PVWave_Plugin.h
+  #QuadSurfField_Plugin.h
+  #SimpleTextFileToMatrix_Plugin.h
+  #StructCurveField_Plugin.h
+  #StructHexVolField_Plugin.h
+  #StructQuadSurfField_Plugin.h
+  #TriSurfField_Plugin.h
+  #TetVolField_Plugin.h
+)
 
-ADD_LIBRARY(Core_IEPlugin ${Core_IEPlugin_SRCS})
+ADD_LIBRARY(Core_IEPlugin ${Core_IEPlugin_SRCS} ${Core_IEPlugin_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_IEPlugin
   Core_Persistent 

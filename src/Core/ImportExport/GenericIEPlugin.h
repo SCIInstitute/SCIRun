@@ -39,7 +39,7 @@ namespace SCIRun {
 
 //----------------------------------------------------------------------
 template <class Data>
-class SCISHARE GenericIEPluginInterface
+class GenericIEPluginInterface
 {
 public:
   virtual ~GenericIEPluginInterface() {}
@@ -66,7 +66,7 @@ bool operator!=(const GenericIEPluginInterface<Data>& lhs, const GenericIEPlugin
 
 
 template <class Data>
-class SCISHARE IEPluginLegacyAdapter : public GenericIEPluginInterface<Data>
+class IEPluginLegacyAdapter : public GenericIEPluginInterface<Data>
 {
 public:
   virtual std::string pluginname() const override { return pluginname_; }
@@ -97,7 +97,7 @@ public:
 };
 
 template <class Data>
-class SCISHARE GenericIEPluginManager 
+class GenericIEPluginManager 
 {
 public:
   static Core::Thread::Mutex& getLock();

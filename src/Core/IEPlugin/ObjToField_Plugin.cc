@@ -34,6 +34,7 @@
  * 
  */
 
+#include <Core/IEPlugin/ObjToField_Plugin.h>
 #include <Core/Algorithms/Legacy/DataIO/ObjToFieldReader.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -58,8 +59,7 @@ FieldHandle ObjToField_reader(Log& pr, const char *filename)
   return result;
 }
 
-bool FieldToObj_writer(Log& pr, FieldHandle fh,
-                       const char* filename)
+bool FieldToObj_writer(Log& pr, FieldHandle fh, const char* filename)
 {
   ObjToFieldReader writer(pr);
 
