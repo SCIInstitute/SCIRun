@@ -78,7 +78,7 @@ template class GenericIEPluginManager<Field>;
 void IEPluginManager::Initialize()
 {
   static FieldIEPluginManager fieldManager;
-  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "{.obj}", "",
+  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "obj", "",
     ObjToField_reader, FieldToObj_writer);
 }
 

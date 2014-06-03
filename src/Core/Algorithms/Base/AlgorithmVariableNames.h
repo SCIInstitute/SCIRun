@@ -49,6 +49,7 @@ public:
   static const AlgorithmParameterName Filename;
   static const AlgorithmParameterName BuildConvergence;
   static const AlgorithmParameterName ColorMapName;
+  static const AlgorithmParameterName FileTypeList;
   
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmInputName FirstMatrix;

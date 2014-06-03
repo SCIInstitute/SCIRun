@@ -44,6 +44,7 @@ PARAMETER(Preconditioner)
 PARAMETER(Filename)
 PARAMETER(BuildConvergence)
 PARAMETER(ColorMapName)
+PARAMETER(FileTypeList)
 
 INPUT(InputMatrix)
 INPUT(FirstMatrix)

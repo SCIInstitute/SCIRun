@@ -312,7 +312,7 @@ std::string defaultTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
 template <>
 std::string defaultTypeForFile(const GenericIEPluginManager<Field>* mgr)
 {
-  return "{{SCIRun Field File} {.fld} } ";
+  return "SCIRun Field File (*.fld)";
 }
 
 template <class Data>
@@ -321,23 +321,24 @@ std::string makeGuiTypesList(const GenericIEPluginManager<Data>& mgr)
   std::vector<std::string> importers;
   mgr.get_importer_list(importers);
 
-  std::string importtypes = "{" + defaultTypeForFile(&mgr);
+  std::ostringstream importtypes;
+  importtypes << defaultTypeForFile(&mgr);
 
   for (size_t i = 0; i < importers.size(); i++)
   {
     auto pl = mgr.get_plugin(importers[i]);
-    if (pl->fileExtension() != "")
+    importtypes << " ;; " << importers[i];
+    if (!pl->fileExtension().empty())
     {
-      importtypes += "{{" + importers[i] + "} {" + pl->fileExtension() + "} } ";
+       importtypes << " (*." << pl->fileExtension() << ")";
     }
     else
     {
-      importtypes += "{{" + importers[i] + "} {.*} } ";
+      importtypes << " (.*)";
     }
   }
 
-  importtypes += "}";
-  return importtypes;
+  return importtypes.str();
 }
 
 }

@@ -41,8 +41,10 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -68,8 +70,6 @@ DECLARE_MAKER(ReadField)
 
 ReadFieldModule::ReadFieldModule()
   : my_base("ReadField", "DataIO", "SCIRun", "Field")    
-  //,
-    //gui_types_(get_ctx()->subVar("types", false)),
     //gui_filetype_(get_ctx()->subVar("filetype")),
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
@@ -82,11 +82,7 @@ ReadFieldModule::ReadFieldModule()
   std::cout << "in ReadField" << std::endl;
   std::cout << types << std::endl;
 
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
-
-  gui_types_.set(importtypes);
-#endif
+  get_state()->setValue(Variables::FileTypeList, types);
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
