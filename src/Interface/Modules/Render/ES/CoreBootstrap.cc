@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <es-fs/Filesystem.hpp>
 #include <es-fs/fscomp/StaticFS.hpp>
+#include <es-acorn/Acorn.hpp>
 
 #include <es-general/comp/StaticObjRefID.hpp>
 #include <es-general/comp/StaticCamera.hpp>
@@ -151,9 +152,9 @@ public:
   }
 };
 
-void registerSystem_CoreBootstrap()
+void registerSystem_CoreBootstrap(CPM_ES_ACORN_NS::Acorn& core)
 {
-  CPM_ES_SYSTEMS_NS::SystemCore::registerSystem<CoreBootstrap>();
+  core.registerSystem<CoreBootstrap>();
 }
 
 const char* getSystemName_CoreBootstrap() {return CoreBootstrap::getName();}

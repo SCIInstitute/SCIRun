@@ -29,12 +29,12 @@
 #ifndef INTERFACE_MODULES_RENDER_ES_REGISTRATION_H
 #define INTERFACE_MODULES_RENDER_ES_REGISTRATION_H
 
-#include <es-cereal/CerealCore.hpp>
+#include <es-acorn/Acorn.hpp>
 
 namespace SCIRun {
 namespace Render {
 
-void rendererRegisterAll(CPM_ES_CEREAL_NS::CerealCore& core);
+void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core);
 
 } // namespace Render
 } // namespace SCIRun
