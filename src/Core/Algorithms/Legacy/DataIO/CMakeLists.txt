@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,47 +26,60 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_DataIO_SRCS
-  ReadField.cc
-  ReadMatrix.cc
-  ReadMatrixState.cc
-  ReadMesh.cc
-  ReadMeshState.cc
-  WriteField.cc
-  WriteMatrix.cc
-  WriteMatrixState.cc
+# Sources of Core/Algorithms/DataIO classes
+
+SET(Core_Algorithms_Legacy_DataIO_SRCS
+  #DataIOAlgo.cc
+  #MRCReader.cc
+  ObjToFieldReader.cc
+  #StreamData/StreamACQFile.cc
 )
 
-SET(Modules_DataIO_HEADERS
-  GenericReader.h
-  GenericWriter.h
-  ReadField.h
-  ReadMatrix.h
-  ReadMatrixState.h
-  ReadMesh.h
-  ReadMeshState.h
-  WriteField.h
-  WriteMatrix.h
-  WriteMatrixState.h
+SET(Core_Algorithms_Legacy_DataIO_HEADERS
+  ObjToFieldReader.h
 )
 
-ADD_LIBRARY(Modules_DataIO 
-  ${Modules_DataIO_HEADERS}
-  ${Modules_DataIO_SRCS}
+#IF(ITK_FOUND)
+#  SET(Core_Algorithms_Legacy_DataIO_SRCS 
+#      ${Core_Algorithms_DataIO_SRCS}
+#      AnalyzeImage.cc 
+#      AnalyzeReader.cc 
+#      AnalyzeSliceImageIO.cc)
+#ENDIF(ITK_FOUND)
+
+ADD_LIBRARY(Core_Algorithms_Legacy_DataIO 
+  ${Core_Algorithms_Legacy_DataIO_SRCS}
+  ${Core_Algorithms_Legacy_DataIO_HEADERS}
 )
 
-TARGET_LINK_LIBRARIES(Modules_DataIO
-  Dataflow_Network
-  Core_Datatypes
+TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO 
+  #Core_Algorithms_Util
+  Algorithms_Base
+  Core_Datatypes 
   Core_Datatypes_Legacy_Field
-  Algorithms_DataIO
-  Core_ImportExport
-  ${SCI_BOOST_LIBRARY}
+  #Core_Thread 
+  #Core_Exceptions 
+  #Core_Geometry 
+  #Core_Util 
+  Core_Math 
+  Core_Persistent 
+  #Core_Geom 
+  Core_ImportExport 
+  #Core_Volume
+  #${SCI_TEEM_LIBRARY}
+  #${SCI_ZLIB_LIBRARY}
+  #${M_LIBRARY}
 )
+
+#IF(ITK_FOUND)
+#  TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO
+#    ITKCommon
+#    ITKIO
+#    ${GDCM_LIBRARY}
+#    ${GL_LIBRARY})
+#ENDIF(ITK_FOUND)
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_DataIO)
+  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_DataIO)
 ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
 

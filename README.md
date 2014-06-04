@@ -4,6 +4,7 @@
 https://github.com/SCIInstitute/SCIRunGUIPrototype
 
 [![Build Status](https://travis-ci.org/SCIInstitute/SCIRunGUIPrototype.svg)](https://travis-ci.org/SCIInstitute/SCIRunGUIPrototype)
+[![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRunGUIPrototype/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRunGUIPrototype)
 
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
 

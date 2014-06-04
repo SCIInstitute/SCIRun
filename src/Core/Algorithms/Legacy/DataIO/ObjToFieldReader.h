@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2010 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -27,43 +27,39 @@
 */
 
 
+#ifndef CORE_ALGORITHMS_DATAIO_OBJTOFIELDREADER_H
+#define CORE_ALGORITHMS_DATAIO_OBJTOFIELDREADER_H 1
+
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/DataIO/share.h>
 
 /*
- *  FieldIEPlugin:  Data structure needed to make a SCIRun FieldIE Plugin
+ * Implementation notes:
  *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   May 2004
- *
+ * This reader does not read textures, just geometry, since
+ * ImageVis3D writes out obj files that only contain geometry.
+ * The intended use of this reader is for reading ImageVis3D obj files.
  */
 
-#ifndef SCI_project_FieldIEPlugin_h
-#define SCI_project_FieldIEPlugin_h 1
-
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/ImportExport/GenericIEPlugin.h>
-#include <Core/ImportExport/share.h>
-
-namespace SCIRun 
+namespace SCIRun
 {
-  typedef GenericIEPluginInterface<Field> FieldIEPlugin;
-
-  typedef IEPluginLegacyAdapter<Field> FieldIEPluginLegacyAdapter;
-
-  class SCISHARE FieldIEPluginManager : public GenericIEPluginManager<Field> 
+  namespace Core
   {
-
-  };
-
-  /// @TODO: blank class needed for Windows export lib...otherwise library is all template now
-  class SCISHARE IEPluginManagerManager
-  {
-  public:
-    IEPluginManagerManager();
-  };
-
+    namespace Algorithms
+    {
+      class SCISHARE ObjToFieldReader : public AlgorithmBase
+      {
+      public:
+        explicit ObjToFieldReader(Logging::Log& log);
+        bool read(const std::string& filename, FieldHandle& field_handle);
+        bool write(const std::string& filename, const FieldHandle& field);
+        virtual AlgorithmOutput run_generic(const AlgorithmInput&) const override
+      { throw "not implemented"; }
+      private:
+        Logging::Log& log_;
+      };
+    }
+  }
 }
 
-#endif
+#endif // CORE_ALGORITHMS_DATAIO_OBJTOFIELDREADER_H
