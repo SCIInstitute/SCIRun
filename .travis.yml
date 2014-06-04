@@ -13,4 +13,4 @@ before_install:
 - sudo apt-get install cmake
 - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-script: cd bin && cmake ../src && make -j4
+script: cd bin && cmake ../src && make -j
