@@ -26,44 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#undef SCISHARE
 
-
-/*
- *  FieldIEPlugin:  Data structure needed to make a SCIRun FieldIE Plugin
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   May 2004
- *
- */
-
-#ifndef SCI_project_FieldIEPlugin_h
-#define SCI_project_FieldIEPlugin_h 1
-
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/ImportExport/GenericIEPlugin.h>
-#include <Core/ImportExport/share.h>
-
-namespace SCIRun 
-{
-  typedef GenericIEPluginInterface<Field> FieldIEPlugin;
-
-  typedef IEPluginLegacyAdapter<Field> FieldIEPluginLegacyAdapter;
-
-  class SCISHARE FieldIEPluginManager : public GenericIEPluginManager<Field> 
-  {
-
-  };
-
-  /// @TODO: blank class needed for Windows export lib...otherwise library is all template now
-  class SCISHARE IEPluginManagerManager
-  {
-  public:
-    IEPluginManagerManager();
-  };
-
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_Algorithms_Legacy_DataIO
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,44 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <gtest/gtest.h>
+#include <Core/IEPlugin/ObjToField_Plugin.h>
 
-
-/*
- *  FieldIEPlugin:  Data structure needed to make a SCIRun FieldIE Plugin
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   May 2004
- *
- */
-
-#ifndef SCI_project_FieldIEPlugin_h
-#define SCI_project_FieldIEPlugin_h 1
-
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/ImportExport/GenericIEPlugin.h>
-#include <Core/ImportExport/share.h>
-
-namespace SCIRun 
+TEST(ObjToFieldPluginTests, CanRead)
 {
-  typedef GenericIEPluginInterface<Field> FieldIEPlugin;
-
-  typedef IEPluginLegacyAdapter<Field> FieldIEPluginLegacyAdapter;
-
-  class SCISHARE FieldIEPluginManager : public GenericIEPluginManager<Field> 
-  {
-
-  };
-
-  /// @TODO: blank class needed for Windows export lib...otherwise library is all template now
-  class SCISHARE IEPluginManagerManager
-  {
-  public:
-    IEPluginManagerManager();
-  };
-
+  FAIL() << "todo";
 }
 
-#endif
+TEST(ObjToFieldPluginTests, CanWrite)
+{
+  FAIL() << "todo";
+}

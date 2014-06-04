@@ -40,15 +40,14 @@
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/DataIO/ReadField.h>
-
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
-
-
 class ReadField : public GenericReader<FieldHandle> {
   protected:
     GuiString gui_types_;
@@ -71,8 +70,6 @@ DECLARE_MAKER(ReadField)
 
 ReadFieldModule::ReadFieldModule()
   : my_base("ReadField", "DataIO", "SCIRun", "Field")    
-  //,
-    //gui_types_(get_ctx()->subVar("types", false)),
     //gui_filetype_(get_ctx()->subVar("filetype")),
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
@@ -80,31 +77,10 @@ ReadFieldModule::ReadFieldModule()
 {
   INITIALIZE_PORT(Field);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
-  std::vector<std::string> importers;
-  mgr.get_importer_list(importers);
-  
-  std::string importtypes = "{";
-  importtypes += "{{SCIRun Field File} {.fld} } ";
+  auto types = makeGuiTypesList(mgr);
 
-  for (unsigned int i = 0; i < importers.size(); i++)
-  {
-    FieldIEPlugin *pl = mgr.get_plugin(importers[i]);
-    if (pl->fileextension != "")
-    {
-      importtypes += "{{" + importers[i] + "} {" + pl->fileextension + "} } ";
-    }
-    else
-    {
-      importtypes += "{{" + importers[i] + "} {.*} } ";
-    }
-  }
-
-  importtypes += "}";
-
-  gui_types_.set(importtypes);
-#endif
+  get_state()->setValue(Variables::FileTypeList, types);
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -133,15 +109,9 @@ ReadFieldModule::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
 
+  const std::string guiFiletype = get_state()->getValue(Variables::FileExtension).getString();
 
-  const std::string ftpre = gui_filetype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-
-  importing_ = !(ft == "" ||
-		 ft == "SCIRun Field File" ||
-		 ft == "SCIRun Field Any");
+  useCustomImporter_ = guiFiletype != ".fld";
 #endif
-
   my_base::execute();
 }

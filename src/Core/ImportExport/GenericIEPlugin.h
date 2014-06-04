@@ -39,7 +39,7 @@ namespace SCIRun {
 
 //----------------------------------------------------------------------
 template <class Data>
-class SCISHARE GenericIEPluginInterface
+class GenericIEPluginInterface
 {
 public:
   virtual ~GenericIEPluginInterface() {}
@@ -66,7 +66,7 @@ bool operator!=(const GenericIEPluginInterface<Data>& lhs, const GenericIEPlugin
 
 
 template <class Data>
-class SCISHARE IEPluginLegacyAdapter : public GenericIEPluginInterface<Data>
+class IEPluginLegacyAdapter : public GenericIEPluginInterface<Data>
 {
 public:
   virtual std::string pluginname() const override { return pluginname_; }
@@ -97,7 +97,7 @@ public:
 };
 
 template <class Data>
-class SCISHARE GenericIEPluginManager 
+class GenericIEPluginManager
 {
 public:
   static Core::Thread::Mutex& getLock();
@@ -301,6 +301,44 @@ bool IEPluginLegacyAdapter<Data>::operator==(const IEPluginLegacyAdapter<Data>& 
     filemagic_ == other.filemagic_ &&
     filereader_ == other.filereader_ &&
     filewriter_ == other.filewriter_);
+}
+
+template <class Data>
+std::string defaultTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
+{
+  return "";
+}
+
+template <>
+std::string defaultTypeForFile(const GenericIEPluginManager<Field>* mgr)
+{
+  return "SCIRun Field File (*.fld)";
+}
+
+template <class Data>
+std::string makeGuiTypesList(const GenericIEPluginManager<Data>& mgr)
+{
+  std::vector<std::string> importers;
+  mgr.get_importer_list(importers);
+
+  std::ostringstream importtypes;
+  importtypes << defaultTypeForFile(&mgr);
+
+  for (size_t i = 0; i < importers.size(); i++)
+  {
+    auto pl = mgr.get_plugin(importers[i]);
+    importtypes << ";;" << importers[i];
+    if (!pl->fileExtension().empty())
+    {
+       importtypes << " (*." << pl->fileExtension() << ")";
+    }
+    else
+    {
+      importtypes << " (.*)";
+    }
+  }
+
+  return importtypes.str();
 }
 
 }

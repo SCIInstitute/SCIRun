@@ -221,8 +221,7 @@ bool dimension_fe(SCIRun::ArrayMathProgramCode& pc)
   SCIRun::VMesh* data1 = pc.get_vmesh(1);
 
   double* data0_end = data0 + pc.get_size();
-  SCIRun::VMesh::Elem::index_type idx = pc.get_index();
-
+  
   double val = static_cast<double>(data1->dimensionality());
   while(data0 != data0_end) 
   {

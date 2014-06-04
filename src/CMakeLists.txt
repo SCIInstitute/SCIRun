@@ -26,7 +26,11 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+IF(UNIX)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
+ELSE()
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
+ENDIF(UNIX)
 
 PROJECT(SCIRun5Prototype)
 
@@ -167,6 +171,9 @@ IF(UNIX)
   ENDIF()
 
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG} -Wall")
+  IF(NOT APPLE)
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lrt")
+  ENDIF()
 ENDIF()
 
 IF(APPLE)
@@ -595,6 +602,7 @@ SET_PROPERTY(TARGET Algorithms_BrainStimulator         PROPERTY FOLDER "Core/Alg
 SET_PROPERTY(TARGET Algorithms_Factory   PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_FiniteElements         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Legacy_DataIO         PROPERTY FOLDER "Core/Algorithms")
 
 SET_PROPERTY(TARGET Dataflow_Network         PROPERTY FOLDER "Dataflow")
 SET_PROPERTY(TARGET Core_Datatypes         PROPERTY FOLDER "Core")
@@ -611,6 +619,7 @@ SET_PROPERTY(TARGET Core_CommandLine         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Command         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Thread         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_ImportExport         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_IEPlugin         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Geometry_Primitives         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Application         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Utils         PROPERTY FOLDER "Core")
@@ -685,6 +694,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_Parser_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_DatabaseManager_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_ImportExport_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Core_IEPlugin_Tests         PROPERTY FOLDER "Core/Tests")
 
   SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
   SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")

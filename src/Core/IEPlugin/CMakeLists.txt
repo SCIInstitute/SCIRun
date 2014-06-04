@@ -26,55 +26,80 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/ImportExport classes
-
-# NOTE: source files are all in sub directories ColorMap, Matrix, Field,
-# and Nrrd
-# 
-
 SET(Core_IEPlugin_SRCS
-  BYUSurfField_Plugin.cc
-  CVRTIFileToMatrix_Plugin.cc
-  CurveField_Plugin.cc
-  DIF_Plugin.cc
-  EcgsimFileToMatrix_Plugin.cc
-  EcgsimFileToTriSurf_Plugin.cc
-  HexVolField_Plugin.cc
-  MRC_Plugin.cc
-  MTextFileToTriSurf_Plugin.cc
-  MatlabFiles_Plugin.cc
-  NrrdField_Plugin.cc
-  NrrdToMatrix_Plugin.cc
+  #BYUSurfField_Plugin.cc
+  #CVRTIFileToMatrix_Plugin.cc
+  #CurveField_Plugin.cc
+  #DIF_Plugin.cc
+  #EcgsimFileToMatrix_Plugin.cc
+  #EcgsimFileToTriSurf_Plugin.cc
+  #HexVolField_Plugin.cc
+  #MRC_Plugin.cc
+  #MTextFileToTriSurf_Plugin.cc
+  #MatlabFiles_Plugin.cc
+  #NrrdField_Plugin.cc
+  #NrrdToMatrix_Plugin.cc
   ObjToField_Plugin.cc
-  PointCloudField_Plugin.cc
-  PVWave_Plugin.cc
-  QuadSurfField_Plugin.cc
-  SimpleTextFileToMatrix_Plugin.cc
-  StructCurveField_Plugin.cc
-  StructHexVolField_Plugin.cc
-  StructQuadSurfField_Plugin.cc
-  TriSurfField_Plugin.cc
-  TetVolField_Plugin.cc
+  #PointCloudField_Plugin.cc
+  #PVWave_Plugin.cc
+  #QuadSurfField_Plugin.cc
+  #SimpleTextFileToMatrix_Plugin.cc
+  #StructCurveField_Plugin.cc
+  #StructHexVolField_Plugin.cc
+  #StructQuadSurfField_Plugin.cc
+  #TriSurfField_Plugin.cc
+  #TetVolField_Plugin.cc
 )
 
+SET(Core_IEPlugin_HEADERS
+  share.h
+  IEPluginInit.h
+  #BYUSurfField_Plugin.h
+  #CVRTIFileToMatrix_Plugin.h
+  #CurveField_Plugin.h
+  #DIF_Plugin.h
+  #EcgsimFileToMatrix_Plugin.h
+  #EcgsimFileToTriSurf_Plugin.h
+  #HexVolField_Plugin.h
+  #MRC_Plugin.h
+  #MTextFileToTriSurf_Plugin.h
+  #MatlabFiles_Plugin.h
+  #NrrdField_Plugin.h
+  #NrrdToMatrix_Plugin.h
+  ObjToField_Plugin.h
+  #PointCloudField_Plugin.h
+  #PVWave_Plugin.h
+  #QuadSurfField_Plugin.h
+  #SimpleTextFileToMatrix_Plugin.h
+  #StructCurveField_Plugin.h
+  #StructHexVolField_Plugin.h
+  #StructQuadSurfField_Plugin.h
+  #TriSurfField_Plugin.h
+  #TetVolField_Plugin.h
+)
 
-SCIRUN_ADD_LIBRARY(Core_IEPlugin ${Core_IEPlugin_SRCS})
+ADD_LIBRARY(Core_IEPlugin ${Core_IEPlugin_SRCS} ${Core_IEPlugin_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_IEPlugin
   Core_Persistent 
-  Core_Exceptions 
-  Core_Thread 
-  Core_Geometry 
-  Core_Math 
-  Core_Util
-  Core_Matlab 
+  #Core_Exceptions 
+  #Core_Thread 
+  #Core_Geometry 
+  #Core_Math 
+  #Core_Util
+  #Core_Matlab 
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
   Core_ImportExport
-  Core_Algorithms_DataIO
-  Core_Algorithms_Converter 
-  Core_Algorithms_Util
+  Core_Algorithms_Legacy_DataIO
+  #Core_Algorithms_Converter 
+  #Core_Algorithms_Util
 )
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_IEPlugin)
 ENDIF(BUILD_SHARED_LIBS)
+
+ADD_DEPENDENCIES(Core_IEPlugin Boost_external)
+
+SCIRUN_ADD_TEST_DIR(Tests)
