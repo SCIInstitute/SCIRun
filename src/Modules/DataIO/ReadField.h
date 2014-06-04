@@ -47,7 +47,8 @@ namespace DataIO {
     ReadFieldModule();
     virtual void execute();
     virtual void setStateDefaults() {}
-
+    virtual bool useCustomImporter(const std::string& filename) const override;
+    
     OUTPUT_PORT(0, Field, LegacyField);
   };
 
