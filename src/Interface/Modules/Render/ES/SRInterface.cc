@@ -36,10 +36,15 @@
 
 // CPM modules.
 #include <gl-state/GLState.hpp>
-
+#include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
+#include <es-fs/fscomp/StaticFS.hpp>
+#include <es-fs/Filesystem.hpp>
+#include <es-fs/FilesystemSync.hpp>
 
 using namespace std::placeholders;
+
+namespace fs      = CPM_ES_FS_NS;
 
 namespace SCIRun {
 namespace Render {
@@ -73,28 +78,29 @@ void SRInterface::setupCore()
 {
   mCore.addUserSystem(getSystemName_CoreBootstrap());
 
-  // // Add screen height / width static component.
-  // {
-  //   gen::StaticScreenDims dims;
-  //   dims.width = static_cast<uint32_t>(gScreenWidth);
-  //   dims.height = static_cast<uint32_t>(gScreenHeight);
-  //   gGameCore->addStaticComponent(dims);
-  // }
+  // Add screen height / width static component.
+  {
+    gen::StaticScreenDims dims;
+    dims.width = static_cast<uint32_t>(mScreenWidth);
+    dims.height = static_cast<uint32_t>(mScreenHeight);
+    mCore.addStaticComponent(dims);
+  }
 
 
-  // // Be exceptionally careful with non-serializable components. They must be
-  // // created outside of the normal bootstrap. They cannot depend on anything
-  // // being serialized correctly. In this circumstance, the filesystem component
-  // // is system dependent and cannot be reliably serialized, so we add it and
-  // // mark it as non-serializable.
-  // {
-  //   // Generate synchronous filesystem, manually add its static component,
-  //   // then mark it as non-serializable.
-  //   fs::StaticFS fileSystem(
-  //       std::shared_ptr<fs::FilesystemSync>(new fs::FilesystemSync(filesystemRoot)));
-  //   gGameCore->addStaticComponent(fileSystem);
-  //   gGameCore->disableComponentSerialization<fs::StaticFS>();
-  // }
+  // Be exceptionally careful with non-serializable components. They must be
+  // created outside of the normal bootstrap. They cannot depend on anything
+  // being serialized correctly. In this circumstance, the filesystem component
+  // is system dependent and cannot be reliably serialized, so we add it and
+  // mark it as non-serializable.
+  {
+    // Generate synchronous filesystem, manually add its static component,
+    // then mark it as non-serializable.
+    std::string filesystemRoot = ""; // Should set this to the relative path containing static data.
+    fs::StaticFS fileSystem(
+        std::shared_ptr<fs::FilesystemSync>(new fs::FilesystemSync(filesystemRoot)));
+    mCore.addStaticComponent(fileSystem);
+    mCore.disableComponentSerialization<fs::StaticFS>();
+  }
 
   /// \todo Add static mouse and keyboard inputs, if necessary.
 }
@@ -119,6 +125,14 @@ void SRInterface::eventResize(size_t width, size_t height)
 
   mContext->makeCurrent();
   GL(glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height)));
+
+  // Obtain StaticScreenDims component and populate.
+  gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
+  if (dims)
+  {
+    dims->width  = static_cast<size_t>(width);
+    dims->height = static_cast<size_t>(height);
+  }
 
   /// \todo Ensure perspective matrix is rebuilt with correct aspect ratio.
 }
@@ -173,22 +187,6 @@ void SRInterface::gcInvalidObjects(const std::vector<std::string>& validObjects)
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::beginFrame()
-{
-  /// \todo Move this outside of the interface!
-  GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
-
-  /// \todo Make line width a part of the GPU state.
-  glLineWidth(2.0f);
-  //glEnable(GL_LINE_SMOOTH);
-
-  CPM_GL_STATE_NS::GLState defaultGLState;
-  defaultGLState.setLineWidth(2.0f);
-  defaultGLState.apply();
-}
-
-//------------------------------------------------------------------------------
 void SRInterface::doFrame(double currentTime, double constantDeltaTime)
 {
   /// \todo Only render a frame if something has changed (new or deleted
@@ -202,11 +200,11 @@ void SRInterface::doFrame(double currentTime, double constantDeltaTime)
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     return;
 
-  beginFrame();
+  mSceneBBox.reset();
+
   updateCamera();
 
-
-  mSceneBBox.reset();
+  mCore.execute(currentTime, constantDeltaTime);
 
   // Set directional light source (in world space).
   // glm::vec3 viewDir = viewToWorld[2].xyz();

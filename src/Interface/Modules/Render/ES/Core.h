@@ -29,10 +29,8 @@
 #ifndef INTERFACE_MODULES_RENDER_ES_CORE_HPP
 #define INTERFACE_MODULES_RENDER_ES_CORE_HPP
 
-#include <entity-system/ESCoreBase.hpp>
-#include <es-cereal/CerealCore.hpp>
-#include <es-systems/SystemCore.hpp>
 #include <es-acorn/Acorn.hpp>
+#include <gl-state/GLState.hpp>
 
 namespace SCIRun {
 namespace Render {
@@ -45,6 +43,15 @@ public:
   virtual ~ESCore();
 
   void execute(double currentTime, double constantFrameTime);
+  
+private:
+
+  int64_t                   mCoreSequence;    ///< Sequence number (frame) since start.
+  CPM_GL_STATE_NS::GLState  mDefaultGLState;  ///< Default OpenGL state.
+  double                    mCurrentTime;     ///< Current system time calculated from constant frame time.
+
+  float                     mFPS;             ///< Actual FPS of system.
+  float                     mLastRealTime;    ///< Last realtime passed into the core.
 };
 
 } // namespace Render

@@ -149,6 +149,9 @@ public:
     orthoCam.data.setView(glm::mat4());
     core.addStaticComponent(orthoCam);
     core.addExemptComponent<gen::StaticOrthoCamera>();
+
+    // Now remove ourselves. We should only execute for one frame.
+    core.removeUserSystem(getName());
   }
 };
 
