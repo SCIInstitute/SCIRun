@@ -60,7 +60,6 @@ void ReadFieldDialog::pushFileNameToState()
 {
   auto file = fileNameLineEdit_->text().trimmed().toStdString();
   state_->setValue(Variables::Filename, file);
-  state_->setValue(Variables::FileExtension, boost::filesystem::extension(file));
 }
 
 void ReadFieldDialog::openFile()
@@ -70,9 +69,6 @@ void ReadFieldDialog::openFile()
   if (file.length() > 0)
   {
     std::string fileStr = file.toStdString();
-    boost::filesystem::path p(fileStr);
-    std::cout << p << std::endl;
-    std::cout << boost::filesystem::extension(p) << std::endl;
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);
     pushFileNameToState();

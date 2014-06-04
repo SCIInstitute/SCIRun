@@ -79,8 +79,6 @@ ReadFieldModule::ReadFieldModule()
 
   FieldIEPluginManager mgr;
   auto types = makeGuiTypesList(mgr);
-  std::cout << "in ReadField" << std::endl;
-  std::cout << types << std::endl;
 
   get_state()->setValue(Variables::FileTypeList, types);
 }
@@ -110,10 +108,10 @@ ReadFieldModule::execute()
 {     
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
-#endif
+
   const std::string guiFiletype = get_state()->getValue(Variables::FileExtension).getString();
 
   useCustomImporter_ = guiFiletype != ".fld";
-
+#endif
   my_base::execute();
 }
