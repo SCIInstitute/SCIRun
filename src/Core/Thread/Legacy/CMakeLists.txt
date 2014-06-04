@@ -105,10 +105,6 @@ IF(WIN32)
   SET(Core_Thread_Legacy_Link ${Core_Thread_Legacy_Link} winmm.lib)
 ENDIF(WIN32)
 
-IF(UNIX AND NOT APPLE)
-  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lrt")
-ENDIF()
-
 TARGET_LINK_LIBRARIES(Core_Thread_Legacy 
   ${Core_Thread_Legacy_Link}
 )
