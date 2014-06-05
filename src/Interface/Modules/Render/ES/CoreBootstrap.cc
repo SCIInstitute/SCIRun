@@ -25,6 +25,7 @@
 #include <es-render/comp/StaticGLState.hpp>
 
 #include "CoreBootstrap.h"
+#include "AssetBootstrap.h"
 #include "Core.h"
 
 namespace es      = CPM_ES_NS;
@@ -149,6 +150,9 @@ public:
     orthoCam.data.setView(glm::mat4());
     core.addStaticComponent(orthoCam);
     core.addExemptComponent<gen::StaticOrthoCamera>();
+
+    // Add asset bootstrap.
+    core.addUserSystem(getSystemName_AssetBootstrap());
 
     // Now remove ourselves. We should only execute for one frame.
     core.removeUserSystem(getName());

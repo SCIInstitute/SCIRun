@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2014 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -26,24 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include "Registration.h"
-#include "CoreBootstrap.h"
-#include "AssetBootstrap.h"
-#include "comp/StaticSRInterface.h"
+#ifndef INTERFACE_MODULES_RENDER_ES_COMP_STATIC_SR_INTERFACE_H
+#define INTERFACE_MODULES_RENDER_ES_COMP_STATIC_SR_INTERFACE_H
+
+#include <cstdint>
+#include <entity-system/GenericSystem.hpp>
+#include <es-cereal/ComponentSerialize.hpp>
+#include "../SRInterface.h"
 
 namespace SCIRun {
 namespace Render {
 
-void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
+/// Reference ID class.
+struct StaticSRInterface
 {
-  // Register systems
-  registerSystem_CoreBootstrap(core);
-  registerSystem_AssetBootstrap(core);
+  // -- Data --
+  SRInterface* interface;
 
-  // Register components
-  core.registerComponent<StaticSRInterface>();
-}
+  // -- Functions --
+  StaticSRInterface() : interface(nullptr) {}
+  StaticSRInterface(SRInterface* srInt) : interface(srInt) {}
+
+  static const char* getName() {return "scirun:StaticSRInterface";}
+
+  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  {
+    return true;
+  }
+};
 
 } // namespace Render
 } // namespace SCIRun
 
+#endif 

@@ -39,6 +39,7 @@
 #include <Interface/Modules/Render/namespaces.h>
 
 #include "Core.h"
+#include "AssetBootstrap.h"
 
 // CPM Modules
 #include <gl-state/GLState.hpp>
@@ -55,6 +56,9 @@ class SRCamera;
 // Information such as mouse clicks and user settings.
 class SRInterface
 {
+  friend class AssetBootstrap;  ///< For assigning asset entity ids.
+                                ///< This can be removed if we use a static
+                                ///< component for assigning entity IDs.
 public:
   SRInterface(std::shared_ptr<Gui::GLContext> context,
               const std::vector<std::string>& shaderDirs);
@@ -166,9 +170,6 @@ private:
   // Sets up ESCore.
   void setupCore();
 
-  // Begins the frame.
-  void beginFrame();
-
   // Places mCamera's transform into our static camera component.
   void updateCamera();
 
@@ -193,6 +194,8 @@ private:
   std::string                     mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
   std::string                     mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
   std::string                     mArrowObjectName; ///< Object name for profile arrow.
+
+  uint64_t                        mCoordAxesEntity; ///< Entity housing geometry data for coord axes.
 
 };
 

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2014 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -26,24 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include "Registration.h"
-#include "CoreBootstrap.h"
-#include "AssetBootstrap.h"
-#include "comp/StaticSRInterface.h"
+#ifndef INTERFACE_MODULES_RENDER_ES_ASSET_BOOTSTRAP_H
+#define INTERFACE_MODULES_RENDER_ES_ASSET_BOOTSTRAP_H
 
+#include <es-acorn/Acorn.hpp>
+
+// Common bootstrap for the entire game application.
 namespace SCIRun {
 namespace Render {
 
-void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
-{
-  // Register systems
-  registerSystem_CoreBootstrap(core);
-  registerSystem_AssetBootstrap(core);
-
-  // Register components
-  core.registerComponent<StaticSRInterface>();
-}
+// Two required functions for systems. Technically, systems could
+// register themselves.
+void        registerSystem_AssetBootstrap(CPM_ES_ACORN_NS::Acorn& core);
+const char* getSystemName_AssetBootstrap();
 
 } // namespace Render
 } // namespace SCIRun
 
+#endif

@@ -32,15 +32,18 @@
 
 #include <Core/Application/Application.h>
 
-#include "CoreBootstrap.h"
-
 // CPM modules.
 #include <gl-state/GLState.hpp>
 #include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
+#include <es-general/comp/StaticObjRefID.hpp>
+#include <es-render/comp/StaticGeomMan.hpp>
 #include <es-fs/fscomp/StaticFS.hpp>
 #include <es-fs/Filesystem.hpp>
 #include <es-fs/FilesystemSync.hpp>
+
+#include "CoreBootstrap.h"
+#include "comp/StaticSRInterface.h"
 
 using namespace std::placeholders;
 
@@ -86,7 +89,6 @@ void SRInterface::setupCore()
     mCore.addStaticComponent(dims);
   }
 
-
   // Be exceptionally careful with non-serializable components. They must be
   // created outside of the normal bootstrap. They cannot depend on anything
   // being serialized correctly. In this circumstance, the filesystem component
@@ -102,7 +104,14 @@ void SRInterface::setupCore()
     mCore.disableComponentSerialization<fs::StaticFS>();
   }
 
+  // Add StaticSRInterface
+  {
+    StaticSRInterface iface(this);
+    mCore.addStaticComponent(iface);
+  }
+
   /// \todo Add static mouse and keyboard inputs, if necessary.
+
 }
 
 //------------------------------------------------------------------------------

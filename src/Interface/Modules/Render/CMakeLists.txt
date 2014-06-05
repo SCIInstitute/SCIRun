@@ -41,6 +41,7 @@ SET(Interface_Modules_Render_HEADERS
   ES/SRUtil.h
   ES/Core.h
   ES/CoreBootstrap.h
+  ES/AssetBootstrap.h
 )
 
 SET(Interface_Modules_Render_SOURCES 
@@ -54,6 +55,7 @@ SET(Interface_Modules_Render_SOURCES
   ES/Core.cc
   ES/CoreBootstrap.cc
   ES/Registration.cc
+  ES/AssetBootstrap.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})
