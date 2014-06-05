@@ -65,10 +65,12 @@ void ReadFieldDialog::pushFileNameToState()
 void ReadFieldDialog::openFile()
 {
   auto types = state_->getValue(Variables::FileTypeList).getString();
-  auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), QString::fromStdString(types));
+  QString selectedFilter;
+  auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter);
   if (file.length() > 0)
   {
-    std::string fileStr = file.toStdString();
+    auto typeName = selectedFilter.trimmed().split(' ')[0];
+    state_->setValue(Variables::FileTypeName, typeName.trimmed().toStdString());
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);
     pushFileNameToState();

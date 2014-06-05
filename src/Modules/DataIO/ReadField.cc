@@ -50,27 +50,13 @@ using namespace SCIRun::Modules::DataIO;
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 class ReadField : public GenericReader<FieldHandle> {
   protected:
-    GuiString gui_types_;
-    GuiString gui_filetype_;
     GuiString gui_filename_base_;
     GuiInt    gui_number_in_series_;
     GuiInt    gui_delay_;
-
-    virtual bool call_importer(const std::string &filename, FieldHandle &fHandle);
-
-  public:
-    ReadField(GuiContext* ctx);
-    virtual ~ReadField() {}
-    virtual void execute();
-};
-
-
-DECLARE_MAKER(ReadField)
 #endif
 
 ReadFieldModule::ReadFieldModule()
   : my_base("ReadField", "DataIO", "SCIRun", "Field")    
-    //gui_filetype_(get_ctx()->subVar("filetype")),
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
     //gui_delay_(get_ctx()->subVar("delay"), 0)
@@ -85,12 +71,9 @@ ReadFieldModule::ReadFieldModule()
 
 bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fHandle) 
 {
-  //const std::string ftpre = gui_filetype_.get();
-  //const std::string::size_type loc = ftpre.find(" (");
-  //const std::string ft = ftpre.substr(0, loc);
-
+  ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
-  FieldIEPlugin *pl = 0;//mgr.get_plugin(ft);
+  FieldIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).getString());
   if (pl)
   {
     fHandle = pl->readFile(filename, getLogger());
@@ -104,15 +87,11 @@ ReadFieldModule::execute()
 {     
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
-
-  
 #endif
   my_base::execute();
 }
 
 bool ReadFieldModule::useCustomImporter(const std::string& filename) const 
 {
-  const std::string guiFiletype = boost::filesystem::extension(filename_);
-
-  return guiFiletype != ".fld";
+  return boost::filesystem::extension(filename_) != ".fld";
 }
