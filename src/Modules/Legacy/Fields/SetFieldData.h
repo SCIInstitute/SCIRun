@@ -46,9 +46,9 @@ namespace SCIRun {
         virtual void execute();
         virtual void setStateDefaults();
         INPUT_PORT(0, InputField, LegacyField);
-	INPUT_PORT(1, InputMatrix, Matrix);
+        INPUT_PORT(1, InputMatrix, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
-	static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }
