@@ -83,25 +83,21 @@ ReadFieldModule::ReadFieldModule()
   get_state()->setValue(Variables::FileTypeList, types);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-bool
-ReadField::call_importer(const std::string &filename,
-			 FieldHandle & fHandle)
+bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fHandle) 
 {
-  const std::string ftpre = gui_filetype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-  
+  //const std::string ftpre = gui_filetype_.get();
+  //const std::string::size_type loc = ftpre.find(" (");
+  //const std::string ft = ftpre.substr(0, loc);
+
   FieldIEPluginManager mgr;
-  FieldIEPlugin *pl = mgr.get_plugin(ft);
+  FieldIEPlugin *pl = 0;//mgr.get_plugin(ft);
   if (pl)
   {
-    fHandle = pl->filereader(this, filename.c_str());
-    return fHandle.get_rep();
+    fHandle = pl->readFile(filename, getLogger());
+    return fHandle != nullptr;
   }
   return false;
 }
-#endif
 
 void
 ReadFieldModule::execute()
@@ -109,14 +105,14 @@ ReadFieldModule::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
 
-  const std::string guiFiletype = get_state()->getValue(Variables::FileExtension).getString();
-
-  useCustomImporter_ = guiFiletype != ".fld";
+  
 #endif
   my_base::execute();
 }
 
 bool ReadFieldModule::useCustomImporter(const std::string& filename) const 
 {
-  return false;
+  const std::string guiFiletype = boost::filesystem::extension(filename_);
+
+  return guiFiletype != ".fld";
 }

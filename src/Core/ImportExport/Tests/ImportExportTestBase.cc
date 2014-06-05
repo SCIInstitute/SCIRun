@@ -52,27 +52,27 @@ TEST(ImportExportPluginManagerTest, CanCreate)
 
 namespace
 {
-  FieldHandle freaderDummy(Core::Logging::Log& pr, const char *filename)
+  FieldHandle freaderDummy(Core::Logging::LoggerHandle pr, const char *filename)
   {
     return FieldHandle();
   }
-  bool fwriterDummy(Core::Logging::Log& pr, FieldHandle f, const char *filename)
+  bool fwriterDummy(Core::Logging::LoggerHandle pr, FieldHandle f, const char *filename)
   {
     return false;
   }
-  ColorMapHandle creaderDummy(Core::Logging::Log& pr, const char *filename)
+  ColorMapHandle creaderDummy(Core::Logging::LoggerHandle pr, const char *filename)
   {
     return ColorMapHandle();
   }
-  bool cwriterDummy(Core::Logging::Log& pr, ColorMapHandle f, const char *filename)
+  bool cwriterDummy(Core::Logging::LoggerHandle pr, ColorMapHandle f, const char *filename)
   {
     return false;
   }
-  MatrixHandle mreaderDummy(Core::Logging::Log& pr, const char *filename)
+  MatrixHandle mreaderDummy(Core::Logging::LoggerHandle pr, const char *filename)
   {
     return MatrixHandle();
   }
-  bool mwriterDummy(Core::Logging::Log& pr, MatrixHandle f, const char *filename)
+  bool mwriterDummy(Core::Logging::LoggerHandle pr, MatrixHandle f, const char *filename)
   {
     return false;
   }
