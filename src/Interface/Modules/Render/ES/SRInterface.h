@@ -173,6 +173,9 @@ private:
   // Places mCamera's transform into our static camera component.
   void updateCamera();
 
+  // Renders coordinate axes on the screen.
+  void renderCoordinateAxes();
+
   // Generates the various colormaps that we use for rendering SCIRun geometry.
   void generateColormaps();
 

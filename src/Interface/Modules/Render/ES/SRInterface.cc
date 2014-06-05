@@ -216,6 +216,8 @@ void SRInterface::doFrame(double currentTime, double constantDeltaTime)
 
   mCore.execute(currentTime, constantDeltaTime);
 
+  renderCoordinateAxes();
+
   // Set directional light source (in world space).
   // glm::vec3 viewDir = viewToWorld[2].xyz();
   // viewDir = -viewDir; // Cameras look down -Z.
@@ -236,6 +238,16 @@ void SRInterface::updateCamera()
   {
     camera->data.setView(viewToWorld);
   }
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::renderCoordinateAxes()
+{
+  // ren::VBOMan& vboMan = *core.getStaticComponent<ren::StaticVBOMan>()->instance;
+  // ren::IBOMan& iboMan = *core.getStaticComponent<ren::StaticIBOMan>()->instance;
+  //
+  // GLuint arrowVBO = vboMan.hasVBO(assetName);
+  // GLuint arrowIBO = iboMan.hasVBO(assetName);
 }
   
   // Manually update the StaticCamera.
