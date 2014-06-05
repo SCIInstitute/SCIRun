@@ -321,5 +321,7 @@ namespace Algorithms {
 #define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() list .build()
 #define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
 #define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
+#define ALGORITHM_PARAMETER_DECL(name) namespace Parameters { SCISHARE extern const SCIRun::Core::Algorithms::AlgorithmParameterName name; }
+#define ALGORITHM_PARAMETER_DEF(ns, name) const SCIRun::Core::Algorithms::AlgorithmParameterName SCIRun::Core::Algorithms::ns::Parameters::name(#name);
 
 #endif
