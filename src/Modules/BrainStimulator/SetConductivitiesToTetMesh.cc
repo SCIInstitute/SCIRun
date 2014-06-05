@@ -52,12 +52,12 @@ SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(Mo
 
 void SetConductivitiesToTetMeshModule::setStateDefaults()
 {
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skin);
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skull);
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF);
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM);
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM);
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Electrode);
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skin());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skull());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Electrode());
 }
 
 void SetConductivitiesToTetMeshModule::execute()
@@ -72,12 +72,12 @@ void SetConductivitiesToTetMeshModule::execute()
   //algorithm parameter
   //algo_->set(Variables::AppendMatrixOption, param);
  
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin);
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skull);
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::CSF);
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::GM);
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::WM);
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Electrode);
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skull());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::CSF());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::GM());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::WM());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Electrode());
   
   if (needToExecute())
   {

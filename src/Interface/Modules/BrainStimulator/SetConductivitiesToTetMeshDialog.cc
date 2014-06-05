@@ -43,12 +43,12 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addDoubleSpinBoxManager(Skin_,       SetConductivitiesToTetMeshAlgorithm::Skin);
-  addDoubleSpinBoxManager(Skull_,      SetConductivitiesToTetMeshAlgorithm::Skull);
-  addDoubleSpinBoxManager(CSF_,        SetConductivitiesToTetMeshAlgorithm::CSF);
-  addDoubleSpinBoxManager(GM_,         SetConductivitiesToTetMeshAlgorithm::GM);
-  addDoubleSpinBoxManager(WM_,         SetConductivitiesToTetMeshAlgorithm::WM);
-  addDoubleSpinBoxManager(Electrode_,  SetConductivitiesToTetMeshAlgorithm::Electrode);
+  addDoubleSpinBoxManager(Skin_,       SetConductivitiesToTetMeshAlgorithm::Skin());
+  addDoubleSpinBoxManager(Skull_,      SetConductivitiesToTetMeshAlgorithm::Skull());
+  addDoubleSpinBoxManager(CSF_,        SetConductivitiesToTetMeshAlgorithm::CSF());
+  addDoubleSpinBoxManager(GM_,         SetConductivitiesToTetMeshAlgorithm::GM());
+  addDoubleSpinBoxManager(WM_,         SetConductivitiesToTetMeshAlgorithm::WM());
+  addDoubleSpinBoxManager(Electrode_,  SetConductivitiesToTetMeshAlgorithm::Electrode());
 }
 
 void SetConductivitiesToTetMeshDialog::push()

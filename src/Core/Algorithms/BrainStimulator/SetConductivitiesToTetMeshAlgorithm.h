@@ -43,12 +43,12 @@ namespace BrainStimulator {
       //Outputs run(const Inputs& input, const Parameters& params = 0) const;
     SetConductivitiesToTetMeshAlgorithm();
     FieldHandle run(FieldHandle fh) const;
-    static AlgorithmParameterName Skin;
-    static AlgorithmParameterName Skull;
-    static AlgorithmParameterName CSF;
-    static AlgorithmParameterName GM;
-    static AlgorithmParameterName WM;
-    static AlgorithmParameterName Electrode;
+    static AlgorithmParameterName Skin();
+    static AlgorithmParameterName Skull();
+    static AlgorithmParameterName CSF();
+    static AlgorithmParameterName GM();
+    static AlgorithmParameterName WM();
+    static AlgorithmParameterName Electrode();
     
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
     static AlgorithmInputName MESH;

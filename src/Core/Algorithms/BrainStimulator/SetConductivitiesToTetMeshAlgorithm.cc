@@ -48,12 +48,12 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skin("Skin");
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skull("Skull");
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF("CSF");
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM("GM"); 
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM("WM");  
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Electrode("Electrode");
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skin() {return AlgorithmParameterName("Skin");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skull() {return AlgorithmParameterName("Skull");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF() { return AlgorithmParameterName("CSF");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM() { return AlgorithmParameterName("GM");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM() { return AlgorithmParameterName("WM");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Electrode() { return AlgorithmParameterName("Electrode");}
 
 AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::MESH("MESH");
 AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::INHOMOGENEOUS_SKULL("INHOMOGENEOUS_SKULL");
@@ -62,12 +62,12 @@ AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH"
 
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
-  addParameter(Skin,      0.33);
-  addParameter(Skull,     0.01);
-  addParameter(CSF,       1.79);
-  addParameter(GM,        0.33);
-  addParameter(WM,        0.14);
-  addParameter(Electrode, 1.4);
+  addParameter(Skin(),      0.33);
+  addParameter(Skull(),     0.01);
+  addParameter(CSF(),       1.79);
+  addParameter(GM(),        0.33);
+  addParameter(WM(),        0.14);
+  addParameter(Electrode(), 1.4);
 }
 
 AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
@@ -121,10 +121,10 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   }
   
   // array holding conductivities
-  double conductivies[] = {get(Skin).getDouble(),
-    get(Skull).getDouble(), get(CSF).getDouble(),
-    get(GM).getDouble(), get(WM).getDouble(),
-    get(Electrode).getDouble()};
+  double conductivies[] = {get(Skin()).getDouble(),
+    get(Skull()).getDouble(), get(CSF()).getDouble(),
+    get(GM()).getDouble(), get(WM()).getDouble(),
+    get(Electrode()).getDouble()};
   
   // replacing field value with conductivity value
   FieldHandle output = CreateField(fi, fh->mesh());
@@ -157,7 +157,7 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
     }
     
     cnt++;
-    if (cnt == 1000)
+    if (cnt == 500)
     {
       cnt = 0;
       update_progress_max(i,vfield->vmesh()->num_elems());
