@@ -30,6 +30,7 @@ SET(Modules_Fields_Tests_SRCS
   CreateLatVolTests.cc
   CalculateFieldDataTests.cc
   CalculateGradientsTests.cc
+  CalculateVectorMagnitudesTests.cc
   CalculateSignedDistanceToFieldTests.cc
   GetFieldBoundaryTests.cc
   ConvertQuadSurfToTriSurfTests.cc
@@ -37,6 +38,10 @@ SET(Modules_Fields_Tests_SRCS
   GetFieldNodesTests.cc
   SetFieldNodesTests.cc
   JoinFieldsTests.cc
+  GetFieldDataTests.cc
+  SetFieldDataTests.cc
+  MapFieldDataFromNodeToElemTests.cc
+  MapFieldDataFromElemToNodeTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests

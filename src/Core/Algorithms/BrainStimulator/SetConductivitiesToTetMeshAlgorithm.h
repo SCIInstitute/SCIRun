@@ -32,9 +32,6 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
@@ -42,16 +39,22 @@ namespace BrainStimulator {
   
   class SCISHARE SetConductivitiesToTetMeshAlgorithm : public AlgorithmBase
   {
-  public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
-
+    public:
+      //Outputs run(const Inputs& input, const Parameters& params = 0) const;
+    SetConductivitiesToTetMeshAlgorithm();
+    FieldHandle run(FieldHandle fh) const;
+    static AlgorithmParameterName Skin();
+    static AlgorithmParameterName Skull();
+    static AlgorithmParameterName CSF();
+    static AlgorithmParameterName GM();
+    static AlgorithmParameterName WM();
+    static AlgorithmParameterName Electrode();
+    
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
     static AlgorithmInputName MESH;
     static AlgorithmInputName INHOMOGENEOUS_SKULL;
     static AlgorithmInputName ANISOTROPIC_WM;
     static AlgorithmOutputName OUTPUTMESH;
-    
   };
 
 }}}}

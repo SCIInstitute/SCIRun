@@ -61,7 +61,7 @@ ADD_LIBRARY(Interface_Modules_BrainStimulator
 
 TARGET_LINK_LIBRARIES(Interface_Modules_BrainStimulator 
   Algorithms_Field
-#  Modules_BrainStimulator
+  Modules_BrainStimulator
   Interface_Modules_Base
 #  Dataflow_Modules_Legacy_BrainStimulator
   ${SCI_BOOST_LIBRARY}
