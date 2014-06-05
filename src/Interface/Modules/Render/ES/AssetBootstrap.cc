@@ -46,15 +46,21 @@ public:
 
     // Will need to replace this with a static entity in the future.
     SRInterface* iface = core.getStaticComponent<StaticSRInterface>()->interface;
-
-    // Load geometry and associated vertex and fragment shaders.
-    uint64_t coordAxesEntity = 0;
     ren::GeomMan* geomMan = core.getStaticComponent<ren::StaticGeomMan>()->instance.get();
+    ren::ShaderMan* shaderMan = core.getStaticComponent<ren::StaticShaderMan>()->instance.get();
+
+    // Create and associate coordinate axes entity with SRInterface.
+    uint64_t coordAxesEntity = 0;
     coordAxesEntity = gen::StaticObjRefID::getNewObjectID(core);
-    geomMan->loadGeometry(core, coordAxesEntity, "assets/arrow");
     iface->mCoordAxesEntity = coordAxesEntity;
 
-    // Note. We don't need to strictly store the coordinate axes entity.
+    // Load geometry and associated vertex and fragment shaders.
+    geomMan->loadGeometry(core, coordAxesEntity, "Assets/arrow");
+
+    // Load shader we will use with the coordinate axes.
+    shaderMan->loadVertexAndFragmentShader(core, coordAxesEntity, "Shaders/DirPhong");
+
+    // Note: We don't need to strictly store the coordinate axes entity.
     // We are really only after its VBO / IBO.
 
     // Remove our system now that we are done caching assets.

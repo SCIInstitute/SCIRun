@@ -43,6 +43,8 @@
 
 // CPM Modules
 #include <gl-state/GLState.hpp>
+#include <es-render/util/Shader.hpp>
+#include <es-render/comp/CommonUniforms.hpp>
 #include <glm/glm.hpp>
 
 namespace SCIRun {
@@ -199,6 +201,8 @@ private:
   std::string                     mArrowObjectName; ///< Object name for profile arrow.
 
   uint64_t                        mCoordAxesEntity; ///< Entity housing geometry data for coord axes.
+  ren::ShaderVBOAttribs<5>        mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
+  ren::CommonUniforms             mArrowUniforms;   ///< Common uniforms used in the arrow shader.
 
 };
 

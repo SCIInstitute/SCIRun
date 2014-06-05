@@ -38,7 +38,11 @@
 #include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/StaticObjRefID.hpp>
+#include <es-general/comp/StaticGlobalTime.hpp>
 #include <es-render/comp/StaticGeomMan.hpp>
+#include <es-render/comp/StaticIBOMan.hpp>
+#include <es-render/comp/StaticVBOMan.hpp>
+#include <es-render/comp/StaticShaderMan.hpp>
 #include <es-fs/fscomp/StaticFS.hpp>
 #include <es-fs/Filesystem.hpp>
 #include <es-fs/FilesystemSync.hpp>
@@ -243,14 +247,134 @@ void SRInterface::updateCamera()
 //------------------------------------------------------------------------------
 void SRInterface::renderCoordinateAxes()
 {
-  // ren::VBOMan& vboMan = *core.getStaticComponent<ren::StaticVBOMan>()->instance;
-  // ren::IBOMan& iboMan = *core.getStaticComponent<ren::StaticIBOMan>()->instance;
-  //
-  // GLuint arrowVBO = vboMan.hasVBO(assetName);
-  // GLuint arrowIBO = iboMan.hasVBO(assetName);
+  // This rendering algorithm is fairly inefficient. Use the entity component
+  // system to optimize the rendering of a large amount of objects.
+  ren::VBOMan& vboMan = *mCore.getStaticComponent<ren::StaticVBOMan>()->instance;
+  ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
+  ren::ShaderMan& shaderMan = *mCore.getStaticComponent<ren::StaticShaderMan>()->instance;
+
+  GLuint arrowVBO = vboMan.hasVBO("Assets/Arrow");
+  GLuint arrowIBO = iboMan.hasIBO("Assets/Arrow");
+  GLuint shader = shaderMan.getIDForAsset("Shaders/DirPhong");
+  const ren::IBOMan::IBOData& iboData = iboMan.getIBOData("Assets/Arrow");
+
+  glm::mat4 trafo;
+
+  // Bail if assets have not been loaded yet (asynchronous loading may take a
+  // few frames).
+  if (arrowVBO == 0 || arrowIBO == 0 || shader == 0) { return; }
+
+  GL(glUseProgram(shader));
+
+  GL(glBindBuffer(GL_ARRAY_BUFFER, arrowVBO));
+  GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, arrowIBO));
+
+  // mSpire->addObjectPassUniform(mArrowObjectName, "uCamViewVec", glm::vec3(0.0f, 0.0f, -1.0f));
+  // mSpire->addObjectPassUniform(mArrowObjectName, "uLightDirWorld", glm::vec3(0.0f, 0.0f, -1.0f));
+
+  // Build pre-applied attributes. We could save some time by performing
+  // this during initialization. But this only occurs once per frame.
+  if (mArrowAttribs.isSetup() == false)
+  {
+    mArrowAttribs.setup(arrowVBO, shader, vboMan);
+  }
+
+  mArrowUniforms.checkUniformArray(shader);
+
+  mArrowAttribs.bind();
+
+  gen::StaticGlobalTime& time = *mCore.getStaticComponent<gen::StaticGlobalTime>();
+  gen::StaticCamera& camera = *mCore.getStaticComponent<gen::StaticCamera>();
+  mArrowUniforms.applyCommonUniforms(trafo, camera.data, time.globalTime);
+
+  // Determine appropriate transforms and colors to use for each of the arrows.
+  GL(glDrawElements(iboData.primMode, iboData.numPrims, iboData.primType, 0));
+
+  mArrowAttribs.unbind();
+
+
+
+
+
+
+//   // Now render the axes on the screen.
+//   float aspect = static_cast<float>(640) / static_cast<float>(480);
+//   glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
+//
+//   // Build world transform for all axes. Rotates about uninverted camera's
+//   // view, then translates to a specified corner on the screen.
+//   glm::mat4 axesRot = mCamera->getWorldToView();
+//   axesRot[3][0] = 0.0f;
+//   axesRot[3][1] = 0.0f;
+//   axesRot[3][2] = 0.0f;
+//   glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.42f, 0.39f, -1.5f));
+//   glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.05));;
+//   glm::mat4 axesTransform = axesScale * axesRot;
+//
+//   mSpire->addObjectPassUniform(mArrowObjectName, "uCamViewVec", glm::vec3(0.0f, 0.0f, -1.0f));
+//   mSpire->addObjectPassUniform(mArrowObjectName, "uLightDirWorld", glm::vec3(0.0f, 0.0f, -1.0f));
+//
+//   // Build projection for the axes to use on the screen. The arrors will not
+//   // use the camera, but will use the camera's transformation matrix.
+//
+//   // X Axis
+//   {
+//     glm::mat4 xform = glm::rotate(glm::mat4(1.0f), spire::PI / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+//     glm::mat4 finalTrafo = axesTransform * xform;
+//
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uAmbientColor", glm::vec4(0.5f, 0.01f, 0.01f, 1.0f));
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uDiffuseColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularPower", 16.0f);
+//
+//     // Add appropriate projection and object -> world transformations.
+//     // Light will always be directed down the camera's axis.
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uProjIVObject", projection * invCamTrans * finalTrafo);
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uObject", finalTrafo);
+//
+//     mSpire->renderObject(mArrowObjectName);
+//   }
+//
+//   // Y Axis
+//   {
+//     glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -spire::PI / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+//     glm::mat4 finalTrafo = axesTransform * xform;
+//
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uAmbientColor", glm::vec4(0.01f, 0.5f, 0.01f, 1.0f));
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uDiffuseColor", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularPower", 16.0f);
+//
+//
+//     // Add appropriate projection and object -> world transformations.
+//     // Light will always be directed down the camera's axis.
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uProjIVObject", projection * invCamTrans * finalTrafo);
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uObject", finalTrafo);
+//
+//     mSpire->renderObject(mArrowObjectName);
+//   }
+//
+//   // Z Axis
+//   {
+//     // No rotation at all
+//     glm::mat4 finalTrafo = axesTransform;
+//
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uAmbientColor", glm::vec4(0.01f, 0.01f, 0.5f, 1.0f));
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uDiffuseColor", glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularPower", 16.0f);
+//
+//
+//     // Add appropriate projection and object -> world transformations.
+//     // Light will always be directed down the camera's axis.
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uProjIVObject", projection * invCamTrans * finalTrafo);
+//     mSpire->addObjectPassUniform(mArrowObjectName, "uObject", finalTrafo);
+//
+//     mSpire->renderObject(mArrowObjectName);
+//   }
 }
   
-  // Manually update the StaticCamera.
+// Manually update the StaticCamera.
 
 float rainbowRaw[] =
 {
