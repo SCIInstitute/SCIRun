@@ -33,6 +33,7 @@
 #include <Core/Application/Application.h>
 
 // CPM modules.
+#include <gl-platform/GLPlatform.hpp>
 #include <gl-state/GLState.hpp>
 #include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
