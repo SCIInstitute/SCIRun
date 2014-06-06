@@ -247,6 +247,11 @@ void SRInterface::updateCamera()
 //------------------------------------------------------------------------------
 void SRInterface::renderCoordinateAxes()
 {
+  // Only execute if static rendering resources are available. All of these
+  // resource checks wouldn't be necessary if we were operating in the perview
+  // of the entity system.
+  if (mCore.getStaticComponent<ren::StaticVBOMan>() == nullptr) return;
+
   // This rendering algorithm is fairly inefficient. Use the entity component
   // system to optimize the rendering of a large amount of objects.
   ren::VBOMan& vboMan = *mCore.getStaticComponent<ren::StaticVBOMan>()->instance;
@@ -256,7 +261,17 @@ void SRInterface::renderCoordinateAxes()
   GLuint arrowVBO = vboMan.hasVBO("Assets/Arrow");
   GLuint arrowIBO = iboMan.hasIBO("Assets/Arrow");
   GLuint shader = shaderMan.getIDForAsset("Shaders/DirPhong");
-  const ren::IBOMan::IBOData& iboData = iboMan.getIBOData("Assets/Arrow");
+
+  const ren::IBOMan::IBOData* iboData;
+  try
+  {
+    iboData = &iboMan.getIBOData("Assets/Arrow");
+  }
+  catch (...)
+  {
+    // Return if IBO data not available.
+    return;
+  }
 
   glm::mat4 trafo;
 
@@ -288,7 +303,7 @@ void SRInterface::renderCoordinateAxes()
   mArrowUniforms.applyCommonUniforms(trafo, camera.data, time.globalTime);
 
   // Determine appropriate transforms and colors to use for each of the arrows.
-  GL(glDrawElements(iboData.primMode, iboData.numPrims, iboData.primType, 0));
+  GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
 
   mArrowAttribs.unbind();
 
