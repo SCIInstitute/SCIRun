@@ -102,7 +102,7 @@ void SRInterface::setupCore()
   {
     // Generate synchronous filesystem, manually add its static component,
     // then mark it as non-serializable.
-    std::string filesystemRoot = ""; // Should set this to the relative path containing static data.
+    std::string filesystemRoot = "./"; // Should set this to the relative path containing static data.
     fs::StaticFS fileSystem(
         std::shared_ptr<fs::FilesystemSync>(new fs::FilesystemSync(filesystemRoot)));
     mCore.addStaticComponent(fileSystem);
@@ -262,6 +262,16 @@ void SRInterface::renderCoordinateAxes()
   GLuint arrowIBO = iboMan.hasIBO("Assets/Arrow");
   GLuint shader = shaderMan.getIDForAsset("Shaders/DirPhong");
 
+  // Bail if assets have not been loaded yet (asynchronous loading may take a
+  // few frames).
+  if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
+  {
+    std::cout << "s: " << shader << " vbo: " << arrowVBO << " ibo: " << arrowIBO << std::endl;
+    return;
+  }
+
+  std::cout << "Here" << std::endl;
+
   const ren::IBOMan::IBOData* iboData;
   try
   {
@@ -270,14 +280,11 @@ void SRInterface::renderCoordinateAxes()
   catch (...)
   {
     // Return if IBO data not available.
+    std::cout << "Failed" << std::endl;
     return;
   }
 
   glm::mat4 trafo;
-
-  // Bail if assets have not been loaded yet (asynchronous loading may take a
-  // few frames).
-  if (arrowVBO == 0 || arrowIBO == 0 || shader == 0) { return; }
 
   GL(glUseProgram(shader));
 
