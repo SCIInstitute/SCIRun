@@ -55,7 +55,7 @@ public:
     iface->mCoordAxesEntity = coordAxesEntity;
 
     // Load geometry and associated vertex and fragment shaders.
-    geomMan->loadGeometry(core, coordAxesEntity, "Assets/arrow");
+    geomMan->loadGeometry(core, coordAxesEntity, "Assets/arrow.geom");
 
     // Load shader we will use with the coordinate axes.
     shaderMan->loadVertexAndFragmentShader(core, coordAxesEntity, "Shaders/DirPhong");

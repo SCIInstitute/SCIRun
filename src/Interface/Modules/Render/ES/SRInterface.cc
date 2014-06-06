@@ -258,8 +258,8 @@ void SRInterface::renderCoordinateAxes()
   ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
   ren::ShaderMan& shaderMan = *mCore.getStaticComponent<ren::StaticShaderMan>()->instance;
 
-  GLuint arrowVBO = vboMan.hasVBO("Assets/arrow");
-  GLuint arrowIBO = iboMan.hasIBO("Assets/arrow");
+  GLuint arrowVBO = vboMan.hasVBO("Assets/arrow.geom");
+  GLuint arrowIBO = iboMan.hasIBO("Assets/arrow.geom");
   GLuint shader = shaderMan.getIDForAsset("Shaders/DirPhong");
 
   // Bail if assets have not been loaded yet (asynchronous loading may take a
@@ -273,7 +273,7 @@ void SRInterface::renderCoordinateAxes()
   const ren::IBOMan::IBOData* iboData;
   try
   {
-    iboData = &iboMan.getIBOData("Assets/Arrow");
+    iboData = &iboMan.getIBOData("Assets/arrow.geom");
   }
   catch (...)
   {
