@@ -82,14 +82,6 @@ SET(Core_Thread_Legacy_HEADERS
   WorkQueue.h
 )
 
-IF(CMAKE_USE_PTHREADS)
-  SET(Core_Thread_Legacy ${Core_Thread_Legacy_SRCS} 
-    CrowdMonitor_pthreads.cc
-    Thread_pthreads.cc 
-    Time_unix.cc
-  )
-ENDIF()
-
 IF(WIN32)
   SET(Core_Thread_Legacy_SRCS ${Core_Thread_Legacy_SRCS} Thread_win32.cc Time_win32.cc)
 ENDIF(WIN32)

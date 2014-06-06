@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <iostream>
+#include <boost/filesystem.hpp>
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
@@ -57,17 +58,19 @@ void ReadFieldDialog::pull()
 
 void ReadFieldDialog::pushFileNameToState() 
 {
-  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+  auto file = fileNameLineEdit_->text().trimmed().toStdString();
+  state_->setValue(Variables::Filename, file);
 }
 
 void ReadFieldDialog::openFile()
 {
-  auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), "SCIRun Field File (*.fld)");
+  auto types = state_->getValue(Variables::FileTypeList).getString();
+  auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), QString::fromStdString(types));
   if (file.length() > 0)
   {
+    std::string fileStr = file.toStdString();
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);
-  
     pushFileNameToState();
   }
 }

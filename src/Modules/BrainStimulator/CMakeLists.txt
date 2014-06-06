@@ -52,7 +52,7 @@ TARGET_LINK_LIBRARIES(Modules_BrainStimulator
   Core_Datatypes_Mesh
   Algorithms_Field
   Core_Datatypes_Legacy_Field
-  #Algorithms_BrainStimulator
+  Algorithms_BrainStimulator
 )
 
 IF(BUILD_SHARED_LIBS)

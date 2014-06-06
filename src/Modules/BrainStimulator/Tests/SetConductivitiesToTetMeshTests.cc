@@ -25,43 +25,80 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::TestUtils;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::BrainStimulator;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
-using ::testing::Mock;
 
 class SetConductivitiesToTetMeshTests : public ModuleTest
 {
 
 };
 
-TEST_F(SetConductivitiesToTetMeshTests, ThrowsForNullInput)
+namespace
 {
-  auto tdcs = makeModule("SetConductivitiesToTetMesh");
-  ASSERT_TRUE(tdcs != nullptr);
-  FieldHandle nullField;
-  stubPortNWithThisData(tdcs, 0, nullField);
-  stubPortNWithThisData(tdcs, 1, nullField);
-
-  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
+  FieldHandle CreateTetMeshVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshSevenElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh_7elem.fld");
+  }
+  // scalar fields covered by the algorithm tests
 }
 
-TEST_F(SetConductivitiesToTetMeshTests, DISABLED_Foo)
+TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarSevenElem)
 {
-  FAIL() << "TODO";
+  auto test = makeModule("SetConductivitiesToTetMesh");
+  stubPortNWithThisData(test, 0, CreateTetMeshSevenElem());
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarOnElem)
+{
+  auto test = makeModule("SetConductivitiesToTetMesh");
+  stubPortNWithThisData(test, 0, CreateTetMeshVectorOnElem());
+  EXPECT_NO_THROW(test->execute());
+}
+TEST_F(SetConductivitiesToTetMeshTests, SparseRowMatrixInput)
+{
+  auto test = makeModule("SetConductivitiesToTetMesh");
+	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+	m->insert(0,0) = 1;
+	m->insert(0,1) = 7;
+	m->insert(0,2) = 3;
+	m->insert(1,0) = 7;
+	m->insert(1,1) = 4;
+	m->insert(1,2) = -5;
+	m->insert(2,0) = 3;
+	m->insert(2,1) = -5;
+	m->insert(2,2) = 6;
+	m->makeCompressed();
+  stubPortNWithThisData(test, 0, m);
+  EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
+}
+TEST_F(SetConductivitiesToTetMeshTests, ThrowsForNullInput)
+{
+  auto test = makeModule("SetConductivitiesToTetMesh");
+  ASSERT_TRUE(test != nullptr);
+  FieldHandle nullField;
+  stubPortNWithThisData(test, 0, nullField);
+  stubPortNWithThisData(test, 1, nullField);
+  EXPECT_THROW(test->execute(), NullHandleOnPortException);
 }

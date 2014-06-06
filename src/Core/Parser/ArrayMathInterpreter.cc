@@ -354,7 +354,8 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
     pprogram->get_const_function(j,fhandle);
     // Set the function pointer
     auto func = boost::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
-    ArrayMathProgramCode pc(func->get_function());
+    ArrayMathProgramCodePtr pcPtr(new ArrayMathProgramCode(func->get_function()));
+    ArrayMathProgramCode& pc = *pcPtr;
     pc.set_size(1);
     pc.set_index(0);
     
@@ -626,7 +627,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
         return (false);
       }
     }
-    mprogram->set_const_program_code(j,pc);
+    mprogram->set_const_program_code(j,pcPtr);
   }
 
   for (size_t j=0; j<num_single_functions; j++)
@@ -635,8 +636,9 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
 
     // Set the function pointer
     auto func = boost::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
-    ArrayMathProgramCode pc(func->get_function());
-    
+    ArrayMathProgramCodePtr pcPtr(new ArrayMathProgramCode(func->get_function()));
+    ArrayMathProgramCode& pc = *pcPtr;
+  
     pc.set_size(1);
     pc.set_index(0);
     
@@ -910,7 +912,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       }
     }
 
-    mprogram->set_single_program_code(j,pc);
+    mprogram->set_single_program_code(j,pcPtr);
   }
 
   // Process sequential list
@@ -922,8 +924,9 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
 
       // Set the function pointer
       auto func = boost::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
-      ArrayMathProgramCode pc(func->get_function());
-      
+      ArrayMathProgramCodePtr pcPtr(new ArrayMathProgramCode(func->get_function()));
+      ArrayMathProgramCode& pc = *pcPtr;
+    
       ParserScriptVariableHandle ohandle = fhandle->get_output_var();
       onum = ohandle->get_var_number();
       type = ohandle->get_type();
@@ -1181,7 +1184,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
           return (false);
         }
       }
-      mprogram->set_sequential_program_code(j,np,pc);
+      mprogram->set_sequential_program_code(j,np,pcPtr);
     }
   }
 
@@ -1479,7 +1482,7 @@ ArrayMathProgram::run_const(size_t& error_line)
   size_t size = const_functions_.size();
   for (size_t j=0; j<size; j++)
   {
-    if(!(const_functions_[j].run()))
+    if(!(const_functions_[j]->run()))
     {
       error_line = j;
       return (false);
@@ -1495,7 +1498,7 @@ ArrayMathProgram::run_single(size_t& error_line)
   size_t size = single_functions_.size();
   for (size_t j=0; j<size; j++)
   {
-    if(!(single_functions_[j].run()))
+    if(!(single_functions_[j]->run()))
     {
       error_line = j;
       return (false);
@@ -1545,12 +1548,12 @@ ArrayMathProgram::run_parallel(int proc)
     size_t size = sequential_functions_[proc].size();
     for (size_t j=0; j<size;j++)
     {
-      sequential_functions_[proc][j].set_index(offset);
-      sequential_functions_[proc][j].set_size(sz);
+      sequential_functions_[proc][j]->set_index(offset);
+      sequential_functions_[proc][j]->set_size(sz);
     }
     for (size_t j=0; j<size; j++)
     {
-      if(!(sequential_functions_[proc][j].run()))
+      if(!(sequential_functions_[proc][j]->run()))
       {
         error_line_[proc] = j;
         success_[proc] = false;
