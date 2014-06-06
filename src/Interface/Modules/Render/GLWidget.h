@@ -86,6 +86,8 @@ private:
   std::shared_ptr<GLContext>            mContext;   ///< Graphics context.
   std::shared_ptr<Render::SRInterface>  mGraphics;  ///< Interface to spire.
   QTimer*                               mTimer;
+
+  double                                mCurrentTime;
 };
 
 } // end of namespace Gui

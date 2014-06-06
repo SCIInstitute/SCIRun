@@ -59,7 +59,7 @@ namespace Render {
 
 //------------------------------------------------------------------------------
 SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
-            const std::vector<std::string>& shaderDirs) :
+                         const std::vector<std::string>& shaderDirs) :
     mMouseMode(MOUSE_OLDSCIRUN),
     mScreenWidth(640),
     mScreenHeight(480),
@@ -102,7 +102,7 @@ void SRInterface::setupCore()
   {
     // Generate synchronous filesystem, manually add its static component,
     // then mark it as non-serializable.
-    std::string filesystemRoot = "./"; // Should set this to the relative path containing static data.
+    std::string filesystemRoot = ""; // Should set this to the relative path containing static data.
     fs::StaticFS fileSystem(
         std::shared_ptr<fs::FilesystemSync>(new fs::FilesystemSync(filesystemRoot)));
     mCore.addStaticComponent(fileSystem);

@@ -43,10 +43,13 @@
 namespace SCIRun {
 namespace Gui {
 
+const int RendererUpdateInMS = 35;
+
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(QtGLContext* context) :
     QGLWidget(context),
-    mContext(new GLContext(this))
+    mContext(new GLContext(this)),
+    mCurrentTime(0.0)
 {
   /// \todo Implement this intelligently. This function is called everytime
   ///       there is a new graphics context.
@@ -64,7 +67,7 @@ GLWidget::GLWidget(QtGLContext* context) :
       new Render::SRInterface(mContext, shaderSearchDirs));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
-  mTimer->start(35);
+  mTimer->start(RendererUpdateInMS);
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
@@ -156,7 +159,10 @@ void GLWidget::makeCurrent()
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  mGraphics->doFrame(0.0, 0.0);
+  double updateTime = static_cast<double>(RendererUpdateInMS) / 1000.0;
+  mCurrentTime += updateTime;
+
+  mGraphics->doFrame(mCurrentTime, updateTime);
   mContext->swapBuffers();
 }
 
