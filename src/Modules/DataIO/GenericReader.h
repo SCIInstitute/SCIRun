@@ -70,8 +70,7 @@ protected:
   time_t old_filemodification_;
 
   virtual bool useCustomImporter(const std::string& filename) const = 0;
-
-  virtual bool call_importer(const std::string &filename, HType & handle);
+  virtual bool call_importer(const std::string &filename, HType & handle) { return false; }
 
   static Core::Thread::Mutex fileCheckMutex_;
   static bool file_exists(const std::string & filename);
@@ -93,14 +92,6 @@ GenericReader<HType, PortTag>::GenericReader(const std::string &name,
 
 template <class HType, class PortTag> 
 Core::Thread::Mutex GenericReader<HType,PortTag>::fileCheckMutex_("GenericReader");
-
-template <class HType, class PortTag> 
-bool
-GenericReader<HType, PortTag>::call_importer(const std::string &/*filename*/,
-				    HType & /*handle*/ )
-{
-  return false;
-}
 
 template <class HType, class PortTag> 
 bool

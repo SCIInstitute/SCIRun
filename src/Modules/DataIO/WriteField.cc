@@ -96,10 +96,10 @@ WriteFieldModule::WriteFieldModule()
 #endif
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-bool
-WriteField::call_exporter(const std::string &filename)
+bool WriteFieldModule::call_exporter(const std::string &filename)
 {
+  throw "todo";
+  /*
   const std::string ftpre = gui_exporttype_.get();
   const std::string::size_type loc = ftpre.find(" (");
   const std::string ft = ftpre.substr(0, loc);
@@ -111,12 +111,10 @@ WriteField::call_exporter(const std::string &filename)
     return pl->filewriter(this, handle_, filename.c_str());
   }
   return false;
+  */
 }
-#endif
 
-
-void
-WriteFieldModule::execute()
+void WriteFieldModule::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   const std::string ftpre = gui_exporttype_.get();
@@ -164,4 +162,10 @@ WriteFieldModule::execute()
     filename_.set(oldfilename);
 #endif
 
+}
+
+bool WriteFieldModule::useCustomExporter(const std::string& filename) const 
+{
+  throw "todo";
+  //return boost::filesystem::extension(filename) != ".fld";
 }

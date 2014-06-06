@@ -46,6 +46,8 @@ namespace SCIRun {
         WriteFieldModule();
         virtual void execute();
         virtual void setStateDefaults() {}
+        virtual bool useCustomExporter(const std::string& filename) const override;
+        virtual bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, FieldToWrite, LegacyField);
       };
