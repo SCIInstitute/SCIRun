@@ -33,6 +33,7 @@
 #include <Core/Thread/Mutex.h>
 #include <map>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 #include <Core/ImportExport/share.h>
 
 namespace SCIRun {
@@ -50,6 +51,8 @@ public:
   virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
   virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
   virtual bool equals(const GenericIEPluginInterface<Data>& other) const = 0;
+  virtual bool hasReader() const = 0;
+  virtual bool hasWriter() const = 0;
 };
 
 template <class Data>
@@ -72,18 +75,12 @@ public:
   virtual std::string pluginname() const override { return pluginname_; }
   virtual std::string fileExtension() const override { return fileextension_; }
   virtual std::string fileMagic() const override { return filemagic_; }
+  virtual bool hasReader() const { return filereader_ != nullptr; }
+  virtual bool hasWriter() const { return filewriter_ != nullptr; }
 
   virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const override;
   virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const override;
   virtual bool equals(const GenericIEPluginInterface<Data>& other) const override;
-
-  const std::string pluginname_;
-  const std::string fileextension_;
-  const std::string filemagic_;
-
-  boost::shared_ptr<Data> (*filereader_)(Core::Logging::LoggerHandle pr, const char *filename);
-  bool (*filewriter_)(Core::Logging::LoggerHandle pr,
-    boost::shared_ptr<Data> f, const char *filename);
 
   IEPluginLegacyAdapter(const std::string &name,
     const std::string &fileextension,
@@ -94,6 +91,15 @@ public:
   ~IEPluginLegacyAdapter();
 
   bool operator==(const IEPluginLegacyAdapter& other) const;
+
+private:
+  const std::string pluginname_;
+  const std::string fileextension_;
+  const std::string filemagic_;
+
+  boost::shared_ptr<Data> (*filereader_)(Core::Logging::LoggerHandle pr, const char *filename);
+  bool (*filewriter_)(Core::Logging::LoggerHandle pr,
+    boost::shared_ptr<Data> f, const char *filename);
 };
 
 template <class Data>
@@ -160,11 +166,10 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
   }
 
   Core::Thread::Guard s(lock_.get());
-  auto itr = pluginTable_->begin();
-  while (itr != pluginTable_->end())
+  BOOST_FOREACH(const PluginMap::value_type& plugin, *pluginTable_)
   {
-    results.push_back((*itr).first);
-    ++itr;
+    if (plugin.second->hasReader())
+      results.push_back(plugin.first);
   }
 }
 
@@ -177,11 +182,10 @@ void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& r
   }
 
   Core::Thread::Guard s(lock_.get());
-  auto itr = pluginTable_->begin();
-  while (itr != pluginTable_->end())
+  BOOST_FOREACH(const PluginMap::value_type& plugin, *pluginTable_)
   {
-    results.push_back((*itr).first);
-    ++itr;
+    if (plugin.second->hasWriter())
+      results.push_back(plugin.first);
   }
 }
 
@@ -304,25 +308,25 @@ bool IEPluginLegacyAdapter<Data>::operator==(const IEPluginLegacyAdapter<Data>& 
 }
 
 template <class Data>
-std::string defaultTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
+std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
 {
   return "";
 }
 
 template <>
-std::string defaultTypeForFile(const GenericIEPluginManager<Field>* mgr)
+SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Field>* mgr)
 {
   return "SCIRun Field File (*.fld)";
 }
 
 template <class Data>
-std::string makeGuiTypesList(const GenericIEPluginManager<Data>& mgr)
+std::string makeGuiTypesListImport(const GenericIEPluginManager<Data>& mgr)
 {
   std::vector<std::string> importers;
   mgr.get_importer_list(importers);
 
   std::ostringstream importtypes;
-  importtypes << defaultTypeForFile(&mgr);
+  importtypes << defaultImportTypeForFile(&mgr);
 
   for (size_t i = 0; i < importers.size(); i++)
   {

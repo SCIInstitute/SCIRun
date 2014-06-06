@@ -64,8 +64,7 @@ ReadFieldModule::ReadFieldModule()
   INITIALIZE_PORT(Field);
 
   FieldIEPluginManager mgr;
-  auto types = makeGuiTypesList(mgr);
-
+  auto types = makeGuiTypesListImport(mgr);
   get_state()->setValue(Variables::FileTypeList, types);
 }
 

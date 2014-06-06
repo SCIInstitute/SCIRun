@@ -47,10 +47,7 @@
 
 #include <Modules/DataIO/WriteField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
-#endif
 
 using namespace SCIRun::Modules::DataIO;
 
