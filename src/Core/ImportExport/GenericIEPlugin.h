@@ -166,7 +166,7 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
   }
 
   Core::Thread::Guard s(lock_.get());
-  BOOST_FOREACH(const PluginMap::value_type& plugin, *pluginTable_)
+  BOOST_FOREACH(const typename PluginMap::value_type& plugin, *pluginTable_)
   {
     if (plugin.second->hasReader())
       results.push_back(plugin.first);
@@ -182,7 +182,7 @@ void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& r
   }
 
   Core::Thread::Guard s(lock_.get());
-  BOOST_FOREACH(const PluginMap::value_type& plugin, *pluginTable_)
+  BOOST_FOREACH(const typename PluginMap::value_type& plugin, *pluginTable_)
   {
     if (plugin.second->hasWriter())
       results.push_back(plugin.first);
@@ -320,7 +320,7 @@ SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Field
 }
 
 template <class Data>
-std::string makeGuiTypesListImport(const GenericIEPluginManager<Data>& mgr)
+std::string makeGuiTypesListForImport(const GenericIEPluginManager<Data>& mgr)
 {
   std::vector<std::string> importers;
   mgr.get_importer_list(importers);
@@ -343,6 +343,44 @@ std::string makeGuiTypesListImport(const GenericIEPluginManager<Data>& mgr)
   }
 
   return importtypes.str();
+}
+
+template <class Data>
+std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
+{
+  return "";
+}
+
+template <>
+SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr)
+{
+  return "SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld)";
+}
+
+template <class Data>
+std::string makeGuiTypesListForExport(const GenericIEPluginManager<Data>& mgr)
+{
+  std::vector<std::string> exporters;
+  mgr.get_exporter_list(exporters);
+
+  std::ostringstream exporttypes;
+  exporttypes << defaultExportTypeForFile(&mgr);
+
+  for (size_t i = 0; i < exporters.size(); i++)
+  {
+    auto pl = mgr.get_plugin(exporters[i]);
+    exporttypes << ";;" << exporters[i];
+    if (!pl->fileExtension().empty())
+    {
+      exporttypes << " (*." << pl->fileExtension() << ")";
+    }
+    else
+    {
+      exporttypes << " (.*)";
+    }
+  }
+
+  return exporttypes.str();
 }
 
 }

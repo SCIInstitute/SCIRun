@@ -48,8 +48,6 @@ namespace SCIRun {
         virtual void setStateDefaults() {}
 
         INPUT_PORT(0, FieldToWrite, LegacyField);
-
-        static Core::Algorithms::AlgorithmParameterName Filename;
       };
 
     }}}

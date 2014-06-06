@@ -48,10 +48,10 @@
 #include <Modules/DataIO/WriteField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
-
-SCIRun::Core::Algorithms::AlgorithmParameterName WriteFieldModule::Filename("Filename");
 
 WriteFieldModule::WriteFieldModule()
   : my_base("WriteField", "DataIO", "SCIRun", "Filename")    
@@ -63,6 +63,10 @@ WriteFieldModule::WriteFieldModule()
   INITIALIZE_PORT(FieldToWrite);
   filetype_ = "Binary";
   objectPortName_ = &FieldToWrite;
+
+  FieldIEPluginManager mgr;
+  auto types = makeGuiTypesListForExport(mgr);
+  get_state()->setValue(Variables::FileTypeList, types);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
