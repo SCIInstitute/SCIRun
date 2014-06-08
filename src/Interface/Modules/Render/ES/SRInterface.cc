@@ -228,8 +228,6 @@ void SRInterface::doFrame(double currentTime, double constantDeltaTime)
   // glm::vec3 viewDir = viewToWorld[2].xyz();
   // viewDir = -viewDir; // Cameras look down -Z.
   //mSpire->addGlobalUniform("uLightDirWorld", viewDir);
-
-  // Render the coordinate axes.
 }
 
 //------------------------------------------------------------------------------
@@ -266,11 +264,7 @@ void SRInterface::renderCoordinateAxes()
 
   // Bail if assets have not been loaded yet (asynchronous loading may take a
   // few frames).
-  if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
-  {
-    std::cout << "s: " << shader << " vbo: " << arrowVBO << " ibo: " << arrowIBO << std::endl;
-    return;
-  }
+  if (arrowVBO == 0 || arrowIBO == 0 || shader == 0) { return; }
 
   const ren::IBOMan::IBOData* iboData;
   try
@@ -280,7 +274,6 @@ void SRInterface::renderCoordinateAxes()
   catch (...)
   {
     // Return if IBO data not available.
-    std::cout << "Failed" << std::endl;
     return;
   }
 
