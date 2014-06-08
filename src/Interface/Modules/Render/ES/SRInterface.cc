@@ -282,6 +282,9 @@ void SRInterface::renderCoordinateAxes()
     return;
   }
 
+  // Ensure shader attributes are setup appropriately.
+  mArrowAttribs.setup(arrowVBO, shader, vboMan);
+
   glm::mat4 trafo;
 
   GL(glUseProgram(shader));
@@ -289,30 +292,104 @@ void SRInterface::renderCoordinateAxes()
   GL(glBindBuffer(GL_ARRAY_BUFFER, arrowVBO));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, arrowIBO));
 
-  // mSpire->addObjectPassUniform(mArrowObjectName, "uCamViewVec", glm::vec3(0.0f, 0.0f, -1.0f));
-  // mSpire->addObjectPassUniform(mArrowObjectName, "uLightDirWorld", glm::vec3(0.0f, 0.0f, -1.0f));
+  // Note that we can pull aspect ratio from the screen dimensions static
+  // variable.
+  float aspect = static_cast<float>(640) / static_cast<float>(480);
+  glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
 
-  // Build pre-applied attributes. We could save some time by performing
-  // this during initialization. But this only occurs once per frame.
-  if (mArrowAttribs.isSetup() == false)
-  {
-    mArrowAttribs.setup(arrowVBO, shader, vboMan);
-  }
+  // Build world transform for all axes. Rotates about uninverted camera's
+  // view, then translates to a specified corner on the screen.
+  glm::mat4 axesRot = mCamera->getWorldToView();
+  axesRot[3][0] = 0.0f;
+  axesRot[3][1] = 0.0f;
+  axesRot[3][2] = 0.0f;
+  glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.42f, 0.39f, -1.5f));
+  glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.02));
+  glm::mat4 axesTransform = axesScale * axesRot;
 
-  mArrowUniforms.checkUniformArray(shader);
+  GLint locCamViewVec     = glGetUniformLocation(shader, "uCamViewVec");
+  GLint locLightDirWorld  = glGetUniformLocation(shader, "uLightDirWorld");
+
+  GLint locAmbientColor   = glGetUniformLocation(shader, "uAmbientColor");
+  GLint locDiffuseColor   = glGetUniformLocation(shader, "uDiffuseColor");
+  GLint locSpecularColor  = glGetUniformLocation(shader, "uSpecularColor");
+  GLint locSpecularPower  = glGetUniformLocation(shader, "uSpecularPower");
+
+  GLint locProjIVObject   = glGetUniformLocation(shader, "uProjIVObject");
+  GLint locObject         = glGetUniformLocation(shader, "uObject");
+
+  GL(glUniform3f(locCamViewVec,     0.0f, 0.0f, -1.0f));
+  GL(glUniform3f(locLightDirWorld,  0.0f, 0.0f, -1.0f));
+
+  // Build projection for the axes to use on the screen. The arrors will not
+  // use the camera, but will use the camera's transformation matrix.
 
   mArrowAttribs.bind();
 
-  gen::StaticGlobalTime& time = *mCore.getStaticComponent<gen::StaticGlobalTime>();
-  gen::StaticCamera& camera = *mCore.getStaticComponent<gen::StaticCamera>();
-  mArrowUniforms.applyCommonUniforms(trafo, camera.data, time.globalTime);
+  // X Axis
+  {
+    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+    glm::mat4 finalTrafo = axesTransform * xform;
 
-  // Determine appropriate transforms and colors to use for each of the arrows.
-  GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+    GL(glUniform4f(locAmbientColor,   0.5f, 0.01f, 0.01f, 1.0f));
+    GL(glUniform4f(locDiffuseColor,   1.0f, 0.0f, 0.0f, 1.0f));
+    GL(glUniform4f(locSpecularColor,  0.5f, 0.5f, 0.5f, 1.0f));
+    GL(glUniform1f(locSpecularPower,  16.0f));
+
+    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+    const GLfloat* ptr = glm::value_ptr(worldToProj);
+    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+    glm::mat4 objectSpace = finalTrafo;
+    ptr = glm::value_ptr(objectSpace);
+    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+  }
+
+  // Y Axis
+  {
+    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+    glm::mat4 finalTrafo = axesTransform * xform;
+
+    GL(glUniform4f(locAmbientColor,   0.01f, 0.5f, 0.01f, 1.0f));
+    GL(glUniform4f(locDiffuseColor,   0.0f, 1.0f, 0.0f, 1.0f));
+    GL(glUniform4f(locSpecularColor,  0.5f, 0.5f, 0.5f, 1.0f));
+    GL(glUniform1f(locSpecularPower,  16.0f));
+
+    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+    const GLfloat* ptr = glm::value_ptr(worldToProj);
+    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+    glm::mat4 objectSpace = finalTrafo;
+    ptr = glm::value_ptr(objectSpace);
+    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+  }
+
+  // Z Axis
+  {
+    // No rotation at all
+    glm::mat4 finalTrafo = axesTransform;
+
+    GL(glUniform4f(locAmbientColor,   0.01f, 0.01f, 0.5f, 1.0f));
+    GL(glUniform4f(locDiffuseColor,   0.0f, 0.0f, 1.0f, 1.0f));
+    GL(glUniform4f(locSpecularColor,  0.5f, 0.5f, 0.5f, 1.0f));
+    GL(glUniform1f(locSpecularPower,  16.0f));
+
+    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+    const GLfloat* ptr = glm::value_ptr(worldToProj);
+    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+    glm::mat4 objectSpace = finalTrafo;
+    ptr = glm::value_ptr(objectSpace);
+    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+  }
 
   mArrowAttribs.unbind();
-
-
 
 
 
