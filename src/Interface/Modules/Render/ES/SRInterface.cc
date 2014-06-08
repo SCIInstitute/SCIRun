@@ -304,7 +304,7 @@ void SRInterface::renderCoordinateAxes()
   axesRot[3][1] = 0.0f;
   axesRot[3][2] = 0.0f;
   glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.42f, 0.39f, -1.5f));
-  glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.02));
+  glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0));
   glm::mat4 axesTransform = axesScale * axesRot;
 
   GLint locCamViewVec     = glGetUniformLocation(shader, "uCamViewVec");
