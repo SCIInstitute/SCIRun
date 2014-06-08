@@ -289,7 +289,8 @@ void SRInterface::renderCoordinateAxes()
 
   // Note that we can pull aspect ratio from the screen dimensions static
   // variable.
-  float aspect = static_cast<float>(640) / static_cast<float>(480);
+  gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
+  float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
   glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
 
   // Build world transform for all axes. Rotates about uninverted camera's
@@ -298,7 +299,7 @@ void SRInterface::renderCoordinateAxes()
   axesRot[3][0] = 0.0f;
   axesRot[3][1] = 0.0f;
   axesRot[3][2] = 0.0f;
-  glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.37f, -1.5f));
+  glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.375f * aspect, 0.37f, -1.5f));
   glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f));
   glm::mat4 axesTransform = axesScale * axesRot;
 
