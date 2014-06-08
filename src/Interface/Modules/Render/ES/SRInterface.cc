@@ -173,7 +173,9 @@ void SRInterface::inputMouseWheel(int32_t delta)
 void SRInterface::doAutoView()
 {
   if (mSceneBBox.valid())
+  {
     mCamera->doAutoView(mSceneBBox);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -303,8 +305,8 @@ void SRInterface::renderCoordinateAxes()
   axesRot[3][0] = 0.0f;
   axesRot[3][1] = 0.0f;
   axesRot[3][2] = 0.0f;
-  glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.42f, 0.39f, -1.5f));
-  glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(1.0));
+  glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.37f, -1.5f));
+  glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f));
   glm::mat4 axesTransform = axesScale * axesRot;
 
   GLint locCamViewVec     = glGetUniformLocation(shader, "uCamViewVec");
@@ -347,6 +349,27 @@ void SRInterface::renderCoordinateAxes()
     GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
   }
 
+  // X Axis (dark)
+  {
+    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+    glm::mat4 finalTrafo = axesTransform * xform;
+
+    GL(glUniform4f(locAmbientColor,   0.1f, 0.01f, 0.01f, 1.0f));
+    GL(glUniform4f(locDiffuseColor,   0.25f, 0.0f, 0.0f, 1.0f));
+    GL(glUniform4f(locSpecularColor,  0.0f, 0.0f, 0.0f, 1.0f));
+    GL(glUniform1f(locSpecularPower,  16.0f));
+
+    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+    const GLfloat* ptr = glm::value_ptr(worldToProj);
+    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+    glm::mat4 objectSpace = finalTrafo;
+    ptr = glm::value_ptr(objectSpace);
+    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+  }
+
   // Y Axis
   {
     glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
@@ -355,6 +378,27 @@ void SRInterface::renderCoordinateAxes()
     GL(glUniform4f(locAmbientColor,   0.01f, 0.5f, 0.01f, 1.0f));
     GL(glUniform4f(locDiffuseColor,   0.0f, 1.0f, 0.0f, 1.0f));
     GL(glUniform4f(locSpecularColor,  0.5f, 0.5f, 0.5f, 1.0f));
+    GL(glUniform1f(locSpecularPower,  16.0f));
+
+    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+    const GLfloat* ptr = glm::value_ptr(worldToProj);
+    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+    glm::mat4 objectSpace = finalTrafo;
+    ptr = glm::value_ptr(objectSpace);
+    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+  }
+
+  // Y Axis (dark)
+  {
+    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+    glm::mat4 finalTrafo = axesTransform * xform;
+
+    GL(glUniform4f(locAmbientColor,   0.01f, 0.1f, 0.01f, 1.0f));
+    GL(glUniform4f(locDiffuseColor,   0.0f, 0.25f, 0.0f, 1.0f));
+    GL(glUniform4f(locSpecularColor,  0.0f, 0.0f, 0.0f, 1.0f));
     GL(glUniform1f(locSpecularPower,  16.0f));
 
     glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
@@ -389,86 +433,29 @@ void SRInterface::renderCoordinateAxes()
     GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
   }
 
+  // Z Axis (dark)
+  {
+    // No rotation at all
+    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
+    glm::mat4 finalTrafo = axesTransform * xform;
+
+    GL(glUniform4f(locAmbientColor,   0.01f, 0.01f, 0.1f, 1.0f));
+    GL(glUniform4f(locDiffuseColor,   0.0f, 0.0f, 0.25f, 1.0f));
+    GL(glUniform4f(locSpecularColor,  0.0f, 0.0f, 0.0f, 1.0f));
+    GL(glUniform1f(locSpecularPower,  16.0f));
+
+    glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
+    const GLfloat* ptr = glm::value_ptr(worldToProj);
+    GL(glUniformMatrix4fv(locProjIVObject, 1, false, ptr));
+
+    glm::mat4 objectSpace = finalTrafo;
+    ptr = glm::value_ptr(objectSpace);
+    GL(glUniformMatrix4fv(locObject, 1, false, ptr));
+
+    GL(glDrawElements(iboData->primMode, iboData->numPrims, iboData->primType, 0));
+  }
+
   mArrowAttribs.unbind();
-
-
-
-
-//   // Now render the axes on the screen.
-//   float aspect = static_cast<float>(640) / static_cast<float>(480);
-//   glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
-//
-//   // Build world transform for all axes. Rotates about uninverted camera's
-//   // view, then translates to a specified corner on the screen.
-//   glm::mat4 axesRot = mCamera->getWorldToView();
-//   axesRot[3][0] = 0.0f;
-//   axesRot[3][1] = 0.0f;
-//   axesRot[3][2] = 0.0f;
-//   glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.42f, 0.39f, -1.5f));
-//   glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.05));;
-//   glm::mat4 axesTransform = axesScale * axesRot;
-//
-//   mSpire->addObjectPassUniform(mArrowObjectName, "uCamViewVec", glm::vec3(0.0f, 0.0f, -1.0f));
-//   mSpire->addObjectPassUniform(mArrowObjectName, "uLightDirWorld", glm::vec3(0.0f, 0.0f, -1.0f));
-//
-//   // Build projection for the axes to use on the screen. The arrors will not
-//   // use the camera, but will use the camera's transformation matrix.
-//
-//   // X Axis
-//   {
-//     glm::mat4 xform = glm::rotate(glm::mat4(1.0f), spire::PI / 2.0f, glm::vec3(0.0, 1.0, 0.0));
-//     glm::mat4 finalTrafo = axesTransform * xform;
-//
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uAmbientColor", glm::vec4(0.5f, 0.01f, 0.01f, 1.0f));
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uDiffuseColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularPower", 16.0f);
-//
-//     // Add appropriate projection and object -> world transformations.
-//     // Light will always be directed down the camera's axis.
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uProjIVObject", projection * invCamTrans * finalTrafo);
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uObject", finalTrafo);
-//
-//     mSpire->renderObject(mArrowObjectName);
-//   }
-//
-//   // Y Axis
-//   {
-//     glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -spire::PI / 2.0f, glm::vec3(1.0, 0.0, 0.0));
-//     glm::mat4 finalTrafo = axesTransform * xform;
-//
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uAmbientColor", glm::vec4(0.01f, 0.5f, 0.01f, 1.0f));
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uDiffuseColor", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularPower", 16.0f);
-//
-//
-//     // Add appropriate projection and object -> world transformations.
-//     // Light will always be directed down the camera's axis.
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uProjIVObject", projection * invCamTrans * finalTrafo);
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uObject", finalTrafo);
-//
-//     mSpire->renderObject(mArrowObjectName);
-//   }
-//
-//   // Z Axis
-//   {
-//     // No rotation at all
-//     glm::mat4 finalTrafo = axesTransform;
-//
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uAmbientColor", glm::vec4(0.01f, 0.01f, 0.5f, 1.0f));
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uDiffuseColor", glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularPower", 16.0f);
-//
-//
-//     // Add appropriate projection and object -> world transformations.
-//     // Light will always be directed down the camera's axis.
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uProjIVObject", projection * invCamTrans * finalTrafo);
-//     mSpire->addObjectPassUniform(mArrowObjectName, "uObject", finalTrafo);
-//
-//     mSpire->renderObject(mArrowObjectName);
-//   }
 }
   
 // Manually update the StaticCamera.
