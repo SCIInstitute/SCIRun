@@ -37,6 +37,7 @@
 #include <gl-state/GLState.hpp>
 #include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
+#include <es-general/comp/StaticOrthoCamera.hpp>
 #include <es-general/comp/StaticObjRefID.hpp>
 #include <es-general/comp/StaticGlobalTime.hpp>
 #include <es-render/comp/StaticGeomMan.hpp>
@@ -148,7 +149,28 @@ void SRInterface::eventResize(size_t width, size_t height)
     dims->height = static_cast<size_t>(height);
   }
 
-  /// \todo Ensure perspective matrix is rebuilt with correct aspect ratio.
+  // Setup default camera projection.
+  gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
+  gen::StaticOrthoCamera* orthoCam = mCore.getStaticComponent<gen::StaticOrthoCamera>();
+
+  if (cam == nullptr || orthoCam == nullptr) return;
+
+  float aspect = static_cast<float>(width) / static_cast<float>(height);
+
+  float perspFOVY = 0.59f;
+  float perspZNear = 1.0f;
+  float perspZFar = 2000.0f;
+  glm::mat4 proj = glm::perspective(perspFOVY, aspect, perspZNear, perspZFar);
+  cam->data.setProjection(proj, perspFOVY, aspect, perspZNear, perspZFar);
+
+  // Setup default ortho camera projection
+  float orthoZNear  = -1000.0f;
+  float orthoZFar   =  1000.0f;
+  glm::mat4 orthoProj =
+      glm::ortho(/*left*/   -1.0f,      /*right*/ 1.0f,
+                 /*bottom*/ -1.0f,      /*top*/   1.0f,
+                 /*znear*/  orthoZNear, /*zfar*/  orthoZFar);
+  orthoCam->data.setOrthoProjection(orthoProj, aspect, 2.0f, 2.0f, orthoZNear, orthoZFar);
 }
 
 //------------------------------------------------------------------------------
