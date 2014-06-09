@@ -30,6 +30,8 @@
 #include "CoreBootstrap.h"
 #include "AssetBootstrap.h"
 #include "comp/StaticSRInterface.h"
+#include "comp/RenderBasicGeom.h"
+#include "systems/RenderBasicSys.h"
 
 namespace SCIRun {
 namespace Render {
@@ -39,9 +41,11 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
   // Register systems
   registerSystem_CoreBootstrap(core);
   registerSystem_AssetBootstrap(core);
+  registerSystem_RenderBasicGeom(core);
 
   // Register components
   core.registerComponent<StaticSRInterface>();
+  core.registerComponent<RenderBasicGeom>();
 }
 
 } // namespace Render
