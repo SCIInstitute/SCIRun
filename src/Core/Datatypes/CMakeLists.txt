@@ -31,6 +31,7 @@ SET(Core_Datatypes_SRCS
   ColorMap.cc
   Datatype.cc
   Geometry.cc
+  Material.cc
   Matrix.cc
   MatrixTypeConversions.cc
   PropertyManagerExtensions.cc
@@ -47,6 +48,7 @@ SET(Core_Datatypes_HEADERS
   DenseMatrix.h
   DenseColumnMatrix.h
   Geometry.h
+  Material.h
   Matrix.h
   MatrixComparison.h
   MatrixFwd.h

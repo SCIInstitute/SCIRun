@@ -38,6 +38,7 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Logging/Log.h>
+//#include <Core/Datatypes/Legacy/Color/Material.h>
 
 #include <boost/foreach.hpp>
 
@@ -166,7 +167,9 @@ void ShowFieldModule::renderNodes(
 
   unsigned int colorScheme = 0; // This is really hacky and imported from old scirun.
                                 // Needs refactoring.
-  // double scol;
+  double scol;
+  //Material vcol(0); // We will be creating our own material.
+
 
   if (fld->basis_order() < 0 ||
       (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||

@@ -63,6 +63,14 @@ ColorRGB::ColorRGB(const std::string& rgb) : r_(0), g_(0), b_(0)
   }
 }
 
+
+ColorRGB::ColorRGB(double r, double g, double b, double /* alpha */) :
+    r_(static_cast<int>(r * 255.0)),
+    g_(static_cast<int>(g * 255.0)),
+    b_(static_cast<int>(b * 255.0))
+{
+}
+
 std::string ColorRGB::toString() const
 {
   std::ostringstream ostr;

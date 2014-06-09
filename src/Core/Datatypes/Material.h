@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,49 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Color.h 
+#ifndef CORE_DATATYPES_COLOR_MATERIAL_H
+#define CORE_DATATYPES_COLOR_MATERIAL_H
 
-#ifndef CORE_DATATYPES_COLORRGB_H
-#define CORE_DATATYPES_COLORRGB_H 
-
-#include <iosfwd>
-#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE ColorRGB 
+  class SCISHARE Material
   {
-  private:
-    int r_, g_, b_;
   public:
-    ColorRGB();
-    explicit ColorRGB(const std::string& rgb);
-    ColorRGB(int, int, int);
-    ColorRGB(double, double, double, double);
+    ColorRGB ambient;
+    ColorRGB diffuse;
+    ColorRGB specular;
+    double shininess;
+    ColorRGB emission;
+    double reflectivity;
+    double transparency;
+    double refraction_index;
 
-    inline bool operator==(const ColorRGB& c) const {
-      return ((r_==c.r_)&&(g_==c.g_)&&(b_==c.b_));
-    }
-
-    inline bool operator!=(const ColorRGB& c) const {
-      return !(*this == c);
-    }
-
-    inline int r() const {return r_;}
-    inline int g() const {return g_;}
-    inline int b() const {return b_;}
-
-    std::string toString() const;
+    Material();
+    Material(const ColorRGB&, const ColorRGB&, const ColorRGB&, double);
+    Material(const ColorRGB&);
+    Material(const Material&);
+    Material& operator=(const Material&);
+    ~Material();
+    Material* clone();
   };
 
-  typedef boost::shared_ptr<ColorRGB> ColorRGBHandle;
-
-  SCISHARE std::ostream& operator<<(std::ostream& out, const ColorRGB& color);
-
-}}}
-
+} // End namespace Datatypes
+} // End namespace Core
+} // End namespace SCIRun
 
 #endif
