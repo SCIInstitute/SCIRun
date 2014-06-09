@@ -26,12 +26,28 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Field)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Legacy)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(BrainStimulator)
+SET(Algorithms_Visualization_SRCS
+  DataConversions.cc
+)
+
+SET(Algorithms_Visualization_HEADERS
+  DataConversions.h
+  RenderFieldState.h
+)
+
+ADD_LIBRARY(Algorithms_Visualization 
+  ${Algorithms_Visualization_HEADERS}
+  ${Algorithms_Visualization_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_Visualization
+  Core_Datatypes
+  Algorithms_Base
+  ${SCI_BOOST_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_Visualization)
+ENDIF(BUILD_SHARED_LIBS)
+
+SCIRUN_ADD_TEST_DIR(Tests)

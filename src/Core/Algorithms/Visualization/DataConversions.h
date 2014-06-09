@@ -29,8 +29,8 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_DATA_CONVERSIONS_H
 #define CORE_ALGORITHMS_VISUALIZATION_DATA_CONVERSIONS_H
 
+#include <Core/Algorithms/Visualization/share.h>
 #include <Core/Datatypes/Color.h>
-#include <Core/Datatypes/share.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 
@@ -42,9 +42,9 @@ namespace SCIRun {
 
 // Conversion templates.
 template <class T>
-SCISHARE bool valToColor( const T &v, Color &c )
+SCISHARE bool valToColor( const T &v, Core::Datatypes::ColorRGB &c )
 {
-  c = Color(fabs(v), fabs(v), fabs(v));
+  c = Core::Datatypes::ColorRGB(fabs(v), fabs(v), fabs(v));
   return true;
 }
 
@@ -57,14 +57,14 @@ SCISHARE bool valToDouble( const T& data_in, double &data_out)
 
 
 template <class T>
-SCISHARE bool valToVector( const T&, Vector&)
+SCISHARE bool valToVector( const T&, Core::Geometry::Vector&)
 {
   return false;
 }
 
 
 template <class T>
-SCISHARE bool valToTensor( const T&, Tensor&)
+SCISHARE bool valToTensor( const T&, Core::Geometry::Tensor&)
 {
   return false;
 }
@@ -79,28 +79,28 @@ SCISHARE bool valToBuffer( const T &value, std::ostringstream &buffer)
 
 // Conversion template specialization.
 template <>
-SCISHARE bool valToColor( const Vector&, Color& );
+SCISHARE bool valToColor( const Core::Geometry::Vector&, Core::Datatypes::ColorRGB& );
 
 template <>
-SCISHARE bool valToColor( const Tensor&, Color& );
+SCISHARE bool valToColor( const Core::Geometry::Tensor&, Core::Datatypes::ColorRGB& );
 
 template <>
-SCISHARE bool valToDouble(const Vector&, double&);
+SCISHARE bool valToDouble(const Core::Geometry::Vector&, double&);
 
 template <>
-SCISHARE bool valToDouble(const Tensor&, double&);
+SCISHARE bool valToDouble(const Core::Geometry::Tensor&, double&);
 
 template <>
 SCISHARE bool valToDouble(const std::string&, double&);
 
 template <>
-SCISHARE bool valToVector(const Vector&, Vector&);
+SCISHARE bool valToVector(const Core::Geometry::Vector&, Core::Geometry::Vector&);
 
 template <>
-SCISHARE bool valToVector(const Tensor&, Vector&);
+SCISHARE bool valToVector(const Core::Geometry::Tensor&, Core::Geometry::Vector&);
 
 template <>
-SCISHARE bool valToTensor(const Tensor&, Tensor&);
+SCISHARE bool valToTensor(const Core::Geometry::Tensor&, Core::Geometry::Tensor&);
 
 template <>
 SCISHARE bool valToBuffer(const unsigned char&, std::ostringstream&);

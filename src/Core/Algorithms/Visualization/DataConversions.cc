@@ -30,33 +30,36 @@
 
 namespace SCIRun {
 
+using namespace Core::Geometry;
+
 template <>
-bool valToColor( const Vector &v, Color &c )
+bool valToColor( const Vector &v, Core::Datatypes::ColorRGB &c )
 {
-  c = Color(fabs(v.x()), fabs(v.y()), fabs(v.z()));
+  c = Core::Datatypes::ColorRGB(fabs(v.x()), fabs(v.y()), fabs(v.z()));
   return true;
 }
 
 template <>
-bool valToColor( const Tensor &t, Color &c )
+bool valToColor( const Tensor &t, Core::Datatypes::ColorRGB &c )
 {
-  Tensor tt = t;
-
-  Vector e1, e2, e3;
-  tt.get_eigenvectors(e1, e2, e3);
-      
-  e1.safe_normalize();
-  double rr = fabs(e1.x());
-  double gg = fabs(e1.y());
-  double bb = fabs(e1.z());
-  
-  Color rgb1(rr, gg, bb);
-  HSVColor hsv(rgb1);
-  hsv[1] = 0.7;
-  hsv[2] = 1.0;
-  
-  c = Color(hsv);
-  return true;
+  /// get_eigenvectors was not implemented in Tensor. Can't identify colors.
+  // Tensor tt = t;
+  //
+  // Vector e1, e2, e3;
+  // tt.get_eigenvectors(e1, e2, e3);
+  //     
+  // e1.safe_normalize();
+  // double rr = fabs(e1.x());
+  // double gg = fabs(e1.y());
+  // double bb = fabs(e1.z());
+  //
+  // Core::Datatypes::ColorRGB rgb1(rr, gg, bb);
+  // HSVColor hsv(rgb1);
+  // hsv[1] = 0.7;
+  // hsv[2] = 1.0;
+  //
+  // c = Core::Datatypes::ColorRGB(hsv);
+  return false;
 }
 
 // Conversion template specialization.
@@ -70,10 +73,10 @@ bool valToDouble( const Vector &data_in, double &data_out)
 template <>
 bool valToDouble( const Tensor &data_in, double &data_out)
 {
-  Tensor t = data_in;
-  double v1, v2, v3;
-  t.get_eigenvalues(v1, v2, v3);
-  data_out = Vector(v1, v2, v3).length();
+  // Tensor t = data_in;
+  // double v1, v2, v3;
+  // t.get_eigenvalues(v1, v2, v3);
+  // data_out = Vector(v1, v2, v3).length();
   return false;
 }
 
@@ -93,11 +96,11 @@ bool valToVector( const Vector &data_in, Vector &data_out)
 template <>
 bool valToVector( const Tensor &data_in, Vector &data_out)
 {
-  Tensor t = data_in;
-  double v1, v2, v3;
-  t.get_eigenvalues(v1, v2, v3);
-  data_out = Vector(v1, v2, v3);
-  return true;
+  // Tensor t = data_in;
+  // double v1, v2, v3;
+  // t.get_eigenvalues(v1, v2, v3);
+  // data_out = Vector(v1, v2, v3);
+  return false;
 }
 
 template <>

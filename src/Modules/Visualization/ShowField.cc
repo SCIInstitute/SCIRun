@@ -39,7 +39,6 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Logging/Log.h>
-//#include <Core/Datatypes/Legacy/Color/Material.h>
 
 #include <boost/foreach.hpp>
 
