@@ -42,13 +42,13 @@ namespace Datatypes {
   class SCISHARE ColorRGB 
   {
   private:
-    int r_, g_, b_;
+    double r_, g_, b_;
   public:
     ColorRGB();
     explicit ColorRGB(const std::string& rgb);
-    ColorRGB(int, int, int);
-    ColorRGB(double, double, double, double);
+    ColorRGB(double, double, double);
 
+    // These equality operations should use floating point comparisons.
     inline bool operator==(const ColorRGB& c) const {
       return ((r_==c.r_)&&(g_==c.g_)&&(b_==c.b_));
     }
@@ -57,9 +57,12 @@ namespace Datatypes {
       return !(*this == c);
     }
 
-    inline int r() const {return r_;}
-    inline int g() const {return g_;}
-    inline int b() const {return b_;}
+    /// \todo Add normalization function to normalize 0 - 255 to 0 - 1.0.
+    ///       useful when reading colors from strings.
+
+    inline double r() const {return r_;}
+    inline double g() const {return g_;}
+    inline double b() const {return b_;}
 
     std::string toString() const;
   };

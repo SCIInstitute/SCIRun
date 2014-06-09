@@ -70,7 +70,7 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(NodeTransparency, false);
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
-  state->setValue(DefaultMeshColor, ColorRGB(255, 255, 255).toString());
+  state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
 }
 
 void ShowFieldModule::execute()

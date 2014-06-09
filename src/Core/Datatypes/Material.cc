@@ -53,7 +53,7 @@ Material::Material(const ColorRGB& diffuse)
     reflectivity(0.5), transparency(0), refraction_index(1)
 {
   ambient=diffuse;
-  specular=ColorRGB(200, 200, 200);
+  specular=ColorRGB(0.8, 0.8, 0.8);
   shininess=20;
 }
 

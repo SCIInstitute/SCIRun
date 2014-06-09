@@ -36,39 +36,31 @@
 using namespace SCIRun::Core::Datatypes;
 
 ColorRGB::ColorRGB()
-  : r_(0), g_(0), b_(0)
+  : r_(0.0), g_(0.0), b_(0.0)
 {
 }
 
-ColorRGB::ColorRGB(int r, int g, int b)
+ColorRGB::ColorRGB(double r, double g, double b)
   : r_(r), g_(g), b_(b)
 {
 }
 
-ColorRGB::ColorRGB(const std::string& rgb) : r_(0), g_(0), b_(0)
+ColorRGB::ColorRGB(const std::string& rgb) : r_(0.0), g_(0.0), b_(0.0)
 {
   try
   {
     static boost::regex r("Color\\((\\d+),(\\d+),(\\d+)\\)");
     boost::smatch what;
     regex_match(rgb, what, r);
-    r_ = boost::lexical_cast<int>(what[1]);
-    g_ = boost::lexical_cast<int>(what[2]);
-    b_ = boost::lexical_cast<int>(what[3]);
+    r_ = boost::lexical_cast<double>(what[1]);
+    g_ = boost::lexical_cast<double>(what[2]);
+    b_ = boost::lexical_cast<double>(what[3]);
   }
   catch (...)
   {
     //error results in white (so you can see things in viewer):
-    r_ = g_ = b_ = 255;
+    r_ = g_ = b_ = 1.0f;
   }
-}
-
-
-ColorRGB::ColorRGB(double r, double g, double b, double /* alpha */) :
-    r_(static_cast<int>(r * 255.0)),
-    g_(static_cast<int>(g * 255.0)),
-    b_(static_cast<int>(b * 255.0))
-{
 }
 
 std::string ColorRGB::toString() const
