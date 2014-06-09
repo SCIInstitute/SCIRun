@@ -56,17 +56,30 @@ namespace Datatypes {
     // Could require rvalue references...
     struct SpireVBO
     {
-      SpireVBO(const std::string& vboName, const std::vector<std::string> attribs,
+      struct AttributeData
+      {
+        AttributeData(const std::string& nameIn, size_t sizeIn, bool normalizeIn = false) :
+            name(nameIn),
+            sizeInBytes(sizeIn),
+            normalize(normalizeIn)
+        {}
+
+        std::string name;
+        size_t      sizeInBytes;
+        bool        normalize;
+      };
+
+      SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
                std::shared_ptr<std::vector<uint8_t>> vboData,
                const Core::Geometry::BBox& bbox) :
           name(vboName),
-          attributeNames(attribs),
+          attributes(attribs),
           data(vboData),
           boundingBox(bbox)
       {}
 
       std::string                           name;
-      std::vector<std::string>              attributeNames;
+      std::vector<AttributeData>            attributes;
       std::shared_ptr<std::vector<uint8_t>> data;
       Core::Geometry::BBox                  boundingBox;
     };

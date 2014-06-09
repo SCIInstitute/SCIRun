@@ -181,6 +181,22 @@ private:
   // Generates the various colormaps that we use for rendering SCIRun geometry.
   void generateColormaps();
 
+  // Simple hash function. Modify if hash collisions occur due to string
+  // hashing. The simplest approach would be to have all names placed in a
+  // hash multimap with a list which assigns ids to names.
+  uint64_t getEntityIDForName(const std::string& name);
+
+  // Adds a VBO to the given entityID.
+  void addVBOToEntity(uint64_t entityID, const std::string& vboName);
+
+  // Adds an IBO to the given entityID.
+  void addIBOToEntity(uint64_t entityID, const std::string& iboName);
+
+  // Adds a shader to the given entityID. Represents different materials
+  // associated with different passes.
+  void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
+
+
   MouseMode                       mMouseMode;       ///< Current mouse mode.
 
   size_t                          mScreenWidth;     ///< Screen width in pixels.

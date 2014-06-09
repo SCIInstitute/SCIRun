@@ -44,6 +44,9 @@
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticShaderMan.hpp>
+#include <es-render/comp/VBO.hpp>
+#include <es-render/comp/IBO.hpp>
+#include <es-render/comp/Shader.hpp>
 #include <es-fs/fscomp/StaticFS.hpp>
 #include <es-fs/Filesystem.hpp>
 #include <es-fs/FilesystemSync.hpp>
@@ -206,22 +209,188 @@ void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> /* obj */)
+uint64_t SRInterface::getEntityIDForName(const std::string& name)
+{
+  return static_cast<uint64_t>(std::hash<std::string>()(name));
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> obj)
 {
   // Ensure our rendering context is current on our thread.
   mContext->makeCurrent();
+
+  std::string objectName = obj->objectName;
+  Core::Geometry::BBox bbox; // Bounding box containing all vertex buffer objects.
+
+  // Check to see if the object already exists in our list. If so, then
+  // remove the object. We will re-add it.
+  auto foundObject = std::find_if(
+      mSRObjects.begin(), mSRObjects.end(),
+      [&objectName, this](const SRObject& obj) -> bool
+      {
+        if (obj.mName == objectName)
+          return true;
+        else
+          return false;
+      });
+
+  ren::VBOMan& vboMan = *mCore.getStaticComponent<ren::StaticVBOMan>()->instance;
+  ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
+  if (foundObject != mSRObjects.end())
+  {
+    // Iterate through each of the passes and remove their associated
+    // entity ID.
+    for (const auto& pass : foundObject->mPasses)
+    {
+      uint64_t entityID = getEntityIDForName(pass.passName);
+      mCore.removeEntity(entityID);
+    }
+
+    // Remove the object from the entity system.
+    mSRObjects.erase(foundObject);
+
+    // Run a garbage collection cycle for the VBOs and IBOs. We will likely
+    // be using similar VBO and IBO names.
+    vboMan.runGCCycle(mCore);
+    iboMan.runGCCycle(mCore);
+  }
+
+  // Add vertex buffer objects.
+  int nameIndex = 0;
+  for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+  {
+    const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
+
+    // Generate vector of attributes to pass into the entity system.
+    std::vector<std::tuple<std::string, size_t, bool>> attributeData;
+    for (const auto& attribData : vbo.attributes)
+    {
+      attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
+    }
+
+    GLuint vboID =  vboMan.addInMemoryVBO(&(*vbo.data)[0], vbo.data->size(),
+                                          attributeData, vbo.name);
+    bbox.extend(vbo.boundingBox);
+  }
+
+  // Add index buffer objects.
+  nameIndex = 0;
+  for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
+  {
+    const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
+    GLenum primType = GL_UNSIGNED_SHORT;
+    switch (ibo.indexSize)
+    {
+      case 1: // 8-bit
+        primType = GL_UNSIGNED_BYTE;
+        break;
+
+      case 2: // 16-bit
+        primType = GL_UNSIGNED_SHORT;
+        break;
+
+      case 4: // 32-bit
+        primType = GL_UNSIGNED_INT;
+        break;
+
+      default:
+        primType = GL_UNSIGNED_INT;
+        throw std::invalid_argument("Unable to determine index buffer depth.");
+        break;
+    }
+
+    iboMan.addInMemoryIBO(&(*ibo.data)[0], ibo.data->size(), GL_TRIANGLES, primType,
+                          ibo.data->size() / ibo.indexSize, ibo.name);
+  }
+
+  // Add default identity transform to the object globally (instead of per-pass)
+  glm::mat4 xform;
+  mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap));
+  SRObject& elem = mSRObjects.back();
+
+  // Add passes
+  for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
+  {
+    const Core::Datatypes::GeometryObject::SpireSubPass& pass = *it;
+
+    uint64_t entityID = getEntityIDForName(pass.passName);
+
+    addVBOToEntity(entityID, pass.vboName);
+    addIBOToEntity(entityID, pass.iboName);
+    addShaderToEntity(entityID, pass.programName);
+
+    /// \todo Add common uniforms component.
+    /// \todo Add component which will direct specific rendering subsystem.
+
+    // Add components associated with entity. We just need a base class which
+    // we can pass in an entity ID, then a derived class which bundles
+    // all associated components (including types) together. We can use
+    // a variadic template for this. This will allow us to place any components
+    // we want on the objects in question in show field. This could lead to
+    // much simpler customization.
+
+    // Add a pass to our local object.
+    elem.mPasses.push_back(pass.passName);
+  }
+
+  // We should perform a complete garbage collection after all of this.
+  // This is what gcInvalidObjects is all about.
 }
 
+//------------------------------------------------------------------------------
+void SRInterface::addVBOToEntity(uint64_t entityID, const std::string& vboName)
+{
+  ren::VBOMan& vboMan = *mCore.getStaticComponent<ren::StaticVBOMan>()->instance;
+  ren::VBO vbo;
+
+  vbo.glid = vboMan.hasVBO(vboName);
+
+  mCore.addComponent(entityID, vbo);
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::addIBOToEntity(uint64_t entityID, const std::string& iboName)
+{
+  ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
+  ren::IBO ibo;
+
+  auto iboData = iboMan.getIBOData(iboName);
+
+  ibo.glid      = iboMan.hasIBO(iboName);
+  ibo.primType  = iboData.primType;
+  ibo.primMode  = iboData.primMode;
+  ibo.numPrims  = iboData.numPrims;
+
+  mCore.addComponent(entityID, ibo);
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)
+{
+  ren::ShaderMan& shaderMan = *mCore.getStaticComponent<ren::StaticShaderMan>()->instance;
+  ren::Shader shader;
+
+  shader.glid = shaderMan.getIDForAsset(shaderName.c_str());
+
+  mCore.addComponent(entityID, shader);
+}
 
 //------------------------------------------------------------------------------
 void SRInterface::removeAllGeomObjects()
 {
   mContext->makeCurrent();
+
+  /// \todo Use function to clear out all non-kernel components.
+  ///       We want to keep the systems in place, however.
 }
 
 //------------------------------------------------------------------------------
 void SRInterface::gcInvalidObjects(const std::vector<std::string>& validObjects)
 {
+  /// \todo Run an entity system GC cycle to get rid of unused resources (VBOs
+  ///       and IBOs). We should do this during the GC cycle.
+
 }
 
 //------------------------------------------------------------------------------

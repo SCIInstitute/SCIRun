@@ -126,7 +126,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   // Crude method of counting the attributes we are placing in the VBO.
   int numFloats = 3 + 1;  // Position + field data.
   if (vmesh->has_normals())
+  {
     numFloats += 3;       // Position + field data + normals;
+  }
 
   // Allocate memory for vertex buffer.
   // Edges and faces should use the same vbo!
@@ -137,7 +139,6 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   // grab a pointer to the first element and use that as the starting point
   // for building our VBO.
   float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]);
-
 
   if (progressFunc) progressFunc(0.1);
 
@@ -237,11 +238,13 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   ///       All of this is NOT necessary if we are on OpenGL 3.2+ where we
   ///       can compute all normals in the geometry shader (smooth and face).
   std::string primVBOName = id + "primaryVBO";
-  std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
-  attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
+  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
+  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
   if (vmesh->has_normals())
-    attribs.push_back("aNormal");
-  attribs.push_back("aFieldData");
+  {
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
+  }
+  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
   geom->mVBOs.push_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO, aabb));
 
   if (progressFunc) progressFunc(0.25);
@@ -255,7 +258,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     // Build pass for the edges.
     /// \todo Find an appropriate place to put program names like UniformColor.
     GeometryObject::SpireSubPass pass =
-        GeometryObject::SpireSubPass("edgesPass", primVBOName, iboName,
+        GeometryObject::SpireSubPass(id + "edgesPass", primVBOName, iboName,
                                      "UniformColor");
 
     //spire::GPUState gpuState;
@@ -295,7 +298,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
         shaderToUse = "DirPhongCMap";
       }
       GeometryObject::SpireSubPass pass = 
-          GeometryObject::SpireSubPass("facesPass", primVBOName, iboName, 
+          GeometryObject::SpireSubPass(id + "facesPass", primVBOName, iboName, 
                                        shaderToUse);
 
       bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
@@ -321,7 +324,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       }
       // No normals present in the model, construct a uniform pass
       GeometryObject::SpireSubPass pass = 
-          GeometryObject::SpireSubPass("facesPass", primVBOName, iboName,
+          GeometryObject::SpireSubPass(id + "facesPass", primVBOName, iboName,
                                        shaderToUse);
 
       // Apply misc user settings.
@@ -347,7 +350,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     // Build pass for the nodes.
     /// \todo Find an appropriate place to put program names like UniformColor.
     GeometryObject::SpireSubPass pass = 
-        GeometryObject::SpireSubPass("nodesPass", primVBOName, iboName,
+        GeometryObject::SpireSubPass(id + "nodesPass", primVBOName, iboName,
                                      "UniformColor");
 
     // Add appropriate uniforms to the pass (in this case, uColor).
