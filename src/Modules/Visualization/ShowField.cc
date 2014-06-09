@@ -32,6 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
+#include <Core/Datatypes/Material.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/BBox.h>
@@ -168,8 +169,7 @@ void ShowFieldModule::renderNodes(
   unsigned int colorScheme = 0; // This is really hacky and imported from old scirun.
                                 // Needs refactoring.
   double scol;
-  //Material vcol(0); // We will be creating our own material.
-
+  Core::Datatypes::Material vcol;
 
   if (fld->basis_order() < 0 ||
       (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
