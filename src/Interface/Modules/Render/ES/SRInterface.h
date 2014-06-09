@@ -219,7 +219,6 @@ private:
   uint64_t                        mCoordAxesEntity; ///< Entity housing geometry data for coord axes.
   ren::ShaderVBOAttribs<5>        mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
   ren::CommonUniforms             mArrowUniforms;   ///< Common uniforms used in the arrow shader.
-
 };
 
 } // namespace Render

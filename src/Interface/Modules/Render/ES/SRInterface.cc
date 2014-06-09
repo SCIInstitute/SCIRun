@@ -401,19 +401,20 @@ void SRInterface::doFrame(double currentTime, double constantDeltaTime)
 
   mContext->makeCurrent();
 
-  // Do not even attempt to render if the framebuffer is not complete.
-  // This can happen when the rendering window is hidden (in SCIRun5 for
-  // example);
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    return;
-
   mSceneBBox.reset();
 
   updateCamera();
 
   mCore.execute(currentTime, constantDeltaTime);
 
-  renderCoordinateAxes();
+  // Do not even attempt to render if the framebuffer is not complete.
+  // This can happen when the rendering window is hidden (in SCIRun5 for
+  // example);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+  {
+    renderCoordinateAxes();
+  }
+
 
   // Set directional light source (in world space).
   // glm::vec3 viewDir = viewToWorld[2].xyz();
