@@ -164,7 +164,8 @@ void ShowFieldModule::renderNodes(
   Core::Geometry::Vector vval;
   Core::Geometry::Tensor tval;
 
-  unsigned int colorScheme = 0;
+  unsigned int colorScheme = 0; // This is really hacky and imported from old scirun.
+                                // Needs refactoring.
   // double scol;
 
   if (fld->basis_order() < 0 ||
@@ -180,9 +181,58 @@ void ShowFieldModule::renderNodes(
   else // if (fld->basis_order() >= 1)
   {
     colorScheme = 2;
+    /// \note There's some
   }
 
   mesh->synchronize(Mesh::NODES_E);
+
+  VMesh::Node::iterator iter, iter_end;
+  mesh->begin(iter);
+
+  while (iter != iter_end)
+  {
+    Core::Geometry::Point p;
+    mesh->get_point(p, *iter);
+
+    if (colorScheme > 0)
+    {
+      if (fld->is_scalar())
+      {
+        fld->get_value(sval, *iter);
+        //value_to_color(colorScheme, sval, scol, vcol);
+      }
+      if (fld->is_vector())
+      {
+        fld->get_value(vval, *iter);
+        //value_to_color(colorScheme, vval, scol, vcol);
+      }
+      if (fld->is_tensor())
+      {
+        fld->get_value(tval, *iter);
+        //value_to_color(colorScheme, tval, scol, vcol);
+      }
+    }
+
+    if (points)
+    {
+      if (colorScheme == 0)
+      {
+        //points->add(p);
+      }
+      else if (colorScheme == 1)
+      {
+        //points->add(p, scol);
+      }
+      else //if (colorScheme == 2)
+      {
+        //points->add(p, vcol);
+      }
+    }
+    else if (spheres)
+    {
+      /// \todo Implement...
+    }
+  }
       
 
 
