@@ -62,7 +62,7 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
 
   IF(${compress_type} MATCHES "GIT")
 
-    SET(boost_GIT_TAG "origin/boost_1_55_0_bjam")
+    SET(boost_GIT_TAG "origin/master")
 
     # TODO: fix install step
     #

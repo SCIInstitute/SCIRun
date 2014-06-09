@@ -47,7 +47,7 @@ MACRO(EXTERNAL_ZLIB_LIBRARY compress_type)
 
   IF(${compress_type} MATCHES "GIT")
 
-    SET(zlib_GIT_TAG "origin/external_build")
+    SET(zlib_GIT_TAG "origin/master")
 
     # TODO: fix install step
     #
