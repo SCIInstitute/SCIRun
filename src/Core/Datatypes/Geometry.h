@@ -86,18 +86,26 @@ namespace Datatypes {
       Core::Geometry::BBox                  boundingBox;
     };
 
-    // Could require rvalue references...
     struct SpireIBO
     {
-      SpireIBO(const std::string& iboName, size_t iboIndexSize,
+      enum PRIMITIVE
+      {
+        POINTS,
+        LINES,
+        TRIANGLES,
+      };
+
+      SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
                std::shared_ptr<std::vector<uint8_t>> iboData) :
           name(iboName),
           indexSize(iboIndexSize),
+          prim(primIn),
           data(iboData)
       {}
 
       std::string                           name;
       size_t                                indexSize;
+      PRIMITIVE                             prim;
       std::shared_ptr<std::vector<uint8_t>> data;
     };
 

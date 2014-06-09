@@ -77,6 +77,12 @@ public:
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const es::ComponentGroup<ren::StaticVBOMan>& vboMan) override
   {
+    /// \todo This needs to be moved to pre-execute.
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+      return;
+    }
+
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
     // setup (including uniforms) if the simple geom hasn't been setup.

@@ -304,7 +304,24 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
         break;
     }
 
-    iboMan.addInMemoryIBO(&(*ibo.data)[0], ibo.data->size(), GL_TRIANGLES, primType,
+    GLenum primitive = GL_TRIANGLES;
+    switch (ibo.prim)
+    {
+      case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
+        primitive = GL_POINTS;
+        break;
+
+      case Core::Datatypes::GeometryObject::SpireIBO::LINES:
+        primitive = GL_LINES;
+        break;
+
+      case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
+      default:
+        primitive = GL_TRIANGLES;
+        break;
+    }
+
+    iboMan.addInMemoryIBO(&(*ibo.data)[0], ibo.data->size(), primitive, primType,
                           ibo.data->size() / ibo.indexSize, ibo.name);
   }
 
@@ -312,6 +329,8 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   glm::mat4 xform;
   mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap));
   SRObject& elem = mSRObjects.back();
+
+  ren::ShaderMan& shaderMan = *mCore.getStaticComponent<ren::StaticShaderMan>()->instance;
 
   // Add passes
   for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
@@ -322,7 +341,10 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
 
     addVBOToEntity(entityID, pass.vboName);
     addIBOToEntity(entityID, pass.iboName);
-    addShaderToEntity(entityID, pass.programName);
+
+    // Load vertex and fragment shader will use an already loaded program.
+    //addShaderToEntity(entityID, pass.programName);
+    shaderMan.loadVertexAndFragmentShader(mCore, entityID, pass.programName);
 
     // Add transformation
     gen::Transform trafo;
@@ -331,6 +353,10 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     // Add rendering
     RenderBasicGeom geom;    
     mCore.addComponent(entityID, geom);
+
+    // Ensure common uniforms are covered.
+    ren::CommonUniforms commonUniforms;
+    mCore.addComponent(entityID, commonUniforms);
 
     for (const auto& uniform : pass.mUniforms)
     {

@@ -259,7 +259,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     /// \todo Find an appropriate place to put program names like UniformColor.
     GeometryObject::SpireSubPass pass =
         GeometryObject::SpireSubPass(id + "edgesPass", primVBOName, iboName,
-                                     "UniformColor");
+                                     "Shaders/UniformColor");
 
     //spire::GPUState gpuState;
     //gpuState.mLineWidth = 2.5f;
@@ -272,7 +272,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     else
       pass.addUniform("uColor", glm::vec4(meshRed, meshGreen, meshBlue, 1.0f));
 
-    geom->mPasses.emplace_back(pass);
+    geom->mPasses.push_back(pass);
   }
 
   if (progressFunc) progressFunc(0.5);
@@ -292,10 +292,10 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     ///       and bind them here.
     if (vmesh->has_normals())
     {
-      std::string shaderToUse = "DirPhong";
+      std::string shaderToUse = "Shaders/DirPhong";
       if (colorMap)
       {
-        shaderToUse = "DirPhongCMap";
+        shaderToUse = "Shaders/DirPhongCMap";
       }
       GeometryObject::SpireSubPass pass = 
           GeometryObject::SpireSubPass(id + "facesPass", primVBOName, iboName, 
@@ -313,14 +313,14 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
       pass.addUniform("uSpecularColor", glm::vec4(1.0f, 1.0f, 1.0f, transparency));
       pass.addUniform("uSpecularPower", 32.0f);
-      geom->mPasses.emplace_back(pass);
+      geom->mPasses.push_back(pass);
     }
     else
     {
-      std::string shaderToUse = "UniformColor";
+      std::string shaderToUse = "Shaders/UniformColor";
       if (colorMap)
       {
-        shaderToUse = "ColorMap";
+        shaderToUse = "Shaders/ColorMap";
       }
       // No normals present in the model, construct a uniform pass
       GeometryObject::SpireSubPass pass = 
@@ -335,7 +335,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       if (!colorMap)
         pass.addUniform("uColor", glm::vec4(meshRed, meshGreen, meshBlue, transparency));
 
-      geom->mPasses.emplace_back(pass);
+      geom->mPasses.push_back(pass);
     }
   }
 
@@ -351,7 +351,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     /// \todo Find an appropriate place to put program names like UniformColor.
     GeometryObject::SpireSubPass pass = 
         GeometryObject::SpireSubPass(id + "nodesPass", primVBOName, iboName,
-                                     "UniformColor");
+                                     "Shaders/UniformColor");
 
     // Add appropriate uniforms to the pass (in this case, uColor).
     bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
@@ -360,7 +360,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     else
       pass.addUniform("uColor", glm::vec4(meshRed, meshGreen, meshBlue, 1.0f));
 
-    geom->mPasses.emplace_back(pass);
+    geom->mPasses.push_back(pass);
   }
 
   if (progressFunc) progressFunc(1);
@@ -420,7 +420,8 @@ void ShowFieldModule::buildFacesIBO(
   }
 
   // Add IBO for the faces.
-  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(desiredIBOName, sizeof(uint32_t), rawIBO));
+  geom->mIBOs.push_back(
+      GeometryObject::SpireIBO(desiredIBOName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), rawIBO));
 }
 
 
@@ -447,7 +448,8 @@ void ShowFieldModule::buildEdgesIBO(
   }
 
   // Add IBO for the edges.
-  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(desiredIBOName, sizeof(uint32_t), rawIBO));
+  geom->mIBOs.push_back(
+      GeometryObject::SpireIBO(desiredIBOName, GeometryObject::SpireIBO::LINES, sizeof(uint32_t), rawIBO));
 
 }
 
@@ -474,7 +476,8 @@ void ShowFieldModule::buildNodesIBO(
   }
 
   // Add IBO for the nodes.
-  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(desiredIBOName, sizeof(uint32_t), rawIBO));
+  geom->mIBOs.push_back(
+      GeometryObject::SpireIBO(desiredIBOName, GeometryObject::SpireIBO::POINTS, sizeof(uint32_t), rawIBO));
 }
 
 AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
