@@ -52,9 +52,13 @@ ColorRGB::ColorRGB(const std::string& rgb) : r_(0.0), g_(0.0), b_(0.0)
     static boost::regex r("Color\\((\\d+),(\\d+),(\\d+)\\)");
     boost::smatch what;
     regex_match(rgb, what, r);
-    r_ = boost::lexical_cast<double>(what[1]);
-    g_ = boost::lexical_cast<double>(what[2]);
-    b_ = boost::lexical_cast<double>(what[3]);
+    int red = boost::lexical_cast<int>(what[1]);
+    int green = boost::lexical_cast<int>(what[2]);
+    int blue = boost::lexical_cast<int>(what[3]);
+
+    r_ = static_cast<double>(red) / 255.0f;
+    g_ = static_cast<double>(green) / 255.0f;
+    b_ = static_cast<double>(blue) / 255.0f;
   }
   catch (...)
   {
