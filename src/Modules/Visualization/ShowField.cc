@@ -166,7 +166,7 @@ void ShowFieldModule::renderNodes(
   Core::Geometry::Vector vval;
   Core::Geometry::Tensor tval;
 
-  unsigned int colorScheme = 0; // This is really hacky and imported from old scirun.
+  unsigned int colorScheme = 1; // This is really hacky and imported from old scirun.
                                 // Needs refactoring.
   double scol;
   Core::Datatypes::Material vcol;
@@ -191,6 +191,7 @@ void ShowFieldModule::renderNodes(
 
   VMesh::Node::iterator iter, iter_end;
   mesh->begin(iter);
+  mesh->end(iter_end);
 
   while (iter != iter_end)
   {
@@ -235,9 +236,9 @@ void ShowFieldModule::renderNodes(
     {
       /// \todo Implement...
     }
-  }
-      
 
+     ++iter; 
+  }
 
   /// \todo Add spheres and other glyphs as display lists. Will want to
   ///       build up to geometry / tesselation shaders if support is present.
