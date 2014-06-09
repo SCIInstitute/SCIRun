@@ -46,8 +46,9 @@ class SCISHARE CalculateVectorMagnitudesAlgo : public AlgorithmBase
   
     bool run(FieldHandle input, FieldHandle& output) const;
 
-    static AlgorithmOutputName ScalarField;
     static AlgorithmInputName VectorField;
+  
+    static AlgorithmOutputName ScalarField;
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 };

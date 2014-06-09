@@ -28,11 +28,12 @@
 
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h> 
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
-
 
 SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,20 +42,24 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //connect(keepTypeCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+
+  addDoubleSpinBoxManager(Skin_,       SetConductivitiesToTetMeshAlgorithm::Skin());
+  addDoubleSpinBoxManager(Skull_,      SetConductivitiesToTetMeshAlgorithm::Skull());
+  addDoubleSpinBoxManager(CSF_,        SetConductivitiesToTetMeshAlgorithm::CSF());
+  addDoubleSpinBoxManager(GM_,         SetConductivitiesToTetMeshAlgorithm::GM());
+  addDoubleSpinBoxManager(WM_,         SetConductivitiesToTetMeshAlgorithm::WM());
+  addDoubleSpinBoxManager(Electrode_,  SetConductivitiesToTetMeshAlgorithm::Electrode());
 }
 
 void SetConductivitiesToTetMeshDialog::push()
 {
-  if (!pulling_)
-  {
-   //state_->setValue(SetFieldDataAlgo::keepTypeCheckBox, keepTypeCheckBox_->isChecked());
-  } 
+  
 }
 
 void SetConductivitiesToTetMeshDialog::pull()
 {
   Pulling p(this);
-  //keepTypeCheckBox_->setChecked(state_->getValue(SetFieldDataAlgo::keepTypeCheckBox).getBool()); 
+  
+  //keepTypeCheckBox_->setChecked(state_->getValue(SetFieldDataAlgo::keepTypeCheckBox).getBool());
 }
 

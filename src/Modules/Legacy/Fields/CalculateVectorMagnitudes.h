@@ -36,18 +36,15 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      /// @class CalculateVectorMagnitudes
-      /// @brief Computes the gradient of a field. 
-
-      class SCISHARE CalculateVectorMagnitudes : public Dataflow::Networks::Module,
+      class SCISHARE CalculateVectorMagnitudesModule : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
-        CalculateVectorMagnitudes();
+        CalculateVectorMagnitudesModule();
 
         virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void setStateDefaults() {};
 
         INPUT_PORT(0, VectorField, LegacyField);
         OUTPUT_PORT(0, ScalarField, LegacyField);
