@@ -74,6 +74,10 @@ namespace Visualization {
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
         Dataflow::Networks::ModuleStateHandle state, const std::string& id);
 
+    Core::Datatypes::GeometryHandle oldBuildGeometryObject(
+        boost::shared_ptr<SCIRun::Field> field,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+        Dataflow::Networks::ModuleStateHandle state, const std::string& id);
 
     /// IBO Construction
     /// @{

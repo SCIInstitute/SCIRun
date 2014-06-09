@@ -88,6 +88,86 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc =
       getUpdaterFunc();
 
+  /// \todo Determine a better way of handling all of the various object state.
+  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
+  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
+  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
+
+  // Resultant geometry type (representing a spire object and a number of passes).
+  GeometryHandle geom(new GeometryObject(field));
+  geom->objectName = id;
+
+
+  /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
+
+  /// \todo Mind material properties (simple since we already have implemented
+  ///       most of this).
+
+  /// \todo Handle assignment of color map. The color map will need to be
+  ///       available to us as we are building the meshes. Due to the way
+  ///       SCIRun expects meshes to be built.
+
+  /// \todo render_state_ DIRTY flag? See old scirun ShowField.cc:446.
+
+  /// \todo Generate a state class for node, edges, and face. This state
+  ///       class will encompass all rendering parameters and will be passed
+  ///       to the appropriate mesh generation function.
+
+  const int dim = field->vmesh()->dimensionality();
+  if (showEdges && dim < 1) { showEdges = false; }
+  if (showFaces && dim < 2) { showFaces = false; }
+
+  if (showNodes)
+  {
+    // Construct node geometry.
+    
+  }
+
+  return geom;
+}
+
+GeometryHandle ShowFieldModule::oldBuildGeometryObject(
+    boost::shared_ptr<SCIRun::Field> field,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+    ModuleStateHandle state, 
+    const std::string& id)
+{
+  // Function for reporting progress.
+  SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc =
+      getUpdaterFunc();
+
+  /// \todo Determine a better way of handling all of the various object state.
+  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
+  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
+  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
+
+  // Resultant geometry type (representing a spire object and a number of passes).
+  GeometryHandle geom(new GeometryObject(field));
+  geom->objectName = id;
+
+
+  /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
+
+  /// \todo Mind material properties (simple since we already have implemented
+  ///       most of this).
+
+  /// \todo Handle assignment of color map. The color map will need to be
+  ///       available to us as we are building the meshes. Due to the way
+  ///       SCIRun expects meshes to be built.
+
+  /// \todo render_state_ DIRTY flag? See old scirun ShowField.cc:446.
+
+  const int dim = field->vmesh()->dimensionality();
+  if (showEdges && dim < 1) { showEdges = false; }
+  if (showFaces && dim < 2) { showFaces = false; }
+
+  if (showNodes)
+  {
+    // Construct node geometry.
+    
+  }
+
+
   // VMesh facade. A simpler interface to the vmesh type.
   SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade =
       field->mesh()->getFacade();
@@ -104,20 +184,12 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   if (vmesh->has_normals())
     vmesh->synchronize(Mesh::NORMALS_E);
   
-  /// \todo Determine a better way of handling all of the various object state.
-  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
-  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
-  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool invertNormals = state->getValue(ShowFieldModule::FaceInvertNormals).getBool();
   //bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
   const ColorRGB meshColor(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
   float meshRed   = static_cast<float>(meshColor.r() / 255.0f);
   float meshGreen = static_cast<float>(meshColor.g() / 255.0f);
   float meshBlue  = static_cast<float>(meshColor.b() / 255.0f);
-
-  // Resultant geometry type (representing a spire object and a number of passes).
-  GeometryHandle geom(new GeometryObject(field));
-  geom->objectName = id;
 
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
   ///       eek out better coherency and use a 16 bit index buffer instead of
@@ -367,6 +439,8 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
   return geom;
 }
+
+
 
 
 void ShowFieldModule::buildFacesIBO(
