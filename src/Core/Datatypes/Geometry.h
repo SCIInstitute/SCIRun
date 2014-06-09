@@ -130,18 +130,18 @@ namespace Datatypes {
 
         Uniform(const std::string& nameIn, float d) :
             name(nameIn),
-            uniform(UNIFORM_SCALAR),
+            type(UNIFORM_SCALAR),
             data(d, 0.0f, 0.0f, 0.0f)
         {}
 
         Uniform(const std::string& nameIn, const glm::vec4& vec) :
             name(nameIn),
-            uniform(UNIFORM_VEC4),
+            type(UNIFORM_VEC4),
             data(vec)
         {}
 
         std::string   name;
-        UniformType   uniform;
+        UniformType   type;
         glm::vec4     data;
       };
 

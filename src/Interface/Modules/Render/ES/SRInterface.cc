@@ -44,6 +44,7 @@
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticShaderMan.hpp>
+#include <es-render/util/Uniform.hpp>
 #include <es-render/comp/VBO.hpp>
 #include <es-render/comp/IBO.hpp>
 #include <es-render/comp/Shader.hpp>
@@ -320,7 +321,11 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     addIBOToEntity(entityID, pass.iboName);
     addShaderToEntity(entityID, pass.programName);
 
-    /// \todo Add common uniforms component.
+    for (const auto& uniform : pass.mUniforms)
+    {
+      applyUniform(entityID, uniform);
+    }
+
     /// \todo Add component which will direct specific rendering subsystem.
 
     // Add components associated with entity. We just need a base class which
@@ -374,6 +379,21 @@ void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shader
   shader.glid = shaderMan.getIDForAsset(shaderName.c_str());
 
   mCore.addComponent(entityID, shader);
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform)
+{
+  switch (uniform.type)
+  {
+    case Core::Datatypes::GeometryObject::SpireSubPass::Uniform::UNIFORM_SCALAR:
+      ren::addGLUniform(mCore, entityID, uniform.name.c_str(), static_cast<float>(uniform.data.x));
+      break;
+
+    case Core::Datatypes::GeometryObject::SpireSubPass::Uniform::UNIFORM_VEC4:
+      ren::addGLUniform(mCore, entityID, uniform.name.c_str(), uniform.data);
+      break;
+  }
 }
 
 //------------------------------------------------------------------------------

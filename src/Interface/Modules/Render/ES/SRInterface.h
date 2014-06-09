@@ -196,6 +196,8 @@ private:
   // associated with different passes.
   void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
 
+  // Apply uniform.
+  void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
 
   MouseMode                       mMouseMode;       ///< Current mouse mode.
 
