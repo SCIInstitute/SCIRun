@@ -37,6 +37,8 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Datatypes/share.h>
 
+#include <glm/glm.hpp>
+
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
@@ -118,8 +120,42 @@ namespace Datatypes {
       std::string   iboName;
       std::string   programName;
 
-      template <typename T>
-      void addUniform(const std::string& uniformName, T uniformData) {}
+      struct Uniform
+      {
+        enum UniformType
+        {
+          UNIFORM_SCALAR,
+          UNIFORM_VEC4
+        };
+
+        Uniform(const std::string& nameIn, float d) :
+            name(nameIn),
+            uniform(UNIFORM_SCALAR),
+            data(d, 0.0f, 0.0f, 0.0f)
+        {}
+
+        Uniform(const std::string& nameIn, const glm::vec4& vec) :
+            name(nameIn),
+            uniform(UNIFORM_VEC4),
+            data(vec)
+        {}
+
+        std::string   name;
+        UniformType   uniform;
+        glm::vec4     data;
+      };
+
+      std::vector<Uniform> mUniforms;
+
+      void addUniform(const std::string& name, float scalar)
+      {
+        mUniforms.push_back(Uniform(name, scalar));
+      }
+
+      void addUniform(const std::string& name, const glm::vec4& vector)
+      {
+        mUniforms.push_back(Uniform(name, vector));
+      }
     };
 
     /// List of passes to setup.
