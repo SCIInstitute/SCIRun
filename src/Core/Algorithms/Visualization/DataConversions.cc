@@ -33,14 +33,14 @@ namespace SCIRun {
 using namespace Core::Geometry;
 
 template <>
-bool valToColor( const Vector &v, Core::Datatypes::ColorRGB &c )
+bool valToColor(const Vector &v, Core::Datatypes::ColorRGB &c)
 {
   c = Core::Datatypes::ColorRGB(fabs(v.x()), fabs(v.y()), fabs(v.z()));
   return true;
 }
 
 template <>
-bool valToColor( const Tensor &t, Core::Datatypes::ColorRGB &c )
+bool valToColor(const Tensor &t, Core::Datatypes::ColorRGB &c)
 {
   /// get_eigenvectors was not implemented in Tensor. Can't identify colors.
   // Tensor tt = t;
@@ -64,14 +64,14 @@ bool valToColor( const Tensor &t, Core::Datatypes::ColorRGB &c )
 
 // Conversion template specialization.
 template <>
-bool valToDouble( const Vector &data_in, double &data_out)
+bool valToDouble(const Vector &data_in, double &data_out)
 {
   data_out = data_in.length();
   return true;
 }
 
 template <>
-bool valToDouble( const Tensor &data_in, double &data_out)
+bool valToDouble(const Tensor &data_in, double &data_out)
 {
   // Tensor t = data_in;
   // double v1, v2, v3;
@@ -81,20 +81,20 @@ bool valToDouble( const Tensor &data_in, double &data_out)
 }
 
 template <>
-bool valToDouble( const std::string&, double&)
+bool valToDouble(const std::string&, double&)
 {
   return false;
 }
 
 template <>
-bool valToVector( const Vector &data_in, Vector &data_out)
+bool valToVector(const Vector &data_in, Vector &data_out)
 {
   data_out = data_in;
   return true;
 }
 
 template <>
-bool valToVector( const Tensor &data_in, Vector &data_out)
+bool valToVector(const Tensor &data_in, Vector &data_out)
 {
   // Tensor t = data_in;
   // double v1, v2, v3;
@@ -104,21 +104,21 @@ bool valToVector( const Tensor &data_in, Vector &data_out)
 }
 
 template <>
-bool valToTensor( const Tensor &data_in, Tensor &data_out)
+bool valToTensor(const Tensor &data_in, Tensor &data_out)
 {
   data_out = data_in;
   return true;
 }
 
 template <>
-bool valToBuffer( const unsigned char &value, std::ostringstream &buffer)
+bool valToBuffer(const unsigned char &value, std::ostringstream &buffer)
 {
   buffer << static_cast<int>(value);
   return true;
 }
 
 template <>
-bool valToBuffer( const char &value, std::ostringstream &buffer)
+bool valToBuffer(const char &value, std::ostringstream &buffer)
 {
   buffer << static_cast<int>(value);
   return true;

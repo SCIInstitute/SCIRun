@@ -35,12 +35,12 @@ SET(Algorithms_Visualization_HEADERS
   RenderFieldState.h
 )
 
-ADD_LIBRARY(Algorithms_Visualization 
+ADD_LIBRARY(Core_Algorithms_Visualization 
   ${Algorithms_Visualization_HEADERS}
   ${Algorithms_Visualization_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Algorithms_Visualization
+TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
   Core_Datatypes
   Algorithms_Base
   ${SCI_BOOST_LIBRARY}
@@ -50,4 +50,3 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Algorithms_Visualization)
 ENDIF(BUILD_SHARED_LIBS)
 
-SCIRUN_ADD_TEST_DIR(Tests)

@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Material.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
@@ -202,17 +203,17 @@ void ShowFieldModule::renderNodes(
       if (fld->is_scalar())
       {
         fld->get_value(sval, *iter);
-        //value_to_color(colorScheme, sval, scol, vcol);
+        valueToColor(colorScheme, sval, scol, vcol);
       }
       if (fld->is_vector())
       {
         fld->get_value(vval, *iter);
-        //value_to_color(colorScheme, vval, scol, vcol);
+        valueToColor(colorScheme, vval, scol, vcol);
       }
       if (fld->is_tensor())
       {
         fld->get_value(tval, *iter);
-        //value_to_color(colorScheme, tval, scol, vcol);
+        valueToColor(colorScheme, tval, scol, vcol);
       }
     }
 

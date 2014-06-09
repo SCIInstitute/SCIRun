@@ -30,13 +30,14 @@
 #define CORE_ALGORITHMS_VISUALIZATION_RENDER_FIELD_STATE_H
 
 #include <Core/Algorithms/Visualization/DataConversions.h>
+#include <Core/Datatypes/Material.h>
 
 /// \todo Create color scheme enumeration, instead of 0, 1, and 2...
 namespace SCIRun {
 
 template <typename Val>
 void valueToColor(unsigned int colorScheme,
-                  Val val, double& scol, Material& vcol)
+                  Val val, double& scol, Core::Datatypes::Material& vcol)
 {
   if (colorScheme == 1)
   {
