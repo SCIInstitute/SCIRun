@@ -35,6 +35,8 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Logging/Log.h>
 
 #include <boost/foreach.hpp>
@@ -120,11 +122,104 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   if (showNodes)
   {
     // Construct node geometry.
+    renderNodes(field, colorMap, state, geom, id);
     
   }
 
   return geom;
 }
+
+
+void ShowFieldModule::renderNodes(
+    boost::shared_ptr<SCIRun::Field> field,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+    Dataflow::Networks::ModuleStateHandle state,
+    Core::Datatypes::GeometryHandle geom, 
+    const std::string& id)
+{
+  VField* fld   = field->vfield();
+  VMesh*  mesh  = field->vmesh();
+
+  bool points   = true;
+  bool spheres  = false;
+
+  /// \todo The following variables should be part of our module state.
+  ///       Color should be checked based on optional existence of colorMap.
+  /// @{
+  bool useDefaultColor  = true;
+  bool useColorMap      = false;
+  /// @}
+
+  if (points)
+  {
+    /// \todo Generate appropriate classes to handle points versus spheres.
+    ///       See old scirun RenderField.cc:132.
+  }
+  else if (spheres)
+  {
+    // See above.
+  }
+
+  double sval;
+  Core::Geometry::Vector vval;
+  Core::Geometry::Tensor tval;
+
+  unsigned int colorScheme = 0;
+  // double scol;
+
+  if (fld->basis_order() < 0 ||
+      (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
+      useDefaultColor)
+  {
+    colorScheme = 0;  // Default color
+  }
+  else if (useColorMap)
+  {
+    colorScheme = 1;
+  }
+  else // if (fld->basis_order() >= 1)
+  {
+    colorScheme = 2;
+  }
+
+  mesh->synchronize(Mesh::NODES_E);
+      
+
+
+  /// \todo Add spheres and other glyphs as display lists. Will want to
+  ///       build up to geometry / tesselation shaders if support is present.
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 GeometryHandle ShowFieldModule::oldBuildGeometryObject(
     boost::shared_ptr<SCIRun::Field> field,
