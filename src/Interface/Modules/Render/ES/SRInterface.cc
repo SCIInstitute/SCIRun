@@ -40,6 +40,7 @@
 #include <es-general/comp/StaticOrthoCamera.hpp>
 #include <es-general/comp/StaticObjRefID.hpp>
 #include <es-general/comp/StaticGlobalTime.hpp>
+#include <es-general/comp/Transform.hpp>
 #include <es-render/comp/StaticGeomMan.hpp>
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
@@ -54,6 +55,8 @@
 
 #include "CoreBootstrap.h"
 #include "comp/StaticSRInterface.h"
+#include "comp/RenderBasicGeom.h"
+#include "systems/RenderBasicSys.h"
 
 using namespace std::placeholders;
 
@@ -321,10 +324,21 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     addIBOToEntity(entityID, pass.iboName);
     addShaderToEntity(entityID, pass.programName);
 
+    // Add transformation
+    gen::Transform trafo;
+    mCore.addComponent(entityID, trafo);
+
+    // Add rendering
+    RenderBasicGeom geom;    
+    mCore.addComponent(entityID, geom);
+
     for (const auto& uniform : pass.mUniforms)
     {
       applyUniform(entityID, uniform);
     }
+
+    // Compare entity and system requirements.
+    mCore.displayEntityVersusSystemInfo(entityID, getSystemName_RenderBasicGeom());
 
     /// \todo Add component which will direct specific rendering subsystem.
 

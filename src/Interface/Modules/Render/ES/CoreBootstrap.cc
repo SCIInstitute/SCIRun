@@ -24,6 +24,8 @@
 #include <es-render/comp/StaticFontMan.hpp>
 #include <es-render/comp/StaticGLState.hpp>
 
+#include "comp/RenderBasicGeom.h"
+#include "systems/RenderBasicSys.h"
 #include "CoreBootstrap.h"
 #include "AssetBootstrap.h"
 #include "Core.h"
@@ -64,7 +66,7 @@ public:
     // Kernel file system.
     core.addKernelSystem(fs::Filesystem::getFSSystemName());
 
-    // --== Rendering ==--
+    // --== Base Rendering ==--
 
     // Static shader man and associated systems. Only run GC every 5 minutes.
     // The systems themselves will run GC at their own convenience.
@@ -103,6 +105,10 @@ public:
 
     core.addStaticComponent(ren::StaticFontMan());
     core.addExemptComponent<ren::StaticFontMan>();
+
+    // --== SCIRun5 Rendering ==--
+
+    core.addUserSystem(getSystemName_RenderBasicGeom());
 
     // --== General ==--
 
