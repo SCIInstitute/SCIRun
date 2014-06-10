@@ -359,6 +359,10 @@ if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
 endif()
 include(${CPM_DIR}/CPM.cmake)
 
+# TODO: Add tags for *all* of the CPM modules. This will allow upstream
+# flexibility. Once all versions are appopriately tagged, I will be able
+# to untag upstream and keep it moving forward.
+
 # ++ MODULE: GL Platform
 CPM_AddModule("gl_platform"
   GIT_REPOSITORY "https://github.com/iauns/cpm-gl-platform"
@@ -417,6 +421,11 @@ CPM_AddModule("es_acorn"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
+# ++ MODULE: Var buffer
+CPM_AddModule("var_buffer"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-var-buffer"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
 
 CPM_Finish()
 

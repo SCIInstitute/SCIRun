@@ -37,7 +37,9 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Datatypes/share.h>
 
+// CPM modules
 #include <glm/glm.hpp>
+#include <var-buffer/VarBuffer.hpp>
 
 namespace SCIRun {
 namespace Core {
