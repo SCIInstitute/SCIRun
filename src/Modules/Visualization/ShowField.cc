@@ -49,6 +49,7 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
@@ -131,6 +132,15 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   return geom;
 }
 
+// Borrowed from SCIRun4 -- Float to Byte
+static uint8_t COLOR_FTOB(double v)
+{
+  const int inter = static_cast<int>(v * 255 + 0.5);
+  if (inter > 255) return 255;
+  if (inter < 0) return 0;
+  return static_cast<uint8_t>(inter);
+}
+
 
 void ShowFieldModule::renderNodes(
     boost::shared_ptr<SCIRun::Field> field,
@@ -166,8 +176,7 @@ void ShowFieldModule::renderNodes(
   Core::Geometry::Vector vval;
   Core::Geometry::Tensor tval;
 
-  unsigned int colorScheme = 1; // This is really hacky and imported from old scirun.
-                                // Needs refactoring.
+  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   double scol;
   Core::Datatypes::Material vcol;
 
@@ -175,16 +184,16 @@ void ShowFieldModule::renderNodes(
       (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
       useDefaultColor)
   {
-    colorScheme = 0;  // Default color
+    colorScheme = GeometryObject::COLOR_UNIFORM;
   }
   else if (useColorMap)
   {
-    colorScheme = 1;
+    colorScheme = GeometryObject::COLOR_MAP;
   }
   else // if (fld->basis_order() >= 1)
   {
-    colorScheme = 2;
-    /// \note There's some
+    colorScheme = GeometryObject::COLOR_IN_SITU;
+    /// \note There's some extra initialization that SCIRun4 would perform here.
   }
 
   mesh->synchronize(Mesh::NODES_E);
@@ -193,12 +202,44 @@ void ShowFieldModule::renderNodes(
   mesh->begin(iter);
   mesh->end(iter_end);
 
+  // Attempt some form of precalculation of iboBuffer and vboBuffer size.
+  int iboSize = mesh->num_nodes() * sizeof(uint32_t);
+  int vboSize = mesh->num_nodes() * sizeof(float) * 3;
+
+  if (useColorMap == GeometryObject::COLOR_MAP)
+  {
+    vboSize += sizeof(float);     // For the data (color map lookup).
+  }
+  else if (useColorMap == GeometryObject::COLOR_IN_SITU)
+  {
+    vboSize += sizeof(uint32_t); // For full color in the elements.
+  }
+
+  /// \todo To reduce memory requirements, we can use a 16bit index buffer.
+
+  /// \todo To further reduce a large amount of memory, get rid of the index
+  ///       buffer and use glDrawArrays to render without an IBO. An IBO is
+  ///       a waste of space.
+  ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
+
+  /// \todo Switch to unique_ptrs and move semantics.
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
+      new CPM_VAR_BUFFER_NS::VarBuffer(mesh->num_nodes() * sizeof(uint32_t)));
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
+      new CPM_VAR_BUFFER_NS::VarBuffer(mesh->num_nodes() * sizeof(float) * 3));
+
+  // Accessing the pointers like this is contrived. We only do this for
+  // speed since we will be using the pointers in a tight inner loop.
+  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
+  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+
+  uint32_t index = 0;
   while (iter != iter_end)
   {
     Core::Geometry::Point p;
     mesh->get_point(p, *iter);
 
-    if (colorScheme > 0)
+    if (colorScheme != GeometryObject::COLOR_UNIFORM)
     {
       if (fld->is_scalar())
       {
@@ -219,18 +260,24 @@ void ShowFieldModule::renderNodes(
 
     if (points)
     {
-      if (colorScheme == 0)
+      vboBuffer->write(static_cast<float>(p.x()));
+      vboBuffer->write(static_cast<float>(p.y()));
+      vboBuffer->write(static_cast<float>(p.z()));
+
+      if (colorScheme == GeometryObject::COLOR_MAP)
       {
-        //points->add(p);
+        vboBuffer->write(static_cast<float>(scol));
       }
-      else if (colorScheme == 1)
+      else //if (colorScheme == GeometryObject::COLOR_IN_SITU)
       {
-        //points->add(p, scol);
+        // Writes uint8_t out to the VBO. A total of 4 bytes.
+        vboBuffer->write(COLOR_FTOB(vcol.diffuse.r()));
+        vboBuffer->write(COLOR_FTOB(vcol.diffuse.g()));
+        vboBuffer->write(COLOR_FTOB(vcol.diffuse.b()));
+        vboBuffer->write(COLOR_FTOB(vcol.transparency));
       }
-      else //if (colorScheme == 2)
-      {
-        //points->add(p, vcol);
-      }
+
+      iboBuffer->write(static_cast<uint32_t>(index));
     }
     else if (spheres)
     {

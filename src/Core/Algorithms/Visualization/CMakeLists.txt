@@ -43,6 +43,7 @@ ADD_LIBRARY(Core_Algorithms_Visualization
 TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
   Core_Datatypes
   Algorithms_Base
+  ${CPM_LIBRARIES}
   ${SCI_BOOST_LIBRARY}
 )
 

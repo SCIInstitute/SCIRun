@@ -48,6 +48,16 @@ namespace Datatypes {
   class SCISHARE GeometryObject : public Datatype
   {
   public:
+
+    // Schemes individually describing how the data is to be colored.
+    // This enumeration may belong in Core/Algorithms/Visualization.
+    enum ColorScheme
+    {
+      COLOR_UNIFORM = 0,
+      COLOR_MAP,
+      COLOR_IN_SITU
+    };
+
     explicit GeometryObject(DatatypeConstHandle dh);
     GeometryObject(const GeometryObject& other);
     GeometryObject& operator=(const GeometryObject& other);
@@ -176,9 +186,6 @@ namespace Datatypes {
 
     double mLowestValue;    ///< Lowest value a field takes on.
     double mHighestValue;   ///< Highest value a field takes on.
-
-    /// \xxx  Possibly implement a list of global uniforms. Only do this if
-    ///       there is a clear need for global uniforms.
 
   private:
     DatatypeConstHandle data_;
