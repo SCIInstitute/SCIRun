@@ -142,6 +142,21 @@ static uint8_t COLOR_FTOB(double v)
 }
 
 
+void ShowFieldModule::renderMesh(
+    boost::shared_ptr<SCIRun::Field> field,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+    Dataflow::Networks::ModuleStateHandle state,
+    Core::Datatypes::GeometryHandle geom, 
+    const std::string& id)
+{
+  VField* fld   = field->vfield();
+  VMesh*  mesh  = field->vmesh();
+
+}
+
+
+
+
 void ShowFieldModule::renderNodes(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
@@ -327,8 +342,6 @@ void ShowFieldModule::renderNodes(
   /// \todo Add spheres and other glyphs as display lists. Will want to
   ///       build up to geometry / tesselation shaders if support is present.
 }
-
-
 
 
 

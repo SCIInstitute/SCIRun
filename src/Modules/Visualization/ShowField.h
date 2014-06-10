@@ -82,6 +82,14 @@ namespace Visualization {
         Dataflow::Networks::ModuleStateHandle state,
         Core::Datatypes::GeometryHandle geom, 
         const std::string& id);
+
+
+    void ShowFieldModule::renderMesh(
+        boost::shared_ptr<SCIRun::Field> field,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+        Dataflow::Networks::ModuleStateHandle state,
+        Core::Datatypes::GeometryHandle geom, 
+        const std::string& id);
     /// @}
 
   };
