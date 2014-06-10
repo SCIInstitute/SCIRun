@@ -74,11 +74,6 @@ namespace Visualization {
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
         Dataflow::Networks::ModuleStateHandle state, const std::string& id);
 
-    Core::Datatypes::GeometryHandle oldBuildGeometryObject(
-        boost::shared_ptr<SCIRun::Field> field,
-        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-        Dataflow::Networks::ModuleStateHandle state, const std::string& id);
-
     /// Mesh construction
     /// @{
     void renderNodes(
@@ -87,21 +82,6 @@ namespace Visualization {
         Dataflow::Networks::ModuleStateHandle state,
         Core::Datatypes::GeometryHandle geom, 
         const std::string& id);
-    /// @}
-
-    /// IBO Construction
-    /// @{
-    void buildFacesIBO(
-        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade, 
-        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
-
-    void buildEdgesIBO(
-        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
-        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
-
-    void buildNodesIBO(
-        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
-        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
     /// @}
 
   };
