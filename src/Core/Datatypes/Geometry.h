@@ -74,7 +74,7 @@ namespace Datatypes {
       };
 
       SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
-               std::shared_ptr<std::vector<uint8_t>> vboData,
+               std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboData,
                const Core::Geometry::BBox& bbox) :
           name(vboName),
           attributes(attribs),
@@ -84,7 +84,7 @@ namespace Datatypes {
 
       std::string                           name;
       std::vector<AttributeData>            attributes;
-      std::shared_ptr<std::vector<uint8_t>> data;
+      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
       Core::Geometry::BBox                  boundingBox;
     };
 
@@ -98,7 +98,7 @@ namespace Datatypes {
       };
 
       SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
-               std::shared_ptr<std::vector<uint8_t>> iboData) :
+               std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
           name(iboName),
           indexSize(iboIndexSize),
           prim(primIn),
@@ -108,7 +108,7 @@ namespace Datatypes {
       std::string                           name;
       size_t                                indexSize;
       PRIMITIVE                             prim;
-      std::shared_ptr<std::vector<uint8_t>> data;
+      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
     };
 
     std::list<SpireVBO> mVBOs;  ///< Array of vertex buffer objects.

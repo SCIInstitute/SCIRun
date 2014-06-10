@@ -273,7 +273,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
       attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
     }
 
-    GLuint vboID =  vboMan.addInMemoryVBO(&(*vbo.data)[0], vbo.data->size(),
+    GLuint vboID =  vboMan.addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(),
                                           attributeData, vbo.name);
     bbox.extend(vbo.boundingBox);
   }
@@ -321,8 +321,8 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
         break;
     }
 
-    iboMan.addInMemoryIBO(&(*ibo.data)[0], ibo.data->size(), primitive, primType,
-                          ibo.data->size() / ibo.indexSize, ibo.name);
+    iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType,
+                          ibo.data->getBufferSize() / ibo.indexSize, ibo.name);
   }
 
   // Add default identity transform to the object globally (instead of per-pass)
