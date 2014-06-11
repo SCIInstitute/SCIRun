@@ -87,7 +87,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 	// Checking if x matrix was given and that the dimenions agree with the stiff matrix
   if (!x)
 	{
-		THROW_ALGORITHM_INPUT_ERROR("No x vector was given");
+    THROW_ALGORITHM_INPUT_ERROR("No x vector was given");
 	}
 	else if ( !(((x->ncols() == m) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == m))) )
 	{
@@ -181,10 +181,8 @@ AlgorithmOutput AddKnownsToLinearSystemAlgo::run_generic(const AlgorithmInput & 
 	auto input_x = input.get<DenseMatrix>(X_Vector);
 
 	if (input_lhs->nrows() != input_lhs->ncols()) 
-	{
-		THROW_ALGORITHM_INPUT_ERROR("Stiffness matrix input needs to be a sparse squared matrix! ");
-	}
-
+		THROW_ALGORITHM_INPUT_ERROR("Stiffness matrix input needs to be a sparse square matrix!");
+	
 	SparseRowMatrixHandle output_lhs;
 	DenseColumnMatrixHandle output_rhs;
   
