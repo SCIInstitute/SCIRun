@@ -55,9 +55,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
 
 WriteFieldModule::WriteFieldModule()
-  : my_base("WriteField", "DataIO", "SCIRun", "Filename")    
-    //gui_types_(get_ctx()->subVar("types", false)),
-    //gui_exporttype_(get_ctx()->subVar("exporttype"), ""),
+  : my_base("WriteField", "DataIO", "SCIRun", "Filename")
     //gui_increment_(get_ctx()->subVar("increment"), 0),
     //gui_current_(get_ctx()->subVar("current"), 0)
 {
@@ -68,62 +66,23 @@ WriteFieldModule::WriteFieldModule()
   FieldIEPluginManager mgr;
   auto types = makeGuiTypesListForExport(mgr);
   get_state()->setValue(Variables::FileTypeList, types);
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  FieldIEPluginManager mgr;
-  std::vector<std::string> exporters;
-  mgr.get_exporter_list(exporters);
-  
-  std::string exporttypes = "{";
-  exporttypes += "{{SCIRun Field Binary} {.fld} } ";
-  exporttypes += "{{SCIRun Field ASCII} {.fld} } ";
-
-  for (unsigned int i = 0; i < exporters.size(); i++)
-  {
-    FieldIEPlugin *pl = mgr.get_plugin(exporters[i]);
-    if (pl->fileextension != "")
-    {
-      exporttypes += "{{" + exporters[i] + "} {" + pl->fileextension + "} } ";
-    }
-    else
-    {
-      exporttypes += "{{" + exporters[i] + "} {.*} } ";
-    }
-  }
-
-  exporttypes += "}";
-
-  gui_types_.set(exporttypes);
-#endif
 }
 
-bool WriteFieldModule::call_exporter(const std::string &filename)
+bool WriteFieldModule::call_exporter(const std::string& filename)
 {
-  return false;
-  /*
-  const std::string ftpre = gui_exporttype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-  
+  ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
-  FieldIEPlugin *pl = mgr.get_plugin(ft);
+  FieldIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).getString());
   if (pl)
   {
-    return pl->filewriter(this, handle_, filename.c_str());
+    return pl->writeFile(handle_, filename, getLogger());
   }
   return false;
-  */
 }
 
 void WriteFieldModule::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  const std::string ftpre = gui_exporttype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-
- 
-  
   //get the current file name
   const std::string oldfilename=filename_.get();
   
