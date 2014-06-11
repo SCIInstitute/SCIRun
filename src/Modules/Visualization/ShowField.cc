@@ -35,7 +35,6 @@
 #include <Core/Datatypes/Material.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
@@ -82,6 +81,35 @@ void ShowFieldModule::execute()
   sendOutput(SceneGraph, geom);
 }
 
+RenderState ShowFieldModule::getNodeRenderState(ModuleStateHandle state)
+{
+  RenderState renState;
+
+  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).getBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).getBool());
+
+  return renState;
+}
+
+RenderState ShowFieldModule::getEdgeRenderState(ModuleStateHandle state)
+{
+  RenderState renState;
+
+  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).getBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).getBool());
+
+  return renState;
+}
+
+RenderState ShowFieldModule::getFaceRenderState(ModuleStateHandle state)
+{
+  RenderState renState;
+
+  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowFaces).getBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).getBool());
+
+  return renState;
+}
 
 GeometryHandle ShowFieldModule::buildGeometryObject(
     boost::shared_ptr<SCIRun::Field> field,
@@ -125,8 +153,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   if (showNodes)
   {
     // Construct node geometry.
-    renderNodes(field, colorMap, state, geom, id);
-    
+    renderNodes(field, colorMap, getNodeRenderState(state), geom, id);
   }
 
   return geom;
@@ -142,11 +169,10 @@ static uint8_t COLOR_FTOB(double v)
 }
 
 
-void ShowFieldModule::renderMesh(
+void ShowFieldModule::renderFaces(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-    Dataflow::Networks::ModuleStateHandle state,
-    Core::Datatypes::GeometryHandle geom, 
+    const RenderState& state, Core::Datatypes::GeometryHandle geom, 
     unsigned int approxDiv,
     const std::string& id)
 {
@@ -181,7 +207,7 @@ void ShowFieldModule::renderMesh(
 void ShowFieldModule::renderFacesLinear(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-    Dataflow::Networks::ModuleStateHandle state,
+    const RenderState& state,
     Core::Datatypes::GeometryHandle geom, 
     unsigned int approxDiv,
     const std::string& id)
@@ -193,7 +219,7 @@ void ShowFieldModule::renderFacesLinear(
 void ShowFieldModule::renderNodes(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-    Dataflow::Networks::ModuleStateHandle state,
+    const RenderState& state,
     Core::Datatypes::GeometryHandle geom, 
     const std::string& id)
 {

@@ -33,6 +33,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -79,25 +80,29 @@ namespace Visualization {
     void renderNodes(
         boost::shared_ptr<SCIRun::Field> field,
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-        Dataflow::Networks::ModuleStateHandle state,
-        Core::Datatypes::GeometryHandle geom, 
+        const RenderState& state, Core::Datatypes::GeometryHandle geom, 
         const std::string& id);
 
-    void renderMesh(
+    void renderFaces(
         boost::shared_ptr<SCIRun::Field> field,
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-        Dataflow::Networks::ModuleStateHandle state,
-        Core::Datatypes::GeometryHandle geom, 
+        const RenderState& state, Core::Datatypes::GeometryHandle geom, 
         unsigned int approx_div,
         const std::string& id);
 
     void renderFacesLinear(
         boost::shared_ptr<SCIRun::Field> field,
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-        Dataflow::Networks::ModuleStateHandle state,
-        Core::Datatypes::GeometryHandle geom, 
+        const RenderState& state, Core::Datatypes::GeometryHandle geom, 
         unsigned int approxDiv,
         const std::string& id);
+    /// @}
+
+    /// State evaluation
+    /// @{
+    RenderState getNodeRenderState(Dataflow::Networks::ModuleStateHandle state);
+    RenderState getEdgeRenderState(Dataflow::Networks::ModuleStateHandle state);
+    RenderState getFaceRenderState(Dataflow::Networks::ModuleStateHandle state);
     /// @}
 
   };
