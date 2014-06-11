@@ -220,6 +220,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(modified()));
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
+ 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
   
@@ -313,7 +314,7 @@ NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
     ModuleWidget* first = getModule(items.first());
     ModuleWidget* second = getModule(items.last());
     if (first && second)
-      return ModulePair(first, second);
+		return ModulePair(first, second); 
   }
   return ModulePair();
 }
@@ -493,7 +494,51 @@ void NetworkEditor::mousePressEvent(QMouseEvent *event)
 {
   if (event->button() != Qt::LeftButton)
     Q_EMIT networkEditorMouseButtonPressed();
+  
+		auto item = scene_->selectedItems();
+		if(item.count() == 1)
+		{
+			ConnectionLine * cL; 
+			if(cL = qgraphicsitem_cast<ConnectionLine*>(item.first())) 
+			{
+				auto port1 = cL->getConnectedFromPortWidget(); 
+				auto port2 = cL->getConnectedToPortWidget();
+
+				auto mId1 = port1->getUnderlyingModuleId(); 
+				auto mId2 = port2->getUnderlyingModuleId(); 
+
+				auto m1 = findById(scene_->items(), mId1); 
+				auto m2 = findById(scene_->items(), mId2); 
+
+				m1->setSelected(true);
+				m2->setSelected(true);
+			}
+		}
   QGraphicsView::mousePressEvent(event);
+}
+
+void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
+{
+	auto item = scene_->selectedItems();
+		if(item.count() == 3)
+		{
+			ConnectionLine * cL; 
+			if(cL = qgraphicsitem_cast<ConnectionLine*>(item.first())) 
+			{
+				auto port1 = cL->getConnectedFromPortWidget(); 
+				auto port2 = cL->getConnectedToPortWidget();
+
+				auto mId1 = port1->getUnderlyingModuleId(); 
+				auto mId2 = port2->getUnderlyingModuleId(); 
+
+				auto m1 = findById(scene_->items(), mId1); 
+				auto m2 = findById(scene_->items(), mId2); 
+
+				m1->setSelected(false);
+				m2->setSelected(false);
+			}
+		}
+	QGraphicsView::mouseReleaseEvent(event);
 }
 
 SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions() const
@@ -506,7 +551,6 @@ SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePosit
       positions->modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
     }
   }
-
   return positions;
 }
 

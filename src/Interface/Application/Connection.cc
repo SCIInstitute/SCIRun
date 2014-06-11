@@ -152,6 +152,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   {
     fromPort_->addConnection(this);
     fromPort_->turn_on_light();
+	placeHoldingColor_ = fromPort_->color(); 
   }
   else
     LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
@@ -159,6 +160,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   {
     toPort_->addConnection(this);
     toPort_->turn_on_light();
+	placeHoldingColor_ = toPort_->color(); 
   }
   else
     LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
@@ -166,7 +168,8 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   if (fromPort_ && toPort_)
     setColor(fromPort_->color());
 
-  setFlags(QGraphicsItem::ItemIsSelectable);
+  setFlags( ItemIsSelectable| ItemIsMovable | ItemSendsGeometryChanges);
+  
   //TODO: need dynamic zValue
   setZValue(1); 
   setToolTip("Left - Highlight*\nDouble-Left - Menu");
@@ -176,7 +179,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   connectUpdateNote(this);
 
   setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
-
+  
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
 }
@@ -228,6 +231,15 @@ void ConnectionLine::trackNodes()
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
 }
 
+PortWidget* ConnectionLine::getConnectedFromPortWidget()
+{
+	return fromPort_;
+}
+PortWidget* ConnectionLine::getConnectedToPortWidget()
+{
+	return toPort_;
+}
+
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 {
   if (!destroyed_)
@@ -244,14 +256,15 @@ void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {	 
-	if(!menuOpen_)
+	this->setAcceptedMouseButtons(Qt::LeftButton);
+	
+	if(!menuOpen_ )
 	{
 		placeHoldingColor_ = this -> color();
-		this -> setColor(Qt::red); 
+		this -> setColor(Qt::red);	
 	}
   QGraphicsPathItem::mousePressEvent(event);
 }
-
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   auto action = menu_->exec(event->screenPos());
@@ -266,7 +279,23 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     //std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
   }
   QGraphicsPathItem::mouseDoubleClickEvent(event);
+}
+void ConnectionLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+  QGraphicsPathItem::mouseMoveEvent(event);
+}
+
+QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+  if (change == ItemPositionChange && scene())
+  {
+	  QPointF newPos = value.toPointF();
+	  newPos.setX(0);
+	  newPos.setY(0);
+	  return newPos;
   }
+  return QGraphicsItem::itemChange(change, value);
+}
 
 void ConnectionLine::setNoteGraphicsContext() 
 {

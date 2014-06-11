@@ -146,6 +146,9 @@ Q_SIGNALS:
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
     void mousePressEvent(QMouseEvent *event);
+	//void mouseMoveEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override; 
+
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
