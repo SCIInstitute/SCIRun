@@ -26,6 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+// Needed for OpenGL include files on Travis:
+#include <QtOpenGL/QGLWidget>
+
 #include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
