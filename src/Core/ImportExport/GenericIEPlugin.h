@@ -314,12 +314,32 @@ std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0
 }
 
 template <>
-SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Field>* mgr)
-{
-  return "SCIRun Field File (*.fld)";
-}
+SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Field>* mgr);
 
 SCISHARE std::string fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter);
+
+template <class Data>
+std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>& mgr, const std::string& defaultType, const std::vector<std::string>& pluginNames)
+{
+  std::ostringstream types;
+  types << defaultType;
+
+  BOOST_FOREACH(const std::string& name, pluginNames)
+  {
+    auto pl = mgr.get_plugin(name);
+    types << ";;" << name;
+    if (!pl->fileExtension().empty())
+    {
+      types << " (*." << pl->fileExtension() << ")";
+    }
+    else
+    {
+      types << " (.*)";
+    }
+  }
+
+  return types.str();
+}
 
 template <class Data>
 std::string makeGuiTypesListForImport(const GenericIEPluginManager<Data>& mgr)
@@ -327,24 +347,7 @@ std::string makeGuiTypesListForImport(const GenericIEPluginManager<Data>& mgr)
   std::vector<std::string> importers;
   mgr.get_importer_list(importers);
 
-  std::ostringstream importtypes;
-  importtypes << defaultImportTypeForFile(&mgr);
-
-  for (size_t i = 0; i < importers.size(); i++)
-  {
-    auto pl = mgr.get_plugin(importers[i]);
-    importtypes << ";;" << importers[i];
-    if (!pl->fileExtension().empty())
-    {
-       importtypes << " (*." << pl->fileExtension() << ")";
-    }
-    else
-    {
-      importtypes << " (.*)";
-    }
-  }
-
-  return importtypes.str();
+  return printPluginDescriptionsForFilter(mgr, defaultImportTypeForFile(&mgr), importers);
 }
 
 template <class Data>
@@ -354,35 +357,14 @@ std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0
 }
 
 template <>
-SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr)
-{
-  return "SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld)";
-}
+SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr);
 
 template <class Data>
 std::string makeGuiTypesListForExport(const GenericIEPluginManager<Data>& mgr)
 {
   std::vector<std::string> exporters;
   mgr.get_exporter_list(exporters);
-
-  std::ostringstream exporttypes;
-  exporttypes << defaultExportTypeForFile(&mgr);
-
-  for (size_t i = 0; i < exporters.size(); i++)
-  {
-    auto pl = mgr.get_plugin(exporters[i]);
-    exporttypes << ";;" << exporters[i];
-    if (!pl->fileExtension().empty())
-    {
-      exporttypes << " (*." << pl->fileExtension() << ")";
-    }
-    else
-    {
-      exporttypes << " (.*)";
-    }
-  }
-
-  return exporttypes.str();
+  return printPluginDescriptionsForFilter(mgr, defaultExportTypeForFile(&mgr), exporters);
 }
 
 }

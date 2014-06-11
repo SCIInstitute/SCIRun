@@ -158,7 +158,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>SCIRun</value>
+										<value>SCIRun Field Binary</value>
 									</value>
 								</second>
 							</item>
@@ -210,7 +210,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>SCIRun</value>
+										<value>SCIRun Field ASCII</value>
 									</value>
 								</second>
 							</item>
@@ -304,22 +304,22 @@
 		<item>
 			<first>WriteField:2</first>
 			<second>
-				<first>-880</first>
-				<second>-141</second>
+				<first>-834</first>
+				<second>-151</second>
 			</second>
 		</item>
 		<item>
 			<first>WriteField:3</first>
 			<second>
-				<first>-606</first>
-				<second>-108</second>
+				<first>-548</first>
+				<second>77</second>
 			</second>
 		</item>
 		<item>
 			<first>WriteField:4</first>
 			<second>
-				<first>-363</first>
-				<second>-34</second>
+				<first>-301</first>
+				<second>-45</second>
 			</second>
 		</item>
 	</modulePositions>

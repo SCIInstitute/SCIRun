@@ -44,6 +44,18 @@ std::string SCIRun::fileTypeDescriptionFromDialogBoxFilter(const std::string& fi
   return what[1];
 }
 
+template <>
+std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Field>* mgr)
+{
+  return "SCIRun Field File (*.fld)";
+}
+
+template <>
+std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr)
+{
+  return "SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld)";
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
 
 #include <Core/Thread/Mutex.h>
