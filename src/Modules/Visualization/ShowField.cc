@@ -147,7 +147,7 @@ void ShowFieldModule::renderMesh(
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
     Dataflow::Networks::ModuleStateHandle state,
     Core::Datatypes::GeometryHandle geom, 
-    unsigned int approx_div,
+    unsigned int approxDiv,
     const std::string& id)
 {
   VField* fld   = field->vfield();
@@ -157,15 +157,15 @@ void ShowFieldModule::renderMesh(
   // I'm assuming it means linear interpolation as opposed to nearest neighbor
   // interpolation along the basis. But I could be wrong.
   bool doLinear = (fld->basis_order() < 2 && mesh->basis_order() < 2 &&
-                   approx_div == 1);
+                   approxDiv == 1);
 
   // Todo: Check for texture -- this is indicative of volume rendering.
   // if(mesh->is_regularmesh() && mesh->is_surface() &&
   //    get_flag(render_state, USE_TEXTURE))
 
-  if (do_linear)
+  if (doLinear)
   {
-    return renderFacesLinear(field, colorMap, state, geom, id);
+    return renderFacesLinear(field, colorMap, state, geom, approxDiv, id);
   }
   else
   {
@@ -173,7 +173,7 @@ void ShowFieldModule::renderMesh(
   }
   // else
   // {
-  //   return renderFaces(field_handle, render_state, approx_div);
+  //   return renderFaces(field_handle, render_state, approxDiv);
   // }
 }
 
@@ -183,6 +183,7 @@ void ShowFieldModule::renderFacesLinear(
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
     Dataflow::Networks::ModuleStateHandle state,
     Core::Datatypes::GeometryHandle geom, 
+    unsigned int approxDiv,
     const std::string& id)
 {
   

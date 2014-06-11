@@ -83,12 +83,20 @@ namespace Visualization {
         Core::Datatypes::GeometryHandle geom, 
         const std::string& id);
 
-
-    void ShowFieldModule::renderMesh(
+    void renderMesh(
         boost::shared_ptr<SCIRun::Field> field,
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
         Dataflow::Networks::ModuleStateHandle state,
         Core::Datatypes::GeometryHandle geom, 
+        unsigned int approx_div,
+        const std::string& id);
+
+    void renderFacesLinear(
+        boost::shared_ptr<SCIRun::Field> field,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+        Dataflow::Networks::ModuleStateHandle state,
+        Core::Datatypes::GeometryHandle geom, 
+        unsigned int approxDiv,
         const std::string& id);
     /// @}
 

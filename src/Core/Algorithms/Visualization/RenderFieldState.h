@@ -51,6 +51,91 @@ void valueToColor(unsigned int colorScheme,
 }
 
 // Add render state information here.
+class RenderState
+{
+public:
+
+  enum ActionFlags
+  {
+    IS_ON = 0,
+    HAS_DATA,
+    USE_TRANSPARENCY,
+    NORMALIZE_DATA,
+
+    USE_DEFAULT_COLOR,
+    USE_COLORMAP,
+    USE_COLOR_CONVERT,
+
+    SMALL_IS_DOT,
+
+    DIRTY,
+
+    // Node flags
+
+    // Edge flags
+
+    // Face flags
+    USE_NORMALS,
+    USE_TEXTURE,
+
+    // Text flags
+    BACKFACES_CULL,
+    ALWAYS_VISIBLE,
+
+    // Scalar data flags
+
+    // Vector data flags
+    BIDIRECTIONAL,
+
+    // Tensor data flags
+
+    // Secondary / tertiary data flags
+    USE_ALPHA,
+    USE_VALUE,
+    USE_MAJOR_RADIUS,
+    USE_MINOR_RADIUS,
+    USE_PITCH,
+
+    MAX_ACTION_FLAGS
+  };
+
+  enum GlyphType
+  {
+    POINT_GLYPH,
+    SPHERE_GLYPH,
+    BOX_GLYPH,
+    AXIS_GLYPH,
+    LINE_GLYPH,
+    NEEDLE_GLYPH,
+    ARROW_GLYPH,
+    CONE_GLYPH,
+    DISK_GLYPH,
+    RING_GLYPH
+  };
+
+  RenderState()
+  {
+    for (int i = 0; i < MAX_ACTION_FLAGS; ++i)
+    {
+      mFlags[i] = false;
+    }
+  }
+
+  void set(ActionFlags flag, bool truth)
+  {
+    mFlags[flag] = truth;
+  }
+
+  bool get(ActionFlags flag) const
+  {
+    return mFlags[flag];
+  }
+
+  // Render state flags.
+  bool mFlags[MAX_ACTION_FLAGS];
+
+};
+
 
 } // namespace SCIRun
 
