@@ -81,32 +81,53 @@ void ShowFieldModule::execute()
   sendOutput(SceneGraph, geom);
 }
 
-RenderState ShowFieldModule::getNodeRenderState(ModuleStateHandle state)
+RenderState ShowFieldModule::getNodeRenderState(
+    ModuleStateHandle state,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
 {
   RenderState renState;
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).getBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).getBool());
 
+  if (colorMap)
+  {
+    renState.set(RenderState::USE_COLORMAP, true);
+  }
+
   return renState;
 }
 
-RenderState ShowFieldModule::getEdgeRenderState(ModuleStateHandle state)
+RenderState ShowFieldModule::getEdgeRenderState(
+    ModuleStateHandle state,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
 {
   RenderState renState;
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).getBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).getBool());
 
+  if (colorMap)
+  {
+    renState.set(RenderState::USE_COLORMAP, true);
+  }
+
   return renState;
 }
 
-RenderState ShowFieldModule::getFaceRenderState(ModuleStateHandle state)
+RenderState ShowFieldModule::getFaceRenderState(
+    ModuleStateHandle state,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap)
 {
   RenderState renState;
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowFaces).getBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).getBool());
+
+  if (colorMap)
+  {
+    renState.set(RenderState::USE_COLORMAP, true);
+  }
 
   return renState;
 }
@@ -130,7 +151,6 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   GeometryHandle geom(new GeometryObject(field));
   geom->objectName = id;
 
-
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
   /// \todo Mind material properties (simple since we already have implemented
@@ -142,10 +162,6 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
   /// \todo render_state_ DIRTY flag? See old scirun ShowField.cc:446.
 
-  /// \todo Generate a state class for node, edges, and face. This state
-  ///       class will encompass all rendering parameters and will be passed
-  ///       to the appropriate mesh generation function.
-
   const int dim = field->vmesh()->dimensionality();
   if (showEdges && dim < 1) { showEdges = false; }
   if (showFaces && dim < 2) { showFaces = false; }
@@ -153,7 +169,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   if (showNodes)
   {
     // Construct node geometry.
-    renderNodes(field, colorMap, getNodeRenderState(state), geom, id);
+    renderNodes(field, colorMap, getNodeRenderState(state, colorMap), geom, id);
   }
 
   return geom;
@@ -182,8 +198,7 @@ void ShowFieldModule::renderFaces(
   // Directly ported from SCIRUN 4. Unsure what 'linear' is.
   // I'm assuming it means linear interpolation as opposed to nearest neighbor
   // interpolation along the basis. But I could be wrong.
-  bool doLinear = (fld->basis_order() < 2 && mesh->basis_order() < 2 &&
-                   approxDiv == 1);
+  bool doLinear = (fld->basis_order() < 2 && mesh->basis_order() < 2 && approxDiv == 1);
 
   // Todo: Check for texture -- this is indicative of volume rendering.
   // if(mesh->is_regularmesh() && mesh->is_surface() &&
@@ -195,12 +210,8 @@ void ShowFieldModule::renderFaces(
   }
   else
   {
-    std::cout << "Non linear faces not supported." << std::endl;
+    std::cout << "Non linear faces not supported at this time." << std::endl;
   }
-  // else
-  // {
-  //   return renderFaces(field_handle, render_state, approxDiv);
-  // }
 }
 
 

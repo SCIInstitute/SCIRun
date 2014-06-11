@@ -100,9 +100,17 @@ namespace Visualization {
 
     /// State evaluation
     /// @{
-    RenderState getNodeRenderState(Dataflow::Networks::ModuleStateHandle state);
-    RenderState getEdgeRenderState(Dataflow::Networks::ModuleStateHandle state);
-    RenderState getFaceRenderState(Dataflow::Networks::ModuleStateHandle state);
+    RenderState getNodeRenderState(
+        Dataflow::Networks::ModuleStateHandle state,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+
+    RenderState getEdgeRenderState(
+        Dataflow::Networks::ModuleStateHandle state,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+
+    RenderState getFaceRenderState(
+        Dataflow::Networks::ModuleStateHandle state,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
     /// @}
 
   };
