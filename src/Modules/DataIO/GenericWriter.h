@@ -61,7 +61,8 @@ public:
 
 protected:
   HType       handle_;
-  std::string filename_, filetype_;
+  std::string filename_;
+  mutable std::string filetype_;
   Core::Algorithms::AlgorithmParameterName stateFilename_;
   StaticPortName<typename HType::element_type, 0>* objectPortName_;
 

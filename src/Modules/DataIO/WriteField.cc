@@ -122,10 +122,7 @@ void WriteFieldModule::execute()
   const std::string::size_type loc = ftpre.find(" (");
   const std::string ft = ftpre.substr(0, loc);
 
-  // Determine if we're ASCII or Binary
-  std::string ab = "Binary";
-  if (ft == "SCIRun Field ASCII") ab = "ASCII";
-  filetype_.set(ab);
+ 
   
   //get the current file name
   const std::string oldfilename=filename_.get();
@@ -164,6 +161,9 @@ bool WriteFieldModule::useCustomExporter(const std::string& filename) const
 {
   auto ft = get_state()->getValue(Variables::FileTypeName).getString();
   LOG_DEBUG("WriteField with filetype " << ft);
+  
+  filetype_ = (ft == "SCIRun Field ASCII") ? "ASCII" : "Binary";
+
   return !(ft == "" ||
     ft == "SCIRun Field Binary" ||
     ft == "SCIRun Field ASCII" ||
