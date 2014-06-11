@@ -147,14 +147,46 @@ void ShowFieldModule::renderMesh(
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
     Dataflow::Networks::ModuleStateHandle state,
     Core::Datatypes::GeometryHandle geom, 
+    unsigned int approx_div,
     const std::string& id)
 {
   VField* fld   = field->vfield();
   VMesh*  mesh  = field->vmesh();
 
+  // Directly ported from SCIRUN 4. Unsure what 'linear' is.
+  // I'm assuming it means linear interpolation as opposed to nearest neighbor
+  // interpolation along the basis. But I could be wrong.
+  bool doLinear = (fld->basis_order() < 2 && mesh->basis_order() < 2 &&
+                   approx_div == 1);
+
+  // Todo: Check for texture -- this is indicative of volume rendering.
+  // if(mesh->is_regularmesh() && mesh->is_surface() &&
+  //    get_flag(render_state, USE_TEXTURE))
+
+  if (do_linear)
+  {
+    return renderFacesLinear(field, colorMap, state, geom, id);
+  }
+  else
+  {
+    std::cout << "Non linear faces not supported." << std::endl;
+  }
+  // else
+  // {
+  //   return renderFaces(field_handle, render_state, approx_div);
+  // }
 }
 
 
+void ShowFieldModule::renderFacesLinear(
+    boost::shared_ptr<SCIRun::Field> field,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+    Dataflow::Networks::ModuleStateHandle state,
+    Core::Datatypes::GeometryHandle geom, 
+    const std::string& id)
+{
+  
+}
 
 
 void ShowFieldModule::renderNodes(
