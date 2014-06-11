@@ -228,7 +228,6 @@ void ShowFieldModule::renderFacesLinear(
   
   bool withNormals = (state.get(RenderState::USE_NORMALS) && mesh->has_normals());
 
-
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   std::vector<double> svals(10);
   std::vector<Vector> vvals(10);
@@ -285,23 +284,274 @@ void ShowFieldModule::renderFacesLinear(
   }
   else
   {
-    if (get_flag(render_state, USE_TRANSPARENCY))
+    /// \todo Sort triangles in a consistent rendering order (back to front).
+    ///       This should happen regardless of camera positioning. This has
+    ///       everything to do with rendering the triangles in a consistent
+    ///       fashion. But with the z buffer turned on, we won't get good
+    ///       results.
+    // if (get_flag(render_state, USE_TRANSPARENCY))
+    // {
+    //   tfaces = new GeomTranspTriangles;
+    //   qfaces = new GeomTranspQuads;
+    //   
+    //   grp->add(tfaces);
+    //   grp->add(qfaces);
+    // }
+    // else
+    // {
+    //   tfaces = new GeomFastTriangles;
+    //   qfaces = new GeomFastQuads;
+    //
+    //   grp->add(tfaces);
+    //   grp->add(qfaces);
+    // }
+    if (state.get(RenderState::USE_TRANSPARENCY))
     {
-      tfaces = new GeomTranspTriangles;
-      qfaces = new GeomTranspQuads;
       
-      grp->add(tfaces);
-      grp->add(qfaces);
     }
     else
     {
-      tfaces = new GeomFastTriangles;
-      qfaces = new GeomFastQuads;
-    
-      grp->add(tfaces);
-      grp->add(qfaces);
+
     }
   }
+
+  if (withNormals) {mesh->synchronize(Mesh::NORMALS_E)};
+
+  mesh->synchronize(Mesh::FACES_E);
+  VMesh::Face::iterator fiter, fiterEnd;
+  VMesh::Node::array_type nodes;
+
+  mesh->begin(fiter);
+  mesh->end(fiterEnd);
+
+  VMesh::Face::size_type f;
+  VMesh::Cell::size_type c;
+
+  mesh->size(f);
+  mesh->size(c);
+
+  while (fiter != fiter_end) 
+  {
+    mesh->get_nodes(nodes, *fiter);
+ 
+    std::vector<Point> points(nodes.size());
+    std::vector<Vector> normals(nodes.size());
+
+    for (size_t i = 0; i < nodes.size(); i++)
+    {
+      mesh->get_point(points[i], nodes[i]);
+    }
+
+    if (with_normals) 
+    {
+      for (size_t i = 0; i < nodes.size(); i++)
+      {
+        mesh->get_normal(normals[i], nodes[i]);
+      }
+    }
+
+    // Default color single face no matter the element data.
+    if (color_scheme == GeometryObject::COLOR_UNIFORM)
+    {
+      //add_face_geom(tfaces, qfaces, points, normals, with_normals, color_scheme, scols, vcols);                        
+    }
+    // Element data (Cells) so two sided faces.
+    else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
+    {
+      VMesh::Elem::array_type cells;
+      mesh->get_elems(cells, *fiter);
+      
+      if (fld->is_scalar())
+      {
+        fld->get_value(svals[0], cells[0]);
+        
+        if (cells.size() > 1)
+        {
+          fld->get_value(svals[1], cells[1]);
+        }
+        else
+        {
+          svals[1] = svals[0];
+        }
+        
+        value_to_color( color_scheme, svals[0], scols[0], vcols[0] );
+        value_to_color( color_scheme, svals[1], scols[1], vcols[1] );
+      }
+      else if (fld->is_vector())
+      {
+        fld->get_value(vvals[0], cells[0]);
+        
+        if (cells.size() > 1)
+        {
+          fld->get_value(vvals[1], cells[1]);
+        }
+        else
+        {
+          svals[1] = svals[0];
+        }
+        
+        value_to_color( color_scheme, vvals[0], scols[0], vcols[0] );
+        value_to_color( color_scheme, vvals[1], scols[1], vcols[1] );
+      }
+      else if (fld->is_tensor())
+      {
+        fld->get_value(tvals[0], cells[0]);
+        
+        if (cells.size() > 1)
+        {
+          fld->get_value(tvals[1], cells[1]);
+        }
+        else
+        {
+          svals[1] = svals[0];
+        }
+        
+        value_to_color( color_scheme, tvals[0], scols[0], vcols[0] );
+        value_to_color( color_scheme, tvals[1], scols[1], vcols[1] );
+      }
+
+      if (color_scheme == GeometryObject::COLOR_MAP)
+      {
+        if (nodes.size() == 4)
+        {
+          if (with_normals)
+          {
+            tqfaces->add(points[0], normals[0], scols[0], scols[1],
+                         points[1], normals[1], scols[0], scols[1],
+                         points[2], normals[2], scols[0], scols[1],
+                         points[3], normals[3], scols[0], scols[1]);
+          }
+          else
+          {
+            tqfaces->add(points[0], scols[0], scols[1],
+                         points[1], scols[0], scols[1],
+                         points[2], scols[0], scols[1],
+                         points[3], scols[0], scols[1]);
+          }
+        }
+        else
+        {
+          for (size_t i=2; i<nodes.size(); i++)
+          {
+            if (with_normals)
+            {
+              ttfaces->add(points[0],   normals[0],   scols[0], scols[1],
+                           points[i-1], normals[i-1], scols[0], scols[1],
+                           points[i],   normals[i],   scols[0], scols[1]);
+            }
+            else
+            {
+              ttfaces->add(points[0],   scols[0], scols[1],
+                           points[i-1], scols[0], scols[1],
+                           points[i],   scols[0], scols[1]);
+            }
+          }
+        }
+      }
+      else //if (color_scheme == GeometryObject::COLOR_IN_SITU)
+      {
+        if (nodes.size() == 4)
+        {
+          if (with_normals)
+          {
+            tqfaces->add(points[0], normals[0], vcols[0], vcols[1],
+                         points[1], normals[1], vcols[0], vcols[1],
+                         points[2], normals[2], vcols[0], vcols[1],
+                         points[3], normals[3], vcols[0], vcols[1]);
+          }
+          else
+          {
+            tqfaces->add(points[0], vcols[0], vcols[1],
+                         points[1], vcols[0], vcols[1],
+                         points[2], vcols[0], vcols[1],
+                         points[3], vcols[0], vcols[1]);
+          }
+        }
+        else
+        {
+          for (size_t i=2; i<nodes.size(); i++)
+          {
+            if (with_normals)
+            {
+              ttfaces->add(points[0],   normals[0],   vcols[0], vcols[1],
+                           points[i-1], normals[i-1], vcols[0], vcols[1],
+                           points[i],   normals[i],   vcols[0], vcols[1]);
+            }
+            else
+            {
+              ttfaces->add(points[0],   vcols[0], vcols[1],
+                           points[i-1], vcols[0], vcols[1],
+                           points[i],   vcols[0], vcols[1]);
+            }
+          }
+        }
+      }
+    }
+    
+    // Element data (faces)
+    else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
+    {
+      if (fld->is_scalar())
+      {
+        fld->get_value(svals[0], *fiter);
+        value_to_color( color_scheme, svals[0], scols[0], vcols[0] );
+      }
+      else if (fld->is_vector())
+      {
+        fld->get_value(vvals[0], *fiter);
+        value_to_color( color_scheme, vvals[0], scols[0], vcols[0] );
+      }
+      else if (fld->is_tensor())
+      {
+        fld->get_value(tvals[0], *fiter);
+        value_to_color( color_scheme, tvals[0], scols[0], vcols[0] );
+      }
+
+      // Same color at all corners.
+      for(size_t i=0; i<nodes.size(); ++i)
+      {
+        scols[i] = scols[0];
+        vcols[i] = vcols[0];
+      }
+      
+      add_face_geom(tfaces, qfaces, points, normals, with_normals, color_scheme, scols, vcols);                        
+    }
+
+    // Data at nodes
+    else if (fld->basis_order() == 1)
+    {
+      if (fld->is_scalar())
+      {
+        for (size_t i=0; i<nodes.size(); i++)
+        {
+          fld->get_value(svals[i], nodes[i]);
+          value_to_color( color_scheme, svals[i], scols[i], vcols[i] );
+        }
+      }
+      else if (fld->is_vector())
+      {
+        for (size_t i=0; i<nodes.size(); i++)
+        {
+          fld->get_value(vvals[i], nodes[i]);
+          value_to_color( color_scheme, vvals[i], scols[i], vcols[i] );
+        }
+      }      
+      else if (fld->is_tensor())
+      {
+        for (size_t i=0; i<nodes.size(); i++)
+        {
+          fld->get_value(tvals[i], nodes[i]);
+          value_to_color( color_scheme, tvals[i], scols[i], vcols[i] );
+        }
+      }
+      
+      add_face_geom(tfaces, qfaces, points, normals, with_normals,
+		    color_scheme, scols, vcols);
+    }
+
+    ++fiter;     
+  }
+
 }
 
 
