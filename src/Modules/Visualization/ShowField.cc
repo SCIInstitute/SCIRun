@@ -237,22 +237,14 @@ void ShowFieldModule::renderNodes(
   VField* fld   = field->vfield();
   VMesh*  mesh  = field->vmesh();
 
-  bool points   = true;
-  bool spheres  = false;
-
-  /// \todo The following variables should be part of our module state.
-  ///       Color should be checked based on optional existence of colorMap.
-  /// @{
-  bool useDefaultColor  = true;
-  bool useColorMap      = false;
-  /// @}
-
-  if (points)
+  if (!state.get(RenderState::USE_SPHERE))
   {
     /// \todo Generate appropriate classes to handle points versus spheres.
     ///       See old scirun RenderField.cc:132.
+    ///       For us, this will be building a draw list. Instancing would
+    ///       be the way to go for this once we have built the draw list.
   }
-  else if (spheres)
+  else
   {
     // See above.
   }
@@ -267,15 +259,15 @@ void ShowFieldModule::renderNodes(
 
   if (fld->basis_order() < 0 ||
       (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
-      useDefaultColor)
+      state.get(RenderState::USE_DEFAULT_COLOR))
   {
     colorScheme = GeometryObject::COLOR_UNIFORM;
   }
-  else if (useColorMap)
+  else if (state.get(RenderState::USE_COLORMAP))
   {
     colorScheme = GeometryObject::COLOR_MAP;
   }
-  else // if (fld->basis_order() >= 1)
+  else
   {
     colorScheme = GeometryObject::COLOR_IN_SITU;
     /// \note There's some extra initialization that SCIRun4 would perform here.
@@ -291,14 +283,16 @@ void ShowFieldModule::renderNodes(
   int iboSize = mesh->num_nodes() * sizeof(uint32_t);
   int vboSize = mesh->num_nodes() * sizeof(float) * 3;
 
-  if (useColorMap == GeometryObject::COLOR_MAP)
+  if (colorScheme == GeometryObject::COLOR_MAP)
   {
-    vboSize += sizeof(float);     // For the data (color map lookup).
+    vboSize += mesh->num_nodes() * sizeof(float);     // For the data (color map lookup).
   }
-  else if (useColorMap == GeometryObject::COLOR_IN_SITU)
+  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
-    vboSize += sizeof(uint32_t); // For full color in the elements.
+    vboSize += mesh->num_nodes() * sizeof(uint32_t); // For full color in the elements.
   }
+
+  std::cout << "Num nodes: " << mesh->num_nodes();
 
   /// \todo To reduce memory requirements, we can use a 16bit index buffer.
 
@@ -343,8 +337,9 @@ void ShowFieldModule::renderNodes(
       }
     }
 
-    if (points)
+    if (!state.get(RenderState::USE_SPHERE))
     {
+      // Render points if we are not rendering spheres.
       vboBuffer->write(static_cast<float>(p.x()));
       vboBuffer->write(static_cast<float>(p.y()));
       vboBuffer->write(static_cast<float>(p.z()));
@@ -353,7 +348,7 @@ void ShowFieldModule::renderNodes(
       {
         vboBuffer->write(static_cast<float>(scol));
       }
-      else //if (colorScheme == GeometryObject::COLOR_IN_SITU)
+      else if (colorScheme == GeometryObject::COLOR_IN_SITU)
       {
         // Writes uint8_t out to the VBO. A total of 4 bytes.
         vboBuffer->write(COLOR_FTOB(vcol.diffuse.r()));
@@ -364,9 +359,9 @@ void ShowFieldModule::renderNodes(
 
       iboBuffer->write(static_cast<uint32_t>(index));
     }
-    else if (spheres)
+    else
     {
-      /// \todo Implement...
+      // Spheres.
     }
 
     ++index;
@@ -374,9 +369,9 @@ void ShowFieldModule::renderNodes(
   }
 
   std::string uniqueNodeID = id + "node";
-  std::string vboName = uniqueNodeID + "VBO";
-  std::string iboName = uniqueNodeID + "IBO";
-  std::string passName = uniqueNodeID + "nodesPass";
+  std::string vboName      = uniqueNodeID + "VBO";
+  std::string iboName      = uniqueNodeID + "IBO";
+  std::string passName     = uniqueNodeID + "nodesPass";
 
   // NOTE: Attributes will depend on the color scheme. We will want to
   // normalize the colors if the color scheme is COLOR_IN_SITU.

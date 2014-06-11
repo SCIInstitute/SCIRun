@@ -321,8 +321,11 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
         break;
     }
 
+    int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+    std::cout << "Num primitives: " << numPrimitives << std::endl;
+
     iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType,
-                          ibo.data->getBufferSize() / ibo.indexSize, ibo.name);
+                          numPrimitives, ibo.name);
   }
 
   // Add default identity transform to the object globally (instead of per-pass)

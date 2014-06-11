@@ -71,6 +71,7 @@ public:
     DIRTY,
 
     // Node flags
+    USE_SPHERE,
 
     // Edge flags
 
