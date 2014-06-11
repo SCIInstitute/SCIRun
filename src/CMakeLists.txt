@@ -416,6 +416,7 @@ INCLUDE_DIRECTORIES(
   # TODO: set up include variable in log4cpp project
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/log4cpp/include
   ${SCI_TEEM_INCLUDE}
+  ${SCI_ZLIB_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
