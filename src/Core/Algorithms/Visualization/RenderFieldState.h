@@ -120,6 +120,9 @@ public:
     {
       mFlags[i] = false;
     }
+
+    // Default settings.
+    mFlags[USE_NORMALS] = true;
   }
 
   void set(ActionFlags flag, bool truth)

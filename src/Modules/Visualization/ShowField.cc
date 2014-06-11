@@ -223,7 +223,85 @@ void ShowFieldModule::renderFacesLinear(
     unsigned int approxDiv,
     const std::string& id)
 {
+  VField* fld   = field->vfield();
+  VMesh*  mesh  = field->vmesh();
   
+  bool withNormals = (state.get(RenderState::USE_NORMALS) && mesh->has_normals());
+
+
+  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  std::vector<double> svals(10);
+  std::vector<Vector> vvals(10);
+  std::vector<Tensor> tvals(10);
+
+  std::vector<Material> vcols(10, Material);
+  std::vector<double> scols(10);
+
+  if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
+  {
+    colorScheme = GeometryObject::COLOR_UNIFORM;
+  }
+  else if (state.get(RenderState::USE_COLORMAP))
+  {
+    colorScheme = GeometryObject::COLOR_MAP;
+  }
+  else // if (fld->basis_order() >= 0)
+  {
+    colorScheme = GeometryObject::COLOR_IN_SITU;
+
+    for (uint32_t i = 0; i < 10; ++i)
+    {
+      vcols[i] = Material(ColorRGB(1.0, 1.0, 1.0));
+
+      if (state.get(RenderState::USE_TRANSPARENCY))
+      {
+        vcols[i].transparency = 0.75;
+      }
+      else
+      {
+        vcols[i].transparency = 1.0;
+      }
+    }
+  }
+
+  // Special case for cell centered data
+  if ((fld->basis_order() == 0) && (mesh->dimensionality() == 3) && (color_scheme != GeometryObject::COLOR_UNIFORM))
+  {
+    std::cout << "Cell centered data not implemented yet. Need two sided triangles." << std::endl;
+    // if (state.get(USE_TRANSPARENCY))
+    // {
+    //   ttfaces = new GeomTranspTrianglesTwoSided;
+    //   tqfaces = new GeomTranspQuadsTwoSided;
+    //   grp->add(ttfaces);
+    //   grp->add(tqfaces);
+    // }
+    // else
+    // {
+    //   ttfaces = new GeomFastTrianglesTwoSided;
+    //   tqfaces = new GeomFastQuadsTwoSided;
+    //   grp->add(ttfaces);
+    //   grp->add(tqfaces);
+    // }
+  }
+  else
+  {
+    if (get_flag(render_state, USE_TRANSPARENCY))
+    {
+      tfaces = new GeomTranspTriangles;
+      qfaces = new GeomTranspQuads;
+      
+      grp->add(tfaces);
+      grp->add(qfaces);
+    }
+    else
+    {
+      tfaces = new GeomFastTriangles;
+      qfaces = new GeomFastQuads;
+    
+      grp->add(tfaces);
+      grp->add(qfaces);
+    }
+  }
 }
 
 
