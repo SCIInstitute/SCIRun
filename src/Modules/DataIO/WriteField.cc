@@ -49,6 +49,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
@@ -98,7 +99,7 @@ WriteFieldModule::WriteFieldModule()
 
 bool WriteFieldModule::call_exporter(const std::string &filename)
 {
-  throw "todo";
+  return false;
   /*
   const std::string ftpre = gui_exporttype_.get();
   const std::string::size_type loc = ftpre.find(" (");
@@ -120,11 +121,6 @@ void WriteFieldModule::execute()
   const std::string ftpre = gui_exporttype_.get();
   const std::string::size_type loc = ftpre.find(" (");
   const std::string ft = ftpre.substr(0, loc);
-
-  exporting_ = !(ft == "" ||
-		 ft == "SCIRun Field Binary" ||
-		 ft == "SCIRun Field ASCII" ||
-                 ft == "Binary");
 
   // Determine if we're ASCII or Binary
   std::string ab = "Binary";
@@ -166,6 +162,10 @@ void WriteFieldModule::execute()
 
 bool WriteFieldModule::useCustomExporter(const std::string& filename) const 
 {
-  throw "todo";
-  //return boost::filesystem::extension(filename) != ".fld";
+  auto ft = get_state()->getValue(Variables::FileTypeName).getString();
+  LOG_DEBUG("WriteField with filetype " << ft);
+  return !(ft == "" ||
+    ft == "SCIRun Field Binary" ||
+    ft == "SCIRun Field ASCII" ||
+    ft == "Binary");
 }

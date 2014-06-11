@@ -319,6 +319,8 @@ SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Field
   return "SCIRun Field File (*.fld)";
 }
 
+SCISHARE std::string fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter);
+
 template <class Data>
 std::string makeGuiTypesListForImport(const GenericIEPluginManager<Data>& mgr)
 {

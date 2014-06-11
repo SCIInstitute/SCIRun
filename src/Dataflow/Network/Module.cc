@@ -138,16 +138,13 @@ void Module::do_execute() throw()
     if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostr;
-      ostr << "Caught exception: " << e.typeName();
-      ostr << "\n";
-      ostr << "Message: " << e.what() << std::endl;
+      ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << std::endl;
       error(ostr.str());
     }
 
     if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostrExtra;
-      ostrExtra << "TODO! Following error info will be filtered later, it's too technical for general audiences.\n";
       ostrExtra << boost::diagnostic_information(e) << std::endl;
       error(ostrExtra.str());
     }
@@ -175,6 +172,11 @@ void Module::do_execute() throw()
 }
 
 ModuleStateHandle Module::get_state() 
+{
+  return state_;
+}
+
+const ModuleStateHandle Module::get_state() const
 {
   return state_;
 }

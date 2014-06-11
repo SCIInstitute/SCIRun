@@ -29,6 +29,7 @@
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Core/ImportExport/GenericIEPlugin.h>
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include <QFileDialog>
@@ -69,8 +70,8 @@ void ReadFieldDialog::openFile()
   auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter);
   if (file.length() > 0)
   {
-    auto typeName = selectedFilter.trimmed().split(' ')[0];
-    state_->setValue(Variables::FileTypeName, typeName.trimmed().toStdString());
+    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter.toStdString());
+    state_->setValue(Variables::FileTypeName, typeName);
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);
     pushFileNameToState();
