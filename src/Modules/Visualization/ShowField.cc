@@ -330,6 +330,21 @@ void ShowFieldModule::renderFacesLinear(
   mesh->size(f);
   mesh->size(c);
 
+  // Construct VBO and IBO that will be used to render the faces. Once again,
+  // IBOs are not strictly needed. But, we may be able to optimize this code
+  // somewhat.
+  /// \todo Switch to unique_ptrs and move semantics.
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
+      new CPM_VAR_BUFFER_NS::VarBuffer(mesh->num_nodes() * sizeof(uint32_t)));
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
+      new CPM_VAR_BUFFER_NS::VarBuffer(mesh->num_nodes() * vboSize));
+
+  // Accessing the pointers like this is contrived. We only do this for
+  // speed since we will be using the pointers in a tight inner loop.
+  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
+  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+
+
   while (fiter != fiter_end) 
   {
     mesh->get_nodes(nodes, *fiter);
@@ -374,8 +389,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
         
-        value_to_color( color_scheme, svals[0], scols[0], vcols[0] );
-        value_to_color( color_scheme, svals[1], scols[1], vcols[1] );
+        valueToColor( color_scheme, svals[0], scols[0], vcols[0] );
+        valueToColor( color_scheme, svals[1], scols[1], vcols[1] );
       }
       else if (fld->is_vector())
       {
@@ -390,8 +405,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
         
-        value_to_color( color_scheme, vvals[0], scols[0], vcols[0] );
-        value_to_color( color_scheme, vvals[1], scols[1], vcols[1] );
+        valueToColor( color_scheme, vvals[0], scols[0], vcols[0] );
+        valueToColor( color_scheme, vvals[1], scols[1], vcols[1] );
       }
       else if (fld->is_tensor())
       {
@@ -406,8 +421,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
         
-        value_to_color( color_scheme, tvals[0], scols[0], vcols[0] );
-        value_to_color( color_scheme, tvals[1], scols[1], vcols[1] );
+        valueToColor( color_scheme, tvals[0], scols[0], vcols[0] );
+        valueToColor( color_scheme, tvals[1], scols[1], vcols[1] );
       }
 
       if (color_scheme == GeometryObject::COLOR_MAP)
@@ -487,24 +502,23 @@ void ShowFieldModule::renderFacesLinear(
         }
       }
     }
-    
     // Element data (faces)
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
     {
       if (fld->is_scalar())
       {
         fld->get_value(svals[0], *fiter);
-        value_to_color( color_scheme, svals[0], scols[0], vcols[0] );
+        valueToColor( color_scheme, svals[0], scols[0], vcols[0] );
       }
       else if (fld->is_vector())
       {
         fld->get_value(vvals[0], *fiter);
-        value_to_color( color_scheme, vvals[0], scols[0], vcols[0] );
+        valueToColor( color_scheme, vvals[0], scols[0], vcols[0] );
       }
       else if (fld->is_tensor())
       {
         fld->get_value(tvals[0], *fiter);
-        value_to_color( color_scheme, tvals[0], scols[0], vcols[0] );
+        valueToColor( color_scheme, tvals[0], scols[0], vcols[0] );
       }
 
       // Same color at all corners.
@@ -619,8 +633,6 @@ void ShowFieldModule::renderNodes(
   {
     vboSize += mesh->num_nodes() * sizeof(uint32_t); // For full color in the elements.
   }
-
-  std::cout << "Num nodes: " << mesh->num_nodes();
 
   /// \todo To reduce memory requirements, we can use a 16bit index buffer.
 
