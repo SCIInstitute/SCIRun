@@ -377,7 +377,6 @@ void Module::Builder::removeInputPort(ModuleHandle module, const PortId& id)
 
 ModuleHandle Module::Builder::build()
 {
-  //module_->postConstructionSetup();
   return module_;
 }
 
@@ -490,16 +489,6 @@ void Module::addPortConnection(const boost::signals2::connection& con)
 ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info) : Module(info), asyncConnected_(false)
 {
 }
-
-//void ModuleWithAsyncDynamicPorts::postConstructionSetup()
-//{
-//  if (!asyncConnected_) 
-//  {
-//    BOOST_FOREACH(InputPortHandle input, inputPorts())
-//      input->connectDataHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1));
-//    asyncConnected_ = true;
-//  }
-//}
 
 void ModuleWithAsyncDynamicPorts::execute()
 {

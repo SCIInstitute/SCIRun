@@ -95,8 +95,6 @@ namespace Networks {
     virtual ExecutionState executionState() const;
     virtual void setExecutionState(ExecutionState state);
 
-    //virtual void postConstructionSetup() {}
-
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
     virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id);
@@ -370,7 +368,6 @@ namespace Networks {
     virtual bool hasDynamicPorts() const override { return true; }
     virtual void execute() override;
     virtual void asyncExecute(Core::Datatypes::DatatypeHandle data) = 0;
-    //virtual void postConstructionSetup() override;
   protected:
     virtual size_t add_input_port(InputPortHandle h) override;
   private:
