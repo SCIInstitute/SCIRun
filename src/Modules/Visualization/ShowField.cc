@@ -333,8 +333,8 @@ void ShowFieldModule::renderFacesLinear(
   // Attempt some form of precalculation of iboBuffer and vboBuffer size.
   // This Initial size estimation will be off quite a bit. Each face will
   // have up to 3 nodes associated.
-  int iboSize = mesh->num_faces() * sizeof(uint32_t);
-  int vboSize = mesh->num_faces() * sizeof(float) * 3;
+  uint32_t iboSize = mesh->num_faces() * sizeof(uint32_t);
+  uint32_t vboSize = mesh->num_faces() * sizeof(float) * 3;
 
   // Construct VBO and IBO that will be used to render the faces. Once again,
   // IBOs are not strictly needed. But, we may be able to optimize this code
@@ -349,6 +349,8 @@ void ShowFieldModule::renderFacesLinear(
   // speed since we will be using the pointers in a tight inner loop.
   CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+
+  uint32_t iboIndex = 0;
 
   while (fiter != fiterEnd) 
   {
@@ -373,7 +375,8 @@ void ShowFieldModule::renderFacesLinear(
     // Default color single face no matter the element data.
     if (colorScheme == GeometryObject::COLOR_UNIFORM)
     {
-      //add_face_geom(tfaces, qfaces, points, normals, withNormals, colorScheme, scols, vcols);                        
+      addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
+                  colorScheme, scols, vcols);
     }
     // Element data (Cells) so two sided faces.
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
@@ -538,7 +541,8 @@ void ShowFieldModule::renderFacesLinear(
         vcols[i] = vcols[0];
       }
       
-      //add_face_geom(tfaces, qfaces, points, normals, withNormals, colorScheme, scols, vcols);                        
+      addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
+                  colorScheme, scols, vcols);
     }
 
     // Data at nodes
@@ -569,7 +573,8 @@ void ShowFieldModule::renderFacesLinear(
         }
       }
       
-      //add_face_geom(tfaces, qfaces, points, normals, withNormals, colorScheme, scols, vcols);
+      addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
+                  colorScheme, scols, vcols);
     }
 
     ++fiter;     
@@ -587,28 +592,56 @@ void ShowFieldModule::addFaceGeom(
     const std::vector<Core::Geometry::Point>  &points,
     const std::vector<Core::Geometry::Vector> &normals,
     bool withNormals,
-    int64_t& iboBufferIndex,
+    uint32_t& iboIndex,
     CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
     CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
     GeometryObject::ColorScheme colorScheme,
     std::vector<double> &scols,
     std::vector<Material> &vcols )
 {
-  if (colorScheme == 0)
+  auto writeVBOPoint = [&vboBuffer](const Core::Geometry::Point& point)
+  {
+    vboBuffer->write(static_cast<float>(point.x()));
+    vboBuffer->write(static_cast<float>(point.y()));
+    vboBuffer->write(static_cast<float>(point.z()));
+  };
+
+  auto writeVBONormal = [&vboBuffer](const Core::Geometry::Vector& normal)
+  {
+    vboBuffer->write(static_cast<float>(normal.x()));
+    vboBuffer->write(static_cast<float>(normal.y()));
+    vboBuffer->write(static_cast<float>(normal.z()));
+  };
+
+  auto writeVBO4ByteColor = [&vboBuffer](const Material& vcol)
+  {
+    vboBuffer->write(COLOR_FTOB(vcol.diffuse.r()));
+    vboBuffer->write(COLOR_FTOB(vcol.diffuse.g()));
+    vboBuffer->write(COLOR_FTOB(vcol.diffuse.b()));
+    vboBuffer->write(COLOR_FTOB(vcol.transparency));
+  };
+
+  auto writeIBOIndex = [&iboBuffer](uint32_t index)
+  {
+    iboBuffer->write(index);
+  };
+
+  if (colorScheme == GeometryObject::COLOR_UNIFORM)
   {
     if (points.size() == 4)
     {
-      if (withNormals)
-      {
-        // qfaces->add(points[0], normals[0],
-        //             points[1], normals[1],
-        //             points[2], normals[2],
-        //             points[3], normals[3]);
-      }
-      else
-      {
-        // qfaces->add(points[0], points[1], points[2], points[3]);
-      }
+      std::cout << "Quads not supported at this time." << std::endl;
+      // if (withNormals)
+      // {
+      //   qfaces->add(points[0], normals[0],
+      //               points[1], normals[1],
+      //               points[2], normals[2],
+      //               points[3], normals[3]);
+      // }
+      // else
+      // {
+      //   qfaces->add(points[0], points[1], points[2], points[3]);
+      // }
     }
     else
     {
@@ -616,35 +649,53 @@ void ShowFieldModule::addFaceGeom(
       {
         if (withNormals)
         {
-          // faces->add(points[0],   normals[0],
-          //            points[i-1], normals[i-1],
-          //            points[i],   normals[i]);
+          // Render points if we are not rendering spheres.
+          writeVBOPoint(points[0]);
+          writeVBONormal(normals[0]);
+          writeIBOIndex(iboIndex);
+
+          writeVBOPoint(points[i-1]);
+          writeVBONormal(normals[i-1]);
+          writeIBOIndex(iboIndex + i-1);
+
+          writeVBOPoint(points[i]);
+          writeVBONormal(normals[i]);
+          writeIBOIndex(iboIndex + i);
         }
         else
         {
-          // faces->add(points[0], points[i-1], points[i]);
+          writeVBOPoint(points[0]);
+          writeIBOIndex(iboIndex);
+
+          writeVBOPoint(points[i-1]);
+          writeIBOIndex(iboIndex + i-1);
+
+          writeVBOPoint(points[i]);
+          writeIBOIndex(iboIndex + i);
         }
       }
+      iboIndex += points.size();
     }    
   }
-  else if (colorScheme == 1)
+  else if (colorScheme == GeometryObject::COLOR_MAP)
   {
     if (points.size() == 4)
     {
-      if (withNormals)
-      {
-        // qfaces->add(points[0], normals[0], scols[0],
-        //             points[1], normals[1], scols[1],
-        //             points[2], normals[2], scols[2],
-        //             points[3], normals[3], scols[3]);
-      }
-      else
-      {
-        // qfaces->add(points[0], scols[0],
-        //             points[1], scols[1],
-        //             points[2], scols[2],
-        //             points[3], scols[3]);
-      }
+      std::cout << "Quads not supported at this time." << std::endl;
+      // if (withnormals)
+      // {
+      //   qfaces->add(points[0], normals[0], scols[0],
+      //               points[1], normals[1], scols[1],
+      //               points[2], normals[2], scols[2],
+      //               points[3], normals[3], scols[3]);
+      // }
+      // else
+      // {
+      //   qfaces->add(points[0], scols[0],
+      //               points[1], scols[1],
+      //               points[2], scols[2],
+      //               points[3], scols[3]);
+      // }
     }
     else
     {
@@ -652,37 +703,60 @@ void ShowFieldModule::addFaceGeom(
       {
         if (withNormals)
         {
-          // faces->add(points[0],   normals[0],   scols[0],
-          //            points[i-1], normals[i-1], scols[i-1],
-          //            points[i],   normals[i],   scols[i]);
+          // Render points if we are not rendering spheres.
+          writeVBOPoint(points[0]);
+          writeVBONormal(normals[0]);
+          vboBuffer->write(scols[0]);
+          writeIBOIndex(iboIndex);
+
+          writeVBOPoint(points[i-1]);
+          writeVBONormal(normals[i-1]);
+          vboBuffer->write(scols[i-1]);
+          writeIBOIndex(iboIndex + i-1);
+
+          writeVBOPoint(points[i]);
+          writeVBONormal(normals[i]);
+          vboBuffer->write(scols[i]);
+          writeIBOIndex(iboIndex + i);
         }
         else
         {
-          // faces->add(points[0],   scols[0],
-          //            points[i-1], scols[i-1],
-          //            points[i],   scols[i]);
+          // Render points if we are not rendering spheres.
+          writeVBOPoint(points[0]);
+          vboBuffer->write(scols[0]);
+          writeIBOIndex(iboIndex);
+
+          writeVBOPoint(points[i-1]);
+          vboBuffer->write(scols[i-1]);
+          writeIBOIndex(iboIndex + i-1);
+
+          writeVBOPoint(points[i]);
+          vboBuffer->write(scols[i]);
+          writeIBOIndex(iboIndex + i);
         }
       }
+      iboIndex += points.size();
     }
   }
-  else if (colorScheme == 2)
+  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
     if (points.size() == 4)
     {
-      if (withNormals)
-      {
-        // qfaces->add(points[0], normals[0], vcols[0],
-        //             points[1], normals[1], vcols[1],
-        //             points[2], normals[2], vcols[2],
-        //             points[3], normals[3], vcols[3]);
-      }
-      else
-      {
-        // qfaces->add(points[0], vcols[0],
-        //             points[1], vcols[1],
-        //             points[2], vcols[2],
-        //             points[3], vcols[3]);
-      }
+      std::cout << "Quads not supported at this time." << std::endl;
+      // if (withNormals)
+      // {
+      //   qfaces->add(points[0], normals[0], vcols[0],
+      //               points[1], normals[1], vcols[1],
+      //               points[2], normals[2], vcols[2],
+      //               points[3], normals[3], vcols[3]);
+      // }
+      // else
+      // {
+      //   qfaces->add(points[0], vcols[0],
+      //               points[1], vcols[1],
+      //               points[2], vcols[2],
+      //               points[3], vcols[3]);
+      // }
     }
     else
     {
@@ -690,17 +764,37 @@ void ShowFieldModule::addFaceGeom(
       {
         if (withNormals)
         {
-          // faces->add(points[0],   normals[0],   vcols[0],
-          //            points[i-1], normals[i-1], vcols[i-1],
-          //            points[i],   normals[i],   vcols[i]);
+          writeVBOPoint(points[0]);
+          writeVBONormal(normals[0]);
+          writeVBO4ByteColor(vcols[0]);
+          writeIBOIndex(iboIndex);
+
+          writeVBOPoint(points[i-1]);
+          writeVBONormal(normals[i-1]);
+          writeVBO4ByteColor(vcols[i-1]);
+          writeIBOIndex(iboIndex + i-1);
+
+          writeVBOPoint(points[i]);
+          writeVBONormal(normals[i]);
+          writeVBO4ByteColor(vcols[i]);
+          writeIBOIndex(iboIndex + i);
         }
         else
         {
-          // faces->add(points[0],   vcols[0],
-          //            points[i-1], vcols[i-1],
-          //            points[i],   vcols[i]);
+          writeVBOPoint(points[0]);
+          writeVBO4ByteColor(vcols[0]);
+          iboBuffer->write(iboIndex);
+
+          writeVBOPoint(points[i-1]);
+          writeVBO4ByteColor(vcols[i-1]);
+          writeIBOIndex(iboIndex + i-1);
+
+          writeVBOPoint(points[i]);
+          writeVBO4ByteColor(vcols[i]);
+          writeIBOIndex(iboIndex + i);
         }
       }
+      iboIndex += points.size();
     }
   }
 }
