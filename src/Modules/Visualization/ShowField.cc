@@ -577,6 +577,135 @@ void ShowFieldModule::renderFacesLinear(
 
 }
 
+// This function needs to be reorganized.
+// The fact that we are only rendering triangles helps us dramatically and
+// we get rid of the quads renderer pointers. Additionally, we can re-order
+// the triangles in ES and perform different rendering based on the
+// transparency of the triangles. Two sided simply becomes a flag that is
+// passed to the ES and the rendering state will be changed accordingly.
+void ShowFieldModule::addFaceGeom(
+    const std::vector<Core::Geometry::Point>  &points,
+    const std::vector<Core::Geometry::Vector> &normals,
+    bool withNormals,
+    int64_t& iboBufferIndex,
+    CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
+    CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
+    GeometryObject::ColorScheme colorScheme,
+    std::vector<double> &scols,
+    std::vector<Material> &vcols )
+{
+  if (colorScheme == 0)
+  {
+    if (points.size() == 4)
+    {
+      if (withNormals)
+      {
+        // qfaces->add(points[0], normals[0],
+        //             points[1], normals[1],
+        //             points[2], normals[2],
+        //             points[3], normals[3]);
+      }
+      else
+      {
+        // qfaces->add(points[0], points[1], points[2], points[3]);
+      }
+    }
+    else
+    {
+      for (size_t i = 2; i < points.size(); i++)
+      {
+        if (withNormals)
+        {
+          // faces->add(points[0],   normals[0],
+          //            points[i-1], normals[i-1],
+          //            points[i],   normals[i]);
+        }
+        else
+        {
+          // faces->add(points[0], points[i-1], points[i]);
+        }
+      }
+    }    
+  }
+  else if (colorScheme == 1)
+  {
+    if (points.size() == 4)
+    {
+      if (withNormals)
+      {
+        // qfaces->add(points[0], normals[0], scols[0],
+        //             points[1], normals[1], scols[1],
+        //             points[2], normals[2], scols[2],
+        //             points[3], normals[3], scols[3]);
+      }
+      else
+      {
+        // qfaces->add(points[0], scols[0],
+        //             points[1], scols[1],
+        //             points[2], scols[2],
+        //             points[3], scols[3]);
+      }
+    }
+    else
+    {
+      for (size_t i = 2; i < points.size(); i++)
+      {
+        if (withNormals)
+        {
+          // faces->add(points[0],   normals[0],   scols[0],
+          //            points[i-1], normals[i-1], scols[i-1],
+          //            points[i],   normals[i],   scols[i]);
+        }
+        else
+        {
+          // faces->add(points[0],   scols[0],
+          //            points[i-1], scols[i-1],
+          //            points[i],   scols[i]);
+        }
+      }
+    }
+  }
+  else if (colorScheme == 2)
+  {
+    if (points.size() == 4)
+    {
+      if (withNormals)
+      {
+        // qfaces->add(points[0], normals[0], vcols[0],
+        //             points[1], normals[1], vcols[1],
+        //             points[2], normals[2], vcols[2],
+        //             points[3], normals[3], vcols[3]);
+      }
+      else
+      {
+        // qfaces->add(points[0], vcols[0],
+        //             points[1], vcols[1],
+        //             points[2], vcols[2],
+        //             points[3], vcols[3]);
+      }
+    }
+    else
+    {
+      for (size_t i = 2; i < points.size(); i++)
+      {
+        if (withNormals)
+        {
+          // faces->add(points[0],   normals[0],   vcols[0],
+          //            points[i-1], normals[i-1], vcols[i-1],
+          //            points[i],   normals[i],   vcols[i]);
+        }
+        else
+        {
+          // faces->add(points[0],   vcols[0],
+          //            points[i-1], vcols[i-1],
+          //            points[i],   vcols[i]);
+        }
+      }
+    }
+  }
+}
+
+
 
 void ShowFieldModule::renderNodes(
     boost::shared_ptr<SCIRun::Field> field,

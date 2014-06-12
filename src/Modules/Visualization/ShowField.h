@@ -96,6 +96,17 @@ namespace Visualization {
         const RenderState& state, Core::Datatypes::GeometryHandle geom, 
         unsigned int approxDiv,
         const std::string& id);
+
+    void addFaceGeom(
+        const std::vector<Core::Geometry::Point>  &points,
+        const std::vector<Core::Geometry::Vector> &normals,
+        bool withNormals,
+        int64_t& iboBufferIndex,
+        CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
+        CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
+        Core::Datatypes::GeometryObject::ColorScheme colorScheme,
+        std::vector<double> &scols,
+        std::vector<Core::Datatypes::Material> &vcols );
     /// @}
 
     /// State evaluation
