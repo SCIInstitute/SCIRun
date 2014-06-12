@@ -49,6 +49,10 @@ SCIRun::Core::Datatypes::DatatypeHandleOption SimpleSink::receive()
 void SimpleSink::setHasData(bool dataPresent) 
 { 
   hasData_ = dataPresent; 
+
+  if (hasData_)
+  /*emit*/ dataHasChanged_(data_);
+
   if (!hasData_)
     data_.reset();
 }
@@ -74,6 +78,11 @@ bool SimpleSink::hasChanged() const
   if (!data_)
     return false;
   return previousId_ == data_->id();
+}
+
+boost::signals2::connection SimpleSink::connectDataHasChanged(const SCIRun::Core::Datatypes::DataHasChangedSignalType::slot_type& subscriber)
+{
+  return dataHasChanged_.connect(subscriber);
 }
 
 void SimpleSource::send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data)

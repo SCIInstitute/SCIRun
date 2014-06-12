@@ -68,6 +68,7 @@ namespace Networks {
     virtual void setIndex(size_t index) = 0;
   };
   
+
   class SCISHARE InputPortInterface : virtual public PortInterface
   {
   public:
@@ -76,6 +77,7 @@ namespace Networks {
     virtual DatatypeSinkInterfaceHandle sink() const = 0;
     virtual InputPortInterface* clone() const = 0;
     virtual bool hasChanged() const = 0;
+    virtual boost::signals2::connection connectDataHasChanged(const Core::Datatypes::DataHasChangedSignalType::slot_type& subscriber) = 0;
   };
   
   class SCISHARE OutputPortInterface : virtual public PortInterface

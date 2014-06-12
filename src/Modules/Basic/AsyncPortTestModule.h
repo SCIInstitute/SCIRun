@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,65 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/Datatype.h 
-#ifndef CORE_DATATYPES_DATATYPE_H
-#define CORE_DATATYPES_DATATYPE_H 
 
-#include <Core/Persistent/Persistent.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <boost/atomic.hpp>
-#include <boost/signals2/signal.hpp>
-#include <Core/Datatypes/share.h>
+#ifndef MODULES_BASIC_ASYNCPORTTESTMODULE_H
+#define MODULES_BASIC_ASYNCPORTTESTMODULE_H
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
-
-  /// @todo: split out
-  template <typename IdType, typename IdGenerator>
-  class HasId
+namespace Modules {
+namespace Basic {
+  
+  class SCISHARE AsyncPortTestModule : public SCIRun::Dataflow::Networks::ModuleWithAsyncDynamicPorts,
+    public Has1InputPort<AsyncDynamicPortTag<FieldPortTag>>,
+    public HasNoOutputPorts
   {
   public:
-    typedef IdType id_type;
-    HasId() : id_(generator_()) {}
-    IdType id() const
-    {
-      return id_;
-    }
-  private:
-    IdGenerator generator_;
-    const IdType id_;
+    AsyncPortTestModule();
+    virtual void asyncExecute(Core::Datatypes::DatatypeHandle data) override;
+    virtual void setStateDefaults() override {}
+
+    INPUT_PORT_DYNAMIC(0, AsyncField, LegacyField);
+
+    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
-
-  struct SCISHARE AtomicCounter
-  {
-    int operator()() const;
-    static boost::atomic<int> counter_;
-  };
-
-  class SCISHARE Datatype : public Persistent, public HasId<int, AtomicCounter>
-  {
-  public:
-    Datatype();
-    virtual ~Datatype();
-    Datatype(const Datatype& other);
-    Datatype& operator=(const Datatype& rhs);
-
-    typedef HasId<int, AtomicCounter>::id_type id_type;
-
-    /// @todo
-    template <typename T>
-    const T* as() const
-    {
-      return dynamic_cast<const T*>(this);
-    }
-
-    virtual Datatype* clone() const = 0;
-  };
-
-   typedef boost::signals2::signal<void(SCIRun::Core::Datatypes::DatatypeHandle)> DataHasChangedSignalType;
 
 }}}
-
 
 #endif

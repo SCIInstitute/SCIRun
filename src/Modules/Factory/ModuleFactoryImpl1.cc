@@ -73,6 +73,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
+#include <Modules/Basic/AsyncPortTestModule.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
@@ -139,4 +140,5 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<AsyncPortTestModule>("...", "ViewScene clone");
 }

@@ -140,6 +140,11 @@ bool InputPort::hasChanged() const
   return sink()->hasChanged();
 }
 
+boost::signals2::connection InputPort::connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber)
+{
+  return sink()->connectDataHasChanged(subscriber);
+}
+
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)
   : Port(module, params), source_(source)
 {

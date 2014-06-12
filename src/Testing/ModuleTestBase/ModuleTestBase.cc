@@ -71,6 +71,7 @@ public:
   virtual bool hasChanged() const { return true; }
 
   void setData(DatatypeHandleOption data) { data_ = data; }
+  virtual boost::signals2::connection connectDataHasChanged(const Core::Datatypes::DataHasChangedSignalType::slot_type& subscriber) { return boost::signals2::connection(); }
 private:
   DatatypeHandleOption data_;
   int previousId_;

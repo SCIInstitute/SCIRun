@@ -104,6 +104,7 @@ public:
   virtual bool isDynamic() const { return isDynamic_; }
   virtual InputPortInterface* clone() const;
   virtual bool hasChanged() const;
+  virtual boost::signals2::connection connectDataHasChanged(const Core::Datatypes::DataHasChangedSignalType::slot_type& subscriber);
 private:
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;

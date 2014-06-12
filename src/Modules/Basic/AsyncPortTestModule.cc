@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,45 +25,44 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Dataflow/Network/DataflowInterfaces.h
 
-#ifndef DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H
-#define DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H 
+#include <Modules/Basic/AsyncPortTestModule.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Core/Logging/Log.h>
 
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Datatypes/Datatype.h>
-#include <Dataflow/Network/share.h>
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-namespace Dataflow {
-namespace Networks {
+ModuleLookupInfo AsyncPortTestModule::staticInfo_("AsyncPortTestModule", "Testing", "SCIRun");
 
-  //template <class Receiver> switch to run-time compatibility checking...
-  class SCISHARE DatatypeSourceInterface
+AsyncPortTestModule::AsyncPortTestModule()
+  : ModuleWithAsyncDynamicPorts(staticInfo_)
+{
+  INITIALIZE_PORT(AsyncField);
+  LOG_DEBUG("AsyncPortTestModule()");
+}
+
+void AsyncPortTestModule::asyncExecute(DatatypeHandle data)
+{
+  //LOG_DEBUG()
+  //TODO
+  // auto field = getLatestInput(AsyncField);
+  // handle(field);
+
+  std::cout << "Async port test. Latest data is a ";
+  auto field = boost::dynamic_pointer_cast<Field>(data);
+  if (field)
   {
-  public:
-    virtual ~DatatypeSourceInterface() {}
-    virtual void send(DatatypeSinkInterfaceHandle receiver, Core::Datatypes::DatatypeHandle data) = 0;
-  };
-
-  class SCISHARE DatatypeSinkInterface
+    ReportFieldInfoAlgorithm algo;
+    auto output = algo.run(field);
+    std::cout << "field of type " << output.type << "." << std::endl;
+  }
+  else
   {
-  public:
-    virtual ~DatatypeSinkInterface() {}
-    
-    // "mailbox" interface
-    virtual bool hasData() const = 0;
-    virtual void setHasData(bool dataPresent) = 0;
-
-    virtual DatatypeSinkInterface* clone() const = 0;
-
-    virtual void waitForData() = 0;
-    virtual Core::Datatypes::DatatypeHandleOption receive() = 0;
-    virtual bool hasChanged() const = 0;
-    virtual boost::signals2::connection connectDataHasChanged(const Core::Datatypes::DataHasChangedSignalType::slot_type& subscriber) = 0;
-  };
-
-}}}
-
-
-#endif
+    std::cout << "null field." << std::endl;
+  }
+  
+}
