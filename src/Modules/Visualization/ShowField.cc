@@ -230,10 +230,10 @@ void ShowFieldModule::renderFacesLinear(
 
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   std::vector<double> svals(10);
-  std::vector<Vector> vvals(10);
-  std::vector<Tensor> tvals(10);
+  std::vector<Core::Geometry::Vector> vvals(10);
+  std::vector<Core::Geometry::Tensor> tvals(10);
 
-  std::vector<Material> vcols(10, Material);
+  std::vector<Material> vcols(10, Material());
   std::vector<double> scols(10);
 
   if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
@@ -264,7 +264,7 @@ void ShowFieldModule::renderFacesLinear(
   }
 
   // Special case for cell centered data
-  if ((fld->basis_order() == 0) && (mesh->dimensionality() == 3) && (color_scheme != GeometryObject::COLOR_UNIFORM))
+  if ((fld->basis_order() == 0) && (mesh->dimensionality() == 3) && (colorScheme != GeometryObject::COLOR_UNIFORM))
   {
     std::cout << "Cell centered data not implemented yet. Need two sided triangles." << std::endl;
     // if (state.get(USE_TRANSPARENCY))
@@ -315,7 +315,7 @@ void ShowFieldModule::renderFacesLinear(
     }
   }
 
-  if (withNormals) {mesh->synchronize(Mesh::NORMALS_E)};
+  if (withNormals) {mesh->synchronize(Mesh::NORMALS_E);}
 
   mesh->synchronize(Mesh::FACES_E);
   VMesh::Face::iterator fiter, fiterEnd;
@@ -330,34 +330,39 @@ void ShowFieldModule::renderFacesLinear(
   mesh->size(f);
   mesh->size(c);
 
+  // Attempt some form of precalculation of iboBuffer and vboBuffer size.
+  // This Initial size estimation will be off quite a bit. Each face will
+  // have up to 3 nodes associated.
+  int iboSize = mesh->num_faces() * sizeof(uint32_t);
+  int vboSize = mesh->num_faces() * sizeof(float) * 3;
+
   // Construct VBO and IBO that will be used to render the faces. Once again,
   // IBOs are not strictly needed. But, we may be able to optimize this code
   // somewhat.
   /// \todo Switch to unique_ptrs and move semantics.
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-      new CPM_VAR_BUFFER_NS::VarBuffer(mesh->num_nodes() * sizeof(uint32_t)));
+      new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-      new CPM_VAR_BUFFER_NS::VarBuffer(mesh->num_nodes() * vboSize));
+      new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
 
   // Accessing the pointers like this is contrived. We only do this for
   // speed since we will be using the pointers in a tight inner loop.
   CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
 
-
-  while (fiter != fiter_end) 
+  while (fiter != fiterEnd) 
   {
     mesh->get_nodes(nodes, *fiter);
  
-    std::vector<Point> points(nodes.size());
-    std::vector<Vector> normals(nodes.size());
+    std::vector<Core::Geometry::Point> points(nodes.size());
+    std::vector<Core::Geometry::Vector> normals(nodes.size());
 
     for (size_t i = 0; i < nodes.size(); i++)
     {
       mesh->get_point(points[i], nodes[i]);
     }
 
-    if (with_normals) 
+    if (withNormals) 
     {
       for (size_t i = 0; i < nodes.size(); i++)
       {
@@ -366,9 +371,9 @@ void ShowFieldModule::renderFacesLinear(
     }
 
     // Default color single face no matter the element data.
-    if (color_scheme == GeometryObject::COLOR_UNIFORM)
+    if (colorScheme == GeometryObject::COLOR_UNIFORM)
     {
-      //add_face_geom(tfaces, qfaces, points, normals, with_normals, color_scheme, scols, vcols);                        
+      //add_face_geom(tfaces, qfaces, points, normals, withNormals, colorScheme, scols, vcols);                        
     }
     // Element data (Cells) so two sided faces.
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
@@ -389,8 +394,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
         
-        valueToColor( color_scheme, svals[0], scols[0], vcols[0] );
-        valueToColor( color_scheme, svals[1], scols[1], vcols[1] );
+        valueToColor( colorScheme, svals[0], scols[0], vcols[0] );
+        valueToColor( colorScheme, svals[1], scols[1], vcols[1] );
       }
       else if (fld->is_vector())
       {
@@ -405,8 +410,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
         
-        valueToColor( color_scheme, vvals[0], scols[0], vcols[0] );
-        valueToColor( color_scheme, vvals[1], scols[1], vcols[1] );
+        valueToColor( colorScheme, vvals[0], scols[0], vcols[0] );
+        valueToColor( colorScheme, vvals[1], scols[1], vcols[1] );
       }
       else if (fld->is_tensor())
       {
@@ -421,82 +426,87 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
         
-        valueToColor( color_scheme, tvals[0], scols[0], vcols[0] );
-        valueToColor( color_scheme, tvals[1], scols[1], vcols[1] );
+        valueToColor( colorScheme, tvals[0], scols[0], vcols[0] );
+        valueToColor( colorScheme, tvals[1], scols[1], vcols[1] );
       }
 
-      if (color_scheme == GeometryObject::COLOR_MAP)
+      if (colorScheme == GeometryObject::COLOR_MAP)
       {
         if (nodes.size() == 4)
         {
-          if (with_normals)
+          /// \todo Quads rendered the same as faces. Will come back to this
+          ///       data type. Rendering quads is a simple process though.
+          ///       just split it into two triangles.
+          std::cout << "Quad rendering not supported." << std::endl;
+          if (withNormals)
           {
-            tqfaces->add(points[0], normals[0], scols[0], scols[1],
-                         points[1], normals[1], scols[0], scols[1],
-                         points[2], normals[2], scols[0], scols[1],
-                         points[3], normals[3], scols[0], scols[1]);
+            // tqfaces->add(points[0], normals[0], scols[0], scols[1],
+            //              points[1], normals[1], scols[0], scols[1],
+            //              points[2], normals[2], scols[0], scols[1],
+            //              points[3], normals[3], scols[0], scols[1]);
           }
           else
           {
-            tqfaces->add(points[0], scols[0], scols[1],
-                         points[1], scols[0], scols[1],
-                         points[2], scols[0], scols[1],
-                         points[3], scols[0], scols[1]);
+            // tqfaces->add(points[0], scols[0], scols[1],
+            //              points[1], scols[0], scols[1],
+            //              points[2], scols[0], scols[1],
+            //              points[3], scols[0], scols[1]);
           }
         }
         else
         {
           for (size_t i=2; i<nodes.size(); i++)
           {
-            if (with_normals)
+            if (withNormals)
             {
-              ttfaces->add(points[0],   normals[0],   scols[0], scols[1],
-                           points[i-1], normals[i-1], scols[0], scols[1],
-                           points[i],   normals[i],   scols[0], scols[1]);
+              // ttfaces->add(points[0],   normals[0],   scols[0], scols[1],
+              //              points[i-1], normals[i-1], scols[0], scols[1],
+              //              points[i],   normals[i],   scols[0], scols[1]);
             }
             else
             {
-              ttfaces->add(points[0],   scols[0], scols[1],
-                           points[i-1], scols[0], scols[1],
-                           points[i],   scols[0], scols[1]);
+              // ttfaces->add(points[0],   scols[0], scols[1],
+              //              points[i-1], scols[0], scols[1],
+              //              points[i],   scols[0], scols[1]);
             }
           }
         }
       }
-      else //if (color_scheme == GeometryObject::COLOR_IN_SITU)
+      else //if (colorScheme == GeometryObject::COLOR_IN_SITU)
       {
         if (nodes.size() == 4)
         {
-          if (with_normals)
+          std::cout << "Quad rendering not supported." << std::endl;
+          if (withNormals)
           {
-            tqfaces->add(points[0], normals[0], vcols[0], vcols[1],
-                         points[1], normals[1], vcols[0], vcols[1],
-                         points[2], normals[2], vcols[0], vcols[1],
-                         points[3], normals[3], vcols[0], vcols[1]);
+            // tqfaces->add(points[0], normals[0], vcols[0], vcols[1],
+            //              points[1], normals[1], vcols[0], vcols[1],
+            //              points[2], normals[2], vcols[0], vcols[1],
+            //              points[3], normals[3], vcols[0], vcols[1]);
           }
           else
           {
-            tqfaces->add(points[0], vcols[0], vcols[1],
-                         points[1], vcols[0], vcols[1],
-                         points[2], vcols[0], vcols[1],
-                         points[3], vcols[0], vcols[1]);
+            // tqfaces->add(points[0], vcols[0], vcols[1],
+            //              points[1], vcols[0], vcols[1],
+            //              points[2], vcols[0], vcols[1],
+            //              points[3], vcols[0], vcols[1]);
           }
         }
         else
         {
           for (size_t i=2; i<nodes.size(); i++)
           {
-            if (with_normals)
+            if (withNormals)
             {
-              ttfaces->add(points[0],   normals[0],   vcols[0], vcols[1],
-                           points[i-1], normals[i-1], vcols[0], vcols[1],
-                           points[i],   normals[i],   vcols[0], vcols[1]);
+              // ttfaces->add(points[0],   normals[0],   vcols[0], vcols[1],
+              //              points[i-1], normals[i-1], vcols[0], vcols[1],
+              //              points[i],   normals[i],   vcols[0], vcols[1]);
             }
             else
             {
-              ttfaces->add(points[0],   vcols[0], vcols[1],
-                           points[i-1], vcols[0], vcols[1],
-                           points[i],   vcols[0], vcols[1]);
+              // ttfaces->add(points[0],   vcols[0], vcols[1],
+              //              points[i-1], vcols[0], vcols[1],
+              //              points[i],   vcols[0], vcols[1]);
             }
           }
         }
@@ -508,17 +518,17 @@ void ShowFieldModule::renderFacesLinear(
       if (fld->is_scalar())
       {
         fld->get_value(svals[0], *fiter);
-        valueToColor( color_scheme, svals[0], scols[0], vcols[0] );
+        valueToColor( colorScheme, svals[0], scols[0], vcols[0] );
       }
       else if (fld->is_vector())
       {
         fld->get_value(vvals[0], *fiter);
-        valueToColor( color_scheme, vvals[0], scols[0], vcols[0] );
+        valueToColor( colorScheme, vvals[0], scols[0], vcols[0] );
       }
       else if (fld->is_tensor())
       {
         fld->get_value(tvals[0], *fiter);
-        valueToColor( color_scheme, tvals[0], scols[0], vcols[0] );
+        valueToColor( colorScheme, tvals[0], scols[0], vcols[0] );
       }
 
       // Same color at all corners.
@@ -528,7 +538,7 @@ void ShowFieldModule::renderFacesLinear(
         vcols[i] = vcols[0];
       }
       
-      add_face_geom(tfaces, qfaces, points, normals, with_normals, color_scheme, scols, vcols);                        
+      //add_face_geom(tfaces, qfaces, points, normals, withNormals, colorScheme, scols, vcols);                        
     }
 
     // Data at nodes
@@ -539,7 +549,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i=0; i<nodes.size(); i++)
         {
           fld->get_value(svals[i], nodes[i]);
-          value_to_color( color_scheme, svals[i], scols[i], vcols[i] );
+          valueToColor( colorScheme, svals[i], scols[i], vcols[i] );
         }
       }
       else if (fld->is_vector())
@@ -547,7 +557,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i=0; i<nodes.size(); i++)
         {
           fld->get_value(vvals[i], nodes[i]);
-          value_to_color( color_scheme, vvals[i], scols[i], vcols[i] );
+          valueToColor( colorScheme, vvals[i], scols[i], vcols[i] );
         }
       }      
       else if (fld->is_tensor())
@@ -555,12 +565,11 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i=0; i<nodes.size(); i++)
         {
           fld->get_value(tvals[i], nodes[i]);
-          value_to_color( color_scheme, tvals[i], scols[i], vcols[i] );
+          valueToColor( colorScheme, tvals[i], scols[i], vcols[i] );
         }
       }
       
-      add_face_geom(tfaces, qfaces, points, normals, with_normals,
-		    color_scheme, scols, vcols);
+      //add_face_geom(tfaces, qfaces, points, normals, withNormals, colorScheme, scols, vcols);
     }
 
     ++fiter;     
@@ -643,9 +652,9 @@ void ShowFieldModule::renderNodes(
 
   /// \todo Switch to unique_ptrs and move semantics.
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-      new CPM_VAR_BUFFER_NS::VarBuffer(mesh->num_nodes() * sizeof(uint32_t)));
+      new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-      new CPM_VAR_BUFFER_NS::VarBuffer(mesh->num_nodes() * vboSize));
+      new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
 
   // Accessing the pointers like this is contrived. We only do this for
   // speed since we will be using the pointers in a tight inner loop.
