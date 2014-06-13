@@ -231,15 +231,6 @@ void ConnectionLine::trackNodes()
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
 }
 
-PortWidget* ConnectionLine::getConnectedFromPortWidget()
-{
-	return fromPort_;
-}
-PortWidget* ConnectionLine::getConnectedToPortWidget()
-{
-	return toPort_;
-}
-
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 {
   if (!destroyed_)
@@ -287,16 +278,24 @@ void ConnectionLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-  if (change == ItemPositionChange && scene())
-  {
-	  QPointF newPos = value.toPointF();
-	  newPos.setX(0);
-	  newPos.setY(0);
-	  return newPos;
-  }
-  return QGraphicsItem::itemChange(change, value);
+	if (change == ItemPositionChange && scene())
+	{
+		QPointF newPos = value.toPointF();
+		newPos.setX(0);
+		newPos.setY(0);
+		return newPos;
+	}
+	return QGraphicsItem::itemChange(change, value);
 }
 
+SCIRun::Dataflow::Networks::ModuleId ConnectionLine::getConnectedToModuleId()
+{
+	return toPort_->getUnderlyingModuleId();
+}
+SCIRun::Dataflow::Networks::ModuleId ConnectionLine::getConnectedFromModuleId()
+{
+	return fromPort_->getUnderlyingModuleId(); 
+}
 void ConnectionLine::setNoteGraphicsContext() 
 {
   scene_ = scene();

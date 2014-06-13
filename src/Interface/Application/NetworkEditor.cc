@@ -490,55 +490,68 @@ void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
 }
 
-void NetworkEditor::mousePressEvent(QMouseEvent *event)
+void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 {
-  if (event->button() != Qt::LeftButton)
-    Q_EMIT networkEditorMouseButtonPressed();
-  
-		auto item = scene_->selectedItems();
-		if(item.count() == 1)
-		{
-			ConnectionLine * cL; 
-			if(cL = qgraphicsitem_cast<ConnectionLine*>(item.first())) 
-			{
-				auto port1 = cL->getConnectedFromPortWidget(); 
-				auto port2 = cL->getConnectedToPortWidget();
+	if (event->button() != Qt::LeftButton)
+		Q_EMIT networkEditorMouseButtonPressed();
 
-				auto mId1 = port1->getUnderlyingModuleId(); 
-				auto mId2 = port2->getUnderlyingModuleId(); 
+	if(ConnectionLine* cL = getSingleConnectionSelected())
+	{ 
+		auto mod1 = cL->getConnectedToModuleId();
+		auto mod2 = cL->getConnectedFromModuleId(); 
 
-				auto m1 = findById(scene_->items(), mId1); 
-				auto m2 = findById(scene_->items(), mId2); 
-
-				m1->setSelected(true);
-				m2->setSelected(true);
-			}
-		}
-  QGraphicsView::mousePressEvent(event);
+		findById(scene_->items(),mod1)->setSelected(true);
+		findById(scene_->items(),mod2)->setSelected(true);
+	}
+	QGraphicsView::mouseMoveEvent(event);
 }
 
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
-	auto item = scene_->selectedItems();
-		if(item.count() == 3)
-		{
-			ConnectionLine * cL; 
-			if(cL = qgraphicsitem_cast<ConnectionLine*>(item.first())) 
-			{
-				auto port1 = cL->getConnectedFromPortWidget(); 
-				auto port2 = cL->getConnectedToPortWidget();
-
-				auto mId1 = port1->getUnderlyingModuleId(); 
-				auto mId2 = port2->getUnderlyingModuleId(); 
-
-				auto m1 = findById(scene_->items(), mId1); 
-				auto m2 = findById(scene_->items(), mId2); 
-
-				m1->setSelected(false);
-				m2->setSelected(false);
-			}
-		}
+	unselectConnectionGroup(); 
 	QGraphicsView::mouseReleaseEvent(event);
+}
+
+ConnectionLine* NetworkEditor::getSingleConnectionSelected()
+{
+	ConnectionLine* connectionSelected = 0;
+	auto item = scene_->selectedItems();
+	if(item.count() == 1 && (connectionSelected = qgraphicsitem_cast<ConnectionLine*>(item.first())))
+		return connectionSelected; 
+	return connectionSelected; 
+}
+void NetworkEditor::unselectConnectionGroup()
+{
+	QList<QGraphicsItem*> items = scene_->selectedItems(); 
+	if(items.count() == 3) 
+	{
+		int hasConnection = 0; 
+		int	hasWidgets = 0;
+		ConnectionLine* cL; ModuleProxyWidget* mPW;
+
+		Q_FOREACH(QGraphicsItem* item, items)
+		{
+			if(cL = qgraphicsitem_cast<ConnectionLine*>(item))
+			{
+				++hasConnection;
+				items.push_front(cL); 
+			}
+			if(mPW = qgraphicsitem_cast<ModuleProxyWidget*>(item))
+				++hasWidgets;
+		}
+		if(hasConnection == 1 && hasWidgets == 2)
+		{
+			if(cL = qgraphicsitem_cast<ConnectionLine*>(items.first()))
+			{
+				auto mod1 = cL->getConnectedToModuleId();
+				auto mod2 = cL->getConnectedFromModuleId(); 
+
+				cL->setSelected(false);  
+				findById(scene_->items(),mod1)->setSelected(false);
+				findById(scene_->items(),mod2)->setSelected(false);
+			}
+		}	
+	}
 }
 
 SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions() const

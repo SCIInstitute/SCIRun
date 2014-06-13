@@ -145,8 +145,7 @@ Q_SIGNALS:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
-    void mousePressEvent(QMouseEvent *event);
-	//void mouseMoveEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override; 
 
   public Q_SLOTS:
@@ -192,7 +191,8 @@ Q_SIGNALS:
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
     void addNewModuleAtPosition(const QPoint& position);
-
+	ConnectionLine* getSingleConnectionSelected();
+	void unselectConnectionGroup(); 
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;
