@@ -331,7 +331,6 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     }
 
     int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-    std::cout << "Num primitives: " << numPrimitives << std::endl;
 
     iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType,
                           numPrimitives, ibo.name);

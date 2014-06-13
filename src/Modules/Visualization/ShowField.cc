@@ -669,8 +669,6 @@ void ShowFieldModule::renderFacesLinear(
   GeometryObject::SpireSubPass pass =
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader);
 
-  std::cout << "Pass: " << passName << " - " << shader << std::endl;
-
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
