@@ -176,6 +176,11 @@ namespace Datatypes {
       {
         mUniforms.push_back(Uniform(name, vector));
       }
+
+      void addUniform(const Uniform& uniform)
+      {
+        mUniforms.push_back(uniform);
+      }
     };
 
     /// List of passes to setup.

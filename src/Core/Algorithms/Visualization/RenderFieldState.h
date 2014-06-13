@@ -31,6 +31,7 @@
 
 #include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Datatypes/Material.h>
+#include <Core/Datatypes/Color.h>
 
 /// \todo Create color scheme enumeration, instead of 0, 1, and 2...
 namespace SCIRun {
@@ -137,6 +138,8 @@ public:
 
   // Render state flags.
   bool mFlags[MAX_ACTION_FLAGS];
+
+  Core::Datatypes::ColorRGB defaultColor;
 
 };
 

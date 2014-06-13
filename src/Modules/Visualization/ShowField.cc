@@ -90,6 +90,8 @@ RenderState ShowFieldModule::getNodeRenderState(
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).getBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).getBool());
 
+  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
+
   if (colorMap)
   {
     renState.set(RenderState::USE_COLORMAP, true);
@@ -107,6 +109,8 @@ RenderState ShowFieldModule::getEdgeRenderState(
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).getBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).getBool());
 
+  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
+
   if (colorMap)
   {
     renState.set(RenderState::USE_COLORMAP, true);
@@ -123,6 +127,8 @@ RenderState ShowFieldModule::getFaceRenderState(
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowFaces).getBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).getBool());
+
+  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
 
   if (colorMap)
   {
@@ -436,7 +442,7 @@ void ShowFieldModule::renderFacesLinear(
       if (colorScheme == GeometryObject::COLOR_MAP)
       {
         // Old scirun may not have got the winding order correct on the 2 sided
-        // polygons.
+        // polygons. This is the cell centered case with two sided triangles.
         if (nodes.size() == 4)
         {
           /// \todo Quads rendered the same as faces. Will come back to this
@@ -591,30 +597,74 @@ void ShowFieldModule::renderFacesLinear(
   // normalize the colors if the color scheme is COLOR_IN_SITU.
 
   // Construct VBO.
+  std::string shader = "Shaders/UniformColor";
   std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+  if (withNormals)
+  {
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
+  }
+
   if (colorScheme == GeometryObject::COLOR_MAP)
   {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+    if (withNormals)
+    {
+      // Use colormapping lit shader.
+      shader = "Shaders/DirPhongCMap";
+    }
+    else
+    {
+      // Use colormapping only shader.
+      shader = "Shaders/ColorMap";
+    }
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
+    if (withNormals)
+    {
+      // Use colored and lit shader.
+      shader = "Shaders/InSituPhongCMap";
+    }
+    else
+    {
+      // Use colormapping shader.
+      shader = "Shaders/InSituColorMap";
+    }
+  }
+  else if (colorScheme == GeometryObject::COLOR_UNIFORM)
+  {
+    ColorRGB defaultColor = state.defaultColor;
+
+    if (state.get(RenderState::USE_TRANSPARENCY))
+    {
+      /// \todo Add transparency slider.
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+              "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+    }
+    else
+    {
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+              "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+    }
   }
 
   geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr, mesh->get_bounding_box()));
 
   // Construct IBO.
   geom->mIBOs.push_back(
-      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::POINTS, sizeof(uint32_t), iboBufferSPtr));
+      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr));
 
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
-      GeometryObject::SpireSubPass(passName, vboName, iboName, "Shaders/UniformColor");
+      GeometryObject::SpireSubPass(passName, vboName, iboName, shader);
 
-  pass.addUniform("uColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  // Add all uniforms generated above to the pass.
+  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
   geom->mPasses.push_back(pass);
 
