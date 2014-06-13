@@ -178,6 +178,12 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     renderNodes(field, colorMap, getNodeRenderState(state, colorMap), geom, id);
   }
 
+  if (showFaces)
+  {
+    int approxDiv = 1;
+    renderFaces(field, colorMap, getFaceRenderState(state, colorMap), geom, approxDiv, id);
+  }
+
   return geom;
 }
 
@@ -662,6 +668,8 @@ void ShowFieldModule::renderFacesLinear(
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader);
+
+  std::cout << "Pass: " << passName << " - " << shader << std::endl;
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
