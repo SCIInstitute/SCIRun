@@ -106,7 +106,7 @@ void ViewSceneDialog::newGeometryValue()
   auto geomDataTransient = state_->getTransientValue("geomData");
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto geomData = optional_any_cast_or_default<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
+    auto geomData = optional_any_cast_or_default<SCIRun::Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
     if (!geomData)
       return;
     std::shared_ptr<SRInterface> spire = mSpire.lock();

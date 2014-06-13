@@ -51,7 +51,6 @@ namespace Render {
   {
   public:
     ViewScene();
-    //virtual void execute() override;
     virtual void asyncExecute(Core::Datatypes::DatatypeHandle data) override;
     virtual void setStateDefaults();
 
@@ -60,6 +59,11 @@ namespace Render {
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 
     static Core::Thread::Mutex mutex_;
+
+    typedef std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>> GeomList;
+    typedef boost::shared_ptr<GeomList> GeomListPtr;
+  private:
+    GeomListPtr activeGeoms_;
   };
 }}}
 

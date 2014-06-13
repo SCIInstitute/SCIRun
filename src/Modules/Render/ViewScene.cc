@@ -84,8 +84,7 @@ void ViewScene::asyncExecute(DatatypeHandle data)
     }
 
     auto transient = get_state()->getTransientValue("geomData");
-    typedef std::list<boost::shared_ptr<GeometryObject>> GeomList;
-    typedef boost::shared_ptr<GeomList> GeomListPtr;
+    
     auto geoms = optional_any_cast_or_default<GeomListPtr>(transient);
     if (!geoms)
     {
