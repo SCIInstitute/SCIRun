@@ -254,13 +254,19 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
       mCore.removeEntity(entityID);
     }
 
-    // Remove the object from the entity system.
-    mSRObjects.erase(foundObject);
+    // We need to renormalize the core after removing entities. We don't need
+    // to run a new pass however. Renormalization is enough to remove
+    // old entities from the system.
+    mCore.renormalize(true);
 
     // Run a garbage collection cycle for the VBOs and IBOs. We will likely
     // be using similar VBO and IBO names.
     vboMan.runGCCycle(mCore);
     iboMan.runGCCycle(mCore);
+
+    // Remove the object from the entity system.
+    mSRObjects.erase(foundObject);
+
   }
 
   // Add vertex buffer objects.
