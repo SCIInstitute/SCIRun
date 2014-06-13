@@ -828,6 +828,14 @@ void SCIRunMainWindow::makeModulesSmallSize()
 
 namespace {
 
+  void addFavoriteMenu(QTreeWidget* tree)
+  {
+    auto faves = new QTreeWidgetItem();
+    faves->setText(0, "Favorites");
+
+    tree->addTopLevelItem(faves);
+  }
+
 void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
 {
   BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
@@ -865,6 +873,8 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->clear();
 
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
+
+  addFavoriteMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs);
 
   GrabNameAndSetFlags visitor;
