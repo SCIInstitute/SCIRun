@@ -632,12 +632,12 @@ void ShowFieldModule::renderFacesLinear(
     if (withNormals)
     {
       // Use colored and lit shader.
-      shader = "Shaders/InSituPhongCMap";
+      shader = "Shaders/InSituPhongColor";
     }
     else
     {
       // Use colormapping shader.
-      shader = "Shaders/InSituColorMap";
+      shader = "Shaders/InSituColor";
     }
   }
   else if (colorScheme == GeometryObject::COLOR_UNIFORM)
@@ -728,18 +728,34 @@ void ShowFieldModule::addFaceGeom(
   {
     if (points.size() == 4)
     {
-      std::cout << "Quads not supported at this time." << std::endl;
-      // if (withNormals)
-      // {
-      //   qfaces->add(points[0], normals[0],
-      //               points[1], normals[1],
-      //               points[2], normals[2],
-      //               points[3], normals[3]);
-      // }
-      // else
-      // {
-      //   qfaces->add(points[0], points[1], points[2], points[3]);
-      // }
+      if (withNormals)
+      {
+        writeVBOPoint(points[0]);
+        writeVBONormal(normals[0]);
+
+        writeVBOPoint(points[1]);
+        writeVBONormal(normals[1]);
+
+        writeVBOPoint(points[2]);
+        writeVBONormal(normals[2]);
+
+        writeVBOPoint(points[3]);
+        writeVBONormal(normals[3]);
+      }
+      else
+      {
+        writeVBOPoint(points[0]);
+        writeVBOPoint(points[1]);
+        writeVBOPoint(points[2]);
+        writeVBOPoint(points[3]);
+      }
+      writeIBOIndex(iboIndex);
+      writeIBOIndex(iboIndex + 1);
+      writeIBOIndex(iboIndex + 2);
+
+      writeIBOIndex(iboIndex + 2);
+      writeIBOIndex(iboIndex + 3);
+      writeIBOIndex(iboIndex + 0);
     }
     else
     {
@@ -779,21 +795,42 @@ void ShowFieldModule::addFaceGeom(
   {
     if (points.size() == 4)
     {
-      std::cout << "Quads not supported at this time." << std::endl;
-      // if (withnormals)
-      // {
-      //   qfaces->add(points[0], normals[0], scols[0],
-      //               points[1], normals[1], scols[1],
-      //               points[2], normals[2], scols[2],
-      //               points[3], normals[3], scols[3]);
-      // }
-      // else
-      // {
-      //   qfaces->add(points[0], scols[0],
-      //               points[1], scols[1],
-      //               points[2], scols[2],
-      //               points[3], scols[3]);
-      // }
+      if (withNormals)
+      {
+        writeVBOPoint(points[0]);
+        writeVBONormal(normals[0]);
+        vboBuffer->write(scols[0]);
+
+        writeVBOPoint(points[1]);
+        writeVBONormal(normals[1]);
+        vboBuffer->write(scols[1]);
+
+        writeVBOPoint(points[2]);
+        writeVBONormal(normals[2]);
+        vboBuffer->write(scols[2]);
+
+        writeVBOPoint(points[3]);
+        writeVBONormal(normals[3]);
+        vboBuffer->write(scols[3]);
+      }
+      else
+      {
+        writeVBOPoint(points[0]);
+        vboBuffer->write(scols[0]);
+        writeVBOPoint(points[1]);
+        vboBuffer->write(scols[1]);
+        writeVBOPoint(points[2]);
+        vboBuffer->write(scols[2]);
+        writeVBOPoint(points[3]);
+        vboBuffer->write(scols[3]);
+      }
+      writeIBOIndex(iboIndex);
+      writeIBOIndex(iboIndex + 1);
+      writeIBOIndex(iboIndex + 2);
+
+      writeIBOIndex(iboIndex + 2);
+      writeIBOIndex(iboIndex + 3);
+      writeIBOIndex(iboIndex + 0);
     }
     else
     {
@@ -840,21 +877,42 @@ void ShowFieldModule::addFaceGeom(
   {
     if (points.size() == 4)
     {
-      std::cout << "Quads not supported at this time." << std::endl;
-      // if (withNormals)
-      // {
-      //   qfaces->add(points[0], normals[0], vcols[0],
-      //               points[1], normals[1], vcols[1],
-      //               points[2], normals[2], vcols[2],
-      //               points[3], normals[3], vcols[3]);
-      // }
-      // else
-      // {
-      //   qfaces->add(points[0], vcols[0],
-      //               points[1], vcols[1],
-      //               points[2], vcols[2],
-      //               points[3], vcols[3]);
-      // }
+      if (withNormals)
+      {
+        writeVBOPoint(points[0]);
+        writeVBONormal(normals[0]);
+        writeVBO4ByteColor(vcols[0]);
+
+        writeVBOPoint(points[1]);
+        writeVBONormal(normals[1]);
+        writeVBO4ByteColor(vcols[1]);
+
+        writeVBOPoint(points[2]);
+        writeVBONormal(normals[2]);
+        writeVBO4ByteColor(vcols[2]);
+
+        writeVBOPoint(points[3]);
+        writeVBONormal(normals[3]);
+        writeVBO4ByteColor(vcols[3]);
+      }
+      else
+      {
+        writeVBOPoint(points[0]);
+        writeVBO4ByteColor(vcols[0]);
+        writeVBOPoint(points[1]);
+        writeVBO4ByteColor(vcols[1]);
+        writeVBOPoint(points[2]);
+        writeVBO4ByteColor(vcols[2]);
+        writeVBOPoint(points[3]);
+        writeVBO4ByteColor(vcols[3]);
+      }
+      writeIBOIndex(iboIndex);
+      writeIBOIndex(iboIndex + 1);
+      writeIBOIndex(iboIndex + 2);
+
+      writeIBOIndex(iboIndex + 2);
+      writeIBOIndex(iboIndex + 3);
+      writeIBOIndex(iboIndex + 0);
     }
     else
     {
