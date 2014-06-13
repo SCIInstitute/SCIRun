@@ -49,7 +49,7 @@ MACRO(EXTERNAL_TEEM_LIBRARY compress_type)
  
   IF(${compress_type} MATCHES "GIT")
 
-    SET(teem_GIT_TAG "origin/external_build")
+    SET(teem_GIT_TAG "origin/master")
 
     # TODO: fix install step
     #
