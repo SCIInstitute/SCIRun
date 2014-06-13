@@ -73,35 +73,35 @@ protected:
     std::string stmt = "INSERT INTO modules VALUES "
     // ModuleName,                      Enabled,  RegressionNetwork,  OtherNetworks,  GuiTested,  ModuleUnitTest, ModuleFunctionalTest, AlgorithmUnitTest,  ParameterizedAlgorithmUnitTest, Documentation, FeatureComplete
     // BrainStimulator
-    "('ElectrodeCoilSetup',             1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    "('GenerateROIStatistics',          1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    "('SetConductivitiesToTetMesh',     1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    "('SetupRHSForTDCSandTMS',          1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
+    "('ElectrodeCoilSetup',             1,        0,                  0,              0,          1,              0,                    1,                  0,                              0,             0),"
+    "('GenerateROIStatistics',          1,        0,                  0,              0,          0,              0,                    1,                  0,                              0,             0),"
+    "('SetConductivitiesToTetMesh',     1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
+    "('SetupRHSforTDCSandTMS',          1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
     // Bundle                                                                                                                                                                                                
-    "('GetFieldsFromBundle',            1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('InsertFieldsIntoBundle',         1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('GetFieldsFromBundle',            1,        1,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
+    "('InsertFieldsIntoBundle',         1,        1,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     // ChangeFieldData                                                                                                                                                                                       
     "('ApplyMappingMatrix',             1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('CalculateFieldData',             1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('CalculateGradients',             1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('CalculateSignedDistanceToField', 1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('CalculateFieldData',             1,        1,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
+    "('CalculateGradients',             1,        1,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
+    "('CalculateSignedDistanceToField', 1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('CalculateVectorMagnitudes',      1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('CreateFieldData',                1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('GetFieldData',                   1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('MapFieldDataFromElemToNode',     1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('MapFieldDataFromNodeToElem',     1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('SetFieldData',                   1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('CreateFieldData',                1,        1,                  1,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('GetFieldData',                   1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
+    "('MapFieldDataFromElemToNode',     1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
+    "('MapFieldDataFromNodeToElem',     1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
+    "('SetFieldData',                   1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
     // ChangeMesh                                                                                                                                                                                            
-    "('AlignMeshBoundingBoxes',         1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('ConvertQuadSurfToTriSurf',       1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('GetFieldNodes',                  1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('SetFieldNodes',                  1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('AlignMeshBoundingBoxes',         1,        0,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
+    "('ConvertQuadSurfToTriSurf',       1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
+    "('GetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
+    "('SetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     // DataIO                                                                                                                                                                                                
     "('ReadField',                      1,        1,                  1,              0,          0,              0,                    0,                  0,                              1,             0),"
     "('ReadNRRD',                       0,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('ReadMatrix',                     1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('ReadMatrix',                     1,        1,                  1,              0,          1,              1,                    1,                  0,                              1,             0),"
     "('WriteField',                     1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('WriteMatrix',                    1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('WriteMatrix',                    1,        1,                  1,              0,          1,              1,                    1,                  0,                              1,             0),"
 
     //std::string error;
     //bool ret = moduleDb_.run_sql_statement(stmt, error);
@@ -110,43 +110,43 @@ protected:
 
     //stmt = "INSERT INTO modules VALUES "
     // FiniteElements                                                                                                                                                                                        
-    "('BuildFEMatrix',                  1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('BuildTDCSMatrix',                1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('BuildFEMatrix',                  1,        1,                  1,              0,          0,              0,                    1,                  0,                              1,             0),"
+    "('BuildTDCSMatrix',                1,        1,                  0,              0,          0,              0,                    1,                  0,                              0,             0),"
     "('tDCSSimulator',                  1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
     // Math                                                                                                                                                                                                  
-    "('AddKnownsToLinearSystem',        1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('AppendMatrix',                   1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('ConvertMatrixType',              1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('CreateMatrix',                   1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('EvaluateLinearAlgebraBinary',    1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('EvaluateLinearAlgebraUnary',     1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('ReportMatrixInfo',               1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('SelectSubMatrix',                1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('SolveLinearSystem',              1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('SolveMinNormLeastSqSystem',      1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('AddKnownsToLinearSystem',        1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
+    "('AppendMatrix',                   1,        1,                  1,              0,          1,              0,                    1,                  0,                              1,             1),"
+    "('ConvertMatrixType',              1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
+    "('CreateMatrix',                   1,        1,                  1,              1,          0,              0,                    0,                  0,                              1,             0),"
+    "('EvaluateLinearAlgebraBinary',    1,        0,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
+    "('EvaluateLinearAlgebraUnary',     1,        0,                  0,              0,          1,              1,                    1,                  0,                              1,             0),"
+    "('ReportMatrixInfo',               1,        1,                  1,              0,          1,              0,                    1,                  0,                              1,             0),"
+    "('SelectSubMatrix',                1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
+    "('SolveLinearSystem',              1,        1,                  0,              0,          1,              0,                    1,                  1,                              1,             0),"
+    "('SolveMinNormLeastSqSystem',      1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     // MiscField                                                                                                                                                                                             
-    "('ReportFieldInfo',                1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('ReportFieldInfo',                1,        1,                  1,              0,          0,              0,                    1,                  0,                              1,             0),"
     // NewField                                                                                                                                                                                              
-    "('CreateLatVol',                   1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('GetDomainBoundary',              1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('GetFieldBoundary',               1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('InterfaceWithCleaver',           1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('JoinFields',                     1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('CreateLatVol',                   1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
+    "('GetDomainBoundary',              1,        1,                  0,              0,          0,              0,                    1,                  1,                              1,             0),"
+    "('GetFieldBoundary',               1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
+    "('InterfaceWithCleaver',           1,        0,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
+    "('JoinFields',                     1,        0,                  0,              0,          1,              0,                    1,                  1,                              1,             0),"
     "('SplitFieldByDomain',             1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
     // Render                                                                                                                                                                                                
-    "('ViewScene',                      1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('ViewScene',                      1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
     // String                                                                                                                                                                                                
     "('CreateString',                   1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('PrintDatatype',                  1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
+    "('PrintDatatype',                  1,        1,                  1,              0,          0,              0,                    0,                  0,                              0,             0),"
     // Testing                                                                                                                                                                                               
-    "('DynamicPortTester',              1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    "('ReceiveScalar',                  1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    "('ReceiveTestMatrix',              1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    "('SendScalar',                     1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    "('SendTestMatrix',                 1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
+    "('DynamicPortTester',              1,        1,                  1,              0,          0,              0,                    0,                  0,                              0,             0),"
+    "('ReceiveScalar',                  1,        0,                  0,              1,          1,              0,                    0,                  0,                              0,             0),"
+    "('ReceiveTestMatrix',              1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
+    "('SendScalar',                     1,        0,                  1,              1,          1,              0,                    0,                  0,                              0,             0),"
+    "('SendTestMatrix',                 1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
     // Visualization                                                                                                                                                                                         
-    "('CreateStandardColorMap',         1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('ShowField',                      1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0)";
+    "('CreateStandardColorMap',         1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
+    "('ShowField',                      1,        1,                  1,              0,          0,              0,                    0,                  0,                              1,             0)";
 
     std::string error;
     bool ret = moduleDb_.run_sql_statement(stmt, error);
