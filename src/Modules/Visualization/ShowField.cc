@@ -435,6 +435,8 @@ void ShowFieldModule::renderFacesLinear(
 
       if (colorScheme == GeometryObject::COLOR_MAP)
       {
+        // Old scirun may not have got the winding order correct on the 2 sided
+        // polygons.
         if (nodes.size() == 4)
         {
           /// \todo Quads rendered the same as faces. Will come back to this
@@ -580,6 +582,44 @@ void ShowFieldModule::renderFacesLinear(
     ++fiter;     
   }
 
+  std::string uniqueNodeID = id + "node";
+  std::string vboName      = uniqueNodeID + "VBO";
+  std::string iboName      = uniqueNodeID + "IBO";
+  std::string passName     = uniqueNodeID + "nodesPass";
+
+  // NOTE: Attributes will depend on the color scheme. We will want to
+  // normalize the colors if the color scheme is COLOR_IN_SITU.
+
+  // Construct VBO.
+  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
+  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  if (colorScheme == GeometryObject::COLOR_MAP)
+  {
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+  }
+  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+  {
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
+  }
+
+  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr, mesh->get_bounding_box()));
+
+  // Construct IBO.
+  geom->mIBOs.push_back(
+      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::POINTS, sizeof(uint32_t), iboBufferSPtr));
+
+  // Construct Pass.
+  // Build pass for the edges.
+  /// \todo Find an appropriate place to put program names like UniformColor.
+  GeometryObject::SpireSubPass pass =
+      GeometryObject::SpireSubPass(passName, vboName, iboName, "Shaders/UniformColor");
+
+  pass.addUniform("uColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+
+  geom->mPasses.push_back(pass);
+
+  /// \todo Add spheres and other glyphs as display lists. Will want to
+  ///       build up to geometry / tessellation shaders if support is present.
 }
 
 // This function needs to be reorganized.
@@ -957,7 +997,7 @@ void ShowFieldModule::renderNodes(
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t)));
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
   }
 
   geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr, mesh->get_bounding_box()));
