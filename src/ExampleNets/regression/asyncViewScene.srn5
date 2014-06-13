@@ -4,34 +4,18 @@
 <networkFile class_id="0" tracking_level="0" version="0">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>8</count>
+			<count>11</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>AsyncPortTestModule:14</first>
+				<first>CreateLatVol:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Testing</category_name_>
-						<module_name_>AsyncPortTestModule</module_name_>
-					</module>
-					<state class_id="6" tracking_level="0" version="0">
-						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>CreateLatVol:0</first>
-				<second>
-					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
 						<module_name_>CreateLatVol</module_name_>
 					</module>
-					<state>
-						<stateMap>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
 							<count>6</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
@@ -142,7 +126,7 @@
 									<name>ElementSizeNormalized</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -166,7 +150,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>2</value>
+										<value>7</value>
 									</value>
 								</second>
 							</item>
@@ -230,7 +214,7 @@
 									<name>ElementSizeNormalized</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -254,7 +238,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -266,7 +250,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>3</value>
 									</value>
 								</second>
 							</item>
@@ -278,7 +262,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>4</value>
 									</value>
 								</second>
 							</item>
@@ -350,9 +334,325 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ShowField:19</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>7</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(101,255,255)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowField:20</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>7</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(255,88,174)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowField:21</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>7</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(255,227,114)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ViewScene:11</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>ViewScene</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>8</count>
+			<count>10</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
@@ -384,34 +684,10 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>AsyncPortTestModule:14</moduleId2_>
+				<moduleId2_>ShowField:19</moduleId2_>
 				<port2_>
-					<name>AsyncField</name>
-					<id>2</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>GetFieldBoundary:3</moduleId1_>
-				<port1_>
-					<name>BoundaryField</name>
+					<name>Field</name>
 					<id>0</id>
-				</port1_>
-				<moduleId2_>AsyncPortTestModule:14</moduleId2_>
-				<port2_>
-					<name>AsyncField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>GetFieldBoundary:3</moduleId1_>
-				<port1_>
-					<name>BoundaryField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>AsyncPortTestModule:14</moduleId2_>
-				<port2_>
-					<name>AsyncField</name>
-					<id>3</id>
 				</port2_>
 			</item>
 			<item>
@@ -427,15 +703,15 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GetFieldBoundary:6</moduleId1_>
+				<moduleId1_>GetFieldBoundary:3</moduleId1_>
 				<port1_>
 					<name>BoundaryField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>AsyncPortTestModule:14</moduleId2_>
+				<moduleId2_>ShowField:20</moduleId2_>
 				<port2_>
-					<name>AsyncField</name>
-					<id>1</id>
+					<name>Field</name>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -450,21 +726,62 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>GetFieldBoundary:6</moduleId1_>
+				<port1_>
+					<name>BoundaryField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:21</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:19</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:11</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:20</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:11</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:21</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:11</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>2</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>8</count>
+		<count>11</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>AsyncPortTestModule:14</first>
-			<second class_id="17" tracking_level="0" version="0">
-				<first>-611</first>
-				<second>168</second>
-			</second>
-		</item>
-		<item>
 			<first>CreateLatVol:0</first>
-			<second>
+			<second class_id="17" tracking_level="0" version="0">
 				<first>-540</first>
 				<second>-334</second>
 			</second>
@@ -479,8 +796,8 @@
 		<item>
 			<first>CreateLatVol:7</first>
 			<second>
-				<first>-1057</first>
-				<second>35</second>
+				<first>-1135</first>
+				<second>-28</second>
 			</second>
 		</item>
 		<item>
@@ -509,6 +826,34 @@
 			<second>
 				<first>-521</first>
 				<second>-88</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:19</first>
+			<second>
+				<first>-980</first>
+				<second>87</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:20</first>
+			<second>
+				<first>-748</first>
+				<second>32</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:21</first>
+			<second>
+				<first>-423</first>
+				<second>37</second>
+			</second>
+		</item>
+		<item>
+			<first>ViewScene:11</first>
+			<second>
+				<first>-610</first>
+				<second>181</second>
 			</second>
 		</item>
 	</modulePositions>

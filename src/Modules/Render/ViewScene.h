@@ -30,6 +30,7 @@
 #define MODULES_RENDER_VIEWSCENE_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Thread/Mutex.h>
 #include <Modules/Render/share.h>
 
 namespace SCIRun {
@@ -44,26 +45,21 @@ namespace Render {
 /// indirectly initiates new iterations of the simulation steps important to
 /// computational steering. 
 
-  class SCISHARE ViewScene : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<DynamicPortTag<GeometryPortTag>>,
+  class SCISHARE ViewScene : public SCIRun::Dataflow::Networks::ModuleWithAsyncDynamicPorts,
+    public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
     public HasNoOutputPorts
   {
   public:
     ViewScene();
-    virtual void execute();
+    //virtual void execute() override;
+    virtual void asyncExecute(Core::Datatypes::DatatypeHandle data) override;
     virtual void setStateDefaults();
-    virtual bool hasDynamicPorts() const { return true; }
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
-    /// Used to initialize spire with the context given in the Transient state.
-    virtual void preExecutionInitialization();
-
-    /// Used to join/destroy the spire thread before the rendering context
-    /// is destroyed.
-    virtual void preDestruction();
-
+    
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
+
+    static Core::Thread::Mutex mutex_;
   };
 }}}
 

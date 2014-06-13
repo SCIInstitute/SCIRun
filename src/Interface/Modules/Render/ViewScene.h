@@ -70,11 +70,13 @@ public:
   ~ViewSceneDialog();
   virtual void pull() {}
 
-  virtual void moduleExecuted();
+Q_SIGNALS:
+  void newGeometryValueForwarder();
 
 protected Q_SLOTS:
   void menuMouseControlChanged(int index);
   void autoViewClicked();
+  void newGeometryValue();
 
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;

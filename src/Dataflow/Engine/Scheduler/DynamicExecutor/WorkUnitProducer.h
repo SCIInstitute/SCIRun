@@ -80,7 +80,8 @@ namespace SCIRun {
                   
                   if (doneIds_.find(mod.second) != doneIds_.end())
                   {
-                    SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::INFO << "Module producer: wants to enqueue module " << mod.second << " a second time." << std::endl;
+                    if (shouldLog_)
+                      SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::INFO << "Module producer: wants to enqueue module " << mod.second << " a second time." << std::endl;
                   }
                   else
                   {

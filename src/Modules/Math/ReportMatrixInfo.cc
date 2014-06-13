@@ -49,7 +49,7 @@ void ReportMatrixInfoModule::execute()
   auto matrix = getRequiredInput(InputMatrix);
 
   auto output = algo().run_generic(make_input((InputMatrix, matrix)));
-  get_state()->setTransientValue("ReportedInfo", output.getTransient());
+  get_state()->setTransientValue("ReportedInfo", output.getTransient(), true);
 
   auto info = optional_any_cast_or_default<SCIRun::Core::Algorithms::Math::ReportMatrixInfoAlgorithm::Outputs>(output.getTransient());
   /// @todo: requires knowledge of algorithm type

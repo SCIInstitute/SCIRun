@@ -29,10 +29,12 @@
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Core/Application/Preferences.h>
 #include <Core/Logging/Log.h>
+#include <Modules/Render/ViewScene.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -71,6 +73,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
       return;
     spire->setMouseMode(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? SRInterface::MOUSE_NEWSCIRUN : SRInterface::MOUSE_OLDSCIRUN);
   }
+
+  state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
+  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 }
 
 //------------------------------------------------------------------------------
@@ -88,8 +93,14 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 }
 
 //------------------------------------------------------------------------------
-void ViewSceneDialog::moduleExecuted()
+void ViewSceneDialog::newGeometryValue()
 {
+  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+
+  Guard lock(SCIRun::Modules::Render::ViewScene::mutex_.get());
+  
+  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
   itemManager_->removeAll();
   // Grab the geomData transient value.
   auto geomDataTransient = state_->getTransientValue("geomData");
@@ -119,6 +130,7 @@ void ViewSceneDialog::moduleExecuted()
       return;
     spire->removeAllGeomObjects();
   }
+  //state_->setTransientValue("geomData", boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
 
 //------------------------------------------------------------------------------
