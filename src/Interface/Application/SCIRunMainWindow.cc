@@ -32,6 +32,7 @@
 #include <boost/bind.hpp>
 #include <boost/assign.hpp>
 #include <boost/assign/std/vector.hpp>
+#include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -342,10 +343,14 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
+  std::string fileNameWithExtension = fileName.toStdString();
+  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
+    fileNameWithExtension += ".srn5";
+
   NetworkFileHandle file = networkEditor_->saveNetwork();
 
-  XMLSerializer::save_xml(*file, fileName.toStdString(), "networkFile");
-  setCurrentFile(fileName);
+  XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
+  setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
   statusBar()->showMessage(tr("File saved"), 2000);
   GuiLogger::Instance().log("File save done.");
