@@ -594,10 +594,10 @@ void ShowFieldModule::renderFacesLinear(
     ++fiter;     
   }
 
-  std::string uniqueNodeID = id + "node";
+  std::string uniqueNodeID = id + "face";
   std::string vboName      = uniqueNodeID + "VBO";
   std::string iboName      = uniqueNodeID + "IBO";
-  std::string passName     = uniqueNodeID + "nodesPass";
+  std::string passName     = uniqueNodeID + "Pass";
 
   // NOTE: Attributes will depend on the color scheme. We will want to
   // normalize the colors if the color scheme is COLOR_IN_SITU.
@@ -754,6 +754,8 @@ void ShowFieldModule::addFaceGeom(
       writeIBOIndex(iboIndex + 2);
       writeIBOIndex(iboIndex + 3);
       writeIBOIndex(iboIndex + 0);
+
+      iboIndex += 4;
     }
     else
     {
@@ -829,6 +831,8 @@ void ShowFieldModule::addFaceGeom(
       writeIBOIndex(iboIndex + 2);
       writeIBOIndex(iboIndex + 3);
       writeIBOIndex(iboIndex + 0);
+
+      iboIndex += 4;
     }
     else
     {
@@ -897,10 +901,13 @@ void ShowFieldModule::addFaceGeom(
       {
         writeVBOPoint(points[0]);
         writeVBO4ByteColor(vcols[0]);
+
         writeVBOPoint(points[1]);
         writeVBO4ByteColor(vcols[1]);
+
         writeVBOPoint(points[2]);
         writeVBO4ByteColor(vcols[2]);
+
         writeVBOPoint(points[3]);
         writeVBO4ByteColor(vcols[3]);
       }
@@ -911,6 +918,8 @@ void ShowFieldModule::addFaceGeom(
       writeIBOIndex(iboIndex + 2);
       writeIBOIndex(iboIndex + 3);
       writeIBOIndex(iboIndex + 0);
+
+      iboIndex += 4;
     }
     else
     {
@@ -1097,7 +1106,7 @@ void ShowFieldModule::renderNodes(
   std::string uniqueNodeID = id + "node";
   std::string vboName      = uniqueNodeID + "VBO";
   std::string iboName      = uniqueNodeID + "IBO";
-  std::string passName     = uniqueNodeID + "nodesPass";
+  std::string passName     = uniqueNodeID + "Pass";
 
   // NOTE: Attributes will depend on the color scheme. We will want to
   // normalize the colors if the color scheme is COLOR_IN_SITU.
