@@ -390,8 +390,15 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     elem.mPasses.push_back(pass.passName);
   }
 
-  // We should perform a complete garbage collection after all of this.
-  // This is what gcInvalidObjects is all about.
+  // Recalculate scene bounding box. Should only be done when an object is added.
+  mSceneBBox.reset();
+  for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+  {
+    if (it->mBBox.valid())
+    {
+      mSceneBBox.extend(it->mBBox);
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -471,8 +478,6 @@ void SRInterface::doFrame(double currentTime, double constantDeltaTime)
   ///       objects, or the view point has changed).
 
   mContext->makeCurrent();
-
-  mSceneBBox.reset();
 
   updateCamera();
 
