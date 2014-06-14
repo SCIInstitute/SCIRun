@@ -71,6 +71,10 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
   state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
+
+  // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
+  // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
+  // is more up in the air.
 }
 
 void ShowFieldModule::execute()
@@ -96,6 +100,13 @@ RenderState ShowFieldModule::getNodeRenderState(
   {
     renState.set(RenderState::USE_COLORMAP, true);
   }
+  else
+  {
+    /// \todo Set this value dependent on the radio button choice in the
+    ///       dialog. Presumably this should overwrite any choice made by the
+    ///       user.
+    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  }
 
   return renState;
 }
@@ -115,6 +126,10 @@ RenderState ShowFieldModule::getEdgeRenderState(
   {
     renState.set(RenderState::USE_COLORMAP, true);
   }
+  else
+  {
+    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  }
 
   return renState;
 }
@@ -133,6 +148,10 @@ RenderState ShowFieldModule::getFaceRenderState(
   if (colorMap)
   {
     renState.set(RenderState::USE_COLORMAP, true);
+  }
+  else
+  {
+    renState.set(RenderState::USE_DEFAULT_COLOR, true);
   }
 
   return renState;

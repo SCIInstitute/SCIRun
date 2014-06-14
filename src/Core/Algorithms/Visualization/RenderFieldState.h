@@ -34,7 +34,6 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/Geometry.h>
 
-/// \todo Create color scheme enumeration, instead of 0, 1, and 2...
 namespace SCIRun {
 
 template <typename Val>
