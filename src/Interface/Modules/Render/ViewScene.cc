@@ -106,11 +106,10 @@ void ViewSceneDialog::moduleExecuted()
   if (geomDataTransient && !geomDataTransient->empty())
   {
     auto geomData = optional_any_cast_or_default<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
-    if (!geomData)
-      return;
+    if (!geomData) { return; }
+
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-    if (spire == nullptr)
-      return;
+    if (spire == nullptr) { return; }
 
     std::vector<std::string> validObjects;
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
