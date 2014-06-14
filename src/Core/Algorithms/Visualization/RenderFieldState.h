@@ -32,19 +32,20 @@
 #include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Datatypes/Material.h>
 #include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/Geometry.h>
 
 /// \todo Create color scheme enumeration, instead of 0, 1, and 2...
 namespace SCIRun {
 
 template <typename Val>
-void valueToColor(unsigned int colorScheme,
+void valueToColor(Core::Datatypes::GeometryObject::ColorScheme colorScheme,
                   Val val, double& scol, Core::Datatypes::Material& vcol)
 {
-  if (colorScheme == 1)
+  if (colorScheme == Core::Datatypes::GeometryObject::COLOR_MAP)
   {
     valToDouble(val, scol);
   }
-  else if (colorScheme == 2)
+  else if (colorScheme == Core::Datatypes::GeometryObject::COLOR_IN_SITU)
   {
     valToColor(val, vcol.ambient);
     valToColor(val, vcol.diffuse);
