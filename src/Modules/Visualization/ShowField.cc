@@ -256,6 +256,47 @@ void ShowFieldModule::renderFacesLinear(
 {
   VField* fld   = field->vfield();
   VMesh*  mesh  = field->vmesh();
+
+  // // Rescale color maps if that is the input paradigm we are using.
+  // // initialize the following so that the compiler will stop
+  // // warning us about possibly using unitialized variables
+  // double minv = DBL_MAX, maxv = -DBL_MAX;
+  //
+  // for( unsigned int i=0; i<field_input_handles.size(); i++ ) 
+  // {
+  //   FieldHandle fHandle = field_input_handles[i];
+  //   VField* vfield = fHandle->vfield();
+  //
+  //   std::string units;
+  //   if( fHandle->get_property("units", units) )
+  //     colormap_output_handle_->set_units(units);
+  //
+  //   if (!(vfield->minmax(minmax_.first,minmax_.second)))
+  //   {
+  //     error("An input field is not a scalar or vector field.");
+  //     execute_error_ = true;  
+  //   } 
+  //
+  //   if ( minv > minmax_.first) minv = minmax_.first;
+  //
+  //   if ( maxv < minmax_.second) maxv = minmax_.second;
+  // }
+  //
+  // minmax_.first  = minv;
+  // minmax_.second = maxv;
+  //
+  // if ( gui_make_symmetric_.get() ) 
+  // {
+  //   float biggest = Max(Abs(minmax_.first), Abs(minmax_.second));
+  //   minmax_.first  = -biggest;
+  //   minmax_.second =  biggest;
+  // }
+  //
+  // colormap_output_handle_->Scale( minmax_.first, minmax_.second);
+  // gui_min_.set( minmax_.first );
+  // gui_max_.set( minmax_.second );
+  //
+  // fld->minmax()
   
   bool withNormals = (state.get(RenderState::USE_NORMALS) && mesh->has_normals());
 
@@ -464,6 +505,7 @@ void ShowFieldModule::renderFacesLinear(
         valueToColor( colorScheme, tvals[1], scols[1], vcols[1] );
       }
 
+      std::cout << "Two sided element values not supported." << std::endl;
       if (colorScheme == GeometryObject::COLOR_MAP)
       {
         // Old scirun may not have got the winding order correct on the 2 sided
@@ -473,7 +515,6 @@ void ShowFieldModule::renderFacesLinear(
           /// \todo Quads rendered the same as faces. Will come back to this
           ///       data type. Rendering quads is a simple process though.
           ///       just split it into two triangles.
-          std::cout << "Quad rendering not supported." << std::endl;
           if (withNormals)
           {
             // tqfaces->add(points[0], normals[0], scols[0], scols[1],
@@ -512,7 +553,6 @@ void ShowFieldModule::renderFacesLinear(
       {
         if (nodes.size() == 4)
         {
-          std::cout << "Quad rendering not supported." << std::endl;
           if (withNormals)
           {
             // tqfaces->add(points[0], normals[0], vcols[0], vcols[1],
@@ -611,6 +651,8 @@ void ShowFieldModule::renderFacesLinear(
     }
 
     ++fiter;     
+
+    // Build min-max
   }
 
   std::string uniqueNodeID = id + "face";
