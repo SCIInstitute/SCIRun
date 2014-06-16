@@ -39,6 +39,8 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Logging/Log.h>
+#include <Core/Algorithms/Visualization/DataConversions.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 
 #include <boost/foreach.hpp>
 
@@ -728,7 +730,7 @@ void ShowFieldModule::renderFacesLinear(
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
-      GeometryObject::SpireSubPass(passName, vboName, iboName, shader);
+      GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -1194,7 +1196,7 @@ void ShowFieldModule::renderNodes(
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
-      GeometryObject::SpireSubPass(passName, vboName, iboName, "Shaders/UniformColor");
+      GeometryObject::SpireSubPass(passName, vboName, iboName, "Shaders/UniformColor", colorScheme);
 
   pass.addUniform("uColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 

@@ -36,6 +36,7 @@
 #include <Core/Datatypes/Datatype.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Datatypes/share.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 
 // CPM modules
 #include <glm/glm.hpp>
@@ -128,11 +129,13 @@ namespace Datatypes {
     struct SpireSubPass
     {
       SpireSubPass(const std::string& name, const std::string& vbo, 
-                   const std::string& ibo, const std::string& program) :
+                   const std::string& ibo, const std::string& program,
+                   ColorScheme scheme) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
-          programName(program)
+          programName(program),
+          mColorScheme(scheme)
       {}
 
       std::string   passName;
@@ -165,7 +168,8 @@ namespace Datatypes {
         glm::vec4     data;
       };
 
-      std::vector<Uniform> mUniforms;
+      std::vector<Uniform>  mUniforms;
+      ColorScheme           mColorScheme;
 
       void addUniform(const std::string& name, float scalar)
       {

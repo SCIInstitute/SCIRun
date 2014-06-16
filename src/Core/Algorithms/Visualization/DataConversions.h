@@ -33,6 +33,7 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/Datatypes/Geometry.h>
 
 #include <sstream>
 #include <iomanip>
@@ -107,6 +108,21 @@ SCISHARE bool valToBuffer(const unsigned char&, std::ostringstream&);
 
 template <>
 SCISHARE bool valToBuffer(const char&, std::ostringstream&);
+
+template <typename Val>
+void valueToColor(Core::Datatypes::GeometryObject::ColorScheme colorScheme,
+                  Val val, double& scol, Core::Datatypes::Material& vcol)
+{
+  if (colorScheme == Core::Datatypes::GeometryObject::COLOR_MAP)
+  {
+    valToDouble(val, scol);
+  }
+  else if (colorScheme == Core::Datatypes::GeometryObject::COLOR_IN_SITU)
+  {
+    valToColor(val, vcol.ambient);
+    valToColor(val, vcol.diffuse);
+  }
+}
 
 }
 
