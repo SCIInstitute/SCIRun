@@ -30,6 +30,10 @@
 uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
 uniform vec4    uColor;             // Uniform color
 
+// The following values are used to rescale the data between 0 .. 1.
+uniform float uMinVal;
+uniform float uMaxVal;
+
 // Attributes
 attribute vec3  aPos;
 attribute float aFieldData;
@@ -40,5 +44,6 @@ varying float    fFieldData;
 void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  fFieldData  = aFieldData;
+  //fFieldData  = aFieldData;
+  fFieldData  = (aFieldData + uMinVal) / (uMaxVal - uMinVal);
 }
