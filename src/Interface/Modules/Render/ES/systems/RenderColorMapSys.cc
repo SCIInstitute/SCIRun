@@ -147,6 +147,21 @@ public:
           trafo.front().transform, camera.front().data, time.front().globalTime);
     }
 
+    for (const ren::Texture& tex : textures)
+    {
+      if (tex.isSetUp() == false)
+      {
+        const_cast<ren::Texture&>(tex).checkUniform(shader.front().glid);
+        if (tex.isSetUp() == false)
+        {
+          return;
+        }
+      }
+    }
+
+    // Apply textures
+    for (const ren::Texture& tex : textures) tex.applyUniform();
+
     // Apply vector uniforms (if any).
     for (const ren::VecUniform& unif : vecUniforms) {unif.applyUniform();}
 
