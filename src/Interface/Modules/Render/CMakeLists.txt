@@ -45,6 +45,7 @@ SET(Interface_Modules_Render_HEADERS
   ES/comp/RenderBasicGeom.h
   ES/comp/StaticSRInterface.h
   ES/systems/RenderBasicSys.h
+  ES/systems/RenderColorMapSys.h
 )
 
 SET(Interface_Modules_Render_SOURCES 
@@ -60,6 +61,7 @@ SET(Interface_Modules_Render_SOURCES
   ES/Registration.cc
   ES/AssetBootstrap.cc
   ES/systems/RenderBasicSys.cc
+  ES/systems/RenderColorMapSys.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})

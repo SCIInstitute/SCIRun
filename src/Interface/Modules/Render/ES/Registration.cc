@@ -31,7 +31,9 @@
 #include "AssetBootstrap.h"
 #include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
+#include "comp/RenderColorMapGeom.h"
 #include "systems/RenderBasicSys.h"
+#include "systems/RenderColorMapSys.h"
 
 namespace SCIRun {
 namespace Render {
@@ -42,10 +44,12 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
   registerSystem_CoreBootstrap(core);
   registerSystem_AssetBootstrap(core);
   registerSystem_RenderBasicGeom(core);
+  registerSystem_RenderColorMap(core);
 
   // Register components
   core.registerComponent<StaticSRInterface>();
   core.registerComponent<RenderBasicGeom>();
+  core.registerComponent<RenderColorMapGeom>();
 }
 
 } // namespace Render

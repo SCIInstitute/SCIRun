@@ -59,6 +59,7 @@
 #include "CoreBootstrap.h"
 #include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
+#include "comp/RenderColorMapGeom.h"
 #include "systems/RenderBasicSys.h"
 
 using namespace std::placeholders;
@@ -370,9 +371,8 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     }
     else if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_MAP)
     {
-      std::cout << "Color mapping renderer not implemented" << std::endl;
-      // RenderColorMappedGeom geom;
-      // mCore.addComponent(entityID, geom);
+      RenderColorMapGeom geom;
+      mCore.addComponent(entityID, geom);
     }
     else
     {
