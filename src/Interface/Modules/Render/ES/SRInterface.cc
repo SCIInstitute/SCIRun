@@ -361,9 +361,25 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     gen::Transform trafo;
     mCore.addComponent(entityID, trafo);
 
-    // Add rendering
-    RenderBasicGeom geom;    
-    mCore.addComponent(entityID, geom);
+    // Add appropriate renderer based on the color scheme to use.
+    if (    pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_UNIFORM
+        ||  pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_IN_SITU)
+    {
+      RenderBasicGeom geom;
+      mCore.addComponent(entityID, geom);
+    }
+    else if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_MAP)
+    {
+      std::cout << "Color mapping renderer not implemented" << std::endl;
+      // RenderColorMappedGeom geom;
+      // mCore.addComponent(entityID, geom);
+    }
+    else
+    {
+      std::cerr << "Renderer: Color mapping type not implemented!" << std::endl;
+      RenderBasicGeom geom;
+      mCore.addComponent(entityID, geom);
+    }
 
     // Ensure common uniforms are covered.
     ren::CommonUniforms commonUniforms;
