@@ -381,6 +381,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
       ren::Texture component;
       component.textureUnit = 0;
       component.setUniformName("uTX0");
+      component.textureType = GL_TEXTURE_1D;
 
       // Setup appropriate texture to render the color map.
       if (*obj->mColorMap == "Rainbow")

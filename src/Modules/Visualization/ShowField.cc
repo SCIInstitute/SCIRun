@@ -245,7 +245,7 @@ void ShowFieldModule::applyColorMapScaling(
   VField* fld   = field->vfield();
   if (!(field->vfield()->minmax(minv, maxv)))
   {
-    std::cerr << "Input fiedl is not a scalar or vector field." << std::endl;
+    std::cerr << "Input field is not a scalar or vector field." << std::endl;
     return;
   } 
 
