@@ -795,6 +795,11 @@ void ShowFieldModule::addFaceGeom(
     vboBuffer->write(COLOR_FTOB(vcol.transparency));
   };
 
+  auto writeVBOScalarValue = [&vboBuffer](double value)
+  {
+    vboBuffer->write(static_cast<float>(value));
+  };
+
   auto writeIBOIndex = [&iboBuffer](uint32_t index)
   {
     iboBuffer->write(index);
@@ -877,30 +882,33 @@ void ShowFieldModule::addFaceGeom(
       {
         writeVBOPoint(points[0]);
         writeVBONormal(normals[0]);
-        vboBuffer->write(scols[0]);
+        writeVBOScalarValue(scols[0]);
 
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
-        vboBuffer->write(scols[1]);
+        writeVBOScalarValue(scols[1]);
 
         writeVBOPoint(points[2]);
         writeVBONormal(normals[2]);
-        vboBuffer->write(scols[2]);
+        writeVBOScalarValue(scols[2]);
 
         writeVBOPoint(points[3]);
         writeVBONormal(normals[3]);
-        vboBuffer->write(scols[3]);
+        writeVBOScalarValue(scols[3]);
       }
       else
       {
         writeVBOPoint(points[0]);
-        vboBuffer->write(scols[0]);
+        writeVBOScalarValue(scols[0]);
+
         writeVBOPoint(points[1]);
-        vboBuffer->write(scols[1]);
+        writeVBOScalarValue(scols[1]);
+
         writeVBOPoint(points[2]);
-        vboBuffer->write(scols[2]);
+        writeVBOScalarValue(scols[2]);
+
         writeVBOPoint(points[3]);
-        vboBuffer->write(scols[3]);
+        writeVBOScalarValue(scols[3]);
       }
       writeIBOIndex(iboIndex);
       writeIBOIndex(iboIndex + 1);
@@ -921,32 +929,32 @@ void ShowFieldModule::addFaceGeom(
           // Render points if we are not rendering spheres.
           writeVBOPoint(points[0]);
           writeVBONormal(normals[0]);
-          vboBuffer->write(scols[0]);
+          writeVBOScalarValue(scols[0]);
           writeIBOIndex(iboIndex);
 
           writeVBOPoint(points[i-1]);
           writeVBONormal(normals[i-1]);
-          vboBuffer->write(scols[i-1]);
+          writeVBOScalarValue(scols[i-1]);
           writeIBOIndex(iboIndex + i-1);
 
           writeVBOPoint(points[i]);
           writeVBONormal(normals[i]);
-          vboBuffer->write(scols[i]);
+          writeVBOScalarValue(scols[i]);
           writeIBOIndex(iboIndex + i);
         }
         else
         {
           // Render points if we are not rendering spheres.
           writeVBOPoint(points[0]);
-          vboBuffer->write(scols[0]);
+          writeVBOScalarValue(scols[0]);
           writeIBOIndex(iboIndex);
 
           writeVBOPoint(points[i-1]);
-          vboBuffer->write(scols[i-1]);
+          writeVBOScalarValue(scols[i-1]);
           writeIBOIndex(iboIndex + i-1);
 
           writeVBOPoint(points[i]);
-          vboBuffer->write(scols[i]);
+          writeVBOScalarValue(scols[i]);
           writeIBOIndex(iboIndex + i);
         }
       }
