@@ -48,6 +48,7 @@
 #include <es-render/comp/StaticIBOMan.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticShaderMan.hpp>
+#include <es-render/comp/Texture.hpp>
 #include <es-render/util/Uniform.hpp>
 #include <es-render/comp/VBO.hpp>
 #include <es-render/comp/IBO.hpp>
@@ -369,14 +370,32 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
       RenderBasicGeom geom;
       mCore.addComponent(entityID, geom);
     }
-    else if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_MAP)
+    else if (   pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_MAP
+             && obj->mColorMap)
     {
       RenderColorMapGeom geom;
       mCore.addComponent(entityID, geom);
+
+
+      // Construct texture component and add it to our entity for rendering.
+      ren::Texture component;
+      component.textureUnit = 0;
+      component.setUniformName("uTX0");
+
+      // Setup appropriate texture to render the color map.
+      if (*obj->mColorMap == "Rainbow")
+      {
+        component.glid = mRainbowCMap;
+      }
+      else
+      {
+        component.glid = mGrayscaleCMap;
+      }
+      mCore.addComponent(entityID, component);
     }
     else
     {
-      std::cerr << "Renderer: Color mapping type not implemented!" << std::endl;
+      std::cerr << "Renderer: Unknown color scheme!" << std::endl;
       RenderBasicGeom geom;
       mCore.addComponent(entityID, geom);
     }

@@ -205,6 +205,21 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     renderFaces(field, colorMap, getFaceRenderState(state, colorMap), geom, approxDiv, id);
   }
 
+
+  // Set value ranges for color mapping fields. We should use uniforms for
+  // setting the highest / lowest value ranges. We should be able to do this
+  // independently of showNodes / showEdges / showFaces.
+  // geom->mLowestValue = valueRangeLow;
+  // geom->mHighestValue = valueRangeHigh;
+  if (colorMap)
+  {
+    geom->mColorMap = boost::optional<std::string>((*colorMap)->getColorMapName());
+  }
+  else
+  {
+    geom->mColorMap = boost::optional<std::string>();
+  }
+
   return geom;
 }
 
