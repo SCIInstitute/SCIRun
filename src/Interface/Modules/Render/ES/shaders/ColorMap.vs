@@ -45,5 +45,5 @@ void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
   //fFieldData  = aFieldData;
-  fFieldData  = (aFieldData + uMinVal) / (uMaxVal - uMinVal);
+  fFieldData  = (aFieldData - uMinVal) / (uMaxVal - uMinVal);
 }
