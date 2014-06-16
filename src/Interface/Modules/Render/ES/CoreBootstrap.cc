@@ -26,6 +26,7 @@
 
 #include "comp/RenderBasicGeom.h"
 #include "systems/RenderBasicSys.h"
+#include "systems/RenderColorMapSys.h"
 #include "CoreBootstrap.h"
 #include "AssetBootstrap.h"
 #include "Core.h"
@@ -109,6 +110,7 @@ public:
     // --== SCIRun5 Rendering ==--
 
     core.addUserSystem(getSystemName_RenderBasicGeom());
+    core.addUserSystem(getSystemName_RenderColorMap());
 
     // --== General ==--
 

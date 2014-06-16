@@ -62,6 +62,7 @@
 #include "comp/RenderBasicGeom.h"
 #include "comp/RenderColorMapGeom.h"
 #include "systems/RenderBasicSys.h"
+#include "systems/RenderColorMapSys.h"
 
 using namespace std::placeholders;
 
@@ -376,7 +377,6 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
       RenderColorMapGeom geom;
       mCore.addComponent(entityID, geom);
 
-
       // Construct texture component and add it to our entity for rendering.
       ren::Texture component;
       component.textureUnit = 0;
@@ -392,6 +392,9 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
         component.glid = mGrayscaleCMap;
       }
       mCore.addComponent(entityID, component);
+
+      // Compare entity and system requirements.
+      mCore.displayEntityVersusSystemInfo(entityID, getSystemName_RenderColorMap());
     }
     else
     {
@@ -409,8 +412,6 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
       applyUniform(entityID, uniform);
     }
 
-    // Compare entity and system requirements.
-    mCore.displayEntityVersusSystemInfo(entityID, getSystemName_RenderBasicGeom());
 
     /// \todo Add component which will direct specific rendering subsystem.
 
