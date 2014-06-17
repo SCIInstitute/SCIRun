@@ -75,25 +75,26 @@ namespace Visualization {
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
         Dataflow::Networks::ModuleStateHandle state, const std::string& id);
 
-    /// Mesh construction
+    /// Mesh construction. Any of the functions below can modify the renderState.
+    /// This modified render state will be passed onto the renderer.
     /// @{
     void renderNodes(
         boost::shared_ptr<SCIRun::Field> field,
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-        const RenderState& state, Core::Datatypes::GeometryHandle geom, 
+        RenderState state, Core::Datatypes::GeometryHandle geom, 
         const std::string& id);
 
     void renderFaces(
         boost::shared_ptr<SCIRun::Field> field,
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-        const RenderState& state, Core::Datatypes::GeometryHandle geom, 
+        RenderState state, Core::Datatypes::GeometryHandle geom, 
         unsigned int approx_div,
         const std::string& id);
 
     void renderFacesLinear(
         boost::shared_ptr<SCIRun::Field> field,
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-        const RenderState& state, Core::Datatypes::GeometryHandle geom, 
+        RenderState state, Core::Datatypes::GeometryHandle geom, 
         unsigned int approxDiv,
         const std::string& id);
 
@@ -106,18 +107,8 @@ namespace Visualization {
         CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
         Core::Datatypes::GeometryObject::ColorScheme colorScheme,
         std::vector<double> &scols,
-        std::vector<Core::Datatypes::Material> &vcols );
-    //
-    // void addDoubleSidedGeom(
-    //     const std::vector<Core::Geometry::Point>&   points,
-    //     const std::vector<Core::Geometry::Vector>&  normals,
-    //     bool withNormals,
-    //     uint32_t& iboIndex,
-    //     CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
-    //     CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
-    //     GeometryObject::ColorScheme colorScheme,
-    //     std::vector<double> &scols,
-    //     std::vector<Material> &vcols );
+        std::vector<Core::Datatypes::Material> &vcols,
+        const RenderState& state);
     /// @}
 
     /// State evaluation

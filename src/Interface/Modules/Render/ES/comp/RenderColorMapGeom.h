@@ -9,8 +9,6 @@
 namespace SCIRun {
 namespace Render {
 
-/// \todo Transition this class to use the template ShaderVBOAttribs class
-///       under utils (utils/Shader.hpp).
 struct RenderColorMapGeom
 {
   // -- Data --

@@ -61,6 +61,7 @@
 #include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
 #include "comp/RenderColorMapGeom.h"
+#include "comp/SRRenderState.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderColorMapSys.h"
 
@@ -363,6 +364,11 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     // Add transformation
     gen::Transform trafo;
     mCore.addComponent(entityID, trafo);
+
+    // Add SCIRun render state.
+    SRRenderState state;
+    state.state = pass.renderState;
+    mCore.addComponent(entityID, state);
 
     // Add appropriate renderer based on the color scheme to use.
     if (    pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_UNIFORM

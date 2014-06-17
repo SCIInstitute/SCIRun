@@ -263,7 +263,7 @@ void ShowFieldModule::applyColorMapScaling(
 void ShowFieldModule::renderFaces(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-    const RenderState& state, Core::Datatypes::GeometryHandle geom, 
+    RenderState state, Core::Datatypes::GeometryHandle geom, 
     unsigned int approxDiv,
     const std::string& id)
 {
@@ -293,7 +293,7 @@ void ShowFieldModule::renderFaces(
 void ShowFieldModule::renderFacesLinear(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-    const RenderState& state,
+    RenderState state,
     Core::Datatypes::GeometryHandle geom, 
     unsigned int approxDiv,
     const std::string& id)
@@ -450,7 +450,7 @@ void ShowFieldModule::renderFacesLinear(
     if (colorScheme == GeometryObject::COLOR_UNIFORM)
     {
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-                  colorScheme, scols, vcols);
+                  colorScheme, scols, vcols, state);
     }
     // Element data (Cells) so two sided faces.
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
@@ -509,88 +509,10 @@ void ShowFieldModule::renderFacesLinear(
         valueToColor( colorScheme, tvals[1], scols[1], vcols[1] );
       }
 
-      std::cout << "Two sided element values not supported." << std::endl;
-      if (colorScheme == GeometryObject::COLOR_MAP)
-      {
-        // Old scirun may not have got the winding order correct on the 2 sided
-        // polygons. This is the cell centered case with two sided triangles.
-        if (nodes.size() == 4)
-        {
-          /// \todo Quads rendered the same as faces. Will come back to this
-          ///       data type. Rendering quads is a simple process though.
-          ///       just split it into two triangles.
-          if (withNormals)
-          {
-            // tqfaces->add(points[0], normals[0], scols[0], scols[1],
-            //              points[1], normals[1], scols[0], scols[1],
-            //              points[2], normals[2], scols[0], scols[1],
-            //              points[3], normals[3], scols[0], scols[1]);
-          }
-          else
-          {
-            // tqfaces->add(points[0], scols[0], scols[1],
-            //              points[1], scols[0], scols[1],
-            //              points[2], scols[0], scols[1],
-            //              points[3], scols[0], scols[1]);
-          }
-        }
-        else
-        {
-          for (size_t i=2; i<nodes.size(); i++)
-          {
-            if (withNormals)
-            {
-              // ttfaces->add(points[0],   normals[0],   scols[0], scols[1],
-              //              points[i-1], normals[i-1], scols[0], scols[1],
-              //              points[i],   normals[i],   scols[0], scols[1]);
-            }
-            else
-            {
-              // ttfaces->add(points[0],   scols[0], scols[1],
-              //              points[i-1], scols[0], scols[1],
-              //              points[i],   scols[0], scols[1]);
-            }
-          }
-        }
-      }
-      else //if (colorScheme == GeometryObject::COLOR_IN_SITU)
-      {
-        if (nodes.size() == 4)
-        {
-          if (withNormals)
-          {
-            // tqfaces->add(points[0], normals[0], vcols[0], vcols[1],
-            //              points[1], normals[1], vcols[0], vcols[1],
-            //              points[2], normals[2], vcols[0], vcols[1],
-            //              points[3], normals[3], vcols[0], vcols[1]);
-          }
-          else
-          {
-            // tqfaces->add(points[0], vcols[0], vcols[1],
-            //              points[1], vcols[0], vcols[1],
-            //              points[2], vcols[0], vcols[1],
-            //              points[3], vcols[0], vcols[1]);
-          }
-        }
-        else
-        {
-          for (size_t i=2; i<nodes.size(); i++)
-          {
-            if (withNormals)
-            {
-              // ttfaces->add(points[0],   normals[0],   vcols[0], vcols[1],
-              //              points[i-1], normals[i-1], vcols[0], vcols[1],
-              //              points[i],   normals[i],   vcols[0], vcols[1]);
-            }
-            else
-            {
-              // ttfaces->add(points[0],   vcols[0], vcols[1],
-              //              points[i-1], vcols[0], vcols[1],
-              //              points[i],   vcols[0], vcols[1]);
-            }
-          }
-        }
-      }
+      state.set(RenderState::IS_DOUBLE_SIDED, true);
+
+      addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
+                  colorScheme, scols, vcols, state);
     }
     // Element data (faces)
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
@@ -619,7 +541,7 @@ void ShowFieldModule::renderFacesLinear(
       }
       
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-                  colorScheme, scols, vcols);
+                  colorScheme, scols, vcols, state);
     }
 
     // Data at nodes
@@ -651,7 +573,7 @@ void ShowFieldModule::renderFacesLinear(
       }
       
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-                  colorScheme, scols, vcols);
+                  colorScheme, scols, vcols, state);
     }
 
     ++fiter;     
@@ -680,15 +602,34 @@ void ShowFieldModule::renderFacesLinear(
   if (colorScheme == GeometryObject::COLOR_MAP)
   {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
-    if (withNormals)
+
+    if (state.get(RenderState::IS_DOUBLE_SIDED) == false)
     {
-      // Use colormapping lit shader.
-      shader = "Shaders/DirPhongCMap";
+      if (withNormals)
+      {
+        // Use colormapping lit shader.
+        shader = "Shaders/DirPhongCMap";
+      }
+      else
+      {
+        // Use colormapping only shader.
+        shader = "Shaders/ColorMap";
+      }
     }
     else
     {
-      // Use colormapping only shader.
-      shader = "Shaders/ColorMap";
+      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldDataSecondary", 1 * sizeof(float)));
+
+      if (withNormals)
+      {
+        // Use colormapping lit shader.
+        shader = "Shaders/DblSided_DirPhongCMap";
+      }
+      else
+      {
+        // Use colormapping only shader.
+        shader = "Shaders/DblSided_ColorMap";
+      }
     }
 
     if (state.get(RenderState::USE_TRANSPARENCY))
@@ -703,20 +644,41 @@ void ShowFieldModule::renderFacesLinear(
   else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
-    if (withNormals)
+
+    if (state.get(RenderState::IS_DOUBLE_SIDED) == false)
     {
-      // Use colored and lit shader.
-      shader = "Shaders/InSituPhongColor";
+      if (withNormals)
+      {
+        // Use colored and lit shader.
+        shader = "Shaders/InSituPhongColor";
+      }
+      else
+      {
+        // Use colormapping shader.
+        shader = "Shaders/InSituColor";
+      }
     }
     else
     {
-      // Use colormapping shader.
-      shader = "Shaders/InSituColor";
+      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColorSecondary", 1 * sizeof(uint32_t), true));
+
+      if (withNormals)
+      {
+        // Use colored and lit shader.
+        shader = "Shaders/DblSided_InSituPhongColor";
+      }
+      else
+      {
+        // Use colormapping shader.
+        shader = "Shaders/DblSided_InSituColor";
+      }
     }
   }
   else if (colorScheme == GeometryObject::COLOR_UNIFORM)
   {
     ColorRGB defaultColor = state.defaultColor;
+
+    shader = "Shaders/UniformColor";
 
     if (state.get(RenderState::USE_TRANSPARENCY))
     {
@@ -757,26 +719,11 @@ void ShowFieldModule::renderFacesLinear(
   ///       build up to geometry / tessellation shaders if support is present.
 }
 
-// void ShowFieldModule::addDoubleSidedGeom(
-//     const std::vector<Core::Geometry::Point>&   points,
-//     const std::vector<Core::Geometry::Vector>&  normals,
-//     bool withNormals,
-//     uint32_t& iboIndex,
-//     CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
-//     CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
-//     GeometryObject::ColorScheme colorScheme,
-//     std::vector<double> &scols,
-//     std::vector<Material> &vcols )
-// {
-//   
-// }
-
 // This function needs to be reorganized.
 // The fact that we are only rendering triangles helps us dramatically and
 // we get rid of the quads renderer pointers. Additionally, we can re-order
 // the triangles in ES and perform different rendering based on the
-// transparency of the triangles. Two sided simply becomes a flag that is
-// passed to the ES and the rendering state will be changed accordingly.
+// transparency of the triangles.
 void ShowFieldModule::addFaceGeom(
     const std::vector<Core::Geometry::Point>  &points,
     const std::vector<Core::Geometry::Vector> &normals,
@@ -786,7 +733,8 @@ void ShowFieldModule::addFaceGeom(
     CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
     GeometryObject::ColorScheme colorScheme,
     std::vector<double> &scols,
-    std::vector<Material> &vcols )
+    std::vector<Material> &vcols,
+    const RenderState& state)
 {
   auto writeVBOPoint = [&vboBuffer](const Core::Geometry::Point& point)
   {
@@ -819,6 +767,8 @@ void ShowFieldModule::addFaceGeom(
   {
     iboBuffer->write(index);
   };
+
+  bool doubleSided = state.get(RenderState::IS_DOUBLE_SIDED);
 
   if (colorScheme == GeometryObject::COLOR_UNIFORM)
   {
@@ -893,37 +843,48 @@ void ShowFieldModule::addFaceGeom(
   {
     if (points.size() == 4)
     {
+      // Note:  For the double sided case, the 0 and 1 indices are not a typo.
+      //        It is a direct translation from old scirun.
       if (withNormals)
       {
         writeVBOPoint(points[0]);
         writeVBONormal(normals[0]);
-        writeVBOScalarValue(scols[0]);
+        if (!doubleSided) {writeVBOScalarValue(scols[0]);}
+        else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
         writeVBOScalarValue(scols[1]);
+        if (!doubleSided) {writeVBOScalarValue(scols[1]);}
+        else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
         writeVBOPoint(points[2]);
         writeVBONormal(normals[2]);
-        writeVBOScalarValue(scols[2]);
+        if (!doubleSided) {writeVBOScalarValue(scols[2]);}
+        else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
         writeVBOPoint(points[3]);
         writeVBONormal(normals[3]);
-        writeVBOScalarValue(scols[3]);
+        if (!doubleSided) {writeVBOScalarValue(scols[3]);}
+        else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
       }
       else
       {
         writeVBOPoint(points[0]);
-        writeVBOScalarValue(scols[0]);
+        if (!doubleSided) {writeVBOScalarValue(scols[0]);}
+        else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
         writeVBOPoint(points[1]);
-        writeVBOScalarValue(scols[1]);
+        if (!doubleSided) {writeVBOScalarValue(scols[1]);}
+        else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
         writeVBOPoint(points[2]);
-        writeVBOScalarValue(scols[2]);
+        if (!doubleSided) {writeVBOScalarValue(scols[2]);}
+        else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
         writeVBOPoint(points[3]);
-        writeVBOScalarValue(scols[3]);
+        if (!doubleSided) {writeVBOScalarValue(scols[3]);}
+        else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
       }
       writeIBOIndex(iboIndex);
       writeIBOIndex(iboIndex + 1);
@@ -939,37 +900,45 @@ void ShowFieldModule::addFaceGeom(
     {
       for (size_t i = 2; i < points.size(); i++)
       {
+        // Note:  For the double sided case, the 0 and 1 indices are not a typo.
+        //        It is a direct translation from old scirun.
         if (withNormals)
         {
           // Render points if we are not rendering spheres.
           writeVBOPoint(points[0]);
           writeVBONormal(normals[0]);
-          writeVBOScalarValue(scols[0]);
+          if (!doubleSided) {writeVBOScalarValue(scols[0]);}
+          else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
           writeIBOIndex(iboIndex);
 
           writeVBOPoint(points[i-1]);
           writeVBONormal(normals[i-1]);
-          writeVBOScalarValue(scols[i-1]);
+          if (!doubleSided) {writeVBOScalarValue(scols[i-1]);}
+          else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
           writeIBOIndex(iboIndex + i-1);
 
           writeVBOPoint(points[i]);
           writeVBONormal(normals[i]);
-          writeVBOScalarValue(scols[i]);
+          if (!doubleSided) {writeVBOScalarValue(scols[i]);}
+          else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
           writeIBOIndex(iboIndex + i);
         }
         else
         {
           // Render points if we are not rendering spheres.
           writeVBOPoint(points[0]);
-          writeVBOScalarValue(scols[0]);
+          if (!doubleSided) {writeVBOScalarValue(scols[0]);}
+          else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
           writeIBOIndex(iboIndex);
 
           writeVBOPoint(points[i-1]);
-          writeVBOScalarValue(scols[i-1]);
+          if (!doubleSided) {writeVBOScalarValue(scols[i-1]);}
+          else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
           writeIBOIndex(iboIndex + i-1);
 
           writeVBOPoint(points[i]);
-          writeVBOScalarValue(scols[i]);
+          if (!doubleSided) {writeVBOScalarValue(scols[i]);}
+          else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
           writeIBOIndex(iboIndex + i);
         }
       }
@@ -984,33 +953,41 @@ void ShowFieldModule::addFaceGeom(
       {
         writeVBOPoint(points[0]);
         writeVBONormal(normals[0]);
-        writeVBO4ByteColor(vcols[0]);
+        if (!doubleSided) {writeVBO4ByteColor(vcols[0]);}
+        else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
 
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
-        writeVBO4ByteColor(vcols[1]);
+        if (!doubleSided) {writeVBO4ByteColor(vcols[1]);}
+        else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
 
         writeVBOPoint(points[2]);
         writeVBONormal(normals[2]);
-        writeVBO4ByteColor(vcols[2]);
+        if (!doubleSided) {writeVBO4ByteColor(vcols[2]);}
+        else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
 
         writeVBOPoint(points[3]);
         writeVBONormal(normals[3]);
-        writeVBO4ByteColor(vcols[3]);
+        if (!doubleSided) {writeVBO4ByteColor(vcols[3]);}
+        else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
       }
       else
       {
         writeVBOPoint(points[0]);
-        writeVBO4ByteColor(vcols[0]);
+        if (!doubleSided) {writeVBO4ByteColor(vcols[0]);}
+        else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
 
         writeVBOPoint(points[1]);
-        writeVBO4ByteColor(vcols[1]);
+        if (!doubleSided) {writeVBO4ByteColor(vcols[1]);}
+        else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
 
         writeVBOPoint(points[2]);
-        writeVBO4ByteColor(vcols[2]);
+        if (!doubleSided) {writeVBO4ByteColor(vcols[2]);}
+        else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
 
         writeVBOPoint(points[3]);
-        writeVBO4ByteColor(vcols[3]);
+        if (!doubleSided) {writeVBO4ByteColor(vcols[3]);}
+        else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
       }
       writeIBOIndex(iboIndex);
       writeIBOIndex(iboIndex + 1);
@@ -1030,31 +1007,37 @@ void ShowFieldModule::addFaceGeom(
         {
           writeVBOPoint(points[0]);
           writeVBONormal(normals[0]);
-          writeVBO4ByteColor(vcols[0]);
+          if (!doubleSided) {writeVBO4ByteColor(vcols[0]);}
+          else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
           writeIBOIndex(iboIndex);
 
           writeVBOPoint(points[i-1]);
           writeVBONormal(normals[i-1]);
-          writeVBO4ByteColor(vcols[i-1]);
+          if (!doubleSided) {writeVBO4ByteColor(vcols[i-1]);}
+          else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
           writeIBOIndex(iboIndex + i-1);
 
           writeVBOPoint(points[i]);
           writeVBONormal(normals[i]);
-          writeVBO4ByteColor(vcols[i]);
+          if (!doubleSided) {writeVBO4ByteColor(vcols[i]);}
+          else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
           writeIBOIndex(iboIndex + i);
         }
         else
         {
           writeVBOPoint(points[0]);
-          writeVBO4ByteColor(vcols[0]);
+          if (!doubleSided) {writeVBO4ByteColor(vcols[0]);}
+          else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
           iboBuffer->write(iboIndex);
 
           writeVBOPoint(points[i-1]);
-          writeVBO4ByteColor(vcols[i-1]);
+          if (!doubleSided) {writeVBO4ByteColor(vcols[i-1]);}
+          else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
           writeIBOIndex(iboIndex + i-1);
 
           writeVBOPoint(points[i]);
-          writeVBO4ByteColor(vcols[i]);
+          if (!doubleSided) {writeVBO4ByteColor(vcols[i]);}
+          else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
           writeIBOIndex(iboIndex + i);
         }
       }
@@ -1068,7 +1051,7 @@ void ShowFieldModule::addFaceGeom(
 void ShowFieldModule::renderNodes(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-    const RenderState& state,
+    RenderState state,
     Core::Datatypes::GeometryHandle geom, 
     const std::string& id)
 {

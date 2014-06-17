@@ -22,6 +22,7 @@
 #include <es-render/comp/StaticVBOMan.hpp>
 
 #include "../comp/RenderColorMapGeom.h"
+#include "../comp/SRRenderState.h"
 
 namespace es = CPM_ES_NS;
 namespace shaders = CPM_GL_SHADERS_NS;
@@ -35,6 +36,7 @@ namespace Render {
 class RenderColorMapSys :
     public es::GenericSystem<true,
                              RenderColorMapGeom,   // TAG class
+                             SRRenderState,
                              gen::Transform,
                              gen::StaticGlobalTime,
                              ren::VBO,
@@ -65,6 +67,7 @@ public:
   void groupExecute(
       es::ESCoreBase&, uint64_t /* entityID */,
       const es::ComponentGroup<RenderColorMapGeom>& geom,
+      const es::ComponentGroup<SRRenderState>& srstate,
       const es::ComponentGroup<gen::Transform>& trafo,
       const es::ComponentGroup<gen::StaticGlobalTime>& time,
       const es::ComponentGroup<ren::VBO>& vbo,

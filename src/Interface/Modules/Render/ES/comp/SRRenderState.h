@@ -1,27 +1,26 @@
-#ifndef INTERFACE_MODULES_RENDER_ES_COMP_RENDER_BASIC_GEOM_H
-#define INTERFACE_MODULES_RENDER_ES_COMP_RENDER_BASIC_GEOM_H
+#ifndef INTERFACE_MODULES_RENDER_ES_COMP_SR_RENDER_STATE_H
+#define INTERFACE_MODULES_RENDER_ES_COMP_SR_RENDER_STATE_H
 
 #include <gl-shaders/GLShader.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 
 namespace SCIRun {
 namespace Render {
 
-/// \todo Transition this class to use a base class that is shared with
-///       render color mapped geom. That will get rid of the duplication
-///       while retaining state and functionality.
-struct RenderBasicGeom
+/// \todo Transition this class to use the template ShaderVBOAttribs class
+///       under utils (utils/Shader.hpp).
+struct SRRenderState
 {
   // -- Data --
-  static const int MaxNumAttributes = 5;
-  ren::ShaderVBOAttribs<MaxNumAttributes> attribs;
+  RenderState state;
 
   // -- Functions --
-  RenderBasicGeom() {}
+  SRRenderState() {}
 
-  static const char* getName() {return "RenderBasicGeom";}
+  static const char* getName() {return "SRRenderState";}
 
   bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
