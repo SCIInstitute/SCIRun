@@ -34,6 +34,8 @@ uniform vec4    uColor;             // Uniform color
 uniform float uMinVal;
 uniform float uMaxVal;
 
+// Transparency to use along side the color map.
+
 // Attributes
 attribute vec3  aPos;
 attribute float aFieldData;

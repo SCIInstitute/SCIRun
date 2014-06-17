@@ -124,7 +124,6 @@ namespace Visualization {
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
     /// @}
 
-
     void applyColorMapScaling(boost::shared_ptr<SCIRun::Field> field,
                               Core::Datatypes::GeometryObject::SpireSubPass& pass);
 

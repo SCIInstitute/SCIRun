@@ -689,6 +689,15 @@ void ShowFieldModule::renderFacesLinear(
       // Use colormapping only shader.
       shader = "Shaders/ColorMap";
     }
+
+    if (state.get(RenderState::USE_TRANSPARENCY))
+    {
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(0.75f)));
+    }
+    else
+    {
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0f)));
+    }
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
