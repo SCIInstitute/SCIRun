@@ -208,7 +208,6 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   proxy->setZValue(zLevelManager_->max());
   proxy->setVisible(true);
-  proxy->setSelected(true);
   proxy->setPos(lastModulePosition_);
   lastModulePosition_ += moduleAddIncrement;
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
