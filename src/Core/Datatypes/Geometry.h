@@ -130,11 +130,12 @@ namespace Datatypes {
     {
       SpireSubPass(const std::string& name, const std::string& vbo, 
                    const std::string& ibo, const std::string& program,
-                   ColorScheme scheme) :
+                   ColorScheme scheme, const RenderState& state) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
           programName(program),
+          renderState(state),
           mColorScheme(scheme)
       {}
 
@@ -142,6 +143,7 @@ namespace Datatypes {
       std::string   vboName;
       std::string   iboName;
       std::string   programName;
+      RenderState   renderState;
 
       struct Uniform
       {

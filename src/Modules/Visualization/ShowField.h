@@ -107,6 +107,17 @@ namespace Visualization {
         Core::Datatypes::GeometryObject::ColorScheme colorScheme,
         std::vector<double> &scols,
         std::vector<Core::Datatypes::Material> &vcols );
+    //
+    // void addDoubleSidedGeom(
+    //     const std::vector<Core::Geometry::Point>&   points,
+    //     const std::vector<Core::Geometry::Vector>&  normals,
+    //     bool withNormals,
+    //     uint32_t& iboIndex,
+    //     CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
+    //     CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
+    //     GeometryObject::ColorScheme colorScheme,
+    //     std::vector<double> &scols,
+    //     std::vector<Material> &vcols );
     /// @}
 
     /// State evaluation

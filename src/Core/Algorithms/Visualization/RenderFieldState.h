@@ -62,6 +62,7 @@ public:
     // Face flags
     USE_NORMALS,
     USE_TEXTURE,
+    IS_DOUBLE_SIDED,
 
     // Text flags
     BACKFACES_CULL,

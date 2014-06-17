@@ -341,7 +341,6 @@ void ShowFieldModule::renderFacesLinear(
   // Special case for cell centered data
   if ((fld->basis_order() == 0) && (mesh->dimensionality() == 3) && (colorScheme != GeometryObject::COLOR_UNIFORM))
   {
-    std::cout << "Cell centered data not implemented yet. Need two sided triangles." << std::endl;
     // if (state.get(USE_TRANSPARENCY))
     // {
     //   ttfaces = new GeomTranspTrianglesTwoSided;
@@ -459,6 +458,8 @@ void ShowFieldModule::renderFacesLinear(
       VMesh::Elem::array_type cells;
       mesh->get_elems(cells, *fiter);
       
+      std::cout << "Cell size: " << cells.size() << std::endl;
+
       if (fld->is_scalar())
       {
         fld->get_value(svals[0], cells[0]);
@@ -740,7 +741,7 @@ void ShowFieldModule::renderFacesLinear(
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
-      GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme);
+      GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme, state);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -755,6 +756,20 @@ void ShowFieldModule::renderFacesLinear(
   /// \todo Add spheres and other glyphs as display lists. Will want to
   ///       build up to geometry / tessellation shaders if support is present.
 }
+
+// void ShowFieldModule::addDoubleSidedGeom(
+//     const std::vector<Core::Geometry::Point>&   points,
+//     const std::vector<Core::Geometry::Vector>&  normals,
+//     bool withNormals,
+//     uint32_t& iboIndex,
+//     CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
+//     CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
+//     GeometryObject::ColorScheme colorScheme,
+//     std::vector<double> &scols,
+//     std::vector<Material> &vcols )
+// {
+//   
+// }
 
 // This function needs to be reorganized.
 // The fact that we are only rendering triangles helps us dramatically and
@@ -1219,7 +1234,7 @@ void ShowFieldModule::renderNodes(
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
-      GeometryObject::SpireSubPass(passName, vboName, iboName, "Shaders/UniformColor", colorScheme);
+      GeometryObject::SpireSubPass(passName, vboName, iboName, "Shaders/UniformColor", colorScheme, state);
 
   pass.addUniform("uColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
