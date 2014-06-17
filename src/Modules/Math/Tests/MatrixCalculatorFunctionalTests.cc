@@ -115,7 +115,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   ASSERT_TRUE(evalModule != nullptr);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input);
+  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
 
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   //manually execute the network, in the correct order.
@@ -201,8 +201,8 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   EXPECT_EQ(9, matrixMathNetwork.nconnections());
 
   //Set module parameters.
-  matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
-  matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
+  matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1(), true);
+  matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2(), true);
   transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
