@@ -458,8 +458,6 @@ void ShowFieldModule::renderFacesLinear(
       VMesh::Elem::array_type cells;
       mesh->get_elems(cells, *fiter);
       
-      std::cout << "Cell size: " << cells.size() << std::endl;
-
       if (fld->is_scalar())
       {
         fld->get_value(svals[0], cells[0]);
@@ -649,7 +647,7 @@ void ShowFieldModule::renderFacesLinear(
     {
       if (withNormals)
       {
-        // Use colored and lit shader.
+        std::cerr << "ERROR - In situ phong not implemented." << std::endl;
         shader = "Shaders/InSituPhongColor";
       }
       else
@@ -664,7 +662,7 @@ void ShowFieldModule::renderFacesLinear(
 
       if (withNormals)
       {
-        // Use colored and lit shader.
+        std::cerr << "ERROR - Double sided in situ phong not implemented." << std::endl;
         shader = "Shaders/DblSided_InSituPhongColor";
       }
       else
