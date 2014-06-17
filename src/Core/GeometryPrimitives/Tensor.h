@@ -92,7 +92,6 @@ public:
   
   double mat_[3][3];
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   void build_mat_from_eigens();
   void build_eigens_from_mat(); 
   void get_eigenvectors(Vector &e1, Vector &e2, Vector &e3);
@@ -100,7 +99,6 @@ public:
   const Vector &get_eigenvector2() { ASSERT(have_eigens_); return e2_; }
   const Vector &get_eigenvector3() { ASSERT(have_eigens_); return e3_; }
   void get_eigenvalues(double &l1, double &l2, double &l3);
-#endif
 
   double norm();
 

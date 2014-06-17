@@ -105,7 +105,7 @@ IF(APPLE AND BUILD_BUNDLE)
       POST_BUILD
         # configure Qt libs
         # TODO: starting with debug level output, reduce later...
-        COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app 
+        COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
 
         COMMAND cp -Rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
 

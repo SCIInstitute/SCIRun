@@ -48,9 +48,7 @@
 
 #include <Core/Persistent/Persistent.h>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <teem/ten.h>
-#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -150,7 +148,6 @@ Tensor::Tensor(int v) {
       else mat_[i][j]=0;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 Tensor::Tensor(const Vector &e1, const Vector &e2, const Vector &e3) :
   e1_(e1), e2_(e2), e3_(e3), 
   l1_(e1.length()), l2_(e2.length()), l3_(e3.length())
@@ -158,7 +155,6 @@ Tensor::Tensor(const Vector &e1, const Vector &e2, const Vector &e3) :
   build_mat_from_eigens();
   have_eigens_=1;
 }
-#endif
 
 Tensor::Tensor(const double **cmat) {
   for (int i=0; i<3; i++)
@@ -167,7 +163,6 @@ Tensor::Tensor(const double **cmat) {
   have_eigens_=0;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void Tensor::build_mat_from_eigens() {
   if (!have_eigens_) return;
   double E[3][3];
@@ -200,7 +195,6 @@ void Tensor::build_mat_from_eigens() {
           mat_[i][j] += E[i][k] * SE[k][j];
       }
 }
-#endif
 
 bool Tensor::operator==(const Tensor& t) const
 {
@@ -321,7 +315,6 @@ Vector Tensor::operator*(const Vector v) const
 		v.x()*mat_[2][0]+v.y()*mat_[2][1]+v.z()*mat_[2][2]);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void Tensor::build_eigens_from_mat()
 {
   if (have_eigens_) return;
@@ -365,7 +358,6 @@ void Tensor::set_eigens(const Vector &e1, const Vector &e2, const Vector &e3) {
   build_mat_from_eigens();
   have_eigens_ = 1;
 }
-#endif
 
 void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
 				const Vector &e3,

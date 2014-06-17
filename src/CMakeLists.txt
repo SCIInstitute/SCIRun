@@ -26,9 +26,10 @@
 #  DEALINGS IN THE SOFTWARE.
 
 IF(UNIX)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
+  # temporary - needed to make Travis CI build work
+  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
 ELSE()
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
+  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
 ENDIF(UNIX)
 
 PROJECT(SCIRun5Prototype)
@@ -209,6 +210,9 @@ IF(APPLE)
     NAMES macdeployqt
   )
   MARK_AS_ADVANCED(MACDEPLOYQT)
+
+  SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
+  MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
 ENDIF()
 
 
@@ -268,6 +272,13 @@ EXTERNAL_ZLIB_LIBRARY(GIT)
 
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BoostConfig.cmake)
 EXTERNAL_BOOST_LIBRARY(GIT)
+
+
+########################################################################
+# Configure teem external project
+
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TeemConfig.cmake)
+EXTERNAL_TEEM_LIBRARY(GIT)
 
 
 ########################################################################
@@ -407,6 +418,8 @@ INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen
   # TODO: set up include variable in log4cpp project
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/log4cpp/include
+  ${SCI_TEEM_INCLUDE}
+  ${SCI_ZLIB_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
