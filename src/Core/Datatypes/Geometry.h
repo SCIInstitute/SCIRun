@@ -59,6 +59,17 @@ namespace Datatypes {
       COLOR_IN_SITU
     };
 
+    /// Different types of rendering support by the system. Strictly speaking,
+    /// all of the rendering types can be subsumed in VBO and IBO rendering.
+    /// This really just boils down to instanced rendering. Once tesselation
+    /// and geometry shaders are supported, we can speed up instanced rendering
+    /// in OpenGL.
+    enum RenderType
+    {
+      RENDER_VBO_IBO,
+      RENDER_RLIST_SPHERE,
+    };
+
     explicit GeometryObject(DatatypeConstHandle dh);
     GeometryObject(const GeometryObject& other);
     GeometryObject& operator=(const GeometryObject& other);
@@ -130,12 +141,14 @@ namespace Datatypes {
     {
       SpireSubPass(const std::string& name, const std::string& vbo, 
                    const std::string& ibo, const std::string& program,
-                   ColorScheme scheme, const RenderState& state) :
+                   ColorScheme scheme, const RenderState& state,
+                   RenderType renType) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
           programName(program),
           renderState(state),
+          renderType(renType),
           mColorScheme(scheme)
       {}
 
@@ -144,6 +157,7 @@ namespace Datatypes {
       std::string   iboName;
       std::string   programName;
       RenderState   renderState;
+      RenderType    renderType;
 
       struct Uniform
       {

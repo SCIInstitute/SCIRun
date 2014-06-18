@@ -153,12 +153,14 @@ private:
 
     struct SRPass
     {
-      SRPass(const std::string& name) :
-          passName(name)
+      SRPass(const std::string& name, Core::Datatypes::GeometryObject::RenderType renType) :
+          passName(name),
+          renderType(renType)
       {}
 
       std::string                 passName;
       std::list<ObjectTransforms> transforms;
+      Core::Datatypes::GeometryObject::RenderType renderType;
     };
 
     std::string           mName;

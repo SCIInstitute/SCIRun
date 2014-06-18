@@ -650,7 +650,8 @@ void ShowFieldModule::renderFacesLinear(
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
-      GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme, state);
+      GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+                                   colorScheme, state, GeometryObject::RENDER_VBO_IBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -1184,7 +1185,8 @@ void ShowFieldModule::renderNodes(
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
-      GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme, state);
+      GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+                                   colorScheme, state, GeometryObject::RENDER_VBO_IBO);
 
   pass.addUniform("uColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 

@@ -430,7 +430,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     // much simpler customization.
 
     // Add a pass to our local object.
-    elem.mPasses.push_back(pass.passName);
+    elem.mPasses.emplace_back(pass.passName, pass.renderType);
   }
 
   // Recalculate scene bounding box. Should only be done when an object is added.
