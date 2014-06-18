@@ -66,8 +66,7 @@ public:
   ~ConnectionLine();
   void setColor(const QColor& color);
   QColor color() const; 
-  SCIRun::Dataflow::Networks::ModuleId getConnectedToModuleId(); 
-  SCIRun::Dataflow::Networks::ModuleId getConnectedFromModuleId();
+  std::list<SCIRun::Dataflow::Networks::ModuleId> getConnectedToModuleId(); 
   
 public Q_SLOTS:
   void trackNodes();

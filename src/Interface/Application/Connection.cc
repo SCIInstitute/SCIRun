@@ -288,13 +288,12 @@ QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& v
 	return QGraphicsItem::itemChange(change, value);
 }
 
-SCIRun::Dataflow::Networks::ModuleId ConnectionLine::getConnectedToModuleId()
+std::list<SCIRun::Dataflow::Networks::ModuleId> ConnectionLine::getConnectedToModuleId()
 {
-	return toPort_->getUnderlyingModuleId();
-}
-SCIRun::Dataflow::Networks::ModuleId ConnectionLine::getConnectedFromModuleId()
-{
-	return fromPort_->getUnderlyingModuleId(); 
+	std::list<SCIRun::Dataflow::Networks::ModuleId> mp; 
+	mp.push_front(toPort_->getUnderlyingModuleId()); 
+	mp.push_front(fromPort_->getUnderlyingModuleId());
+	return mp; 
 }
 void ConnectionLine::setNoteGraphicsContext() 
 {

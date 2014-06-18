@@ -497,11 +497,10 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 
 	if(ConnectionLine* cL = getSingleConnectionSelected())
 	{ 
-		auto mod1 = cL->getConnectedToModuleId();
-		auto mod2 = cL->getConnectedFromModuleId(); 
+		auto selectedPair = cL->getConnectedToModuleId();
 
-		findById(scene_->items(),mod1)->setSelected(true);
-		findById(scene_->items(),mod2)->setSelected(true);
+		findById(scene_->items(),selectedPair.front())->setSelected(true);
+		findById(scene_->items(),selectedPair.back())->setSelected(true);
 	}
 	QGraphicsView::mouseMoveEvent(event);
 }
@@ -543,12 +542,11 @@ void NetworkEditor::unselectConnectionGroup()
 		{
 			if(cL = qgraphicsitem_cast<ConnectionLine*>(items.first()))
 			{
-				auto mod1 = cL->getConnectedToModuleId();
-				auto mod2 = cL->getConnectedFromModuleId(); 
+				auto selectedPair = cL->getConnectedToModuleId(); 
 
 				cL->setSelected(false);  
-				findById(scene_->items(),mod1)->setSelected(false);
-				findById(scene_->items(),mod2)->setSelected(false);
+				findById(scene_->items(),selectedPair.front())->setSelected(false);
+				findById(scene_->items(),selectedPair.back())->setSelected(false);
 			}
 		}	
 	}
