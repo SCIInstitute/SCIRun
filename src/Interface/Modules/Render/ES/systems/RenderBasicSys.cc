@@ -170,6 +170,7 @@ public:
     }
     else
     {
+      GL(glEnable(GL_CULL_FACE));
       // Double sided rendering. Mimic SCIRun4 and use GL_FRONT and GL_BACK
       // to mimic forward facing and back facing polygons.
       
