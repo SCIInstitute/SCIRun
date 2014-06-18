@@ -31,8 +31,8 @@
 
 #include "Interface/Modules/BrainStimulator/ui_SetupRHSforTDCSandTMSDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/BrainStimulator/share.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
+#include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
 namespace Gui {
