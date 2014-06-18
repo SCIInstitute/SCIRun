@@ -789,7 +789,6 @@ Transform::perspective(const Point& eyep, const Point& lookat,
   x*=xscale;
   y*=yscale;
   z*=zscale;
-  // pre_translate(Point(0,0,0)-eyep);
   double m[4][4];
   // Viewing...
   m[0][0]=x.x(); m[0][1]=y.x(); m[0][2]=z.x(); m[0][3]=eyep.x();

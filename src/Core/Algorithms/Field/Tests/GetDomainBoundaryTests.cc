@@ -194,7 +194,6 @@ protected:
 
 TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)
 {
-    //EXPECT_NO_FATAL_FAILURE(GetDomainBoundaryTestsParameterized); 
     //EXPECT_EQ(0, boundary->vmesh()->num_nodes()); 
   boundary_.reset();
   ASSERT_TRUE(algo_.runImpl(latVol_, unused_, boundary_));
