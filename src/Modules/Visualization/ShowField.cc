@@ -338,57 +338,6 @@ void ShowFieldModule::renderFacesLinear(
     }
   }
 
-  // Special case for cell centered data
-  if ((fld->basis_order() == 0) && (mesh->dimensionality() == 3) && (colorScheme != GeometryObject::COLOR_UNIFORM))
-  {
-    // if (state.get(USE_TRANSPARENCY))
-    // {
-    //   ttfaces = new GeomTranspTrianglesTwoSided;
-    //   tqfaces = new GeomTranspQuadsTwoSided;
-    //   grp->add(ttfaces);
-    //   grp->add(tqfaces);
-    // }
-    // else
-    // {
-    //   ttfaces = new GeomFastTrianglesTwoSided;
-    //   tqfaces = new GeomFastQuadsTwoSided;
-    //   grp->add(ttfaces);
-    //   grp->add(tqfaces);
-    // }
-  }
-  else
-  {
-    /// \todo Sort triangles in a consistent rendering order (back to front).
-    ///       This should happen regardless of camera positioning. This has
-    ///       everything to do with rendering the triangles in a consistent
-    ///       fashion. But with the z buffer turned on, we won't get good
-    ///       results.
-    // if (get_flag(render_state, USE_TRANSPARENCY))
-    // {
-    //   tfaces = new GeomTranspTriangles;
-    //   qfaces = new GeomTranspQuads;
-    //   
-    //   grp->add(tfaces);
-    //   grp->add(qfaces);
-    // }
-    // else
-    // {
-    //   tfaces = new GeomFastTriangles;
-    //   qfaces = new GeomFastQuads;
-    //
-    //   grp->add(tfaces);
-    //   grp->add(qfaces);
-    // }
-    if (state.get(RenderState::USE_TRANSPARENCY))
-    {
-      
-    }
-    else
-    {
-
-    }
-  }
-
   if (withNormals) {mesh->synchronize(Mesh::NORMALS_E);}
 
   mesh->synchronize(Mesh::FACES_E);
