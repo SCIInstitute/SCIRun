@@ -89,6 +89,7 @@ namespace Networks {
     /// @todo: execute signal here.
     virtual void do_execute() throw(); //--C++11--will throw nothing
     virtual ModuleStateHandle get_state();
+    virtual const ModuleStateHandle get_state() const;
     virtual void set_state(ModuleStateHandle state);
 
     virtual ExecutionState executionState() const;

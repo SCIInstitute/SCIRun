@@ -26,16 +26,16 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Basis_Tests_SRCS
-  BasisTests.cc
+SET(Core_IEPlugin_Tests_SRCS
+  ObjToFieldPluginTests.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Core_Basis_Tests
-  ${Core_Basis_Tests_SRCS}
+SCIRUN_ADD_UNIT_TEST(Core_IEPlugin_Tests
+  ${Core_IEPlugin_Tests_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Core_Basis_Tests
-  Core_Basis
+TARGET_LINK_LIBRARIES(Core_IEPlugin_Tests
+  Core_IEPlugin
   gtest_main
   gtest
   gmock

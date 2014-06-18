@@ -28,13 +28,16 @@
 
 #include <Interface/Modules/DataIO/WriteFieldDialog.h>
 #include <Modules/DataIO/WriteField.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Core/ImportExport/GenericIEPlugin.h>
 #include <iostream>
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 WriteFieldDialog::WriteFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -52,19 +55,23 @@ WriteFieldDialog::WriteFieldDialog(const std::string& name, ModuleStateHandle st
 
 void WriteFieldDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(WriteFieldModule::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
 }
 
 void WriteFieldDialog::pushFileNameToState() 
 {
-  state_->setValue(WriteFieldModule::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
 void WriteFieldDialog::saveFile()
 {
-  auto file = QFileDialog::getSaveFileName(this, "Save Field Binary File", dialogDirectory(), "*.fld");
+  auto types = state_->getValue(Variables::FileTypeList).getString();
+  QString selectedFilter;
+  auto file = QFileDialog::getSaveFileName(this, "Save Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter);
   if (file.length() > 0)
   {
+    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter.toStdString());
+    state_->setValue(Variables::FileTypeName, typeName);
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);
     pushFileNameToState();
