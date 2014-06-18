@@ -26,17 +26,14 @@
 
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/Util/StringUtil.h>
+//#include <Core/Util/StringUtil.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 
 #include <Core/Algorithms/Fields/ResampleMesh/ResampleRegularMesh.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 namespace SCIRun {
 
 using namespace SCIRun;
@@ -64,15 +61,18 @@ class ResampleRegularMesh : public Module {
 
 
 DECLARE_MAKER(ResampleRegularMesh)
+#endif
 
-ResampleRegularMesh::ResampleRegularMesh(GuiContext* ctx) :
+ResampleRegularMesh::ResampleRegularMesh() :
   Module("ResampleRegularMesh", ctx, Source, "ChangeMesh", "SCIRun"),
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   method_(get_ctx()->subVar("method"),"box"),
   sigma_(get_ctx()->subVar("sigma"),1.0),
   extend_(get_ctx()->subVar("extend"),1.0),
   xaxis_(get_ctx()->subVar("xdim"),"x0.5"),
   yaxis_(get_ctx()->subVar("ydim"),"x0.5"),
   zaxis_(get_ctx()->subVar("zdim"),"x0.5")
+#endif
 {
   algo_.set_progress_reporter(this);
 }
@@ -185,8 +185,3 @@ ResampleRegularMesh::execute()
     send_output_handle("Field",output,true);  
   }  
 }
-
-} // End namespace SCIRun
-
-
-#endif
