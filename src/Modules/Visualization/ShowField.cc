@@ -1026,7 +1026,6 @@ void ShowFieldModule::renderNodes(
   else
   {
     colorScheme = GeometryObject::COLOR_IN_SITU;
-    /// \note There's some extra initialization that SCIRun4 would perform here.
   }
 
   mesh->synchronize(Mesh::NODES_E);
@@ -1131,15 +1130,48 @@ void ShowFieldModule::renderNodes(
   // normalize the colors if the color scheme is COLOR_IN_SITU.
 
   // Construct VBO.
+  std::string shader = "Shaders/UniformColor";
   std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+
+  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+
   if (colorScheme == GeometryObject::COLOR_MAP)
   {
+    shader = "Shaders/ColorMap";
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+
+    if (state.get(RenderState::USE_TRANSPARENCY))
+    {
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(0.75f)));
+    }
+    else
+    {
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0f)));
+    }
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
+    shader = "Shaders/InSituColor";
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
+  }
+  else if (colorScheme == GeometryObject::COLOR_UNIFORM)
+  {
+    ColorRGB defaultColor = state.defaultColor;
+
+    shader = "Shaders/UniformColor";
+
+    if (state.get(RenderState::USE_TRANSPARENCY))
+    {
+      /// \todo Add transparency slider.
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+              "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+    }
+    else
+    {
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+              "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+    }
   }
 
   geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr, mesh->get_bounding_box()));
@@ -1152,7 +1184,7 @@ void ShowFieldModule::renderNodes(
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
-      GeometryObject::SpireSubPass(passName, vboName, iboName, "Shaders/UniformColor", colorScheme, state);
+      GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme, state);
 
   pass.addUniform("uColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
