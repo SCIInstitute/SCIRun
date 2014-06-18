@@ -108,10 +108,16 @@ void ViewSceneDialog::newGeometryValue()
   {
     auto geomData = optional_any_cast_or_default<SCIRun::Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
     if (!geomData)
+    {
+      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
       return;
+    }
     std::shared_ptr<SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
+    {
+      LOG_DEBUG("Logical error: Spire lock not acquired.");
       return;
+    }
 
     std::vector<std::string> validObjects;
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
