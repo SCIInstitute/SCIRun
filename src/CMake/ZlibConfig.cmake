@@ -58,7 +58,7 @@ MACRO(EXTERNAL_ZLIB_LIBRARY compress_type)
       BINARY_DIR ${zlib_BINARY_DIR}
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/zlib"
       PATCH_COMMAND ""
-      ${disabled_update}
+      ${DISABLED_UPDATE}
       INSTALL_DIR ""
       INSTALL_COMMAND ""
       #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${zlib_BINARY_DIR}"
