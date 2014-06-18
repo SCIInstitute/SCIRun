@@ -58,8 +58,6 @@ namespace BrainStimulator {
 //    static const AlgorithmInputName COIL2;
 //    static const AlgorithmOutputName ELECTRODES_FIELD;
 //    static const AlgorithmOutputName COILS_FIELD;
-  private:
-    
   };
 
 }}}}

@@ -65,12 +65,6 @@ void SetConductivitiesToTetMeshModule::execute()
   auto mesh = getRequiredInput(MESH);
   auto skull = getOptionalInput(INHOMOGENEOUS_SKULL);
   auto wm = getOptionalInput(ANISOTROPIC_WM);
-  
-   // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
-
-  //algorithm parameter
-  //algo_->set(Variables::AppendMatrixOption, param);
  
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin());
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skull());
@@ -87,4 +81,9 @@ void SetConductivitiesToTetMeshModule::execute()
     //algorithm output
     sendOutputFromAlgorithm(OUTPUTMESH, output);
   }
+
+  // UI input
+  //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
+  //algorithm parameter
+  //algo_->set(Variables::AppendMatrixOption, param);
 }
