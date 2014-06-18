@@ -42,12 +42,14 @@ namespace Basic {
   {
   public:
     AsyncPortTestModule();
-    virtual void asyncExecute(Core::Datatypes::DatatypeHandle data) override;
+    virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     virtual void setStateDefaults() override {}
 
     INPUT_PORT_DYNAMIC(0, AsyncField, LegacyField);
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  protected:
+    virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override {}
   };
 
 }}}

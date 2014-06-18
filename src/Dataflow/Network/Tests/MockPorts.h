@@ -72,7 +72,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(id, PortId());
           MOCK_CONST_METHOD0(hasChanged, bool());
           MOCK_METHOD1(setIndex, void(size_t));
-          MOCK_METHOD1(connectDataHasChanged, boost::signals2::connection(const Core::Datatypes::DataHasChangedSignalType::slot_type&));
+          MOCK_METHOD1(connectDataOnPortHasChanged, boost::signals2::connection(const DataOnPortHasChangedSignalType::slot_type&));
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
@@ -106,7 +106,7 @@ namespace SCIRun {
           MOCK_METHOD0(waitForData, void());
           MOCK_METHOD0(receive, Core::Datatypes::DatatypeHandleOption());
           MOCK_CONST_METHOD0(hasChanged, bool());
-          MOCK_METHOD1(connectDataHasChanged, boost::signals2::connection(const Core::Datatypes::DataHasChangedSignalType::slot_type&));
+          MOCK_METHOD1(connectDataHasChanged, boost::signals2::connection(const DataHasChangedSignalType::slot_type&));
         };
 
         typedef boost::shared_ptr<MockDatatypeSink> MockDatatypeSinkPtr;

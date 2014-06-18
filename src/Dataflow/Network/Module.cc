@@ -496,6 +496,15 @@ void ModuleWithAsyncDynamicPorts::execute()
 
 size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
 {
-  h->connectDataHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1));
+  h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
   return Module::add_input_port(h);
+}
+
+void ModuleWithAsyncDynamicPorts::portRemovedSlot(const ModuleId& mid, const PortId& pid)
+{
+  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
+  if (mid == id_)
+  {
+    portRemovedSlotImpl(pid);
+  }
 }

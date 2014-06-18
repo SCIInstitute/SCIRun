@@ -80,7 +80,7 @@ bool SimpleSink::hasChanged() const
   return previousId_ == data_->id();
 }
 
-boost::signals2::connection SimpleSink::connectDataHasChanged(const SCIRun::Core::Datatypes::DataHasChangedSignalType::slot_type& subscriber)
+boost::signals2::connection SimpleSink::connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber)
 {
   return dataHasChanged_.connect(subscriber);
 }

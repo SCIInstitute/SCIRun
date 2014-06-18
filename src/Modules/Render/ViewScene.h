@@ -51,7 +51,7 @@ namespace Render {
   {
   public:
     ViewScene();
-    virtual void asyncExecute(Core::Datatypes::DatatypeHandle data) override;
+    virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     virtual void setStateDefaults();
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
@@ -60,10 +60,14 @@ namespace Render {
 
     static Core::Thread::Mutex mutex_;
 
-    typedef std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>> GeomList;
+    typedef std::set<Core::Datatypes::GeometryHandle> GeomList;
     typedef boost::shared_ptr<GeomList> GeomListPtr;
+    typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryHandle> ActiveGeometryMap;
+  protected:
+    virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
   private:
-    GeomListPtr activeGeoms_;
+    void updateTransientList();
+    ActiveGeometryMap activeGeoms_;
   };
 }}}
 

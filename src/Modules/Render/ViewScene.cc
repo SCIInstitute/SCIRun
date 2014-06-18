@@ -58,16 +58,47 @@ void ViewScene::setStateDefaults()
   //none yet, but LOTS to come...
 }
 
-//void ViewScene::execute()
-//{
-//  //todo: ugly.
-//  //if (num_input_ports() == 1 && iports_connected()
-//  //    clearValues
-//
-//  //better: on port removal, delete object
-//}
+void ViewScene::portRemovedSlotImpl(const PortId& pid)
+{
+  //lock for state modification
+  {
+    Guard lock(mutex_.get());
+    activeGeoms_.erase(activeGeoms_.find(pid));
+    updateTransientList();
+  }
+  get_state()->fireTransientStateChangeSignal();
+}
 
-void ViewScene::asyncExecute(DatatypeHandle data)
+void ViewScene::updateTransientList()
+{
+  auto transient = get_state()->getTransientValue("geomData");
+
+  auto geoms = optional_any_cast_or_default<GeomListPtr>(transient);
+  if (!geoms)
+  {
+    geoms.reset(new GeomList());
+  }
+  auto activeHandles = activeGeoms_ | boost::adaptors::map_values;
+  geoms->clear();
+  geoms->insert(activeHandles.begin(), activeHandles.end());
+
+  // Grab geometry inputs and pass them along in a transient value to the GUI
+  // thread where they will be transported to Spire.
+  // NOTE: I'm not implementing mutex locks for this now. But for production
+  // purposes, they NEED to be in there!
+
+  // Pass geometry object up through transient... really need to be concerned
+  // about the lifetimes of the buffers we have in GeometryObject. Need to
+  // switch to std::shared_ptr on an std::array when in production.
+
+  /// \todo Need to make this data transfer mechanism thread safe!
+  // I thought about dynamic casting geometry object to a weak_ptr, but I don't
+  // know where it will be destroyed. For now, it will have have stale pointer
+  // data lying around in it... yuck.
+  get_state()->setTransientValue("geomData", geoms, false);
+}
+
+void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
   //lock for state modification
   {
@@ -76,36 +107,15 @@ void ViewScene::asyncExecute(DatatypeHandle data)
 
     LOG_DEBUG("ViewScene::asyncExecute after locking");
 
-    boost::shared_ptr<GeometryObject> geom = boost::dynamic_pointer_cast<GeometryObject>(data);
+    GeometryHandle geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)
     {
       error("Logical error: not a geometry object on ViewScene");
       return;
     }
 
-    auto transient = get_state()->getTransientValue("geomData");
-    
-    auto geoms = optional_any_cast_or_default<GeomListPtr>(transient);
-    if (!geoms)
-    {
-      geoms.reset(new GeomList());
-    }
-    geoms->push_back(geom);
-
-    // Grab geometry inputs and pass them along in a transient value to the GUI
-    // thread where they will be transported to Spire.
-    // NOTE: I'm not implementing mutex locks for this now. But for production
-    // purposes, they NEED to be in there!
-
-    // Pass geometry object up through transient... really need to be concerned
-    // about the lifetimes of the buffers we have in GeometryObject. Need to
-    // switch to std::shared_ptr on an std::array when in production.
-
-    /// \todo Need to make this data transfer mechanism thread safe!
-    // I thought about dynamic casting geometry object to a weak_ptr, but I don't
-    // know where it will be destroyed. For now, it will have have stale pointer
-    // data lying around in it... yuck.
-    get_state()->setTransientValue("geomData", geoms, false);
+    activeGeoms_[pid] = geom;
+    updateTransientList();
   }
   get_state()->fireTransientStateChangeSignal();
 }

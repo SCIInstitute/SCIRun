@@ -130,6 +130,7 @@ void ViewSceneDialog::newGeometryValue()
       return;
     spire->removeAllGeomObjects();
   }
+  //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
   //state_->setTransientValue("geomData", boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
 

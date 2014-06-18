@@ -51,12 +51,12 @@ namespace SCIRun
         virtual DatatypeSinkInterface* clone() const;
         virtual bool hasChanged() const;
         void setData(SCIRun::Core::Datatypes::DatatypeHandle data);
-        virtual boost::signals2::connection connectDataHasChanged(const Core::Datatypes::DataHasChangedSignalType::slot_type& subscriber);
+        virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber);
       private:
         SCIRun::Core::Datatypes::DatatypeHandle data_;
         SCIRun::Core::Datatypes::Datatype::id_type previousId_;
         bool hasData_;
-        Core::Datatypes::DataHasChangedSignalType dataHasChanged_;
+        DataHasChangedSignalType dataHasChanged_;
       };
     
       /*

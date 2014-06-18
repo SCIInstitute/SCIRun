@@ -32,7 +32,6 @@
 #include <Core/Persistent/Persistent.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <boost/atomic.hpp>
-#include <boost/signals2/signal.hpp>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -80,8 +79,6 @@ namespace Datatypes {
 
     virtual Datatype* clone() const = 0;
   };
-
-   typedef boost::signals2::signal<void(SCIRun::Core::Datatypes::DatatypeHandle)> DataHasChangedSignalType;
 
 }}}
 

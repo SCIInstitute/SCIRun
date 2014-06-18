@@ -45,14 +45,14 @@ AsyncPortTestModule::AsyncPortTestModule()
   LOG_DEBUG("AsyncPortTestModule()");
 }
 
-void AsyncPortTestModule::asyncExecute(DatatypeHandle data)
+void AsyncPortTestModule::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
   //LOG_DEBUG()
   //TODO
   // auto field = getLatestInput(AsyncField);
   // handle(field);
 
-  std::cout << "Async port test. Latest data is a ";
+  std::cout << "Async port test. Latest data on port " << pid.toString() << " is a ";
   auto field = boost::dynamic_pointer_cast<Field>(data);
   if (field)
   {
