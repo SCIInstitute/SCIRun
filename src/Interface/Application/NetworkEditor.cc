@@ -495,6 +495,10 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 	if (event->button() != Qt::LeftButton)
 		Q_EMIT networkEditorMouseButtonPressed();
 
+	
+}
+void NetworkEditor::mousePressEvent(QMouseEvent* event)
+{
 	if(ConnectionLine* cL = getSingleConnectionSelected())
 	{ 
 		auto selectedPair = cL->getConnectedToModuleId();
@@ -504,7 +508,6 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 	}
 	QGraphicsView::mouseMoveEvent(event);
 }
-
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
 	unselectConnectionGroup(); 
