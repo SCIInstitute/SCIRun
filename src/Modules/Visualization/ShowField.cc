@@ -1134,6 +1134,7 @@ void ShowFieldModule::renderNodes(
   std::string shader = "Shaders/UniformColor";
   std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
 
   std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
 
@@ -1175,6 +1176,11 @@ void ShowFieldModule::renderNodes(
     }
   }
 
+  if (state.get(RenderState::USE_SPHERE))
+  {
+    renderType = GeometryObject::RENDER_RLIST_SPHERE;
+  }
+
   geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr, mesh->get_bounding_box()));
 
   // Construct IBO.
@@ -1186,7 +1192,7 @@ void ShowFieldModule::renderNodes(
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-                                   colorScheme, state, GeometryObject::RENDER_VBO_IBO);
+                                   colorScheme, state, renderType);
 
   pass.addUniform("uColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
