@@ -173,7 +173,19 @@ public:
       GL(glEnable(GL_CULL_FACE));
       // Double sided rendering. Mimic SCIRun4 and use GL_FRONT and GL_BACK
       // to mimic forward facing and back facing polygons.
-      
+
+      // Draw front facing polygons.
+      GLint fdToggleLoc = glGetUniformLocation(shader.front().glid, "uFDToggle");
+
+      GL(glUniform1f(fdToggleLoc, 1.0f));
+      glCullFace(GL_BACK);
+      GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
+                        ibo.front().primType, 0));
+
+      GL(glUniform1f(fdToggleLoc, 0.0f));
+      glCullFace(GL_FRONT);
+      GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
+                        ibo.front().primType, 0));
     }
 
     if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
