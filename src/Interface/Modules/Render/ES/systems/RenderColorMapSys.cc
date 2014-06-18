@@ -173,8 +173,29 @@ public:
 
     geom.front().attribs.bind();
 
-    GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                      ibo.front().primType, 0));
+    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    {
+      GL(glDepthMask(GL_FALSE));
+      GL(glDisable(GL_CULL_FACE));
+    }
+
+    if (!srstate.front().state.get(RenderState::IS_DOUBLE_SIDED))
+    {
+      GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
+                        ibo.front().primType, 0));
+    }
+    else
+    {
+      // Double sided rendering. Mimic SCIRun4 and use GL_FRONT and GL_BACK
+      // to mimic forward facing and back facing polygons.
+      
+    }
+
+    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    {
+      GL(glDepthMask(GL_TRUE));
+      GL(glEnable(GL_CULL_FACE));
+    }
 
     geom.front().attribs.unbind();
 
