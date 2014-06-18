@@ -1005,18 +1005,6 @@ void ShowFieldModule::renderNodes(
   VField* fld   = field->vfield();
   VMesh*  mesh  = field->vmesh();
 
-  if (!state.get(RenderState::USE_SPHERE))
-  {
-    /// \todo Generate appropriate classes to handle points versus spheres.
-    ///       See old scirun RenderField.cc:132.
-    ///       For us, this will be building a draw list. Instancing would
-    ///       be the way to go for this once we have built the draw list.
-  }
-  else
-  {
-    // See above.
-  }
-
   double sval;
   Core::Geometry::Vector vval;
   Core::Geometry::Tensor tval;
