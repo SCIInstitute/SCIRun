@@ -147,6 +147,7 @@ Q_SIGNALS:
     virtual void dragMoveEvent(QDragMoveEvent* event);
 	void mouseMoveEvent(QMouseEvent *event) override;
 	void mouseReleaseEvent(QMouseEvent *event) override; 
+	void mousePressEvent(QMouseEvent *event) override; 
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
