@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>378</width>
-    <height>370</height>
+    <width>322</width>
+    <height>293</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,205 +19,190 @@
   <property name="windowTitle">
    <string>ResampleRegularMesh</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_9">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
     <widget class="QGroupBox" name="dimOuputMeshGroupBox_">
      <property name="title">
       <string>Dimensions of output mesh</string>
      </property>
-     <widget class="QLabel" name="label_6">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>20</y>
-        <width>340</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Enter number of samples or scaling factor</string>
-      </property>
-     </widget>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>X-axis</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="yAxisDimensionComboBox_">
+          <item>
+           <property name="text">
+            <string>Number of samples</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Scaling factor</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QDoubleSpinBox" name="xAxisDoubleSpinBox_"/>
+        </item>
+        <item row="1" column="2">
+         <widget class="QDoubleSpinBox" name="yAxisDoubleSpinBox_"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="xAxisDimensionComboBox_">
+          <item>
+           <property name="text">
+            <string>Number of samples</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Scaling factor</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QDoubleSpinBox" name="zAxisDoubleSpinBox_"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Y-axis</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Z-axis</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="zAxisDimensionComboBox_">
+          <item>
+           <property name="text">
+            <string>Number of samples</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Scaling factor</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="resampleKernalGroupBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>160</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Resampling Kernel</string>
+     </property>
      <widget class="QWidget" name="">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>40</y>
-        <width>234</width>
-        <height>147</height>
+        <x>12</x>
+        <y>25</y>
+        <width>265</width>
+        <height>119</height>
        </rect>
       </property>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_3">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="1">
+        <widget class="QRadioButton" name="cubicBRadioButton_">
          <property name="text">
-          <string>X-axis</string>
+          <string>Cubic (B-Spline)</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QRadioButton" name="boxRadioButton_">
+         <property name="text">
+          <string>Box</string>
          </property>
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
+        <widget class="QRadioButton" name="cubicCatRadioButton_">
          <property name="text">
-          <string>Y-axis</string>
+          <string>Cubic (Catmull-Rom)</string>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QRadioButton" name="tentRadioButton_">
+         <property name="text">
+          <string>Tent</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QComboBox" name="yAxisDimensionComboBox_"/>
-       </item>
-       <item row="0" column="1">
-        <widget class="QComboBox" name="xAxisDimensionComboBox_"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_5">
+        <widget class="QRadioButton" name="guassianRadioButton_">
          <property name="text">
-          <string>Z-axis</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <string>Gaussian</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
-       </item>
-       <item row="2" column="2">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
-       </item>
-       <item row="3" column="2">
-        <widget class="QDoubleSpinBox" name="doubleSpinBox_3"/>
+       <item row="1" column="1">
+        <widget class="QRadioButton" name="quarticRadioButton_">
+         <property name="text">
+          <string>Quartic</string>
+         </property>
+        </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QComboBox" name="zAxisDimensionComboBox_"/>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="resampleKernalGroupBox_">
-     <property name="title">
-      <string>Resampling Kernel</string>
-     </property>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>8</x>
-        <y>16</y>
-        <width>299</width>
-        <height>67</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QRadioButton" name="boxRadioButton_">
-           <property name="text">
-            <string>Box</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="tentRadioButton_">
-           <property name="text">
-            <string>Tent</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="cubicCatRadioButton_">
-           <property name="text">
-            <string>Cubic (Catmull-Rom)</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QRadioButton" name="cubicBRadioButton_">
-           <property name="text">
-            <string>Cubic (B-Spline)</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="quarticRadioButton_">
-           <property name="text">
-            <string>Quartic</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="guassianRadioButton_">
-           <property name="text">
-            <string>Gaussian</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>13</x>
-        <y>91</y>
-        <width>157</width>
-        <height>58</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
+        <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="0">
           <widget class="QLabel" name="label">
            <property name="text">
             <string>Gaussian sigma</string>
            </property>
           </widget>
          </item>
-         <item>
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="gaussianSigmaDoubleSpinBox_"/>
+         </item>
+         <item row="1" column="0">
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Guassian extend</string>
            </property>
           </widget>
          </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item>
-          <widget class="QLineEdit" name="sigmaLineEdit_">
-           <property name="text">
-            <string>1.0</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="extendedLineEdit_">
-           <property name="text">
-            <string>1.0</string>
-           </property>
-          </widget>
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="gaussianExtendDoubleSpinBox_"/>
          </item>
         </layout>
        </item>
       </layout>
      </widget>
-     <zorder>layoutWidget</zorder>
-     <zorder>layoutWidget</zorder>
-     <zorder>dimOuputMeshGroupBox_</zorder>
     </widget>
    </item>
   </layout>
