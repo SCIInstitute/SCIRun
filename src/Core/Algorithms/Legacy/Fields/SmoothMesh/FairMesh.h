@@ -38,15 +38,20 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-class SCISHARE FairMeshAlgo : public AlgorithmBase
-{
-  public:
-    FairMeshAlgo();
+        ALGORITHM_PARAMETER_DECL(FairMeshMethod);
+        ALGORITHM_PARAMETER_DECL(NumIterations);
+        ALGORITHM_PARAMETER_DECL(Lambda);
+        ALGORITHM_PARAMETER_DECL(FilterCutoff);
 
-    bool runImpl(FieldHandle input,FieldHandle& output) const;
+        class SCISHARE FairMeshAlgo : public AlgorithmBase
+        {
+        public:
+          FairMeshAlgo();
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-};
+          bool runImpl(FieldHandle input,FieldHandle& output) const;
+
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
 
       }}}}
 

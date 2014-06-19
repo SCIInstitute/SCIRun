@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -36,29 +37,34 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
+ALGORITHM_PARAMETER_DEF(Fields, FairMeshMethod);
+ALGORITHM_PARAMETER_DEF(Fields, NumIterations);
+ALGORITHM_PARAMETER_DEF(Fields, Lambda);
+ALGORITHM_PARAMETER_DEF(Fields, FilterCutoff);
+
 FairMeshAlgo::FairMeshAlgo()
 {
-  add_option("method","fast","fast|desbrun");
-  add_int("num_iterations",50);
-  add_scalar("lambda",0.6307);
-  add_scalar("filter_cutoff",0.1);
+  add_option(Parameters::FairMeshMethod,"fast","fast|desbrun");
+  addParameter(Parameters::NumIterations,50);
+  addParameter(Parameters::Lambda,0.6307);
+  addParameter(Parameters::FilterCutoff,0.1);
 }
 
-bool FairMeshAlgo::run(FieldHandle input,FieldHandle& output) const
+bool FairMeshAlgo::runImpl(FieldHandle input,FieldHandle& output) const
 {
-  algo_start("fairmesh");
+  ScopedAlgorithmStatusReporter asr(this, "fairmesh");
 
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
   FieldInformation fi(input);
   if (!fi.is_surface())
   {
     error("This algorithm only works on a surface mesh");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   if (fi.is_imagemesh())
@@ -68,16 +74,14 @@ bool FairMeshAlgo::run(FieldHandle input,FieldHandle& output) const
     return (true);
   }
 
-  std::string method = get_option("method");
-  int num_iter = 2*get_int("num_iterations");
-  double lambda = get_scalar("lambda");
-  double filter_cutoff = get_scalar("filter_cutoff");
+  std::string method = get_option(Parameters::FairMeshMethod);
+  int num_iter = 2*get(Parameters::NumIterations).getInt();
+  double lambda = get(Parameters::Lambda).getDouble();
+  double filter_cutoff = get(Parameters::FilterCutoff).getDouble();
   
   double mu = 1.0/(filter_cutoff - 1.0/lambda);
   
-  output = input;
-  output.detach();
-  output->mesh_detach();
+  output.reset(input->deep_clone());
   
   VMesh* mesh = output->vmesh();
   VMesh::size_type num_nodes = mesh->num_nodes();
@@ -122,7 +126,7 @@ bool FairMeshAlgo::run(FieldHandle input,FieldHandle& output) const
         for (VMesh::Node::index_type idx=0; idx<num_nodes;idx++)
           point[idx] = point[idx]+  mu*disp[idx];      
       }
-      update_progress(it,num_iter);
+      update_progress_max(it,num_iter);
     }
   }
   else
@@ -175,10 +179,10 @@ bool FairMeshAlgo::run(FieldHandle input,FieldHandle& output) const
         Vector p12;
         
         // get local neighborhood pairs
-        std::vector<std::pair<VMesh::index_type,VMesh::index_type> > &neighborhood = neighborhoods[idx];
+        const std::vector<std::pair<VMesh::index_type,VMesh::index_type> > &neighborhood = neighborhoods[idx];
         
         // if no neighborhood continue
-        if (neighborhood.size() == 0) continue;
+        if (neighborhood.empty()) continue;
   
         // total weight
         double totw = 0.0;
@@ -236,10 +240,10 @@ bool FairMeshAlgo::run(FieldHandle input,FieldHandle& output) const
         for (VMesh::Node::index_type idx=0; idx<num_nodes;idx++)
           point[idx] = point[idx]+  mu*disp[idx];      
       }
-      update_progress(it,num_iter);
+      update_progress_max(it,num_iter);
     }
   }
 
-  algo_end(); 
+  
   return (true);
 } 
