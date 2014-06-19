@@ -49,6 +49,10 @@ public:
     ren::GeomMan* geomMan = core.getStaticComponent<ren::StaticGeomMan>()->instance.get();
     ren::ShaderMan* shaderMan = core.getStaticComponent<ren::StaticShaderMan>()->instance.get();
 
+    // A cached entity so that our VBOs and IBOs will not get garbage collected.
+    uint64_t cachedEntity = 0;
+    cachedEntity = gen::StaticObjRefID::getNewObjectID(core);
+
     // Create and associate coordinate axes entity with SRInterface.
     uint64_t coordAxesEntity = 0;
     coordAxesEntity = gen::StaticObjRefID::getNewObjectID(core);
@@ -56,6 +60,7 @@ public:
 
     // Load geometry and associated vertex and fragment shaders.
     geomMan->loadGeometry(core, coordAxesEntity, "Assets/arrow.geom");
+    geomMan->loadGeometry(core, cachedEntity, "Assets/sphere.geom");
 
     // Load shader we will use with the coordinate axes.
     shaderMan->loadVertexAndFragmentShader(core, coordAxesEntity, "Shaders/DirPhong");
