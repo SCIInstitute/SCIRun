@@ -640,7 +640,8 @@ void ShowFieldModule::renderFacesLinear(
     }
   }
 
-  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr, mesh->get_bounding_box()));
+  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+                                                 mesh->get_bounding_box(), true));
 
   // Construct IBO.
   geom->mIBOs.push_back(
@@ -1136,6 +1137,10 @@ void ShowFieldModule::renderNodes(
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
   GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
 
+  // If true, then the VBO will be placed on the GPU. We don't want to place
+  // VBOs on the GPU when we are generating rendering lists.
+  bool vboOnGPU = true;
+
   std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
 
   if (colorScheme == GeometryObject::COLOR_MAP)
@@ -1179,9 +1184,11 @@ void ShowFieldModule::renderNodes(
   if (state.get(RenderState::USE_SPHERE))
   {
     renderType = GeometryObject::RENDER_RLIST_SPHERE;
+    vboOnGPU = false;
   }
 
-  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr, mesh->get_bounding_box()));
+  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+                                                 mesh->get_bounding_box(), vboOnGPU));
 
   // Construct IBO.
   geom->mIBOs.push_back(

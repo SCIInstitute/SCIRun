@@ -97,17 +97,19 @@ namespace Datatypes {
 
       SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
                std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboData,
-               const Core::Geometry::BBox& bbox) :
+               const Core::Geometry::BBox& bbox, bool placeOnGPU) :
           name(vboName),
           attributes(attribs),
           data(vboData),
-          boundingBox(bbox)
+          boundingBox(bbox),
+          onGPU(placeOnGPU)
       {}
 
       std::string                           name;
       std::vector<AttributeData>            attributes;
       std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
       Core::Geometry::BBox                  boundingBox;
+      bool                                  onGPU;
     };
 
     struct SpireIBO

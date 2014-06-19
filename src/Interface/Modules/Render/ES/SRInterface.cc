@@ -279,15 +279,19 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   {
     const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
 
-    // Generate vector of attributes to pass into the entity system.
-    std::vector<std::tuple<std::string, size_t, bool>> attributeData;
-    for (const auto& attribData : vbo.attributes)
+    if (vbo.onGPU)
     {
-      attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
+      // Generate vector of attributes to pass into the entity system.
+      std::vector<std::tuple<std::string, size_t, bool>> attributeData;
+      for (const auto& attribData : vbo.attributes)
+      {
+        attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
+      }
+
+      GLuint vboID =  vboMan.addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(),
+                                            attributeData, vbo.name);
     }
 
-    GLuint vboID =  vboMan.addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(),
-                                          attributeData, vbo.name);
     bbox.extend(vbo.boundingBox);
   }
 
@@ -354,8 +358,15 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
 
     uint64_t entityID = getEntityIDForName(pass.passName);
 
-    addVBOToEntity(entityID, pass.vboName);
-    addIBOToEntity(entityID, pass.iboName);
+    if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
+    {
+      addVBOToEntity(entityID, pass.vboName);
+      addIBOToEntity(entityID, pass.iboName);
+    }
+    else
+    {
+      // We will be constructing a render list from the VBO and IBO.
+    }
 
     // Load vertex and fragment shader will use an already loaded program.
     //addShaderToEntity(entityID, pass.programName);
@@ -418,9 +429,6 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     {
       applyUniform(entityID, uniform);
     }
-
-
-    /// \todo Add component which will direct specific rendering subsystem.
 
     // Add components associated with entity. We just need a base class which
     // we can pass in an entity ID, then a derived class which bundles
