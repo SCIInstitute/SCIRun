@@ -27,19 +27,45 @@
 */
 
 
-#include <Core/Algorithms/Fields/ResampleMesh/ResampleRegularMesh.h>
+#include <Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h>
 
-/// For mapping matrices
-#include <Core/Datatypes/NrrdData.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
+//#include <Core/Datatypes/NrrdData.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-/// STL classes needed
-#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
 
 #include <teem/nrrd.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
+
+ResampleRegularMeshAlgo::ResampleRegularMeshAlgo()
+{ 
+  /// Option for selecting the resampling kernel
+  add_option("method","box","box|tent|cubiccr|cubicrs|gaussian");
+  add_scalar("sigma",1.0);
+  add_scalar("extend",1.0);
+
+  // resample none = keep as is, number= specify new number of samples
+  //          factor = multiply number of samples by a factor 
+  add_option("resamplex","none","none|number|factor");
+  add_option("resampley","none","none|number|factor");
+  add_option("resamplez","none","none|number|factor");
+
+  add_scalar("xfactor",1.0);
+  add_scalar("yfactor",1.0);
+  add_scalar("zfactor",1.0);
+
+  add_int("xnumber",128);
+  add_int("ynumber",128);
+  add_int("znumber",128);
+}
 
 namespace SCIRunAlgo {
 

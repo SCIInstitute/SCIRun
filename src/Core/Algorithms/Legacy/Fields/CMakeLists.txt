@@ -57,6 +57,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/GetFieldData.h
   Mapping/MapFieldDataFromElemToNode.h
   Mapping/MapFieldDataFromNodeToElem.h
+  ResampleMesh/ResampleRegularMesh.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -141,7 +142,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MeshDerivatives/GetBoundingBox.cc
   #MeshDerivatives/SplitByConnectedRegion.cc
   #RefineMesh/RefineMesh.cc
-  #ResampleMesh/ResampleRegularMesh.cc
+  ResampleMesh/ResampleRegularMesh.cc
   #ResampleMesh/PadRegularMesh.cc
   #SampleField/GeneratePointSamplesFromField.cc
   #SmoothMesh/FairMesh.cc

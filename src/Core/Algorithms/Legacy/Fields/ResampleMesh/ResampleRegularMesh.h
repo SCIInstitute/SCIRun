@@ -29,50 +29,37 @@
 #ifndef CORE_ALGORITHMS_FIELDS_RESAMPLEMESH_RESAMPLEREGULARMESH_H
 #define CORE_ALGORITHMS_FIELDS_RESAMPLEMESH_RESAMPLEREGULARMESH_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+        ALGORITHM_PARAMETER_DECL(ResampleMethod);
+        ALGORITHM_PARAMETER_DECL(ResampleGaussianSigma);
+        ALGORITHM_PARAMETER_DECL(ResampleGaussianExtend);
+        ALGORITHM_PARAMETER_DECL(ResampleXDim);
+        ALGORITHM_PARAMETER_DECL(ResampleYDim);
+        ALGORITHM_PARAMETER_DECL(ResampleZDim);
+        ALGORITHM_PARAMETER_DECL(ResampleXDimUseScalingFactor);
+        ALGORITHM_PARAMETER_DECL(ResampleYDimUseScalingFactor);
+        ALGORITHM_PARAMETER_DECL(ResampleZDimUseScalingFactor);
 
-namespace SCIRunAlgo {
+        class SCISHARE ResampleRegularMeshAlgo : public AlgorithmBase
+        {
+        public:  
+          ResampleRegularMeshAlgo();
 
-using namespace SCIRun;
+          bool runImpl(FieldHandle input, FieldHandle& output);
 
-class SCISHARE ResampleRegularMeshAlgo : public AlgoBase
-{
-  public:  
-    /// Set defaults
-    ResampleRegularMeshAlgo()
-    { 
-      /// Option for selecting the resamplign kernel
-      add_option("method","box","box|tent|cubiccr|cubicrs|gaussian");
-      add_scalar("sigma",1.0);
-      add_scalar("extend",1.0);
-      
-      // resample none = keep as is, number= specify new number of samples
-      //          factor = multiply number of samples by a factor 
-      add_option("resamplex","none","none|number|factor");
-      add_option("resampley","none","none|number|factor");
-      add_option("resamplez","none","none|number|factor");
+          static const AlgorithmInputName InputField;
+          static const AlgorithmOutputName OutputField;
 
-      add_scalar("xfactor",1.0);
-      add_scalar("yfactor",1.0);
-      add_scalar("zfactor",1.0);
-      
-      add_int("xnumber",128);
-      add_int("ynumber",128);
-      add_int("znumber",128);
-    }
-    
-    /// Run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-};
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
 
-} // end namespace
+}}}}
 
 #endif

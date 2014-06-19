@@ -31,10 +31,10 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 
-//#include <Core/Algorithms/Fields/ResampleMesh/ResampleRegularMesh.h>
+#include <Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h>
 
 using namespace SCIRun::Modules::Fields;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
@@ -81,14 +81,15 @@ ResampleRegularMesh::ResampleRegularMesh() :
 void ResampleRegularMesh::setStateDefaults()
 {
   auto state = get_state();
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    method_(get_ctx()->subVar("method"),"box"),
-    sigma_(get_ctx()->subVar("sigma"),1.0),
-    extend_(get_ctx()->subVar("extend"),1.0),
-    xaxis_(get_ctx()->subVar("xdim"),"x0.5"),
-    yaxis_(get_ctx()->subVar("ydim"),"x0.5"),
-    zaxis_(get_ctx()->subVar("zdim"),"x0.5")
-  #endif
+  state->setValue(Parameters::ResampleMethod, std::string("box"));
+  state->setValue(Parameters::ResampleGaussianSigma, 1.0);
+  state->setValue(Parameters::ResampleGaussianExtend, 1.0);
+  state->setValue(Parameters::ResampleXDim, 0.5);
+  state->setValue(Parameters::ResampleYDim, 0.5);
+  state->setValue(Parameters::ResampleZDim, 0.5);
+  state->setValue(Parameters::ResampleXDimUseScalingFactor, true);
+  state->setValue(Parameters::ResampleYDimUseScalingFactor, true);
+  state->setValue(Parameters::ResampleZDimUseScalingFactor, true);
 }
 
 void
