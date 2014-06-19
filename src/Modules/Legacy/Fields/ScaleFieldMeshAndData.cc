@@ -29,11 +29,11 @@
 
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
 
-//#include <Core/Algorithms/Fields/TransformMesh/ScaleFieldMeshAndData.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;

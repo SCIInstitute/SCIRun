@@ -31,6 +31,12 @@
 
 #include <Core/Datatypes/SparseRowMatrix.h>
 
+ConvertFieldBasisTypeAlgo()
+{
+  /// The output type
+  add_option("basistype","linear","nodata|constant|linear|quadratic|cubic");
+}
+
 namespace SCIRunAlgo {
 
 bool

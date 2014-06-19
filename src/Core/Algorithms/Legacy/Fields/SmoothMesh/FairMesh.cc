@@ -29,6 +29,14 @@
 #include <Core/Algorithms/Fields/SmoothMesh/FairMesh.h>
 #include <Core/Datatypes/FieldInformation.h>
 
+FairMeshAlgo()
+{
+  add_option("method","fast","fast|desbrun");
+  add_int("num_iterations",50);
+  add_scalar("lambda",0.6307);
+  add_scalar("filter_cutoff",0.1);
+}
+
 namespace SCIRunAlgo {
 
 bool

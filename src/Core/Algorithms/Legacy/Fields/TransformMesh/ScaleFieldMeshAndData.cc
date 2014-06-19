@@ -30,6 +30,13 @@
 #include <Core/Datatypes/VField.h>
 #include <Core/Datatypes/VMesh.h>
 
+ScaleFieldMeshAndDataAlgo()
+{
+  add_scalar("data_scale",1.0);
+  add_scalar("mesh_scale",1.0);
+  add_bool("scale_from_center",false);
+}
+
 namespace SCIRunAlgo {
 
 using namespace SCIRun;
