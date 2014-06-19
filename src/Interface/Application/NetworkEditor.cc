@@ -497,8 +497,8 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 	
 	if(ConnectionLine* cL = getSingleConnectionSelected())
 		if(event->buttons() & Qt::LeftButton)
+			if(!(event->modifiers() & Qt::ControlModifier))
 		{
-			//hoveroverevent here?
 			auto selectedPair = cL->getConnectedToModuleId();
 
 			findById(scene_->items(),selectedPair.front())->setSelected(true);
@@ -506,10 +506,10 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 		}
 	QGraphicsView::mouseMoveEvent(event); 
 }
-void NetworkEditor::mousePressEvent(QMouseEvent* event)
-{
-	QGraphicsView::mousePressEvent(event);
-}
+//void NetworkEditor::mousePressEvent(QMouseEvent* event)
+//{
+//	//QGraphicsView::mousePressEvent(event);
+//}
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
 	unselectConnectionGroup(); 
