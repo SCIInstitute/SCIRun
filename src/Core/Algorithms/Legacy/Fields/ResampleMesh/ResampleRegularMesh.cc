@@ -44,6 +44,16 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
 
+ALGORITHM_PARAMETER_DEF(Fields, ResampleMethod);
+ALGORITHM_PARAMETER_DEF(Fields, ResampleGaussianSigma);
+ALGORITHM_PARAMETER_DEF(Fields, ResampleGaussianExtend);
+ALGORITHM_PARAMETER_DEF(Fields, ResampleXDim);
+ALGORITHM_PARAMETER_DEF(Fields, ResampleYDim);
+ALGORITHM_PARAMETER_DEF(Fields, ResampleZDim);
+ALGORITHM_PARAMETER_DEF(Fields, ResampleXDimUseScalingFactor);
+ALGORITHM_PARAMETER_DEF(Fields, ResampleYDimUseScalingFactor);
+ALGORITHM_PARAMETER_DEF(Fields, ResampleZDimUseScalingFactor);
+
 ResampleRegularMeshAlgo::ResampleRegularMeshAlgo()
 { 
   /// Option for selecting the resampling kernel
