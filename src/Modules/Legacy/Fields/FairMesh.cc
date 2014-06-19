@@ -30,15 +30,16 @@
 
 #include <Modules/Legacy/Fields/FairMesh.h>
 
+//#include <Core/Algorithms/Fields/SmoothMesh/FairMesh.h>
+
+using namespace SCIRun::Modules::Fields;
+//using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-#include <Core/Algorithms/Fields/SmoothMesh/FairMesh.h>
-
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
-
-#include <Dataflow/Modules/Fields/share.h>
-
 namespace SCIRun {
 
 class FairMesh : public Module {
@@ -55,22 +56,39 @@ class FairMesh : public Module {
     
     SCIRunAlgo::FairMeshAlgo algo_;
 };
+#endif
 
+ModuleLookupInfo FairMesh::staticInfo_("FairMesh", "NewField", "SCIRun");
 
-DECLARE_MAKER(FairMesh)
-FairMesh::FairMesh(GuiContext* ctx) : 
-  Module("FairMesh", ctx, Source, "NewField", "SCIRun"),
-  iterations_(get_ctx()->subVar("iterations"), 50),
-  method_(get_ctx()->subVar("method"), "fast"),
-  lambda_(get_ctx()->subVar("lambda"),0.6307),
-  mu_(get_ctx()->subVar("mu"),0.1)
+FairMesh::FairMesh() : 
+  Module(staticInfo_)
+  //iterations_(get_ctx()->subVar("iterations"), 50),
+  //method_(get_ctx()->subVar("method"), "fast"),
+  //lambda_(get_ctx()->subVar("lambda"),0.6307),
+  //mu_(get_ctx()->subVar("mu"),0.1)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Input_Mesh);
+  INITIALIZE_PORT(Faired_Mesh);
 }
 
+void FairMesh::setStateDefaults()
+{
+  auto state = get_state();
+
+  //state->setValue(Parameters::ResampleMethod, std::string("box"));
+  //setStateDoubleFromAlgo(Parameters::ResampleGaussianSigma);
+  //setStateDoubleFromAlgo(Parameters::ResampleGaussianExtend);
+  //setStateDoubleFromAlgo(Parameters::ResampleXDim);
+  //setStateDoubleFromAlgo(Parameters::ResampleYDim);
+  //setStateDoubleFromAlgo(Parameters::ResampleZDim);
+  //setStateBoolFromAlgo(Parameters::ResampleXDimUseScalingFactor);
+  //setStateBoolFromAlgo(Parameters::ResampleYDimUseScalingFactor);
+  //setStateBoolFromAlgo(Parameters::ResampleZDimUseScalingFactor);
+}
 
 void FairMesh::execute()
 {
+#if 0
   FieldHandle input, output;
   
   get_input_handle("Input Mesh", input);
@@ -90,7 +108,5 @@ void FairMesh::execute()
     
     send_output_handle("Faired Mesh", output);
   }
-}
-
-} // End namespace SCIRun
 #endif
+}
