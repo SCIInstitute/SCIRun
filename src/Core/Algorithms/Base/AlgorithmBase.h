@@ -251,6 +251,7 @@ namespace Algorithms {
     bool set_option(const AlgorithmParameterName& key, const std::string& value);
     bool get_option(const AlgorithmParameterName& key, std::string& value) const;
     std::string get_option(const AlgorithmParameterName& key) const;
+    bool check_option(const AlgorithmParameterName& key, const std::string& value) const;
 
     virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key);
 

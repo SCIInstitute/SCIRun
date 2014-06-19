@@ -29,14 +29,11 @@
 
 #include <Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
-//#include <Core/Datatypes/NrrdData.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-
-#include <algorithm>
-#include <set>
 
 #include <teem/nrrd.h>
 
@@ -125,7 +122,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   if (fi.is_lineardata()) vmesh->get_dimensions(dims);  
   else vmesh->get_elem_dimensions(dims);
 
-  int dimsSize = dims.size();
+  int dimsSize = static_cast<int>(dims.size());
   for (int k = nrrddim; k < nrrddim + dimsSize; k++)
     nrrddims[k] = dims[k-nrrddim];
   nrrddim += dimsSize;
@@ -228,36 +225,36 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   double param[NRRD_KERNEL_PARMS_NUM]; param[0] =  1.0;
   for (int j=1; j<NRRD_KERNEL_PARMS_NUM; j++) param[j] = 0.0;
   
-  if (check_option("method","box")) 
+  if (check_option(Parameters::ResampleMethod,"box")) 
   {
     kern = nrrdKernelBox;
   } 
-  else if (check_option("method","tent"))
+  else if (check_option(Parameters::ResampleMethod,"tent"))
   {
     kern = nrrdKernelTent;
   } 
-  else if (check_option("method","cubiccr")) 
+  else if (check_option(Parameters::ResampleMethod,"cubiccr")) 
   { 
     kern = nrrdKernelBCCubic; 
     param[1] = 0.0; 
     param[2] = 0.5; 
   } 
-  else if (check_option("method","cubicBS"))
+  else if (check_option(Parameters::ResampleMethod,"cubicBS"))
   { 
     kern = nrrdKernelBCCubic; 
     param[1] = 1.0; 
     param[2] = 0.0; 
   } 
-  else if (check_option("method","gaussian"))
+  else if (check_option(Parameters::ResampleMethod,"gaussian"))
   { 
     kern = nrrdKernelGaussian; 
-    param[0] = get_scalar("sigma"); 
-    param[1] = get_scalar("extend"); 
+    param[0] = get(Parameters::ResampleGaussianSigma).getDouble(); 
+    param[1] = get(Parameters::ResampleGaussianExtend).getDouble(); 
   } 
   else  
   { // default is quartic
     kern = nrrdKernelAQuartic; 
-    param[1] = 0.0834; // most accurate as per Teem documenation
+    param[1] = 0.0834; // most accurate as per Teem documentation
   }  
   
   NrrdResampleInfo *info = nrrdResampleInfoNew();
@@ -274,7 +271,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   Transform trans;
   vmesh->get_canonical_transform(trans);
 
-  // Set the lengthss along the axis
+  // Set the lengths along the axis
   info->min[nrrdoffset] = 0.0;
   nin->axis[nrrdoffset].min = 0.0;
   info->max[nrrdoffset] = trans.project(Vector(1.0,0.0,0.0)).length();
@@ -296,45 +293,42 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   }    
   
   // Set the resampling options
-  if (check_option("resamplex","none")) info->kernel[nrrdoffset] = 0;
-  else if (check_option("resamplex","number"))
+  if (!get(Parameters::ResampleXDimUseScalingFactor).getBool())
   {
     info->kernel[nrrdoffset] = kern;
-    info->samples[nrrdoffset] = get_int("xnumber");
+    info->samples[nrrdoffset] = static_cast<size_t>(get(Parameters::ResampleXDim).getDouble());
   }
-  else if (check_option("resamplex","factor"))
+  else
   {
     info->kernel[nrrdoffset] = kern;
-    info->samples[nrrdoffset] = static_cast<size_t>(get_scalar("xfactor")*nrrddims[nrrdoffset]);
+    info->samples[nrrdoffset] = static_cast<size_t>(get(Parameters::ResampleXDim).getDouble() * nrrddims[nrrdoffset]);
   }
 
   if (nrrddim-nrrdoffset > 1)
   {
-    if (check_option("resampley","none")) info->kernel[nrrdoffset+1] = 0;
-    else if (check_option("resampley","number"))
+    if (!get(Parameters::ResampleYDimUseScalingFactor).getBool())
     {
       info->kernel[nrrdoffset+1] = kern;
-      info->samples[nrrdoffset+1] = get_int("ynumber");
+      info->samples[nrrdoffset+1] = static_cast<size_t>(get(Parameters::ResampleYDim).getDouble());
     }
-    else if (check_option("resampley","factor"))
+    else
     {
       info->kernel[nrrdoffset+1] = kern;
-      info->samples[nrrdoffset+1] = static_cast<size_t>(get_scalar("yfactor")*nrrddims[nrrdoffset+1]);
+      info->samples[nrrdoffset+1] = static_cast<size_t>(get(Parameters::ResampleYDim).getDouble()*nrrddims[nrrdoffset+1]);
     }
   }
 
   if (nrrddim-nrrdoffset > 2)
   {
-    if (check_option("resamplez","none")) info->kernel[nrrdoffset+2] = 0;
-    else if (check_option("resamplez","number"))
+    if (!get(Parameters::ResampleZDimUseScalingFactor).getBool())
     {
       info->kernel[nrrdoffset+2] = kern;
-      info->samples[nrrdoffset+2] = get_int("znumber");
+      info->samples[nrrdoffset+2] = static_cast<size_t>(get(Parameters::ResampleZDim).getDouble());
     }
-    else if (check_option("resamplez","factor"))
+    else
     {
       info->kernel[nrrdoffset+2] = kern;
-      info->samples[nrrdoffset+2] = static_cast<size_t>(get_scalar("zfactor")*nrrddims[nrrdoffset+2]);
+      info->samples[nrrdoffset+2] = static_cast<size_t>(get(Parameters::ResampleZDim).getDouble()*nrrddims[nrrdoffset+2]);
     }
   }
 
@@ -480,7 +474,7 @@ AlgorithmOutput ResampleRegularMeshAlgo::run_generic(const AlgorithmInput& input
   auto field = input.get<Field>(Variables::InputField);
 
   FieldHandle outputField;
-  if (!run(field, outputField))
+  if (!runImpl(field, outputField))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
