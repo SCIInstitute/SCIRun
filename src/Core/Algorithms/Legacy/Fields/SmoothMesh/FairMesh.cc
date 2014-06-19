@@ -26,10 +26,17 @@
 //  DEALINGS IN THE SOFTWARE.
 
 
-#include <Core/Algorithms/Fields/SmoothMesh/FairMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-FairMeshAlgo()
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+
+FairMeshAlgo::FairMeshAlgo()
 {
   add_option("method","fast","fast|desbrun");
   add_int("num_iterations",50);
@@ -37,10 +44,7 @@ FairMeshAlgo()
   add_scalar("filter_cutoff",0.1);
 }
 
-namespace SCIRunAlgo {
-
-bool
-FairMeshAlgo::run(FieldHandle input,FieldHandle& output)
+bool FairMeshAlgo::run(FieldHandle input,FieldHandle& output) const
 {
   algo_start("fairmesh");
 
@@ -239,5 +243,3 @@ FairMeshAlgo::run(FieldHandle input,FieldHandle& output)
   algo_end(); 
   return (true);
 } 
-
-} // namespace SCIRun

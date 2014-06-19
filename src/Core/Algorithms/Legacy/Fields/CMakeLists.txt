@@ -58,6 +58,9 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Mapping/MapFieldDataFromElemToNode.h
   Mapping/MapFieldDataFromNodeToElem.h
   ResampleMesh/ResampleRegularMesh.h
+  SmoothMesh/FairMesh.h
+  FieldData/ConvertFieldBasisType.h
+  TransformMesh/ScaleFieldMeshAndData.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -92,7 +95,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   FieldData/CalculateVectorMagnitudesAlgo.cc
   #FieldData/CalculateFieldDataMetric.cc
   #FieldData/ConvertFieldDataType.cc
-  #FieldData/ConvertFieldBasisType.cc
+  FieldData/ConvertFieldBasisType.cc
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
@@ -145,13 +148,13 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   ResampleMesh/ResampleRegularMesh.cc
   #ResampleMesh/PadRegularMesh.cc
   #SampleField/GeneratePointSamplesFromField.cc
-  #SmoothMesh/FairMesh.cc
+  SmoothMesh/FairMesh.cc
   #StreamLines/StreamLineIntegrators.cc
   #StreamLines/GenerateStreamLines.cc
   TransformMesh/AlignMeshBoundingBoxes.cc
   #TransformMesh/TransformMeshWithTransform.cc
   #TransformMesh/ConvertMeshCoordinateSystem.cc
-  #TransformMesh/ScaleFieldMeshAndData.cc
+  TransformMesh/ScaleFieldMeshAndData.cc
   #TransformMesh/TransformPlanarMesh.cc
   #TransformMesh/GeneratePolarProjection.cc
   #TransformMesh/ProjectPointsOntoMesh.cc

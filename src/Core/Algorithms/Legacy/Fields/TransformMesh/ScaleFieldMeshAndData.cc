@@ -26,20 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/TransformMesh/ScaleFieldMeshAndData.h>
-#include <Core/Datatypes/VField.h>
-#include <Core/Datatypes/VMesh.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-ScaleFieldMeshAndDataAlgo()
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+
+ScaleFieldMeshAndDataAlgo::ScaleFieldMeshAndDataAlgo()
 {
   add_scalar("data_scale",1.0);
   add_scalar("mesh_scale",1.0);
   add_bool("scale_from_center",false);
 }
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
 
 template <class T>
 void
@@ -113,5 +116,3 @@ run(FieldHandle input, FieldHandle& output)
   output->copy_properties(input.get_rep());
   algo_end(); return (true);
 }
-
-} // End namespace SCIRunAlgo

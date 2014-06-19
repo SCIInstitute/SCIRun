@@ -26,22 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/FieldData/ConvertFieldBasisType.h>
-#include <Core/Datatypes/FieldInformation.h>
-
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 
-ConvertFieldBasisTypeAlgo()
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+
+ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 {
   /// The output type
   add_option("basistype","linear","nodata|constant|linear|quadratic|cubic");
 }
 
-namespace SCIRunAlgo {
-
 bool
-ConvertFieldBasisTypeAlgo::
-run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
+ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const
 {
   ScopedAlgorithmReporter r(this, "ConvertFieldBasis");
   
@@ -445,12 +449,8 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
 
 
 bool
-ConvertFieldBasisTypeAlgo::
-run(FieldHandle input, FieldHandle& output)
+ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   MatrixHandle dummy;
-  return run(input,output,dummy);
+  return runImpl(input,output,dummy);
 }
-
-
-} // end namespace SCIRunAlgo
