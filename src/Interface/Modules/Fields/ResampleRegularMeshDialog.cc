@@ -28,11 +28,11 @@
 
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
-//#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 ResampleRegularMeshDialog::ResampleRegularMeshDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,12 +42,15 @@ ResampleRegularMeshDialog::ResampleRegularMeshDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //addCheckBoxManager(forcePointCloudCheckBox_, SCIRun::Modules::Fields::JoinFields::ForcePointCloud);
-  //addCheckBoxManager(mergeDuplicateElementsCheckBox_, JoinFieldsAlgo::MergeElems);
-  //addCheckBoxManager(mergeDuplicateNodesCheckBox_, JoinFieldsAlgo::MergeNodes);
-  //addCheckBoxManager(mergeMeshOnlyCheckBox_, JoinFieldsAlgo::MakeNoData);
-  //addCheckBoxManager(onlyMergeSameValueCheckBox_, JoinFieldsAlgo::MatchNodeValues);
-  //addDoubleSpinBoxManager(nodeToleranceDoubleSpinBox_, JoinFieldsAlgo::Tolerance);
+  addDoubleSpinBoxManager(gaussianSigmaDoubleSpinBox_, Parameters::ResampleGaussianSigma);
+  addDoubleSpinBoxManager(gaussianExtendDoubleSpinBox_, Parameters::ResampleGaussianExtend);
+  addDoubleSpinBoxManager(xAxisDoubleSpinBox_, Parameters::ResampleXDim);
+  addDoubleSpinBoxManager(yAxisDoubleSpinBox_, Parameters::ResampleYDim);
+  addDoubleSpinBoxManager(zAxisDoubleSpinBox_, Parameters::ResampleZDim);
+  addTwoChoiceBooleanComboBoxManager(xAxisDimensionComboBox_, Parameters::ResampleXDimUseScalingFactor);
+  addTwoChoiceBooleanComboBoxManager(yAxisDimensionComboBox_, Parameters::ResampleYDimUseScalingFactor);
+  addTwoChoiceBooleanComboBoxManager(zAxisDimensionComboBox_, Parameters::ResampleZDimUseScalingFactor);
+  addComboBoxManager(kernelComboBox_, Parameters::ResampleMethod);
 }
 
 void ResampleRegularMeshDialog::pull()

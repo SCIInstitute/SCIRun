@@ -78,6 +78,7 @@ namespace Gui {
     void addSpinBoxManager(QSpinBox* spinBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addDoubleSpinBoxManager(QDoubleSpinBox* spinBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addCheckBoxManager(QCheckBox* checkBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     std::vector<WidgetSlotManagerPtr> slotManagers_;

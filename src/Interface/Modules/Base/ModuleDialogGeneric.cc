@@ -115,6 +115,44 @@ void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const Algorith
   addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
 }
 
+// ASSUMEs true state = comboBox index 1, false state = comboBox index 0. 
+class TwoChoiceBooleanComboBoxSlotManager : public WidgetSlotManager
+{
+public:
+  TwoChoiceBooleanComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox)
+  {
+    connect(comboBox, SIGNAL(activated(int)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto value = state_->getValue(stateKey_).getBool();
+    auto index = value ? 1 : 0;
+    if (index != comboBox_->currentIndex())
+    {
+      LOG_DEBUG("In new version of pull code for combobox, boolean mode: " << index);
+      comboBox_->setCurrentIndex(index);
+    }
+  }
+  virtual void pushImpl() override
+  {
+    auto index = comboBox_->currentIndex();
+    if (index != (state_->getValue(stateKey_).getBool() ? 1 : 0))
+    {
+      LOG_DEBUG("In new version of push code for combobox, boolean mode: " << index);
+      state_->setValue(stateKey_, index == 1);
+    }
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QComboBox* comboBox_;
+};
+
+void ModuleDialogGeneric::addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<TwoChoiceBooleanComboBoxSlotManager>(state_, *this, stateKey, comboBox));
+}
+
 class TextEditSlotManager : public WidgetSlotManager
 {
 public:

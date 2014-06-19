@@ -26,8 +26,6 @@
 
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 
-//#include <Core/Util/StringUtil.h>
-
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 
@@ -40,17 +38,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-namespace SCIRun {
-
-using namespace SCIRun;
-
 /// @class ResampleRegularMesh
 /// @brief Resample a regular mesh, such as a LatVol.
-
-    SCIRunAlgo::ResampleRegularMeshAlgo algo_;
-
-#endif
 
 ModuleLookupInfo ResampleRegularMesh::staticInfo_("ResampleRegularMesh", "ChangeMesh", "SCIRun");
 

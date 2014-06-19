@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Logging/Log.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -57,7 +58,7 @@ ALGORITHM_PARAMETER_DEF(Fields, ResampleZDimUseScalingFactor);
 ResampleRegularMeshAlgo::ResampleRegularMeshAlgo()
 { 
   /// Option for selecting the resampling kernel
-  add_option(Parameters::ResampleMethod, "box","box|tent|cubiccr|cubicrs|gaussian");
+  add_option(Parameters::ResampleMethod, "Box","Box|Tent|Cubic (Catmull-Rom)|Cubic (B-Spline)|Gaussian");
   addParameter(Parameters::ResampleGaussianSigma, 1.0);
   addParameter(Parameters::ResampleGaussianExtend, 1.0);
 
@@ -235,27 +236,27 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   double param[NRRD_KERNEL_PARMS_NUM]; param[0] =  1.0;
   for (int j=1; j<NRRD_KERNEL_PARMS_NUM; j++) param[j] = 0.0;
   
-  if (check_option(Parameters::ResampleMethod,"box")) 
+  if (check_option(Parameters::ResampleMethod,"Box")) 
   {
     kern = nrrdKernelBox;
   } 
-  else if (check_option(Parameters::ResampleMethod,"tent"))
+  else if (check_option(Parameters::ResampleMethod,"Tent"))
   {
     kern = nrrdKernelTent;
   } 
-  else if (check_option(Parameters::ResampleMethod,"cubiccr")) 
+  else if (check_option(Parameters::ResampleMethod,"Cubic (Catmull-Rom)")) 
   { 
     kern = nrrdKernelBCCubic; 
     param[1] = 0.0; 
     param[2] = 0.5; 
   } 
-  else if (check_option(Parameters::ResampleMethod,"cubicBS"))
+  else if (check_option(Parameters::ResampleMethod,"Cubic (B-Spline)"))
   { 
     kern = nrrdKernelBCCubic; 
     param[1] = 1.0; 
     param[2] = 0.0; 
   } 
-  else if (check_option(Parameters::ResampleMethod,"gaussian"))
+  else if (check_option(Parameters::ResampleMethod,"Gaussian"))
   { 
     kern = nrrdKernelGaussian; 
     param[0] = get(Parameters::ResampleGaussianSigma).getDouble(); 
@@ -263,6 +264,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   } 
   else  
   { // default is quartic
+    LOG_DEBUG("ResampleRegularMeshAlgo defaulting to Quartic kernel." << std::endl);
     kern = nrrdKernelAQuartic; 
     param[1] = 0.0834; // most accurate as per Teem documentation
   }  
