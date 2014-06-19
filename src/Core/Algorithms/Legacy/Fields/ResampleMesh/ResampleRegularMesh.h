@@ -52,10 +52,7 @@ namespace SCIRun {
         public:  
           ResampleRegularMeshAlgo();
 
-          bool runImpl(FieldHandle input, FieldHandle& output);
-
-          static const AlgorithmInputName InputField;
-          static const AlgorithmOutputName OutputField;
+          bool runImpl(FieldHandle input, FieldHandle& output) const;
 
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
         };

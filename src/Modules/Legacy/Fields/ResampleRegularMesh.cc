@@ -81,15 +81,16 @@ ResampleRegularMesh::ResampleRegularMesh() :
 void ResampleRegularMesh::setStateDefaults()
 {
   auto state = get_state();
+  
   state->setValue(Parameters::ResampleMethod, std::string("box"));
-  state->setValue(Parameters::ResampleGaussianSigma, 1.0);
-  state->setValue(Parameters::ResampleGaussianExtend, 1.0);
-  state->setValue(Parameters::ResampleXDim, 0.5);
-  state->setValue(Parameters::ResampleYDim, 0.5);
-  state->setValue(Parameters::ResampleZDim, 0.5);
-  state->setValue(Parameters::ResampleXDimUseScalingFactor, true);
-  state->setValue(Parameters::ResampleYDimUseScalingFactor, true);
-  state->setValue(Parameters::ResampleZDimUseScalingFactor, true);
+  setStateDoubleFromAlgo(Parameters::ResampleGaussianSigma);
+  setStateDoubleFromAlgo(Parameters::ResampleGaussianExtend);
+  setStateDoubleFromAlgo(Parameters::ResampleXDim);
+  setStateDoubleFromAlgo(Parameters::ResampleYDim);
+  setStateDoubleFromAlgo(Parameters::ResampleZDim);
+  setStateBoolFromAlgo(Parameters::ResampleXDimUseScalingFactor);
+  setStateBoolFromAlgo(Parameters::ResampleYDimUseScalingFactor);
+  setStateBoolFromAlgo(Parameters::ResampleZDimUseScalingFactor);
 }
 
 void

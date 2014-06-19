@@ -28,9 +28,11 @@
 
 
 #include <Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 //#include <Core/Datatypes/NrrdData.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 #include <algorithm>
@@ -48,39 +50,40 @@ using namespace SCIRun::Core::Logging;
 ResampleRegularMeshAlgo::ResampleRegularMeshAlgo()
 { 
   /// Option for selecting the resampling kernel
-  add_option("method","box","box|tent|cubiccr|cubicrs|gaussian");
-  add_scalar("sigma",1.0);
-  add_scalar("extend",1.0);
+  add_option(Parameters::ResampleMethod, "box","box|tent|cubiccr|cubicrs|gaussian");
+  addParameter(Parameters::ResampleGaussianSigma, 1.0);
+  addParameter(Parameters::ResampleGaussianExtend, 1.0);
 
   // resample none = keep as is, number= specify new number of samples
   //          factor = multiply number of samples by a factor 
-  add_option("resamplex","none","none|number|factor");
-  add_option("resampley","none","none|number|factor");
-  add_option("resamplez","none","none|number|factor");
+  //add_option("resamplex","none","none|number|factor");
+  //add_option("resampley","none","none|number|factor");
+  //add_option("resamplez","none","none|number|factor");
 
-  add_scalar("xfactor",1.0);
-  add_scalar("yfactor",1.0);
-  add_scalar("zfactor",1.0);
+  addParameter(Parameters::ResampleXDim, 0.5);
+  addParameter(Parameters::ResampleYDim, 0.5);
+  addParameter(Parameters::ResampleZDim, 0.5);
+  addParameter(Parameters::ResampleXDimUseScalingFactor, true);
+  addParameter(Parameters::ResampleYDimUseScalingFactor, true);
+  addParameter(Parameters::ResampleZDimUseScalingFactor, true);
 
-  add_int("xnumber",128);
-  add_int("ynumber",128);
-  add_int("znumber",128);
+  //addParameter("xnumber",128);
+  //addParameter("ynumber",128);
+  //addParameter("znumber",128);
 }
-
-namespace SCIRunAlgo {
 
 ///////////////////////////////////////////////////////
 // Refine elements for a TetVol 
 
 bool  
-ResampleRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
+ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
-  algo_start("ReSampleRegularMesh");
+  ScopedAlgorithmStatusReporter asr(this, "ReSampleRegularMesh");
 
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field was given.");
-    algo_end(); return (false);
+    return (false);
   }
 
   FieldInformation fi(input);
@@ -88,7 +91,7 @@ ResampleRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
   if ((!(fi.is_latvolmesh()))&&(!(fi.is_imagemesh()))&&(!(fi.is_scanlinemesh())))
   {
     error("This algorithm only operates on regular grids");
-    algo_end(); return (false);
+    return (false);
   }
   
   // Convert data to nrrd and run through teem resampler
@@ -217,7 +220,7 @@ ResampleRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
   else
   {
     error("Unknown datatype.");
-    algo_end(); return (false);  
+    return (false);  
   }
   
   NrrdKernel *kern = 0;
@@ -340,7 +343,7 @@ ResampleRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
     char *err = biffGetDone(NRRD);
     error(std::string("Trouble resampling: ") +  err);
     free(err);
-    algo_end(); return (false);
+    return (false);
   }
 
   nrrdNix(nin);
@@ -381,16 +384,16 @@ ResampleRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
   }
 
   
-  if (mesh.get_rep() == 0)
+  if (!mesh)
   {
     error("Could not create output mesh");
-    algo_end(); return (false);
+    return (false);
   }
   output = CreateField(fi,mesh);
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output mesh");
-    algo_end(); return (false);
+    return (false);
   }
   output->vmesh()->transform(trans);
 
@@ -469,7 +472,18 @@ ResampleRegularMeshAlgo::run(FieldHandle input, FieldHandle& output)
 
   nrrdNix(nout);
 
-  algo_end(); return (true);
+  return (true);
 }                           
-     
-} // namespace    
+
+AlgorithmOutput ResampleRegularMeshAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Variables::InputField);
+
+  FieldHandle outputField;
+  if (!run(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
+}
