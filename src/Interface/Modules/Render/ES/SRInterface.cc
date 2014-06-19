@@ -62,6 +62,7 @@
 #include "comp/RenderBasicGeom.h"
 #include "comp/RenderColorMapGeom.h"
 #include "comp/SRRenderState.h"
+#include "comp/RenderList.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderColorMapSys.h"
 
@@ -366,6 +367,20 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     else
     {
       // We will be constructing a render list from the VBO and IBO.
+      RenderList list;
+
+      for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+      {
+        const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
+        if (vbo.name == pass.vboName)
+        {
+          list.data = vbo.data;
+          list.attributes = vbo.attributes;
+          list.renderType = pass.renderType;
+          mCore.addComponent(entityID, list);
+          break;
+        }
+      }
     }
 
     // Load vertex and fragment shader will use an already loaded program.
