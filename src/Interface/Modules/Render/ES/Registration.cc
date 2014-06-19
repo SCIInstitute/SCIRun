@@ -33,6 +33,7 @@
 #include "comp/RenderBasicGeom.h"
 #include "comp/RenderColorMapGeom.h"
 #include "comp/SRRenderState.h"
+#include "comp/RenderList.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderColorMapSys.h"
 
@@ -52,6 +53,7 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
   core.registerComponent<RenderBasicGeom>();
   core.registerComponent<RenderColorMapGeom>();
   core.registerComponent<SRRenderState>();
+  core.registerComponent<RenderList>();
 }
 
 } // namespace Render
