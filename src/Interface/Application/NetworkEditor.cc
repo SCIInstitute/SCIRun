@@ -494,19 +494,21 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 {
 	if (event->button() != Qt::LeftButton)
 		Q_EMIT networkEditorMouseButtonPressed();
-
 	
+	if(ConnectionLine* cL = getSingleConnectionSelected())
+		if(event->buttons() & Qt::LeftButton)
+		{
+			//hoveroverevent here?
+			auto selectedPair = cL->getConnectedToModuleId();
+
+			findById(scene_->items(),selectedPair.front())->setSelected(true);
+			findById(scene_->items(),selectedPair.back())->setSelected(true);
+		}
+	QGraphicsView::mouseMoveEvent(event); 
 }
 void NetworkEditor::mousePressEvent(QMouseEvent* event)
 {
-	if(ConnectionLine* cL = getSingleConnectionSelected())
-	{ 
-		auto selectedPair = cL->getConnectedToModuleId();
-
-		findById(scene_->items(),selectedPair.front())->setSelected(true);
-		findById(scene_->items(),selectedPair.back())->setSelected(true);
-	}
-	QGraphicsView::mouseMoveEvent(event);
+	QGraphicsView::mousePressEvent(event);
 }
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
