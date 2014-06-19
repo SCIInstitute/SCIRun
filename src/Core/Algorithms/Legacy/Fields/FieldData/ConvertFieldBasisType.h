@@ -38,16 +38,18 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-class SCISHARE ConvertFieldBasisTypeAlgo : public AlgorithmBase
-{
-  public:
-    ConvertFieldBasisTypeAlgo();
-  
-    bool runImpl(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping);
-    bool runImpl(FieldHandle input, FieldHandle& output);
+        ALGORITHM_PARAMETER_DECL(BasisType);
 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-};
+        class SCISHARE ConvertFieldBasisTypeAlgo : public AlgorithmBase
+        {
+        public:
+          ConvertFieldBasisTypeAlgo();
+
+          bool runImpl(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping) const;
+          bool runImpl(FieldHandle input, FieldHandle& output) const;
+
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
 
       }}}}
 
