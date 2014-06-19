@@ -34,6 +34,7 @@
 #include <Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h>
 
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
@@ -47,26 +48,8 @@ using namespace SCIRun;
 /// @class ResampleRegularMesh
 /// @brief Resample a regular mesh, such as a LatVol.
 
-class ResampleRegularMesh : public Module {
-  public:
-    ResampleRegularMesh(GuiContext*);
-    virtual ~ResampleRegularMesh() {}
-
-    virtual void execute();
-
-  private:
-    GuiString method_;
-    GuiDouble sigma_;
-    GuiDouble extend_;
-    GuiString xaxis_;
-    GuiString yaxis_;
-    GuiString zaxis_;
-
     SCIRunAlgo::ResampleRegularMeshAlgo algo_;
-};
 
-
-DECLARE_MAKER(ResampleRegularMesh)
 #endif
 
 ModuleLookupInfo ResampleRegularMesh::staticInfo_("ResampleRegularMesh", "ChangeMesh", "SCIRun");
@@ -93,113 +76,54 @@ void ResampleRegularMesh::setStateDefaults()
   setStateBoolFromAlgo(Parameters::ResampleZDimUseScalingFactor);
 }
 
+void ResampleRegularMesh::setDimensionParameter(const std::string& name, const AlgorithmParameterName& dim, const AlgorithmParameterName& useScaling)
+{
+  auto state = get_state();
+  auto dimValue = state->getValue(dim).getDouble();
+  if (state->getValue(useScaling).getBool())
+  {
+    if (dimValue <= 0) 
+    {
+      error(name + " axis has an incorrect factor");
+      return;
+    }
+  }
+  else
+  {
+    if (dimValue < 2)
+    {
+      error(name + " axis has an incorrect dimension");
+      return;
+    }
+  }
+  setAlgoDoubleFromState(dim);
+  setAlgoBoolFromState(useScaling);
+}
+
 void
 ResampleRegularMesh::execute()
 {
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  FieldHandle input, output;
+  auto input = getRequiredInput(InputField);
 
-  get_input_handle("Field",input,true);
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || method_.changed() || sigma_.changed() ||
       extend_.changed() || xaxis_.changed() || yaxis_.changed() ||
       zaxis_.changed() || !oport_cached("Field"))
+#endif
+  if (needToExecute())
   {
-    algo_.set_option("method",method_.get());
-    algo_.set_scalar("sigma",sigma_.get());
-    algo_.set_scalar("extend",extend_.get());
+    auto state = get_state();
 
-    std::string xaxis = xaxis_.get();
-    std::string::size_type xloc = xaxis.find("x");
+    setAlgoOptionFromState(Parameters::ResampleMethod);
+    setAlgoDoubleFromState(Parameters::ResampleGaussianSigma);
+    setAlgoDoubleFromState(Parameters::ResampleGaussianExtend);
 
-    algo_.set_option("resamplex","none");
-    if (xloc != std::string::npos)
-    {
-      double factor = 0.0;
-      from_string(xaxis.substr(xloc+1),factor);
-      if (factor <= 0.0)
-      {
-        error("X axis has an incorrect factor");
-        return;
-      }
-      algo_.set_option("resamplex","factor");
-      algo_.set_scalar("xfactor",factor);
-    }
-    else
-    {
-      int number = 0;
-      from_string(xaxis,number);
-      if (number < 2)
-      {
-        error("X axis has an incorrect dimension");
-        return;
-      }
-      algo_.set_option("resamplex","number");
-      algo_.set_int("xnumber",number);
-    }
+    setDimensionParameter("X", Parameters::ResampleXDim, Parameters::ResampleXDimUseScalingFactor);
+    setDimensionParameter("Y", Parameters::ResampleYDim, Parameters::ResampleYDimUseScalingFactor);
+    setDimensionParameter("Z", Parameters::ResampleZDim, Parameters::ResampleZDimUseScalingFactor);
 
-    std::string yaxis = yaxis_.get();
-    std::string::size_type yloc = yaxis.find("x");
+    auto output = algo().run_generic(make_input((InputField, input)));
 
-    algo_.set_option("resampley","none");
-    if (yloc != std::string::npos)
-    {
-      double factor = 0.0;
-      from_string(yaxis.substr(yloc+1),factor);
-      if (factor <= 0.0)
-      {
-        error("Y axis has an incorrect factor");
-        return;
-      }
-      algo_.set_option("resampley","factor");
-      algo_.set_scalar("yfactor",factor);
-    }
-    else
-    {
-      int number = 0;
-      from_string(yaxis,number);
-      if (number < 2)
-      {
-        error("Y axis has an incorrect dimension");
-        return;
-      }
-      algo_.set_option("resampley","number");
-      algo_.set_int("ynumber",number);
-    }
-
-
-    std::string zaxis = zaxis_.get();
-    std::string::size_type zloc = zaxis.find("x");
-
-    algo_.set_option("resamplez","none");
-    if (zloc != std::string::npos)
-    {
-      double factor = 0.0;
-      from_string(zaxis.substr(zloc+1),factor);
-      if (factor <= 0.0)
-      {
-        error("Z axis has an incorrect factor");
-        return;
-      }
-      algo_.set_option("resamplez","factor");
-      algo_.set_scalar("zfactor",factor);
-    }
-    else
-    {
-      int number = 0;
-      from_string(zaxis,number);
-      if (number < 2)
-      {
-        error("Z axis has an incorrect dimension");
-        return;
-      }
-      algo_.set_option("resamplez","number");
-      algo_.set_int("znumber",number);
-    }
-
-    if(!(algo_.run(input,output))) return;
-
-    send_output_handle("Field",output,true);
+    sendOutputFromAlgorithm(OutputField, output);
   }
-  #endif
 }

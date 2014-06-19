@@ -236,6 +236,7 @@ namespace Networks {
     void setAlgoBoolFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoIntFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoDoubleFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setAlgoOptionFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
 
     virtual size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
