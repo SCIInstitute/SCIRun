@@ -29,6 +29,7 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -37,56 +38,52 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
+ALGORITHM_PARAMETER_DEF(Fields, data_scale);
+ALGORITHM_PARAMETER_DEF(Fields, mesh_scale);
+ALGORITHM_PARAMETER_DEF(Fields, scale_from_center);
+
 ScaleFieldMeshAndDataAlgo::ScaleFieldMeshAndDataAlgo()
 {
-  add_scalar("data_scale",1.0);
-  add_scalar("mesh_scale",1.0);
-  add_bool("scale_from_center",false);
+  addParameter(Parameters::data_scale,1.0);
+  addParameter(Parameters::mesh_scale,1.0);
+  addParameter(Parameters::scale_from_center,false);
 }
 
-template <class T>
-void
-ScaleFieldMeshAndDataAlgoT(double scale, FieldHandle output)
+namespace
 {
-  std::vector<T> values;
-  output->vfield()->get_values(values);
-  for (size_t j=0;j<values.size();j++) values[j] = static_cast<T>(scale*values[j]);
-  output->vfield()->set_values(values);
+  template <class T>
+  void
+  ScaleFieldMeshAndDataAlgoT(double scale, FieldHandle output)
+  {
+    std::vector<T> values;
+    output->vfield()->get_values(values);
+    for (size_t j=0;j<values.size();j++) values[j] = static_cast<T>(scale*values[j]);
+    output->vfield()->set_values(values);
+  }
 }
 
 bool 
-ScaleFieldMeshAndDataAlgo::
-run(FieldHandle input, FieldHandle& output)
+ScaleFieldMeshAndDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
-  // Mark that we are starting the algorithm, but do not report progress
-  algo_start("ScaleFieldMeshAndData");
+  ScopedAlgorithmStatusReporter asr(this, "ScaleFieldMeshAndData");
   
-  bool scale_from_center = get_bool("scale_from_center");
-  
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  double datascale = get_scalar("data_scale");
-  double meshscale = get_scalar("mesh_scale");
-  
-  output = input->clone();
-  if (output.get_rep() == 0)
-  {
-    error("Could not allocate output field");
-    algo_end(); return (false);  
-  }    
-      
-  BBox box = input->vmesh()->get_bounding_box();
-  Vector center = 0.5*(box.min()+box.max());
-  
+  bool scale_from_center = get(Parameters::scale_from_center).getBool();
+  double datascale = get(Parameters::data_scale).getDouble();
+  double meshscale = get(Parameters::mesh_scale).getDouble();
+
   // scale mesh, only when needed
   if (scale_from_center || (meshscale != 1.0))
   {
-    output->mesh_detach();
+    output.reset(input->deep_clone());
     Transform tf;
+    BBox box = input->vmesh()->get_bounding_box();
+    Vector center = 0.5*(box.min()+box.max());
     
     tf.load_identity();
     if (scale_from_center) tf.pre_translate(-center);
@@ -95,6 +92,16 @@ run(FieldHandle input, FieldHandle& output)
     
     output->vmesh()->transform(tf);
   }
+  else
+  {
+    output.reset(input->clone());
+  }
+
+  if (!output)
+  {
+    error("Could not allocate output field");
+    return (false);  
+  }   
 
   if (datascale != 1.0)
   {
@@ -113,6 +120,20 @@ run(FieldHandle input, FieldHandle& output)
     if (ofield->is_unsigned_longlong()) ScaleFieldMeshAndDataAlgoT<unsigned long long>(datascale,output);
   }
 
-  output->copy_properties(input.get_rep());
-  algo_end(); return (true);
+  CopyProperties(*input, *output);
+  return true;
+}
+
+AlgorithmOutput ScaleFieldMeshAndDataAlgo::run_generic(const AlgorithmInput& input) const
+{
+  throw "todo";
+  //auto field = input.get<Field>(Variables::InputField);
+
+  //FieldHandle outputField;
+  //if (!runImpl(field, outputField))
+  //  THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  //AlgorithmOutput output;
+  //output[Variables::OutputField] = outputField;
+  //return output;
 }
