@@ -69,8 +69,10 @@ class ResampleRegularMesh : public Module {
 DECLARE_MAKER(ResampleRegularMesh)
 #endif
 
+ModuleLookupInfo ResampleRegularMesh::staticInfo_("ResampleRegularMesh", "ChangeMesh", "SCIRun");
+
 ResampleRegularMesh::ResampleRegularMesh() :
-  Module(ModuleLookupInfo("ResampleRegularMesh", "ChangeMesh", "SCIRun"))
+  Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);

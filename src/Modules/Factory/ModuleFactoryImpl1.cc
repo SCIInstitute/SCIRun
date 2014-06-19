@@ -61,6 +61,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
+#include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -122,6 +123,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
   addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates stiffness matrix ");
+  addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addBundleModules()
