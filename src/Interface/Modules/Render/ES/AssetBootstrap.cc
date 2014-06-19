@@ -53,17 +53,12 @@ public:
     uint64_t cachedEntity = 0;
     cachedEntity = gen::StaticObjRefID::getNewObjectID(core);
 
-    // Create and associate coordinate axes entity with SRInterface.
-    uint64_t coordAxesEntity = 0;
-    coordAxesEntity = gen::StaticObjRefID::getNewObjectID(core);
-    iface->mCoordAxesEntity = coordAxesEntity;
-
     // Load geometry and associated vertex and fragment shaders.
-    geomMan->loadGeometry(core, coordAxesEntity, "Assets/arrow.geom");
+    geomMan->loadGeometry(core, cachedEntity, "Assets/arrow.geom");
     geomMan->loadGeometry(core, cachedEntity, "Assets/sphere.geom");
 
     // Load shader we will use with the coordinate axes.
-    shaderMan->loadVertexAndFragmentShader(core, coordAxesEntity, "Shaders/DirPhong");
+    shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/DirPhong");
 
     // Note: We don't need to strictly store the coordinate axes entity.
     // We are really only after its VBO / IBO.
