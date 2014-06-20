@@ -171,8 +171,16 @@ public:
 
     if (rlist.size() > 0)
     {
-      // Lookup transform uniform and uniform color uniform (we may not
-      // use the uniform color uniform).
+      glm::mat4 rlistTrafo = trafo.front().transform;
+
+      GLint uniformColorLoc = 0;
+      for (const ren::VecUniform& unif : vecUniforms)
+      {
+        if (std::string(unif.getName()) == "uColor")
+        {
+          uniformColorLoc = unif.uniformLocation;
+        }
+      }
 
       // Note: Some of this work can be done beforehand. But we elect not to
       // since it is feasible that the data contained in the VBO can change
@@ -228,12 +236,19 @@ public:
           float g = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
           float b = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
           float a = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
+          colorDeserialize.readBytes(posStride);
           
           /// \todo Set the uniform color uniform. We need to lookup the
           ///       color uniform in our shader.
+          GL(glUniform4f(uniformColorLoc, r, g, b, a));
         }
 
         // Update transform.
+        rlistTrafo[3].x = x;
+        rlistTrafo[3].y = y;
+        rlistTrafo[3].z = z;
+        commonUniforms.front().applyCommonUniforms(
+            rlistTrafo, camera.front().data, time.front().globalTime);
 
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
                           ibo.front().primType, 0));
