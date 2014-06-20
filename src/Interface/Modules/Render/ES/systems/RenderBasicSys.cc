@@ -169,10 +169,8 @@ public:
 
     if (rlist.size() > 0)
     {
-      // Render using a draw list.
-
-      //rlist.front().data
-
+      // Render using a draw list. We will be using the VBO and IBO attached
+      // to this object as the basic rendering primitive.
     }
     else
     {

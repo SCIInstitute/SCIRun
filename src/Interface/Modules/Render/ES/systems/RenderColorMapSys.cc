@@ -23,6 +23,7 @@
 
 #include "../comp/RenderColorMapGeom.h"
 #include "../comp/SRRenderState.h"
+#include "../comp/RenderList.h"
 
 namespace es = CPM_ES_NS;
 namespace shaders = CPM_GL_SHADERS_NS;
@@ -37,6 +38,7 @@ class RenderColorMapSys :
     public es::GenericSystem<true,
                              RenderColorMapGeom,   // TAG class
                              SRRenderState,
+                             RenderList,
                              gen::Transform,
                              gen::StaticGlobalTime,
                              ren::VBO,
@@ -57,7 +59,8 @@ public:
 
   bool isComponentOptional(uint64_t type) override
   {
-    return es::OptionalComponents<ren::GLState,
+    return es::OptionalComponents<RenderList,
+                                  ren::GLState,
                                   ren::StaticGLState,
                                   ren::CommonUniforms,
                                   ren::VecUniform,
@@ -68,6 +71,7 @@ public:
       es::ESCoreBase&, uint64_t /* entityID */,
       const es::ComponentGroup<RenderColorMapGeom>& geom,
       const es::ComponentGroup<SRRenderState>& srstate,
+      const es::ComponentGroup<RenderList>& rlist,
       const es::ComponentGroup<gen::Transform>& trafo,
       const es::ComponentGroup<gen::StaticGlobalTime>& time,
       const es::ComponentGroup<ren::VBO>& vbo,
@@ -179,29 +183,37 @@ public:
       GL(glDisable(GL_CULL_FACE));
     }
 
-    if (!srstate.front().state.get(RenderState::IS_DOUBLE_SIDED))
+    if (rlist.size() > 0)
     {
-      GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                        ibo.front().primType, 0));
+      // Render a color mapped list of VBOs/IBOs. We will be using the VBO and
+      // IBO attached to this object as the basic rendering primitive.
     }
     else
     {
-      GL(glEnable(GL_CULL_FACE));
-      // Double sided rendering. Mimic SCIRun4 and use GL_FRONT and GL_BACK
-      // to mimic forward facing and back facing polygons.
+      if (!srstate.front().state.get(RenderState::IS_DOUBLE_SIDED))
+      {
+        GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
+                          ibo.front().primType, 0));
+      }
+      else
+      {
+        GL(glEnable(GL_CULL_FACE));
+        // Double sided rendering. Mimic SCIRun4 and use GL_FRONT and GL_BACK
+        // to mimic forward facing and back facing polygons.
 
-      // Draw front facing polygons.
-      GLint fdToggleLoc = glGetUniformLocation(shader.front().glid, "uFDToggle");
+        // Draw front facing polygons.
+        GLint fdToggleLoc = glGetUniformLocation(shader.front().glid, "uFDToggle");
 
-      GL(glUniform1f(fdToggleLoc, 1.0f));
-      glCullFace(GL_BACK);
-      GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                        ibo.front().primType, 0));
+        GL(glUniform1f(fdToggleLoc, 1.0f));
+        glCullFace(GL_BACK);
+        GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
+                          ibo.front().primType, 0));
 
-      GL(glUniform1f(fdToggleLoc, 0.0f));
-      glCullFace(GL_FRONT);
-      GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
-                        ibo.front().primType, 0));
+        GL(glUniform1f(fdToggleLoc, 0.0f));
+        glCullFace(GL_FRONT);
+        GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
+                          ibo.front().primType, 0));
+      }
     }
 
     if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
