@@ -31,6 +31,7 @@ SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
   GetDomainBoundary.ui
   JoinFields.ui
+  FairMesh.ui
   ReportFieldInfoDialog.ui
   SplitFieldByDomain.ui
   CreateFieldData.ui
@@ -48,6 +49,7 @@ SET(Interface_Modules_Fields_HEADERS
   CalculateFieldDataDialog.h
   GetDomainBoundaryDialog.h
   JoinFieldsDialog.h
+  FairMeshDialog.h
   ReportFieldInfoDialog.h
   SplitFieldByDomainDialog.h
   InterfaceWithCleaverDialog.h
@@ -64,6 +66,7 @@ SET(Interface_Modules_Fields_SOURCES
   CalculateFieldDataDialog.cc
   GetDomainBoundaryDialog.cc
   JoinFieldsDialog.cc
+  FairMeshDialog.cc
   ReportFieldInfoDialog.cc
   SplitFieldByDomainDialog.cc
   InterfaceWithCleaverDialog.cc
