@@ -6,6 +6,7 @@
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Core/Datatypes/Geometry.h>
 
 namespace SCIRun {
 namespace Render {

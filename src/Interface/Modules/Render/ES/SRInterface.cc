@@ -377,6 +377,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
           list.data = vbo.data;
           list.attributes = vbo.attributes;
           list.renderType = pass.renderType;
+          list.numElements = vbo.numElements;
           mCore.addComponent(entityID, list);
           break;
         }

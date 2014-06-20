@@ -374,7 +374,7 @@ void ShowFieldModule::renderFacesLinear(
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
 
   uint32_t iboIndex = 0;
-
+  int64_t numVBOElements = 0;
   while (fiter != fiterEnd) 
   {
     mesh->get_nodes(nodes, *fiter);
@@ -523,9 +523,8 @@ void ShowFieldModule::renderFacesLinear(
                   colorScheme, scols, vcols, state);
     }
 
-    ++fiter;     
-
-    // Build min-max
+    ++fiter;
+    ++numVBOElements;
   }
 
   std::string uniqueNodeID = id + "face";
@@ -641,7 +640,7 @@ void ShowFieldModule::renderFacesLinear(
   }
 
   geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                 mesh->get_bounding_box(), true));
+                                                 numVBOElements, mesh->get_bounding_box(), true));
 
   // Construct IBO.
   geom->mIBOs.push_back(
@@ -1068,6 +1067,7 @@ void ShowFieldModule::renderNodes(
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
 
   uint32_t index = 0;
+  int64_t numVBOElements = 0;
   while (iter != iter_end)
   {
     Core::Geometry::Point p;
@@ -1116,11 +1116,12 @@ void ShowFieldModule::renderNodes(
     }
     else
     {
-      // Spheres.
+      // Spheres. I don't believe we need this.
     }
 
     ++index;
-    ++iter; 
+    ++iter;
+    ++numVBOElements;
   }
 
   std::string uniqueNodeID = id + "node";
@@ -1188,7 +1189,7 @@ void ShowFieldModule::renderNodes(
   }
 
   geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                 mesh->get_bounding_box(), vboOnGPU));
+                                                 numVBOElements, mesh->get_bounding_box(), vboOnGPU));
 
   // Construct IBO.
   geom->mIBOs.push_back(

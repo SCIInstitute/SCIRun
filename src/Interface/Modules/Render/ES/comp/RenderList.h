@@ -16,6 +16,7 @@ struct RenderList
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data;
   std::vector<Core::Datatypes::GeometryObject::SpireVBO::AttributeData> attributes;
   Core::Datatypes::GeometryObject::RenderType renderType;
+  int64_t numElements;
 
   // -- Functions --
   RenderList() {}
