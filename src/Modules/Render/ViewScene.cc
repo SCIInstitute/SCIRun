@@ -63,7 +63,9 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
   //lock for state modification
   {
     Guard lock(mutex_.get());
-    activeGeoms_.erase(activeGeoms_.find(pid));
+    auto loc = activeGeoms_.find(pid);
+    if (loc != activeGeoms_.end())
+      activeGeoms_.erase(loc);
     updateTransientList();
   }
   get_state()->fireTransientStateChangeSignal();
