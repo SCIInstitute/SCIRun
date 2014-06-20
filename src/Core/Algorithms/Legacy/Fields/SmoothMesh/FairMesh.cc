@@ -29,6 +29,7 @@
 #include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -247,16 +248,18 @@ bool FairMeshAlgo::runImpl(FieldHandle input,FieldHandle& output) const
   return (true);
 } 
 
+const AlgorithmInputName FairMeshAlgo::Input_Mesh("Input_Mesh");
+const AlgorithmOutputName FairMeshAlgo::Faired_Mesh("Faired_Mesh");
+
 AlgorithmOutput FairMeshAlgo::run_generic(const AlgorithmInput& input) const
 {
-  throw "todo";
-  //auto field = input.get<Field>(Variables::InputField);
+  auto field = input.get<Field>(Input_Mesh);
 
-  //FieldHandle outputField;
-  //if (!runImpl(field, outputField))
-  //  THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  FieldHandle outputField;
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
-  //AlgorithmOutput output;
-  //output[Variables::OutputField] = outputField;
-  //return output;
+  AlgorithmOutput output;
+  output[Faired_Mesh] = outputField;
+  return output;
 }

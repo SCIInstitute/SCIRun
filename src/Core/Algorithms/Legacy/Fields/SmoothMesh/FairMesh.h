@@ -50,6 +50,9 @@ namespace SCIRun {
 
           bool runImpl(FieldHandle input,FieldHandle& output) const;
 
+          const static AlgorithmInputName Input_Mesh;
+          const static AlgorithmOutputName Faired_Mesh;
+
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
         };
 
