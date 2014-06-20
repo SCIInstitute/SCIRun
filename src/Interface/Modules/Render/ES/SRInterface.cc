@@ -382,6 +382,18 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
           break;
         }
       }
+
+      // Lookup the VBOs and IBOs associated with this particular draw list
+      // and add them to our entity in question.
+      std::string assetName = "Assets/sphere.geom";
+
+      if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
+      {
+        assetName = "Assets/sphere.geom";
+      }
+
+      addVBOToEntity(entityID, assetName);
+      addIBOToEntity(entityID, assetName);
     }
 
     // Load vertex and fragment shader will use an already loaded program.
