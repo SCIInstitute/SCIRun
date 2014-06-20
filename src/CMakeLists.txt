@@ -361,6 +361,12 @@ CPM_AddModule("var_buffer"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
+# ++ MODULE: BSerialize
+CPM_AddModule("bserialize"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-bserialize"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
 CPM_Finish()
 
 ########################################################################

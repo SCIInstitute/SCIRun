@@ -21,6 +21,8 @@
 #include <es-render/comp/StaticGLState.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 
+#include <bserialize/BSerialize.hpp>
+
 #include "../comp/RenderBasicGeom.h"
 #include "../comp/SRRenderState.h"
 #include "../comp/RenderList.h"
@@ -169,8 +171,73 @@ public:
 
     if (rlist.size() > 0)
     {
+      // Lookup transform uniform and uniform color uniform (we may not
+      // use the uniform color uniform).
+
+      // Note: Some of this work can be done beforehand. But we elect not to
+      // since it is feasible that the data contained in the VBO can change
+      // fairly dramatically.
+
+      // Build BSerialize object.
+      CPM_BSERIALIZE_NS::BSerialize posDeserialize(
+          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
+
+      CPM_BSERIALIZE_NS::BSerialize colorDeserialize(
+          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize()); 
+
+      int64_t posSize     = 0;
+      int64_t colorSize   = 0;
+      int64_t stride      = 0;  // Stride of entire attributes buffer.
+
+      // Determine stride for our buffer. Also determine appropriate position
+      // and color information offsets, and set the offsets. Also determine
+      // attribute size in bytes.
+      for (const auto& attrib : rlist.front().attributes)
+      {
+        if (attrib.name == "aPos")
+        {
+          if (stride != 0) {posDeserialize.readBytes(stride);}
+          posSize = attrib.sizeInBytes;
+        }
+        else if (attrib.name == "aColor")
+        {
+          if (stride != 0) {colorDeserialize.readBytes(stride);}
+          colorSize = attrib.sizeInBytes;
+        }
+
+        stride += attrib.sizeInBytes;
+      }
+
+      int64_t posStride   = stride - posSize;
+      int64_t colorStride = stride - colorSize;
+
       // Render using a draw list. We will be using the VBO and IBO attached
       // to this object as the basic rendering primitive.
+      for (int i = 0; i < rlist.front().numElements; ++i)
+      {
+        // Read position.
+        float x = posDeserialize.read<float>();
+        float y = posDeserialize.read<float>();
+        float z = posDeserialize.read<float>();
+        posDeserialize.readBytes(posStride);
+
+        // Read color if available.
+        if (colorSize > 0)
+        {
+          float r = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
+          float g = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
+          float b = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
+          float a = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
+          
+          /// \todo Set the uniform color uniform. We need to lookup the
+          ///       color uniform in our shader.
+        }
+
+        // Update transform.
+
+        GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
+                          ibo.front().primType, 0));
+      }
     }
     else
     {
