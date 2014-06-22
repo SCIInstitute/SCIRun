@@ -96,6 +96,12 @@ RenderState ShowFieldModule::getNodeRenderState(
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).getBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).getBool());
 
+  renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).getBool());
+  if (state->getValue(ShowFieldModule::NodeAsSpheres).getBool())
+  {
+    std::cout << "Nodes as spheres!" << std::endl;
+  }
+
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
 
   if (colorMap)
@@ -1229,6 +1235,8 @@ AlgorithmParameterName ShowFieldModule::NodeTransparency("NodeTransparency");
 AlgorithmParameterName ShowFieldModule::EdgeTransparency("EdgeTransparency");
 AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
 AlgorithmParameterName ShowFieldModule::FaceInvertNormals("FaceInvertNormals");
+AlgorithmParameterName ShowFieldModule::NodeAsPoints("NodeAsPoints");
+AlgorithmParameterName ShowFieldModule::NodeAsSpheres("NodeAsSpheres");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
 
 

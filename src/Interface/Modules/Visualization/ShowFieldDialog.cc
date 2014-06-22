@@ -53,6 +53,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
   addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
   addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
+
   buttonBox->setVisible(false);
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 }
@@ -62,6 +63,7 @@ void ShowFieldDialog::push()
   if (!pulling_)
   {
     pushColor();
+    pushNodes();
   }
 }
 
@@ -92,3 +94,9 @@ void ShowFieldDialog::pushColor()
 {
   state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
 }
+
+void ShowFieldDialog::pushNodes()
+{
+  state_->setValue(ShowFieldModule::NodeAsPoints, nodesAsPointsButton_->isChecked());
+}
+

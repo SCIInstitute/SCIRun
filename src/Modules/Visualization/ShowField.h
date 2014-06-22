@@ -55,6 +55,8 @@ namespace Visualization {
     static Core::Algorithms::AlgorithmParameterName EdgeTransparency;
     static Core::Algorithms::AlgorithmParameterName FaceTransparency;
     static Core::Algorithms::AlgorithmParameterName FaceInvertNormals;
+    static Core::Algorithms::AlgorithmParameterName NodeAsPoints;
+    static Core::Algorithms::AlgorithmParameterName NodeAsSpheres;
     static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
 
     INPUT_PORT(0, Field, LegacyField);

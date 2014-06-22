@@ -60,7 +60,7 @@
      <item>
       <widget class="QTabWidget" name="displayOptionsTabs_">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="nodesTab_">
         <attribute name="title">
@@ -141,7 +141,7 @@
           <item>
            <widget class="QGroupBox" name="groupBox_4">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="title">
              <string>Node Display Type</string>
@@ -160,7 +160,7 @@
              <item>
               <widget class="QRadioButton" name="nodesAsSpheresButton_">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="text">
                 <string>Spheres</string>

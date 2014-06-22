@@ -124,7 +124,6 @@ public:
   bool mFlags[MAX_ACTION_FLAGS];
 
   Core::Datatypes::ColorRGB defaultColor;
-
 };
 
 
