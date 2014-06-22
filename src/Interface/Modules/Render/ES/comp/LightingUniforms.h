@@ -1,5 +1,5 @@
-#ifndef INTERFACE_MODULES_RENDER_ES_COMP_STATIC_WORLD_LIGHT_H
-#define INTERFACE_MODULES_RENDER_ES_COMP_STATIC_WORLD_LIGHT_H
+#ifndef INTERFACE_MODULES_RENDER_ES_COMP_LIGHTING_UNIFORMS_H
+#define INTERFACE_MODULES_RENDER_ES_COMP_LIGHTING_UNIFORMS_H
 
 #include <cstdint>
 #include <glm/glm.hpp>
@@ -12,20 +12,23 @@ namespace Render {
 
 // Static world light. We may have multiple world lights inside this structure
 // eventually.
-struct StaticWorldLight
+struct LightingUniforms
 {
   // -- Data --
-  glm::vec3 lightDir;
+  bool hasLightUniform;
+  GLint uniformLocation;
 
   // -- Functions --
-  StaticWorldLight() { }
+  LightingUniforms() : hasLightUniform(false), uniformLocation(0) { }
 
-  static const char* getName() {return "StaticWorldLight";}
+  static const char* getName() {return "LightingUniforms";}
+
+  void checkUniformArray(GLuint shaderID);
+  void applyUniform(const glm::vec3& lightDir) const;
 
   bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
   {
-    s.serialize("dir", lightDir);
-    return true;
+    return false;
   }
 };
 

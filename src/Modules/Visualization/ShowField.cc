@@ -1145,7 +1145,7 @@ void ShowFieldModule::renderNodes(
   {
     if (state.get(RenderState::USE_SPHERE))
     {
-      shader = "Shaders/ColorMapUniform";
+      shader = "Shaders/DirPhongCMapUniform";
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uFieldData", 1.0f));
     }
     else

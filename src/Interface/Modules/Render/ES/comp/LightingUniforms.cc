@@ -2,14 +2,14 @@
 
 #include <es-general/util/Math.hpp>
 
-#include "StaticWorldLight.h"
+#include "LightingUniforms.h"
 
 namespace shaders = CPM_GL_SHADERS_NS;
 
 namespace SCIRun {
 namespace Render {
 
-void StaticWorldLight::checkUniformArray(GLuint shaderID)
+void LightingUniforms::checkUniformArray(GLuint shaderID)
 {
   // Obtain uniforms from shader and decide which of the uniforms we can
   // provide automatically.
@@ -25,7 +25,7 @@ void StaticWorldLight::checkUniformArray(GLuint shaderID)
   }
 }
 
-void StaticWorldLight::applyUniform() const
+void LightingUniforms::applyUniform(const glm::vec3& lightDir) const
 {
   if (hasLightUniform)
   {

@@ -64,6 +64,7 @@
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
 #include "comp/StaticWorldLight.h"
+#include "comp/LightingUniforms.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderColorMapSys.h"
 
@@ -401,6 +402,10 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     // Add transformation
     gen::Transform trafo;
     mCore.addComponent(entityID, trafo);
+
+    // Add lighting uniform checks
+    LightingUniforms lightUniforms;
+    mCore.addComponent(entityID, lightUniforms);
 
     // Add SCIRun render state.
     SRRenderState state;

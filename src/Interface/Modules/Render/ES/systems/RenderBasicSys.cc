@@ -27,6 +27,7 @@
 #include "../comp/SRRenderState.h"
 #include "../comp/RenderList.h"
 #include "../comp/StaticWorldLight.h"
+#include "../comp/LightingUniforms.h"
 
 namespace es = CPM_ES_NS;
 namespace shaders = CPM_GL_SHADERS_NS;
@@ -42,6 +43,7 @@ class RenderBasicSys :
                              RenderBasicGeom,   // TAG class
                              SRRenderState,
                              RenderList,
+                             LightingUniforms,
                              gen::Transform,
                              gen::StaticGlobalTime,
                              ren::VBO,
@@ -75,6 +77,7 @@ public:
       const es::ComponentGroup<RenderBasicGeom>& geom,
       const es::ComponentGroup<SRRenderState>& srstate,
       const es::ComponentGroup<RenderList>& rlist,
+      const es::ComponentGroup<LightingUniforms>& lightUniforms,
       const es::ComponentGroup<gen::Transform>& trafo,
       const es::ComponentGroup<gen::StaticGlobalTime>& time,
       const es::ComponentGroup<ren::VBO>& vbo,
@@ -131,7 +134,7 @@ public:
         }
       }
 
-      const_cast<StaticWorldLight&>(worldLight.front()).checkUniformArray(shader.front().glid);
+      const_cast<LightingUniforms&>(lightUniforms.front()).checkUniformArray(shader.front().glid);
     }
 
     // Check to see if we have GLState. If so, apply it relative to the
@@ -161,7 +164,7 @@ public:
 
     // Apply vector uniforms (if any).
     for (const ren::VecUniform& unif : vecUniforms) {unif.applyUniform();}
-    worldLight.front().applyUniform();
+    lightUniforms.front().applyUniform(worldLight.front().lightDir);
 
     // Apply matrix uniforms (if any).
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}

@@ -45,6 +45,7 @@ SET(Interface_Modules_Render_HEADERS
   ES/comp/RenderBasicGeom.h
   ES/comp/StaticSRInterface.h
   ES/comp/StaticWorldLight.h
+  ES/comp/LightingUniforms.h
   ES/systems/RenderBasicSys.h
   ES/systems/RenderColorMapSys.h
 )
@@ -61,7 +62,7 @@ SET(Interface_Modules_Render_SOURCES
   ES/CoreBootstrap.cc
   ES/Registration.cc
   ES/AssetBootstrap.cc
-  ES/comp/StaticWorldLight.cc
+  ES/comp/LightingUniforms.cc
   ES/systems/RenderBasicSys.cc
   ES/systems/RenderColorMapSys.cc
 )
