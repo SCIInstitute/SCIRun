@@ -24,6 +24,7 @@
 #include "../comp/RenderColorMapGeom.h"
 #include "../comp/SRRenderState.h"
 #include "../comp/RenderList.h"
+#include "../comp/StaticWorldLight.h"
 
 namespace es = CPM_ES_NS;
 namespace shaders = CPM_GL_SHADERS_NS;
@@ -49,6 +50,7 @@ class RenderColorMapSys :
                              ren::MatUniform,
                              ren::Shader,
                              ren::GLState,
+                             StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
                              ren::StaticVBOMan>
@@ -82,6 +84,7 @@ public:
       const es::ComponentGroup<ren::MatUniform>& matUniforms,
       const es::ComponentGroup<ren::Shader>& shader,
       const es::ComponentGroup<ren::GLState>& state,
+      const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const es::ComponentGroup<ren::StaticVBOMan>& vboMan) override
