@@ -130,6 +130,8 @@ public:
           const_cast<ren::MatUniform&>(unif).checkUniform(shader.front().glid);
         }
       }
+
+      const_cast<StaticWorldLight&>(worldLight.front()).checkUniformArray(shader.front().glid);
     }
 
     // Check to see if we have GLState. If so, apply it relative to the
@@ -159,6 +161,7 @@ public:
 
     // Apply vector uniforms (if any).
     for (const ren::VecUniform& unif : vecUniforms) {unif.applyUniform();}
+    worldLight.front().applyUniform();
 
     // Apply matrix uniforms (if any).
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}
