@@ -569,6 +569,8 @@ void SRInterface::doFrame(double currentTime, double constantDeltaTime)
 
 
   // Set directional light source (in world space).
+  // Need to set a static light source component which will be used when
+  // uLightDirWorld is requested from a shader.
   // glm::vec3 viewDir = viewToWorld[2].xyz();
   // viewDir = -viewDir; // Cameras look down -Z.
   //mSpire->addGlobalUniform("uLightDirWorld", viewDir);

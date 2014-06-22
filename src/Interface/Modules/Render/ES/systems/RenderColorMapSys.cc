@@ -187,6 +187,85 @@ public:
     {
       // Render a color mapped list of VBOs/IBOs. We will be using the VBO and
       // IBO attached to this object as the basic rendering primitive.
+      glm::mat4 rlistTrafo = trafo.front().transform;
+
+      GLint uniformColorLoc = 0;
+      for (const ren::VecUniform& unif : vecUniforms)
+      {
+        if (std::string(unif.uniformName) == "uFieldData")
+        {
+          uniformColorLoc = unif.uniformLocation;
+        }
+      }
+
+      // Note: Some of this work can be done beforehand. But we elect not to
+      // since it is feasible that the data contained in the VBO can change
+      // fairly dramatically.
+
+      // Build BSerialize object.
+      CPM_BSERIALIZE_NS::BSerialize posDeserialize(
+          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
+
+      CPM_BSERIALIZE_NS::BSerialize dataDeserialize(
+          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize()); 
+
+      int64_t posSize     = 0;
+      int64_t dataSize    = 0;
+      int64_t stride      = 0;  // Stride of entire attributes buffer.
+
+      // Determine stride for our buffer. Also determine appropriate position
+      // and color information offsets, and set the offsets. Also determine
+      // attribute size in bytes.
+      for (const auto& attrib : rlist.front().attributes)
+      {
+        if (attrib.name == "aPos")
+        {
+          if (stride != 0) {posDeserialize.readBytes(stride);}
+          posSize = attrib.sizeInBytes;
+        }
+        else if (attrib.name == "aFieldData")
+        {
+          if (stride != 0) {dataDeserialize.readBytes(stride);}
+          dataSize = attrib.sizeInBytes;
+        }
+
+        stride += attrib.sizeInBytes;
+      }
+
+      int64_t posStride  = stride - posSize;
+      int64_t dataStride = stride - dataSize;
+
+      // Render using a draw list. We will be using the VBO and IBO attached
+      // to this object as the basic rendering primitive.
+      for (int i = 0; i < rlist.front().numElements; ++i)
+      {
+        // Read position.
+        float x = posDeserialize.read<float>();
+        float y = posDeserialize.read<float>();
+        float z = posDeserialize.read<float>();
+        posDeserialize.readBytes(posStride);
+
+        // Read color if available.
+        if (dataSize > 0)
+        {
+          float data = dataDeserialize.read<float>();
+          if (dataDeserialize.getBytesLeft() > dataStride)
+          {
+            dataDeserialize.readBytes(dataStride);
+          }
+          GL(glUniform1f(uniformColorLoc, data));
+        }
+
+        // Update transform.
+        rlistTrafo[3].x = x;
+        rlistTrafo[3].y = y;
+        rlistTrafo[3].z = z;
+        commonUniforms.front().applyCommonUniforms(
+            rlistTrafo, camera.front().data, time.front().globalTime);
+
+        GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
+                          ibo.front().primType, 0));
+      }
     }
     else
     {

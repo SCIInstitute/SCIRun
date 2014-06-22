@@ -176,7 +176,7 @@ public:
       GLint uniformColorLoc = 0;
       for (const ren::VecUniform& unif : vecUniforms)
       {
-        if (std::string(unif.getName()) == "uColor")
+        if (std::string(unif.uniformName) == "uColor")
         {
           uniformColorLoc = unif.uniformLocation;
         }
@@ -236,10 +236,10 @@ public:
           float g = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
           float b = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
           float a = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
-          colorDeserialize.readBytes(posStride);
-          
-          /// \todo Set the uniform color uniform. We need to lookup the
-          ///       color uniform in our shader.
+          if (colorDeserialize.getBytesLeft() > colorStride)
+          {
+            colorDeserialize.readBytes(colorStride);
+          }
           GL(glUniform4f(uniformColorLoc, r, g, b, a));
         }
 

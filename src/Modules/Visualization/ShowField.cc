@@ -1143,7 +1143,15 @@ void ShowFieldModule::renderNodes(
 
   if (colorScheme == GeometryObject::COLOR_MAP)
   {
-    shader = "Shaders/ColorMap";
+    if (state.get(RenderState::USE_SPHERE))
+    {
+      shader = "Shaders/ColorMapUniform";
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uFieldData", 1.0f));
+    }
+    else
+    {
+      shader = "Shaders/ColorMap";
+    }
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
 
     if (state.get(RenderState::USE_TRANSPARENCY))
@@ -1199,7 +1207,13 @@ void ShowFieldModule::renderNodes(
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
                                    colorScheme, state, renderType);
 
-  pass.addUniform("uColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  // Add all uniforms generated above to the pass.
+  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
+
+  if (colorScheme == GeometryObject::COLOR_MAP)
+  {
+    applyColorMapScaling(field, pass);
+  }
 
   geom->mPasses.push_back(pass);
 

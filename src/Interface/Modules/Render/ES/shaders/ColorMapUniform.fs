@@ -25,26 +25,24 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+#ifdef OPENGL_ES
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
+    // Default precision
+    precision highp float;
+  #else
+    precision mediump float;
+  #endif
+#endif
 
-// Uniforms
-uniform mat4  uProjIVObject;      // Projection * Inverse View * World XForm
-
-// The following values are used to rescale the data between 0 .. 1.
-uniform float uMinVal;
-uniform float uMaxVal;
+uniform sampler1D uTX0;
+varying float	fFieldData;
 
 // Transparency to use along side the color map.
+uniform float uTransparency;
 
-// Attributes
-attribute vec3  aPos;
-attribute float aFieldData;
-
-// Outputs to the fragment shader.
-varying float    fFieldData;
-
-void main( void )
+void main()
 {
-  gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  //fFieldData  = aFieldData;
-  fFieldData  = (aFieldData - uMinVal) / (uMaxVal - uMinVal);
+  vec4 color    = texture1D(uTX0, fFieldData);
+  color.a       = uTransparency;
+	gl_FragColor  = color;
 }

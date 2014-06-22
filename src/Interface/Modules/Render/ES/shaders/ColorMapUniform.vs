@@ -32,12 +32,12 @@ uniform mat4  uProjIVObject;      // Projection * Inverse View * World XForm
 // The following values are used to rescale the data between 0 .. 1.
 uniform float uMinVal;
 uniform float uMaxVal;
+uniform float uFieldData;
 
 // Transparency to use along side the color map.
 
 // Attributes
 attribute vec3  aPos;
-attribute float aFieldData;
 
 // Outputs to the fragment shader.
 varying float    fFieldData;
@@ -45,6 +45,5 @@ varying float    fFieldData;
 void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  //fFieldData  = aFieldData;
-  fFieldData  = (aFieldData - uMinVal) / (uMaxVal - uMinVal);
+  fFieldData  = (uFieldData - uMinVal) / (uMaxVal - uMinVal);
 }
