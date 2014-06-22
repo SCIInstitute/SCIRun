@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <entity-system/GenericSystem.hpp>
 #include <cereal-glm/CerealGLM.hpp>
+#include <es-cereal/ComponentSerialize.hpp>
 
 namespace SCIRun {
 namespace Render {
@@ -16,10 +17,16 @@ struct StaticWorldLight
   // -- Data --
   glm::vec3 lightDir;
 
+  bool hasLightUniform;
+  GLint uniformLocation;
+
   // -- Functions --
-  StaticWorldLight() { }
+  StaticWorldLight() : hasLightUniform(false), uniformLocation(0) { }
 
   static const char* getName() {return "StaticWorldLight";}
+
+  void checkUniformArray(GLuint shaderID);
+  void applyUniform() const;
 
   bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
   {
