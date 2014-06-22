@@ -1149,6 +1149,9 @@ void ShowFieldModule::renderNodes(
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uFieldData", 1.0f));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
                                                                glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                               glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     }
     else
     {
