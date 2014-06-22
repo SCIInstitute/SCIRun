@@ -130,9 +130,6 @@ void SRInterface::setupCore()
     StaticSRInterface iface(this);
     mCore.addStaticComponent(iface);
   }
-
-  /// \todo Add static mouse and keyboard inputs, if necessary.
-
 }
 
 //------------------------------------------------------------------------------
@@ -440,7 +437,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
       mCore.addComponent(entityID, component);
 
       // Compare entity and system requirements.
-      mCore.displayEntityVersusSystemInfo(entityID, getSystemName_RenderColorMap());
+      //mCore.displayEntityVersusSystemInfo(entityID, getSystemName_RenderColorMap());
     }
     else
     {

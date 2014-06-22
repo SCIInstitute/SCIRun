@@ -76,8 +76,6 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   if (mCoreSequence % fpsAvgLength == 0)
   {
     mFPS /= fpsAvgLength;
-    std::cout << "Avg. FPS: " << mFPS << std::endl;
-
     mFPS = 0.0f;
   }
 

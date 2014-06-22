@@ -56,6 +56,10 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 
   buttonBox->setVisible(false);
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  connect(nodesAsPointsButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
+  connect(nodesAsSpheresButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
+
+  pushNodeType();
 }
 
 void ShowFieldDialog::push()
@@ -63,7 +67,6 @@ void ShowFieldDialog::push()
   if (!pulling_)
   {
     pushColor();
-    pushNodes();
   }
 }
 
@@ -95,8 +98,12 @@ void ShowFieldDialog::pushColor()
   state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
 }
 
-void ShowFieldDialog::pushNodes()
+void ShowFieldDialog::pushNodeType()
 {
   state_->setValue(ShowFieldModule::NodeAsPoints, nodesAsPointsButton_->isChecked());
+  state_->setValue(ShowFieldModule::NodeAsSpheres, nodesAsSpheresButton_->isChecked());
+
+  std::cout << "Nodes as points: " << state_->getValue(ShowFieldModule::NodeAsPoints) << std::endl;
+  std::cout << "Nodes as spheres: " << state_->getValue(ShowFieldModule::NodeAsSpheres) << std::endl;
 }
 

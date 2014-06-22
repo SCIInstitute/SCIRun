@@ -73,6 +73,8 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
   state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(NodeAsPoints, true);
+  state->setValue(NodeAsSpheres, false);
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
