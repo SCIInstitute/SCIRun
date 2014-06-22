@@ -111,6 +111,13 @@ namespace Visualization {
         std::vector<double> &scols,
         std::vector<Core::Datatypes::Material> &vcols,
         const RenderState& state);
+
+    void renderEdges(
+        boost::shared_ptr<SCIRun::Field> field,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+        RenderState state,
+        Core::Datatypes::GeometryHandle geom, 
+        const std::string& id);
     /// @}
 
     /// State evaluation

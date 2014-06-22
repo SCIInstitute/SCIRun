@@ -209,6 +209,10 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     renderFaces(field, colorMap, getFaceRenderState(state, colorMap), geom, approxDiv, id);
   }
 
+  if (showEdges)
+  {
+    renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, id);
+  }
 
   // Set value ranges for color mapping fields. We should use uniforms for
   // setting the highest / lowest value ranges. We should be able to do this
@@ -1290,8 +1294,322 @@ void ShowFieldModule::renderNodes(
 }
 
 
+void ShowFieldModule::renderEdges(
+    boost::shared_ptr<SCIRun::Field> field,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+    RenderState state,
+    Core::Datatypes::GeometryHandle geom, 
+    const std::string& id)
+{
+  /// \todo Cylinder edge rendering.
+
+  VField* fld   = field->vfield();
+  VMesh*  mesh  = field->vmesh();
+
+  double sval0, sval1;
+  Core::Geometry::Vector vval0, vval1;
+  Core::Geometry::Tensor tval0, tval1;
+
+  GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  double scol0 = 0.0, scol1 = 0.0;
+  Core::Datatypes::Material vcol0;
+  Core::Datatypes::Material vcol1;
+
+  if (fld->basis_order() < 0 ||
+      (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
+      state.get(RenderState::USE_DEFAULT_COLOR))
+  {
+    colorScheme = GeometryObject::COLOR_UNIFORM;
+  }
+  else if (state.get(RenderState::USE_COLORMAP))
+  {
+    colorScheme = GeometryObject::COLOR_MAP;
+  }
+  else
+  {
+    colorScheme = GeometryObject::COLOR_IN_SITU;
+  }
 
 
+  mesh->synchronize(Mesh::EDGES_E);
+
+  VMesh::Edge::iterator eiter, eiter_end;
+  mesh->begin(eiter);
+  mesh->end(eiter_end);
+
+  // Attempt some form of precalculation of iboBuffer and vboBuffer size.
+  int iboSize = mesh->num_nodes() * sizeof(uint32_t);
+  int vboSize = mesh->num_nodes() * sizeof(float) * 3;
+
+  if (colorScheme == GeometryObject::COLOR_MAP)
+  {
+    vboSize += mesh->num_nodes() * sizeof(float);     // For the data (color map lookup).
+  }
+  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+  {
+    vboSize += mesh->num_nodes() * sizeof(uint32_t); // For full color in the elements.
+  }
+
+  /// \todo To reduce memory requirements, we can use a 16bit index buffer.
+
+  /// \todo To further reduce a large amount of memory, get rid of the index
+  ///       buffer and use glDrawArrays to render without an IBO. An IBO is
+  ///       a waste of space.
+  ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
+
+  /// \todo Switch to unique_ptrs and move semantics.
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
+      new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
+      new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
+
+  // Accessing the pointers like this is contrived. We only do this for
+  // speed since we will be using the pointers in a tight inner loop.
+  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
+  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+
+  uint32_t index = 0;
+  int64_t numVBOElements = 0;
+  while (eiter != eiter_end)
+  {
+    VMesh::Node::array_type nodes;
+    mesh->get_nodes(nodes, *eiter);
+
+    Core::Geometry::Point p0, p1;
+    mesh->get_point(p0, nodes[0]);
+    mesh->get_point(p1, nodes[1]);
+
+    if (colorScheme != GeometryObject::COLOR_UNIFORM)
+    {
+      if (fld->is_scalar())
+      {
+        if (fld->basis_order() == 1)
+        {
+          fld->get_value(sval0, nodes[0]);
+          fld->get_value(sval1, nodes[1]);
+        }
+        else //if (mesh->dimensionality() == 1)
+        {
+          fld->get_value(sval0, *eiter);
+          
+          sval1 = sval0;
+        }
+        
+        valueToColor(colorScheme, sval0, scol0, vcol0);
+        valueToColor(colorScheme, sval1, scol1, vcol1);
+      }
+      else if (fld->is_vector())
+      {
+        if (fld->basis_order() == 1)
+        {
+          fld->get_value(vval0, nodes[0]);
+          fld->get_value(vval1, nodes[1]);
+        }
+        else //if (mesh->dimensionality() == 1)
+        {
+          fld->get_value(vval0, *eiter);
+          vval1 = vval0;
+        }
+
+        valueToColor(colorScheme, vval0, scol0, vcol0);
+        valueToColor(colorScheme, vval1, scol1, vcol1);
+      }
+      else if (fld->is_tensor())
+      {
+        if (fld->basis_order() == 1)
+        {
+          fld->get_value(tval0, nodes[0]);
+          fld->get_value(tval1, nodes[1]);
+        }
+        else //if (mesh->dimensionality() == 1)
+        {
+          fld->get_value(tval0, *eiter);
+          tval1 = tval0;
+        }
+        
+        valueToColor(colorScheme, tval0, scol0, vcol0);
+        valueToColor(colorScheme, tval1, scol1, vcol1);
+      }
+    }
+
+    // Write first point on line
+    vboBuffer->write(static_cast<float>(p0.x()));
+    vboBuffer->write(static_cast<float>(p0.y()));
+    vboBuffer->write(static_cast<float>(p0.z()));
+
+    if (colorScheme == GeometryObject::COLOR_MAP)
+    {
+      vboBuffer->write(static_cast<float>(scol0));
+    }
+    else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+    {
+      // Writes uint8_t out to the VBO. A total of 4 bytes.
+      vboBuffer->write(COLOR_FTOB(vcol0.diffuse.r()));
+      vboBuffer->write(COLOR_FTOB(vcol0.diffuse.g()));
+      vboBuffer->write(COLOR_FTOB(vcol0.diffuse.b()));
+      vboBuffer->write(COLOR_FTOB(vcol0.transparency));
+    }
+
+    iboBuffer->write(static_cast<uint32_t>(index));
+
+    ++index;
+
+    // Write second point on line
+    vboBuffer->write(static_cast<float>(p1.x()));
+    vboBuffer->write(static_cast<float>(p1.y()));
+    vboBuffer->write(static_cast<float>(p1.z()));
+
+    if (colorScheme == GeometryObject::COLOR_MAP)
+    {
+      vboBuffer->write(static_cast<float>(scol1));
+    }
+    else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+    {
+      // Writes uint8_t out to the VBO. A total of 4 bytes.
+      vboBuffer->write(COLOR_FTOB(vcol1.diffuse.r()));
+      vboBuffer->write(COLOR_FTOB(vcol1.diffuse.g()));
+      vboBuffer->write(COLOR_FTOB(vcol1.diffuse.b()));
+      vboBuffer->write(COLOR_FTOB(vcol1.transparency));
+    }
+
+    iboBuffer->write(static_cast<uint32_t>(index));
+
+    ++index;
+
+    ++eiter;
+    ++numVBOElements;
+  }
+
+  std::string uniqueNodeID = id + "edge";
+  std::string vboName      = uniqueNodeID + "VBO";
+  std::string iboName      = uniqueNodeID + "IBO";
+  std::string passName     = uniqueNodeID + "Pass";
+
+  // NOTE: Attributes will depend on the color scheme. We will want to
+  // normalize the colors if the color scheme is COLOR_IN_SITU.
+
+  // Construct VBO.
+  std::string shader = "Shaders/UniformColor";
+  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
+  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
+
+  // If true, then the VBO will be placed on the GPU. We don't want to place
+  // VBOs on the GPU when we are generating rendering lists.
+  bool vboOnGPU = true;
+
+  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+
+  if (colorScheme == GeometryObject::COLOR_MAP)
+  {
+    /// \todo Use cylinders...
+    // if (state.get(RenderState::USE_SPHERE))
+    // {
+    //   shader = "Shaders/DirPhongCMapUniform";
+    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uFieldData", 1.0f));
+    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+    //                                                            glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+    //                                                            glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+    // }
+    // else
+    // {
+      shader = "Shaders/ColorMap";
+    //}
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+
+    if (state.get(RenderState::USE_TRANSPARENCY))
+    {
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(0.75f)));
+    }
+    else
+    {
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0f)));
+    }
+  }
+  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+  {
+    shader = "Shaders/InSituColor";
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
+  }
+  else if (colorScheme == GeometryObject::COLOR_UNIFORM)
+  {
+    ColorRGB defaultColor = state.defaultColor;
+
+    /// \todo Use cylinders...
+    // if (state.get(RenderState::USE_SPHERE))
+    // {
+    //   shader = "Shaders/DirPhong";
+    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+    //                                                            glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+    //                                                            glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+    //
+    //   if (state.get(RenderState::USE_TRANSPARENCY))
+    //   {
+    //     uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+    //             "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+    //   }
+    //   else
+    //   {
+    //     uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+    //             "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+    //   }
+    // }
+    // else
+    // {
+      shader = "Shaders/UniformColor";
+
+      if (state.get(RenderState::USE_TRANSPARENCY))
+      {
+        /// \todo Add transparency slider.
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+      }
+      else
+      {
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+      }
+    // }
+  }
+
+  /// \todo Use cylinders...
+  // if (state.get(RenderState::USE_SPHERE))
+  // {
+  //   renderType = GeometryObject::RENDER_RLIST_SPHERE;
+  //   vboOnGPU = false;
+  // }
+
+  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+                                                 numVBOElements, mesh->get_bounding_box(), vboOnGPU));
+
+  // Construct IBO.
+  geom->mIBOs.push_back(
+      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr));
+
+  // Construct Pass.
+  // Build pass for the edges.
+  /// \todo Find an appropriate place to put program names like UniformColor.
+  GeometryObject::SpireSubPass pass =
+      GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+                                   colorScheme, state, renderType);
+
+  // Add all uniforms generated above to the pass.
+  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
+
+  if (colorScheme == GeometryObject::COLOR_MAP)
+  {
+    applyColorMapScaling(field, pass);
+  }
+
+  geom->mPasses.push_back(pass);
+
+  /// \todo Add spheres and other glyphs as display lists. Will want to
+  ///       build up to geometry / tesselation shaders if support is present.
+}
 
 
 
