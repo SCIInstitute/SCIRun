@@ -60,6 +60,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   connect(nodesAsSpheresButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
 
   pushNodeType();
+  pushColor();
 }
 
 void ShowFieldDialog::push()
