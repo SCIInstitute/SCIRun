@@ -559,6 +559,11 @@ void ShowFieldModule::renderFacesLinear(
       {
         // Use colormapping lit shader.
         shader = "Shaders/DirPhongCMap";
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                                 glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                                 glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
       {
@@ -574,6 +579,11 @@ void ShowFieldModule::renderFacesLinear(
       {
         // Use colormapping lit shader.
         shader = "Shaders/DblSided_DirPhongCMap";
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                                 glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                                 glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
       {
@@ -599,8 +609,12 @@ void ShowFieldModule::renderFacesLinear(
     {
       if (withNormals)
       {
-        std::cerr << "ERROR - In situ phong not implemented." << std::endl;
         shader = "Shaders/InSituPhongColor";
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                                 glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                                 glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
       {
@@ -614,8 +628,12 @@ void ShowFieldModule::renderFacesLinear(
 
       if (withNormals)
       {
-        std::cerr << "ERROR - Double sided in situ phong not implemented." << std::endl;
         shader = "Shaders/DblSided_InSituPhongColor";
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                                 glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                                 glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
       {
@@ -628,18 +646,40 @@ void ShowFieldModule::renderFacesLinear(
   {
     ColorRGB defaultColor = state.defaultColor;
 
-    shader = "Shaders/UniformColor";
-
-    if (state.get(RenderState::USE_TRANSPARENCY))
+    if (withNormals)
     {
-      /// \todo Add transparency slider.
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-              "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+      shader = "Shaders/DirPhong";
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                               glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                               glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+
+      if (state.get(RenderState::USE_TRANSPARENCY))
+      {
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+      }
+      else
+      {
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+      }
     }
     else
     {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-              "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+      shader = "Shaders/UniformColor";
+      if (state.get(RenderState::USE_TRANSPARENCY))
+      {
+        /// \todo Add transparency slider.
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+      }
+      else
+      {
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+      }
     }
   }
 
@@ -1177,18 +1217,41 @@ void ShowFieldModule::renderNodes(
   {
     ColorRGB defaultColor = state.defaultColor;
 
-    shader = "Shaders/UniformColor";
-
-    if (state.get(RenderState::USE_TRANSPARENCY))
+    if (state.get(RenderState::USE_SPHERE))
     {
-      /// \todo Add transparency slider.
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-              "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+      shader = "Shaders/DirPhong";
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                               glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                               glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+
+      if (state.get(RenderState::USE_TRANSPARENCY))
+      {
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+      }
+      else
+      {
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+      }
     }
     else
     {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-              "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+      shader = "Shaders/UniformColor";
+
+      if (state.get(RenderState::USE_TRANSPARENCY))
+      {
+        /// \todo Add transparency slider.
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+      }
+      else
+      {
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+      }
     }
   }
 

@@ -34,6 +34,8 @@
 #include "comp/RenderColorMapGeom.h"
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
+#include "comp/StaticWorldLight.h"
+#include "comp/LightingUniforms.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderColorMapSys.h"
 
@@ -50,6 +52,8 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
 
   // Register components
   core.registerComponent<StaticSRInterface>();
+  core.registerComponent<StaticWorldLight>();
+  core.registerComponent<LightingUniforms>();
   core.registerComponent<RenderBasicGeom>();
   core.registerComponent<RenderColorMapGeom>();
   core.registerComponent<SRRenderState>();
