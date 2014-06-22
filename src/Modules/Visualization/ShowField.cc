@@ -99,10 +99,6 @@ RenderState ShowFieldModule::getNodeRenderState(
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).getBool());
 
   renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).getBool());
-  if (state->getValue(ShowFieldModule::NodeAsSpheres).getBool())
-  {
-    std::cout << "Nodes as spheres!" << std::endl;
-  }
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
 
@@ -1100,32 +1096,25 @@ void ShowFieldModule::renderNodes(
       }
     }
 
-    if (!state.get(RenderState::USE_SPHERE))
-    {
-      // Render points if we are not rendering spheres.
-      vboBuffer->write(static_cast<float>(p.x()));
-      vboBuffer->write(static_cast<float>(p.y()));
-      vboBuffer->write(static_cast<float>(p.z()));
+    // Render points if we are not rendering spheres.
+    vboBuffer->write(static_cast<float>(p.x()));
+    vboBuffer->write(static_cast<float>(p.y()));
+    vboBuffer->write(static_cast<float>(p.z()));
 
-      if (colorScheme == GeometryObject::COLOR_MAP)
-      {
-        vboBuffer->write(static_cast<float>(scol));
-      }
-      else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-      {
-        // Writes uint8_t out to the VBO. A total of 4 bytes.
-        vboBuffer->write(COLOR_FTOB(vcol.diffuse.r()));
-        vboBuffer->write(COLOR_FTOB(vcol.diffuse.g()));
-        vboBuffer->write(COLOR_FTOB(vcol.diffuse.b()));
-        vboBuffer->write(COLOR_FTOB(vcol.transparency));
-      }
-
-      iboBuffer->write(static_cast<uint32_t>(index));
-    }
-    else
+    if (colorScheme == GeometryObject::COLOR_MAP)
     {
-      // Spheres. I don't believe we need this.
+      vboBuffer->write(static_cast<float>(scol));
     }
+    else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+    {
+      // Writes uint8_t out to the VBO. A total of 4 bytes.
+      vboBuffer->write(COLOR_FTOB(vcol.diffuse.r()));
+      vboBuffer->write(COLOR_FTOB(vcol.diffuse.g()));
+      vboBuffer->write(COLOR_FTOB(vcol.diffuse.b()));
+      vboBuffer->write(COLOR_FTOB(vcol.transparency));
+    }
+
+    iboBuffer->write(static_cast<uint32_t>(index));
 
     ++index;
     ++iter;
