@@ -282,7 +282,7 @@ EXTERNAL_TEEM_LIBRARY(GIT)
 
 
 ########################################################################
-# Configure CPM and Spire - http://github.com/iauns/cpm
+# Configure CPM and Spire - http://github.com/CIBC-Internal/cpm
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -293,9 +293,9 @@ if(NOT GIT_FOUND)
   message(FATAL_ERROR "CPM requires Git.")
 endif()
 if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
-  message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
+  message(STATUS "Cloning repo (https://github.com/CIBC-Internal/cpm)")
   execute_process(
-    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
+    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/CIBC-Internal/cpm ${CPM_DIR}
     RESULT_VARIABLE error_code
     OUTPUT_QUIET ERROR_QUIET)
   if(error_code)
@@ -310,71 +310,71 @@ include(${CPM_DIR}/CPM.cmake)
 
 # ++ MODULE: GL Platform
 CPM_AddModule("gl_platform"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-platform"
-  GIT_TAG "1.3.5")
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-gl-platform"
+  GIT_TAG "origin/master")
 
 # ++ MODULE: Arc-Look-At (Autoview Camera)
 CPM_AddModule("look_at"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-arc-look-at"
-  GIT_TAG "1.0.0")
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-arc-look-at"
+  GIT_TAG "origin/master")
 
 # ++ MODULE: Entity System
 CPM_AddModule("es"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-entity-system"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-entity-system"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Entity system component serialization
 CPM_AddModule("es_cereal"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-es-cereal"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-cereal"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Cereal support for GLM.
 CPM_AddModule("cereal_glm"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-cereal-glm"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-cereal-glm"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: ES Systems
 CPM_AddModule("es_systems"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-es-systems"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-systems"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Async filesystem support
 CPM_AddModule("es_fs"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-es-fs"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-fs"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: General transforms and components
 CPM_AddModule("es_general"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-es-general"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-general"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Entity System Rendering.
 CPM_AddModule("es_render"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-es-render"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-render"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Acorn
 CPM_AddModule("es_acorn"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-es-acorn"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-acorn"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Var buffer
 CPM_AddModule("var_buffer"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-var-buffer"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-var-buffer"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: BSerialize
 CPM_AddModule("bserialize"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-bserialize"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-bserialize"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE)
 
