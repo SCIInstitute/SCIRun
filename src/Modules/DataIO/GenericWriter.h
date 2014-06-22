@@ -61,7 +61,8 @@ public:
 
 protected:
   HType       handle_;
-  std::string filename_, filetype_;
+  std::string filename_;
+  mutable std::string filetype_;
   Core::Algorithms::AlgorithmParameterName stateFilename_;
   StaticPortName<typename HType::element_type, 0>* objectPortName_;
 
@@ -69,10 +70,11 @@ protected:
   //GuiString   filetype_;
   //GuiInt      confirm_;
   //GuiInt			confirm_once_;
-  bool        exporting_;
+  
+  virtual bool useCustomExporter(const std::string& filename) const = 0;
+  virtual bool call_exporter(const std::string &filename) { return false; }
 
   virtual bool overwrite() { return true; } /// @todo
-  virtual bool call_exporter(const std::string &filename);
 };
 
 
@@ -84,8 +86,7 @@ GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std:
     //confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
 		//confirm_once_(get_ctx()->subVar("confirm-once"),0),
     stateFilename_(stateFilename),
-    objectPortName_(0),
-    exporting_(false)
+    objectPortName_(0)
 {
   INITIALIZE_PORT(Filename);
 }
@@ -105,14 +106,6 @@ GenericWriter<HType, PortTag>::overwrite()
   return true;
 }
 #endif
-
-template <class HType, class PortTag>
-bool
-GenericWriter<HType, PortTag>::call_exporter(const std::string &/*filename*/)
-{
-  return false;
-}
-
 
 template <class HType, class PortTag>
 void
@@ -157,7 +150,7 @@ GenericWriter<HType, PortTag>::execute()
 
   if (!overwrite()) return;
  
-  if (exporting_)
+  if (useCustomExporter(filename_))
   {
     if (!call_exporter(filename_))
     {

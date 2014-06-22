@@ -47,6 +47,15 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
 
+ALGORITHM_PARAMETER_DEF(Fields, MinRange);
+ALGORITHM_PARAMETER_DEF(Fields, MaxRange);
+ALGORITHM_PARAMETER_DEF(Fields, Domain);
+ALGORITHM_PARAMETER_DEF(Fields, UseRange);
+ALGORITHM_PARAMETER_DEF(Fields, AddOuterBoundary);
+ALGORITHM_PARAMETER_DEF(Fields, InnerBoundaryOnly);
+ALGORITHM_PARAMETER_DEF(Fields, NoInnerBoundary);
+ALGORITHM_PARAMETER_DEF(Fields, DisconnectBoundaries);
+
 struct pointtype
 {
   pointtype() : node(0), val1(0), val2(0), hasneighbor(false) {}
@@ -69,18 +78,11 @@ struct IndexHash
 };
 
 AlgorithmInputName GetDomainBoundaryAlgo::ElemLink("ElemLink");
-AlgorithmParameterName GetDomainBoundaryAlgo::MinRange("MinRange");
-AlgorithmParameterName GetDomainBoundaryAlgo::MaxRange("MaxRange");
-AlgorithmParameterName GetDomainBoundaryAlgo::Domain("Domain");
-AlgorithmParameterName GetDomainBoundaryAlgo::UseRange("UseRange");
-AlgorithmParameterName GetDomainBoundaryAlgo::AddOuterBoundary("AddOuterBoundary");
-AlgorithmParameterName GetDomainBoundaryAlgo::InnerBoundaryOnly("InnerBoundaryOnly");
-AlgorithmParameterName GetDomainBoundaryAlgo::NoInnerBoundary("NoInnerBoundary");
-AlgorithmParameterName GetDomainBoundaryAlgo::DisconnectBoundaries("DisconnectBoundaries");
 AlgorithmOutputName GetDomainBoundaryAlgo::BoundaryField("BoundaryField");
 
 GetDomainBoundaryAlgo::GetDomainBoundaryAlgo()
 {
+  using namespace Parameters;
   addParameter(MinRange, 0);
   addParameter(MaxRange,255);
   addParameter(Domain,1);
@@ -98,7 +100,8 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   typedef boost::unordered_map<index_type,VMesh::Node::index_type,IndexHash> hash_map_type;
 
   ScopedAlgorithmStatusReporter asr(this, "GetDomainBoundary");
-  
+  using namespace Parameters;
+
   int minval = get(MinRange).getInt();
   int maxval = get(MaxRange).getInt();
   const int domval = get(Domain).getInt();

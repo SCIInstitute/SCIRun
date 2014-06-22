@@ -29,6 +29,7 @@
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Core/Application/Preferences.h>
 #include <Core/Logging/Log.h>
+#include <Modules/Render/ViewScene.h>
 
 #include <Interface/Modules/Render/GLWidget.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
@@ -36,6 +37,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -81,6 +83,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
       spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
     }
   }
+
+  state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
+  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 }
 
 //------------------------------------------------------------------------------
@@ -98,18 +103,31 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 }
 
 //------------------------------------------------------------------------------
-void ViewSceneDialog::moduleExecuted()
+void ViewSceneDialog::newGeometryValue()
 {
+  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+
+  Guard lock(SCIRun::Modules::Render::ViewScene::mutex_.get());
+  
+  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
   itemManager_->removeAll();
   // Grab the geomData transient value.
   auto geomDataTransient = state_->getTransientValue("geomData");
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto geomData = optional_any_cast_or_default<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
-    if (!geomData) { return; }
-
+    auto geomData = optional_any_cast_or_default<SCIRun::Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+    if (!geomData)
+    {
+      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+      return;
+    }
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-    if (spire == nullptr) { return; }
+    if (spire == nullptr)
+    {
+      LOG_DEBUG("Logical error: Spire lock not acquired.");
+      return;
+    }
 
     std::vector<std::string> validObjects;
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
@@ -128,6 +146,8 @@ void ViewSceneDialog::moduleExecuted()
       return;
     spire->removeAllGeomObjects();
   }
+  //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
+  //state_->setTransientValue("geomData", boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
 
 //------------------------------------------------------------------------------

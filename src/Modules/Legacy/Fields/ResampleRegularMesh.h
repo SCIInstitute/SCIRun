@@ -49,9 +49,9 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        //static Core::Algorithms::AlgorithmParameterName FunctionString;
-        //static Core::Algorithms::AlgorithmParameterName FormatString;
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        void setDimensionParameter(const std::string& name, const Core::Algorithms::AlgorithmParameterName& dim, const Core::Algorithms::AlgorithmParameterName& useScaling);
       };
     }
   }

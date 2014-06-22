@@ -110,10 +110,16 @@ SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientVal
   return i != transientStateMap_.end() ? boost::make_optional(i->second) : TransientValueOption();
 }
 
-void SimpleMapModuleState::setTransientValue(const std::string& name, const TransientValue& value)
+void SimpleMapModuleState::setTransientValue(const std::string& name, const TransientValue& value, bool fireSignal)
 {
   transientStateMap_[name] = value;
 
+  if (fireSignal)
+    fireTransientStateChangeSignal();
+}
+
+void SimpleMapModuleState::fireTransientStateChangeSignal()
+{
   stateChangedSignal_();  /// @todo: ???
 }
 

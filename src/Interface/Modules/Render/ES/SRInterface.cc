@@ -541,16 +541,43 @@ void SRInterface::removeAllGeomObjects()
 {
   mContext->makeCurrent();
 
-  /// \todo Use function to clear out all non-kernel components.
-  ///       We want to keep the systems in place, however.
+  for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+  {
+    // Iterate through each of the passes and remove their associated
+    // entity ID.
+    for (const auto& pass : it->mPasses)
+    {
+      uint64_t entityID = getEntityIDForName(pass.passName);
+      mCore.removeEntity(entityID);
+    }
+  }
+
+  mCore.renormalize(true);
+
+  mSRObjects.clear();
 }
 
 //------------------------------------------------------------------------------
 void SRInterface::gcInvalidObjects(const std::vector<std::string>& validObjects)
 {
-  /// \todo Run an entity system GC cycle to get rid of unused resources (VBOs
-  ///       and IBOs). We should do this during the GC cycle.
+  for (auto it = mSRObjects.begin(); it != mSRObjects.end();)
+  {
+    if (std::find(validObjects.begin(), validObjects.end(), it->mName) == validObjects.end())
+    {
+      for (const auto& pass : it->mPasses)
+      {
+        uint64_t entityID = getEntityIDForName(pass.passName);
+        mCore.removeEntity(entityID);
+      }
+      it = mSRObjects.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
 
+  mCore.renormalize(true);
 }
 
 //------------------------------------------------------------------------------

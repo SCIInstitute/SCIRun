@@ -312,7 +312,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 
 void NetworkEditorController::clear()
 {
-  //std::cout << "NetworkEditorController::clear()" << std::endl;
+  LOG_DEBUG("NetworkEditorController::clear()" << std::endl);
 }
 
 void NetworkEditorController::executeAll(const ExecutableLookup* lookup)

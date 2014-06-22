@@ -122,9 +122,6 @@ void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::N
   ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module);
   moduleEventProxy_->trackModule(module);
   
-  //TODO: this depends on the ModuleWidget's dialog being created, since that will change some module state.
-  module->preExecutionInitialization();
-
   setupModuleWidget(moduleWidget);
   Q_EMIT modified();
 }
@@ -211,7 +208,6 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   proxy->setZValue(zLevelManager_->max());
   proxy->setVisible(true);
-  proxy->setSelected(true);
   proxy->setPos(lastModulePosition_);
   lastModulePosition_ += moduleAddIncrement;
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);

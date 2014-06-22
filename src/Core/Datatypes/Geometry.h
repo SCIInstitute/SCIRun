@@ -220,8 +220,6 @@ namespace Datatypes {
     DatatypeConstHandle data_;
   };
 
-  typedef boost::shared_ptr<GeometryObject> GeometryHandle;
-
 }}}
 
 
