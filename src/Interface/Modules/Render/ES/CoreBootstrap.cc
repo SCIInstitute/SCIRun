@@ -25,6 +25,7 @@
 #include <es-render/comp/StaticGLState.hpp>
 
 #include "comp/RenderBasicGeom.h"
+#include "comp/StaticWorldLight.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderColorMapSys.h"
 #include "CoreBootstrap.h"
@@ -145,6 +146,12 @@ public:
 
     core.addStaticComponent(cam);
     core.addExemptComponent<gen::StaticCamera>();
+
+    // Add static world light.
+    StaticWorldLight worldLight;
+    worldLight.lightDir = glm::vec3(1.0f, 0.0f, 0.0f);
+    core.addStaticComponent(worldLight);
+    core.addExemptComponent<StaticWorldLight>();
 
     // Setup default ortho camera projection
     gen::StaticOrthoCamera orthoCam;

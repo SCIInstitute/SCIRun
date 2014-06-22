@@ -177,6 +177,9 @@ private:
   // Places mCamera's transform into our static camera component.
   void updateCamera();
 
+  // Updates the world light.
+  void updateWorldLight();
+
   // Renders coordinate axes on the screen.
   void renderCoordinateAxes();
 

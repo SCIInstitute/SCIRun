@@ -63,6 +63,7 @@
 #include "comp/RenderColorMapGeom.h"
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
+#include "comp/StaticWorldLight.h"
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderColorMapSys.h"
 
@@ -556,6 +557,7 @@ void SRInterface::doFrame(double currentTime, double constantDeltaTime)
   mContext->makeCurrent();
 
   updateCamera();
+  updateWorldLight();
 
   mCore.execute(currentTime, constantDeltaTime);
 
@@ -587,6 +589,21 @@ void SRInterface::updateCamera()
   if (camera)
   {
     camera->data.setView(viewToWorld);
+  }
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::updateWorldLight()
+{
+  glm::mat4 viewToWorld = mCamera->getViewToWorld();
+
+  // Set directional light source (in world space).
+  StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
+  if (light)
+  {
+    glm::vec3 viewDir = viewToWorld[2].xyz();
+    viewDir = -viewDir; // Cameras look down -Z.
+    light->lightDir = viewDir;
   }
 }
 
