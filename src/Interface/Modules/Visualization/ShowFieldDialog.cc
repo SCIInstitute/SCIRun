@@ -102,8 +102,5 @@ void ShowFieldDialog::pushNodeType()
 {
   state_->setValue(ShowFieldModule::NodeAsPoints, nodesAsPointsButton_->isChecked());
   state_->setValue(ShowFieldModule::NodeAsSpheres, nodesAsSpheresButton_->isChecked());
-
-  std::cout << "Nodes as points: " << state_->getValue(ShowFieldModule::NodeAsPoints) << std::endl;
-  std::cout << "Nodes as spheres: " << state_->getValue(ShowFieldModule::NodeAsSpheres) << std::endl;
 }
 
