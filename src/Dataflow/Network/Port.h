@@ -35,6 +35,7 @@
 #include <string>
 #include <vector>
 #include <boost/noncopyable.hpp>
+#include <boost/signals2/signal.hpp>
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/share.h>
@@ -104,6 +105,7 @@ public:
   virtual bool isDynamic() const { return isDynamic_; }
   virtual InputPortInterface* clone() const;
   virtual bool hasChanged() const;
+  virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber);
 private:
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;

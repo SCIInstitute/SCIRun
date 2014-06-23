@@ -30,67 +30,55 @@
 
 #include <Modules/Legacy/Fields/FairMesh.h>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-#include <Core/Algorithms/Fields/SmoothMesh/FairMesh.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
+ModuleLookupInfo FairMesh::staticInfo_("FairMesh", "NewField", "SCIRun");
 
-#include <Dataflow/Modules/Fields/share.h>
-
-namespace SCIRun {
-
-class FairMesh : public Module {
-  public:
-    FairMesh(GuiContext*);
-    virtual ~FairMesh() {}
-    virtual void execute();
-    
-  private:
-    GuiInt       iterations_;
-    GuiString    method_;
-    GuiDouble    lambda_;
-    GuiDouble    mu_;
-    
-    SCIRunAlgo::FairMeshAlgo algo_;
-};
-
-
-DECLARE_MAKER(FairMesh)
-FairMesh::FairMesh(GuiContext* ctx) : 
-  Module("FairMesh", ctx, Source, "NewField", "SCIRun"),
-  iterations_(get_ctx()->subVar("iterations"), 50),
-  method_(get_ctx()->subVar("method"), "fast"),
-  lambda_(get_ctx()->subVar("lambda"),0.6307),
-  mu_(get_ctx()->subVar("mu"),0.1)
+FairMesh::FairMesh() : 
+  Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Input_Mesh);
+  INITIALIZE_PORT(Faired_Mesh);
 }
 
+void FairMesh::setStateDefaults()
+{
+  auto state = get_state();
+
+  setStateStringFromAlgoOption(Parameters::FairMeshMethod);
+  setStateIntFromAlgo(Parameters::NumIterations);
+  setStateDoubleFromAlgo(Parameters::Lambda);
+  setStateDoubleFromAlgo(Parameters::FilterCutoff);
+}
 
 void FairMesh::execute()
 {
-  FieldHandle input, output;
-  
-  get_input_handle("Input Mesh", input);
+  auto input = getRequiredInput(Input_Mesh);
 
-  /// If it is a new field get appropriate algorithm, 
-  /// otherwise the cached algorithm is still good.
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || iterations_.changed() ||
       method_.changed() || lambda_.changed() ||
       mu_.changed() || !oport_cached("Faired Mesh"))
+#endif
+  if (needToExecute())
   {
     update_state(Executing);
-    algo_.set_int("num_iterations",iterations_.get());
-    algo_.set_option("method",method_.get());
-    algo_.set_scalar("lambda",lambda_.get());
-    algo_.set_scalar("filter_cutoff",mu_.get());
-    if(!(algo_.run(input,output))) return;
-    
-    send_output_handle("Faired Mesh", output);
+    auto state = get_state();
+    setAlgoIntFromState(Parameters::NumIterations);
+    setAlgoDoubleFromState(Parameters::Lambda);
+    setAlgoDoubleFromState(Parameters::FilterCutoff);
+    setAlgoOptionFromState(Parameters::FairMeshMethod);
+
+    auto output = algo().run_generic(make_input((Input_Mesh, input)));
+
+    sendOutputFromAlgorithm(Faired_Mesh, output);
   }
 }
-
-} // End namespace SCIRun
-#endif

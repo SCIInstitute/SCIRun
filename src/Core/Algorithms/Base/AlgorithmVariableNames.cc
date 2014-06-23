@@ -46,6 +46,7 @@ PARAMETER(BuildConvergence)
 PARAMETER(ColorMapName)
 PARAMETER(FileTypeList)
 PARAMETER(FileExtension)
+PARAMETER(FileTypeName)
 
 INPUT(InputMatrix)
 INPUT(FirstMatrix)

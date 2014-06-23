@@ -50,27 +50,13 @@ using namespace SCIRun::Modules::DataIO;
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 class ReadField : public GenericReader<FieldHandle> {
   protected:
-    GuiString gui_types_;
-    GuiString gui_filetype_;
     GuiString gui_filename_base_;
     GuiInt    gui_number_in_series_;
     GuiInt    gui_delay_;
-
-    virtual bool call_importer(const std::string &filename, FieldHandle &fHandle);
-
-  public:
-    ReadField(GuiContext* ctx);
-    virtual ~ReadField() {}
-    virtual void execute();
-};
-
-
-DECLARE_MAKER(ReadField)
 #endif
 
 ReadFieldModule::ReadFieldModule()
   : my_base("ReadField", "DataIO", "SCIRun", "Field")    
-    //gui_filetype_(get_ctx()->subVar("filetype")),
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
     //gui_delay_(get_ctx()->subVar("delay"), 0)
@@ -78,40 +64,33 @@ ReadFieldModule::ReadFieldModule()
   INITIALIZE_PORT(Field);
 
   FieldIEPluginManager mgr;
-  auto types = makeGuiTypesList(mgr);
-
+  auto types = makeGuiTypesListForImport(mgr);
   get_state()->setValue(Variables::FileTypeList, types);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-bool
-ReadField::call_importer(const std::string &filename,
-			 FieldHandle & fHandle)
+bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fHandle) 
 {
-  const std::string ftpre = gui_filetype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-  
+  ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
-  FieldIEPlugin *pl = mgr.get_plugin(ft);
+  FieldIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).getString());
   if (pl)
   {
-    fHandle = pl->filereader(this, filename.c_str());
-    return fHandle.get_rep();
+    fHandle = pl->readFile(filename, getLogger());
+    return fHandle != nullptr;
   }
   return false;
 }
-#endif
 
 void
 ReadFieldModule::execute()
 {     
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
-
-  const std::string guiFiletype = get_state()->getValue(Variables::FileExtension).getString();
-
-  useCustomImporter_ = guiFiletype != ".fld";
 #endif
   my_base::execute();
+}
+
+bool ReadFieldModule::useCustomImporter(const std::string& filename) const 
+{
+  return boost::filesystem::extension(filename) != ".fld";
 }

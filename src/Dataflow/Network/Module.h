@@ -89,6 +89,7 @@ namespace Networks {
     /// @todo: execute signal here.
     virtual void do_execute() throw(); //--C++11--will throw nothing
     virtual ModuleStateHandle get_state();
+    virtual const ModuleStateHandle get_state() const;
     virtual void set_state(ModuleStateHandle state);
 
     virtual ExecutionState executionState() const;
@@ -232,9 +233,15 @@ namespace Networks {
     void setStateBoolFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setStateIntFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setStateDoubleFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setStateStringFromAlgoOption(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoBoolFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoIntFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoDoubleFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setAlgoOptionFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+
+    virtual size_t add_input_port(InputPortHandle);
+    size_t add_output_port(OutputPortHandle);
+    virtual void removeInputPort(const PortId& id);
 
   private:
     template <class T>
@@ -248,9 +255,7 @@ namespace Networks {
     bool inputsChanged() const;
 
     friend class Builder;
-    size_t add_input_port(InputPortHandle);
-    size_t add_output_port(OutputPortHandle);
-    void removeInputPort(const PortId& id);
+
     bool has_ui_;
 
     Core::Algorithms::AlgorithmHandle algo_;
@@ -358,6 +363,21 @@ namespace Networks {
     return data;
   }
 
+  class SCISHARE ModuleWithAsyncDynamicPorts : public Module
+  {
+  public:
+    explicit ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info);
+    virtual bool hasDynamicPorts() const override { return true; }
+    virtual void execute() override;
+    virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) = 0;
+    virtual void portRemovedSlot(const ModuleId& mid, const PortId& pid) override;
+  protected:
+    virtual void portRemovedSlotImpl(const PortId& pid) = 0;
+    virtual size_t add_input_port(InputPortHandle h) override;
+  private:
+    bool asyncConnected_;
+  };
+
 }}
 
 
@@ -375,6 +395,12 @@ namespace Modules
 
   template <typename Base>
   struct DynamicPortTag : Base 
+  {
+    typedef Base type;
+  };
+
+  template <typename Base>
+  struct AsyncDynamicPortTag : DynamicPortTag<Base> 
   {
     typedef Base type;
   };
@@ -611,6 +637,17 @@ namespace Modules
       ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(0, port0Name), #type, true)); \
       return ports;\
     }\
+  };\
+  template <>\
+  class Has1InputPort<AsyncDynamicPortTag<type ## PortTag>> : public NumInputPorts<1>\
+  {\
+  public:\
+  static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
+  {\
+  std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
+  ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(0, port0Name), #type, true)); \
+  return ports;\
+  }\
   }\
 
   PORT_SPEC(Matrix);

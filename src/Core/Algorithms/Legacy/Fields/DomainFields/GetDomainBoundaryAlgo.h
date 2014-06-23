@@ -40,25 +40,25 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
+        ALGORITHM_PARAMETER_DECL(MinRange);
+        ALGORITHM_PARAMETER_DECL(MaxRange);
+        ALGORITHM_PARAMETER_DECL(Domain);
+        ALGORITHM_PARAMETER_DECL(UseRange);
+        ALGORITHM_PARAMETER_DECL(AddOuterBoundary);
+        ALGORITHM_PARAMETER_DECL(InnerBoundaryOnly);
+        ALGORITHM_PARAMETER_DECL(NoInnerBoundary);
+        ALGORITHM_PARAMETER_DECL(DisconnectBoundaries);
+
 class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase
 {
   public:
     GetDomainBoundaryAlgo();
 
     static AlgorithmInputName ElemLink;
-    static AlgorithmParameterName MinRange;
-    static AlgorithmParameterName MaxRange;
-    static AlgorithmParameterName Domain;
-    static AlgorithmParameterName UseRange;
-    static AlgorithmParameterName AddOuterBoundary;
-    static AlgorithmParameterName InnerBoundaryOnly;
-    static AlgorithmParameterName NoInnerBoundary;
-    static AlgorithmParameterName DisconnectBoundaries;
     static AlgorithmOutputName BoundaryField;
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    //bool runImpl(FieldHandle input, FieldHandle& output) const;
     bool runImpl(FieldHandle input, Datatypes::SparseRowMatrixHandle domainlink, FieldHandle& output) const;
 };
 

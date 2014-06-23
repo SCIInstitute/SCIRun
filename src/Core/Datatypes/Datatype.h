@@ -80,7 +80,6 @@ namespace Datatypes {
     virtual Datatype* clone() const = 0;
   };
 
-
 }}}
 
 
