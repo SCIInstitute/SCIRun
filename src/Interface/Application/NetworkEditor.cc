@@ -506,10 +506,7 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 		}
 	QGraphicsView::mouseMoveEvent(event); 
 }
-//void NetworkEditor::mousePressEvent(QMouseEvent* event)
-//{
-//	//QGraphicsView::mousePressEvent(event);
-//}
+
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
 	unselectConnectionGroup(); 

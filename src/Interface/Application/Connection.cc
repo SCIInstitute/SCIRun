@@ -146,13 +146,12 @@ namespace SCIRun
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false), 
   NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
-  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(0)
+  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(0), menuOpen_(0)
 {
   if (fromPort_)
   {
     fromPort_->addConnection(this);
-    fromPort_->turn_on_light();
-	placeHoldingColor_ = fromPort_->color(); 
+    fromPort_->turn_on_light(); 
   }
   else
     LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
@@ -160,13 +159,15 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   {
     toPort_->addConnection(this);
     toPort_->turn_on_light();
-	placeHoldingColor_ = toPort_->color(); 
   }
   else
     LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
 
   if (fromPort_ && toPort_)
+  {
     setColor(fromPort_->color());
+	placeHoldingColor_ = fromPort_->color();
+  }
 
   setFlags( ItemIsSelectable| ItemIsMovable | ItemSendsGeometryChanges);
   
@@ -248,7 +249,7 @@ void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {	 
 	this->setAcceptedMouseButtons(Qt::LeftButton);
-	
+
 	if(!menuOpen_ )
 	{
 		placeHoldingColor_ = this -> color();
@@ -278,6 +279,7 @@ void ConnectionLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& value)
 {
+	//Position drag movement relative to movement in network. Otherwise CL moves relative to modules as though they are the whole scene (faster, CL moves out of modules). 
 	if (change == ItemPositionChange && scene())
 	{
 		QPointF newPos = value.toPointF();
