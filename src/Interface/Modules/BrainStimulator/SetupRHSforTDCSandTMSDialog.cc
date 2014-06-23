@@ -42,7 +42,6 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
   // connecting all table cell positions (int = row, int = col)
   connect(tableWidget_5, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }
@@ -58,13 +57,11 @@ void SetupRHSforTDCSandTMSDialog::push()
 void SetupRHSforTDCSandTMSDialog::pull()
 {  
   // storing table values into vector then attaching address to state
-  /*int size = tableWidget_5->rowCount();
+  int size = tableWidget_5->rowCount();
   std::vector<double> elc_vals;
   for (int i=0; i<size; i++)
-    elc_vals.push_back(tableWidget_5->item(i,1)->text().toDouble());*/
-  
-  //for (int i=0; i<size; i++)
-  //  std::cout << "electrode " << i << " = " << tableWidget_5->item(i,1)->text().toDouble() << std::endl;
+    elc_vals.push_back(tableWidget_5->item(i,1)->text().toDouble());
+  state_->setValue(SCIRun::Modules::BrainStimulator::SetupRHSforTDCSandTMSModule::Test(), elc_vals); // no overload so it fails
 
   Pulling p(this);
 }
