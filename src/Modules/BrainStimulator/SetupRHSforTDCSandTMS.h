@@ -42,7 +42,6 @@ class SCISHARE SetupRHSforTDCSandTMSModule : public Dataflow::Networks::Module,
 {
   public:
     SetupRHSforTDCSandTMSModule();
-
     virtual void execute();
     virtual void setStateDefaults();
 

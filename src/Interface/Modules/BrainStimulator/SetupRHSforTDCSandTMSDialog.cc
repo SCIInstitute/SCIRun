@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
-#include <iostream>
-#include <vector>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -57,6 +57,15 @@ void SetupRHSforTDCSandTMSDialog::push()
 
 void SetupRHSforTDCSandTMSDialog::pull()
 {  
+  // storing table values into vector then attaching address to state
+  /*int size = tableWidget_5->rowCount();
+  std::vector<double> elc_vals;
+  for (int i=0; i<size; i++)
+    elc_vals.push_back(tableWidget_5->item(i,1)->text().toDouble());*/
+  
+  //for (int i=0; i<size; i++)
+  //  std::cout << "electrode " << i << " = " << tableWidget_5->item(i,1)->text().toDouble() << std::endl;
+
   Pulling p(this);
 }
 
