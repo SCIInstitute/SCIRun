@@ -47,11 +47,13 @@ namespace SCIRun
       explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
       ~ModuleProxyWidget();
       ModuleWidget* getModuleWidget();
+
     public Q_SLOTS:
       void highlightIfSelected();
       void setAsWaiting();
       void setDefaultNotePosition(NotePosition position);
       void createPortPositionProviders();
+	 
     Q_SIGNALS:
       void selected();
       void widgetMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);

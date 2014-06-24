@@ -394,6 +394,7 @@ ModuleId PortWidget::getUnderlyingModuleId() const
   return moduleId_;
 }
 
+
 void PortWidget::portCachingChanged(bool checked)
 {
   //TODO
