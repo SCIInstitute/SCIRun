@@ -30,7 +30,6 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/Log.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -63,60 +62,13 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 
   addSpinBoxManager(maxIterationsSpinBox_, Variables::MaxIterations);
   addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
-  //TODO: clean these up...still getting circles of push/pull
-  //TODO: need this connection ???
+
   connect(methodComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
-  //connect(preconditionerComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
   addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
-}
-
-void SolveLinearSystemDialog::pushParametersToState()
-{
-  if (!pulling_)
-  {
-    //TODO: need pattern for this, to avoid silly recursion of push/pull.
-
-    {
-      auto method = methodComboBox_->currentText().toStdString();
-      Core::Logging::Log::get() << Core::Logging::DEBUG_LOG << "GUI: METHOD SELECTED: " << method;
-      Core::Logging::Log::get().flush();
-
-      std::string methodOption = impl_->solverNameLookup_.left.at(method);
-
-      if (methodOption != state_->getValue(Variables::Method).getString())
-      {
-        state_->setValue(Variables::Method, methodOption);
-      }
-    }
-
-//     {
-//       QString precond = preconditionerComboBox_->currentText();
-//       std::string precondOption;
-//       if (precond == "Jacobi")
-//         precondOption = "jacobi";
-//       else 
-//         precondOption = "None";
-// 
-//       if (precondOption != state_->getValue(Variables::Preconditioner).getString())
-//       {
-//         state_->setValue(Variables::Preconditioner, precondOption);
-//       }
-//     }
-  }
+  addComboBoxManager(methodComboBox_, Variables::Method, impl_->solverNameLookup_);
 }
 
 void SolveLinearSystemDialog::pull()
 {
-  //TODO convert to new widget managers
-  Pulling p(this);
-  
-  auto method = state_->getValue(Variables::Method).getString();
-  
-  auto it = impl_->solverNameLookup_.right.find(method);
-  if (it != impl_->solverNameLookup_.right.end())
-    methodComboBox_->setCurrentIndex(methodComboBox_->findText(QString::fromStdString(it->get_left())));
-
-  //auto precond = state_->getValue(Variables::Preconditioner).getString();
-  //preconditionerComboBox_->setCurrentIndex((precond == "jacobi") ? 0 : 1);
+  pull_newVersionToReplaceOld();
 }
-
