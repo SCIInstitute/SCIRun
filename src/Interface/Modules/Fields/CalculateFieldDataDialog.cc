@@ -44,7 +44,6 @@ CalculateFieldDataDialog::CalculateFieldDataDialog(const std::string& name, Modu
   
   addTextEditManager(expressionTextEdit_, CalculateFieldDataModule::FunctionString);
   addComboBoxManager(outputTypeComboBox_, CalculateFieldDataModule::FormatString);
-  //addComboBoxManager(fieldOutputBasisComboBox_, CreateFieldDataModule::BasisString); 
 }
 
 void CalculateFieldDataDialog::pull()

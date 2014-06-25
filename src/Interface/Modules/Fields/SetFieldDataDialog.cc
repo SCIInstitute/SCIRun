@@ -55,6 +55,7 @@ void SetFieldDataDialog::push()
 
 void SetFieldDataDialog::pull()
 {
+  //TODO convert to new widget managers
   Pulling p(this);
   keepTypeCheckBox_->setChecked(state_->getValue(SetFieldDataAlgo::keepTypeCheckBox).getBool()); 
 }

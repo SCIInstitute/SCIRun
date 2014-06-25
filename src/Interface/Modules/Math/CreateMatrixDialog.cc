@@ -55,5 +55,6 @@ void CreateMatrixDialog::pushMatrixToState()
 
 void CreateMatrixDialog::pull()
 {
+  //TODO convert to new widget managers
   matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
 }

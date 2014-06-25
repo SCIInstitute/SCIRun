@@ -107,6 +107,7 @@ void SolveLinearSystemDialog::pushParametersToState()
 
 void SolveLinearSystemDialog::pull()
 {
+  //TODO convert to new widget managers
   Pulling p(this);
   
   auto method = state_->getValue(Variables::Method).getString();

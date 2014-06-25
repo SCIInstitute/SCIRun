@@ -67,6 +67,7 @@ void SelectSubMatrixDialog::push()
 
 void SelectSubMatrixDialog::pull()
 {
+  //TODO convert to new widget managers
   Pulling p(this);
   rowCheckBox_->setChecked(state_->getValue(SelectSubMatrixAlgorithm::rowCheckBox()).getBool()); 
   columnCheckBox_->setChecked(state_->getValue(SelectSubMatrixAlgorithm::columnCheckBox()).getBool()); 

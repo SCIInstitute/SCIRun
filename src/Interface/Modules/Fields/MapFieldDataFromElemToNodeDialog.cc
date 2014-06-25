@@ -85,6 +85,7 @@ void MapFieldDataFromElemToNodeDialog::push()
 
 void MapFieldDataFromElemToNodeDialog::pull()
 {
+  //TODO convert to new widget managers
   Pulling p(this);
  
   auto method = state_->getValue(MapFieldDataFromElemToNodeAlgo::Method).getString();

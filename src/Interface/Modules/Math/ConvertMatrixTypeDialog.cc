@@ -64,6 +64,7 @@ void ConvertMatrixTypeDialog::push()
 
 void ConvertMatrixTypeDialog::pull()
 {
+  //TODO convert to new widget managers
   Pulling p(this);
   
   PassThrough_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::PassThrough()).getBool()); 

@@ -61,6 +61,7 @@ void AppendMatrixDialog::isCols()
 
 void AppendMatrixDialog::pull()
 {
+  //TODO convert to new widget managers
   if (AppendMatrixAlgorithm::ROWS == state_->getValue(Variables::RowsOrColumns).getInt())
     appendRowsButton_->setChecked(true);
   else

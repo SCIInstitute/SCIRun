@@ -71,7 +71,7 @@ void InterfaceWithCleaverDialog::push()
 
 void InterfaceWithCleaverDialog::pull()
 {
-
+  //TODO convert to new widget managers
   Pulling p(this);
     
   double newValue = state_->getValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X).getDouble();
