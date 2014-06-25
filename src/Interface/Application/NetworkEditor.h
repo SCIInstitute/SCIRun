@@ -191,8 +191,8 @@ Q_SIGNALS:
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
     void addNewModuleAtPosition(const QPoint& position);
-	ConnectionLine* getSingleConnectionSelected();
-	void unselectConnectionGroup(); 
+    ConnectionLine* getSingleConnectionSelected();
+    void unselectConnectionGroup(); 
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;
