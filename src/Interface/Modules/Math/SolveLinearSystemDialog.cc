@@ -65,9 +65,9 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
   //TODO: clean these up...still getting circles of push/pull
   //TODO: need this connection ???
-  connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushParametersToState()));
   connect(methodComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
-  connect(preconditionerComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
+  //connect(preconditionerComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
+  addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
 }
 
 void SolveLinearSystemDialog::pushParametersToState()
@@ -89,19 +89,19 @@ void SolveLinearSystemDialog::pushParametersToState()
       }
     }
 
-    {
-      QString precond = preconditionerComboBox_->currentText();
-      std::string precondOption;
-      if (precond == "Jacobi")
-        precondOption = "jacobi";
-      else 
-        precondOption = "None";
-
-      if (precondOption != state_->getValue(Variables::Preconditioner).getString())
-      {
-        state_->setValue(Variables::Preconditioner, precondOption);
-      }
-    }
+//     {
+//       QString precond = preconditionerComboBox_->currentText();
+//       std::string precondOption;
+//       if (precond == "Jacobi")
+//         precondOption = "jacobi";
+//       else 
+//         precondOption = "None";
+// 
+//       if (precondOption != state_->getValue(Variables::Preconditioner).getString())
+//       {
+//         state_->setValue(Variables::Preconditioner, precondOption);
+//       }
+//     }
   }
 }
 
@@ -116,7 +116,7 @@ void SolveLinearSystemDialog::pull()
   if (it != impl_->solverNameLookup_.right.end())
     methodComboBox_->setCurrentIndex(methodComboBox_->findText(QString::fromStdString(it->get_left())));
 
-  auto precond = state_->getValue(Variables::Preconditioner).getString();
-  preconditionerComboBox_->setCurrentIndex((precond == "jacobi") ? 0 : 1);
+  //auto precond = state_->getValue(Variables::Preconditioner).getString();
+  //preconditionerComboBox_->setCurrentIndex((precond == "jacobi") ? 0 : 1);
 }
 

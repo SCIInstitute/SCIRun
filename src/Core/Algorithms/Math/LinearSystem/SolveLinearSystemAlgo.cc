@@ -48,7 +48,7 @@ SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
   // For solver
   add_option(Variables::Method,"cg","jacobi|cg|bicg|minres");
-  add_option(Variables::Preconditioner,"jacobi","none|jacobi");
+  add_option(Variables::Preconditioner,"Jacobi","None|Jacobi");
   
   addParameter(Variables::TargetError, 1e-6);
   addParameter(Variables::MaxIterations, 300);
@@ -189,7 +189,7 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
   PLA.copy(X0,XMIN);
   
   // Build a preconditioner
-  if (pre_conditioner_ == "jacobi")
+  if (pre_conditioner_ == "Jacobi")
   {
     PLA.absdiag(A,DIAG);
     double max = PLA.max(DIAG);
@@ -399,7 +399,7 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
   PLA.copy(X0,XMIN);
   
   // Build a preconditioner
-  if (pre_conditioner_ == "jacobi")
+  if (pre_conditioner_ == "Jacobi")
   {
     PLA.absdiag(A,DIAG);
     double max = PLA.max(DIAG);
@@ -618,7 +618,7 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
   PLA.copy(X0,XMIN);
   
   // Build a preconditioner
-  if (pre_conditioner_ == "jacobi")
+  if (pre_conditioner_ == "Jacobi")
   {
     PLA.absdiag(A,DIAG);
     double max = PLA.max(DIAG);
