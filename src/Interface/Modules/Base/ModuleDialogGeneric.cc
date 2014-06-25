@@ -312,3 +312,35 @@ void ModuleDialogGeneric::addCheckBoxManager(QCheckBox* checkBox, const Algorith
 {
   addWidgetSlotManager(boost::make_shared<CheckBoxSlotManager>(state_, *this, stateKey, checkBox));
 }
+
+class CheckableButtonSlotManager : public WidgetSlotManager
+{
+public:
+  CheckableButtonSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QAbstractButton* checkable) : 
+      WidgetSlotManager(state, dialog), stateKey_(stateKey), checkable_(checkable) 
+      {
+        connect(checkable_, SIGNAL(clicked()), this, SLOT(push()));
+      }
+      virtual void pull() override
+      {
+        bool newValue = state_->getValue(stateKey_).getBool();
+        if (newValue != checkable_->isChecked())
+        {
+          LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);
+          checkable_->setChecked(newValue);
+        }
+      }
+      virtual void pushImpl() override
+      {
+        LOG_DEBUG("In new version of push code for checkable QAbstractButton: " << checkable_->isChecked());
+        state_->setValue(stateKey_, checkable_->isChecked());
+      }
+private:
+  AlgorithmParameterName stateKey_;
+  QAbstractButton* checkable_;
+};
+
+void ModuleDialogGeneric::addCheckableButtonManager(QAbstractButton* checkable, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<CheckableButtonSlotManager>(state_, *this, stateKey, checkable));
+}

@@ -39,76 +39,22 @@ InterfaceWithCleaverDialog::InterfaceWithCleaverDialog(const std::string& name, 
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
-
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  connect(VerboseCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(AbsoluteVolumeScalingRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(RelativeVolumeScalingRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(PaddingCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(VolumeScalingSpinBox_X_, SIGNAL(valueChanged(double)), this, SLOT(push()));
-  connect(VolumeScalingSpinBox_Y_, SIGNAL(valueChanged(double)), this, SLOT(push()));
-  connect(VolumeScalingSpinBox_Z_, SIGNAL(valueChanged(double)), this, SLOT(push()));
-}
 
-void InterfaceWithCleaverDialog::push()
-{
+  addDoubleSpinBoxManager(VolumeScalingSpinBox_X_, InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X);
+  addDoubleSpinBoxManager(VolumeScalingSpinBox_Y_, InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y);
+  addDoubleSpinBoxManager(VolumeScalingSpinBox_Z_, InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z);
+  addCheckBoxManager(VerboseCheckBox_, InterfaceWithCleaverAlgorithm::VerboseCheckBox);
+  addCheckBoxManager(PaddingCheckBox_, InterfaceWithCleaverAlgorithm::PaddingCheckBox);
 
- if (!pulling_)
-  {
-   state_->setValue(InterfaceWithCleaverAlgorithm::VerboseCheckBox, VerboseCheckBox_->isChecked());
-   state_->setValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox, PaddingCheckBox_->isChecked());
-   state_->setValue(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton, AbsoluteVolumeScalingRadioButton_->isChecked()); 
-   state_->setValue(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton, RelativeVolumeScalingRadioButton_->isChecked());  
-   state_->setValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X, VolumeScalingSpinBox_X_->value());
-   state_->setValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y, VolumeScalingSpinBox_Y_->value());
-   state_->setValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z, VolumeScalingSpinBox_Z_->value());   
-  }
-
-
-}
-
+  //TODO: change the algorithm layer to a single boolean for these two radio buttons. Right now the logic allows all 4 combinations. 
+  addCheckableButtonManager(AbsoluteVolumeScalingRadioButton_, InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton);
+  addCheckableButtonManager(RelativeVolumeScalingRadioButton_, InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton);
+}                         
+                          
 void InterfaceWithCleaverDialog::pull()
 {
-  //TODO convert to new widget managers
-  Pulling p(this);
-    
-  double newValue = state_->getValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X).getDouble();
-  if (newValue != VolumeScalingSpinBox_X_->value())
-    VolumeScalingSpinBox_X_->setValue(newValue); 
-  
-  newValue = state_->getValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y).getDouble();
-  if (newValue != VolumeScalingSpinBox_Y_->value())
-    VolumeScalingSpinBox_Y_->setValue(newValue); 
-  
-  newValue = state_->getValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z).getDouble();
-  if (newValue != VolumeScalingSpinBox_Z_->value())
-    VolumeScalingSpinBox_Z_->setValue(newValue);    
-  
-  VerboseCheckBox_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::VerboseCheckBox).getBool());  
-  PaddingCheckBox_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox).getBool());
-  AbsoluteVolumeScalingRadioButton_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton).getBool());
-  RelativeVolumeScalingRadioButton_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton).getBool());
-    
-}
-
-
-void InterfaceWithCleaverDialog::pullAndDisplayInfo() 
-{
- /* auto info = optional_any_cast_or_default<ReportFieldInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
-
-  std::ostringstream ostr;
-  ostr << "Type: " << info.type << std::endl;
-  ostr << "Center: " << info.center << std::endl;
-  ostr << "Size: " << info.size << std::endl;
-  ostr << "Data min,max: " << info.dataMin << " , " << info.dataMax << std::endl;
-  ostr << "# nodes: " << info.numnodes_ << std::endl;
-  ostr << "# elements: " << info.numelements_ << std::endl;
-  ostr << "# data: " << info.numdata_ << std::endl;
-  ostr << "Data location: " << info.dataLocation << std::endl;
-  ostr << "Dims (x,y,z): " << info.dims << std::endl;
-  ostr << "Geometric size: " << info.geometricSize << std::endl;
-
-  fieldInfoTextEdit_->setPlainText(ostr.str().c_str());*/
+ pull_newVersionToReplaceOld();   
 }
