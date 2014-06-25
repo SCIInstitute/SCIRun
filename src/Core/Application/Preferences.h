@@ -48,7 +48,7 @@ namespace SCIRun
     public:
       /// @todo: reuse Seg3D state vars
 
-      bool moduleErrorDialogState;
+      bool showModuleErrorDialogs;
       bool saveBeforeExecute;
       bool useNewViewSceneMouseControls;
 	

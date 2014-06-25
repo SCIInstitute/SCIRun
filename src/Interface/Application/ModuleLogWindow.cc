@@ -51,7 +51,7 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
-  if (SCIRun::Core::Preferences::Instance().moduleErrorDialogState)
+  if (SCIRun::Core::Preferences::Instance().showModuleErrorDialogs)
     QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
 }
 
