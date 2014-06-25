@@ -44,33 +44,16 @@ ConvertMatrixTypeDialog::ConvertMatrixTypeDialog(const std::string& name, Module
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  connect(PassThrough_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(ConvertToColumnMatrix_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(ConvertToDenseMatrix_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(ConvertToSparseRowMatrix_, SIGNAL(clicked()), this, SLOT(push()));
-}
 
-void ConvertMatrixTypeDialog::push()
-{
-  if (!pulling_)
-  {
-   state_->setValue(ConvertMatrixTypeAlgorithm::PassThrough(), PassThrough_->isChecked());
-   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), ConvertToColumnMatrix_->isChecked());
-   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), ConvertToDenseMatrix_->isChecked());
-   state_->setValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), ConvertToSparseRowMatrix_->isChecked());
-  }
+  //TODO: map to enum on algo level
+  addCheckableButtonManager(PassThrough_, ConvertMatrixTypeAlgorithm::PassThrough());
+  addCheckableButtonManager(ConvertToColumnMatrix_, ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix());
+  addCheckableButtonManager(ConvertToDenseMatrix_, ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix());
+  addCheckableButtonManager(ConvertToSparseRowMatrix_, ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix());
 }
 
 void ConvertMatrixTypeDialog::pull()
 {
-  //TODO convert to new widget managers
-  Pulling p(this);
-  
-  PassThrough_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::PassThrough()).getBool()); 
-  ConvertToColumnMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix()).getBool());
-  ConvertToDenseMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix()).getBool());
-  ConvertToSparseRowMatrix_->setChecked(state_->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix()).getBool());
-  
+  pull_newVersionToReplaceOld();  
 }
 

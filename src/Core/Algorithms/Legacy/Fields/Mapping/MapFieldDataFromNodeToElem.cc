@@ -85,7 +85,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
   mesh->size(sz);
   index_type cnt = 0, c = 0;
 
-  if ((method == "average") || (method == "interpolation"))
+  if ((method == "Average") || (method == "Interpolation"))
   {
     DATA tval(0);
     while (it != eit)
@@ -111,7 +111,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       }
     }
   }
-  else if (method == "max")
+  else if (method == "Max")
   {
     while (it != eit)
     {
@@ -138,7 +138,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       }
     }
   }
-  else if (method == "min")
+  else if (method == "Min")
   {
     DATA tval(0);
     while (it != eit)
@@ -165,7 +165,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       }
     } 
   }
-  else if (method == "sum")
+  else if (method == "Sum")
   {
     DATA tval(0);
     while (it != eit)
@@ -188,7 +188,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
       }
     }
   }
-  else if (method == "median")
+  else if (method == "Median")
   {
     std::vector<DATA> valarray;
     while (it != eit)
@@ -218,7 +218,7 @@ MapFieldDataFromNodeToElemT(const MapFieldDataFromNodeToElemAlgo* algo,
 
 MapFieldDataFromNodeToElemAlgo::MapFieldDataFromNodeToElemAlgo()
 {
-  add_option(Method,"interpolation","interpolation|average|min|max|sum|median|none");
+  add_option(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
 }
 
 AlgorithmInputName MapFieldDataFromNodeToElemAlgo::InputField("InputField");
