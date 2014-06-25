@@ -41,21 +41,10 @@ SetFieldDataDialog::SetFieldDataDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  addCheckBoxManager(keepTypeCheckBox_, SetFieldDataAlgo::keepTypeCheckBox);
 }
-
-void SetFieldDataDialog::push()
-{
-  if (!pulling_)
-  {
-   state_->setValue(SetFieldDataAlgo::keepTypeCheckBox, keepTypeCheckBox_->isChecked());
-  }
-}
-
-///BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
 
 void SetFieldDataDialog::pull()
 {
-  //TODO convert to new widget managers
-  Pulling p(this);
-  keepTypeCheckBox_->setChecked(state_->getValue(SetFieldDataAlgo::keepTypeCheckBox).getBool()); 
+  pull_newVersionToReplaceOld();
 }
