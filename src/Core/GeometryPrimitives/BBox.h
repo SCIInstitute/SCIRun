@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/GeometryPrimitives/BBox.h
+
 #ifndef CORE_GEOMETRY_BBOX_H
 #define CORE_GEOMETRY_BBOX_H 1
 
@@ -34,8 +36,8 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
 
-// TODO: replace asserts in this code with warnings or other reporting
-// mechanism that doesn't abort the program
+/// @todo replace asserts in this code with warnings or other reporting
+/// mechanism that doesn't abort the program
 
 namespace SCIRun {
 namespace Core {
@@ -92,7 +94,7 @@ class BBox {
     inline void set_valid(bool v) { is_valid_ = v; }
     inline void reset() { is_valid_ = false; }
 
-    //! Expand the bounding box to include point p
+    /// Expand the bounding box to include point p
     inline BBox& extend(const Point& p)
     {
       if(is_valid_)
@@ -109,9 +111,9 @@ class BBox {
       return *this;
     }
 
-    //! Extend the bounding box on all sides by a margin
-    //! For example to expand it by a certain epsilon to make
-    //! sure that a lookup will be inside the bounding box
+    /// Extend the bounding box on all sides by a margin
+    /// For example to expand it by a certain epsilon to make
+    /// sure that a lookup will be inside the bounding box
     inline void extend(double val)
     {
       if (is_valid_)
@@ -125,8 +127,8 @@ class BBox {
       }
     }
 
-    //! Expand the bounding box to include a sphere of radius radius
-    //! and centered at point p
+    /// Expand the bounding box to include a sphere of radius radius
+    /// and centered at point p
     inline void extend(const Point& p, double radius)
     {
       Vector r(radius,radius,radius);
@@ -143,7 +145,7 @@ class BBox {
       }
     }
 
-    //! Expand the bounding box to include bounding box b
+    /// Expand the bounding box to include bounding box b
     inline void extend(const BBox& b)
     {
       if(b.valid())
@@ -153,38 +155,38 @@ class BBox {
       }
     }
     
-    //! Expand the bounding box to include a disk centered at cen,
-    //! with normal normal, and radius r.
+    /// Expand the bounding box to include a disk centered at cen,
+    /// with normal normal, and radius r.
     SCISHARE void extend_disk(const Point& cen, const Vector& normal, double r);
 
     inline Point center() const  
     {
-      //TODO: C assert: assert(is_valid_);
+      /// @todo: C assert: assert(is_valid_);
       Vector d = diagonal();
       return cmin_ + (d * 0.5);
     }
     
     inline double longest_edge() const
     {
-      //TODO: C assert: assert(is_valid_);
+      /// @todo: C assert: assert(is_valid_);
       Vector diagonal(cmax_-cmin_);
       return Max(diagonal.x(), diagonal.y(), diagonal.z());
     }
 
     inline double shortest_edge() const
     {
-      //TODO: C assert: assert(is_valid_);
+      /// @todo: C assert: assert(is_valid_);
       Vector diagonal(cmax_-cmin_);
       return Min(diagonal.x(), diagonal.y(), diagonal.z());
     }
 
-    //! Check whether two BBoxes are similar
+    /// Check whether two BBoxes are similar
     SCISHARE bool is_similar_to(const BBox &b, double diff=0.5) const;
 
-    //! Move the bounding box 
+    /// Move the bounding box 
     SCISHARE void translate(const Vector &v);
 
-    //! Scale the bounding box by s, centered around o
+    /// Scale the bounding box by s, centered around o
     SCISHARE void scale(double s, const Vector &o);
 
     inline Point min() const
@@ -227,13 +229,13 @@ class BBox {
     inline double y_length() { return (cmax_.y() - cmin_.y()); }
     inline double z_length() { return (cmax_.z() - cmin_.z()); }
 
-    //! bbox's that share a face overlap
+    /// bbox's that share a face overlap
     SCISHARE bool overlaps(const BBox& bb) const;
-    //! bbox's that share a face do not overlap_inside
+    /// bbox's that share a face do not overlap_inside
     SCISHARE bool overlaps_inside(const BBox& bb) const;
 
-    //! returns true if the ray hit the bbox and returns the hit point
-    //! in hitNear
+    /// returns true if the ray hit the bbox and returns the hit point
+    /// in hitNear
     SCISHARE bool intersect(const Point& e, const Vector& v, Point& hitNear);
 
     friend std::ostream& operator<<(std::ostream& out, const BBox& b);

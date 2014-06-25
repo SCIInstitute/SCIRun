@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Dataflow/Engine/Controller/DynamicPortManager.cc
 
 #include <Dataflow/Engine/Controller/DynamicPortManager.h>
 #include <Dataflow/Network/NetworkInterface.h>
@@ -47,7 +48,7 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
   if (enabled_)
   {
     //std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
-    //TODO: assumption: dynamic = input
+    /// @todo: assumption: dynamic = input
     auto moduleIn = controller_->getNetwork()->lookupModule(cd.in_.moduleId_);
     if (moduleIn->getInputPort(cd.in_.portId_)->isDynamic())
     {

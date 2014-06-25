@@ -118,9 +118,9 @@ size_t Module::num_output_ports() const
 void Module::do_execute() throw()
 {
   executeBegins_(id_);
-  //TODO: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
+  /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
-  //TODO: need separate logger per module
+  /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   setExecutionState(ModuleInterface::Executing);
 
@@ -134,20 +134,17 @@ void Module::do_execute() throw()
   }
   catch (Core::ExceptionBase& e)
   {
-    //TODO: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
+    /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
     if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostr;
-      ostr << "Caught exception: " << e.typeName();
-      ostr << "\n";
-      ostr << "Message: " << e.what() << std::endl;
+      ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << std::endl;
       error(ostr.str());
     }
 
     if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostrExtra;
-      ostrExtra << "TODO! Following error info will be filtered later, it's too technical for general audiences.\n";
       ostrExtra << boost::diagnostic_information(e) << std::endl;
       error(ostrExtra.str());
     }
@@ -166,7 +163,7 @@ void Module::do_execute() throw()
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
   status("MODULE FINISHED: " + id_.id_);  
-  //TODO: need separate logger per module
+  /// @todo: need separate logger per module
   //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
   setExecutionState(ModuleInterface::Completed);
   resetStateChanged();
@@ -175,6 +172,11 @@ void Module::do_execute() throw()
 }
 
 ModuleStateHandle Module::get_state() 
+{
+  return state_;
+}
+
+const ModuleStateHandle Module::get_state() const
 {
   return state_;
 }
@@ -215,7 +217,7 @@ bool Module::hasOutputPort(const PortId& id) const
 
 DatatypeHandleOption Module::get_input_handle(const PortId& id)
 {
-  //TODO test...
+  /// @todo test...
   if (!iports_.hasPort(id))
   {
     BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Input port not found: " + id.toString()));
@@ -234,7 +236,7 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
 
 std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
 {
-  //TODO test...
+  /// @todo test...
   auto portsWithName = iports_[id.name];  //will throw if empty
   if (!portsWithName[0]->isDynamic())
   {
@@ -248,7 +250,7 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
 
 void Module::send_output_handle(const PortId& id, DatatypeHandle data)
 {
-  //TODO test...
+  /// @todo test...
   if (!oports_.hasPort(id))
   {
     THROW_OUT_OF_RANGE("Output port does not exist: " + id.toString());
@@ -457,6 +459,16 @@ void Module::setAlgoDoubleFromState(AlgorithmParameterName name)
   algo().set(name, get_state()->getValue(name).getDouble());
 }
 
+void Module::setAlgoOptionFromState(AlgorithmParameterName name)
+{
+  algo().set_option(name, get_state()->getValue(name).getString());
+}
+
+void Module::setStateStringFromAlgoOption(AlgorithmParameterName name)
+{
+  get_state()->setValue(name, algo().get_option(name));
+}
+
 ModuleInterface::ExecutionState Module::executionState() const
 {
   return executionState_;
@@ -471,7 +483,7 @@ bool Module::needToExecute() const
 {
   return true;
   //return newStatePresent() || inputsChanged();
-    //TODO: || !oports_cached()
+    /// @todo: || !oports_cached()
 }
 
 bool Module::inputsChanged() const
@@ -482,4 +494,27 @@ bool Module::inputsChanged() const
 void Module::addPortConnection(const boost::signals2::connection& con)
 {
   portConnections_.emplace_back(new boost::signals2::scoped_connection(con));
+}
+
+ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info) : Module(info), asyncConnected_(false)
+{
+}
+
+void ModuleWithAsyncDynamicPorts::execute()
+{
+}
+
+size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
+{
+  h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
+  return Module::add_input_port(h);
+}
+
+void ModuleWithAsyncDynamicPorts::portRemovedSlot(const ModuleId& mid, const PortId& pid)
+{
+  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
+  if (mid == id_)
+  {
+    portRemovedSlotImpl(pid);
+  }
 }

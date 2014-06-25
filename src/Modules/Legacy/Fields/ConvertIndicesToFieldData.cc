@@ -33,8 +33,11 @@
 
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class ConvertIndicesToFieldData
+/// @brief Convert a field with indices as data values into a field with values
+/// assigned to each index using a lookup table.
 
 class ConvertIndicesToFieldData : public Module {
   public:

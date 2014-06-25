@@ -26,56 +26,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//! Include the algorithm
-#include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
+/// @brief This module will get the data associated with the nodes or the
+/// elements of a field and put them in a matrix.
 
-//! The module class
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/GetFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
 
-//! We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/NrrdPort.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-namespace SCIRun {
-
-class GetFieldData : public Module {
-  public:
-    //! constructor and execute function
-    GetFieldData(GuiContext*);
-    virtual ~GetFieldData() {}
-    virtual void execute();
-  
-  private:
-    //! Define algorithms needed
-    SCIRunAlgo::GetFieldDataAlgo algo_;
-  
-};
-
-
-DECLARE_MAKER(GetFieldData)
-GetFieldData::GetFieldData(GuiContext* ctx)
-  : Module("GetFieldData", ctx, Source, "ChangeFieldData", "SCIRun")
+GetFieldDataModule::GetFieldDataModule()
+  : Module(ModuleLookupInfo("GetFieldData", "ChangeFieldData", "SCIRun"), false)
 {
-  //! Forward error messages;
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
-void GetFieldData::execute()
+void GetFieldDataModule::execute()
 {
-  //! Define dataflow handles:
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    /// Define dataflow handles:
   FieldHandle input;
   MatrixHandle matrixdata(0);
   NrrdDataHandle nrrddata(0);
   
-  //! Get data from port:
+  /// Get data from port:
   if(!(get_input_handle("Field",input,true))) return;
 
-  //! Data is only computed if the output port is connected:
+  /// Data is only computed if the output port is connected:
   bool need_matrix_data = oport_connected("Matrix Data");
   bool need_nrrd_data   = oport_connected("Nrrd Data");
 
-  //! Only do work if needed:
+  /// Only do work if needed:
   if (inputs_changed_ ||
       (!oport_cached("Matrix Data") && need_matrix_data) ||
       (!oport_cached("Nrrd Data") && need_nrrd_data))
@@ -83,23 +72,34 @@ void GetFieldData::execute()
     update_state(Executing);
     if( need_matrix_data) 
     {
-      //! Run algorithm
+      /// Run algorithm
       if(!(algo_.run(input,matrixdata))) return;
     }
 
     if(need_nrrd_data )
     {
-      //! Run algorithm
+      /// Run algorithm
       if(!(algo_.run(input,nrrddata))) return;
     }
 
-    //! If port is not connected at time of execute, send down a null handle
-    //! send data downstream:
+    /// If port is not connected at time of execute, send down a null handle
+    /// send data downstream:
     send_output_handle("Matrix Data", matrixdata);
     send_output_handle("Nrrd Data", nrrddata);
 
   }
+  #endif
+  
+  ///NO Nrrd support yet !!!
+  FieldHandle input = getRequiredInput(InputField);
+  
+  ///inputs_changed_ || !oport_cached("Matrix Nodes")
+  if (needToExecute())
+  { 
+   update_state(Executing);  
+   
+   auto output = algo().run_generic(make_input((InputField, input)));
+
+   sendOutputFromAlgorithm(OutputMatrix, output);
+  }
 }
-
-} // End namespace SCIRun
-

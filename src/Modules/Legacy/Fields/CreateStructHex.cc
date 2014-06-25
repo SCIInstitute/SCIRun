@@ -26,18 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  CreateStructHex.cc:  Make an ImageField that fits the source field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
+///@author
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -48,6 +41,9 @@
 #include <iostream>
 
 namespace SCIRun {
+
+/// @class CreateStructHex
+/// @brief This module constructs a StructHexVolField that fits the source field.
 
 class CreateStructHex : public Module
 {

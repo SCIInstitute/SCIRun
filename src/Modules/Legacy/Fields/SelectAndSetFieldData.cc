@@ -39,6 +39,11 @@
 
 namespace SCIRun {
 
+
+/// @class SelectAndSetFieldData
+/// @brief This module selects a function based on the input values of the field
+/// and then applies this function to assign a new value to the field.
+
 class SelectAndSetFieldData : public Module {
   public:
     SelectAndSetFieldData(GuiContext*);

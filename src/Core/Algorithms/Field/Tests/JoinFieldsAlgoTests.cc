@@ -139,6 +139,7 @@ FieldHandle output;
 protected:
   virtual void SetUp()
   {
+//<<<<<<< HEAD
     SCIRun::Core::Logging::Log::get().setVerbose(true);
 	// How to set parameters on an algorithm (that come from the GUI)
     algo_.set(JoinFieldsAlgo::MergeNodes,      ::std::tr1::get<0>(GetParam()));
@@ -146,6 +147,22 @@ protected:
     algo_.set(JoinFieldsAlgo::MatchNodeValues, ::std::tr1::get<2>(GetParam()));
     algo_.set(JoinFieldsAlgo::MakeNoData,      ::std::tr1::get<3>(GetParam()));
     algo_.set(JoinFieldsAlgo::Tolerance,       ::std::tr1::get<4>(GetParam()));
+//=======
+//    ASSERT_TRUE(latVol_->vmesh()->is_latvolmesh());
+//    
+//    // How to set parameters on an algorithm (that come from the GUI)
+//    algo_.set(GetDomainBoundaryAlgo::AddOuterBoundary, ::std::tr1::get<0>(GetParam()));
+//    
+//    /// @todo: this logic matches the wacky module behavior
+//    algo_.set(GetDomainBoundaryAlgo::UseRange, ::std::tr1::get<1>(GetParam()));
+//    if (!::std::tr1::get<1>(GetParam()))///useRange)
+//    {
+//      algo_.set(GetDomainBoundaryAlgo::Domain,   ::std::tr1::get<2>(GetParam()));
+//      algo_.set(GetDomainBoundaryAlgo::MinRange, ::std::tr1::get<3>(GetParam()));
+//      algo_.set(GetDomainBoundaryAlgo::MaxRange, ::std::tr1::get<3>(GetParam()));
+//      algo_.set(GetDomainBoundaryAlgo::UseRange, true);
+//    }
+//>>>>>>> master
   }
 
   FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5)

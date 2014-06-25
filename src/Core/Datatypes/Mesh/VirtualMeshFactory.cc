@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Mesh/VirtualMeshFactory.cc
+
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
@@ -46,7 +48,7 @@ class VirtualLatticeVolumeMesh : public VirtualMeshShared<MESH> {
 public:
   virtual bool is_latvolmesh()         { return (true); }
 
-  //! constructor and destructor
+  /// constructor and destructor
   VirtualLatticeVolumeMesh(MESH* mesh) : VirtualMeshShared<MESH>(mesh) 
   {
     //DEBUG_CONSTRUCTOR("VirtualLatticeVolumeMesh")    
@@ -147,7 +149,7 @@ public:
   virtual bool get_edge(VirtualMesh::Edge::index_type& edge, 
     VirtualMesh::Node::array_type& nodes) const;
 
-  //! Get the center of a certain mesh element
+  /// Get the center of a certain mesh element
   virtual void get_center(Point &point, VirtualMesh::Node::index_type i) const;
   virtual void get_center(Point &point, VirtualMesh::ENode::index_type i) const;
   virtual void get_center(Point &point, VirtualMesh::Edge::index_type i) const;
@@ -156,7 +158,7 @@ public:
   virtual void get_center(Point &point, VirtualMesh::Elem::index_type i) const;
   virtual void get_center(Point &point, VirtualMesh::DElem::index_type i) const;
 
-  //! Get the centers of a series of nodes
+  /// Get the centers of a series of nodes
   virtual void get_centers(Point* points, VirtualMesh::Node::array_type& array) const;
   virtual void get_centers(Point* points, VirtualMesh::Elem::array_type& array) const;
 
@@ -261,10 +263,10 @@ public:
   virtual Transform get_transform() const;
   virtual void set_transform(const Transform& t);
 
-  //! Get all the information needed for interpolation:
-  //! this includes weights and node indices
-  //! As linear interpolation needs far less data from the mesh
-  //! these classes are spilt out in linear, quadratic and cubic
+  /// Get all the information needed for interpolation:
+  /// this includes weights and node indices
+  /// As linear interpolation needs far less data from the mesh
+  /// these classes are spilt out in linear, quadratic and cubic
 
   virtual void get_interpolate_weights(const Point& point, 
     VirtualMesh::ElemInterpolate& ei,
@@ -1193,7 +1195,7 @@ void
   if (sz < 0) sz = 0;
 }
 
-//! Topology functions
+/// Topology functions
 
 
 template <class MESH>

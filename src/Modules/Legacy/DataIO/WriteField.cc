@@ -26,23 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  WriteField.cc: Save persistent representation of a field to a file
- *
- *  Written by:
- *   Elisha R. Hughes
- *   CVRTI
- *   University of Utah
- *   November 2004
-
- *  based on:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+/// @author
+///    Elisha R. Hughes,
+///    CVRTI,
+///    University of Utah,
+///   based on:
+///    Steven G. Parker,
+///    Department of Computer Science,
+///    University of Utah.
+///    July 1994
+/// 
+/// @date  November 2004
 
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Modules/DataIO/GenericWriter.h>
@@ -51,6 +45,11 @@
 namespace SCIRun {
 
 template class GenericWriter<FieldHandle>;
+
+/// @class WriteField
+/// @brief This module writes a field to file
+///
+/// (a SCIRun .fld file and various other file formats using a plugin system). 
 
 class WriteField : public GenericWriter<FieldHandle> {
 protected:

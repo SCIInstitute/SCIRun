@@ -32,6 +32,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/filesystem.hpp>
+#include <sci_debug.h>
 #include <Testing/Utils/share.h>
 
 namespace SCIRun 

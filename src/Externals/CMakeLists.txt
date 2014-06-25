@@ -28,16 +28,17 @@
 
 MESSAGE(STATUS "Configuring External Packages")
 
-##################################################
-# ADDING GOOGLE MOCK
-##################################################
-
 # TODO: move to external repository
-MESSAGE(STATUS "Configuring google-mock")
-ADD_SUBDIRECTORY(gmock)
-#MESSAGE(STATUS "Configuring eigen")
-#ADD_SUBDIRECTORY(eigen)
+IF(BUILD_TESTING)
+  MESSAGE(STATUS "Configuring google-mock")
+  ADD_SUBDIRECTORY(gmock)
+ENDIF()
+
 
 MESSAGE(STATUS "Configuring log4cpp")
 ADD_SUBDIRECTORY(log4cpp)
+ADD_SUBDIRECTORY(cleaver)
+
+MESSAGE(STATUS "Configuring sqlite")
+ADD_SUBDIRECTORY(sqlite)
 

@@ -27,6 +27,7 @@
 #
 
 SET(Algorithms_Field_Tests_SRCS
+  CalculateVectorMagnitudesAlgoTests.cc
   CalculateGradientsAlgoTests.cc
   GetDomainBoundaryTests.cc
   GetFieldBoundaryTests.cc
@@ -35,7 +36,14 @@ SET(Algorithms_Field_Tests_SRCS
   ConvertMeshToPointCloudMeshAlgoTests.cc
   AlignMeshBoundingBoxesAlgoTests.cc
   SetGetFieldNodesAlgoTests.cc
+  InterfaceWithCleaverAlgorithmTests.cc
   JoinFieldsAlgoTests.cc
+  MapFieldDataFromElemToNodeAlgoTests.cc
+  MapFieldDataFromNodeToElemAlgoTests.cc
+  GetFieldDataAlgoTests.cc
+  SetFieldDataAlgoTests.cc
+  LoadFieldsForAlgoCoreTests.cc
+  LoadFieldsForAlgoCoreTests.h
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
@@ -43,6 +51,7 @@ SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
 )
 
 TARGET_LINK_LIBRARIES(Algorithms_Field_Tests
+  Algorithms_DataIO
   Algorithms_Field
   Core_Datatypes_Legacy_Field
   Core_Algorithms_Legacy_Fields

@@ -37,6 +37,12 @@
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/StringPort.h>
 
+/// @class SelectAndSetFieldData3
+/// @brief This module selects a function based on the input values of the field
+/// and then applies this function to assign a new value to the field. This
+/// module contains two additional field ports to be used for selecting and
+/// setting data values. 
+
 namespace SCIRun {
 
 class SelectAndSetFieldData3 : public Module {

@@ -33,6 +33,9 @@
 
 namespace SCIRun {
 
+/// @class ReorderMatrixByReverseCuthillMcKee
+/// @brief This module reorders a matrix to reduce the average bandwidth of the matrix. 
+
 class ReorderMatrixByReverseCuthillMcKee : public Module {
   public:
     ReorderMatrixByReverseCuthillMcKee(GuiContext*);

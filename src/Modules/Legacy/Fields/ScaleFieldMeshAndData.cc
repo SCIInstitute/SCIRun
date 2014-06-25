@@ -25,15 +25,20 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/ScaleFieldMeshAndData.cc
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Algorithms/Fields/TransformMesh/ScaleFieldMeshAndData.h>
+#include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 namespace SCIRun {
 
 class ScaleFieldMeshAndData : public Module {
@@ -49,21 +54,40 @@ class ScaleFieldMeshAndData : public Module {
     
     SCIRunAlgo::ScaleFieldMeshAndDataAlgo algo_;
 };
+#endif
 
+ModuleLookupInfo ScaleFieldMeshAndData::staticInfo_("ScaleFieldMeshAndData", "ChangeMesh", "SCIRun");
 
-DECLARE_MAKER(ScaleFieldMeshAndData)
-ScaleFieldMeshAndData::ScaleFieldMeshAndData(GuiContext* ctx)
-  : Module("ScaleFieldMeshAndData", ctx, Source, "ChangeMesh", "SCIRun"),
-    guidatascale_(ctx->subVar("datascale")),
-    guigeomscale_(ctx->subVar("geomscale")),
-    guiusegeomcenter_(ctx->subVar("usegeomcenter"))
+ScaleFieldMeshAndData::ScaleFieldMeshAndData()
+  : Module(staticInfo_)
+    //guidatascale_(ctx->subVar("datascale")),
+    //guigeomscale_(ctx->subVar("geomscale")),
+    //guiusegeomcenter_(ctx->subVar("usegeomcenter"))
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(GeomScaleFactor);
+  INITIALIZE_PORT(DataScaleFactor);
+  INITIALIZE_PORT(OutputField);
 }
 
+void ScaleFieldMeshAndData::setStateDefaults()
+{
+  auto state = get_state();
+
+  //state->setValue(Parameters::ResampleMethod, std::string("box"));
+  //setStateDoubleFromAlgo(Parameters::ResampleGaussianSigma);
+  //setStateDoubleFromAlgo(Parameters::ResampleGaussianExtend);
+  //setStateDoubleFromAlgo(Parameters::ResampleXDim);
+  //setStateDoubleFromAlgo(Parameters::ResampleYDim);
+  //setStateDoubleFromAlgo(Parameters::ResampleZDim);
+  //setStateBoolFromAlgo(Parameters::ResampleXDimUseScalingFactor);
+  //setStateBoolFromAlgo(Parameters::ResampleYDimUseScalingFactor);
+  //setStateBoolFromAlgo(Parameters::ResampleZDimUseScalingFactor);
+}
 
 void ScaleFieldMeshAndData::execute()
 {
+#if 0
   FieldHandle input, output;
   MatrixHandle DataScale,GeomScale;
   
@@ -97,7 +121,5 @@ void ScaleFieldMeshAndData::execute()
     
     send_output_handle("Field", output);
   }
+#endif
 }
-
-} // End namespace ModelCreation
-

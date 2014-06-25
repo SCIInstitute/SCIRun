@@ -33,6 +33,10 @@
 
 namespace SCIRun {
 
+/// @class CollectPointClouds
+/// @brief This module collects and joins PointClouds fields while iterating
+/// over a dataflow loop. 
+
 class CollectPointClouds : public Module
 {
   public:

@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/Port.h
+
 
 #ifndef DATAFLOW_NETWORK_PORT_H
 #define DATAFLOW_NETWORK_PORT_H 
@@ -33,6 +35,7 @@
 #include <string>
 #include <vector>
 #include <boost/noncopyable.hpp>
+#include <boost/signals2/signal.hpp>
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/share.h>
@@ -70,7 +73,7 @@ public:
   virtual size_t getIndex() const;
   virtual void setIndex(size_t index);
 
-  //TODO:
+  /// @todo:
   // light interface
 
 protected:
@@ -89,7 +92,7 @@ protected:
 #pragma warning (disable : 4250)
 #endif
 
-//TODO: discuss this interface design
+/// @todo: discuss this interface design
 class SCISHARE InputPort : public Port, public InputPortInterface
 {
 public:
@@ -102,6 +105,7 @@ public:
   virtual bool isDynamic() const { return isDynamic_; }
   virtual InputPortInterface* clone() const;
   virtual bool hasChanged() const;
+  virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber);
 private:
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;
@@ -115,7 +119,7 @@ public:
   virtual ~OutputPort();
   virtual void sendData(Core::Datatypes::DatatypeHandle data);
   virtual bool isInput() const { return false; } //boo
-  virtual bool isDynamic() const { return false; } //TODO: design dynamic output ports
+  virtual bool isDynamic() const { return false; } /// @todo: design dynamic output ports
 private:
   DatatypeSourceInterfaceHandle source_;
 };

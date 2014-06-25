@@ -28,45 +28,147 @@
  
 #include <gtest/gtest.h>
 
+#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
-void runTest(.../*int basis, const std::string& expectedBasisTypeTemplate, const std::string& expectedBasisString, int expectedNumData*/)
+namespace
 {
-  //FieldInformation lfi("LatVolMesh", basis, "double");
+  FieldHandle TetMeshWithoutFieldData()
+  {
+    FieldInformation fi("TetVolMesh", 1, "double");
+    FieldHandle singleTetField_ = CreateField(fi);
+    VMesh *vmesh = singleTetField_->vmesh();
+    VMesh::Node::array_type vdata;
+    vdata.resize(4);
+    vmesh->node_reserve(8);
+    vmesh->elem_reserve(1);
+    vmesh->add_point( Point(0.0, 0.0, 0.0) );
+    vmesh->add_point( Point(1.0, 0.0, 0.0) );
+    vmesh->add_point( Point(1.0, 1.0, 0.0) );
+    vmesh->add_point( Point(0.0, 1.0, 0.0) );
+    vmesh->add_point( Point(0.0, 0.0, 1.0) );
+    vmesh->add_point( Point(1.0, 0.0, 1.0) );
+    vmesh->add_point( Point(1.0, 1.0, 1.0) );
+    vmesh->add_point( Point(0.0, 1.0, 1.0) );
+    vdata[0]=5; vdata[1]=6;  vdata[2]=0; vdata[3]=4;
+    vmesh->add_elem(vdata);
+    vdata[0]=0; vdata[1]=7;  vdata[2]=2; vdata[3]=3;
+    vmesh->add_elem(vdata);
+    vdata[0]=2; vdata[1]=6;  vdata[2]=0; vdata[3]=1;
+    vmesh->add_elem(vdata);
+    vdata[0]=0; vdata[1]=6;  vdata[2]=5; vdata[3]=1;
+    vmesh->add_elem(vdata);
+    vdata[0]=0; vdata[1]=6;  vdata[2]=2; vdata[3]=7;
+    vmesh->add_elem(vdata);
+    vdata[0]=6; vdata[1]=7;  vdata[2]=0; vdata[3]=4;
+    vmesh->add_elem(vdata);
+    return singleTetField_;
+  }
+  
+  /*** TRI SURFs ***/
+  FieldHandle CreateTriSurfScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+  }
+  FieldHandle CreateTriSurfVectorOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
+  }
 
-  //size_type sizex = 3, sizey = 4, sizez = 5;
-  //Point minb(-1.0, -1.0, -1.0);
-  //Point maxb(1.0, 1.0, 1.0);
-  //MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
-  //FieldHandle ofh = CreateField(lfi,mesh);
-  //ofh->vfield()->clear_all_values();
-
-  //ReportFieldInfoAlgorithm algo;
-
-  //auto info = algo.run(ofh);
-
-  //EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point> > ," + expectedBasisTypeTemplate + "<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > ", info.type);
-  //EXPECT_EQ(0, info.dataMin);
-  //EXPECT_EQ(0, info.dataMax);
-  //EXPECT_EQ(expectedNumData, info.numdata_);
-  //EXPECT_EQ(sizex * sizey * sizez, info.numnodes_);
-  //EXPECT_EQ((sizex-1) * (sizey-1) * (sizez-1), info.numelements_);
-  //EXPECT_EQ(expectedBasisString, info.dataLocation);
+  /*** TET MESHs ***/
+  FieldHandle CreateTetMeshVectorOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+  }
+  FieldHandle CreateTetMeshTensorOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.fld");
+  }
+  
+  /*** CLOUD POINT ***/
+  FieldHandle CreatePointClodeScalar()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/point_cloud/scalar/pts_scalar.fld");
+  }
 }
 
-TEST(CalculateGradientsAlgoTests, DISABLED_Foo)
+TEST(CalculateGradientsAlgoTests, TriSurfScalarOnNodeAsInput)
 {
-  FAIL() << "TODO";
-  runTest(-1, "NoDataBasis", "None (nodata basis)", 0);
-  runTest(0, "ConstantBasis", "Cells (constant basis)", 24);
-  runTest(1, "HexTrilinearLgn", "Nodes (linear basis)", 60);
+  FieldHandle in = CreateTriSurfScalarOnNode();
+  FieldHandle out;
+  CalculateGradientsAlgo algo;
+  EXPECT_EQ(algo.run(in, out), true);
+  // TODO: compare values from SCIRun 4
 }
+TEST(CalculateGradientsAlgoTests, TriSurfVectorOnNodeAsInput)
+{
+  FieldHandle in = CreateTriSurfVectorOnNode();
+  FieldHandle out;
+  CalculateGradientsAlgo algo;
+  EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
+}
+TEST(CalculateGradientsAlgoTests, TetMeshScalarOnNodeAsInput)
+{
+//  FAIL() << "TODO"; // SEG FAULT
+  FieldHandle in = CreateTetMeshScalarOnNode();
+  FieldHandle out;
+  CalculateGradientsAlgo algo;
+  EXPECT_EQ(algo.run(in, out), true);
+  // TODO: compare values from SCIRun 4
+}
+TEST(CalculateGradientsAlgoTests, DISABLED_TetMeshTensorOnNodeAsInput)
+{
+  FieldHandle in = CreateTetMeshTensorOnNode();
+  FieldHandle out;
+  CalculateGradientsAlgo algo;
+  EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
+}
+TEST(CalculateGradientsAlgoTests, TetMeshVectorOnNodeAsInput)
+{
+  FieldHandle in = CreateTetMeshVectorOnNode();
+  FieldHandle out;
+  CalculateGradientsAlgo algo;
+  EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
+}
+
+TEST(CalculateGradientsAlgoTests, PointCloudScalarOnNodeAsInput)
+{
+  FieldHandle in = CreatePointClodeScalar();
+  FieldHandle out;
+  CalculateGradientsAlgo algo;
+  EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
+}
+
+TEST(CalculateGradientsAlgoTests, NullFieldHandleInput)
+{
+  FieldHandle in;
+  FieldHandle out;
+  CalculateGradientsAlgo algo;
+  EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
+}
+
+TEST(CalculateGradientsAlgoTests, NoFieldDataInput)
+{
+  FieldHandle in = TetMeshWithoutFieldData();
+  FieldHandle out;
+  CalculateGradientsAlgo algo;
+  EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
+}
+
+
+

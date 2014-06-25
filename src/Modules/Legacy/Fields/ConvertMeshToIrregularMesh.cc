@@ -40,6 +40,9 @@
 
 namespace SCIRun {
 
+/// @class ConvertMeshToIrregularMesh
+/// @brief This module loads a regular mesh and converts it to an irregular mesh.
+
 class ConvertMeshToIrregularMesh : public Module
 {
   public:
@@ -55,7 +58,7 @@ DECLARE_MAKER(ConvertMeshToIrregularMesh)
 ConvertMeshToIrregularMesh::ConvertMeshToIrregularMesh(GuiContext* context)
   : Module("ConvertMeshToIrregularMesh", context, Filter, "ChangeMesh", "SCIRun")
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 

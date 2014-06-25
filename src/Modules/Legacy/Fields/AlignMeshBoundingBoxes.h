@@ -36,6 +36,9 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+	/// @class AlignMeshBoundingBoxes
+	/// @brief Scales, translates, and deforms an input field to a defined
+	/// alignment field. 
       class SCISHARE AlignMeshBoundingBoxes : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, FieldPortTag>,
         public Has2OutputPorts<FieldPortTag, MatrixPortTag>

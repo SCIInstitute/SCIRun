@@ -25,18 +25,13 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/*
- *  ClipVolumeByIsovalue.cc:  Clip out parts of a field.
- *
- *  Written by:
- *   Allen R. Sanderson
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
 
+///@author
+///   Allen R. Sanderson
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -45,6 +40,9 @@
 #include <iostream>
 
 namespace SCIRun {
+
+/// @class ClipVolumeByIsovalue
+/// @brief Clip out parts of a field.
 
 class ClipVolumeByIsovalue : public Module
 {

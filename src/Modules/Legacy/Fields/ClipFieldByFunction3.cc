@@ -39,8 +39,11 @@
 #include <Dataflow/Network/Ports/StringPort.h>
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class ClipFieldByFunction3
+/// @brief This module selects a subset of one or more (up to three) fields
+/// using a function. 
 
 class ClipFieldByFunction3 : public Module {
   public:

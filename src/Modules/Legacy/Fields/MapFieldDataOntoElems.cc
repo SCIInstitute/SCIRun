@@ -36,6 +36,10 @@
 
 namespace SCIRun {
 
+/// @class MapFieldDataOntoElems
+/// @brief Maps data from one mesh to another mesh. The output mesh will have
+/// the data located on the elements. 
+
 using namespace SCIRun;
 
 class MapFieldDataOntoElems : public Module {

@@ -26,16 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  EvaluateLinAlgUnary: Unary matrix operations -- just transpose for now
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   June 1999
- *
- */
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  June 1999
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -53,6 +48,9 @@
 
 namespace SCIRun {
 
+/// @class EvaluateLinAlgUnary
+/// @brief Performs one of a number of selectable unary matrix operations to the input matrix. 
+ 
 class EvaluateLinAlgUnary : public Module {
   GuiString op_;
   GuiString function_;

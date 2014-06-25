@@ -32,13 +32,13 @@
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Basis;
 
-//! Only include this class if we included Curve Support
+/// Only include this class if we included Curve Support
 #if (SCIRUN_CURVE_SUPPORT > 0)
 
 namespace SCIRun {
 
-//! This class is not exposed to the general interface and only the VMesh class
-//! is accessed by other classes.
+/// This class is not exposed to the general interface and only the VMesh class
+/// is accessed by other classes.
 template<class MESH>
 class VCurveMesh : public VUnstructuredMesh<MESH> {
 public:
@@ -101,19 +101,19 @@ public:
 };
 
 
-//! Functions for creating the virtual interface for specific mesh types
-//! These are similar to compare maker and only serve to instantiate the class
+/// Functions for creating the virtual interface for specific mesh types
+/// These are similar to compare maker and only serve to instantiate the class
 
-//! Currently there are only 3 variations of this mesh available
-//! 1) linear interpolation
-//! 2) quadratic interpolation
-//! 3) cubic interpolation
+/// Currently there are only 3 variations of this mesh available
+/// 1) linear interpolation
+/// 2) quadratic interpolation
+/// 3) cubic interpolation
 VMesh* CreateVCurveMesh(CurveMesh<CrvLinearLgn<Point> >* mesh)
 {
   return new VCurveMesh<CurveMesh<CrvLinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID CurveMesh_MeshID1(CurveMesh<CrvLinearLgn<Point> >::type_name(-1),
                   CurveMesh<CrvLinearLgn<Point> >::mesh_maker);
 
@@ -122,20 +122,20 @@ VMesh* CreateVCurveMesh(CurveMesh<CrvQuadraticLgn<Point> >* mesh)
 {
   return new VCurveMesh<CurveMesh<CrvQuadraticLgn<Point> > >(mesh);
 }
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID CurveMesh_MeshID2(CurveMesh<CrvQuadraticLgn<Point> >::type_name(-1),
                   CurveMesh<CrvQuadraticLgn<Point> >::mesh_maker);
 #endif
 
 
-//! Add the CUBIC virtual interface and the meshid for creating it                  
+/// Add the CUBIC virtual interface and the meshid for creating it                  
 #if (SCIRUN_CUBIC_SUPPORT > 0)
 VMesh* CreateVCurveMesh(CurveMesh<CrvCubicHmt<Point> >* mesh)
 {
   return new VCurveMesh<CurveMesh<CrvCubicHmt<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID CurveMesh_MeshID3(CurveMesh<CrvCubicHmt<Point> >::type_name(-1),
                   CurveMesh<CrvCubicHmt<Point> >::mesh_maker);
 #endif

@@ -24,7 +24,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-//This module makes a mesh that looks like a wire
+///@brief This module makes a mesh that looks like a wire
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/GeometryPort.h>

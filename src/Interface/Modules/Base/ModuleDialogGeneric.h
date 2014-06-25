@@ -29,18 +29,23 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
-#include <QDialog>
-#include <Dataflow/Network/NetworkFwd.h>
+#include <Interface/Modules/Base/WidgetSlotManagers.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h> //TODO: split up this header!
+#include <QtGui>
+#include <boost/atomic.hpp>
+#include <boost/noncopyable.hpp>
 #include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-  class SCISHARE ModuleDialogGeneric : public QDialog
+
+  class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
     Q_OBJECT
   public:
-    virtual ~ModuleDialogGeneric() {}
+    virtual ~ModuleDialogGeneric();
+    bool isPulling() const { return pulling_; } //yuck
+
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
     //virtual int moduleExecutionTime() = 0;
@@ -49,6 +54,7 @@ namespace Gui {
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI
     virtual void pull() = 0;
+    void pull_newVersionToReplaceOld();
   Q_SIGNALS:
     void executionTimeChanged(int time);
     void executeButtonPressed();
@@ -58,13 +64,24 @@ namespace Gui {
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
 
     //TODO: need a better push/pull model
-    bool pulling_;
+    boost::atomic<bool> pulling_;
     struct Pulling
     {
       explicit Pulling(ModuleDialogGeneric* m) : m_(m) { m->pulling_ = true; }
       ~Pulling() { m_->pulling_ = false; }
       ModuleDialogGeneric* m_;
     };
+    
+    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addTextEditManager(QTextEdit* textEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addSpinBoxManager(QSpinBox* spinBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addDoubleSpinBoxManager(QDoubleSpinBox* spinBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addCheckBoxManager(QCheckBox* checkBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+  private:
+    void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
+    std::vector<WidgetSlotManagerPtr> slotManagers_;
   };
 
 }

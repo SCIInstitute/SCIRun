@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Mesh/MeshFactory.h
+
 #ifndef CORE_DATATYPES_MESHFACTORY_H
 #define CORE_DATATYPES_MESHFACTORY_H 
 
@@ -53,7 +55,7 @@ namespace Datatypes {
   typedef MeshHandle (*MeshDefaultConstructor)();
   typedef MeshHandle (*MeshConstructor)(const MeshConstructionParameters&);
 
-  //TODO: yucky double-singleton to separate registration from construction.
+  /// @todo: yucky double-singleton to separate registration from construction.
 
   class SCISHARE MeshFactory : boost::noncopyable
   {

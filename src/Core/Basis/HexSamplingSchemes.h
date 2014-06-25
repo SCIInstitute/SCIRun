@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Basis/HexSamplingSchemes.h 
+
 #ifndef CORE_BASIS_HEXSAMPLINGSCHEMES_H
 #define CORE_BASIS_HEXSAMPLINGSCHEMES_H 1
 

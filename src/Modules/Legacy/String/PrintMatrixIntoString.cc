@@ -43,6 +43,9 @@
 
 namespace SCIRun {
 
+/// @class PrintMatrixIntoString
+/// @brief This module does a sprintf with input matrices into a new string. 
+
 class PrintMatrixIntoString : public Module {
   public:
     PrintMatrixIntoString(GuiContext*);

@@ -39,6 +39,9 @@
 
 namespace SCIRun {
 
+/// @class EvaluateLinAlgGeneral
+/// @brief This module performs a user defined linear algebra operation on up to five input matrices. 
+
 class EvaluateLinAlgGeneral : public Module
 {
 public:

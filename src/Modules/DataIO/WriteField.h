@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/DataIO/WriteField.h
 
 #ifndef MODULES_DATAIO_WRITE_FIELD_H
 #define MODULES_DATAIO_WRITE_FIELD_H
@@ -45,10 +46,10 @@ namespace SCIRun {
         WriteFieldModule();
         virtual void execute();
         virtual void setStateDefaults() {}
+        virtual bool useCustomExporter(const std::string& filename) const override;
+        virtual bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, FieldToWrite, LegacyField);
-
-        static Core::Algorithms::AlgorithmParameterName Filename;
       };
 
     }}}

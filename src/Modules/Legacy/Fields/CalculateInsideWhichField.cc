@@ -28,7 +28,6 @@
 
 #include <Dataflow/Network/Module.h>
 
-
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
@@ -38,6 +37,10 @@
 #include <Core/Algorithms/Fields/DistanceField/CalculateInsideWhichField.h>
 
 namespace SCIRun {
+
+/// @class CalculateInsideWhichField
+/// @brief Calculate inside which field of a number of given fields a certain
+/// element is located. 
 
 class CalculateInsideWhichField : public Module 
 {

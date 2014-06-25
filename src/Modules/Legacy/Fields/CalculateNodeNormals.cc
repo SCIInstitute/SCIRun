@@ -35,6 +35,9 @@
 
 namespace SCIRun {
 
+/// @class CalculateNodeNormals
+/// @brief Make a new vector field that points to the input point.
+
 class CalculateNodeNormals : public Module
 {
   public:

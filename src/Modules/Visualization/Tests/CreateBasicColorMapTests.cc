@@ -53,7 +53,7 @@ TEST_F(CreateBasicColorMapModuleTest, ThrowsForUnknownColorMapName)
   EXPECT_THROW(cbc->execute(), InvalidArgumentException);
 }
 
-TEST_F(CreateBasicColorMapModuleTest, CreatesRainbowByDefault)
+TEST_F(CreateBasicColorMapModuleTest, DISABLED_CreatesRainbowByDefault)
 {
   UseRealModuleStateFactory f;
 
@@ -61,5 +61,5 @@ TEST_F(CreateBasicColorMapModuleTest, CreatesRainbowByDefault)
 
   cbc->execute();
 
-  FAIL() << "TODO: need output value collector dummy module";
+  FAIL() << "TODO: need output value collector dummy module: See Issue #499";
 }

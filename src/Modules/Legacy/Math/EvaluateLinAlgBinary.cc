@@ -27,16 +27,11 @@
 */
 
 
-/*
- *  EvaluateLinAlgBinary: Binary matrix operations -- add, multiply
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   June 1999
- *
- */
+///@author
+///   David Weinstein,
+///   Department of Computer Science,
+///   University of Utah
+///@date June 1999
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/ColumnMatrix.h>
@@ -54,6 +49,12 @@
 #include <sstream>
 
 namespace SCIRun {
+
+/// @class EvaluateLinAlgBinary 
+/// @brief This module performs one of a number of selectable matrix operations
+/// using the two input matrices.
+///
+/// Binary matrix operations -- add, multiply
 
 class EvaluateLinAlgBinary : public Module {
   GuiString op_;

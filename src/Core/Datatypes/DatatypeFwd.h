@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-
+/// @todo Documentation Core/Datatypes/DatatypeFwd.h
 #ifndef CORE_DATATYPES_DATATYPE_FWD_H
 #define CORE_DATATYPES_DATATYPE_FWD_H 
 
@@ -59,6 +58,7 @@ namespace Datatypes {
   class Bundle;
 
   typedef boost::shared_ptr<String> StringHandle;
+  typedef boost::shared_ptr<GeometryObject> GeometryHandle;
 }}
 
   class Field;

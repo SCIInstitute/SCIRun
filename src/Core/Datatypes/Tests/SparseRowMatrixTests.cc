@@ -175,9 +175,9 @@ namespace
     m.insert(2,3) = 0.5;
     return m;
   }
-  SparseRowMatrix Zero()
+  SparseRowMatrix Zero(int r = 4, int c = 5)
   {
-    SparseRowMatrix m(4,5);
+    SparseRowMatrix m(r,c);
     m.setZero();
     return m;
   }
@@ -313,8 +313,8 @@ TEST(SparseRowMatrixBinaryOperationTests, CanMultiply)
 
   PRINT_MATRIX_BASE(m);
   PRINT_MATRIX(m * m.transpose());
-  SparseRowMatrix prod = Zero() * m;
-  EXPECT_EQ(prod, Zero());
+  SparseRowMatrix prod = m.transpose() * Zero();
+  EXPECT_EQ(prod, Zero(5,5));
 }
 
 TEST(SparseRowMatrixBinaryOperationTests, CanAdd)
@@ -338,14 +338,14 @@ TEST(SparseRowMatrixBinaryOperationTests, CanSubtract)
   EXPECT_EQ(diff, Zero());
 }
 
-//TODO: compare to v4.
-//TEST(SparseRowMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
-//{
-//  SparseRowMatrix sum = matrix1() + matrix1();
-//  std::cout << sum.rows() << std::endl;
-//  std::cout << sum.cols() << std::endl;
-//  PRINT_MATRIX(sum);
-//}
+/// @todo: compare to v4.
+TEST(SparseRowMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
+{
+  SparseRowMatrix sum = matrix1() + matrix1();
+  std::cout << sum.rows() << std::endl;
+  std::cout << sum.cols() << std::endl;
+  PRINT_MATRIX(sum);
+}
 
 namespace std
 {

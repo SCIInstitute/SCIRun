@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation Dataflow/Network/Module.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_H
 #define DATAFLOW_NETWORK_MODULE_H 
@@ -86,9 +86,10 @@ namespace Networks {
     virtual std::vector<InputPortHandle> inputPorts() const;
     virtual std::vector<OutputPortHandle> outputPorts() const;
 
-    //TODO: execute signal here.
+    /// @todo: execute signal here.
     virtual void do_execute() throw(); //--C++11--will throw nothing
     virtual ModuleStateHandle get_state();
+    virtual const ModuleStateHandle get_state() const;
     virtual void set_state(ModuleStateHandle state);
 
     virtual ExecutionState executionState() const;
@@ -123,7 +124,7 @@ namespace Networks {
 
     virtual bool hasDynamicPorts() const 
     {
-      return false; //TODO: need to examine HasPorts base classes
+      return false; /// @todo: need to examine HasPorts base classes
     }
 
     bool oport_connected(const PortId& id) const;
@@ -175,6 +176,9 @@ namespace Networks {
     template <class T, size_t N>
     std::vector<boost::shared_ptr<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
 
+    template <class T, size_t N>
+    std::vector<boost::shared_ptr<T>> getOptionalDynamicInputs(const DynamicPortName<T,N>& port);
+
     template <class T, class D, size_t N>
     void sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data);
 
@@ -192,7 +196,7 @@ namespace Networks {
       Builder& setStateDefaults();
       ModuleHandle build();
 
-      //TODO: these don't quite belong here, think about extracting
+      /// @todo: these don't quite belong here, think about extracting
       PortId cloneInputPort(ModuleHandle module, const PortId& id);
       void removeInputPort(ModuleHandle module, const PortId& id);
 
@@ -207,7 +211,7 @@ namespace Networks {
       static SourceMaker source_maker_;
     };
 
-    //TODO: yuck
+    /// @todo: yuck
     static ModuleStateFactoryHandle defaultStateFactory_;
     static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
 
@@ -229,9 +233,15 @@ namespace Networks {
     void setStateBoolFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setStateIntFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setStateDoubleFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setStateStringFromAlgoOption(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoBoolFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoIntFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoDoubleFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setAlgoOptionFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+
+    virtual size_t add_input_port(InputPortHandle);
+    size_t add_output_port(OutputPortHandle);
+    virtual void removeInputPort(const PortId& id);
 
   private:
     template <class T>
@@ -245,9 +255,7 @@ namespace Networks {
     bool inputsChanged() const;
 
     friend class Builder;
-    size_t add_input_port(InputPortHandle);
-    size_t add_output_port(OutputPortHandle);
-    void removeInputPort(const PortId& id);
+
     bool has_ui_;
 
     Core::Algorithms::AlgorithmHandle algo_;
@@ -303,6 +311,19 @@ namespace Networks {
     auto check = [&, this](SCIRun::Core::Datatypes::DatatypeHandleOption opt) { return this->checkInput<T>(opt, port.id_); };
     auto end = handleOptions.end() - 1; //leave off empty final port
     std::transform(handleOptions.begin(), end, std::back_inserter(handles), check);
+    if (handles.empty())
+      MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port " + port.id_.name);
+    return handles;
+  }
+
+  template <class T, size_t N>
+  std::vector<boost::shared_ptr<T>> Module::getOptionalDynamicInputs(const DynamicPortName<T,N>& port)
+  {
+    auto handleOptions = get_dynamic_input_handles(port.id_);
+    std::vector<boost::shared_ptr<T>> handles;
+    auto check = [&, this](SCIRun::Core::Datatypes::DatatypeHandleOption opt) { return this->checkInput<T>(opt, port.id_); };
+    auto end = handleOptions.end() - 1; //leave off empty final port
+    std::transform(handleOptions.begin(), end, std::back_inserter(handles), check);
     return handles;
   }
 
@@ -342,6 +363,21 @@ namespace Networks {
     return data;
   }
 
+  class SCISHARE ModuleWithAsyncDynamicPorts : public Module
+  {
+  public:
+    explicit ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info);
+    virtual bool hasDynamicPorts() const override { return true; }
+    virtual void execute() override;
+    virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) = 0;
+    virtual void portRemovedSlot(const ModuleId& mid, const PortId& pid) override;
+  protected:
+    virtual void portRemovedSlotImpl(const PortId& pid) = 0;
+    virtual size_t add_input_port(InputPortHandle h) override;
+  private:
+    bool asyncConnected_;
+  };
+
 }}
 
 
@@ -359,6 +395,12 @@ namespace Modules
 
   template <typename Base>
   struct DynamicPortTag : Base 
+  {
+    typedef Base type;
+  };
+
+  template <typename Base>
+  struct AsyncDynamicPortTag : DynamicPortTag<Base> 
   {
     typedef Base type;
   };
@@ -392,7 +434,7 @@ namespace Modules
   public:
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
-      //TODO: use move semantics
+      /// @todo: use move semantics
       auto ports = Has1InputPort<PortTypeTag0>::inputPortDescription(port0Name);
       ports.push_back(Has1InputPort<PortTypeTag1>::inputPortDescription(port1Name)[0]);
       return ports;
@@ -472,7 +514,7 @@ namespace Modules
   public:
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
-      //TODO: use move semantics
+      /// @todo: use move semantics
       auto ports = Has1OutputPort<PortTypeTag0>::outputPortDescription(port0Name);
       ports.push_back(Has1OutputPort<PortTypeTag1>::outputPortDescription(port1Name)[0]);
       return ports;
@@ -595,6 +637,17 @@ namespace Modules
       ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(0, port0Name), #type, true)); \
       return ports;\
     }\
+  };\
+  template <>\
+  class Has1InputPort<AsyncDynamicPortTag<type ## PortTag>> : public NumInputPorts<1>\
+  {\
+  public:\
+  static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
+  {\
+  std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
+  ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(0, port0Name), #type, true)); \
+  return ports;\
+  }\
   }\
 
   PORT_SPEC(Matrix);
@@ -620,7 +673,7 @@ namespace Modules
 
 #define INITIALIZE_PORT(nameObj) do{ nameObj.id_.name = #nameObj; }while(0);
 
-  //TODO: make metafunc for Input/Output
+  /// @todo: make metafunc for Input/Output
 
   template <size_t numPorts, class ModuleType>
   struct IPortDescriber

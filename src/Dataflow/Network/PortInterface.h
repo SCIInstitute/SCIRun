@@ -26,12 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/PortInterface.h
+
+/// @todo Documentation Dataflow/Network/PortInterface.h
+
 
 #ifndef DATAFLOW_NETWORK_PORT_INTERFACE_H
 #define DATAFLOW_NETWORK_PORT_INTERFACE_H 
 
 #include <string>
 #include <vector>
+#include <boost/signals2/signal.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Dataflow/Network/share.h>
@@ -64,6 +69,8 @@ namespace Networks {
     virtual void setIndex(size_t index) = 0;
   };
   
+  typedef boost::signals2::signal<void(const PortId&, SCIRun::Core::Datatypes::DatatypeHandle)> DataOnPortHasChangedSignalType;
+
   class SCISHARE InputPortInterface : virtual public PortInterface
   {
   public:
@@ -72,6 +79,7 @@ namespace Networks {
     virtual DatatypeSinkInterfaceHandle sink() const = 0;
     virtual InputPortInterface* clone() const = 0;
     virtual bool hasChanged() const = 0;
+    virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) = 0;
   };
   
   class SCISHARE OutputPortInterface : virtual public PortInterface

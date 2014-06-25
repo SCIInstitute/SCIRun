@@ -26,17 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  ReadColorMap2.cc: Read a persistent colormap from a file
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   Sept 2004
- *
- */
+///
+/// @file  ReadColorMap2D.cc
+/// 
+/// @author
+///    Michael Callahan
+///    Department of Computer Science
+///    University of Utah
+/// @date  Sept 2004
+///
 
 #include <Dataflow/Network/Ports/ColorMap2Port.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>
@@ -44,6 +42,9 @@
 namespace SCIRun {
 
 template class GenericReader<ColorMap2Handle>;
+
+/// @class ReadColorMap2D
+/// @brief This module reads a colormap2D from file (a SCIRun .cmap2 file).
 
 class ReadColorMap2D : public GenericReader<ColorMap2Handle> {
   protected:

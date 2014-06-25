@@ -29,6 +29,7 @@
 SET(Core_Algorithms_Legacy_Fields_HEADERS
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
+  Mapping/ApplyMappingMatrix.h
   #Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h         
   #FieldData/ConvertIndicesToFieldData.h
@@ -39,9 +40,10 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/ConvertFieldBasisType.h            
   #FieldData/CalculateLatVolGradientsAtNodes.h  
   #FieldData/GetFieldData.h
-  #FieldData/SetFieldData.h
+  FieldData/SetFieldData.h
   #FieldData/SetFieldDataToConstantValue.h
   #FieldData/SmoothVecFieldMedian.h
+  Mapping/BuildMappingMatrixAlgo.h
   DomainFields/GetDomainBoundaryAlgo.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
@@ -51,10 +53,17 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/GetMeshNodes.h
   MergeFields/JoinFieldsAlgo.h
   DomainFields/SplitFieldByDomainAlgo.h
+  #MeshData/GetMeshData.h
+  FieldData/GetFieldData.h
+  Mapping/MapFieldDataFromElemToNode.h
+  Mapping/MapFieldDataFromNodeToElem.h
+  ResampleMesh/ResampleRegularMesh.h
+  SmoothMesh/FairMesh.h
+  FieldData/ConvertFieldBasisType.h
+  TransformMesh/ScaleFieldMeshAndData.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
-  Mapping/ApplyMappingMatrix.cc
   #RegisterWithCorrespondences.cc
   #MeshData/FlipSurfaceNormals.cc
   #Cleanup/CleanupTetMesh.cc
@@ -86,11 +95,11 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   FieldData/CalculateVectorMagnitudesAlgo.cc
   #FieldData/CalculateFieldDataMetric.cc
   #FieldData/ConvertFieldDataType.cc
-  #FieldData/ConvertFieldBasisType.cc
+  FieldData/ConvertFieldBasisType.cc
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
-  #FieldData/SetFieldData.cc
+  FieldData/SetFieldData.cc
   FieldData/SetFieldDataToConstantValue.cc
   #FieldData/SmoothVecFieldMedian.cc
   #FilterFieldData/DilateFieldData.cc
@@ -98,10 +107,9 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FilterFieldData/TriSurfPhaseFilter.cc
   #FindNodes/FindClosestNode.cc
   #FindNodes/FindClosestNodeByValue.cc
-  #Mapping/ApplyMappingMatrix.cc
-  #Mapping/BuildMappingMatrix.cc
-  #Mapping/MapFieldDataFromElemToNode.cc
-  #Mapping/MapFieldDataFromNodeToElem.cc
+  Mapping/BuildMappingMatrixAlgo.cc
+  Mapping/MapFieldDataFromElemToNode.cc
+  Mapping/MapFieldDataFromNodeToElem.cc
   #Mapping/MapFieldDataFromSourceToDestination.cc
   #Mapping/MappingDataSource.cc
   #Mapping/MapFieldDataOntoNodes.cc
@@ -124,6 +132,9 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   MergeFields/JoinFieldsAlgo.cc
   MeshData/GetMeshNodes.cc
   MeshData/SetMeshNodes.cc
+  #MeshData/GetMeshData.cc
+  FieldData/GetFieldData.cc
+  Mapping/ApplyMappingMatrix.cc
   #MeshData/GetSurfaceNodeNormals.cc
   #MeshData/GetSurfaceElemNormals.cc
   #MeshData/GetMeshQualityField.cc
@@ -134,22 +145,22 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MeshDerivatives/GetBoundingBox.cc
   #MeshDerivatives/SplitByConnectedRegion.cc
   #RefineMesh/RefineMesh.cc
-  #ResampleMesh/ResampleRegularMesh.cc
+  ResampleMesh/ResampleRegularMesh.cc
   #ResampleMesh/PadRegularMesh.cc
   #SampleField/GeneratePointSamplesFromField.cc
-  #SmoothMesh/FairMesh.cc
+  SmoothMesh/FairMesh.cc
   #StreamLines/StreamLineIntegrators.cc
   #StreamLines/GenerateStreamLines.cc
   TransformMesh/AlignMeshBoundingBoxes.cc
   #TransformMesh/TransformMeshWithTransform.cc
   #TransformMesh/ConvertMeshCoordinateSystem.cc
-  #TransformMesh/ScaleFieldMeshAndData.cc
+  TransformMesh/ScaleFieldMeshAndData.cc
   #TransformMesh/TransformPlanarMesh.cc
   #TransformMesh/GeneratePolarProjection.cc
   #TransformMesh/ProjectPointsOntoMesh.cc
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
-  #TracePoints/TracePoints.cc
+  #TracePoints/TracePoints.cc  
 )
 
 IF(WITH_TETGEN)
@@ -188,3 +199,5 @@ ENDIF(WITH_TETGEN)
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Fields)
 ENDIF(BUILD_SHARED_LIBS)
+
+ADD_DEPENDENCIES(Core_Algorithms_Legacy_Fields Boost_external)

@@ -88,12 +88,3 @@ TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
   EXPECT_TRUE(receiveScalar != 0);
   EXPECT_EQ(dataToSend, receiveScalar->latestReceivedValue());
 }
-
-
-
-
-
-
-
-
-

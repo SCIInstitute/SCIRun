@@ -31,8 +31,10 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
@@ -63,18 +65,14 @@ void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const
 
   ASSERT_TRUE(boundary.get() != nullptr);
 
-  //TODO: need assertions on boundary field
+  /// @todo: need assertions on boundary field
 
   if (basis != -1)
   {
-    ASSERT_TRUE(mapping.get() != nullptr);
+    ASSERT_TRUE(mapping != nullptr);
     EXPECT_EQ(expectedMatrixRows, mapping->nrows());
     EXPECT_EQ(expectedMatrixColumns, mapping->ncols());
-    std::ostringstream ostr;
-    ostr << *mapping;
-    //std::cout << "expected\n" << expectedMatrixString << std::endl;
-    //std::cout << "actual\n" << ostr.str() << std::endl;
-    EXPECT_EQ(expectedMatrixString, ostr.str());
+    EXPECT_EQ(expectedMatrixString, matrix_to_string(*matrix_convert::to_dense(mapping)));
   }
 }
 

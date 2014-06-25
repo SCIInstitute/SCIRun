@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation Dataflow/State/SimpleModuleState.h
 #ifndef DATAFLOW_STATE_SIMPLEMAPMODULESTATE_H
 #define DATAFLOW_STATE_SIMPLEMAPMODULESTATE_H
 
@@ -51,7 +51,8 @@ namespace State {
     virtual boost::signals2::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
 
     virtual TransientValueOption getTransientValue(const std::string& name) const;
-    virtual void setTransientValue(const std::string& name, const TransientValue& value);
+    virtual void setTransientValue(const std::string& name, const TransientValue& value, bool fireSignal);
+    virtual void fireTransientStateChangeSignal();
 
   protected:
     typedef std::map<Name, Value> StateMap;

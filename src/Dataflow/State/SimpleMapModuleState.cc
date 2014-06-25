@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Dataflow/State/SimpleMapModuleState.cc
 
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Core/Logging/Log.h>
@@ -42,7 +43,7 @@ SimpleMapModuleState::SimpleMapModuleState()
 
 SimpleMapModuleState::SimpleMapModuleState(const SimpleMapModuleState& rhs)
   : stateMap_(rhs.stateMap_), 
-  transientStateMap_(rhs.transientStateMap_) //TODO: I think this is wrong, transient shouldn't be copied
+  transientStateMap_(rhs.transientStateMap_) /// @todo: I think this is wrong, transient shouldn't be copied
 {
 }
 
@@ -51,8 +52,8 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
   if (&rhs != this)
   {
     stateMap_ = rhs.stateMap_;
-    transientStateMap_ = rhs.transientStateMap_;  //TODO: I think this is wrong, transient shouldn't be copied
-    //TODO??
+    transientStateMap_ = rhs.transientStateMap_;  /// @todo: I think this is wrong, transient shouldn't be copied
+    /// @todo??
     //stateChangedSignal_.disconnect_all_slots();
   }
   return *this;
@@ -109,11 +110,17 @@ SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientVal
   return i != transientStateMap_.end() ? boost::make_optional(i->second) : TransientValueOption();
 }
 
-void SimpleMapModuleState::setTransientValue(const std::string& name, const TransientValue& value)
+void SimpleMapModuleState::setTransientValue(const std::string& name, const TransientValue& value, bool fireSignal)
 {
   transientStateMap_[name] = value;
 
-  stateChangedSignal_();  //TODO: ???
+  if (fireSignal)
+    fireTransientStateChangeSignal();
+}
+
+void SimpleMapModuleState::fireTransientStateChangeSignal()
+{
+  stateChangedSignal_();  /// @todo: ???
 }
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const

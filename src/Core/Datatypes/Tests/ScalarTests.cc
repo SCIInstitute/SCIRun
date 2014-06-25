@@ -36,7 +36,7 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 using namespace SCIRun::Core::Datatypes;
 
-//TODO DAN
+/// @todo DAN
 
 TEST(ColorTests, CanParseString)
 {

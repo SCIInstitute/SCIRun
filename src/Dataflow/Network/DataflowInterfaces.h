@@ -25,13 +25,14 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation Dataflow/Network/DataflowInterfaces.h
 
 #ifndef DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H
 #define DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H 
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
+#include <boost/signals2/signal.hpp>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
@@ -46,6 +47,8 @@ namespace Networks {
     virtual void send(DatatypeSinkInterfaceHandle receiver, Core::Datatypes::DatatypeHandle data) = 0;
   };
 
+  typedef boost::signals2::signal<void(SCIRun::Core::Datatypes::DatatypeHandle)> DataHasChangedSignalType;
+  
   class SCISHARE DatatypeSinkInterface
   {
   public:
@@ -60,6 +63,7 @@ namespace Networks {
     virtual void waitForData() = 0;
     virtual Core::Datatypes::DatatypeHandleOption receive() = 0;
     virtual bool hasChanged() const = 0;
+    virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber) = 0;
   };
 
 }}}

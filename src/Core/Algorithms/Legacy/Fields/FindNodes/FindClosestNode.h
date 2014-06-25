@@ -30,14 +30,14 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FINDNODES_FINDCLOSESTNODE_H
 #define CORE_ALGORITHMS_FIELDS_FINDNODES_FINDCLOSESTNODE_H 1
 
-//! Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 
-//! Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 #include <vector>
@@ -49,12 +49,12 @@ using namespace SCIRun;
 class SCISHARE FindClosestNodeAlgo : public AlgoBase
 {
   public:
-    //! Set defaults
+    /// Set defaults
     FindClosestNodeAlgo()
     {
     }
   
-    //! run the algorithm
+    /// run the algorithm
     bool run(FieldHandle input, FieldHandle points, std::vector<index_type>& nodes);
 };
 

@@ -24,65 +24,145 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author : Spencer Frisby
+   Date   : May 2014
 */
 
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-//////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
-//////////////////////////////////////////////////////////////////////////
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <iostream>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
-    
-const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
-const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::ELECTRODE_TRIANGULATION("ELECTRODE_TRIANGULATION");
-const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::ELECTRODE_TRIANGULATION2("ELECTRODE_TRIANGULATION2");
-const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::COIL("COIL");
-const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::COIL2("COIL2");
-const AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
-const AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::COILS_FIELD("COILS_FIELD");
 
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skin() {return AlgorithmParameterName("Skin");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skull() {return AlgorithmParameterName("Skull");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF() { return AlgorithmParameterName("CSF");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM() { return AlgorithmParameterName("GM");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM() { return AlgorithmParameterName("WM");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Electrode() { return AlgorithmParameterName("Electrode");}
+
+AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::MESH("MESH");
+AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::INHOMOGENEOUS_SKULL("INHOMOGENEOUS_SKULL");
+AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::ANISOTROPIC_WM("ANISOTROPIC_WM");
+AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH");
+
+SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
+{
+  addParameter(Skin(),      0.33);
+  addParameter(Skull(),     0.01);
+  addParameter(CSF(),       1.79);
+  addParameter(GM(),        0.33);
+  addParameter(WM(),        0.14);
+  addParameter(Electrode(), 1.4);
+}
 
 AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
-  auto tri2 = input.get<Field>(ELECTRODE_TRIANGULATION2);
-  auto coil = input.get<Field>(COIL);
-  auto coil2 = input.get<Field>(COIL2);
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
+  auto mesh  = input.get<Field>(MESH);
+  auto skull = input.get<Matrix>(INHOMOGENEOUS_SKULL);
+  auto wm    = input.get<Matrix>(ANISOTROPIC_WM);
+
+ /* ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");
-  //old-style run call, just put algorithm code here
-  //auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).getInt()));
-  // CODE HERE
-  FieldHandle out1,out2;
-
-  //Algorithm starts here:
-  //VField* vfield = elc_coil_pos_and_normal->vfield();
-   VMesh*  vmesh  = pos_orient->vmesh();
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");*/
  
-   std::cout << "a: " << vmesh->num_nodes() << std::endl;
-   //for (int i=0;i<vmesh->num_nodes();;i++)
-   //{
-   
-   
-   //}
-  //
-
-
   AlgorithmOutput output;
-  output[ELECTRODES_FIELD] = out1;
-  output[COILS_FIELD] = out2;
+  
+  FieldHandle output_field = run(mesh);
+  
+  output[OUTPUTMESH] = output_field;;
+
+  return output;
+}
+
+FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
+{
+  // making sure the field is not null
+  if (!fh)
+    THROW_ALGORITHM_INPUT_ERROR("Field supplied is empty ");
+  
+  // making sure the data is on the elem and not the nodes
+  FieldInformation fi(fh);
+  if (!fi.is_constantdata())
+    THROW_ALGORITHM_INPUT_ERROR("This function requires the data to be on the elements ");
+  
+  // making sure the field contains data
+  VField* vfield = fh->vfield();
+  if (vfield->is_nodata())
+    THROW_ALGORITHM_INPUT_ERROR("Field supplied contained no data ");
+  
+  // making sure the field is not in vector format
+  if (vfield->is_vector())
+    THROW_ALGORITHM_INPUT_ERROR("Function is not setup to work with vectors at this time ");
+  
+  // making sure no field value (from the input) is outside the range 1-6
+  double ival = 0;
+  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++)
+  {
+    vfield->get_value(ival, i);
+    if (ival > 6 || ival < 1)
+      THROW_ALGORITHM_INPUT_ERROR("Field values were outside the range 1-6 ");
+  }
+  
+  // array holding conductivities
+  double conductivies[] = {get(Skin()).getDouble(),
+    get(Skull()).getDouble(), get(CSF()).getDouble(),
+    get(GM()).getDouble(), get(WM()).getDouble(),
+    get(Electrode()).getDouble()};
+  
+  // replacing field value with conductivity value
+  FieldHandle output = CreateField(fi, fh->mesh());
+  VField* ofield = output->vfield();
+  int val = 0;
+  int cnt = 0;
+  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++)
+  {
+    vfield->get_value(val, i);
+    switch (val)
+    {
+      case 1:
+        ofield->set_value(conductivies[0], i);
+        break;
+      case 2:
+        ofield->set_value(conductivies[1], i);
+        break;
+      case 3:
+        ofield->set_value(conductivies[2], i);
+        break;
+      case 4:
+        ofield->set_value(conductivies[3], i);
+        break;
+      case 5:
+        ofield->set_value(conductivies[4], i);
+        break;
+      case 6:
+        ofield->set_value(conductivies[5], i);
+        break;
+    }
+    
+    cnt++;
+    if (cnt == 500)
+    {
+      cnt = 0;
+      update_progress_max(i,vfield->vmesh()->num_elems());
+    }
+  }
+
   return output;
 }

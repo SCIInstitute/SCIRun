@@ -31,18 +31,17 @@
 #ifndef CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H
 #define CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H 1
 
-//! STL datatypes needed
+/// STL datatypes needed
 #include <algorithm>
 
-//! Datatypes used
-//#include <Core/Datatypes/Matrix.h>
+/// Datatypes used
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Math/MiscMath.h>
-//! Base for algorithm
+/// Base for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -57,16 +56,15 @@ class SCISHARE ApplyMappingMatrixAlgo : public AlgorithmBase
     static AlgorithmInputName Destination;
     static AlgorithmInputName Mapping;
     static AlgorithmOutputName Output;  
-    // Algorithm defaults
+    /// Algorithm defaults
     ApplyMappingMatrixAlgo();
-    ~ApplyMappingMatrixAlgo();
 
-    // Algorithm Functions
-    bool run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping, FieldHandle& output) const;
+    /// Algorithm Functions
+    FieldHandle run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping) const;
     virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 };
 
-} // namespace SCIRunAlgo
+} /// namespace SCIRunAlgo
 }}}
 
-#endif // ApplyMappingMatrix_h
+#endif

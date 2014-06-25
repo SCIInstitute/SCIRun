@@ -25,6 +25,7 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
+/// @todo Documentation Core/Utils/Lockable.h
 
 #ifndef CORE_UTILS_LOCKABLE_H
 #define CORE_UTILS_LOCKABLE_H
@@ -43,7 +44,7 @@ namespace SCIRun
 namespace Core
 {
 
-class Lockable : public boost::noncopyable
+class Lockable : boost::noncopyable
 {
 public:
 	typedef boost::mutex mutex_type;
@@ -61,7 +62,7 @@ private:
 	mutable mutex_type mutex_;
 };
 
-class RecursiveLockable : public boost::noncopyable
+class RecursiveLockable : boost::noncopyable
 {
 public:
 	typedef boost::recursive_mutex mutex_type;
@@ -79,7 +80,7 @@ private:
 	mutable mutex_type mutex_;
 };
 
-class SharedLockable : public boost::noncopyable
+class SharedLockable : boost::noncopyable
 {
 public:
 	typedef boost::shared_mutex mutex_type;

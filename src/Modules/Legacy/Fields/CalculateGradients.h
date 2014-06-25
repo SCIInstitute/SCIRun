@@ -36,6 +36,9 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+      /// @class CalculateGradients
+      /// @brief Compute the derivative of a scalar field and output it as a vector field. 
+
       class SCISHARE CalculateGradients : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
         public Has1OutputPort<FieldPortTag>

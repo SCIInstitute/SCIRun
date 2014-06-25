@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+/// @todo Documentation Core/Command/GlobalCommandBuilderFromCommandLine.cc
+
 #include <iostream>
 #include <boost/make_shared.hpp>
 #include <Core/Command/CommandQueue.h>
@@ -64,7 +66,7 @@ using namespace SCIRun::Core::Commands;
     if (!params->disableGui())
       q->enqueue(cmdFactory_->create(ShowMainWindow));
     else
-      std::cout << "HEADLESS MODE" << std::endl;  //TODO obviously
+      std::cout << "HEADLESS MODE" << std::endl;  /// @todo obviously
 
     if (params->inputFile())
       q->enqueue(cmdFactory_->create(LoadNetworkFile));

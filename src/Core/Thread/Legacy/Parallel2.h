@@ -28,16 +28,15 @@
 
 
 
-/*
- *  Parallel2: Automatically instantiate several threads, with 2 arguments
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 2000
- *
- */
+///
+///@file   Parallel2.h
+///@brief  Automatically instantiate several threads, with 2 arguments
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 2000
+///
 
 #ifndef Core_Thread_Parallel2_h
 #define Core_Thread_Parallel2_h
@@ -48,13 +47,13 @@
 namespace SCIRun {
 /**************************************
  
- CLASS
+@class
  Parallel2
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@details
  Helper class to make instantiating threads to perform a parallel
  task easier.
    
@@ -62,14 +61,14 @@ namespace SCIRun {
 template<class T, class Arg1, class Arg2> class Parallel2  : public ParallelBase {
 public:
   //////////
-  // Create a Parallel2 object, using the specified member
-  // function instead of <i>Parallel2</i>.  This will
-  // typically be used like:
-  // <b><pre>Thread::Parallel2(Parallel2&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
+  /// Create a Parallel2 object, using the specified member
+  /// function instead of <i>Parallel2</i>.  This will
+  /// typically be used like:
+  /// <b><pre>Thread::Parallel2(Parallel2&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
   Parallel2(T* obj, void (T::*pmf)(int, Arg1, Arg2), Arg1 a1, Arg2 a2);
 	    
   //////////
-  // Destroy the Parallel2 object - the threads will remain alive.
+  /// Destroy the Parallel2 object - the threads will remain alive.
   virtual ~Parallel2();
   T* obj_;
   void (T::*pmf_)(int, Arg1, Arg2);
@@ -78,7 +77,7 @@ public:
 protected:
   virtual void run(int proc);
 private:
-  // Cannot copy them
+  /// Cannot copy them
   Parallel2(const Parallel2&);
   Parallel2<T, Arg1, Arg2>& operator=(const Parallel2<T, Arg1, Arg2>&);
 };

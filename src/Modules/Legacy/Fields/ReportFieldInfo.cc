@@ -40,6 +40,9 @@ namespace ModelCreation {
 
 using namespace SCIRun;
 
+/// @class ReportFieldInfo
+/// @brief ReportFieldInfo is used to view the attributes of fields. 
+
 class ReportFieldInfo : public Module {
   public:
     ReportFieldInfo(GuiContext* ctx);

@@ -26,17 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  WritePath.cc: Save persistent representation of a path to a file
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///@author
+///   Steven G. Parker
+///   Department of Computer Science
+///   University of Utah
+///@date  July 1994
 
 #include <Dataflow/Network/Ports/PathPort.h>
 #include <Dataflow/Modules/DataIO/GenericWriter.h>
@@ -44,6 +38,9 @@
 namespace SCIRun {
 
 template class GenericWriter<PathHandle>;
+
+/// @class WritePath
+/// @brief This module writes a camera path to file (a SCIRun .path file). 
 
 class WritePath : public GenericWriter<PathHandle> {
 public:

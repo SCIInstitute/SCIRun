@@ -28,16 +28,17 @@
 
 
 
-/*
- *  MatrixOperations.h: Matrix Operations
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   August 2003
- *
- */
+///
+///@file  MatrixOperations.h
+///@brief Matrix Operations
+/// 
+///@author
+///    Michael Callahan
+///    Department of Computer Science
+///    University of Utah
+///@date  August 2003
+/// 
+ 
 
 #ifndef CORE_DATATYPES_MATRIXOPERATIONS_H
 #define CORE_DATATYPES_MATRIXOPERATIONS_H 1

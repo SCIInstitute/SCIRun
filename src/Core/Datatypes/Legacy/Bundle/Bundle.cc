@@ -26,6 +26,8 @@
   DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Legacy/Bundle/Bundle.cc
+
 #include <boost/algorithm/string.hpp>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -607,7 +609,7 @@ DatatypeHandle Bundle::get(const std::string& name) const
   return DatatypeHandle();
 }
 
-//TODO: extract into teplate impl, but do it here to avoid including every type in Bundle.h
+/// @todo: extract into teplate impl, but do it here to avoid including every type in Bundle.h
 
 FieldHandle Bundle::getField(const std::string& name) const
 {

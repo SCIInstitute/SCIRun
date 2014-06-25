@@ -26,14 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  SplitFileName.cc:
- *
- *  Written by:
- *   jeroen
- *   TODAY'S DATE HERE
- *
- */
+///@file  SplitFileName.cc
+///
+///@author
+///   jeroen
 
 #include <Dataflow/Network/Module.h>
 
@@ -43,6 +39,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class SplitFileName
+/// @brief This module splits a filename in: pathname, filename (base), and extension. 
 
 class SplitFileName : public Module {
 public:

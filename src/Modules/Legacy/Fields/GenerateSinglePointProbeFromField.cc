@@ -48,6 +48,9 @@ namespace SCIRun {
 
 using std::stack;
 
+/// @class GenerateSinglePointProbeFromField
+/// @brief This module generates a single probe. 
+
 class GenerateSinglePointProbeFromField : public Module
 {
   public:

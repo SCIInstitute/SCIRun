@@ -36,6 +36,9 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
 
+  /// @class AppendMatrixModule
+  /// @brief Append the rows or columns of a matrix to a base matrix. 
+
   class SCISHARE AppendMatrixModule : public SCIRun::Dataflow::Networks::Module,
     public Has3InputPorts<MatrixPortTag, MatrixPortTag, DynamicPortTag<MatrixPortTag>>,
     public Has1OutputPort<MatrixPortTag>

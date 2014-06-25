@@ -26,17 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  ConvertMeshCoordinateSystem.cc: Take in fields and add all of their points into one field
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   November 1994
- *
- */
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  November 1994
+///
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Algorithms/Fields/TransformMesh/ConvertMeshCoordinateSystem.h>
@@ -44,8 +40,10 @@
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+///@class ConvertMeshCoordinateSystem
+///@brief Take in fields and add all of their points into one field
 
 class ConvertMeshCoordinateSystem : public Module {
   public:

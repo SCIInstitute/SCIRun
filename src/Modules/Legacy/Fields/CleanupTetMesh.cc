@@ -36,6 +36,10 @@ namespace SCIRun {
 
 using namespace SCIRun;
 
+/// @class CleanupTetMesh
+/// @brief This module tidies up node orientation and removes degenerate
+/// tetrahedral elements on a given tetrahedral mesh. 
+
 class CleanupTetMesh : public Module {
   public:
     CleanupTetMesh(GuiContext*);

@@ -36,6 +36,9 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+	/// @class ConvertQuadSurfToTriSurf
+	/// @brief Convert a QuadSurfField into a TriSurfField. 
+
       class SCISHARE ConvertQuadSurfToTriSurf : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
         public Has1OutputPort<FieldPortTag>

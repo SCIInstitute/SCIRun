@@ -26,20 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  TransformPlanarMesh.cc
- *
- *  Rotate and flip field to get it into "standard" view
- *
- *  Written by:
- *   Allen Sanderson
- *   Scientific Computing and Imaging Institute
- *   University of Utah
- *   April 2006
- *
- */
+///
+///@file  TransformPlanarMesh.cc
+///
+///@brief Rotate and flip field to get it into "standard" view
+///
+///@author
+///   Allen Sanderson
+///   Scientific Computing and Imaging Institute
+///   University of Utah
+///@date  April 2006
+///
 
 #include <Core/Datatypes/Field.h> 
 #include <Core/Datatypes/Mesh.h> 
@@ -52,6 +49,8 @@
 
 namespace SCIRun {
 
+/// @class TransformPlanarMesh
+/// @brief Non-interactive geometric transform of a field. 
 
 class TransformPlanarMesh : public Module
 {
@@ -95,8 +94,8 @@ TransformPlanarMesh::execute()
 
   if( matrix_input_handle.get_rep() ) 
   {
-    //! Check to see what index has been selected and if it matches
-    //! the gui index.a
+    /// Check to see what index has been selected and if it matches
+    /// the gui index.a
     if( gui_trans_x_.get() != matrix_input_handle->get(0, 0) ||
         gui_trans_y_.get() != matrix_input_handle->get(1, 0) ) 
     {
@@ -108,8 +107,8 @@ TransformPlanarMesh::execute()
     }
   }
 
-  //! If no data or an input change recreate the field. I.e Only
-  //! execute when neeed.
+  /// If no data or an input change recreate the field. I.e Only
+  /// execute when neeed.
   if (inputs_changed_  ||
       gui_axis_.changed( true ) ||
       gui_invert_.changed( true ) ||

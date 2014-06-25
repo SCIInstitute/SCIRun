@@ -40,6 +40,9 @@
 
 namespace SCIRun {
 
+/// @class ConvertHexVolToTetVol
+/// @brief Convert a HexVolField into a TetVolField.
+
 class SCISHARE ConvertHexVolToTetVol : public Module {
   public:
     ConvertHexVolToTetVol(GuiContext*);
@@ -55,7 +58,7 @@ DECLARE_MAKER(ConvertHexVolToTetVol)
 ConvertHexVolToTetVol::ConvertHexVolToTetVol(GuiContext* ctx)
   : Module("ConvertHexVolToTetVol", ctx, Source, "ChangeMesh", "SCIRun")
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 

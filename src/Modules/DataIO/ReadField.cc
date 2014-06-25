@@ -27,121 +27,70 @@
 */
 
 
-/*
- *  ReadField.cc: Read a persistent field from a file
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+///@file  ReadField.cc 
+///@brief Read a persistent field from a file
+///
+///@author
+///   Steven G. Parker
+///   Department of Computer Science
+///   University of Utah
+///@date   July 1994
+///
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/DataIO/ReadField.h>
-
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
-
-
 class ReadField : public GenericReader<FieldHandle> {
   protected:
-    GuiString gui_types_;
-    GuiString gui_filetype_;
     GuiString gui_filename_base_;
     GuiInt    gui_number_in_series_;
     GuiInt    gui_delay_;
-
-    virtual bool call_importer(const std::string &filename, FieldHandle &fHandle);
-
-  public:
-    ReadField(GuiContext* ctx);
-    virtual ~ReadField() {}
-    virtual void execute();
-};
-
-
-DECLARE_MAKER(ReadField)
 #endif
 
 ReadFieldModule::ReadFieldModule()
   : my_base("ReadField", "DataIO", "SCIRun", "Field")    
-  //,
-    //gui_types_(get_ctx()->subVar("types", false)),
-    //gui_filetype_(get_ctx()->subVar("filetype")),
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
     //gui_delay_(get_ctx()->subVar("delay"), 0)
 {
   INITIALIZE_PORT(Field);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
-  std::vector<std::string> importers;
-  mgr.get_importer_list(importers);
-  
-  std::string importtypes = "{";
-  importtypes += "{{SCIRun Field File} {.fld} } ";
-
-  for (unsigned int i = 0; i < importers.size(); i++)
-  {
-    FieldIEPlugin *pl = mgr.get_plugin(importers[i]);
-    if (pl->fileextension != "")
-    {
-      importtypes += "{{" + importers[i] + "} {" + pl->fileextension + "} } ";
-    }
-    else
-    {
-      importtypes += "{{" + importers[i] + "} {.*} } ";
-    }
-  }
-
-  importtypes += "}";
-
-  gui_types_.set(importtypes);
-#endif
+  auto types = makeGuiTypesListForImport(mgr);
+  get_state()->setValue(Variables::FileTypeList, types);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-bool
-ReadField::call_importer(const std::string &filename,
-			 FieldHandle & fHandle)
+bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fHandle) 
 {
-  const std::string ftpre = gui_filetype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-  
+  ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
-  FieldIEPlugin *pl = mgr.get_plugin(ft);
+  FieldIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).getString());
   if (pl)
   {
-    fHandle = pl->filereader(this, filename.c_str());
-    return fHandle.get_rep();
+    fHandle = pl->readFile(filename, getLogger());
+    return fHandle != nullptr;
   }
   return false;
 }
-#endif
 
 void
 ReadFieldModule::execute()
 {     
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
-
-
-  const std::string ftpre = gui_filetype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-
-  importing_ = !(ft == "" ||
-		 ft == "SCIRun Field File" ||
-		 ft == "SCIRun Field Any");
 #endif
-
   my_base::execute();
+}
+
+bool ReadFieldModule::useCustomImporter(const std::string& filename) const 
+{
+  return boost::filesystem::extension(filename) != ".fld";
 }

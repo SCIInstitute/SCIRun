@@ -30,6 +30,8 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
+/// @todo Documentation Core/GeometryPrimitives/PointVectorOperators.h
+
 #ifndef CORE_GEOMETRY_POINTVECTOROPERATORS_H
 #define CORE_GEOMETRY_POINTVECTOROPERATORS_H
 
@@ -40,11 +42,6 @@
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
-
-  //inline Vector operator-(const Point& p1, const Point& p2)
-  //{
-  //  return Vector(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]);
-  //}
 
   inline Point& Point::operator+=(const Vector& v)
   {
@@ -68,7 +65,6 @@ namespace Geometry {
     d_[1] = p[1]; 
     d_[2] = p[2];
   }
-
 
   inline Vector Point::operator+(const Point& p) const
   {

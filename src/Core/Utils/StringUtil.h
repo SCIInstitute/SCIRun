@@ -25,11 +25,15 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
+/// @todo Documentation Core/Utils/StringUtil.h
 
 #ifndef CORE_UTILS_STRINGUTIL_H
 #define CORE_UTILS_STRINGUTIL_H 1
 
 #include <sstream>
+#include <vector>
+#include <iterator>
+#include <boost/shared_ptr.hpp>
 #include <Core/Utils/share.h>
 
 namespace SCIRun 
@@ -37,7 +41,15 @@ namespace SCIRun
 namespace Core
 {
     
-
+template <typename T>
+std::vector<T*> toVectorOfRawPointers(const std::vector<boost::shared_ptr<T>>& vec)
+{
+  std::vector<T*> raws;
+  raws.reserve(vec.size());
+  std::transform(vec.begin(), vec.end(), std::back_inserter(raws), [](boost::shared_ptr<T> ptr) { return ptr.get(); });
+  return raws;
+}
+  
 template <typename T>
 std::string to_string(const T& t)
 {
@@ -78,7 +90,7 @@ std::vector<boost::shared_ptr<T>> upcast_range(Iter begin, Iter end)
   return std::move(output);
 }
 
-template <class T, class Cont>
+template <class T, class Cont> 
 std::vector<boost::shared_ptr<T>> upcast_range(const Cont& container)
 {
   return upcast_range<T>(container.begin(), container.end());

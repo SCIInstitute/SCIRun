@@ -36,6 +36,9 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+	/// @class GetFieldBoundary
+	/// @brief This module extracts a boundary surface from a volume field. 
+
       class SCISHARE GetFieldBoundary : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
         public Has2OutputPorts<FieldPortTag, MatrixPortTag>

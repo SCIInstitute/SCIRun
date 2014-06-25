@@ -26,18 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  CoregisterPointClouds.cc:  CoregisterPointClouds two point clouds
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -51,6 +44,9 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace SCIRun {
+
+/// @class CoregisterPointClouds
+/// @brief CoregisterPointClouds the first three points of two PointCloudFields
 
 class CoregisterPointClouds : public Module
 {
@@ -209,7 +205,7 @@ CoregisterPointClouds::execute()
 }
 
 
-//! Commands invoked from the Gui.  Pause/unpause/stop the search.
+/// Commands invoked from the Gui.  Pause/unpause/stop the search.
 
 void
 CoregisterPointClouds::tcl_command(GuiArgs& args, void* userdata)

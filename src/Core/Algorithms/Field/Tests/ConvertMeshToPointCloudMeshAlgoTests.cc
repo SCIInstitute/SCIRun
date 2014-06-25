@@ -97,9 +97,9 @@ protected:
     // How to set parameters on an algorithm (that come from the GUI)
     algo_.set(GetDomainBoundaryAlgo::AddOuterBoundary, ::std::tr1::get<0>(GetParam()));
     
-    //// TODO: this logic matches the wacky module behavior
+    /// @todo: this logic matches the wacky module behavior
     algo_.set(GetDomainBoundaryAlgo::UseRange, ::std::tr1::get<1>(GetParam()));
-    if (!::std::tr1::get<1>(GetParam()))//!useRange)
+    if (!::std::tr1::get<1>(GetParam()))///useRange)
     {
       algo_.set(GetDomainBoundaryAlgo::Domain,   ::std::tr1::get<2>(GetParam()));
       algo_.set(GetDomainBoundaryAlgo::MinRange, ::std::tr1::get<3>(GetParam()));
@@ -114,7 +114,6 @@ protected:
 
 TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)
 {
-    //EXPECT_NO_FATAL_FAILURE(GetDomainBoundaryTestsParameterized); 
     //EXPECT_EQ(0, boundary->vmesh()->num_nodes()); 
   boundary_.reset();
   ASSERT_TRUE(algo_.runImpl(latVol_, unused_, boundary_));

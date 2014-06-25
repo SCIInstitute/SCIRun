@@ -33,8 +33,10 @@
 
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class TransformMeshWithTransform
+/// @brief Non-interactive geometric transform of a field. 
 
 class TransformMeshWithTransform : public Module
 {

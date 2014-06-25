@@ -97,7 +97,6 @@ namespace SCIRun {
         private:
           size_t moduleCounter_;
           ModuleStateFactoryHandle stateFactory_;
-          //std::map<MockModulePtr, ModuleStateHandle> stateMap_;
         };
       }
     }

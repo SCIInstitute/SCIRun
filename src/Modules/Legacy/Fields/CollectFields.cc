@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/CollectFields.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Thread/Mutex.h>
@@ -37,8 +41,10 @@
 
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class CollectFields
+/// @brief This module collects and joins fields while iterating over a dataflow loop. 
 
 class CollectFields : public Module {
   public:
@@ -151,3 +157,4 @@ CollectFields::tcl_command(GuiArgs& args, void* userdata)
 } // End namespace SCIRun
 
 
+#endif

@@ -36,7 +36,8 @@
 
 using namespace SCIRun;
 
-
+/// @class WriteBundle
+/// @brief This module writes a bundle to file (a SCIRun .bdl file). 
 
 class WriteBundle  : public GenericWriter<BundleHandle> {
   public:

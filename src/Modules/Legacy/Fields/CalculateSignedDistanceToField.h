@@ -36,6 +36,10 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+      /// @class CalculateSignedDistanceToField
+      /// @brief Calculate the distance to a surface mesh and use the normal of
+      /// the surface to determine on which side of the surface the element is located. 
+
       class SCISHARE CalculateSignedDistanceToField : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, FieldPortTag>,
         public Has2OutputPorts<FieldPortTag, FieldPortTag>

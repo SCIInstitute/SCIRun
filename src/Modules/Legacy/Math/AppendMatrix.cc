@@ -33,6 +33,9 @@
 
 namespace SCIRun {
 
+/// @class AppendMatrix
+/// @brief Append the rows or columns of a matrix to a base matrix. 
+
 class AppendMatrix : public Module {
   public:
     AppendMatrix(GuiContext*);

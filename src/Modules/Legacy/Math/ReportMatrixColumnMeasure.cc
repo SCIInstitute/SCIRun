@@ -33,6 +33,10 @@
 
 namespace SCIRun {
 
+/// @class ReportMatrixColumnMeasure
+/// @brief This module computes a measure on each column of the input matrix and
+/// stores the result in the output matrix. 
+
 class ReportMatrixColumnMeasure : public Module {
 public:
   ReportMatrixColumnMeasure(GuiContext*);

@@ -26,12 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  DenseMatrixMultiplication.h
- */
-
+///@brief 
+///@file  DenseMatrixMultiplication.h
 
 #ifndef CORE_DATATYPES_DENSEMATRIXMULTIPLICATION_H
 #define CORE_DATATYPES_DENSEMATRIXMULTIPLICATION_H 

@@ -27,11 +27,11 @@
 */
 
 
-
-//    File   : EditMeshBoundingBox.cc
-//    Author : McKay Davis
-//    Date   : July 2002
-
+///
+///   @file    EditMeshBoundingBox.cc
+///   @author  McKay Davis
+///   @date    July 2002
+///
 
 #include <Dataflow/Network/Module.h>
 
@@ -51,6 +51,9 @@ namespace SCIRun {
 
 using std::endl;
 using std::pair;
+
+/// @class EditMeshBoundingBox
+/// @brief EditMeshBoundingBox is used to transform the field geometry.
 
 class EditMeshBoundingBox : public Module {
   public:

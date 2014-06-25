@@ -36,6 +36,9 @@
 
 namespace SCIRun {
 
+/// @class ReportMatrixInfo
+/// @brief This module is used to view the attributes of matrices. 
+
 class ReportMatrixInfo : public Module {
 private:
   GuiString gui_matrixname_;

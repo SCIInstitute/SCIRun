@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : Bases.h
-//    Author : Frank B. Sachse
-//    Date   : 28 Nov 2005  
+///   @file    Bases.h
+///   @author  Frank B. Sachse
+///   @date    28 Nov 2005  
 
 #ifndef CORE_BASIS_BASES_H
 #define CORE_BASIS_BASES_H 1

@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : HexTrilinearLgn.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Dec 04 2004
+///   @file    HexTrilinearLgn.h
+///   @author  Martin Cole, Frank B. Sachse
+///   @date    Dec 04 2004
 
 #ifndef CORE_BASIS_HEXTRILINEARLGN_H
 #define CORE_BASIS_HEXTRILINEARLGN_H 1
@@ -45,52 +45,52 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of HexTrilinearLgn 
+/// Class for describing unit geometry of HexTrilinearLgn 
 class SCISHARE HexTrilinearLgnUnitElement {
 public:
-  //! Parametric coordinates of vertices of unit edge 
+  /// Parametric coordinates of vertices of unit edge 
   static double unit_vertices[8][3];
-  //! References to vertices of unit edge   
+  /// References to vertices of unit edge   
   static int unit_edges[12][2]; 
-  //! References to vertices of unit face  
+  /// References to vertices of unit face  
   static int unit_faces[6][4];  
-  //! References to normals of unit face 
+  /// References to normals of unit face 
   static double unit_face_normals[6][3];  
-  //! Parametric coordinate used for the center
+  /// Parametric coordinate used for the center
   static double unit_center[3];
  
   HexTrilinearLgnUnitElement();
   virtual ~HexTrilinearLgnUnitElement();
 
-  //! return dimension of domain 
+  /// return dimension of domain 
   static int domain_dimension() 
     { return 3; } 
   
-  //! return size of the domain
+  /// return size of the domain
   static double domain_size() 
     { return 1.0; }
   
-  //! return number of vertices
+  /// return number of vertices
   static int number_of_vertices() 
     { return 8; } 
   
-  //! return number of vertices
+  /// return number of vertices
   static int number_of_mesh_vertices() 
     { return 8; } 
   
-  //! return degrees of freedom
+  /// return degrees of freedom
   static int dofs() 
     { return 8; } 
   
-  //! return number of edges
+  /// return number of edges
   static int number_of_edges() 
     { return 12; } 
   
-  //! return number of vertices per face 
+  /// return number of vertices per face 
   static int vertices_of_face() 
     { return 4; } 
   
-  //! return number of faces per cell 
+  /// return number of faces per cell 
   static int faces_of_cell() 
     { return 6; } 
 
@@ -108,16 +108,16 @@ public:
 };
 
 
-//! Class for creating geometrical approximations of Hex meshes
+/// Class for creating geometrical approximations of Hex meshes
 class HexApprox {  
 public:
  
   HexApprox() {}
   virtual ~HexApprox() {}
   
-  //! Approximate edge for element by piecewise linear segments
-  //! return: coords gives parametric coordinates of the approximation.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate edge for element by piecewise linear segments
+  /// return: coords gives parametric coordinates of the approximation.
+  /// Use interpolate with coordinates to get the world coordinates.
   
   template<class VECTOR>
   void approx_edge(const unsigned edge, 
@@ -147,13 +147,13 @@ public:
     } 	
   }
 
-  //! return number of vertices per face
+  /// return number of vertices per face
   virtual int get_approx_face_elements() const { return 4; }
 
     
-  //! Approximate faces for element by piecewise linear elements
-  //! return: coords gives parametric coordinates at the approximation point.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate faces for element by piecewise linear elements
+  /// return: coords gives parametric coordinates at the approximation point.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_face(const unsigned face, 
                    const unsigned div_per_unit, 
@@ -191,8 +191,8 @@ public:
 };
 
   
-//! Class for searching of parametric coordinates related to a 
-//! value in Hex meshes and fields
+/// Class for searching of parametric coordinates related to a 
+/// value in Hex meshes and fields
 template <class ElemBasis>
 class HexLocate : public Dim3Locate<ElemBasis> {
 public:
@@ -201,7 +201,7 @@ public:
   HexLocate() {}
   virtual ~HexLocate() {}
  
-  //! find value in interpolation for given value
+  /// find value in interpolation for given value
   template <class ElemData, class VECTOR>
   bool get_coords(const ElemBasis *pEB, VECTOR &coords, 
 		  const T& value, const ElemData &cd) const  
@@ -229,7 +229,7 @@ public:
   }
   
 protected:
-  //! find a reasonable initial guess 
+  /// find a reasonable initial guess 
   template <class ElemData, class VECTOR>
   void initial_guess(const ElemBasis *pElem, const T &val, const ElemData &cd, 
 		     VECTOR & guess) const
@@ -267,7 +267,7 @@ protected:
   }
 };
 
-//! Class with weights and coordinates for 1st order Gaussian integration
+/// Class with weights and coordinates for 1st order Gaussian integration
 template <class T>
 class HexGaussian1
 {
@@ -293,7 +293,7 @@ template <class T>
 T HexGaussian1<T>::GaussianWeights[1] = 
   {1.0};
  
-//! Class with weights and coordinates for 2nd order Gaussian integration
+/// Class with weights and coordinates for 2nd order Gaussian integration
 template <class T>
 class HexGaussian2 
 {
@@ -326,7 +326,7 @@ template <class T>
 T HexGaussian2<T>::GaussianWeights[8] = 
   {.125, .125, .125, .125, .125, .125, .125, .125};
 
-//! Class with weights and coordinates for 3rd order Gaussian integration
+/// Class with weights and coordinates for 3rd order Gaussian integration
 template <class T>
 class HexGaussian3 
 {
@@ -372,8 +372,8 @@ T HexGaussian3<T>::GaussianWeights[27] =
   };
 
   
-//! Class for handling of element of type hexahedron with 
-//! trilinear lagrangian interpolation
+/// Class for handling of element of type hexahedron with 
+/// trilinear lagrangian interpolation
 template <class T>
 class HexTrilinearLgn : 
       public BasisSimple<T>, 
@@ -391,7 +391,7 @@ public:
   
   static int polynomial_order() { return 1; }
 
-  //! get weight factors at parametric coordinate 
+  /// get weight factors at parametric coordinate 
   template<class VECTOR>
   inline void get_weights(const VECTOR& coords, double *w) const
     { get_linear_weights(coords,w); }
@@ -400,7 +400,7 @@ public:
   inline void get_derivate_weights(const VECTOR& coords, double *w) const
     { get_linear_derivate_weights(coords,w); }
     
-  //! get value at parametric coordinate 
+  /// get value at parametric coordinate 
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
@@ -418,7 +418,7 @@ public:
       w[7] * cd.node7());
   }
   
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &cd, 
 		VECTOR2 &derivs) const
@@ -458,7 +458,7 @@ public:
       w[23] * cd.node7());
   }
   
-  //! get parametric coordinate for value within the element
+  /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
   bool get_coords(VECTOR &coords, const T& value, 
 		  const ElemData &cd) const  
@@ -467,21 +467,21 @@ public:
     return CL.get_coords(this, coords, value, cd);
   }
     
-  //! get arc length for edge
+  /// get arc length for edge
   template <class ElemData>
   double get_arc_length(const unsigned edge, const ElemData &cd) const  
   {
     return get_arc3d_length<CrvGaussian1<double> >(this, edge, cd);
   }
  
-  //! get area
+  /// get area
   template <class ElemData>
   double get_area(const unsigned face, const ElemData &cd) const  
   {
     return get_area3<QuadGaussian3<double> >(this, face, cd);
   }
   
-  //! get volume
+  /// get volume
   template <class ElemData>
   double get_volume(const ElemData & cd) const  
   {

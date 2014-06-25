@@ -25,7 +25,11 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/ProjectPointsOntoMesh.cc
 
+#include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Algorithms/Fields/TransformMesh/ProjectPointsOntoMesh.h>
 
 #include <Dataflow/Network/Module.h>
@@ -78,3 +82,4 @@ ProjectPointsOntoMesh::execute()
 } // End namespace SCIRun
 
 
+#endif

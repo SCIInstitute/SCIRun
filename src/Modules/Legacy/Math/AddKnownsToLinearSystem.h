@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Math/AddKnownsToLinearSystem.h
 
 #ifndef MODULES_LEGACY_Math_AddKnownsToLinearSystem_H__
 #define MODULES_LEGACY_Math_AddKnownsToLinearSystem_H__
@@ -46,10 +47,10 @@ namespace SCIRun {
         virtual void execute();
 
         INPUT_PORT(0, LHS_Matrix, SparseRowMatrix);
-        INPUT_PORT(1, RHS_Vector, DenseMatrix);
+        INPUT_PORT(1, RHS_Vector, DenseColumnMatrix);
 	      INPUT_PORT(2, X_Vector, DenseMatrix);
         OUTPUT_PORT(0, OutPutLHSMatrix, SparseRowMatrix);
-	      OUTPUT_PORT(1, OutPutRHSVector, DenseMatrix);
+	      OUTPUT_PORT(1, OutPutRHSVector, DenseColumnMatrix);
 	
       };
 

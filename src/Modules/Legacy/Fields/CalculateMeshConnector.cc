@@ -24,8 +24,6 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-
-
 #include <Core/Algorithms/Fields/MeshDerivatives/CalculateMeshConnector.h>
 
 #include <Core/Datatypes/Field.h>
@@ -36,6 +34,10 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class CalculateMeshConnector
+/// @brief This module computes a connection between two meshes based on the
+/// minimal spatial distance between their nodes. 
 
 class CalculateMeshConnector : public Module {
   public:

@@ -27,21 +27,22 @@
 */
 
 
-/*
- *  ChooseMatrix.cc: Choose one input field to be passed downstream
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   November 1994
- *
- */
+///@file  ChooseMatrix.cc
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  November 1994
 
 #include <Dataflow/Network/ChooseModule.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
 namespace SCIRun {
+
+/// @class ChooseMatrix
+/// @brief This module takes in an arbitrary number of input matrices, and
+/// passes one of them downstream. 
 
 class ChooseMatrix : public ChooseModule< MatrixHandle > {
 public:

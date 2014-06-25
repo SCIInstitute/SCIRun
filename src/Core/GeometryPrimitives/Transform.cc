@@ -218,7 +218,7 @@ Transform::build_shear(double mat[4][4], const Vector& s, const Plane& p)
   double d=Dot(dn,p.normal());
   if (fabs(d)<0.00001) 
   {
-    //TODO: use real logger here
+    /// @todo: use real logger here
     std::cerr << "Transform - shear vector lies in shear fixed plane.  Returning identity." << std::endl;
     return;
   }
@@ -789,7 +789,6 @@ Transform::perspective(const Point& eyep, const Point& lookat,
   x*=xscale;
   y*=yscale;
   z*=zscale;
-  // pre_translate(Point(0,0,0)-eyep);
   double m[4][4];
   // Viewing...
   m[0][0]=x.x(); m[0][1]=y.x(); m[0][2]=z.x(); m[0][3]=eyep.x();

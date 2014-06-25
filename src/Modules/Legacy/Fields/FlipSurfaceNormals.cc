@@ -37,6 +37,10 @@ namespace SCIRun {
 
 //using namespace SCIRun;
 
+/// @class FlipSurfaceNormals
+/// @brief Changes the normal of the face of an element on a surface mesh by
+/// reordering how the nodes are ordered in the face definition.
+
 class FlipSurfaceNormals : public Module 
 {
   public:

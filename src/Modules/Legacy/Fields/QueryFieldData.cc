@@ -26,18 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  QueryFieldData: Field data operations
- *
- *  Written by:
- *   Allen R. Sanderson
- *   Michael Callahan
- *   SCI Institute
- *   University of Utah
- *   February 2006
- *
- */
+///
+///@author
+///   Allen R. Sanderson
+///   Michael Callahan
+///   SCI Institute
+///   University of Utah
+///@date  February 2006
+///
 
 
 #include <Core/Datatypes/String.h>
@@ -51,6 +47,9 @@
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
 namespace SCIRun {
+
+///@class QueryFieldData
+///@brief Query field data using a function.  
 
 class QueryFieldData : public Module
 {

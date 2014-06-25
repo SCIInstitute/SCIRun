@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
@@ -40,6 +39,9 @@
 #include <Dataflow/Network/Ports/StringPort.h>
 
 namespace SCIRun {
+
+/// @class CalculateMeshNodes
+/// @brief Calculate new positions for the node locations of the mesh.
 
 class CalculateMeshNodes : public Module 
 {

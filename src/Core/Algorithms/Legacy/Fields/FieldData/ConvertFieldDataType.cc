@@ -38,14 +38,14 @@ ConvertFieldDataTypeAlgo::run(FieldHandle input, FieldHandle& output)
 {
   algo_start("ConvertFieldData");
   
-  //! Safety check
+  /// Safety check
   if (input.get_rep() == 0)
   {
     error("No input field");
     algo_end(); return (false);
   }
   
-  //! Get the information of the input field
+  /// Get the information of the input field
   FieldInformation fo(input);
   
   std::string datatype;
@@ -68,7 +68,7 @@ ConvertFieldDataTypeAlgo::run(FieldHandle input, FieldHandle& output)
   ofield->copy_values(ifield);
   ofield->copy_properties(ifield);
   
-  //! Support for quadratic fields
+  /// Support for quadratic fields
   if (ofield->basis_order() == 2)
   {
     ofield->copy_evalues(ifield);

@@ -39,10 +39,14 @@
 #include <iostream>
 #include <sstream>
 
-
 namespace SCIRun {
 
 using namespace SCIRunAlgo;
+
+/// @class SolveLinearSystem
+/// @brief This module is used to solve the linear system Ax=b, where A is a
+/// given Matrix, b is a given right-hand-side vector, and the user wants to
+/// find the solution vector x. 
 
 class SolveLinearSystem : public Module, public AlgoCallBack {
 

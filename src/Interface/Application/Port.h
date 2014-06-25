@@ -142,7 +142,6 @@ private:
   boost::shared_ptr<ConnectionFactory> connectionFactory_;
   boost::shared_ptr<ClosestPortFinder> closestPortFinder_;
   PortActionsMenu* menu_;
-
   //TODO
   typedef std::map<std::string, std::map<bool, std::map<SCIRun::Dataflow::Networks::PortId, PortWidget*>>> PortWidgetMap;
   static PortWidgetMap portWidgetMap_;

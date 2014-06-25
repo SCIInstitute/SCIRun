@@ -39,7 +39,7 @@ namespace SCIRunAlgo {
 using namespace SCIRun;
 
 
-//! interpolate using the generic linear interpolator
+/// interpolate using the generic linear interpolator
 bool
 StreamLineIntegrators::interpolate( const Point &p,
 				    Vector &v)
@@ -114,7 +114,7 @@ StreamLineIntegrators::FindAdamsBashforth()
 void
 StreamLineIntegrators::FindAdamsMoulton()
 {
-  // TODO: Implement AdamsMoulton
+  /// @todo: Implement AdamsMoulton
 }
 
 

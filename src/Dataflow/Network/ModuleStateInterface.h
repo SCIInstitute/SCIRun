@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/ModuleStateInterface.h
+
 #ifndef DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H
 #define DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H 
 
@@ -63,7 +65,8 @@ namespace Networks {
     typedef boost::any TransientValue;
     typedef boost::optional<TransientValue> TransientValueOption;
     virtual TransientValueOption getTransientValue(const std::string& name) const = 0;
-    virtual void setTransientValue(const std::string& name, const TransientValue& value) = 0;
+    virtual void setTransientValue(const std::string& name, const TransientValue& value, bool fireSignal) = 0;
+    virtual void fireTransientStateChangeSignal() = 0;
 
     typedef boost::signals2::signal<void()> state_changed_sig_t;
 
@@ -77,7 +80,7 @@ namespace Networks {
     virtual ModuleStateInterface* make_state(const std::string& name) const = 0;
   };
 
-  //TODO split
+  /// @todo split
   template <class T>
   T any_cast_or_default_(const boost::any& x)
   {
@@ -87,7 +90,7 @@ namespace Networks {
     }
     catch (boost::bad_any_cast&)
     {
-      //TODO: use real logger here
+      /// @todo: use real logger here
       //std::cout << "Attempted any_cast failed, returning default value." << std::endl;
       return T();
     }

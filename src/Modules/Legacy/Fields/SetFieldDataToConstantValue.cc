@@ -35,6 +35,10 @@ namespace SCIRun {
 
 using namespace SCIRun;
 
+/// @class SetFieldDataToConstantValue
+/// @brief Sets field data to a given scalar value on a new output field based
+/// on the input field geometry. 
+
 class SetFieldDataToConstantValue : public Module {
   public:
     SetFieldDataToConstantValue(GuiContext*);

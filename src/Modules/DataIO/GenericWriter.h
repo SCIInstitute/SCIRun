@@ -29,15 +29,13 @@
 #ifndef MODULES_DATAIO_GENERIC_WRITER_H
 #define MODULES_DATAIO_GENERIC_WRITER_H
 
-/*
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+///@author
+///   Steven G. Parker
+///   Department of Computer Science
+///   University of Utah
+///@date  July 1994
+///
 
 #include <boost/filesystem.hpp>
 #include <Dataflow/Network/Module.h>
@@ -63,18 +61,20 @@ public:
 
 protected:
   HType       handle_;
-  std::string filename_, filetype_;
+  std::string filename_;
+  mutable std::string filetype_;
   Core::Algorithms::AlgorithmParameterName stateFilename_;
-  StaticPortName<typename HType::element_type, 0> objectPortName_;
+  StaticPortName<typename HType::element_type, 0>* objectPortName_;
 
   //GuiFilename filename_;
   //GuiString   filetype_;
   //GuiInt      confirm_;
   //GuiInt			confirm_once_;
-  bool        exporting_;
+  
+  virtual bool useCustomExporter(const std::string& filename) const = 0;
+  virtual bool call_exporter(const std::string &filename) { return false; }
 
-  virtual bool overwrite() { return true; } //TODO
-  virtual bool call_exporter(const std::string &filename);
+  virtual bool overwrite() { return true; } /// @todo
 };
 
 
@@ -86,7 +86,7 @@ GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std:
     //confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
 		//confirm_once_(get_ctx()->subVar("confirm-once"),0),
     stateFilename_(stateFilename),
-    exporting_(false)
+    objectPortName_(0)
 {
   INITIALIZE_PORT(Filename);
 }
@@ -108,19 +108,11 @@ GenericWriter<HType, PortTag>::overwrite()
 #endif
 
 template <class HType, class PortTag>
-bool
-GenericWriter<HType, PortTag>::call_exporter(const std::string &/*filename*/)
-{
-  return false;
-}
-
-
-template <class HType, class PortTag>
 void
 GenericWriter<HType, PortTag>::execute()
 {
   // If there is an optional input string set the filename to it in the GUI.
-  //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
+  /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
   if (!fileOption)
     filename_ = get_state()->getValue(stateFilename_).getString();
@@ -138,7 +130,12 @@ GenericWriter<HType, PortTag>::execute()
     filename_ = path.string();
   }
 
-  handle_ = getRequiredInput(objectPortName_);
+  if (!objectPortName_)
+  {
+    error("Logical error: object port name not specified.");
+    return;
+  }
+  handle_ = getRequiredInput(*objectPortName_);
   
   if (filename_.empty())
   {
@@ -153,7 +150,7 @@ GenericWriter<HType, PortTag>::execute()
 
   if (!overwrite()) return;
  
-  if (exporting_)
+  if (useCustomExporter(filename_))
   {
     if (!call_exporter(filename_))
     {

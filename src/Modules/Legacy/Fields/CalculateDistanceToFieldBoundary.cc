@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
@@ -36,6 +40,9 @@
 #include <Core/Algorithms/Fields/MeshDerivatives/GetFieldBoundary.h>
 
 namespace SCIRun {
+
+/// @class CalculateDistanceToFieldBoundary
+/// @brief Calculate the distance field to a boundary of a given mesh. 
 
 class CalculateDistanceToFieldBoundary : public Module 
 {
@@ -116,3 +123,4 @@ CalculateDistanceToFieldBoundary::execute()
 } // End namespace SCIRun
 
 
+#endif

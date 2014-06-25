@@ -30,7 +30,7 @@
 #undef SCISHARE
 
 #if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
-#  ifdef BUILD_Dataflow_Modules_Legacy_Fields
+#  ifdef BUILD_Modules_Legacy_Fields
 #    define SCISHARE __declspec(dllexport)
 #  else
 #    define SCISHARE __declspec(dllimport)

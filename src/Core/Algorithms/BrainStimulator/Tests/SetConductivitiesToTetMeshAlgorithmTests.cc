@@ -33,16 +33,106 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
-//////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
-//////////////////////////////////////////////////////////////////////////
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::TestUtils;
+using namespace SCIRun::Core::Algorithms;
 
-TEST(SetConductivitiesToTetMeshAlgorithm, DISABLED_Foo)
+namespace
+{
+  FieldHandle CreateTetMeshVectorOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarSevenElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh_7elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnElem()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
+  }
+  FieldHandle CreateTetMeshScalarOnNode()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+  }
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
-  FAIL() << "Insert code here for the most basic test cases !"; 
+  
+  double conductivities[] = {9.25, 25.1988, 3.5, 5.1988, 5.22, 22.2013};
+  
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Skin(),  conductivities[0]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Skull(), conductivities[1]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),   conductivities[2]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::GM(),    conductivities[3]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::WM(),    conductivities[4]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Electrode(), conductivities[5]);
+  
+  FieldHandle input  = CreateTetMeshScalarSevenElem();
+  FieldHandle output = algo.run(CreateTetMeshScalarSevenElem());
+  
+  VField* ivfield = input->vfield();
+  VField* ovfield = output->vfield();
+  int ival = 0;
+  double oval = 0;
+  for (VMesh::Elem::index_type i=0; i < ivfield->vmesh()->num_elems(); i++)
+  {
+    ivfield->get_value(ival, i);
+    if (ival != 1 && ival != 2 && ival != 3 && ival != 4 && ival !=5 && ival !=6)
+      FAIL() << "field value outside of range obtained " << std::endl;
+    ovfield->get_value(oval, i);
+    EXPECT_EQ(oval, conductivities[ival-1]);
+  }
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarThreeElem)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  double conductivities[] = {9.25, 25.1988, 3.5};
+  
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Skin(),  conductivities[0]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Skull(), conductivities[1]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),   conductivities[2]);
+  
+  FieldHandle input  = CreateTetMeshScalarOnElem();
+  FieldHandle output = algo.run(CreateTetMeshScalarOnElem());
+  
+  VField* ivfield = input->vfield();
+  VField* ovfield = output->vfield();
+  int ival = 0;
+  double oval = 0;
+  for (VMesh::Elem::index_type i=0; i < ivfield->vmesh()->num_elems(); i++)
+  {
+    ivfield->get_value(ival, i);
+    if (ival != 1 && ival != 2 && ival != 3)
+      FAIL() << "field value outside of range obtained " << std::endl;
+    ovfield->get_value(oval, i);
+    EXPECT_EQ(oval, conductivities[ival-1]);
+  }
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshVector)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  EXPECT_THROW(algo.run(CreateTetMeshVectorOnElem()), AlgorithmInputException);
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithmTest, ThrowsForDataOnNode)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  EXPECT_THROW(algo.run(CreateTetMeshScalarOnNode()), AlgorithmInputException);
+}
+
+TEST(SetConductivitiesToTetMeshAlgorithmTest, ThrowsForNullInput)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  FieldHandle nullField;
+  EXPECT_THROW(algo.run(nullField), AlgorithmInputException);
 }

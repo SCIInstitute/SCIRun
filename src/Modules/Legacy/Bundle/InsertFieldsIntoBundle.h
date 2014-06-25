@@ -36,6 +36,9 @@ namespace SCIRun {
   namespace Modules {
     namespace Bundles {
 
+      /// @class InserFieldsIntoBundle
+      /// @brief This module inserts a field object into a bundle.
+
       class SCISHARE InsertFieldsIntoBundle : public Dataflow::Networks::Module,
         public Has2InputPorts<BundlePortTag, DynamicPortTag<FieldPortTag>>,
         public Has1OutputPort<BundlePortTag>

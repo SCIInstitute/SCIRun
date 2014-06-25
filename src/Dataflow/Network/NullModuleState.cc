@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/NullModuleState.cc
+
 #include <Dataflow/Network/NullModuleState.h>
 
 using namespace SCIRun::Engine::State;
@@ -65,6 +67,6 @@ NullModuleState::TransientValueOption NullModuleState::getTransientValue(const s
   return TransientValueOption();
 }
 
-void NullModuleState::setTransientValue(const std::string& name, const TransientValue& value)
+void NullModuleState::setTransientValue(const std::string& name, const TransientValue& value, bool b)
 {
 }

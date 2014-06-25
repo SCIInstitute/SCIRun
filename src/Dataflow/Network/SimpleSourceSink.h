@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/SimpleSourceSink.h
+
 #ifndef DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 #define DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 
@@ -49,10 +51,12 @@ namespace SCIRun
         virtual DatatypeSinkInterface* clone() const;
         virtual bool hasChanged() const;
         void setData(SCIRun::Core::Datatypes::DatatypeHandle data);
+        virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber);
       private:
         SCIRun::Core::Datatypes::DatatypeHandle data_;
         SCIRun::Core::Datatypes::Datatype::id_type previousId_;
         bool hasData_;
+        DataHasChangedSignalType dataHasChanged_;
       };
     
       /*

@@ -38,6 +38,10 @@ namespace SCIRun {
 
 using namespace SCIRun;
 
+/// @class MapFieldDataOntoNodes
+/// @brief Maps data from one mesh or point cloud to another mesh or point
+/// cloud. The output mesh will have the data located at the nodes.
+
 class MapFieldDataOntoNodes : public Module {
   public:
     MapFieldDataOntoNodes(GuiContext*);

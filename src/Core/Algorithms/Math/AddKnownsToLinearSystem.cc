@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
    
    Author            : Moritz Dannhauer
-   Last modification : 10/24/2013 ported from SCIRun4 and slightly improved
+   Author            : Spencer Frisby
+   Last modification : 5/1/2014
+   
 */
-
-
 
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -39,82 +39,133 @@
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <stdexcept>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
-
-bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff, DenseColumnMatrixHandle rhs, DenseMatrixHandle x, SparseRowMatrixHandle& output_stiff, 
-  DenseColumnMatrixHandle& output_rhs) const
+bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
+									  DenseColumnMatrixHandle rhs,
+									  DenseMatrixHandle x,
+									  SparseRowMatrixHandle& output_stiff,
+									  DenseColumnMatrixHandle& output_rhs) const
 {
   SparseRowMatrixFromMap::Values additionalData;
-
+	
+	// Making sure the stiff matrix (left hand side) is symmetric
   if (!isSymmetricMatrix(*stiff))
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("LHS matrix is not symmetrical");
-  } 
-
-  unsigned int m=static_cast<unsigned int>(stiff->ncols()),n=static_cast<unsigned int>(stiff->nrows());
-  if (!rhs) 
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("Could not allocate new b matrix");  
-  } 
-  else if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))))
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("The dimensions of matrix rhs do not match the dimensions of matrix A"); 
+    THROW_ALGORITHM_INPUT_ERROR("matrix A is not symmetrical");
+    
+	// Storing the number of columns in m and rows in n from the stiff matrix, m == n
+  unsigned int m = static_cast<unsigned int>(stiff->ncols()), 
+               n = static_cast<unsigned int>(stiff->nrows());
+	
+	// Checking if the rhs matrix is allocated and that the dimenions agree with the stiff matrix
+	if (!rhs)
+	{
+    THROW_ALGORITHM_INPUT_ERROR("Could not allocate new b matrix");
+	}
+	else if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))) )
+	{
+		THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector b do not match the dimensions of matrix A"); 
   }
-
-  auto rhsCol = matrix_cast::as_column(rhs);
-  if (!rhsCol) rhsCol = matrix_convert::to_column(rhs); 
-
+    
+	// casting rhs to be a column
+	auto rhsCol = matrix_cast::as_column(rhs);
+  if (!rhsCol) rhsCol = matrix_convert::to_column(rhs);
+	
+	// Checking if x matrix was given and that the dimenions agree with the stiff matrix
   if (!x)
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("No x vector was given");
+	{
+    THROW_ALGORITHM_INPUT_ERROR("No x vector was given");
+	}
+	else if ( !(((x->ncols() == m) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == m))) )
+	{
+		THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector x do not match the dimensions of matrix A");
   } 
-  else if ( !(((x->ncols() == m) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == m))) )
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("The dimensions of matrix x do not match the dimensions of matrix A");
-  } 
+	
+	// casting x to be a column
+	auto xCol = matrix_cast::as_column(x);
+	if (!xCol) xCol = matrix_convert::to_column(x);  
+    
+	// cnt used for updating the progress bar
+	index_type cnt = 0;
+ 
+	bool just_copying_inputs = true;
 
-  auto xCol = matrix_cast::as_column(x);
-  if (!xCol) rhsCol = matrix_convert::to_column(x);  
-
-  index_type cnt = 0;
-
-  for (index_type p=0; p<m;p++)
-  {
-    if (IsFinite((*x).coeff(p)))
-    {  
-      for (index_type i=0; i<m; i++)
-      {
-        if (i!=p) 
-        {
-          (*rhsCol).coeffRef(i) -= (*stiff).coeff(i,p) * (*xCol).coeff(p); 
-          additionalData[i][p]=0.0;
-        }
-        else
-        {          
-          (*rhsCol)[p] = (*xCol).coeff(p);
-          additionalData[p][p]=1.0; 
-        }	    
-      }	           
-    }
-    cnt++;
-    if (cnt == 10)
-    {
-      cnt = 0;
-      update_progress((double)p/m);
-    }
-  } 
-
-  output_stiff = SparseRowMatrixFromMap::appendToSparseMatrix(m, n, *stiff, additionalData);
-
-  output_rhs = rhsCol;
-  output_stiff->makeCompressed();
-
-  return true;
+  // performs calculation adjustments for setting row and col values to zero
+  // NOTE: right hand side vector values are reset multiple times during this
+  //   proccess, thus it was necessary to have a second for loop to set the
+  //   right hand side vector equal to the known values
+  for (index_type p=0; p<m; p++)
+	{
+		// making sure the rhs vector is finite
+		if (!IsFinite((*rhsCol)[p]))
+			THROW_ALGORITHM_INPUT_ERROR("NaN exist in the b vector");
+		if (IsFinite((*x).coeff(p)))
+		{
+      just_copying_inputs = false;
+			for (index_type i=0; i<m; i++)
+			{
+				if (i!=p)
+				{
+					(*rhsCol).coeffRef(i) += -(*stiff).coeff(i,p) * (*xCol).coeff(p);
+					additionalData[i][p] = 0.0;
+          additionalData[p][i] = 0.0;
+				}
+				else
+				{
+					additionalData[p][p] = 1.0;
+				}
+			}
+		}
+		cnt++;
+		if (cnt == 10)
+		{
+			cnt = 0;
+			update_progress((double)p/m);
+		}
+	}
+  
+  // assigns value for right hand side vector
+  for (index_type p=0; p<m; p++)
+	{
+		if (IsFinite((*x).coeff(p)))
+		{
+      just_copying_inputs = false;
+			for (index_type i=0; i<m; i++)
+			{
+				if (i == p)
+				{
+					(*rhsCol)[p] = (*xCol).coeff(p);
+				}
+			}
+		}
+		cnt++;
+		if (cnt == 10)
+		{
+			cnt = 0;
+			update_progress((double)p/m);
+		}
+	}
+  
+	if (just_copying_inputs)
+    remark("X vector does not contain any knowns! Copying inputs to outputs.");
+	
+	output_stiff = SparseRowMatrixFromMap::appendToSparseMatrix(m, n, *stiff, additionalData);
+	output_rhs = rhsCol;
+	output_stiff->makeCompressed();
+	return true;
 }
 
 AlgorithmInputName AddKnownsToLinearSystemAlgo::LHS_Matrix("LHS_Matrix");
@@ -125,24 +176,22 @@ AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector
 
 AlgorithmOutput AddKnownsToLinearSystemAlgo::run_generic(const AlgorithmInput & input) const
 { 
+	auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
+	auto input_rhs = input.get<DenseColumnMatrix>(RHS_Vector);
+	auto input_x = input.get<DenseMatrix>(X_Vector);
+
+	if (input_lhs->nrows() != input_lhs->ncols()) 
+		THROW_ALGORITHM_INPUT_ERROR("Stiffness matrix input needs to be a sparse square matrix!");
+	
+	SparseRowMatrixHandle output_lhs;
+	DenseColumnMatrixHandle output_rhs;
   
-  auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
-  auto input_rhs = input.get<DenseColumnMatrix>(RHS_Vector);
-  auto input_x = input.get<DenseMatrix>(X_Vector);
+	if (!run(input_lhs,input_rhs,input_x,output_lhs,output_rhs))
+		THROW_ALGORITHM_INPUT_ERROR("False returned on legacy run call.");
 
-  if (input_lhs->nrows() != input_lhs->ncols()) 
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("Stiffness matrix input needs to be a sparse squared matrix! ");
-  }
+	AlgorithmOutput output; 
+	output[OutPutLHSMatrix] = output_lhs;
+	output[OutPutRHSVector] = output_rhs;
 
-  SparseRowMatrixHandle output_lhs;
-  DenseColumnMatrixHandle output_rhs;
-  if (!run(input_lhs,input_rhs,input_x,output_lhs,output_rhs))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-
-  AlgorithmOutput output;
-  output[OutPutLHSMatrix] = output_lhs;
-  output[OutPutRHSVector] = output_rhs;
-
-  return output;
+	return output;
 }

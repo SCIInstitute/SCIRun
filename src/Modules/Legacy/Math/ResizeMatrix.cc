@@ -34,6 +34,9 @@
 
 namespace SCIRun {
 
+/// @class ResizeMatrix
+/// This module resizes a matrix to a different size. 
+
 class ResizeMatrix : public Module {
 public:
   ResizeMatrix(GuiContext*);

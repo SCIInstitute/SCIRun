@@ -24,9 +24,13 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
+IF(UNIX)
+  # temporary - needed to make Travis CI build work
+  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
+ELSE()
+  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
+ENDIF(UNIX)
 
 PROJECT(SCIRun5Prototype)
 
@@ -167,6 +171,9 @@ IF(UNIX)
   ENDIF()
 
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG} -Wall")
+  IF(NOT APPLE)
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lrt")
+  ENDIF()
 ENDIF()
 
 IF(APPLE)
@@ -203,19 +210,24 @@ IF(APPLE)
     NAMES macdeployqt
   )
   MARK_AS_ADVANCED(MACDEPLOYQT)
+
+  SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
+  MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
 ENDIF()
 
 
 ########################################################################
 # Configure documentation
 
-OPTION(BUILD_DOXYGEN_DOCUMENTATION "Generate doxygen-based documentation." OFF)
+OPTION(BUILD_DOXYGEN_DOCUMENTATION "Generate Doxygen-based documentation." OFF)
 MARK_AS_ADVANCED(BUILD_DOXYGEN_DOCUMENTATION)
 
 IF(BUILD_DOXYGEN_DOCUMENTATION)
   FIND_PACKAGE(Doxygen)
 
   IF(DOXYGEN_FOUND)
+    OPTION(COPY_DOXYGEN_TO_SERVER "Copy Doxygen documentation to server." OFF)
+    MARK_AS_ADVANCED(COPY_DOXYGEN_TO_SERVER)
     ADD_SUBDIRECTORY(Documentation/Doxygen)
   ELSE()
     SET(BUILD_DOXYGEN_DOCUMENTATION OFF CACHE BOOL "Generate doxygen-based documentation." FORCE)
@@ -249,82 +261,24 @@ IF(DISABLE_ExternalProject_UPDATE)
 ENDIF()
 
 ########################################################################
+# Configure zlib external project
+
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ZlibConfig.cmake)
+EXTERNAL_ZLIB_LIBRARY(GIT)
+
+
+########################################################################
 # Configure Boost external project
 
-# TODO: make macro
-
-ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB=1)
-
-SET(boost_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Externals/boost")
-SET(boost_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/boost")
-
-SET(SCI_BOOST_INCLUDE ${boost_SOURCE_DIR} CACHE INTERNAL "Boost include directories." FORCE)
-SET(SCI_BOOST_LIBRARY boost CACHE INTERNAL "Boost library name." FORCE)
-
-IF(WIN32)
-#  # See cmake-2.8/Modules/FindBoost.cmake
-#  #SET(boost_LIB_PREFIX "lib")
-  SET(boost_LIB_PREFIX "")
-ELSE()
-  SET(boost_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
-ENDIF()
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BoostConfig.cmake)
+EXTERNAL_BOOST_LIBRARY(GIT)
 
 
-SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-# other configuration options are RELWITHDEBINFO and MINSIZEREL
-SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/Release/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+########################################################################
+# Configure teem external project
 
-# Fixes Mac build for now, without extra boost/python cmake magic.
-SET(boost_GIT_TAG "origin/master")
-
-# TODO: fix install step
-#
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
-ExternalProject_Add(Boost_external
-  PREFIX ${boost_BINARY_DIR}
-  GIT_REPOSITORY "https://github.com/SCIInstitute/boost.git"
-  GIT_TAG ${boost_GIT_TAG}
-  SOURCE_DIR ${boost_SOURCE_DIR}
-  BINARY_DIR ${boost_BINARY_DIR}
-  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
-  PATCH_COMMAND ""
-  ${DISABLED_UPDATE}
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
-  #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${boost_BINARY_DIR}"
-  CMAKE_CACHE_ARGS
-    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-    -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
-    -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
-    -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY}
-)
-
-ADD_LIBRARY(${SCI_BOOST_LIBRARY} STATIC IMPORTED GLOBAL)
-
-# adding Boost as a build target and dependency
-#
-# TODO: how to make boost include dependent on Boost_external?
-ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} Boost_external)
-ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} ${SCI_BOOST_INCLUDE})
-
-IF (CMAKE_GENERATOR MATCHES "Makefiles")
-  SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
-    PROPERTIES
-      IMPORTED_LOCATION ${boost_LIBRARY_PATH}
-  )
-ELSE() # IDEs: Xcode, VS, others...
-  SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
-    PROPERTIES
-      IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
-      IMPORTED_LOCATION_RELEASE ${boost_LIBRARY_PATH_RELEASE}
-      IMPORTED_LOCATION_DEBUG ${boost_LIBRARY_PATH_DEBUG}
-  )
-ENDIF()
-
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/TeemConfig.cmake)
+EXTERNAL_TEEM_LIBRARY(GIT)
 
 
 ########################################################################
@@ -419,22 +373,24 @@ FIND_PACKAGE(OpenGL REQUIRED)
 # Find and configure Qt
 
 # TODO: exclude for headless
-SET(QT_MIN_VERSION "4.8.0")
-FIND_PACKAGE(Qt4 REQUIRED)
-SET(QT_USE_QTOPENGL TRUE)
+IF(NOT BUILD_HEADLESS)
+  SET(QT_MIN_VERSION "4.8.0")
+  FIND_PACKAGE(Qt4 REQUIRED)
+  SET(QT_USE_QTOPENGL TRUE)
 
-IF(QT_FOUND)
-  # TODO: may want to grab Seg3D's custom FindQt4 module and UseQt4 file if
-  # build issues haven't been corrected in CMake 2.8.7 and newer
+  IF(QT_FOUND)
+    # TODO: may want to grab Seg3D's custom FindQt4 module and UseQt4 file if
+    # build issues haven't been corrected in CMake 2.8.7 and newer
 
-  INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
-  INCLUDE(${QT_USE_FILE})
-  ADD_DEFINITIONS(${QT_DEFINITIONS})
-ELSE()
-  MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun5Prototype")
+    INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+    INCLUDE(${QT_USE_FILE})
+    ADD_DEFINITIONS(${QT_DEFINITIONS})
+  ELSE()
+    MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun5Prototype")
+  ENDIF()
+
+  ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 ENDIF()
-
-ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
 
 ########################################################################
@@ -456,11 +412,14 @@ INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_SOURCE_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
+  ${SCIRun5Prototype_SOURCE_DIR}/Externals/
   ${SCIRun5Prototype_BINARY_DIR}/
   ${SCIRun5Prototype_BINARY_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen
   # TODO: set up include variable in log4cpp project
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/log4cpp/include
+  ${SCI_TEEM_INCLUDE}
+  ${SCI_ZLIB_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
@@ -592,6 +551,7 @@ SET_PROPERTY(TARGET Algorithms_BrainStimulator         PROPERTY FOLDER "Core/Alg
 SET_PROPERTY(TARGET Algorithms_Factory   PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_FiniteElements         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Legacy_DataIO         PROPERTY FOLDER "Core/Algorithms")
 
 SET_PROPERTY(TARGET Dataflow_Network         PROPERTY FOLDER "Dataflow")
 SET_PROPERTY(TARGET Core_Datatypes         PROPERTY FOLDER "Core")
@@ -601,15 +561,19 @@ SET_PROPERTY(TARGET Core_Datatypes_Legacy_Field         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Legacy_Bundle         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Basis         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Persistent         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_DatabaseManager         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Logging         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_ConsoleApplication         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_CommandLine         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Command         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Thread         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_ImportExport         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_IEPlugin         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Geometry_Primitives         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Application         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Utils         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Math         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Parser         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Exceptions_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Util_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Containers         PROPERTY FOLDER "Core")
@@ -676,6 +640,10 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Core_Serialization_Network_Tests         PROPERTY FOLDER "Dataflow/Serialization/Tests")
   SET_PROPERTY(TARGET Core_Thread_Tests   PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Utils_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Core_Parser_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Core_DatabaseManager_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Core_ImportExport_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET Core_IEPlugin_Tests         PROPERTY FOLDER "Core/Tests")
 
   SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
   SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
@@ -693,13 +661,16 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_Render_Tests   PROPERTY FOLDER "Modules/Render")
   SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
-  SET_PROPERTY(TARGET Dataflow_Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
+  SET_PROPERTY(TARGET Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
 ENDIF()
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${CPM_LIBRARIES} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
-
+SET_PROPERTY(TARGET sqlite PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET Zlib_external   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET Teem_external   PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
@@ -772,3 +743,14 @@ IF(APPLE)
 ENDIF()
 
 INCLUDE(CPack)
+
+########################################################################
+#GCov
+
+OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
+MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
+
+IF(ENABLE_GCOV_DATA_FILES)
+ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF(ENABLE_GCOV_DATA_FILES)

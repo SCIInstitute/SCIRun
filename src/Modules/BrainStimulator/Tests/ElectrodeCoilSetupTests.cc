@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -58,7 +58,7 @@ TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
   stubPortNWithThisData(tdcs, 0, nullField);
   stubPortNWithThisData(tdcs, 1, nullField);
 
-  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
+  EXPECT_THROW(tdcs->execute(), NoHandleOnPortException);  //nulls are removed, so should throw "no handle"
 }
 
 TEST_F(ElectrodeCoilSetupTests, DISABLED_Foo)

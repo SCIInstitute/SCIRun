@@ -28,16 +28,16 @@
 
 
 
-/*
- *  CatmullRomSpline.h: 
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   March 1994
- *
- */
+///
+///@class CatmullRomSpline 
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///
+///@date  March 1994
+///
 
 #ifndef SCI_Math_CatmullRomSpline_h
 #define SCI_Math_CatmullRomSpline_h
@@ -162,14 +162,10 @@ CatmullRomSpline<T>::operator()( double x ) const
    T p2 = d[ idx3 ];
    T p3 = d[ idx4 ];
 
-   //printf("x=%lf, idx=%d, t=%lf         (dsize = %d)    %d, %d, %d, %d\n", x, idx, t, size, idx1, idx2, idx3, idx4 );
-
    T result = ( (p0*-1 + p1*3  + p2*-3 + p3   ) * (t3 * 0.5)+
                 (p0*2  + p1*-5 + p2*4  + p3*-1) * (t2 * 0.5)+
                 (p0*-1         + p2           ) * (t  * 0.5)+
                 (        p1                   ) );
-
-   //cout << "result: " << result << "\n";
 
    return result;
 }

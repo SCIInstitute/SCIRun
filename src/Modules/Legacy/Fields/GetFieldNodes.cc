@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Modules/Legacy/Fields/GetFieldNodes.cc
+
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -49,7 +51,6 @@ void GetFieldNodes::execute()
   if (needToExecute())
   {    
     update_state(Executing);
-
     auto output = algo().run_generic(make_input((InputField, input)));
 
     sendOutputFromAlgorithm(MatrixNodes, output);

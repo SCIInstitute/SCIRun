@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/ColumnMatrix.h>
@@ -39,6 +38,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class CreateMatrix
+/// @brief This module lets the user create a small dense matrix manually. 
 
 class CreateMatrix : public Module
 {
@@ -97,7 +99,7 @@ CreateMatrix::execute()
   
   double *ptr = mat->get_data_pointer();
  
-  //TODO: quick bug fix, this module is due for rewrite.
+  /// @todo: quick bug fix, this module is due for rewrite.
   for (index_type p = 0; p < nums.size(); p++)
   { 
     ptr[p] = nums[p];

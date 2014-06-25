@@ -40,6 +40,9 @@
 
 namespace SCIRun {
 
+/// @class ConvertMeshToPointCloud
+/// @brief Convert a structured field into an unstructured field for editing. 
+
 class ConvertMeshToPointCloud : public Module
 {
   public:
@@ -59,7 +62,7 @@ ConvertMeshToPointCloud::ConvertMeshToPointCloud(GuiContext* ctx)
   : Module("ConvertMeshToPointCloud", ctx, Filter, "ChangeMesh", "SCIRun"),
     datalocation_(get_ctx()->subVar("datalocation"))
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 

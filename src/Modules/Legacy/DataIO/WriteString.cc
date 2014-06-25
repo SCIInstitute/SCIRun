@@ -36,6 +36,9 @@ namespace SCIRun {
 
 using namespace SCIRun;
 
+/// @class WriteString
+/// @brief This module writes a string to file (an ASCII text file).
+
 class WriteString : public GenericWriter<StringHandle> {
   public:
     WriteString(GuiContext*);

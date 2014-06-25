@@ -44,53 +44,34 @@ GetDomainBoundaryDialog::GetDomainBoundaryDialog(const std::string& name, Module
   
   connect(compartmentRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(compartmentsRangeRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(disconnectBoundariesCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(excludeInnerBoundaryCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(includeInnerBoundaryCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(maxCompartmentSpinner_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(minCompartmentSpinner_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(valueCompartmentSpinner_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(outerBoundaryCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+
+  using namespace Parameters;
+  addCheckBoxManager(disconnectBoundariesCheckBox_, DisconnectBoundaries);
+  addCheckBoxManager(excludeInnerBoundaryCheckBox_, NoInnerBoundary);
+  addCheckBoxManager(includeInnerBoundaryCheckBox_, InnerBoundaryOnly);
+  addSpinBoxManager(maxCompartmentSpinner_, MaxRange);
+  addSpinBoxManager(minCompartmentSpinner_, MinRange);
+  addSpinBoxManager(valueCompartmentSpinner_, Domain);
+  addCheckBoxManager(outerBoundaryCheckBox_,AddOuterBoundary);
 }
 
 void GetDomainBoundaryDialog::push()
 {
   if (!pulling_)
   {
-    state_->setValue(GetDomainBoundaryAlgo::AddOuterBoundary, outerBoundaryCheckBox_->isChecked());
-    state_->setValue(GetDomainBoundaryAlgo::InnerBoundaryOnly, includeInnerBoundaryCheckBox_->isChecked());
-    state_->setValue(GetDomainBoundaryAlgo::DisconnectBoundaries, disconnectBoundariesCheckBox_->isChecked());
-    state_->setValue(GetDomainBoundaryAlgo::NoInnerBoundary, excludeInnerBoundaryCheckBox_->isChecked());
-    state_->setValue(GetDomainBoundaryAlgo::UseRange, !compartmentRadioButton_->isChecked());
-    state_->setValue(GetDomainBoundaryAlgo::UseRange, compartmentsRangeRadioButton_->isChecked());
-    state_->setValue(GetDomainBoundaryAlgo::MinRange, minCompartmentSpinner_->value());
-    state_->setValue(GetDomainBoundaryAlgo::MaxRange, maxCompartmentSpinner_->value());
-    state_->setValue(GetDomainBoundaryAlgo::Domain, valueCompartmentSpinner_->value());
+    using namespace Parameters;
+    state_->setValue(UseRange, !compartmentRadioButton_->isChecked());
+    state_->setValue(UseRange, compartmentsRangeRadioButton_->isChecked());
   }
 }
-
-//BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
 
 void GetDomainBoundaryDialog::pull()
 {
   Pulling p(this);
   
-  int newValue = state_->getValue(GetDomainBoundaryAlgo::MinRange).getInt();
-  if (newValue != minCompartmentSpinner_->value())
-    minCompartmentSpinner_->setValue(newValue);
+  using namespace Parameters;
+  compartmentRadioButton_->setChecked(!state_->getValue(UseRange).getBool());
+  compartmentsRangeRadioButton_->setChecked(state_->getValue(UseRange).getBool());
 
-  newValue = state_->getValue(GetDomainBoundaryAlgo::MaxRange).getInt();
-  if (newValue != maxCompartmentSpinner_->value())
-    maxCompartmentSpinner_->setValue(newValue);
-
-  newValue = state_->getValue(GetDomainBoundaryAlgo::Domain).getInt();
-  if (newValue != valueCompartmentSpinner_->value())
-    valueCompartmentSpinner_->setValue(newValue);
-  
-  outerBoundaryCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::AddOuterBoundary).getBool());
-  includeInnerBoundaryCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::InnerBoundaryOnly).getBool());
-  disconnectBoundariesCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::DisconnectBoundaries).getBool());
-  excludeInnerBoundaryCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::NoInnerBoundary).getBool());
-  compartmentRadioButton_->setChecked(!state_->getValue(GetDomainBoundaryAlgo::UseRange).getBool());
-  compartmentsRangeRadioButton_->setChecked(state_->getValue(GetDomainBoundaryAlgo::UseRange).getBool());
+  pull_newVersionToReplaceOld();
 }

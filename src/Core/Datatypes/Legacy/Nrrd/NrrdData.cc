@@ -26,15 +26,16 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-
-// NrrdData.cc - Interface to Gordon's Nrrd package
-//
-//  Written by:
-//   David Weinstein
-//   School of Computing
-//   University of Utah
-//   February 2001
-
+/*
+ *@file  NrrdData.cc 
+ *@brief Interface to Gordon's Nrrd package
+ *
+ *@author
+ *   David Weinstein
+ *   School of Computing
+ *   University of Utah
+ *@date  February 2001
+ */
 
 #include <Core/Util/Debug.h>
 #include <Core/Thread/RecursiveMutex.h>

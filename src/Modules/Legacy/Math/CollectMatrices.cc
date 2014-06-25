@@ -26,17 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  CollectMatrices: Matrix operations -- concatenate, replace
- *
- *  Written by:
- *   David Weinstein &
- *   Chris Butson
- *   Department of Computer Science
- *   University of Utah
- *   July 2002
- *
- */
+///@brief Matrix operations -- concatenate, replace
+///
+///@author
+///   David Weinstein &
+///   Chris Butson
+///   Department of Computer Science
+///   University of Utah
+///@date  July 2002
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -52,6 +49,10 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace SCIRun {
+
+/// @class CollectMatrices
+/// @detail This module appends/replaces rows or columns of a matrix while
+/// looping through a network. 
 
 class CollectMatrices : public Module 
 {
@@ -78,7 +79,7 @@ CollectMatrices::CollectMatrices(GuiContext* ctx)
 }
 
 
-//TODO: match output matrix type with input type.
+/// @todo: match output matrix type with input type.
 void
 CollectMatrices::execute()
 {

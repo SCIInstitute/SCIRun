@@ -36,6 +36,9 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+	/// @class GetDomainBoundary
+	/// @brief This module extracts the boundaries of the different regions in a label map. 
+
       class SCISHARE GetDomainBoundary : public Dataflow::Networks::Module,
         public Has4InputPorts<FieldPortTag, ScalarPortTag, ScalarPortTag, MatrixPortTag>,
         public Has1OutputPort<FieldPortTag>

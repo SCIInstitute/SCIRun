@@ -26,13 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : ExtractIsosurfaceByFunction.h
-//    Author : Michael Callahan &&
-//             Allen Sanderson
-//             SCI Institute
-//             University of Utah
-//    Date   : March 2006
-
+///    @file    ExtractIsosurfaceByFunction.h
+///    @author  Michael Callahan &&
+///             Allen Sanderson
+///             SCI Institute
+///             University of Utah
+///    @date    March 2006
 
 #include <Core/Parser/ArrayMathEngine.h>
 #include <Core/Algorithms/Fields/Mapping/ApplyMappingMatrix.h>
@@ -64,7 +63,7 @@ class SCISHARE ExtractIsosurfaceByFunction : public Module {
   private:
     FieldHandle field_transformed_handle_;
   
-    //! GUI variables
+    /// GUI variables
     GuiString  gui_function_;
 
     GuiDouble  gui_slice_value_min_;
@@ -88,7 +87,7 @@ class SCISHARE ExtractIsosurfaceByFunction : public Module {
     //last will prevent the net from executing when it is instantiated.
     GuiString  gui_update_type_;
 
-    //! status variables
+    /// status variables
     std::vector< double > slicevals_;
     
     bool old_version_;
@@ -130,14 +129,14 @@ ExtractIsosurfaceByFunction::ExtractIsosurfaceByFunction(GuiContext *context)
 void
 ExtractIsosurfaceByFunction::execute()
 {
-  //! Get the input field handle from the port.
+  /// Get the input field handle from the port.
   FieldHandle input_field_handle;
   FieldHandle field_output_handle;
   std::vector<MatrixHandle> matrices;
   
   get_input_handle( "Input Field", input_field_handle, true);
 
-  //! Current
+  /// Current
   int basis_order = input_field_handle->vfield()->basis_order();
   if( basis_order != 0 && basis_order != 1)
   {
@@ -152,12 +151,12 @@ ExtractIsosurfaceByFunction::execute()
   TCLInterface::execute(get_id() + " update_text");
 
   /////////////////////////////////////////////////////////////////////////////
-  //! Transform Section
+  /// Transform Section
 
   if( gui_function_.changed( true ) )
     inputs_changed_ = true;
 
-  //! Check to see if the input field has changed.
+  /// Check to see if the input field has changed.
   if( inputs_changed_ || !field_transformed_handle_.get_rep() ) 
   {
     NewArrayMathEngine engine;
@@ -292,7 +291,7 @@ ExtractIsosurfaceByFunction::execute()
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  //! Isosurface Section
+  /// Isosurface Section
 
   std::vector<double> slicevals(0);
 
@@ -462,7 +461,7 @@ ExtractIsosurfaceByFunction::execute()
     }
     else
     {
-      //! No field.
+      /// No field.
       warning( "No slices found" );
       return;
     }
@@ -499,9 +498,9 @@ ExtractIsosurfaceByFunction::execute()
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    //! Apply Mapping Section 1
+    /// Apply Mapping Section 1
 
-    //! Apply the matrix to the sliced data.
+    /// Apply the matrix to the sliced data.
     FieldHandle field_apply_mapping_handle;
     
     SCIRunAlgo::ApplyMappingMatrixAlgo mapping_algo;
@@ -524,7 +523,7 @@ ExtractIsosurfaceByFunction::execute()
     mapping_ = oport_connected("Mapping");
 
   }
-  //! Send the data downstream.
+  /// Send the data downstream.
   send_output_handle( "Output Field", field_output_handle, true );
 }
 
@@ -580,4 +579,4 @@ ExtractIsosurfaceByFunction::post_read()
 
 
 
-} //! End namespace SCIRun
+} // End namespace SCIRun

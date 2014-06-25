@@ -27,16 +27,15 @@
 */
 
 
-/*
- *  ReadPath.cc: Read a persistent camera path from a file
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+/// @file  ReadPath.cc
+/// 
+/// @author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+/// @date  July 1994
+/// 
 
 #include <Dataflow/Network/Ports/PathPort.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>
@@ -44,6 +43,9 @@
 namespace SCIRun {
 
 template class GenericReader<PathHandle>;
+
+/// @class ReadPath
+/// @brief This module reads a camera path from file (a SCIRun .path file).
 
 class ReadPath : public GenericReader<PathHandle> {
   public:

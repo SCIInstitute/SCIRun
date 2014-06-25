@@ -40,6 +40,9 @@ namespace SCIRun {
 
 using namespace SCIRun;
 
+/// @class PrintStringIntoString
+/// @brief This module does a sprintf with input strings into a new string. 
+
 class PrintStringIntoString : public Module {
   public:
     PrintStringIntoString(GuiContext*);

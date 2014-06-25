@@ -30,39 +30,33 @@
 #ifndef CORE_ALGORITHMS_FIELDS_SMOOTHMESH_FAIRMESH_H
 #define CORE_ALGORITHMS_FIELDS_SMOOTHMESH_FAIRMESH_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+        ALGORITHM_PARAMETER_DECL(FairMeshMethod);
+        ALGORITHM_PARAMETER_DECL(NumIterations);
+        ALGORITHM_PARAMETER_DECL(Lambda);
+        ALGORITHM_PARAMETER_DECL(FilterCutoff);
 
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
+        class SCISHARE FairMeshAlgo : public AlgorithmBase
+        {
+        public:
+          FairMeshAlgo();
 
-namespace SCIRunAlgo {
+          bool runImpl(FieldHandle input,FieldHandle& output) const;
 
-using namespace SCIRun;
+          const static AlgorithmInputName Input_Mesh;
+          const static AlgorithmOutputName Faired_Mesh;
 
-class SCISHARE FairMeshAlgo : public AlgoBase
-{
-  public:
-    //! Set defaults
-    FairMeshAlgo()
-    {
-      add_option("method","fast","fast|desbrun");
-      add_int("num_iterations",50);
-      add_scalar("lambda",0.6307);
-      add_scalar("filter_cutoff",0.1);
-    }
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
 
-    //! run the algorithm
-    bool run(FieldHandle input,FieldHandle& output);
-};
-
-} // end namespace SCIRunAlgo
+      }}}}
 
 #endif 
 

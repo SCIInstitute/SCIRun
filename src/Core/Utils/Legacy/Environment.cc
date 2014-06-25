@@ -27,6 +27,7 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
   DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Utils/Legacy/Environment.cc
 
 // Core SCIRun Includes
 
@@ -97,8 +98,8 @@ SCISHARE Mutex nrrdIEPluginMutex("Nrrd Import/Export Plugin Table Lock");
 }
 
 
-// This set stores all of the environemnt keys that were set when scirun was
-// started. Its checked by sci_putenv to ensure we don't overwrite variables
+/// This set stores all of the environemnt keys that were set when scirun was
+/// started. Its checked by sci_putenv to ensure we don't overwrite variables
 static std::map<std::string, std::string> scirun_env;
 
 // MacroSubstitute takes var_value returns a string with the environment
@@ -348,7 +349,7 @@ void putenv_if_not_present(const std::string& key, const std::string& value)
   }
 }
 
-//TODO: add common state here
+/// @todo: add common state here
 class SciEnvironmentBuilder
 {
 public:
@@ -665,7 +666,7 @@ SCIRun::parse_rcfile( const char* rcfile )
 
 // find_and_parse_rcfile will search for the rcfile file in 
 // default locations and read it into the environemnt if possible.
-// TODO: boostify this
+/// @todo: boostify this
 void
 SCIRun::find_and_parse_rcfile(const std::string &rcfile)
 {

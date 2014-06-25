@@ -38,8 +38,10 @@
 // For Windows support
 #include <Dataflow/Modules/Fields/share.h>
 
-
 namespace SCIRun {
+
+/// @class ConvertMeshToUnstructuredMesh
+/// @brief Convert a structured field into an unstructured field for editing.
 
 class SCISHARE ConvertMeshToUnstructuredMesh : public Module 
 {
@@ -56,7 +58,7 @@ DECLARE_MAKER(ConvertMeshToUnstructuredMesh)
  ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh(GuiContext* context)
   : Module("ConvertMeshToUnstructuredMesh", context, Source, "ChangeMesh", "SCIRun")
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 

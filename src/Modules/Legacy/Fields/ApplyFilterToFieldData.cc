@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Core/Algorithms/Fields/FilterFieldData/DilateFieldData.h>
 #include <Core/Algorithms/Fields/FilterFieldData/ErodeFieldData.h>
 
@@ -37,6 +36,9 @@ namespace SCIRun {
 
 using namespace SCIRun;
 using namespace SCIRunAlgo;
+
+/// @class ApplyFilterToFieldData
+/// @brief Applies a dilate or erode filter to a regular mesh. 
 
 class ApplyFilterToFieldData : public Module {
   public:

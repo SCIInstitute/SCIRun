@@ -26,16 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  SetFieldOrMeshStringProperty: Set a property for a Field (or its Mesh)
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   June 1999
- *
- */
+#include <Modules/Legacy/Fields/SetFieldOrMeshStringProperty.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date   June 1999
+///
 
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>
@@ -45,6 +46,9 @@
 #include <sstream>
 
 namespace SCIRun {
+
+/// @class SetFieldOrMeshStringProperty
+/// @brief Set a property for a Field (or its Mesh)
 
 class SetFieldOrMeshStringProperty : public Module {
   public:
@@ -90,3 +94,4 @@ SetFieldOrMeshStringProperty::execute()
 }
 
 } // End namespace SCIRun
+#endif

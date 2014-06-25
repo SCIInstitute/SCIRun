@@ -27,16 +27,16 @@
 */
 
 
-/*
- *  Tensor.h:  Symmetric, positive definite tensors (diffusion, conductivity)
- *
- *  Written by:
- *   Author: David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   Date: March 2001
- *
- */
+///
+///@file  Tensor.h
+///@brief Symmetric, positive definite tensors (diffusion, conductivity)
+///
+///@author
+///       David Weinstein
+///       Department of Computer Science
+///       University of Utah
+///@date  March 2001
+///
 
 #ifndef Geometry_Tensor_h
 #define Geometry_Tensor_h 1
@@ -92,7 +92,6 @@ public:
   
   double mat_[3][3];
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   void build_mat_from_eigens();
   void build_eigens_from_mat(); 
   void get_eigenvectors(Vector &e1, Vector &e2, Vector &e3);
@@ -100,7 +99,6 @@ public:
   const Vector &get_eigenvector2() { ASSERT(have_eigens_); return e2_; }
   const Vector &get_eigenvector3() { ASSERT(have_eigens_); return e3_; }
   void get_eigenvalues(double &l1, double &l2, double &l3);
-#endif
 
   double norm();
 
@@ -115,7 +113,7 @@ public:
 			  const Vector &e3,
 			  double v1, double v2, double v3);
 
-  //! support dynamic compilation
+  /// support dynamic compilation
   static const std::string& get_h_file_path();
 
   friend SCISHARE void Pio(Piostream&, Tensor&);

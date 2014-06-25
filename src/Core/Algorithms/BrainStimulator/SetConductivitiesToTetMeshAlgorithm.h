@@ -32,9 +32,6 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
-//////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
-//////////////////////////////////////////////////////////////////////////
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
@@ -42,22 +39,22 @@ namespace BrainStimulator {
   
   class SCISHARE SetConductivitiesToTetMeshAlgorithm : public AlgorithmBase
   {
-  public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
-
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
-  private:
-  
+    public:
+      //Outputs run(const Inputs& input, const Parameters& params = 0) const;
+    SetConductivitiesToTetMeshAlgorithm();
+    FieldHandle run(FieldHandle fh) const;
+    static AlgorithmParameterName Skin();
+    static AlgorithmParameterName Skull();
+    static AlgorithmParameterName CSF();
+    static AlgorithmParameterName GM();
+    static AlgorithmParameterName WM();
+    static AlgorithmParameterName Electrode();
     
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    static AlgorithmInputName MESH;
+    static AlgorithmInputName INHOMOGENEOUS_SKULL;
+    static AlgorithmInputName ANISOTROPIC_WM;
+    static AlgorithmOutputName OUTPUTMESH;
   };
 
 }}}}

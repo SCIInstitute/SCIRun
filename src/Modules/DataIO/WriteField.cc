@@ -25,111 +25,64 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/DataIO/WriteField.cc
 
 
-/*
- *  WriteField.cc: Save persistent representation of a field to a file
- *
- *  Written by:
- *   Elisha R. Hughes
- *   CVRTI
- *   University of Utah
- *   November 2004
-
- *  based on:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+///@file  WriteField.cc
+///@brief Save persistent representation of a field to a file
+///
+///@author
+///   Elisha R. Hughes
+///   CVRTI
+///   University of Utah
+///  based on:
+///   Steven G. Parker
+///   Department of Computer Science
+///   University of Utah
+///   July 1994
+///
+///@date November 2004
+///
 
 #include <Modules/DataIO/WriteField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
-#endif
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Logging/Log.h>
 
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
 
-SCIRun::Core::Algorithms::AlgorithmParameterName WriteFieldModule::Filename("Filename");
-
 WriteFieldModule::WriteFieldModule()
-  : my_base("WriteField", "DataIO", "SCIRun", "Filename")    
-    //gui_types_(get_ctx()->subVar("types", false)),
-    //gui_exporttype_(get_ctx()->subVar("exporttype"), ""),
+  : my_base("WriteField", "DataIO", "SCIRun", "Filename")
     //gui_increment_(get_ctx()->subVar("increment"), 0),
     //gui_current_(get_ctx()->subVar("current"), 0)
 {
   INITIALIZE_PORT(FieldToWrite);
   filetype_ = "Binary";
+  objectPortName_ = &FieldToWrite;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
-  std::vector<std::string> exporters;
-  mgr.get_exporter_list(exporters);
-  
-  std::string exporttypes = "{";
-  exporttypes += "{{SCIRun Field Binary} {.fld} } ";
-  exporttypes += "{{SCIRun Field ASCII} {.fld} } ";
-
-  for (unsigned int i = 0; i < exporters.size(); i++)
-  {
-    FieldIEPlugin *pl = mgr.get_plugin(exporters[i]);
-    if (pl->fileextension != "")
-    {
-      exporttypes += "{{" + exporters[i] + "} {" + pl->fileextension + "} } ";
-    }
-    else
-    {
-      exporttypes += "{{" + exporters[i] + "} {.*} } ";
-    }
-  }
-
-  exporttypes += "}";
-
-  gui_types_.set(exporttypes);
-#endif
+  auto types = makeGuiTypesListForExport(mgr);
+  get_state()->setValue(Variables::FileTypeList, types);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-bool
-WriteField::call_exporter(const std::string &filename)
+bool WriteFieldModule::call_exporter(const std::string& filename)
 {
-  const std::string ftpre = gui_exporttype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-  
+  ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
-  FieldIEPlugin *pl = mgr.get_plugin(ft);
+  FieldIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).getString());
   if (pl)
   {
-    return pl->filewriter(this, handle_, filename.c_str());
+    return pl->writeFile(handle_, filename, getLogger());
   }
   return false;
 }
-#endif
 
-
-void
-WriteFieldModule::execute()
+void WriteFieldModule::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  const std::string ftpre = gui_exporttype_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-
-  exporting_ = !(ft == "" ||
-		 ft == "SCIRun Field Binary" ||
-		 ft == "SCIRun Field ASCII" ||
-                 ft == "Binary");
-
-  // Determine if we're ASCII or Binary
-  std::string ab = "Binary";
-  if (ft == "SCIRun Field ASCII") ab = "ASCII";
-  filetype_.set(ab);
-  
   //get the current file name
   const std::string oldfilename=filename_.get();
   
@@ -161,4 +114,17 @@ WriteFieldModule::execute()
     filename_.set(oldfilename);
 #endif
 
+}
+
+bool WriteFieldModule::useCustomExporter(const std::string& filename) const 
+{
+  auto ft = get_state()->getValue(Variables::FileTypeName).getString();
+  LOG_DEBUG("WriteField with filetype " << ft);
+  
+  filetype_ = (ft == "SCIRun Field ASCII") ? "ASCII" : "Binary";
+
+  return !(ft == "" ||
+    ft == "SCIRun Field Binary" ||
+    ft == "SCIRun Field ASCII" ||
+    ft == "Binary");
 }

@@ -46,7 +46,9 @@
 namespace SCIRunAlgo {
 	
 	using namespace SCIRun;
-	
+
+	/// @class CalculateProfile
+	/// @brief Samples image data surrounding mesh generated from segmentation. 	
 	class CalculateProfile : public Module {
 	public:
 		CalculateProfile(GuiContext*);

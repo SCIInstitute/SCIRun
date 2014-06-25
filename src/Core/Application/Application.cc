@@ -37,6 +37,7 @@
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Logging/Log.h>
+#include <Core/IEPlugin/IEPluginInit.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::CommandLine;
@@ -93,12 +94,15 @@ NetworkEditorControllerHandle Application::controller()
 {
   if (!private_->controller_)
   {
-    //TODO: these all get configured
+    /// @todo: these all get configured
     ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
     private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory));
+
+    /// @todo: sloppy way to initialize this but similar to v4, oh well
+    IEPluginManager::Initialize();
   }
   return private_->controller_;
 }
@@ -122,8 +126,8 @@ std::string Application::commandHelpString() const
 
 std::string Application::version() const
 {
-	//TODO:
-  //return CORE_APPLICATION_VERSION;
+	/// @todo:
+  ///return CORE_APPLICATION_VERSION;
   return "5.0.0 developer version";
 }
 

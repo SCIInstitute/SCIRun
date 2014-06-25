@@ -33,6 +33,10 @@
 
 namespace SCIRun {
 
+/// @class ReportMatrixRowMeasure
+/// @brief This module computes a measure on each row of the input matrix and
+/// stores the result in the output matrix. 
+
 class ReportMatrixRowMeasure : public Module {
 public:
   ReportMatrixRowMeasure(GuiContext*);

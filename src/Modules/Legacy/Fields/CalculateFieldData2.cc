@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
@@ -40,6 +39,11 @@
 #include <Dataflow/Network/Ports/StringPort.h>
 
 namespace SCIRun {
+
+/// @class CalculateFieldData2
+/// @brief Calculate new data for the field given a function that uses field
+/// data, node location and element properties as input, with a second input
+/// port for a second field.
 
 class CalculateFieldData2 : public Module {
   public:

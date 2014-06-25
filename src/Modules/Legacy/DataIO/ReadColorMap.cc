@@ -27,16 +27,15 @@
 */
 
 
-/*
- *  ReadColorMap.cc: Read a persistent colormap from a file
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+/// @file  ReadColorMap.cc
+///
+/// @author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+/// @date  July 1994
+/// 
 
 #include <Dataflow/Network/Ports/ColorMapPort.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>
@@ -45,6 +44,9 @@
 namespace SCIRun {
 
 template class GenericReader<ColorMapHandle>;
+
+/// @class ReadColorMap
+/// @brief Read a persistent colormap from a file (a SCIRun .cmap file)
 
 class ReadColorMap : public GenericReader<ColorMapHandle> {
   protected:

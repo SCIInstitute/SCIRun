@@ -29,16 +29,16 @@
 
 
 
-/*
- *  SimpleReducer: A barrier with reduction operations
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@file  SimpleReducer.cc
+///@brief A barrier with reduction operations
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 #include <Core/Thread/Legacy/SimpleReducer.h>
 #include <Core/Thread/Legacy/ThreadGroup.h>

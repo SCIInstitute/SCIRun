@@ -33,6 +33,9 @@
 
 namespace SCIRun {
 
+/// @class ConvertLatVolDataFromNodeToElem
+/// @brief Make a new field with data at elements instead of nodes. 
+
 class ConvertLatVolDataFromNodeToElem : public Module
 {
   public:
@@ -65,10 +68,10 @@ ConvertLatVolDataFromNodeToElem::execute()
   {
     update_state(Executing);
     
-    //! Run algorithm
+    /// Run algorithm
     if(!(algo_.run(input,output))) return;
     
-    //! Send output
+    /// Send output
     send_output_handle("Elem Field", output);
   }
 }

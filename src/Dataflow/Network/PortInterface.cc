@@ -26,10 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
+/// @todo Documentation Dataflow/Network/PortInterface.cc
+
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 
@@ -64,42 +66,38 @@ namespace
   bool isWildPort(const PortDescriptionInterface& port)
   {
     return port.get_typename() == "Datatype";
-    //const static std::string blackGui = "#000000";
-    //const static std::string black = "black";
-    //auto color = port.get_typename();
-    //return color == black || color == blackGui;
   }
 }
 
 
 
-//TODO: unit test
+/// @todo: unit test
 bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2) const
 {
   if (isFullInputPort(port1) || isFullInputPort(port2))
   {
-    //std::cout << "can't connect since input ports can only take one connection" << std::endl;
+    LOG_DEBUG("can't connect since input ports can only take one connection" << std::endl);
     return false;
   }
   if (port1.isInput() == port2.isInput())
   {
-    //std::cout << "can't connect since input/output not compatible" << std::endl;
+    LOG_DEBUG("can't connect since input/output not compatible" << std::endl);
     return false;
   }
   if (sharesParentModule(port1, port2))
   {
-    //std::cout << "can't connect since it's the same module" << std::endl;
+    LOG_DEBUG("can't connect since it's the same module" << std::endl);
     return false;
   }
   if (isWildPort(port1) || isWildPort(port2))
   {
-    //std::cout << "found wild port" << std::endl;
-    //TODO: trying out "wildcard" ports
+    LOG_DEBUG("found wild port" << std::endl);
+    /// @todo: trying out "wildcard" ports
     return true;
   }
   if (port1.get_typename() != port2.get_typename())
   {
-    //std::cout << "can't connect since colors don't match" << std::endl;
+    LOG_DEBUG("can't connect since colors don't match" << std::endl);
     return false;
   }
   return true;

@@ -36,6 +36,9 @@
 
 namespace SCIRun {
 
+/// @class CalculateIsInsideField
+/// @brief Calculate whether an element of one field is inside the domain of another field. 
+
 class CalculateIsInsideField : public Module 
 {
   public:

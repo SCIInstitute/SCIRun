@@ -26,19 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  SwapFieldDataWithMatrixEntries:
- *  Store/retrieve values from an input matrix to/from the data of a field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   February 2001
- *
- */
-
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
@@ -49,6 +36,17 @@
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
 namespace SCIRun {
+
+///
+///@class  SwapFieldDataWithMatrixEntries
+///@brief  Store/retrieve values from an input matrix to/from the data of a field.
+///
+///@author
+///   Michael Callahan,
+///   Department of Computer Science.
+///   University of Utah
+///@date   February 2001
+///
 
 class SwapFieldDataWithMatrixEntries : public Module
 {

@@ -26,14 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  GetFileName.cc:
- *
- *  Written by:
- *   jeroen
- *   TODAY'S DATE HERE
- *
- */
+///
+///@file  GetFileName.cc
+///
+///@author
+///   jeroen
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/StringPort.h>
@@ -44,6 +41,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class GetFileName
+/// @brief This Module gets a filename and stores it in a string. 
 
 class GetFileName : public Module {
 public:
@@ -107,8 +107,8 @@ GetFileName::execute()
     send_output_handle("Full Filename", handle);
   }
 
-  //! If no data or an input change recreate the field. I.e Only
-  //! execute when neeed.
+  /// If no data or an input change recreate the field. I.e Only
+  /// execute when neeed.
   if( gui_number_in_series_.changed( true ) ||
       !oport_cached("Number in Series") )
   {

@@ -45,9 +45,9 @@ namespace SCIRun
 namespace Core
 {
 
-// CLASS PYTHONINTERPRETER
-/// A wrapper class of the python interpreter.
-/// It calls the python interpreter on a separate thread.
+///@class  PythonInterpreter
+///@brief  A wrapper class of the python interpreter.
+///@details It calls the python interpreter on a separate thread.
 
 class PythonInterpreterPrivate;
 typedef boost::shared_ptr< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;

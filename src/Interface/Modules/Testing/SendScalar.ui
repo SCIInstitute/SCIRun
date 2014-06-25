@@ -40,23 +40,28 @@
     <rect>
      <x>11</x>
      <y>11</y>
-     <width>413</width>
+     <width>191</width>
      <height>71</height>
     </rect>
    </property>
    <property name="title">
     <string>Scalar Value To Send</string>
    </property>
-   <widget class="QLineEdit" name="scalarValueToSend_">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>30</y>
-      <width>113</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QDoubleSpinBox" name="scalarValueToSend_">
+      <property name="decimals">
+       <number>3</number>
+      </property>
+      <property name="minimum">
+       <double>-100000.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>100000.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QLabel" name="executionTimeLabel_">
    <property name="geometry">

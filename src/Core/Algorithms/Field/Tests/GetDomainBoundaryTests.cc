@@ -64,16 +64,17 @@ protected:
     GetDomainBoundaryAlgo algo;
 
     // How to set parameters on an algorithm (that come from the GUI)
-    algo.set(GetDomainBoundaryAlgo::AddOuterBoundary, includeOuterBoundary);
+    algo.set(Parameters::AddOuterBoundary, includeOuterBoundary);
+    
+    /// @todo: this logic matches the wacky module behavior
 
-    // TODO: this logic matches the wacky module behavior
-    algo.set(GetDomainBoundaryAlgo::UseRange, useRange);
+    algo.set(Parameters::UseRange, useRange);
     if (!useRange)
     {
-      algo.set(GetDomainBoundaryAlgo::Domain, domainValue);
-      algo.set(GetDomainBoundaryAlgo::MinRange, domainValue);
-      algo.set(GetDomainBoundaryAlgo::MaxRange, domainValue);
-	  algo.set(GetDomainBoundaryAlgo::UseRange, true);
+      algo.set(Parameters::Domain, domainValue);
+      algo.set(Parameters::MinRange, domainValue);
+      algo.set(Parameters::MaxRange, domainValue);
+	  algo.set(Parameters::UseRange, true);
     }
 
     FieldHandle boundary;
@@ -171,20 +172,20 @@ protected:
     ASSERT_TRUE(latVol_->vmesh()->is_latvolmesh());
     
     // How to set parameters on an algorithm (that come from the GUI)
-    algo_.set(GetDomainBoundaryAlgo::AddOuterBoundary, ::std::tr1::get<0>(GetParam()));
+    algo_.set(Parameters::AddOuterBoundary, ::std::tr1::get<0>(GetParam()));
     
-    //// TODO: this logic matches the wacky module behavior
-    algo_.set(GetDomainBoundaryAlgo::UseRange, ::std::tr1::get<1>(GetParam()));
-    if (!::std::tr1::get<1>(GetParam()))//!useRange)
+    /// @todo: this logic matches the wacky module behavior
+    algo_.set(Parameters::UseRange, ::std::tr1::get<1>(GetParam()));
+    if (!::std::tr1::get<1>(GetParam()))///useRange)
     {
-      algo_.set(GetDomainBoundaryAlgo::Domain,   ::std::tr1::get<2>(GetParam()));
-      algo_.set(GetDomainBoundaryAlgo::MinRange, ::std::tr1::get<3>(GetParam()));
-      algo_.set(GetDomainBoundaryAlgo::MaxRange, ::std::tr1::get<3>(GetParam()));
-      algo_.set(GetDomainBoundaryAlgo::UseRange, true);
+      algo_.set(Parameters::Domain,   ::std::tr1::get<2>(GetParam()));
+      algo_.set(Parameters::MinRange, ::std::tr1::get<3>(GetParam()));
+      algo_.set(Parameters::MaxRange, ::std::tr1::get<3>(GetParam()));
+      algo_.set(Parameters::UseRange, true);
     }
-	//algo_.set(GetDomainBoundaryAlgo::InnerBoundaryOnly, ::std::tr1::get<3>(GetParam()));
-	//algo_.set(GetDomainBoundaryAlgo::NoInnerBoundary, ::std::tr1::get<4>(GetParam()));
-	//algo_.set(GetDomainBoundaryAlgo::DisconnectBoundaries, ::std::tr1::get<5>(GetParam())); 
+	//algo_.set(Parameters::InnerBoundaryOnly, ::std::tr1::get<3>(GetParam()));
+	//algo_.set(Parameters::NoInnerBoundary, ::std::tr1::get<4>(GetParam()));
+	//algo_.set(Parameters::DisconnectBoundaries, ::std::tr1::get<5>(GetParam())); 
     //ASSERT_TRUE(algo_.runImpl(latVol, unused, boundary));
   }
   virtual void TearDown()
@@ -193,7 +194,6 @@ protected:
 
 TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)
 {
-    //EXPECT_NO_FATAL_FAILURE(GetDomainBoundaryTestsParameterized); 
     //EXPECT_EQ(0, boundary->vmesh()->num_nodes()); 
   boundary_.reset();
   ASSERT_TRUE(algo_.runImpl(latVol_, unused_, boundary_));

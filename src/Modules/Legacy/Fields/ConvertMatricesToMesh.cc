@@ -26,18 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  ConvertMatricesToMesh: Store/retrieve values from an input matrix to/from 
- *            the data of a field
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   February 2001
- *
- */
+///
+///@author
+///   Michael Callahan,
+///   Department of Computer Science,
+///   University of Utah
+///@date  February 2001
+///
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
@@ -50,6 +45,9 @@
 
 namespace SCIRun {
 
+/// @class ConvertMatricesToMesh
+/// @brief This module constructs a mesh from raw matrix data. 
+ 
 class ConvertMatricesToMesh : public Module
 {
 private:

@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Mesh/MeshFacadeIterators.h
+
 #ifndef CORE_DATATYPES_MESH_FACADE_ITERATORS_H
 #define CORE_DATATYPES_MESH_FACADE_ITERATORS_H 
 
@@ -47,7 +49,7 @@ namespace Datatypes {
     class SmartFaceIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[4],SmartIndex<Edge>[4]> >
   */
 
-  // TODO: Being conservative with mesh synchronization flags until more
+  /// @todo: Being conservative with mesh synchronization flags until more
   // synchronize infrastructure is implemented and tested,
   // so clear_synchronization() is always called after synchronize and operation
   // that requires synchronize to be called.
@@ -55,7 +57,7 @@ namespace Datatypes {
   class SmartMeshIterator : public boost::iterator_facade<SmartMeshIterator<VirtualMeshType, MeshComponent>, MeshComponent<VirtualMeshType>, boost::bidirectional_traversal_tag>
   {
   public:
-    //TODO: need to look up pattern for creating "end" iterators.
+    /// @todo: need to look up pattern for creating "end" iterators.
     explicit SmartMeshIterator(VirtualMeshType* vmesh = 0, bool isEnd = false) : iter_(0), vmesh_(vmesh), current_(vmesh)
     {
       ENSURE_NOT_NULL(vmesh, "virtual mesh");
@@ -65,7 +67,7 @@ namespace Datatypes {
       }
       else
       {
-        //TODO: need to split out that Synchronize enum
+        /// @todo: need to split out that Synchronize enum
         vmesh_->synchronize(/*Mesh::EDGES_E*/ 2);
         vmesh_->end(iter_);
       }
@@ -94,7 +96,7 @@ namespace Datatypes {
     mutable MeshComponent<VirtualMeshType> current_;
   };
 
-  //TODO: templatize with traits and stuff. for now, a specialized version for edges.
+  /// @todo: templatize with traits and stuff. for now, a specialized version for edges.
   template <class VirtualMeshType>
   class EdgeInfo
   {
@@ -106,7 +108,7 @@ namespace Datatypes {
     };
     explicit EdgeInfo(VirtualMeshType* mesh) : index_(0), vmesh_(mesh) 
     {
-      //TODO: need to split out that Synchronize enum
+      /// @todo: need to split out that Synchronize enum
       vmesh_->synchronize(/*Mesh::EDGES_E*/ sync_enum);
     }
     void setIndex(typename VirtualMeshType::Edge::index_type i) { index_ = i; }
@@ -210,7 +212,7 @@ namespace Datatypes {
     {
       if (!synched_)
       {
-        //TODO: need to split out that Synchronize enum
+        /// @todo: need to split out that Synchronize enum
         vmesh_->synchronize(/*Mesh::NODE_NEIGHBORS_E*/sync_enum);
         synched_ = true;
       }

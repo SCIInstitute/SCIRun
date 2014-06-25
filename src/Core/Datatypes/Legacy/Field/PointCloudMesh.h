@@ -29,8 +29,8 @@
 #ifndef CORE_DATATYPES_POINTCLOUDMESH_H
 #define CORE_DATATYPES_POINTCLOUDMESH_H 1
 
-//! Include what kind of support we want to have
-//! Need to fix this and couple it sci-defs
+/// Include what kind of support we want to have
+/// Need to fix this and couple it sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Persistent/PersistentSTL.h>
@@ -58,19 +58,19 @@ namespace SCIRun {
 /////////////////////////////////////////////////////
 // Declarations for virtual interface
 
-//! Functions for creating the virtual interface
-//! Declare the functions that instantiate the virtual interface
+/// Functions for creating the virtual interface
+/// Declare the functions that instantiate the virtual interface
 template <class Basis> class PointCloudMesh;
 
-//! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behavior will allow
-//! for dynamically compiling the interface if needed.
+/// make sure any other mesh other than the preinstantiate ones
+/// returns no virtual interface. Altering this behavior will allow
+/// for dynamically compiling the interface if needed.
 
 template<class MESH>
 VMesh* CreateVPointCloudMesh(MESH*) { return (0); }
 
-//! Declare that these can be found in a library that is already
-//! precompiled. So dynamic compilation will not instantiate them again.
+/// Declare that these can be found in a library that is already
+/// precompiled. So dynamic compilation will not instantiate them again.
 #if (SCIRUN_POINTCLOUD_SUPPORT > 0)
 SCISHARE VMesh* CreateVPointCloudMesh(PointCloudMesh<Core::Basis::ConstantBasis<Core::Geometry::Point> >* mesh);
 
@@ -85,7 +85,7 @@ template <class Basis>
 class PointCloudMesh : public Mesh
 {
 
-//! Make sure the virtual interface has access
+/// Make sure the virtual interface has access
 template<class MESH> friend class VPointCloudMesh;
 template<class MESH> friend class VMeshShared;
 
@@ -99,7 +99,7 @@ public:
   typedef boost::shared_ptr<PointCloudMesh<Basis> > handle_type;
   typedef Basis                                 basis_type;
 
-  //! Index and Iterator types required for Mesh Concept.
+  /// Index and Iterator types required for Mesh Concept.
   struct Node {
     typedef NodeIndex<under_type>       index_type;
     typedef NodeIterator<under_type>    iterator;
@@ -128,16 +128,16 @@ public:
     typedef std::vector<index_type>          array_type;
   };
 
-  //! Elem refers to the most complex topological object
-  //! DElem refers to object just below Elem in the topological hierarchy
+  /// Elem refers to the most complex topological object
+  /// DElem refers to object just below Elem in the topological hierarchy
 
   typedef Node Elem;
   typedef Node DElem;
 
-  //! Somehow the information of how to interpolate inside an element
-  //! ended up in a separate class, as they need to share information
-  //! this construction was created to transfer data. 
-  //! Hopefully in the future this class will disappear again.
+  /// Somehow the information of how to interpolate inside an element
+  /// ended up in a separate class, as they need to share information
+  /// this construction was created to transfer data. 
+  /// Hopefully in the future this class will disappear again.
   friend class ElemData;
   class ElemData
   {
@@ -169,20 +169,20 @@ public:
 
   //////////////////////////////////////////////////////////////////
 
-  //! Construct a new mesh
+  /// Construct a new mesh
   PointCloudMesh(); 
   
-  //! Copy a mesh, needed for detaching the mesh from a field 
+  /// Copy a mesh, needed for detaching the mesh from a field 
   PointCloudMesh(const PointCloudMesh &copy);
   
-  //! Clone function for detaching the mesh and automatically generating
-  //! a new version if needed.
+  /// Clone function for detaching the mesh and automatically generating
+  /// a new version if needed.
   virtual PointCloudMesh *clone() const { return new PointCloudMesh(*this); }
   
-  //! Destructor
+  /// Destructor
   virtual ~PointCloudMesh();
 
-  //! Access point to virtual interface
+  /// Access point to virtual interface
   virtual VMesh* vmesh() { return (vmesh_.get()); }
 
   virtual MeshFacadeHandle getFacade() const
@@ -190,48 +190,48 @@ public:
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
-  //! This one should go at some point, should be reroute throught the
-  //! virtual interface
+  /// This one should go at some point, should be reroute throught the
+  /// virtual interface
   virtual int basis_order() 
   {
     return (basis_.polynomial_order()); 
   }
 
-  //! Topological dimension
+  /// Topological dimension
   virtual int dimensionality() const { return 0; }
 
-  //! What kind of mesh is this 
-  //! structured = no connectivity data
-  //! regular    = no node location data
+  /// What kind of mesh is this 
+  /// structured = no connectivity data
+  /// regular    = no node location data
   virtual int topology_geometry() const 
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
-  //! Get the bounding box of the field
+  /// Get the bounding box of the field
   virtual Core::Geometry::BBox get_bounding_box() const;
   
-  //! Return the transformation that takes a 0-1 space bounding box 
-  //! to the current bounding box of this mesh.  
+  /// Return the transformation that takes a 0-1 space bounding box 
+  /// to the current bounding box of this mesh.  
   virtual void get_canonical_transform(Core::Geometry::Transform &t) const;
 
-  //! Core::Geometry::Transform a field (transform all nodes using this transformation matrix)  
+  /// Core::Geometry::Transform a field (transform all nodes using this transformation matrix)  
   virtual void transform(const Core::Geometry::Transform &t);
 
-  //! Check whether mesh can be altered by adding nodes or elements
+  /// Check whether mesh can be altered by adding nodes or elements
   virtual bool is_editable() const { return true; }
 
-  //! Has this mesh normals.
+  /// Has this mesh normals.
   virtual bool has_normals() const { return (false); }
 
-  //! Compute tables for doing topology, these need to be synchronized
-  //! before doing a lot of operations.
+  /// Compute tables for doing topology, these need to be synchronized
+  /// before doing a lot of operations.
   virtual bool synchronize(mask_type sync);
   virtual bool unsynchronize(mask_type sync);
   bool clear_synchronization();
   
-  //! Get the basis class
+  /// Get the basis class
   Basis& get_basis() { return basis_; }
     
-  //! begin/end iterators
+  /// begin/end iterators
   void begin(typename Node::iterator &) const;
   void begin(typename Edge::iterator &) const;
   void begin(typename Face::iterator &) const;
@@ -242,17 +242,17 @@ public:
   void end(typename Face::iterator &) const;
   void end(typename Cell::iterator &) const;
 
-  //! Get the iteration sizes
+  /// Get the iteration sizes
   void size(typename Node::size_type &) const;
   void size(typename Edge::size_type &) const;
   void size(typename Face::size_type &) const;
   void size(typename Cell::size_type &) const;
 
-  //! These are here to convert indices to unsigned int
-  //! counters. Some how the decision was made to use multi
-  //! dimensional indices in some fields, these functions
-  //! should deal with different pointer types.
-  //! Use the virtual interface to avoid all this non sense.
+  /// These are here to convert indices to unsigned int
+  /// counters. Some how the decision was made to use multi
+  /// dimensional indices in some fields, these functions
+  /// should deal with different pointer types.
+  /// Use the virtual interface to avoid all this non sense.
   inline void to_index(typename Node::index_type &index, index_type i) const 
     { index = i; }
   inline void to_index(typename Edge::index_type &index, index_type i) const 
@@ -321,7 +321,7 @@ public:
     { ASSERTFAIL("PointCloudMesh: get_cells has not been implemented"); }
     
     
-  //! get the parent element(s) of the given index
+  /// get the parent element(s) of the given index
   void get_elems(typename Elem::array_type &result,
                  typename Node::index_type idx) const
   { 
@@ -352,8 +352,8 @@ public:
                   typename Cell::index_type) const
     { ASSERTFAIL("PointCloudMesh: get_delems has not been implemented for cells"); }
 
-  //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an edge.
+  /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an edge.
   template<class VECTOR>
   void pwl_approx_edge(VECTOR &,
                        typename Elem::index_type,
@@ -373,7 +373,7 @@ public:
   }
 
 
-  //! get the center point (in object space) of an element
+  /// get the center point (in object space) of an element
   void get_center(Core::Geometry::Point &p, typename Node::index_type i) const 
     { p = points_[i]; }
   void get_center(Core::Geometry::Point &, typename Edge::index_type) const
@@ -383,7 +383,7 @@ public:
   void get_center(Core::Geometry::Point &, typename Cell::index_type) const
     { ASSERTFAIL("PointCloudMesh: get_center has not been implemented for cells"); }
 
-  //! Get the size of an elemnt (length, area, volume)
+  /// Get the size of an elemnt (length, area, volume)
   double get_size(typename Node::index_type) const { return 0.0; }
   double get_size(typename Edge::index_type) const { return 0.0; }
   double get_size(typename Face::index_type) const { return 0.0; }
@@ -394,9 +394,9 @@ public:
 
   double get_size(typename Node::array_type&) const { return 0.0; }
 
-  //! Get neighbors of an element or a node
-  //! THIS ONE IS FLAWED AS IN 3D SPACE  A NODE CAN BE CONNECTED TO
-  //! MANY ELEMENTS
+  /// Get neighbors of an element or a node
+  /// THIS ONE IS FLAWED AS IN 3D SPACE  A NODE CAN BE CONNECTED TO
+  /// MANY ELEMENTS
   bool get_neighbor(typename Elem::index_type& /*neighbor*/,
                     typename Elem::index_type /*elem*/,
                     typename DElem::index_type /*delem*/) const
@@ -409,7 +409,7 @@ public:
                      typename DElem::index_type /*delem*/) const 
     { array.resize(0); return (false); }
 
-  //! Locate a point in a mesh, find which is the closest node
+  /// Locate a point in a mesh, find which is the closest node
   bool locate(typename Node::index_type &n, const Core::Geometry::Point &p) const
     { return (locate_node(n,p)); }
   bool locate(typename Edge::index_type &, const Core::Geometry::Point &) const
@@ -423,8 +423,8 @@ public:
   bool locate(typename Node::index_type &n, ARRAY& coords, const Core::Geometry::Point &p) const
     { coords.resize(0); return (locate_node(n,p)); }
 
-  //! These should become obsolete soon, they do not follow the concept
-  //! of the basis functions....
+  /// These should become obsolete soon, they do not follow the concept
+  /// of the basis functions....
   int get_weights(const Core::Geometry::Point &p, typename Node::array_type &l, double *w);
   int get_weights(const Core::Geometry::Point&, typename Edge::array_type&, double*)
     { ASSERTFAIL("PointCloudField: get_weights for edges isn't supported"); }
@@ -448,7 +448,7 @@ public:
   void get_normal(Core::Geometry::Vector&, VECTOR &, typename Elem::index_type, unsigned int) const
     { ASSERTFAIL("PointCloudMesh: this mesh type does not have element normals."); }
 
-  //! use these to build up a new PointCloudField mesh
+  /// use these to build up a new PointCloudField mesh
   typename Node::index_type add_node(const Core::Geometry::Point &p) { return add_point(p); }
   typename Node::index_type add_point(const Core::Geometry::Point &p);
   
@@ -464,13 +464,13 @@ public:
   void resize_elems(size_t s) { points_.resize(s); }
 
 
-  //! THESE FUNCTIONS ARE DEFINED INSIDE THE CLASS AS THESE ARE TEMPLATED
-  //! FUNCTIONS INSIDE A TEMPLATED CLASS. THIS WAY OF DEFINING THE FUNCTIONS
-  //! IS SUPPORTED BY MOST COMPILERS
+  /// THESE FUNCTIONS ARE DEFINED INSIDE THE CLASS AS THESE ARE TEMPLATED
+  /// FUNCTIONS INSIDE A TEMPLATED CLASS. THIS WAY OF DEFINING THE FUNCTIONS
+  /// IS SUPPORTED BY MOST COMPILERS
 
-  //! Get the local coordinates for a certain point within an element
-  //! This function uses a couple of newton iterations to find the local
-  //! coordinate of a point
+  /// Get the local coordinates for a certain point within an element
+  /// This function uses a couple of newton iterations to find the local
+  /// coordinate of a point
   template<class VECTOR, class INDEX>
   bool get_coords(VECTOR &coords, const Core::Geometry::Point& /*p*/, INDEX /*idx*/) const
   {
@@ -479,17 +479,17 @@ public:
     return true;
   }
 
-  //! Find the location in the global coordinate system for a local coordinate
-  //! This function is the opposite of get_coords.
+  /// Find the location in the global coordinate system for a local coordinate
+  /// This function is the opposite of get_coords.
   template<class VECTOR, class INDEX>
   void interpolate(Core::Geometry::Point &pt, const VECTOR& /*coords*/, INDEX idx) const
   {
     get_center(pt, typename Node::index_type(idx));
   }
 
-  //! Interpolate the derivate of the function, This infact will return the
-  //! jacobian of the local to global coordinate transformation. This function
-  //! is mainly intended for the non linear elements
+  /// Interpolate the derivate of the function, This infact will return the
+  /// jacobian of the local to global coordinate transformation. This function
+  /// is mainly intended for the non linear elements
   template<class VECTOR1, class INDEX, class VECTOR2>
   void derivate(const VECTOR1& /*coords*/, INDEX /*idx*/, VECTOR2 &J) const
   {
@@ -500,17 +500,17 @@ public:
   }
 
 
-  //! Get the determinant of the jacobian, which is the local volume of an element
-  //! and is intended to help with the integration of functions over an element.
+  /// Get the determinant of the jacobian, which is the local volume of an element
+  /// and is intended to help with the integration of functions over an element.
   template<class VECTOR, class INDEX>
   double det_jacobian(const VECTOR& coords, INDEX idx) const
   {
     return (1.0);
   }
 
-  //! Get the jacobian of the transformation. In case one wants the non inverted
-  //! version of this matrix. This is currentl here for completeness of the 
-  //! interface
+  /// Get the jacobian of the transformation. In case one wants the non inverted
+  /// version of this matrix. This is currentl here for completeness of the 
+  /// interface
   template<class VECTOR, class INDEX>
   void jacobian(const VECTOR& coords, INDEX idx, double* J) const
   {
@@ -525,9 +525,9 @@ public:
     J[8] = 1.0;
   }
 
-  //! Get the inverse jacobian of the transformation. This one is needed to 
-  //! translate local gradients into global gradients. Hence it is crucial for
-  //! calculating gradients of fields, or constructing finite elements.        
+  /// Get the inverse jacobian of the transformation. This one is needed to 
+  /// translate local gradients into global gradients. Hence it is crucial for
+  /// calculating gradients of fields, or constructing finite elements.        
   template<class VECTOR, class INDEX>                
   double inverse_jacobian(const VECTOR& /*coords*/, INDEX /*idx*/, double* Ji) const
   {
@@ -563,20 +563,20 @@ public:
     return (0.0);
   }
 
-  //! Find closest node
-  //! Loop over all nodes to see which is the closest
+  /// Find closest node
+  /// Loop over all nodes to see which is the closest
   template <class INDEX>
   bool locate_node(INDEX &node, const Core::Geometry::Point &p) const
   {
-    //! If there are no nodes, we cannot find a closest one
+    /// If there are no nodes, we cannot find a closest one
     typename Node::size_type sz; size(sz);
     if (sz == 0) return (false);
   
-    //! Check accuracity of first guess if we have any
+    /// Check accuracity of first guess if we have any
     if (node >= 0 && node < sz)
     {
-      //! Estimate is close enough and thence continue as we found the
-      //! closest point within an epsilon uncertainty
+      /// Estimate is close enough and thence continue as we found the
+      /// closest point within an epsilon uncertainty
       if ((p-points_[node]).length2() < epsilon2_) return (true);
     }
     
@@ -606,8 +606,8 @@ public:
     do 
     {
       found = true; 
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
     
       for (index_type i = bi; i <= ei; i++)
       {
@@ -654,14 +654,14 @@ public:
     return (true); 
   }
 
-  //! Find whether we are inside the element
-  //! If we find an element we return true
+  /// Find whether we are inside the element
+  /// If we find an element we return true
   template <class INDEX>
   bool locate_elem(INDEX &idx, const Core::Geometry::Point &p) const
   {
     typename Elem::size_type sz; size(sz);
     
-    //! Check whether the estimate given in idx is the point we are looking for
+    /// Check whether the estimate given in idx is the point we are looking for
     if (idx >= 0 && idx < sz) 
     {
       if ((p - points_[idx]).length2() < epsilon2_) return (true);
@@ -727,7 +727,7 @@ public:
   }
 
 
-  //! Closest node and the location
+  /// Closest node and the location
   template <class INDEX> 
   bool find_closest_node(double& pdist, Core::Geometry::Point& result, 
                          INDEX &node, const Core::Geometry::Point &p, double maxdist) const
@@ -735,7 +735,7 @@ public:
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
     typename Node::size_type sz; size(sz);
    
-    //! If there are no nodes we cannot find the closest one
+    /// If there are no nodes we cannot find the closest one
     if(sz == 0) return (false);
   
     if (node >= 0 && node < sz)
@@ -774,9 +774,9 @@ public:
     do 
     {
       found = true; 
-      //! This looks incorrect - but it is correct
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// This looks incorrect - but it is correct
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
     
       for (index_type i = bi; i <= ei; i++)
       {
@@ -807,7 +807,7 @@ public:
                     node = INDEX(*it); 
                     dmin = dist; 
 
-                    //! If we are closer than eps^2 we found a node close enough
+                    /// If we are closer than eps^2 we found a node close enough
                     if (dmin < epsilon2_) 
                     { 
                       pdist = sqrt(dmin);
@@ -988,7 +988,7 @@ public:
     coords.resize(0);
     typename Elem::size_type sz; size(sz);
    
-    //! If there are no nodes we cannot find the closest one
+    /// If there are no nodes we cannot find the closest one
     if(sz == 0) return (false);
   
     if (elem >= 0 && elem < sz)
@@ -1028,8 +1028,8 @@ public:
     do 
     {
       found = true; 
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;
@@ -1059,7 +1059,7 @@ public:
                     elem = INDEX(*it); 
                     dmin = dist; 
 
-                    //! If we are closer than eps^2 we found a node close enough
+                    /// If we are closer than eps^2 we found a node close enough
                     if (dmin < epsilon2_) 
                     {
                       pdist = sqrt(dmin);
@@ -1135,9 +1135,9 @@ public:
     do 
     {
       found = true; 
-      //! This looks incorrect - but it is correct
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements
+      /// This looks incorrect - but it is correct
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;
@@ -1193,20 +1193,20 @@ public:
   double get_epsilon() const 
     { return (epsilon_); }
 
-  //! Export this class using the old Pio system
+  /// Export this class using the old Pio system
   virtual void io(Piostream&);
   
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS  
     
-  //! These IDs are created as soon as this class will be instantiated
+  /// These IDs are created as soon as this class will be instantiated
   static PersistentTypeID pointcloud_typeid;
-  //! Core functionality for getting the name of a templated mesh class
+  /// Core functionality for getting the name of a templated mesh class
   static const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return pointcloud_typeid.type; }
 
-  //! Type description, used for finding names of the mesh class for
-  //! dynamic compilation purposes. Some of this should be obsolete  
+  /// Type description, used for finding names of the mesh class for
+  /// dynamic compilation purposes. Some of this should be obsolete  
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
@@ -1215,9 +1215,9 @@ public:
   static const TypeDescription* elem_type_description()
   { return node_type_description(); }
 
-  //! This function returns a maker for Pio.
+  /// This function returns a maker for Pio.
   static Persistent *maker() { return new PointCloudMesh(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<PointCloudMesh>(); }
 
 protected:
@@ -1246,23 +1246,23 @@ protected:
   void remove_elem_from_grid(typename Elem::index_type ci);
 
 
-  //! the nodes
+  /// the nodes
   std::vector<Core::Geometry::Point> points_;
 
-  //! basis fns
+  /// basis fns
   Basis         basis_;
 
   boost::shared_ptr<SearchGridT<index_type> > grid_;
 
-  //! Record which parts of the mesh are synchronized
+  /// Record which parts of the mesh are synchronized
   mask_type     synchronized_;
-  //! Lock to synchronize between threads
+  /// Lock to synchronize between threads
   Core::Thread::Mutex         synchronize_lock_;
   
   double        epsilon_;
   double        epsilon2_;
 
-  //! Virtual interface
+  /// Virtual interface
   boost::shared_ptr<VMesh> vmesh_;
 
 };  // end class PointCloudMesh
@@ -1276,7 +1276,7 @@ PointCloudMesh<Basis>::PointCloudMesh() :
   epsilon2_(0.0)
 {
   DEBUG_CONSTRUCTOR("PointCloudMesh") 
-  //! Initialize the virtual interface when the mesh is created
+  /// Initialize the virtual interface when the mesh is created
   vmesh_.reset(CreateVPointCloudMesh(this));
 }
   
@@ -1292,9 +1292,9 @@ PointCloudMesh<Basis>::PointCloudMesh(const PointCloudMesh &copy) :
 
   PointCloudMesh &lcopy = (PointCloudMesh &)copy;
 
-  //! We need to lock before we can copy these as these
-  //! structures are generate dynamically when they are
-  //! needed.  
+  /// We need to lock before we can copy these as these
+  /// structures are generate dynamically when they are
+  /// needed.  
   lcopy.synchronize_lock_.lock();
 
   // Copy element grid
@@ -1313,9 +1313,9 @@ PointCloudMesh<Basis>::PointCloudMesh(const PointCloudMesh &copy) :
 
   lcopy.synchronize_lock_.unlock();
 
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   vmesh_.reset(CreateVPointCloudMesh(this));
 }
     
@@ -1568,18 +1568,18 @@ PointCloudMesh<Basis>::synchronize(mask_type sync)
       ( !(synchronized_ & Mesh::LOCATE_E) ||
         !(synchronized_ & Mesh::EPSILON_E) ))
   {
-    //! These computations share the evalution of the bounding box
+    /// These computations share the evalution of the bounding box
     Core::Geometry::BBox bb = get_bounding_box(); 
 
-    //! Compute the epsilon for geometrical closeness comparisons
-    //! Mainly used by the grid lookup tables
+    /// Compute the epsilon for geometrical closeness comparisons
+    /// Mainly used by the grid lookup tables
     if (sync & (Mesh::EPSILON_E|Mesh::LOCATE_E|Mesh::FIND_CLOSEST_E) && 
         !(synchronized_ & Mesh::EPSILON_E))
     {
       compute_epsilon(bb);
     }
 
-    //! Table for finding nodes in space
+    /// Table for finding nodes in space
     if (sync & (Mesh::LOCATE_E|Mesh::FIND_CLOSEST_E) && 
         !(synchronized_ & Mesh::LOCATE_E))
     {
@@ -1623,7 +1623,7 @@ template <class Basis>
 void
 PointCloudMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ni)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   grid_->insert(ni,points_[ni]);
 }

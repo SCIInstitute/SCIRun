@@ -34,6 +34,7 @@ SET(Interface_Modules_Factory_HEADERS
 
 SET(Interface_Modules_Factory_SOURCES 
   ModuleDialogFactory.cc
+  ModuleDialogFactoryAdditional.cc
 )
 
 #QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})

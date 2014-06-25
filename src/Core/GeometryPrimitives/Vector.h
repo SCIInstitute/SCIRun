@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/GeometryPrimitives/Vector.h
+
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
@@ -43,7 +45,7 @@ namespace SCIRun {
 namespace Core {
 namespace Geometry {
 
-  //TODO: move to math header
+  /// @todo move to math header
   template <typename T>
   inline const T& Min(const T& t1, const T& t2, const T& t3)
   {
@@ -469,7 +471,7 @@ inline void Vector::Set(double x, double y, double z)
 SCISHARE const TypeDescription* get_type_description(Vector*);
 
 }}
-// TODO: This one is obsolete when dynamic compilation will be abandoned
+/// @todo: This one is obsolete when dynamic compilation will be abandoned
 const std::string& Vector_get_h_file_path();
 }
 

@@ -47,8 +47,8 @@ namespace SCIRun
 namespace Core
 {
 
-// CLASS APPLICATION:
-/// Application is the thread that processes all the actions in the program.
+/// @class Application
+/// @brief Application is the thread that processes all the actions in the program.
 
 class Application;
 class ApplicationPrivate;
@@ -75,7 +75,7 @@ public:
   std::string commandHelpString() const;
   std::string version() const;
 
-  //TODO: following will be useful later
+  /// @todo: following will be useful later
 #if 0
 public:
 	void log_start();

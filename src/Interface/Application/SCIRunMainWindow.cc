@@ -32,6 +32,7 @@
 #include <boost/bind.hpp>
 #include <boost/assign.hpp>
 #include <boost/assign/std/vector.hpp>
+#include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -159,6 +160,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionQuit_->setShortcut(QKeySequence::Quit);
   connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
   actionDelete_->setShortcut(QKeySequence::Delete);
+
+  connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
 
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
@@ -340,10 +343,14 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
+  std::string fileNameWithExtension = fileName.toStdString();
+  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
+    fileNameWithExtension += ".srn5";
+
   NetworkFileHandle file = networkEditor_->saveNetwork();
 
-  XMLSerializer::save_xml(*file, fileName.toStdString(), "networkFile");
-  setCurrentFile(fileName);
+  XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
+  setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
   statusBar()->showMessage(tr("File saved"), 2000);
   GuiLogger::Instance().log("File save done.");
@@ -821,20 +828,29 @@ void SCIRunMainWindow::makeModulesSmallSize()
 
 namespace {
 
+  void addFavoriteMenu(QTreeWidget* tree)
+  {
+    auto faves = new QTreeWidgetItem();
+    faves->setText(0, "Favorites");
+
+    tree->addTopLevelItem(faves);
+  }
+
 void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
 {
   BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
   {
     const std::string& packageName = package.first;
-    auto p = new QTreeWidgetItem();
-    p->setText(0, QString::fromStdString(packageName));
-    tree->addTopLevelItem(p);
+    auto packageItem = new QTreeWidgetItem();
+    packageItem->setText(0, QString::fromStdString(packageName));
+    tree->addTopLevelItem(packageItem);
+    size_t totalModules = 0;
     BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
     {
       const std::string& categoryName = category.first;
-      auto c = new QTreeWidgetItem();
-      c->setText(0, QString::fromStdString(categoryName));
-      p->addChild(c);
+      auto categoryItem = new QTreeWidgetItem();
+      categoryItem->setText(0, QString::fromStdString(categoryName));
+      packageItem->addChild(categoryItem);
       BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
       {
         const std::string& moduleName = module.first;
@@ -842,9 +858,12 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
         m->setText(0, QString::fromStdString(moduleName));
         m->setText(1, QString::fromStdString(module.second.moduleStatus_));
         m->setText(2, QString::fromStdString(module.second.moduleInfo_));
-        c->addChild(m);
+        categoryItem->addChild(m);
+        totalModules++;
       }
+      categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
     }
+    packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
   }
 }
 }
@@ -854,14 +873,21 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->clear();
 
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
+
+  addFavoriteMenu(moduleSelectorTreeWidget_);
   fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs);
 
   GrabNameAndSetFlags visitor;
   visitTree(moduleSelectorTreeWidget_, visitor);
-  //std::for_each(visitor.nameList_.begin(), visitor.nameList_.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
 
   moduleSelectorTreeWidget_->expandAll();
   moduleSelectorTreeWidget_->resizeColumnToContents(0);
   moduleSelectorTreeWidget_->resizeColumnToContents(1);
   moduleSelectorTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
+}
+
+void SCIRunMainWindow::displayAcknowledgement()
+{
+  QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment", 
+    "CIBC software and the data sets provided on this web site are Open Source software projects that are principally funded through the SCI Institute's NIH/NCRR CIBC. For us to secure the funding that allows us to continue providing this software, we must have evidence of its utility. Thus we ask users of our software and data to acknowledge us in their publications and inform us of these publications. Please use the following acknowledgment and send us references to any publications, presentations, or successful funding applications that make use of the NIH/NCRR CIBC software or data sets we provide. <p> <i>This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545.</i>");
 }

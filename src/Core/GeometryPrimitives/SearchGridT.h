@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/GeometryPrimitives/SearchGridT.h
+
 #ifndef CORE_DATATYPES_SEARCHGRIDT_H
 #define CORE_DATATYPES_SEARCHGRIDT_H 1
 
@@ -45,7 +47,7 @@ template<class INDEX>
 class SearchGridT 
 {
   public:
-    //! Include the types defined in Types into this class
+    /// Include the types defined in Types into this class
     typedef SCIRun::index_type                    index_type;
     typedef SCIRun::size_type                     size_type;
     typedef typename std::vector<INDEX>::iterator iterator;
@@ -72,7 +74,7 @@ class SearchGridT
       { transform_ = trans; return transform_; }
   
 
-    //! Get the size of the search grid
+    /// Get the size of the search grid
     inline size_type get_ni() const { return ni_; }
     inline size_type get_nj() const { return nj_; }
     inline size_type get_nk() const { return nk_; }
@@ -241,12 +243,12 @@ class SearchGridT
 
 
   private:
-    //! Size of the search grid
+    /// Size of the search grid
     index_type ni_, nj_, nk_;
-    //! Transformation to unitary coordinate system
+    /// Transformation to unitary coordinate system
     Core::Geometry::Transform transform_;
     
-    //! Where to store the lookup table
+    /// Where to store the lookup table
     std::vector<std::vector<INDEX> > bin_;   
 };
 

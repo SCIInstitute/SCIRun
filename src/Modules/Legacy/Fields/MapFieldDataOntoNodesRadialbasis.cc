@@ -47,16 +47,18 @@
 
 namespace SCIRun {
 
-// TODO: code cleanup needed
+/// @todo: code cleanup needed
 // documentation needed
 // move calculation to algorithm class
+
+/// @class MapFieldDataOntoNodesRadialbasis
+/// @brief Maps data centered on the nodes to another set of nodes using a radial basis.
 
 class MapFieldDataOntoNodesRadialbasis : public Module {
   public:
     MapFieldDataOntoNodesRadialbasis(GuiContext*);
     virtual ~MapFieldDataOntoNodesRadialbasis() {}
 	
-
     virtual void execute();
 
   private:

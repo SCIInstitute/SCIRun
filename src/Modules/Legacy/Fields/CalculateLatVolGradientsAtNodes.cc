@@ -34,6 +34,9 @@
 
 namespace SCIRun {
 
+/// @class CalculateLatVolGradientsAtNodes
+/// @brief Compute the derivative of a scalar lattice and output it as a vector lattice.
+
 class CalculateLatVolGradientsAtNodes : public Module
 {
   public:

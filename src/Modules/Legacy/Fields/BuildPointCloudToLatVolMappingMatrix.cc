@@ -26,19 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  BuildPointCloudToLatVolMappingMatrix.cc:  
- *   Builds mapping matrix that projects data from a PointCloud to a LatVol
- *
- *  Written by:
- *   McKay Davis
- *   Scientific Computing and Imaging INstitute
- *   University of Utah
- *   May 2005
- *
- */
+///@author
+///   McKay Davis,
+///   Scientific Computing and Imaging INstitute,
+///   University of Utah
+///@date  May 2005
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
@@ -55,6 +47,10 @@
 #include <map>
 
 namespace SCIRun {
+
+///@file  BuildPointCloudToLatVolMappingMatrix.cc  
+///@class BuildPointCloudToLatVolMappingMatrix
+///@brief Builds mapping matrix that projects data from a PointCloud to a LatVol
 
 class BuildPointCloudToLatVolMappingMatrix : public Module
 {
@@ -187,7 +183,7 @@ BuildPointCloudToLatVolMappingMatrix::execute()
         // Normalize, and dont add if contribution is nil
         double d = pb->second/total;
         if (d > 0.0000001) 
-        { // TODO: Better epsilon checking
+        { /// @todo: Better epsilon checking
           // Add the data to the sparse row matrix
           cols.push_back(pb->first);
           data.push_back(d);

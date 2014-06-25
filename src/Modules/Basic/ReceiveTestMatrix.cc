@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Basic/ReceiveTestMatrix.cc
 
 #include <iostream>
 #include <Modules/Basic/ReceiveTestMatrix.h>
@@ -44,5 +45,5 @@ void ReceiveTestMatrixModule::execute()
 {
   auto data = getRequiredInput(Input);
   latestValue_ = data;
-  get_state()->setTransientValue("ReceivedMatrix", latestValue_);
+  get_state()->setTransientValue("ReceivedMatrix", latestValue_, true);
 }

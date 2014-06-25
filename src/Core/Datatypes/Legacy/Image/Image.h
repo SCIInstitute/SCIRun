@@ -28,17 +28,14 @@
 
 
 
-/*
- *  Image.h
- *
- *  Written by:
- *   Author: ?
- *   Sourced from MeshPort.cc by David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   Date: ?
- *
- */
+///
+///@file Image.h
+///
+///@author
+///      Sourced from MeshPort.cc by David Weinstein
+///      Department of Computer Science
+///      University of Utah
+///
 
 #ifndef SCI_DATATYPES_IMAGE_H
 #define SCI_DATATYPES_IMAGE_H 1

@@ -29,35 +29,34 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_GETFIELDDATA_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_GETFIELDDATA_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/NrrdData.h>
 
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GetFieldDataAlgo : public AlgoBase
+class SCISHARE GetFieldDataAlgo : public AlgorithmBase
 {
   public:
-    GetFieldDataAlgo()
-    {}
+    GetFieldDataAlgo();
     
-    //! Convert data into a matrix
-    bool run(FieldHandle& input, MatrixHandle& output); 
-
-    //! Convert data into nrrddata
-    bool run(FieldHandle& input, NrrdDataHandle& output); 
+    static AlgorithmInputName InputField;
+    static AlgorithmOutputName OutputMatrix;
+    
+    Datatypes::DenseMatrixHandle GetScalarFieldDataV(FieldHandle& input) const;
+    Datatypes::DenseMatrixHandle GetVectorFieldDataV(FieldHandle& input) const;
+    Datatypes::DenseMatrixHandle GetTensorFieldDataV(FieldHandle& input) const;
+    Datatypes::DenseMatrixHandle run(FieldHandle input_field) const; 
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    bool GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output) const;
+    bool GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output) const;
+    bool GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output) const;
+    #endif
 };
 
-} // end namespace SCIRunAlgo
-
+}}}}
 #endif

@@ -27,16 +27,15 @@
 */
 
 
-/*
- *  ReadField.cc: Read a persistent field from a file
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+/// @file  ReadField.cc
+/// 
+/// @author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+/// @date  July 1994
+/// 
 
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>
@@ -45,6 +44,11 @@
 namespace SCIRun {
 
 template class GenericReader<FieldHandle>;
+
+/// @class ReadField
+/// @brief This module reads a field from file 
+///
+/// (a SCIRun .fld file and various other formats using a plugin system).  
 
 class ReadField : public GenericReader<FieldHandle> {
   protected:

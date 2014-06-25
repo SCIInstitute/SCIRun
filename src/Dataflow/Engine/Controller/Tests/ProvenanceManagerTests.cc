@@ -182,7 +182,7 @@ TEST_F(ProvenanceManagerTests, CannotRedoWhenEmpty)
   EXPECT_FALSE(redone);
 }
 
-//TODO: need test case (no situation for it yet) for "undo all does not completely clear the network"
+/// @todo: need test case (no situation for it yet) for "undo all does not completely clear the network"
 TEST_F(ProvenanceManagerTests, CanUndoAll)
 {
   ProvenanceManager<std::string> manager(controller_.get());

@@ -28,14 +28,15 @@
 
 
 /*
- *   TypeName.h : template to return name of argument type; 
- *                used in PIO of templatized types
+ *@file  TypeName.h
+ *@brief template to return name of argument type; 
+ *       used in PIO of templatized types
  *                
- *   Created by:
+ *@author
  *   Alexei Samsonov
  *   Department of Computer Science
  *   University of Utah
- *   December 2000
+ *@date  December 2000
  *
  */
 
@@ -56,7 +57,7 @@ namespace SCIRun {
 
 class TypeNameGenerator
 {
-  //TODO: callers of these can be compressed using macros.  worth it?
+/// @todo: callers of these can be compressed using macros.  worth it?
 public:
   static const std::string make_template_id(const std::string& templateName, const std::string& templateParam)
   {

@@ -37,6 +37,10 @@ namespace SCIRun {
 
 //using namespace SCIRun;
 
+/// @class SmoothVecFieldMedian
+/// @brief This function smoothes vectors assigned to the elements of a mesh
+/// using a median filter. 
+
 class SmoothVecFieldMedian : public Module 
 {
   public:

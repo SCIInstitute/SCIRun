@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Field.h>
@@ -37,8 +35,10 @@
 #include <Core/Algorithms/Fields/ClipMesh/ClipMeshBySelection.h>
 #include <Core/Algorithms/Fields/DistanceField/CalculateIsInsideField.h>
 
-
 namespace SCIRun {
+
+/// @class ClipFieldByMesh
+/// @brief Clip a mesh to another mesh. 
 
 class ClipFieldByMesh : public Module {
   public:

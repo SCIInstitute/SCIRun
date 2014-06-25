@@ -87,7 +87,7 @@ namespace Algorithms {
   class SCISHARE Variable
   {
   public:
-    //TODO: expand this 
+    /// @todo: expand this 
     typedef boost::variant<
       int,
       double,
@@ -126,7 +126,7 @@ namespace Algorithms {
     ~AlgorithmLogger();
     void setLogger(Core::Logging::LoggerHandle logger);
 
-    //! functions for the algorithm, so it can forward errors if needed
+    /// functions for the algorithm, so it can forward errors if needed
     virtual void error(const std::string& error) const;
     virtual void warning(const std::string& warning) const;
     virtual void remark(const std::string& remark) const;
@@ -136,7 +136,7 @@ namespace Algorithms {
     Core::Logging::LoggerHandle defaultLogger_;
   };
 
-  //TODO: integrate with logger type above
+  /// @todo: integrate with logger type above
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
@@ -181,7 +181,7 @@ namespace Algorithms {
     boost::shared_ptr<T> get(const Name& name) const
     {
       auto it = data_.find(name);
-      //TODO: log incorrect type if present but wrong type
+      /// @todo: log incorrect type if present but wrong type
       return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second[0]);
     }
 
@@ -189,7 +189,7 @@ namespace Algorithms {
     std::vector<boost::shared_ptr<T>> getList(const Name& name) const
     {
       auto it = data_.find(name);
-      //TODO: log incorrect type if present but wrong type
+      /// @todo: log incorrect type if present but wrong type
       return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(it->second);
     }
 
@@ -199,7 +199,7 @@ namespace Algorithms {
       data_[name] = upcast_range<Datatypes::Datatype>(list);
     }
 
-    //TODO: lame
+    /// @todo: lame
     void setTransient(boost::any t) { transient_ = t; }
     boost::any getTransient() const { return transient_; }
 
@@ -226,7 +226,7 @@ namespace Algorithms {
     virtual ~AlgorithmInterface() {}
     
     /*
-      TODO idea: make it mockable
+ @todo idea: make it mockable
   
     virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
 
@@ -236,23 +236,24 @@ namespace Algorithms {
     */
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
-    virtual void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) = 0;
+    virtual bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) = 0;
     virtual const AlgorithmParameter& get(const AlgorithmParameterName& key) const = 0;
   };
 
-  //TODO: link this to ModuleState via meeting discussion
+  /// @todo: link this to ModuleState via meeting discussion
   class SCISHARE AlgorithmParameterList : public AlgorithmInterface
   {
   public:
     AlgorithmParameterList();
-    void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
+    bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
     const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
 
     bool set_option(const AlgorithmParameterName& key, const std::string& value);
     bool get_option(const AlgorithmParameterName& key, std::string& value) const;
     std::string get_option(const AlgorithmParameterName& key) const;
+    bool check_option(const AlgorithmParameterName& key, const std::string& value) const;
 
-    virtual void keyNotFoundPolicy(const AlgorithmParameterName& key);
+    virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key);
 
   protected:
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
@@ -321,5 +322,7 @@ namespace Algorithms {
 #define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() list .build()
 #define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
 #define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
+#define ALGORITHM_PARAMETER_DECL(name) namespace Parameters { SCISHARE extern const SCIRun::Core::Algorithms::AlgorithmParameterName name; }
+#define ALGORITHM_PARAMETER_DEF(ns, name) const SCIRun::Core::Algorithms::AlgorithmParameterName SCIRun::Core::Algorithms::ns::Parameters::name(#name);
 
 #endif

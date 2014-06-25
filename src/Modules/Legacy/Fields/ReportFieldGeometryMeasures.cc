@@ -26,18 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  ReportFieldGeometryMeasures.cc: 
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
+///@file  ReportFieldGeometryMeasures.cc 
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
 
 #include <Core/Datatypes/ColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -50,6 +45,10 @@
 #include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
+
+/// @class ReportFieldGeometryMeasures
+/// @brief Build a densematrix, where each row is a particular measure of the
+/// input Field (e.g. the x-values, or the element size). 
 
 class ReportFieldGeometryMeasures : public Module
 {
@@ -92,7 +91,7 @@ ReportFieldGeometryMeasures::execute()
 
   VMesh* mesh = fieldhandle->vmesh();
 
-  //! This is a hack for now, it is definitely not an optimal way
+  /// This is a hack for now, it is definitely not an optimal way
   int syncflag = 0;
   std::string simplex =simplexString_.get();
   

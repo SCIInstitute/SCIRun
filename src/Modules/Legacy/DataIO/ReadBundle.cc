@@ -36,6 +36,8 @@
 
 using namespace SCIRun;
 
+/// @class ReadBundle
+/// @brief This module reads a bundle from file (a SCIRun .bdl file).
 
 class ReadBundle : public GenericReader<BundleHandle> {
   public:

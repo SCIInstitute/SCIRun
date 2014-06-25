@@ -113,7 +113,7 @@ bool DilateFieldDataNodeV(AlgoBase *algo, FieldHandle input, FieldHandle& output
   int num_iter;
   algo->get_int("num_iterations",num_iter);
 
-  //! Create output field
+  /// Create output field
   output = input;
   output.detach();
   
@@ -172,7 +172,7 @@ bool DilateFieldDataElemV(AlgoBase *algo, FieldHandle input, FieldHandle& output
   int num_iter;
   algo->get_int("num_iterations",num_iter);
 
-  //! Create output field
+  /// Create output field
   output = input;
   output.detach();
   

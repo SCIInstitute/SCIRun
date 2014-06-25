@@ -64,7 +64,7 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
 
   FieldInformation fi(input);
 
-  //TODO: refactor duplication
+  /// @todo: refactor duplication
   if (fi.is_regularmesh())
   {
     Point p;
@@ -113,7 +113,6 @@ AlgorithmOutputName GetMeshNodesAlgo::MatrixNodes("MatrixNodes");
 AlgorithmOutput GetMeshNodesAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
-
   DenseMatrixHandle nodes;
   if (!run(inputField, nodes))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");

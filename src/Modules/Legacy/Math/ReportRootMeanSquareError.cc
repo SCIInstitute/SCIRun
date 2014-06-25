@@ -36,6 +36,10 @@
 
 namespace SCIRun {
 
+/// @class ReportRootMeanSquareError
+/// @brief This module computes the Root Mean Square Error from two input
+/// matrices and stores the result in the output matrix. 
+
 class ReportRootMeanSquareError : public Module
 {
   GuiInt     guiinput_is_vector_;

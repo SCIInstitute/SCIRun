@@ -26,18 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  ClipFieldToFieldOrWidget.cc:  Rotate and flip field to get it into "standard" view
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
+///
+///@file  ClipFieldToFieldOrWidget.cc
+///
+///@author
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
+///
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Clipper.h>
@@ -57,6 +54,9 @@
 namespace SCIRun {
 
 using std::stack;
+
+/// @class ClipFieldToFieldOrWidget
+/// @brief This module selects a subset of a field using a field or a widget. 
 
 class ClipFieldToFieldOrWidget : public Module
 {
