@@ -26,25 +26,43 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
-#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-
-MapFieldDataFromElemToNodeDialog::MapFieldDataFromElemToNodeDialog(const std::string& name, ModuleStateHandle state,
+ProjectPointsOntoMeshDialog::ProjectPointsOntoMeshDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addComboBoxManager(methodComboBox_, MapFieldDataFromElemToNodeAlgo::Method);
+  
+  connect(pointsOntoElementsRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(pointsOntoNodesRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
 }
 
-void MapFieldDataFromElemToNodeDialog::pull()
+void ProjectPointsOntoMeshDialog::push()
 {
+  if (!pulling_)
+  {
+    using namespace Parameters;
+    state_->setValue(ProjectMethod, pointsOntoElementsRadioButton_->isChecked() ? std::string("elements") : std::string("nodes"));
+  }
+}
+
+void ProjectPointsOntoMeshDialog::pull()
+{
+  Pulling p(this);
+  
+  using namespace Parameters;
+  auto method = state_->getValue(ProjectMethod).getString();
+  pointsOntoElementsRadioButton_->setChecked("elements" == method);
+  pointsOntoNodesRadioButton_->setChecked("nodes" == method);
+
   pull_newVersionToReplaceOld();
 }

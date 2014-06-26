@@ -26,25 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
-#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
+#ifndef INTERFACE_MODULES_PROJECT_POINTS_ONTO_MESH_H
+#define INTERFACE_MODULES_PROJECT_POINTS_ONTO_MESH_H
 
+#include "Interface/Modules/Fields/ui_ProjectPointsOntoMesh.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-MapFieldDataFromElemToNodeDialog::MapFieldDataFromElemToNodeDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE ProjectPointsOntoMeshDialog : public ModuleDialogGeneric, 
+  public Ui::ProjectPointsOntoMesh
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-  addComboBoxManager(methodComboBox_, MapFieldDataFromElemToNodeAlgo::Method);
+	Q_OBJECT
+	
+public:
+  ProjectPointsOntoMeshDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+private Q_SLOTS:
+    void push();
+};
+
+}
 }
 
-void MapFieldDataFromElemToNodeDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}
+#endif
