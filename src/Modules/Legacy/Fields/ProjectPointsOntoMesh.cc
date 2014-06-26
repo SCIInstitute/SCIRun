@@ -41,6 +41,9 @@ ModuleLookupInfo ProjectPointsOntoMesh::staticInfo_("ProjectPointsOntoMesh", "Ch
 ProjectPointsOntoMesh::ProjectPointsOntoMesh() :
   Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(ObjectField);
+  INITIALIZE_PORT(OutputField);
 }
 
 void ProjectPointsOntoMesh::setStateDefaults()

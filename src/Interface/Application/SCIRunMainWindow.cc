@@ -528,13 +528,13 @@ void SCIRunMainWindow::makeFilterButtonMenu()
   filterActionGroup_ = new QActionGroup(filterMenu);
   auto startsWithAction = new QAction("Starts with", filterButton_);
   startsWithAction->setCheckable(true);
-  startsWithAction->setChecked(true);
   filterActionGroup_->addAction(startsWithAction);
   filterMenu->addAction(startsWithAction);
 
   auto wildcardAction = new QAction("Use wildcards", filterButton_);
   wildcardAction->setCheckable(true);
   filterActionGroup_->addAction(wildcardAction);
+  wildcardAction->setChecked(true);
   filterMenu->addAction(wildcardAction);
 
   filterButton_->setMenu(filterMenu);
