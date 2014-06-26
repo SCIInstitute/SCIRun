@@ -65,6 +65,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/FairMesh.h>
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
+#include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -128,8 +129,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates stiffness matrix ");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<FairMesh>("Real ported module", "...");
-  addModuleDesc<ConvertFieldBasis>("Real ported module", "...");
-  addModuleDesc<ScaleFieldMeshAndData>("Real ported module", "...");
+  addModuleDesc<ConvertFieldBasis>("NOT WORKING YET--Real ported module", "...");
+  addModuleDesc<ScaleFieldMeshAndData>("NOT WORKING YET--Real ported module", "...");
+  addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addBundleModules()

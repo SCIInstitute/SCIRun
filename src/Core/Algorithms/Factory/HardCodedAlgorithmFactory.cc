@@ -47,6 +47,7 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 #include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -119,8 +120,8 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(BuildFEMatrix, BuildFEMatrixAlgo)
       ADD_MODULE_ALGORITHM(GetDomainBoundary, GetDomainBoundaryAlgo)
       ADD_MODULE_ALGORITHM(InterfaceWithCleaver, InterfaceWithCleaverAlgorithm)      
-      ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo) //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
-      ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo) //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+      ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo)
+      ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
       ADD_MODULE_ALGORITHM(JoinFields, JoinFieldsAlgo)
       ADD_MODULE_ALGORITHM(SplitFieldByDomain, SplitFieldByDomainAlgo)
       ADD_MODULE_ALGORITHM(ApplyMappingMatrix, ApplyMappingMatrixAlgo) 
@@ -132,6 +133,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(FairMesh, FairMeshAlgo)
       ADD_MODULE_ALGORITHM(ScaleFieldMeshAndData, ScaleFieldMeshAndDataAlgo)
       ADD_MODULE_ALGORITHM(ConvertFieldBasis, ConvertFieldBasisTypeAlgo)
+      ADD_MODULE_ALGORITHM(ProjectPointsOntoMesh, ProjectPointsOntoMeshAlgo)
     ;
   }
 }
@@ -144,7 +146,6 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
   if (func != factoryMap_.end())
     h.reset((func->second)());
 
-    
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());
