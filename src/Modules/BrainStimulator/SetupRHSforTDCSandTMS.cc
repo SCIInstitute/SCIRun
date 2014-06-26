@@ -56,7 +56,10 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
-  
+  auto state = get_state();
+  auto elc_vals_from_state = get_state()->getValue(Test()).getList();
+  for (int i=0; i < elc_vals_from_state.size(); i++)
+    state->setValue(elc_vals_from_state[i].name_, elc_vals_from_state[i].value_);
 }
 
 void SetupRHSforTDCSandTMSModule::execute()
@@ -64,10 +67,12 @@ void SetupRHSforTDCSandTMSModule::execute()
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_count = getRequiredInput(ELECTRODE_COUNT);
 
-  // obtaining electrode values that where placed in the state map
-  auto testing = get_state()->getValue(Test()).getList();
-  for (int i=0; i < testing.size(); i++)
-    std::cout << testing[i] << std::endl;
+  // obtaining electrode values from state map
+  //auto elc_vals_from_state = get_state()->getValue(Test()).getList();
+  auto elc_vals_from_state = get_state()->getValue(Test()).getList();
+  for (int i=0; i < elc_vals_from_state.size(); i++)
+    algo().set(elc_vals_from_state[i].name_, elc_vals_from_state[i].value_);
+  // !!! dan was saying to set these values inside a loop then use get in algorithm level to reobtain them
 
   if (needToExecute())
   {
@@ -75,6 +80,6 @@ void SetupRHSforTDCSandTMSModule::execute()
     auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_COUNT, elc_count)));
     
     //algorithm output
-	  sendOutputFromAlgorithm(RHS, output);    
+	  sendOutputFromAlgorithm(RHS, output);
   }
 }
