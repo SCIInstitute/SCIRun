@@ -43,7 +43,6 @@ class SCISHARE GetFieldDataAlgo : public AlgorithmBase
   public:
     GetFieldDataAlgo();
     
-    static AlgorithmInputName InputField;
     static AlgorithmOutputName OutputMatrix;
     
     Datatypes::DenseMatrixHandle GetScalarFieldDataV(FieldHandle& input) const;

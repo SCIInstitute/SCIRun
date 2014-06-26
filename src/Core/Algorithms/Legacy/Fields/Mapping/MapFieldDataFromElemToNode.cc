@@ -229,19 +229,17 @@ MapFieldDataFromElemToNodeAlgo::MapFieldDataFromElemToNodeAlgo()
   add_option(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
 }
 
-AlgorithmInputName MapFieldDataFromElemToNodeAlgo::InputField("InputField");
-AlgorithmOutputName MapFieldDataFromElemToNodeAlgo::OutputField("OutputField");
 AlgorithmParameterName MapFieldDataFromElemToNodeAlgo::Method("Method");
 
 AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto input_field = input.get<Field>(InputField);
+  auto input_field = input.get<Field>(Variables::InputField);
   
   FieldHandle output_field;
   output_field = run(input_field);
   
   AlgorithmOutput output;
-  output[OutputField] = output_field;
+  output[Variables::OutputField] = output_field;
 
   return output;
 }

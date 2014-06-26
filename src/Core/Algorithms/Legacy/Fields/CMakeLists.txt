@@ -61,6 +61,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   SmoothMesh/FairMesh.h
   FieldData/ConvertFieldBasisType.h
   TransformMesh/ScaleFieldMeshAndData.h
+  TransformMesh/ProjectPointsOntoMesh.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -157,7 +158,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   TransformMesh/ScaleFieldMeshAndData.cc
   #TransformMesh/TransformPlanarMesh.cc
   #TransformMesh/GeneratePolarProjection.cc
-  #TransformMesh/ProjectPointsOntoMesh.cc
+  TransformMesh/ProjectPointsOntoMesh.cc
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
   #TracePoints/TracePoints.cc  

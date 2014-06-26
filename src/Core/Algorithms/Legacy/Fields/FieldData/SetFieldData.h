@@ -52,9 +52,6 @@ class SCISHARE SetFieldDataAlgo : public AlgorithmBase
     bool setscalardata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
     bool setvectordata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
     bool settensordata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
-    static AlgorithmInputName InputField;
-    static AlgorithmInputName InputMatrix;
-    static AlgorithmOutputName OutputField;
     static AlgorithmParameterName keepTypeCheckBox;
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 };
