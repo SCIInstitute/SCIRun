@@ -31,6 +31,12 @@
 #include <Core/Datatypes/FieldInformation.h>
 #include <Core/Datatypes/Field.h>
 
+ProjectPointsOntoMeshAlgo::ProjectPointsOntoMeshAlgo()
+{
+  // Are we projecting points on thre nodes or on the elements
+  add_option("method","nodes","elements|nodes");
+}
+
 namespace SCIRunAlgo {
 
 bool ProjectPointsOntoMeshAlgo::run(FieldHandle input, FieldHandle object, 

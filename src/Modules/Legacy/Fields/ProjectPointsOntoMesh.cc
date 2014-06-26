@@ -28,12 +28,13 @@
 /// @todo Documentation Modules/Legacy/Fields/ProjectPointsOntoMesh.cc
 
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
-
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 ModuleLookupInfo ProjectPointsOntoMesh::staticInfo_("ProjectPointsOntoMesh", "ChangeMesh", "SCIRun");
 
@@ -44,22 +45,24 @@ ProjectPointsOntoMesh::ProjectPointsOntoMesh() :
 
 void ProjectPointsOntoMesh::setStateDefaults()
 {
-  // guimethod_(ctx->subVar("method"),"nodes")
+  auto state = get_state();
+  setStateStringFromAlgoOption(Parameters::ProjectMethod);
 }
 
 void ProjectPointsOntoMesh::execute()
 {
-  FieldHandle input, object, output;
-  get_input_handle("Field",input,true);
-  get_input_handle("Object",object,true);
+  auto input = getRequiredInput(InputField);
+  auto object = getRequiredInput(ObjectField);
 
-  if (inputs_changed_ || guimethod_.changed() || !oport_cached("Field"))
+  //if (inputs_changed_ || guimethod_.changed() || !oport_cached("Field"))
+  if (needToExecute())
   {
     update_state(Executing);
 
-    algo_.set_option("method",guimethod_.get());
-    if (!(algo_.run(input,object,output))) return;
+    setAlgoOptionFromState(Parameters::ProjectMethod);
+
+    auto output = algo().run_generic(make_input((InputField, input)(ObjectField, object)));
     
-    send_output_handle("Field",output);
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
