@@ -139,7 +139,6 @@ FieldHandle output;
 protected:
   virtual void SetUp()
   {
-//<<<<<<< HEAD
     SCIRun::Core::Logging::Log::get().setVerbose(true);
 	// How to set parameters on an algorithm (that come from the GUI)
     algo_.set(JoinFieldsAlgo::MergeNodes,      ::std::tr1::get<0>(GetParam()));
@@ -147,25 +146,11 @@ protected:
     algo_.set(JoinFieldsAlgo::MatchNodeValues, ::std::tr1::get<2>(GetParam()));
     algo_.set(JoinFieldsAlgo::MakeNoData,      ::std::tr1::get<3>(GetParam()));
     algo_.set(JoinFieldsAlgo::Tolerance,       ::std::tr1::get<4>(GetParam()));
-//=======
-//    ASSERT_TRUE(latVol_->vmesh()->is_latvolmesh());
-//    
-//    // How to set parameters on an algorithm (that come from the GUI)
-//    algo_.set(GetDomainBoundaryAlgo::AddOuterBoundary, ::std::tr1::get<0>(GetParam()));
-//    
-//    /// @todo: this logic matches the wacky module behavior
-//    algo_.set(GetDomainBoundaryAlgo::UseRange, ::std::tr1::get<1>(GetParam()));
-//    if (!::std::tr1::get<1>(GetParam()))///useRange)
-//    {
-//      algo_.set(GetDomainBoundaryAlgo::Domain,   ::std::tr1::get<2>(GetParam()));
-//      algo_.set(GetDomainBoundaryAlgo::MinRange, ::std::tr1::get<3>(GetParam()));
-//      algo_.set(GetDomainBoundaryAlgo::MaxRange, ::std::tr1::get<3>(GetParam()));
-//      algo_.set(GetDomainBoundaryAlgo::UseRange, true);
-//    }
-//>>>>>>> master
+	
   }
-
-  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5)
+  virtual void TearDown(){ }
+};
+FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez)
   {
     FieldInformation lfi("LatVolMesh", 1, "double");
     Point minb(-1.0, -1.0, -1.0);
@@ -174,20 +159,17 @@ protected:
     FieldHandle ofh = CreateField(lfi,mesh);
     ofh->vfield()->clear_all_values();
     return ofh;
-  }  
-  virtual void TearDown(){}
-};
+}  
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
 {
 	input.push_back(CreateEmptyLatVol(2,3,4));
 	input.push_back(CreateEmptyLatVol(5,6,7));
 	input.push_back(CreateEmptyLatVol(8,9,10));
-
-	algo_.runImpl(input, output); 
-	
-	EXPECT_EQ(output->vmesh()->num_nodes(), output->vmesh()->num_nodes());
-	
+	algo_.runImpl(input,output); 
+	EXPECT_TRUE(algo_.runImpl(input, output));
+	//EXPECT_EQ(output->vmesh()->num_nodes(), output->vmesh()->num_nodes());
+	//EXPECT_EQ(1,1); 
 }
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
@@ -198,7 +180,8 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
 
 	auto outputObj = algo_.run_generic(make_input((JoinFieldsAlgo::InputFields, input)));
 	FieldHandle output = outputObj.get<Field>(Core::Algorithms::Variables::OutputField);
-	EXPECT_EQ(output->vmesh()->num_nodes(), output->vmesh()->num_nodes());
+	EXPECT_EQ(output->vmesh()->num_nodes(),output->vmesh()->num_nodes());
+	//EXPECT_EQ(1,1);
 }
 
 INSTANTIATE_TEST_CASE_P(
