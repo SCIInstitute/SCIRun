@@ -28,97 +28,81 @@
 
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-#include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
 
-#include <Core/Algorithms/Fields/DistanceField/CalculateDistanceField.h>
-
-namespace SCIRun {
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
 
 /// @class CalculateDistanceToField 
 /// @brief Calculate the distance field to a mesh. 
 
-class CalculateDistanceToField : public Module 
+// class CalculateDistanceToField : public Module 
+// {
+//   private:
+//     GuiInt      gui_truncate_;
+//     GuiDouble   gui_truncate_distance_;
+//     GuiString   gui_datatype_;
+//     GuiString   gui_basistype_;
+//   
+//     SCIRunAlgo::CalculateDistanceFieldAlgo algo_;
+// };
+
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
+
+
+ModuleLookupInfo CalculateDistanceToField::staticInfo_("CalculateDistanceToField", "ChangeFieldData", "SCIRun");
+
+CalculateDistanceToField::CalculateDistanceToField() : Module(staticInfo_)
 {
-  public:
-    CalculateDistanceToField(GuiContext*);
-    virtual ~CalculateDistanceToField() {}
-    virtual void execute();
-
-  private:
-    GuiInt      gui_truncate_;
-    GuiDouble   gui_truncate_distance_;
-    GuiString   gui_datatype_;
-    GuiString   gui_basistype_;
-  
-    SCIRunAlgo::CalculateDistanceFieldAlgo algo_;
-};
-
-
-DECLARE_MAKER(CalculateDistanceToField)
-CalculateDistanceToField::CalculateDistanceToField(GuiContext* ctx)
-  : Module("CalculateDistanceToField", ctx, Source, "ChangeFieldData", "SCIRun"),
-    gui_truncate_(get_ctx()->subVar("truncate"),0),
-    gui_truncate_distance_(get_ctx()->subVar("truncate-distance"),1.0),
-    gui_datatype_(get_ctx()->subVar("datatype"),"double"),
-    gui_basistype_(get_ctx()->subVar("basistype"),"same as input")    
-{
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(ObjectField);
+  INITIALIZE_PORT(DistanceField);
+  INITIALIZE_PORT(ValueField);
 }
 
+void CalculateDistanceToField::setStateDefaults()
+{
+  setStateBoolFromAlgo(Parameters::Truncate);
+  setStateDoubleFromAlgo(Parameters::TruncateDistance);
+  setStateStringFromAlgoOption(Parameters::BasisType);
+  setStateStringFromAlgoOption(Parameters::OutputFieldDatatype);
+}
 
 void
 CalculateDistanceToField::execute()
 {
-  // define data handles:
-  FieldHandle input, output, value;
-  FieldHandle object;
+  auto input = getRequiredInput(InputField);
+  auto object = getRequiredInput(ObjectField);
   
-  // get input from ports:
-  get_input_handle("Field",input,true);
-  get_input_handle("ObjectField",object,true);
+  bool value_connected = oport_connected(ValueField);
   
-  bool value_connected = oport_connected("ValueField");
-  
-  // only compute output if inputs changed:
-  if (inputs_changed_ || !oport_cached("DistanceField") ||
-      (!oport_cached("ValueField") && value_connected) ||
-      gui_truncate_.changed() || gui_truncate_distance_.changed())
+//   if (inputs_changed_ || !oport_cached("DistanceField") ||
+//       (!oport_cached("ValueField") && value_connected) ||
+//       gui_truncate_.changed() || gui_truncate_distance_.changed())
+  if (needToExecute())
   {
-    // Inform module that execution started
     update_state(Executing);
 
-    // Set parameters
-    algo_.set_bool("truncate",gui_truncate_.get());
-    algo_.set_scalar("truncate_distance",gui_truncate_distance_.get());
-    algo_.set_option("datatype",gui_datatype_.get());
-    algo_.set_option("basistype",gui_basistype_.get());
+    setAlgoBoolFromState(Parameters::Truncate);
+    setAlgoDoubleFromState(Parameters::TruncateDistance);
+    setAlgoOptionFromState(Parameters::BasisType);
+    setAlgoOptionFromState(Parameters::OutputFieldDatatype);
       
-    // Actual algorithm:
+    auto inputs = make_input((InputField, input)(ObjectField, object));
+
+    algo().set(Parameters::OutputValueField, value_connected);
+    auto output = algo().run_generic(inputs);
+
+    sendOutputFromAlgorithm(DistanceField, output); 
+
     if (value_connected)
     {
-      if(!(algo_.run(input,object,output,value))) return;
-
-      // Send data downstream:
-      send_output_handle("DistanceField", output);
-      send_output_handle("ValueField", value);
-    }
-    else
-    {
-      if(!(algo_.run(input,object,output))) return;
-
-      // Send data downstream:
-      send_output_handle("DistanceField", output);
+      sendOutputFromAlgorithm(ValueField, output); 
     }
   }
 }
-
-} // End namespace SCIRun
-
-
-#endif

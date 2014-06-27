@@ -51,8 +51,6 @@ namespace SCIRun {
         OUTPUT_PORT(0, DistanceField, LegacyField);
         OUTPUT_PORT(1, ValueField, LegacyField);
 
-        //static Core::Algorithms::AlgorithmParameterName FunctionString;
-        //static Core::Algorithms::AlgorithmParameterName FormatString;
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
     }
