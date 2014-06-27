@@ -858,8 +858,17 @@ namespace {
     return 0;
   }
 
-void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
+  void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
+  {
+    LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
+    auto copy = new QTreeWidgetItem(*module);
+    copy->setData(0, Qt::CheckStateRole, QVariant());  
+    faves->addChild(copy);
+  }
+
+void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
 {
+  QTreeWidgetItem* faves = getFavoriteMenu(tree);
   BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
   {
     const std::string& packageName = package.first;
@@ -876,12 +885,21 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
       BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
       {
         const std::string& moduleName = module.first;
-        auto m = new QTreeWidgetItem();
-        m->setText(0, QString::fromStdString(moduleName));
-        m->setCheckState(0, Qt::Unchecked);
-        m->setText(1, QString::fromStdString(module.second.moduleStatus_));
-        m->setText(2, QString::fromStdString(module.second.moduleInfo_));
-        categoryItem->addChild(m);
+        auto moduleItem = new QTreeWidgetItem();
+        auto name = QString::fromStdString(moduleName);
+        moduleItem->setText(0, name);
+        if (favoriteModuleNames.contains(name))
+        {
+          moduleItem->setCheckState(0, Qt::Checked);
+          addFavoriteItem(faves, moduleItem);
+        }
+        else
+        {
+          moduleItem->setCheckState(0, Qt::Unchecked);
+        }
+        moduleItem->setText(1, QString::fromStdString(module.second.moduleStatus_));
+        moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
+        categoryItem->addChild(moduleItem);
         totalModules++;
       }
       categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
@@ -889,6 +907,13 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
     packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
   }
 }
+
+  void sortFavorites(QTreeWidget* tree)
+  {
+    QTreeWidgetItem* faves = getFavoriteMenu(tree);
+    faves->sortChildren(0, Qt::AscendingOrder);
+  }
+
 }
 
 void SCIRunMainWindow::fillModuleSelector()
@@ -898,7 +923,8 @@ void SCIRunMainWindow::fillModuleSelector()
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
 
   addFavoriteMenu(moduleSelectorTreeWidget_);
-  fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs);
+  fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
+  sortFavorites(moduleSelectorTreeWidget_);
 
   GrabNameAndSetFlags visitor;
   visitTree(moduleSelectorTreeWidget_, visitor);
@@ -923,10 +949,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
     {
       if (faves)
       {
-        LOG_DEBUG("Adding item to favorites: " << item->text(0).toStdString() << std::endl);
-        auto copy = new QTreeWidgetItem(*item);
-        copy->setData(0, Qt::CheckStateRole, QVariant());  
-        faves->addChild(copy);
+        addFavoriteItem(faves, item);
         faves->sortChildren(0, Qt::AscendingOrder);
         favoriteModuleNames_ << item->text(0);
       }
