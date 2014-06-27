@@ -856,6 +856,7 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
         const std::string& moduleName = module.first;
         auto m = new QTreeWidgetItem();
         m->setText(0, QString::fromStdString(moduleName));
+        m->setCheckState(0, Qt::Unchecked);
         m->setText(1, QString::fromStdString(module.second.moduleStatus_));
         m->setText(2, QString::fromStdString(module.second.moduleInfo_));
         categoryItem->addChild(m);
@@ -884,6 +885,53 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->resizeColumnToContents(0);
   moduleSelectorTreeWidget_->resizeColumnToContents(1);
   moduleSelectorTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
+
+  connect(moduleSelectorTreeWidget_, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(handleCheckedModuleEntry(QTreeWidgetItem*, int)));
+}
+
+void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int column)
+{
+  if (item && 0 == column)
+  {
+    moduleSelectorTreeWidget_->setCurrentItem(item);
+
+    QTreeWidgetItem* faves = 0;
+    for (int i = 0; i < moduleSelectorTreeWidget_->topLevelItemCount(); ++i)
+    {
+      auto top = moduleSelectorTreeWidget_->topLevelItem(i);
+      if (top->text(0) == "Favorites")
+      {
+        faves = top;
+        break;
+      }
+    }
+
+    if (item->checkState(0) == Qt::Checked)
+    {
+      if (faves)
+      {
+        LOG_DEBUG("Adding item to favorites: " << item->text(0).toStdString() << std::endl);
+        auto copy = new QTreeWidgetItem(*item);
+        copy->setData(0, Qt::CheckStateRole, QVariant());  
+        faves->addChild(copy);
+        faves->sortChildren(0, Qt::AscendingOrder);
+        favoriteModuleNames_ << item->text(0);
+      }
+    }
+    else
+    {
+      if (faves)
+      {
+        favoriteModuleNames_.removeAll(item->text(0));
+        for (int i = 0; i < faves->childCount(); ++i)
+        {
+          auto child = faves->child(i);
+          if (child->text(0) == item->text(0))
+            faves->removeChild(child);
+        }
+      }
+    }
+  }
 }
 
 void SCIRunMainWindow::displayAcknowledgement()

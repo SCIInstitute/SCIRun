@@ -267,10 +267,10 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Drag or double-click to add a module</string>
+        <string>Drag or double-click to add a module. Checkbox adds/removes from favorites.</string>
        </property>
        <property name="whatsThis">
-        <string>List of available modules. Drag an item from here and drop onto the network editor, or double-click an item, to instantiate a new instance of that module.</string>
+        <string>List of available modules. Drag an item from here and drop onto the network editor, or double-click an item, to instantiate a new instance of that module. Click the checkbox to add/remove from the favorites list.</string>
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>
