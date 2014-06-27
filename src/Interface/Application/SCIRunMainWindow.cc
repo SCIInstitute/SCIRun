@@ -629,6 +629,14 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: newViewSceneMouseControls = " + QString::number(mode));
     Core::Preferences::Instance().useNewViewSceneMouseControls = mode;
   }
+
+  const QString favoriteModules = "favoriteModules";
+  if (settings.contains(favoriteModules))
+  {
+    auto faves = settings.value(favoriteModules).toStringList();
+    GuiLogger::Instance().log("Setting read: favoriteModules = " + faves.join(", "));
+    favoriteModuleNames_ = faves;
+  }
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -644,6 +652,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
   settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls);
+  settings.setValue("favoriteModules", favoriteModuleNames_);
 }
 
 namespace
@@ -836,6 +845,19 @@ namespace {
     tree->addTopLevelItem(faves);
   }
 
+  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree)
+  {
+    for (int i = 0; i < tree->topLevelItemCount(); ++i)
+    {
+      auto top = tree->topLevelItem(i);
+      if (top->text(0) == "Favorites")
+      {
+        return top;
+      }
+    }
+    return 0;
+  }
+
 void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
 {
   BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
@@ -895,16 +917,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   {
     moduleSelectorTreeWidget_->setCurrentItem(item);
 
-    QTreeWidgetItem* faves = 0;
-    for (int i = 0; i < moduleSelectorTreeWidget_->topLevelItemCount(); ++i)
-    {
-      auto top = moduleSelectorTreeWidget_->topLevelItem(i);
-      if (top->text(0) == "Favorites")
-      {
-        faves = top;
-        break;
-      }
-    }
+    QTreeWidgetItem* faves = getFavoriteMenu(moduleSelectorTreeWidget_);
 
     if (item->checkState(0) == Qt::Checked)
     {
