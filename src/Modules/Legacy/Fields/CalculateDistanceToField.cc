@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,23 +29,11 @@
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Matrix.h>
 
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
 
-/// @class CalculateDistanceToField 
-/// @brief Calculate the distance field to a mesh. 
-
-// class CalculateDistanceToField : public Module 
-// {
-//   private:
-//     GuiInt      gui_truncate_;
-//     GuiDouble   gui_truncate_distance_;
-//     GuiString   gui_datatype_;
-//     GuiString   gui_basistype_;
-//   
-//     SCIRunAlgo::CalculateDistanceFieldAlgo algo_;
-// };
+/// @class CalculateDistanceToField
+/// @brief Calculate the distance field to a mesh.
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
@@ -55,7 +43,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 
-ModuleLookupInfo CalculateDistanceToField::staticInfo_("CalculateDistanceToField", "ChangeFieldData", "SCIRun");
+const ModuleLookupInfo CalculateDistanceToField::staticInfo_("CalculateDistanceToField", "ChangeFieldData", "SCIRun");
 
 CalculateDistanceToField::CalculateDistanceToField() : Module(staticInfo_)
 {
@@ -78,9 +66,9 @@ CalculateDistanceToField::execute()
 {
   auto input = getRequiredInput(InputField);
   auto object = getRequiredInput(ObjectField);
-  
+
   bool value_connected = oport_connected(ValueField);
-  
+
 //   if (inputs_changed_ || !oport_cached("DistanceField") ||
 //       (!oport_cached("ValueField") && value_connected) ||
 //       gui_truncate_.changed() || gui_truncate_distance_.changed())
@@ -92,17 +80,17 @@ CalculateDistanceToField::execute()
     setAlgoDoubleFromState(Parameters::TruncateDistance);
     setAlgoOptionFromState(Parameters::BasisType);
     setAlgoOptionFromState(Parameters::OutputFieldDatatype);
-      
+
     auto inputs = make_input((InputField, input)(ObjectField, object));
 
     algo().set(Parameters::OutputValueField, value_connected);
     auto output = algo().run_generic(inputs);
 
-    sendOutputFromAlgorithm(DistanceField, output); 
+    sendOutputFromAlgorithm(DistanceField, output);
 
     if (value_connected)
     {
-      sendOutputFromAlgorithm(ValueField, output); 
+      sendOutputFromAlgorithm(ValueField, output);
     }
   }
 }

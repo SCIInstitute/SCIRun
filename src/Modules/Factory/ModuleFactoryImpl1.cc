@@ -67,6 +67,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
+#include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -134,6 +135,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ScaleFieldMeshAndData>("NOT WORKING YET--Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToField>("Real ported module", "...");
+  addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addBundleModules()

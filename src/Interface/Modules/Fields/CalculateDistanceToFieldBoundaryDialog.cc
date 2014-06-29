@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_CALCULATEDISTANCETOFIELDBOUNDARY_H__
-#define MODULES_LEGACY_FIELDS_CALCULATEDISTANCETOFIELDBOUNDARY_H__
+#include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+CalculateDistanceToFieldBoundaryDialog::CalculateDistanceToFieldBoundaryDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-      class SCISHARE CalculateDistanceToFieldBoundary : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has2OutputPorts<FieldPortTag, FieldPortTag>
-      {
-      public:
-        CalculateDistanceToFieldBoundary();
-
-        virtual void execute();
-        virtual void setStateDefaults();
-
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, DistanceField, LegacyField);
-        OUTPUT_PORT(1, ValueField, LegacyField);
-
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-    }
-  }
+  addCheckBoxManager(truncateDistanceCheckBox_, Parameters::Truncate);
+  addDoubleSpinBoxManager(truncateDoubleSpinBox_, Parameters::TruncateDistance);
+  addComboBoxManager(basisTypeComboBox_, Parameters::BasisType);
+  addComboBoxManager(dataTypeComboBox_, Parameters::OutputFieldDatatype);
 }
 
-#endif
+void CalculateDistanceToFieldBoundaryDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

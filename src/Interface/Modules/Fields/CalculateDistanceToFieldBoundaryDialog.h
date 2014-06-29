@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_CALCULATEDISTANCETOFIELDBOUNDARY_H__
-#define MODULES_LEGACY_FIELDS_CALCULATEDISTANCETOFIELDBOUNDARY_H__
+#ifndef INTERFACE_MODULES_CALCULATE_DISTANCE_TO_FIELD_BOUNDARY_H
+#define INTERFACE_MODULES_CALCULATE_DISTANCE_TO_FIELD_BOUNDARY_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+#include "Interface/Modules/Fields/ui_calculatedistancetofieldboundary.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace Gui {
 
-      class SCISHARE CalculateDistanceToFieldBoundary : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has2OutputPorts<FieldPortTag, FieldPortTag>
-      {
-      public:
-        CalculateDistanceToFieldBoundary();
+class SCISHARE CalculateDistanceToFieldBoundaryDialog : public ModuleDialogGeneric,
+  public Ui::CalculateDistanceToFieldBoundary
+{
+	Q_OBJECT
 
-        virtual void execute();
-        virtual void setStateDefaults();
+public:
+  CalculateDistanceToFieldBoundaryDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
 
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, DistanceField, LegacyField);
-        OUTPUT_PORT(1, ValueField, LegacyField);
-
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-    }
-  }
+}
 }
 
 #endif
