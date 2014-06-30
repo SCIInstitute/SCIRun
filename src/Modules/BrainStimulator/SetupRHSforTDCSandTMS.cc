@@ -71,7 +71,7 @@ void SetupRHSforTDCSandTMSModule::execute()
   auto elc_vals_from_state = get_state()->getValue(ElectrodeTableValues()).getList();
 //  for (int i=0; i<elc_vals_from_state.size(); i++)
 //    std::cout << "i = " << elc_vals_from_state[i].value_ << std::endl;
-  algo().set(ELECTRODE_VALUES, elc_vals_from_state);
+  algo().set(ELECTRODE_VALUES(), elc_vals_from_state);
 
 
   if (needToExecute())
