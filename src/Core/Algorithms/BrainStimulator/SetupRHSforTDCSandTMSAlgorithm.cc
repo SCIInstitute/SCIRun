@@ -60,7 +60,7 @@ AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
 
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
-  //addParameter("elc0", 1.0);
+  
 }
 
 AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput& input) const
@@ -68,8 +68,17 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   auto elc_coil_pos_and_normal = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_count               = input.get<Matrix>(ELECTRODE_COUNT);
 
-  // how to obtain at algorithm level?
-  //  get_state()->getValue().getDouble();
+  //***//! try:
+  //auto electrodes = get(ELC).getList();
+  //for (int i=0; i<electrodes.size(); i++)
+  //{
+  //  auto elecName = electrodes[i].name_;
+  //  auto elecValue = electrodes[i].getDouble();
+  //  // need a consistency check:
+  //  auto expectedElecName = electrodeName(i);
+  //  EXPECT_EQ(elecName, expectedElecName); // if not, electrodes are being stored out of order. 
+  //  //You may not care about the name--if so just ignore the above.
+  //}
   
   // obtaining number of electrodes
   DenseMatrixHandle elc_count_dense (new DenseMatrix(matrix_cast::as_dense(elc_count)->block(0,0,elc_count->nrows(),elc_count->ncols()))); 

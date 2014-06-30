@@ -31,6 +31,8 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <iostream>
+#include <string>
 #include <vector>
 
 using namespace SCIRun::Modules::BrainStimulator;
@@ -39,7 +41,7 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
-AlgorithmParameterName SetupRHSforTDCSandTMSModule::Test() { return AlgorithmParameterName("Test");}
+AlgorithmParameterName SetupRHSforTDCSandTMSModule::ElectrodeTableValues() { return AlgorithmParameterName("ElectrodeTableValues");}
 
 SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookupInfo("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun"))
 {
@@ -56,10 +58,12 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
-  auto state = get_state();
-  auto elc_vals_from_state = get_state()->getValue(Test()).getList();
-  for (int i=0; i < elc_vals_from_state.size(); i++)
-    state->setValue(elc_vals_from_state[i].name_, elc_vals_from_state[i].value_);
+  // this function is meant to fill in default values set for the GUI
+}
+
+AlgorithmParameterName SetupRHSforTDCSandTMSModule::ElecrodeParameterName(int i) 
+{
+  return AlgorithmParameterName(Name("ELC"+boost::lexical_cast<std::string>(i)));;
 }
 
 void SetupRHSforTDCSandTMSModule::execute()
@@ -68,11 +72,15 @@ void SetupRHSforTDCSandTMSModule::execute()
   auto elc_count = getRequiredInput(ELECTRODE_COUNT);
 
   // obtaining electrode values from state map
-  //auto elc_vals_from_state = get_state()->getValue(Test()).getList();
-  auto elc_vals_from_state = get_state()->getValue(Test()).getList();
-  for (int i=0; i < elc_vals_from_state.size(); i++)
-    algo().set(elc_vals_from_state[i].name_, elc_vals_from_state[i].value_);
-  // !!! dan was saying to set these values inside a loop then use get in algorithm level to reobtain them
+  auto elc_vals_from_state = get_state()->getValue(ElectrodeTableValues()).getList();
+  for (int i=0; i<elc_vals_from_state.size(); i++)
+    std::cout << "i = " << elc_vals_from_state[i].value_ << std::endl;
+
+  //**** algo().set(INSERT_NAME_OF_ELECTRODE_PARAMETER_NAME_VAR, elc_vals_from_state);
+
+
+
+
 
   if (needToExecute())
   {
