@@ -48,10 +48,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ELECTRODE_VALUES);
-
-AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_VALUES() {return AlgorithmParameterName("ELECTRODE_VALUES");}
 
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COUNT("ELECTRODE_COUNT");
@@ -74,7 +71,7 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   auto elc_count               = input.get<Matrix>(ELECTRODE_COUNT);
 
   //! try:
-  auto elc_values = get(ELECTRODE_VALUES()).getList();
+  auto elc_values = get(ELECTRODE_VALUES).getList();
   for (int i=0; i<elc_values.size(); i++)
   {
     std::cout << elc_values[i].name_ << "=" << elc_values[i].value_ << std::endl;

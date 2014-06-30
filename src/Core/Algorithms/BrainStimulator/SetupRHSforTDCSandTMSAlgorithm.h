@@ -49,7 +49,6 @@ namespace BrainStimulator {
     SCIRun::Core::Datatypes::DenseMatrixHandle run(FieldHandle fh, int num_of_elc) const;
     
     static AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElectrodeTableValues();
-    static AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_VALUES();
     
     static AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
     static AlgorithmInputName ELECTRODE_COUNT;
