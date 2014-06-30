@@ -122,7 +122,7 @@
 									<name>Preconditioner</name>
 									<value>
 										<which>2</which>
-										<value>jacobi</value>
+										<value>Jacobi</value>
 									</value>
 								</second>
 							</item>

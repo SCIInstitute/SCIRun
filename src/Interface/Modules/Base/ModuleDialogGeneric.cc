@@ -60,9 +60,9 @@ void ModuleDialogGeneric::fixSize()
   }
 }
 
-void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr) 
-{ 
-  slotManagers_.push_back(ptr); 
+void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr)
+{
+  slotManagers_.push_back(ptr);
 }
 
 void ModuleDialogGeneric::pull_newVersionToReplaceOld()
@@ -77,11 +77,19 @@ class ComboBoxSlotManager : public WidgetSlotManager
 public:
   typedef boost::function<std::string(const QString&)> FromQStringConverter;
   typedef boost::function<QString(const std::string&)> ToQStringConverter;
-  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox, 
+  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     FromQStringConverter fromLabelConverter = boost::bind(&QString::toStdString, _1),
-    ToQStringConverter toLabelConverter = &QString::fromStdString) : 
+    ToQStringConverter toLabelConverter = &QString::fromStdString) :
   WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
   {
+    connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+  }
+  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
+    const GuiStringTranslationMap& stringMap) :
+  WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), stringMap_(stringMap)
+  {
+    fromLabelConverter_ = [this](const QString& qstr) { return stringMap_.left.at(qstr.toStdString()); };
+    toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(stringMap_.right.at(str)); };
     connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
   }
   virtual void pull() override
@@ -108,6 +116,7 @@ private:
   QComboBox* comboBox_;
   FromQStringConverter fromLabelConverter_;
   ToQStringConverter toLabelConverter_;
+  GuiStringTranslationMap stringMap_;
 };
 
 void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey)
@@ -115,7 +124,12 @@ void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const Algorith
   addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
 }
 
-// ASSUMEs true state = comboBox index 1, false state = comboBox index 0. 
+void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap)
+{
+  addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox, stringMap));
+}
+
+// ASSUMEs true state = comboBox index 1, false state = comboBox index 0.
 class TwoChoiceBooleanComboBoxSlotManager : public WidgetSlotManager
 {
 public:
@@ -156,8 +170,8 @@ void ModuleDialogGeneric::addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox
 class TextEditSlotManager : public WidgetSlotManager
 {
 public:
-  TextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) : 
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), textEdit_(textEdit) 
+  TextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), textEdit_(textEdit)
   {
     connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
   }
@@ -188,8 +202,8 @@ void ModuleDialogGeneric::addTextEditManager(QTextEdit* textEdit, const Algorith
 class LineEditSlotManager : public WidgetSlotManager
 {
 public:
-  LineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) : 
-      WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit) 
+  LineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) :
+      WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit)
   {
     connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
   }
@@ -220,8 +234,8 @@ void ModuleDialogGeneric::addLineEditManager(QLineEdit* lineEdit, const Algorith
 class SpinBoxSlotManager : public WidgetSlotManager
 {
 public:
-  SpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSpinBox* spinBox) : 
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox) 
+  SpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSpinBox* spinBox) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox)
   {
     connect(spinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
   }
@@ -252,8 +266,8 @@ void ModuleDialogGeneric::addSpinBoxManager(QSpinBox* spinBox, const AlgorithmPa
 class DoubleSpinBoxSlotManager : public WidgetSlotManager
 {
 public:
-  DoubleSpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox) : 
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox) 
+  DoubleSpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox)
   {
     connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(push()));
   }
@@ -284,8 +298,8 @@ void ModuleDialogGeneric::addDoubleSpinBoxManager(QDoubleSpinBox* spinBox, const
 class CheckBoxSlotManager : public WidgetSlotManager
 {
 public:
-  CheckBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QCheckBox* checkBox) : 
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), checkBox_(checkBox) 
+  CheckBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QCheckBox* checkBox) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), checkBox_(checkBox)
   {
     connect(checkBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
   }
@@ -311,4 +325,36 @@ private:
 void ModuleDialogGeneric::addCheckBoxManager(QCheckBox* checkBox, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<CheckBoxSlotManager>(state_, *this, stateKey, checkBox));
+}
+
+class CheckableButtonSlotManager : public WidgetSlotManager
+{
+public:
+  CheckableButtonSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QAbstractButton* checkable) :
+      WidgetSlotManager(state, dialog), stateKey_(stateKey), checkable_(checkable)
+      {
+        connect(checkable_, SIGNAL(clicked()), this, SLOT(push()));
+      }
+      virtual void pull() override
+      {
+        bool newValue = state_->getValue(stateKey_).getBool();
+        if (newValue != checkable_->isChecked())
+        {
+          LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);
+          checkable_->setChecked(newValue);
+        }
+      }
+      virtual void pushImpl() override
+      {
+        LOG_DEBUG("In new version of push code for checkable QAbstractButton: " << checkable_->isChecked());
+        state_->setValue(stateKey_, checkable_->isChecked());
+      }
+private:
+  AlgorithmParameterName stateKey_;
+  QAbstractButton* checkable_;
+};
+
+void ModuleDialogGeneric::addCheckableButtonManager(QAbstractButton* checkable, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<CheckableButtonSlotManager>(state_, *this, stateKey, checkable));
 }

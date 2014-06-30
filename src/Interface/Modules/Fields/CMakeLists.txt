@@ -41,6 +41,9 @@ SET(Interface_Modules_Fields_FORMS
   MapFieldDataFromElemToNodeDialog.ui
   MapFieldDataFromNodeToElemDialog.ui
   resampleregularmesh.ui #TODO: fix case
+  ProjectPointsOntoMesh.ui
+  calculatedistancetofield.ui #TODO: fix case
+  calculatedistancetofieldboundary.ui #TODO: fix case
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -57,6 +60,9 @@ SET(Interface_Modules_Fields_HEADERS
   MapFieldDataFromElemToNodeDialog.h
   MapFieldDataFromNodeToElemDialog.h
   ResampleRegularMeshDialog.h
+  ProjectPointsOntoMeshDialog.h
+  CalculateDistanceToFieldDialog.h
+  CalculateDistanceToFieldBoundaryDialog.h
   share.h
 )
 
@@ -74,6 +80,9 @@ SET(Interface_Modules_Fields_SOURCES
   MapFieldDataFromElemToNodeDialog.cc
   MapFieldDataFromNodeToElemDialog.cc
   ResampleRegularMeshDialog.cc
+  ProjectPointsOntoMeshDialog.cc
+  CalculateDistanceToFieldDialog.cc
+  CalculateDistanceToFieldBoundaryDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

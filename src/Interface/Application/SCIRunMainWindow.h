@@ -81,6 +81,7 @@ private:
   PythonConsoleWidget* pythonConsole_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
+  QStringList favoriteModuleNames_;
   
 private:
   void postConstructionSignalHookup();
@@ -130,6 +131,7 @@ private Q_SLOTS:
   void chooseBackgroundColor();
   void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
+  void handleCheckedModuleEntry(QTreeWidgetItem* item, int column);
   void setExecutor(int type);
   void readDefaultNotePosition(int index);
   void updateMiniView();

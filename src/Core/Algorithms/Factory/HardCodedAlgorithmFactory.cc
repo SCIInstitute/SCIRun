@@ -31,6 +31,7 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
@@ -47,6 +48,7 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 #include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -78,9 +80,9 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace boost::assign;
 
-/// @todo: add unit test 
+/// @todo: add unit test
 
-HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() 
+HardCodedAlgorithmFactory::HardCodedAlgorithmFactory()
 {
   addToMakerMap();
   addToMakerMap2();
@@ -100,10 +102,10 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(ConvertQuadSurfToTriSurf, ConvertMeshToTriSurfMeshAlgo)
       ADD_MODULE_ALGORITHM(AlignMeshBoundingBoxes, AlignMeshBoundingBoxesAlgo)
       ADD_MODULE_ALGORITHM(GetFieldNodes, GetMeshNodesAlgo)     /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
-      ADD_MODULE_ALGORITHM(ElectrodeCoilSetup, ElectrodeCoilSetupAlgorithm)     
-      ADD_MODULE_ALGORITHM(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshAlgorithm) 
-      ADD_MODULE_ALGORITHM(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSAlgorithm)   
-      ADD_MODULE_ALGORITHM(GenerateROIStatistics, GenerateROIStatisticsAlgorithm)        
+      ADD_MODULE_ALGORITHM(ElectrodeCoilSetup, ElectrodeCoilSetupAlgorithm)
+      ADD_MODULE_ALGORITHM(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshAlgorithm)
+      ADD_MODULE_ALGORITHM(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSAlgorithm)
+      ADD_MODULE_ALGORITHM(GenerateROIStatistics, GenerateROIStatisticsAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
       ADD_MODULE_ALGORITHM(ReportFieldInfo, ReportFieldInfoAlgorithm)
       ADD_MODULE_ALGORITHM(ReportMatrixInfo, ReportMatrixInfoAlgorithm)
@@ -114,24 +116,27 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryAlgorithm)
       ADD_MODULE_ALGORITHM(ConvertMeshToIrregularMesh, ConvertMeshToIrregularMeshAlgo)
       ADD_MODULE_ALGORITHM(ReadMesh, TextToTriSurfFieldAlgorithm)
-      ADD_MODULE_ALGORITHM(AddKnownsToLinearSystem, AddKnownsToLinearSystemAlgo)  
-      ADD_MODULE_ALGORITHM(CalculateVectorMagnitudes, CalculateVectorMagnitudesAlgo) 
+      ADD_MODULE_ALGORITHM(AddKnownsToLinearSystem, AddKnownsToLinearSystemAlgo)
+      ADD_MODULE_ALGORITHM(CalculateVectorMagnitudes, CalculateVectorMagnitudesAlgo)
       ADD_MODULE_ALGORITHM(BuildFEMatrix, BuildFEMatrixAlgo)
       ADD_MODULE_ALGORITHM(GetDomainBoundary, GetDomainBoundaryAlgo)
-      ADD_MODULE_ALGORITHM(InterfaceWithCleaver, InterfaceWithCleaverAlgorithm)      
-      ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo) //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
-      ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo) //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+      ADD_MODULE_ALGORITHM(InterfaceWithCleaver, InterfaceWithCleaverAlgorithm)
+      ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo)
+      ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
       ADD_MODULE_ALGORITHM(JoinFields, JoinFieldsAlgo)
       ADD_MODULE_ALGORITHM(SplitFieldByDomain, SplitFieldByDomainAlgo)
-      ADD_MODULE_ALGORITHM(ApplyMappingMatrix, ApplyMappingMatrixAlgo) 
-      ADD_MODULE_ALGORITHM(SelectSubMatrix, SelectSubMatrixAlgorithm)   
-      ADD_MODULE_ALGORITHM(ConvertMatrixType, ConvertMatrixTypeAlgorithm)  
-      ADD_MODULE_ALGORITHM(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemAlgo)    
+      ADD_MODULE_ALGORITHM(ApplyMappingMatrix, ApplyMappingMatrixAlgo)
+      ADD_MODULE_ALGORITHM(SelectSubMatrix, SelectSubMatrixAlgorithm)
+      ADD_MODULE_ALGORITHM(ConvertMatrixType, ConvertMatrixTypeAlgorithm)
+      ADD_MODULE_ALGORITHM(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemAlgo)
       ADD_MODULE_ALGORITHM(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeAlgo)
       ADD_MODULE_ALGORITHM(ResampleRegularMesh, ResampleRegularMeshAlgo)
       ADD_MODULE_ALGORITHM(FairMesh, FairMeshAlgo)
       ADD_MODULE_ALGORITHM(ScaleFieldMeshAndData, ScaleFieldMeshAndDataAlgo)
       ADD_MODULE_ALGORITHM(ConvertFieldBasis, ConvertFieldBasisTypeAlgo)
+      ADD_MODULE_ALGORITHM(ProjectPointsOntoMesh, ProjectPointsOntoMeshAlgo)
+      ADD_MODULE_ALGORITHM(CalculateDistanceToField, CalculateDistanceFieldAlgo)
+      ADD_MODULE_ALGORITHM(CalculateDistanceToFieldBoundary, CalculateDistanceFieldAlgo)
     ;
   }
 }
@@ -144,7 +149,6 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
   if (func != factoryMap_.end())
     h.reset((func->second)());
 
-    
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());

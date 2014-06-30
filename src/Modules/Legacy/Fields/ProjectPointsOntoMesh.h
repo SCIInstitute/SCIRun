@@ -47,11 +47,9 @@ namespace SCIRun {
         virtual void setStateDefaults();
 
         INPUT_PORT(0, InputField, LegacyField);
-        INPUT_PORT(1, Object, LegacyField);
+        INPUT_PORT(1, ObjectField, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        //static Core::Algorithms::AlgorithmParameterName FunctionString;
-        //static Core::Algorithms::AlgorithmParameterName FormatString;
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
     }

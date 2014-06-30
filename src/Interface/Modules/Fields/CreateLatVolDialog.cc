@@ -76,6 +76,7 @@ std::string CreateLatVolDialog::getDataAtLocation() const
 
 void CreateLatVolDialog::pull()
 {
+  //TODO convert to new widget managers
   Pulling p(this);
   elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolModule::ElementSizeNormalized).getBool());
   elementSizeOneButton_->setChecked(!elementSizeNormalizedButton_->isChecked());

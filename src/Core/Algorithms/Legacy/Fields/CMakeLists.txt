@@ -29,6 +29,7 @@
 SET(Core_Algorithms_Legacy_Fields_HEADERS
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
+  DistanceField/CalculateDistanceField.h
   Mapping/ApplyMappingMatrix.h
   #Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h         
@@ -61,6 +62,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   SmoothMesh/FairMesh.h
   FieldData/ConvertFieldBasisType.h
   TransformMesh/ScaleFieldMeshAndData.h
+  TransformMesh/ProjectPointsOntoMesh.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -81,7 +83,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
-  #DistanceField/CalculateDistanceField.cc
+  DistanceField/CalculateDistanceField.cc
   #DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
   DistanceField/CalculateSignedDistanceField.cc
@@ -157,7 +159,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   TransformMesh/ScaleFieldMeshAndData.cc
   #TransformMesh/TransformPlanarMesh.cc
   #TransformMesh/GeneratePolarProjection.cc
-  #TransformMesh/ProjectPointsOntoMesh.cc
+  TransformMesh/ProjectPointsOntoMesh.cc
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
   #TracePoints/TracePoints.cc  

@@ -28,58 +28,44 @@
 /// @todo Documentation Modules/Legacy/Fields/ProjectPointsOntoMesh.cc
 
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/Algorithms/Fields/TransformMesh/ProjectPointsOntoMesh.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-namespace SCIRun {
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-class ProjectPointsOntoMesh : public Module {
-  public:
-    ProjectPointsOntoMesh(GuiContext*);
-    virtual ~ProjectPointsOntoMesh() {}
-    virtual void execute();
-    
-  private:
-    GuiString guimethod_;
-    SCIRunAlgo::ProjectPointsOntoMeshAlgo algo_;
-};
+ModuleLookupInfo ProjectPointsOntoMesh::staticInfo_("ProjectPointsOntoMesh", "ChangeMesh", "SCIRun");
 
-
-DECLARE_MAKER(ProjectPointsOntoMesh)
-
-ProjectPointsOntoMesh::ProjectPointsOntoMesh(GuiContext* ctx) :
-  Module("ProjectPointsOntoMesh", ctx, Source, "ChangeMesh", "SCIRun"),
-  guimethod_(ctx->subVar("method"),"nodes")
+ProjectPointsOntoMesh::ProjectPointsOntoMesh() :
+  Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(ObjectField);
+  INITIALIZE_PORT(OutputField);
 }
 
-void
-ProjectPointsOntoMesh::execute()
+void ProjectPointsOntoMesh::setStateDefaults()
 {
-  FieldHandle input, object, output;
-  get_input_handle("Field",input,true);
-  get_input_handle("Object",object,true);
+  auto state = get_state();
+  setStateStringFromAlgoOption(Parameters::ProjectMethod);
+}
 
-  if (inputs_changed_ || guimethod_.changed() || !oport_cached("Field"))
+void ProjectPointsOntoMesh::execute()
+{
+  auto input = getRequiredInput(InputField);
+  auto object = getRequiredInput(ObjectField);
+
+  //if (inputs_changed_ || guimethod_.changed() || !oport_cached("Field"))
+  if (needToExecute())
   {
     update_state(Executing);
 
-    algo_.set_option("method",guimethod_.get());
-    if (!(algo_.run(input,object,output))) return;
+    setAlgoOptionFromState(Parameters::ProjectMethod);
+
+    auto output = algo().run_generic(make_input((InputField, input)(ObjectField, object)));
     
-    send_output_handle("Field",output);
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
-
-
-} // End namespace SCIRun
-
-
-#endif

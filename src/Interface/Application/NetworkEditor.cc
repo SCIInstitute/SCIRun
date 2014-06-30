@@ -472,8 +472,11 @@ void NetworkEditor::addNewModuleAtPosition(const QPoint& position)
 
 void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 {
-  defaultModulePosition_ += moduleAddIncrement.toPoint();
-  addNewModuleAtPosition(defaultModulePosition_);
+  if (moduleSelectionGetter_->isModule())
+  {
+    defaultModulePosition_ += moduleAddIncrement.toPoint();
+    addNewModuleAtPosition(defaultModulePosition_);
+  }
 }
 
 void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)

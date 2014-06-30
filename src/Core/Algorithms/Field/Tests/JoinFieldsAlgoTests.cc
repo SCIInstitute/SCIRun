@@ -61,14 +61,12 @@ protected:
     FieldInformation lfi("LatVolMesh", 1, "double");
     Point minb(-1.0, -1.0, -1.0);
     Point maxb(1.0, 1.0, 1.0);
-    MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
+    MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
     FieldHandle ofh = CreateField(lfi,mesh);
     ofh->vfield()->clear_all_values();
     return ofh;
   }
 };
-
-
 
 // parameters:
 // MergeNodes = Bool()
@@ -80,10 +78,8 @@ protected:
 TEST_F(JoinFieldsAlgoTests, CanLogErrorMessage)
 {
   JoinFieldsAlgo algo;
-
   FieldList input;
   FieldHandle output;
-
   EXPECT_FALSE(algo.runImpl(input, output));
 }
 
@@ -124,70 +120,79 @@ TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVolsGeneric)
   EXPECT_EQ(914, output->vmesh()->num_nodes());
 }
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+//#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #if GTEST_HAS_COMBINE
 
-/*Get Parameterized Tests
-*/
+/*Get Parameterized Tests*/
+
 using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
+
 class JoinFieldsAlgoTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool, bool, double> >
 {
 public:
-  FieldHandle boundary_;
-  JoinFieldsAlgo algo_;
-  FieldHandle latVol_;
-  GetDomainBoundaryTestsParameterized() 
-  {
-    latVol_ = loadFieldFromFile(TestResources::rootDir() / "latVolWithNormData.fld");
-    SCIRun::Core::Logging::Log::get().setVerbose(true);
-  } 
-
+JoinFieldsAlgo algo_;
+FieldList input;
+FieldHandle output; 
 protected:
   virtual void SetUp()
   {
-    ASSERT_TRUE(latVol_->vmesh()->is_latvolmesh());
-    
-    // How to set parameters on an algorithm (that come from the GUI)
-    algo_.set(GetDomainBoundaryAlgo::AddOuterBoundary, ::std::tr1::get<0>(GetParam()));
-    
-    /// @todo: this logic matches the wacky module behavior
-    algo_.set(GetDomainBoundaryAlgo::UseRange, ::std::tr1::get<1>(GetParam()));
-    if (!::std::tr1::get<1>(GetParam()))///useRange)
-    {
-      algo_.set(GetDomainBoundaryAlgo::Domain,   ::std::tr1::get<2>(GetParam()));
-      algo_.set(GetDomainBoundaryAlgo::MinRange, ::std::tr1::get<3>(GetParam()));
-      algo_.set(GetDomainBoundaryAlgo::MaxRange, ::std::tr1::get<3>(GetParam()));
-      algo_.set(GetDomainBoundaryAlgo::UseRange, true);
-    }
+    SCIRun::Core::Logging::Log::get().setVerbose(true);
+	// How to set parameters on an algorithm (that come from the GUI)
+    algo_.set(JoinFieldsAlgo::MergeNodes,      ::std::tr1::get<0>(GetParam()));
+	algo_.set(JoinFieldsAlgo::MergeElems,      ::std::tr1::get<1>(GetParam()));
+    algo_.set(JoinFieldsAlgo::MatchNodeValues, ::std::tr1::get<2>(GetParam()));
+    algo_.set(JoinFieldsAlgo::MakeNoData,      ::std::tr1::get<3>(GetParam()));
+    algo_.set(JoinFieldsAlgo::Tolerance,       ::std::tr1::get<4>(GetParam()));
+	
   }
-  virtual void TearDown()
-  {  }
-
+  virtual void TearDown(){ }
 };
+FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez)
+  {
+    FieldInformation lfi("LatVolMesh", 1, "double");
+    Point minb(-1.0, -1.0, -1.0);
+    Point maxb(1.0, 1.0, 1.0);
+    MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
+    FieldHandle ofh = CreateField(lfi,mesh);
+    ofh->vfield()->clear_all_values();
+    return ofh;
+}  
 
-TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
 {
-    //EXPECT_NO_FATAL_FAILURE(GetDomainBoundaryTestsParameterized); 
-    //EXPECT_EQ(0, boundary->vmesh()->num_nodes()); 
-  boundary_.reset();
-  ASSERT_TRUE(algo_.runImpl(latVol_, unused_, boundary_));
-  ASSERT_THAT(boundary_, NotNull());
-    //EXPECT_EQ(expectedBoundaryNodes, boundary->vmesh()->num_nodes());
-    //EXPECT_EQ(expectedBoundaryElements, boundary->vmesh()->num_elems());
-  EXPECT_TRUE(boundary_->vmesh()->is_quadsurfmesh());
+	input.push_back(CreateEmptyLatVol(2,3,4));
+	input.push_back(CreateEmptyLatVol(5,6,7));
+	input.push_back(CreateEmptyLatVol(8,9,10));
+	algo_.runImpl(input,output); 
+	EXPECT_TRUE(algo_.runImpl(input, output));
+	//EXPECT_EQ(output->vmesh()->num_nodes(), output->vmesh()->num_nodes());
+	//EXPECT_EQ(1,1); 
+}
+
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
+{
+	input.push_back(CreateEmptyLatVol(2,3,4));
+	input.push_back(CreateEmptyLatVol(5,6,7));
+	input.push_back(CreateEmptyLatVol(8,9,10));
+
+	auto outputObj = algo_.run_generic(make_input((JoinFieldsAlgo::InputFields, input)));
+	FieldHandle output = outputObj.get<Field>(Core::Algorithms::Variables::OutputField);
+	EXPECT_EQ(output->vmesh()->num_nodes(),output->vmesh()->num_nodes());
+	//EXPECT_EQ(1,1);
 }
 
 INSTANTIATE_TEST_CASE_P(
-  LatVolBoundry_Parameterized,
-  GetDomainBoundaryTestsParameterized,
-  Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4)) 
+  JoinFieldsAlgo_Parameterized,
+  JoinFieldsAlgoTestsParameterized,
+  Combine(Bool(), Bool(), Bool(), Bool(), Values(1e-1,1e-3)) 
   );
 
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
-//
+
 #endif 
 
-#endif
+//#endif

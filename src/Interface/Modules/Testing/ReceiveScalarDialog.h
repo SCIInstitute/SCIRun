@@ -31,7 +31,6 @@
 
 #include "Interface/Modules/Testing/ui_ReceiveScalar.h"
 #include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Testing/share.h>
 
@@ -39,7 +38,6 @@ namespace SCIRun {
 namespace Gui {
   
 class SCISHARE ReceiveScalarDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
   public Ui::ReceiveScalar
 {
 	Q_OBJECT

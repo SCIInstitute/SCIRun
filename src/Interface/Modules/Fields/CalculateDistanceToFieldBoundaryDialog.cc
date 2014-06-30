@@ -1,13 +1,12 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,28 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H 1
+#include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
 
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
-
-namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
-
-class SCISHARE MapFieldDataFromNodeToElemAlgo : public AlgorithmBase
+CalculateDistanceToFieldBoundaryDialog::CalculateDistanceToFieldBoundaryDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  public:
-    MapFieldDataFromNodeToElemAlgo();
-    
-    static AlgorithmParameterName Method;
-    FieldHandle run(FieldHandle input_field) const; 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-};
+  addCheckBoxManager(truncateDistanceCheckBox_, Parameters::Truncate);
+  addDoubleSpinBoxManager(truncateDoubleSpinBox_, Parameters::TruncateDistance);
+  addComboBoxManager(basisTypeComboBox_, Parameters::BasisType);
+  addComboBoxManager(dataTypeComboBox_, Parameters::OutputFieldDatatype);
+}
 
-}}}}
-#endif
+void CalculateDistanceToFieldBoundaryDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

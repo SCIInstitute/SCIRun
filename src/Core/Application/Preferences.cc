@@ -33,7 +33,7 @@ using namespace SCIRun::Core;
 CORE_SINGLETON_IMPLEMENTATION( Preferences );
 
 Preferences::Preferences() :
-  moduleErrorDialogState(true), saveBeforeExecute(false), useNewViewSceneMouseControls(false)
+  showModuleErrorDialogs(true), saveBeforeExecute(false), useNewViewSceneMouseControls(false)
 {	
 }
 
