@@ -48,6 +48,11 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+
+ALGORITHM_PARAMETER_DEF(BrainStimulator, ELECTRODE_VALUES);
+
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_VALUES() {return AlgorithmParameterName("ELECTRODE_VALUES");}
+
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COUNT("ELECTRODE_COUNT");
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
@@ -68,17 +73,18 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   auto elc_coil_pos_and_normal = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_count               = input.get<Matrix>(ELECTRODE_COUNT);
 
-  //***//! try:
-  //auto electrodes = get(ELC).getList();
-  //for (int i=0; i<electrodes.size(); i++)
-  //{
+  //! try:
+  auto elc_values = get(ELECTRODE_VALUES()).getList();
+  for (int i=0; i<elc_values.size(); i++)
+  {
+    std::cout << elc_values[i].name_ << "=" << elc_values[i].value_ << std::endl;
   //  auto elecName = electrodes[i].name_;
   //  auto elecValue = electrodes[i].getDouble();
   //  // need a consistency check:
   //  auto expectedElecName = electrodeName(i);
   //  EXPECT_EQ(elecName, expectedElecName); // if not, electrodes are being stored out of order. 
   //  //You may not care about the name--if so just ignore the above.
-  //}
+  }
   
   // obtaining number of electrodes
   DenseMatrixHandle elc_count_dense (new DenseMatrix(matrix_cast::as_dense(elc_count)->block(0,0,elc_count->nrows(),elc_count->ncols()))); 

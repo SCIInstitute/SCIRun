@@ -31,8 +31,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <iostream>
-#include <string>
 #include <vector>
 
 using namespace SCIRun::Modules::BrainStimulator;
@@ -42,6 +40,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
 AlgorithmParameterName SetupRHSforTDCSandTMSModule::ElectrodeTableValues() { return AlgorithmParameterName("ElectrodeTableValues");}
+AlgorithmParameterName ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
 
 SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookupInfo("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun"))
 {
@@ -58,12 +57,7 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
-  // this function is meant to fill in default values set for the GUI
-}
 
-AlgorithmParameterName SetupRHSforTDCSandTMSModule::ElecrodeParameterName(int i) 
-{
-  return AlgorithmParameterName(Name("ELC"+boost::lexical_cast<std::string>(i)));;
 }
 
 void SetupRHSforTDCSandTMSModule::execute()
@@ -71,15 +65,12 @@ void SetupRHSforTDCSandTMSModule::execute()
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_count = getRequiredInput(ELECTRODE_COUNT);
 
+  
   // obtaining electrode values from state map
   auto elc_vals_from_state = get_state()->getValue(ElectrodeTableValues()).getList();
-  for (int i=0; i<elc_vals_from_state.size(); i++)
-    std::cout << "i = " << elc_vals_from_state[i].value_ << std::endl;
-
-  //**** algo().set(INSERT_NAME_OF_ELECTRODE_PARAMETER_NAME_VAR, elc_vals_from_state);
-
-
-
+//  for (int i=0; i<elc_vals_from_state.size(); i++)
+//    std::cout << "i = " << elc_vals_from_state[i].value_ << std::endl;
+  algo().set(ELECTRODE_VALUES, elc_vals_from_state);
 
 
   if (needToExecute())
