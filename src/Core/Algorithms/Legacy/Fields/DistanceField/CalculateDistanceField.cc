@@ -32,6 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Logging/Log.h>
 #include <Core/Thread/Parallel.h>
 
 using namespace SCIRun;
@@ -52,6 +53,7 @@ CalculateDistanceFieldAlgo::CalculateDistanceFieldAlgo()
   using namespace Parameters;
   addParameter(Truncate, false);
   addParameter(TruncateDistance, 1.0);
+  addParameter(OutputValueField, false);
   add_option(BasisType, "same as input","same as input|constant|linear");
   add_option(OutputFieldDatatype, "double","char|unsigned char|short|unsigned short|int|unsigned int|float|double");
 }
