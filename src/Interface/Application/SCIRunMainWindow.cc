@@ -49,6 +49,7 @@
 #include <Core/Logging/LoggerInterface.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
+#include <Interface/Application/DialogErrorControl.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
@@ -130,10 +131,15 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 	executeBar->addAction(actionExecute_All_);
 	
 	networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
+	dialogErrorControl_.reset(new DialogErrorControl(this)); 
+
   executeBar->addActions(networkProgressBar_->actions());
   connect(actionExecute_All_, SIGNAL(triggered()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
-	
+  
+  connect(actionExecute_All_, SIGNAL(triggered()), dialogErrorControl_.get(), SLOT(resetCounter())); 
+	connect(this, SIGNAL(errorDialogCreate()), dialogErrorControl_.get(), SLOT(increaseCounter())); 
+
 	scrollAreaWidgetContents_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
   sep->setSeparator(true);
