@@ -39,8 +39,9 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
-AlgorithmParameterName SetupRHSforTDCSandTMSModule::ElectrodeTableValues() { return AlgorithmParameterName("ElectrodeTableValues");}
+
 AlgorithmParameterName SetupRHSforTDCSandTMSModule::ELECTRODE_VALUES() { return AlgorithmParameterName("ELECTRODE_VALUES");}
+AlgorithmParameterName SetupRHSforTDCSandTMSModule::ElectrodeTableValues() { return AlgorithmParameterName("ElectrodeTableValues");}
 AlgorithmParameterName ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
 
 SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookupInfo("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun"))

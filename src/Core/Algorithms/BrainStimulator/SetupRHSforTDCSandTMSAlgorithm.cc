@@ -71,7 +71,7 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   auto elc_count               = input.get<Matrix>(ELECTRODE_COUNT);
 
   //! try:
-  auto elc_values = get(ELECTRODE_VALUES).getList();
+  auto elc_values = get(Parameters::ELECTRODE_VALUES).getList();
   for (int i=0; i<elc_values.size(); i++)
   {
     std::cout << elc_values[i].name_ << "=" << elc_values[i].value_ << std::endl;
