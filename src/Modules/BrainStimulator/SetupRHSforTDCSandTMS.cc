@@ -39,9 +39,7 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
-
-AlgorithmParameterName SetupRHSforTDCSandTMSModule::ELECTRODE_VALUES() { return AlgorithmParameterName("ELECTRODE_VALUES");}
-AlgorithmParameterName SetupRHSforTDCSandTMSModule::ElectrodeTableValues() { return AlgorithmParameterName("ElectrodeTableValues");}
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElectrodeTableValues() { return AlgorithmParameterName("ElectrodeTableValues");}
 AlgorithmParameterName ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
 
 SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookupInfo("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun"))
@@ -67,13 +65,11 @@ void SetupRHSforTDCSandTMSModule::execute()
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_count = getRequiredInput(ELECTRODE_COUNT);
 
-  
   // obtaining electrode values from state map
   auto elc_vals_from_state = get_state()->getValue(ElectrodeTableValues()).getList();
 //  for (int i=0; i<elc_vals_from_state.size(); i++)
-//    std::cout << "i = " << elc_vals_from_state[i].value_ << std::endl;
-  algo().set(ELECTRODE_VALUES(), elc_vals_from_state);
-
+//    std::cout << "elc" << i << " = " << elc_vals_from_state[i].value_ << std::endl;
+  algo().set(Parameters::ELECTRODE_VALUES, elc_vals_from_state);
 
   if (needToExecute())
   {
