@@ -27,11 +27,9 @@
 */
 
 #include <iostream> 
-#include <Interface/Application/ModuleLogWindow.h> 
 #include <Interface/Application/DialogErrorControl.h>
 
 using namespace SCIRun::Gui;
-
 
 DialogErrorControl::DialogErrorControl(QWidget*parent) : counter_(0)
 {
@@ -39,9 +37,9 @@ DialogErrorControl::DialogErrorControl(QWidget*parent) : counter_(0)
 }
 void DialogErrorControl::resetCounter()
 { 
-	counter_ = 0;
+		counter_ = 0;
 }
 void DialogErrorControl::increaseCounter()
 {
-	++counter_; 
+		++counter_; 
 }

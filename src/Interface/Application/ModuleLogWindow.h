@@ -34,22 +34,28 @@
 #include <Core/Logging/LoggerInterface.h>
 #include <Dataflow/Network/NetworkFwd.h>
 
+
 namespace SCIRun {
 namespace Gui {
+
+class DialogErrorControl; 
 
 class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
 {
 	Q_OBJECT
 	
 public:
-  explicit ModuleLogWindow(const QString& moduleName, QWidget* parent = 0);
+  explicit ModuleLogWindow(const QString& moduleName, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
 public Q_SLOTS:
   void appendMessage(const QString& message, const QColor& color = Qt::black);
   void popupMessageBox(const QString& message);
+
 Q_SIGNALS:
   void messageReceived(const QColor& color);
+	
 private:
   QString moduleName_;
+	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
 };
 
 class ModuleLogger : public QObject, public Core::Logging::LegacyLoggerInterface
@@ -61,6 +67,7 @@ public:
   virtual void warning(const std::string& msg) const;
   virtual void remark(const std::string& msg) const;
   virtual void status(const std::string& msg) const;
+
 Q_SIGNALS:
   void logSignal(const QString& message, const QColor& color) const;
   void alert(const QColor& color) const;

@@ -28,8 +28,6 @@
 #ifndef INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
 #define	INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
 
-#include <Core/Logging/LoggerInterface.h>
-#include <Dataflow/Network/NetworkFwd.h>
 #include <QObject>
 
 

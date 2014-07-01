@@ -115,7 +115,6 @@ private:
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
-	void errorDialogCreated(); ////////////////////////
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
