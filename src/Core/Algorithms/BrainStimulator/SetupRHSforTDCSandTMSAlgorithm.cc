@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 
    Author: Spencer Frisby
-   Date:   June 2014
+   Date:   July 2014
 */
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -59,6 +59,8 @@ AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
 //const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::COIL2("COIL2");
 //const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
 //const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::COILS_FIELD("COILS_FIELD");
+
+
 
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
