@@ -43,7 +43,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun")) 
+SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun"))
 {
   INITIALIZE_PORT(LHS);
   INITIALIZE_PORT(RHS);
@@ -53,10 +53,10 @@ SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("So
 void SolveLinearSystemModule::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Variables::TargetError, 0.00001);
-  state->setValue(Variables::MaxIterations, 500);
-  state->setValue(Variables::Method, std::string("cg"));
-  state->setValue(Variables::Preconditioner, std::string("jacobi"));
+  setStateDoubleFromAlgo(Variables::TargetError);
+  setStateDoubleFromAlgo(Variables::MaxIterations);
+  setStateStringFromAlgoOption(Variables::Method);
+  setStateStringFromAlgoOption(Variables::Preconditioner);
 }
 
 void SolveLinearSystemModule::execute()
@@ -96,7 +96,7 @@ void SolveLinearSystemModule::execute()
       remark("Using preconditioner: " + precond);
 
       auto output = algo().run_generic(make_input((LHS, A)(RHS, rhsCol)));
-      
+
       sendOutputFromAlgorithm(Solution, output);
     }
   }

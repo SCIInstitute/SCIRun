@@ -26,27 +26,46 @@
 //  DEALINGS IN THE SOFTWARE.
 
 
-#include <Core/Algorithms/Fields/SmoothMesh/FairMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
-namespace SCIRunAlgo {
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
 
-bool
-FairMeshAlgo::run(FieldHandle input,FieldHandle& output)
+ALGORITHM_PARAMETER_DEF(Fields, FairMeshMethod);
+ALGORITHM_PARAMETER_DEF(Fields, NumIterations);
+ALGORITHM_PARAMETER_DEF(Fields, Lambda);
+ALGORITHM_PARAMETER_DEF(Fields, FilterCutoff);
+
+FairMeshAlgo::FairMeshAlgo()
 {
-  algo_start("fairmesh");
+  add_option(Parameters::FairMeshMethod,"fast","fast|desbrun");
+  addParameter(Parameters::NumIterations,50);
+  addParameter(Parameters::Lambda,0.6307);
+  addParameter(Parameters::FilterCutoff,0.1);
+}
 
-  if (input.get_rep() == 0)
+bool FairMeshAlgo::runImpl(FieldHandle input,FieldHandle& output) const
+{
+  ScopedAlgorithmStatusReporter asr(this, "fairmesh");
+
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
   FieldInformation fi(input);
   if (!fi.is_surface())
   {
     error("This algorithm only works on a surface mesh");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   if (fi.is_imagemesh())
@@ -56,16 +75,14 @@ FairMeshAlgo::run(FieldHandle input,FieldHandle& output)
     return (true);
   }
 
-  std::string method = get_option("method");
-  int num_iter = 2*get_int("num_iterations");
-  double lambda = get_scalar("lambda");
-  double filter_cutoff = get_scalar("filter_cutoff");
+  std::string method = get_option(Parameters::FairMeshMethod);
+  int num_iter = 2*get(Parameters::NumIterations).getInt();
+  double lambda = get(Parameters::Lambda).getDouble();
+  double filter_cutoff = get(Parameters::FilterCutoff).getDouble();
   
   double mu = 1.0/(filter_cutoff - 1.0/lambda);
   
-  output = input;
-  output.detach();
-  output->mesh_detach();
+  output.reset(input->deep_clone());
   
   VMesh* mesh = output->vmesh();
   VMesh::size_type num_nodes = mesh->num_nodes();
@@ -110,7 +127,7 @@ FairMeshAlgo::run(FieldHandle input,FieldHandle& output)
         for (VMesh::Node::index_type idx=0; idx<num_nodes;idx++)
           point[idx] = point[idx]+  mu*disp[idx];      
       }
-      update_progress(it,num_iter);
+      update_progress_max(it,num_iter);
     }
   }
   else
@@ -163,10 +180,10 @@ FairMeshAlgo::run(FieldHandle input,FieldHandle& output)
         Vector p12;
         
         // get local neighborhood pairs
-        std::vector<std::pair<VMesh::index_type,VMesh::index_type> > &neighborhood = neighborhoods[idx];
+        const std::vector<std::pair<VMesh::index_type,VMesh::index_type> > &neighborhood = neighborhoods[idx];
         
         // if no neighborhood continue
-        if (neighborhood.size() == 0) continue;
+        if (neighborhood.empty()) continue;
   
         // total weight
         double totw = 0.0;
@@ -224,12 +241,25 @@ FairMeshAlgo::run(FieldHandle input,FieldHandle& output)
         for (VMesh::Node::index_type idx=0; idx<num_nodes;idx++)
           point[idx] = point[idx]+  mu*disp[idx];      
       }
-      update_progress(it,num_iter);
+      update_progress_max(it,num_iter);
     }
   }
-
-  algo_end(); 
+  
   return (true);
 } 
 
-} // namespace SCIRun
+const AlgorithmInputName FairMeshAlgo::Input_Mesh("Input_Mesh");
+const AlgorithmOutputName FairMeshAlgo::Faired_Mesh("Faired_Mesh");
+
+AlgorithmOutput FairMeshAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Input_Mesh);
+
+  FieldHandle outputField;
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Faired_Mesh] = outputField;
+  return output;
+}

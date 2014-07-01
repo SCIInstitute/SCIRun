@@ -114,9 +114,6 @@ namespace Networks {
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
 
     /// @todo: name too clunky.
-    virtual void preExecutionInitialization() {}
-
-    /// @todo: name too clunky.
     /// Called before the module is to be destroyed. More importantly, called
     /// before the UI widget is to be destroyed.
     virtual void preDestruction() {}

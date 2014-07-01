@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
 #include <QtGui>
 #include <Interface/Application/MainWindowCollaborators.h>
 
@@ -60,9 +61,11 @@ QString TreeViewModuleGetter::text() const
 {
   return tree_.currentItem()->text(0);
 }
+
 bool TreeViewModuleGetter::isModule() const
 {
-  return tree_.currentItem()->childCount() == 0;
+  auto current = tree_.currentItem();
+  return current->childCount() == 0 && current->parent();
 }
 
 NotePosition ComboBoxDefaultNotePositionGetter::position() const

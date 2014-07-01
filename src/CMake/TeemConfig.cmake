@@ -63,7 +63,7 @@ MACRO(EXTERNAL_TEEM_LIBRARY compress_type)
       BINARY_DIR ${teem_BINARY_DIR}
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/teem"
       PATCH_COMMAND ""
-      ${disabled_update}
+      ${DISABLED_UPDATE}
       INSTALL_DIR ""
       INSTALL_COMMAND ""
       #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${teem_BINARY_DIR}"

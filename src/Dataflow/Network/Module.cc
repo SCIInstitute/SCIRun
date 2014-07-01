@@ -138,16 +138,13 @@ void Module::do_execute() throw()
     if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostr;
-      ostr << "Caught exception: " << e.typeName();
-      ostr << "\n";
-      ostr << "Message: " << e.what() << std::endl;
+      ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << std::endl;
       error(ostr.str());
     }
 
     if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostrExtra;
-      ostrExtra << "TODO! Following error info will be filtered later, it's too technical for general audiences.\n";
       ostrExtra << boost::diagnostic_information(e) << std::endl;
       error(ostrExtra.str());
     }
@@ -175,6 +172,11 @@ void Module::do_execute() throw()
 }
 
 ModuleStateHandle Module::get_state() 
+{
+  return state_;
+}
+
+const ModuleStateHandle Module::get_state() const
 {
   return state_;
 }
@@ -457,6 +459,16 @@ void Module::setAlgoDoubleFromState(AlgorithmParameterName name)
   algo().set(name, get_state()->getValue(name).getDouble());
 }
 
+void Module::setAlgoOptionFromState(AlgorithmParameterName name)
+{
+  algo().set_option(name, get_state()->getValue(name).getString());
+}
+
+void Module::setStateStringFromAlgoOption(AlgorithmParameterName name)
+{
+  get_state()->setValue(name, algo().get_option(name));
+}
+
 ModuleInterface::ExecutionState Module::executionState() const
 {
   return executionState_;
@@ -482,4 +494,27 @@ bool Module::inputsChanged() const
 void Module::addPortConnection(const boost::signals2::connection& con)
 {
   portConnections_.emplace_back(new boost::signals2::scoped_connection(con));
+}
+
+ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info) : Module(info), asyncConnected_(false)
+{
+}
+
+void ModuleWithAsyncDynamicPorts::execute()
+{
+}
+
+size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
+{
+  h->connectDataOnPortHasChanged(boost::bind(&ModuleWithAsyncDynamicPorts::asyncExecute, this, _1, _2));
+  return Module::add_input_port(h);
+}
+
+void ModuleWithAsyncDynamicPorts::portRemovedSlot(const ModuleId& mid, const PortId& pid)
+{
+  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
+  if (mid == id_)
+  {
+    portRemovedSlotImpl(pid);
+  }
 }

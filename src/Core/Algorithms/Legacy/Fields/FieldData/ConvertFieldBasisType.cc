@@ -26,21 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/FieldData/ConvertFieldBasisType.h>
-#include <Core/Datatypes/FieldInformation.h>
-
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 
-namespace SCIRunAlgo {
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+
+ALGORITHM_PARAMETER_DEF(Fields, BasisType)
+
+ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
+{
+  /// The output type
+  add_option(Parameters::BasisType, "linear", "nodata|constant|linear|quadratic|cubic");
+}
 
 bool
-ConvertFieldBasisTypeAlgo::
-run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
+ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const
 {
-  ScopedAlgorithmReporter r(this, "ConvertFieldBasis");
-  
-  /// Safety check
-  if (input.get_rep() == 0)
+  ScopedAlgorithmStatusReporter r(this, "ConvertFieldBasis");
+#if 0 // yucky sparse matrix code below
+  if (!input)
   {
     error("No input field");
     return (false);
@@ -50,7 +61,7 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
   FieldInformation fo(input);
   
   std::string basistype;
-  get_option("basistype",basistype);
+  get_option(Parameters::BasisType,basistype);
   
   int basis_order = input->vfield()->basis_order();
   
@@ -68,9 +79,10 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
     fo.make_nodata();
     output = CreateField(fo,input->mesh());
     
-    if (output.get_rep() == 0)
+    if (!output)
     {
       error("Could not create output field");
+      return false;
     }
     
     return (true);
@@ -93,7 +105,7 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
     {
       // Field is already no data
       output = input;
-      mapping = SparseRowMatrix::identity(num_values);
+      mapping = SparseRowMatrix::Identity(num_values);
       return (true);
     }
 
@@ -219,7 +231,7 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
     {
       // Field is already no data
       output = input;
-      mapping = SparseRowMatrix::identity(num_values);
+      mapping = SparseRowMatrix::Identity(num_values);
       return (true);
     }
 
@@ -433,18 +445,27 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
       return (true);
     }  
   }
-
+#endif
   return (true);
 }
 
-
 bool
-ConvertFieldBasisTypeAlgo::
-run(FieldHandle input, FieldHandle& output)
+ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   MatrixHandle dummy;
-  return run(input,output,dummy);
+  return runImpl(input,output,dummy);
 }
 
+AlgorithmOutput ConvertFieldBasisTypeAlgo::run_generic(const AlgorithmInput& input) const
+{
+  throw "todo";
+  //auto field = input.get<Field>(Variables::InputField);
 
-} // end namespace SCIRunAlgo
+  //FieldHandle outputField;
+  //if (!runImpl(field, outputField))
+  //  THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  //AlgorithmOutput output;
+  //output[Variables::OutputField] = outputField;
+  //return output;
+}

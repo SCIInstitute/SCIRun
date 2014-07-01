@@ -29,6 +29,7 @@
 SET(Core_Algorithms_Legacy_Fields_HEADERS
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
+  DistanceField/CalculateDistanceField.h
   Mapping/ApplyMappingMatrix.h
   #Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h         
@@ -57,6 +58,11 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/GetFieldData.h
   Mapping/MapFieldDataFromElemToNode.h
   Mapping/MapFieldDataFromNodeToElem.h
+  ResampleMesh/ResampleRegularMesh.h
+  SmoothMesh/FairMesh.h
+  FieldData/ConvertFieldBasisType.h
+  TransformMesh/ScaleFieldMeshAndData.h
+  TransformMesh/ProjectPointsOntoMesh.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -77,7 +83,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
-  #DistanceField/CalculateDistanceField.cc
+  DistanceField/CalculateDistanceField.cc
   #DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
   DistanceField/CalculateSignedDistanceField.cc
@@ -91,7 +97,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   FieldData/CalculateVectorMagnitudesAlgo.cc
   #FieldData/CalculateFieldDataMetric.cc
   #FieldData/ConvertFieldDataType.cc
-  #FieldData/ConvertFieldBasisType.cc
+  FieldData/ConvertFieldBasisType.cc
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
@@ -141,19 +147,19 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MeshDerivatives/GetBoundingBox.cc
   #MeshDerivatives/SplitByConnectedRegion.cc
   #RefineMesh/RefineMesh.cc
-  #ResampleMesh/ResampleRegularMesh.cc
+  ResampleMesh/ResampleRegularMesh.cc
   #ResampleMesh/PadRegularMesh.cc
   #SampleField/GeneratePointSamplesFromField.cc
-  #SmoothMesh/FairMesh.cc
+  SmoothMesh/FairMesh.cc
   #StreamLines/StreamLineIntegrators.cc
   #StreamLines/GenerateStreamLines.cc
   TransformMesh/AlignMeshBoundingBoxes.cc
   #TransformMesh/TransformMeshWithTransform.cc
   #TransformMesh/ConvertMeshCoordinateSystem.cc
-  #TransformMesh/ScaleFieldMeshAndData.cc
+  TransformMesh/ScaleFieldMeshAndData.cc
   #TransformMesh/TransformPlanarMesh.cc
   #TransformMesh/GeneratePolarProjection.cc
-  #TransformMesh/ProjectPointsOntoMesh.cc
+  TransformMesh/ProjectPointsOntoMesh.cc
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
   #TracePoints/TracePoints.cc  

@@ -45,10 +45,11 @@ ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHan
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   buttonBox->setVisible(false);
+
+  addDoubleSpinBoxManager(scalarValueReceived_, ReceiveScalarModule::ReceivedValue);
 }
 
 void ReceiveScalarDialog::pull() 
 {
-  double value = state_->getValue(ReceiveScalarModule::ReceivedValue).getDouble();
-  scalarValueReceived_->setText(QString::number(value));
+  pull_newVersionToReplaceOld();
 }

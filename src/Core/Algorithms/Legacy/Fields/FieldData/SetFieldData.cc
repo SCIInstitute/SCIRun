@@ -476,21 +476,17 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle dat
 }
 
 AlgorithmParameterName SetFieldDataAlgo::keepTypeCheckBox("keepTypeCheckBox");
-AlgorithmInputName SetFieldDataAlgo::InputField("InputField");
-AlgorithmInputName SetFieldDataAlgo::InputMatrix("InputMatrix");
-AlgorithmOutputName SetFieldDataAlgo::OutputField("OutputField");
 
 AlgorithmOutput SetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 {
-
-  auto input_field = input.get<Field>(InputField);
-  auto input_matrix = input.get<DenseMatrix>(InputMatrix);
+  auto input_field = input.get<Field>(Variables::InputField);
+  auto input_matrix = input.get<DenseMatrix>(Variables::InputMatrix);
  
   FieldHandle output_field;
   output_field = run(input_field,input_matrix);
   
   AlgorithmOutput output;
-  output[OutputField] = output_field;
+  output[Variables::OutputField] = output_field;
 
   return output;
 }

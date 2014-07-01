@@ -32,6 +32,7 @@
 #include <boost/bind.hpp>
 #include <boost/assign.hpp>
 #include <boost/assign/std/vector.hpp>
+#include <boost/algorithm/string.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -342,10 +343,14 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
+  std::string fileNameWithExtension = fileName.toStdString();
+  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
+    fileNameWithExtension += ".srn5";
+
   NetworkFileHandle file = networkEditor_->saveNetwork();
 
-  XMLSerializer::save_xml(*file, fileName.toStdString(), "networkFile");
-  setCurrentFile(fileName);
+  XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile");
+  setCurrentFile(QString::fromStdString(fileNameWithExtension));
 
   statusBar()->showMessage(tr("File saved"), 2000);
   GuiLogger::Instance().log("File save done.");
@@ -523,13 +528,13 @@ void SCIRunMainWindow::makeFilterButtonMenu()
   filterActionGroup_ = new QActionGroup(filterMenu);
   auto startsWithAction = new QAction("Starts with", filterButton_);
   startsWithAction->setCheckable(true);
-  startsWithAction->setChecked(true);
   filterActionGroup_->addAction(startsWithAction);
   filterMenu->addAction(startsWithAction);
 
   auto wildcardAction = new QAction("Use wildcards", filterButton_);
   wildcardAction->setCheckable(true);
   filterActionGroup_->addAction(wildcardAction);
+  wildcardAction->setChecked(true);
   filterMenu->addAction(wildcardAction);
 
   filterButton_->setMenu(filterMenu);
@@ -624,6 +629,14 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: newViewSceneMouseControls = " + QString::number(mode));
     Core::Preferences::Instance().useNewViewSceneMouseControls = mode;
   }
+
+  const QString favoriteModules = "favoriteModules";
+  if (settings.contains(favoriteModules))
+  {
+    auto faves = settings.value(favoriteModules).toStringList();
+    GuiLogger::Instance().log("Setting read: favoriteModules = " + faves.join(", "));
+    favoriteModuleNames_ = faves;
+  }
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -639,6 +652,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
   settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls);
+  settings.setValue("favoriteModules", favoriteModuleNames_);
 }
 
 namespace
@@ -823,8 +837,38 @@ void SCIRunMainWindow::makeModulesSmallSize()
 
 namespace {
 
-void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
+  void addFavoriteMenu(QTreeWidget* tree)
+  {
+    auto faves = new QTreeWidgetItem();
+    faves->setText(0, "Favorites");
+
+    tree->addTopLevelItem(faves);
+  }
+
+  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree)
+  {
+    for (int i = 0; i < tree->topLevelItemCount(); ++i)
+    {
+      auto top = tree->topLevelItem(i);
+      if (top->text(0) == "Favorites")
+      {
+        return top;
+      }
+    }
+    return 0;
+  }
+
+  void addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
+  {
+    LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
+    auto copy = new QTreeWidgetItem(*module);
+    copy->setData(0, Qt::CheckStateRole, QVariant());  
+    faves->addChild(copy);
+  }
+
+void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
 {
+  QTreeWidgetItem* faves = getFavoriteMenu(tree);
   BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
   {
     const std::string& packageName = package.first;
@@ -841,11 +885,21 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
       BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
       {
         const std::string& moduleName = module.first;
-        auto m = new QTreeWidgetItem();
-        m->setText(0, QString::fromStdString(moduleName));
-        m->setText(1, QString::fromStdString(module.second.moduleStatus_));
-        m->setText(2, QString::fromStdString(module.second.moduleInfo_));
-        categoryItem->addChild(m);
+        auto moduleItem = new QTreeWidgetItem();
+        auto name = QString::fromStdString(moduleName);
+        moduleItem->setText(0, name);
+        if (favoriteModuleNames.contains(name))
+        {
+          moduleItem->setCheckState(0, Qt::Checked);
+          addFavoriteItem(faves, moduleItem);
+        }
+        else
+        {
+          moduleItem->setCheckState(0, Qt::Unchecked);
+        }
+        moduleItem->setText(1, QString::fromStdString(module.second.moduleStatus_));
+        moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
+        categoryItem->addChild(moduleItem);
         totalModules++;
       }
       categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
@@ -853,6 +907,13 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
     packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
   }
 }
+
+  void sortFavorites(QTreeWidget* tree)
+  {
+    QTreeWidgetItem* faves = getFavoriteMenu(tree);
+    faves->sortChildren(0, Qt::AscendingOrder);
+  }
+
 }
 
 void SCIRunMainWindow::fillModuleSelector()
@@ -860,7 +921,10 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->clear();
 
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
-  fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs);
+
+  addFavoriteMenu(moduleSelectorTreeWidget_);
+  fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
+  sortFavorites(moduleSelectorTreeWidget_);
 
   GrabNameAndSetFlags visitor;
   visitTree(moduleSelectorTreeWidget_, visitor);
@@ -869,6 +933,41 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->resizeColumnToContents(0);
   moduleSelectorTreeWidget_->resizeColumnToContents(1);
   moduleSelectorTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
+
+  connect(moduleSelectorTreeWidget_, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(handleCheckedModuleEntry(QTreeWidgetItem*, int)));
+}
+
+void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int column)
+{
+  if (item && 0 == column)
+  {
+    moduleSelectorTreeWidget_->setCurrentItem(item);
+
+    QTreeWidgetItem* faves = getFavoriteMenu(moduleSelectorTreeWidget_);
+
+    if (item->checkState(0) == Qt::Checked)
+    {
+      if (faves)
+      {
+        addFavoriteItem(faves, item);
+        faves->sortChildren(0, Qt::AscendingOrder);
+        favoriteModuleNames_ << item->text(0);
+      }
+    }
+    else
+    {
+      if (faves)
+      {
+        favoriteModuleNames_.removeAll(item->text(0));
+        for (int i = 0; i < faves->childCount(); ++i)
+        {
+          auto child = faves->child(i);
+          if (child->text(0) == item->text(0))
+            faves->removeChild(child);
+        }
+      }
+    }
+  }
 }
 
 void SCIRunMainWindow::displayAcknowledgement()

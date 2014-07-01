@@ -61,6 +61,13 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
+#include <Modules/Legacy/Fields/ResampleRegularMesh.h>
+#include <Modules/Legacy/Fields/FairMesh.h>
+#include <Modules/Legacy/Fields/ConvertFieldBasis.h>
+#include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
+#include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
+#include <Modules/Legacy/Fields/CalculateDistanceToField.h>
+#include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -73,6 +80,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
+#include <Modules/Basic/AsyncPortTestModule.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
@@ -121,6 +129,13 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
   addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates stiffness matrix ");
+  addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
+  addModuleDesc<FairMesh>("Real ported module", "...");
+  addModuleDesc<ConvertFieldBasis>("NOT WORKING YET--Real ported module", "...");
+  addModuleDesc<ScaleFieldMeshAndData>("NOT WORKING YET--Real ported module", "...");
+  addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
+  addModuleDesc<CalculateDistanceToField>("Real ported module", "...");
+  addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addBundleModules()
@@ -139,4 +154,5 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
+  addModuleDesc<AsyncPortTestModule>("...", "ViewScene clone");
 }

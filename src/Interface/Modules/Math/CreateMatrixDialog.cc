@@ -43,17 +43,22 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  //TODO: here is where to start on standardizing module dialog buttons.
-  //TODO: need this connection 
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
+  connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(updatePushButton()));
 }
 
 void CreateMatrixDialog::pushMatrixToState()
 {
   state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+  buttonBox->button(QDialogButtonBox::Ok)->setText("OK");
 }
 
 void CreateMatrixDialog::pull()
 {
   matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
+}
+
+void CreateMatrixDialog::updatePushButton()
+{
+  buttonBox->button(QDialogButtonBox::Ok)->setText("Matrix Edited, click here to save");
 }

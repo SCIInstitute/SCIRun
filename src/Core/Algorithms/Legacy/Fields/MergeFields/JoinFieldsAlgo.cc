@@ -188,6 +188,8 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   // Add an epsilon so all nodes will be inside
   if (merge_nodes)
   {    
+    if (!box.valid())
+      THROW_ALGORITHM_PROCESSING_ERROR("Merging nodes will fail: BBox is empty or invalid, diagonal not provided.");
     box.extend(1e-5*box.diagonal().length()); 
 
     const size_type s =  3*static_cast<size_type>

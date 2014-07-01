@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <vector>
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -217,6 +218,13 @@ std::string AlgorithmParameterList::get_option(const AlgorithmParameterName& key
   std::string value;
   get_option(key, value);
   return value;
+}
+
+bool AlgorithmParameterList::check_option(const AlgorithmParameterName& key, const std::string& value) const
+{
+  std::string currentValue;
+  get_option(key, currentValue);
+  return boost::iequals(value, currentValue);
 }
 
 bool SCIRun::Core::Algorithms::operator==(const AlgoOption& lhs, const AlgoOption& rhs)

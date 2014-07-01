@@ -45,27 +45,27 @@ using namespace SCIRun::Core::Algorithms;
 
 namespace SCIRun {
 
-FieldHandle ObjToField_reader(Log& pr, const char *filename)
+FieldHandle ObjToField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle result;
   ObjToFieldReader reader(pr);
   std::string fn(filename);
   if (! reader.read(fn, result))
   {
-    pr << ERROR_LOG << "Convert Obj to field failed." << std::endl;
+    if (pr) pr->error("Convert Obj to field failed.");
     return (result);
   }
 
   return result;
 }
 
-bool FieldToObj_writer(Log& pr, FieldHandle fh, const char* filename)
+bool FieldToObj_writer(LoggerHandle pr, FieldHandle fh, const char* filename)
 {
   ObjToFieldReader writer(pr);
 
   if(!writer.write(std::string(filename), fh))
   {
-    pr << ERROR_LOG << "Converting field to Obj failed." << std::endl;
+    if (pr) pr->error("Converting field to Obj failed.");
     return false;
   }
 
@@ -77,8 +77,7 @@ template class GenericIEPluginManager<Field>;
 /// @todo: split out into separate file
 void IEPluginManager::Initialize()
 {
-  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "obj", "",
-    ObjToField_reader, FieldToObj_writer);
+  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "obj", "", ObjToField_reader, FieldToObj_writer);
 }
 
 }

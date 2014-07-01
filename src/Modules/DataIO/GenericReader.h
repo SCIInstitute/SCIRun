@@ -69,9 +69,8 @@ protected:
 
   time_t old_filemodification_;
 
-  bool useCustomImporter_;
-
-  virtual bool call_importer(const std::string &filename, HType & handle);
+  virtual bool useCustomImporter(const std::string& filename) const = 0;
+  virtual bool call_importer(const std::string &filename, HType & handle) { return false; }
 
   static Core::Thread::Mutex fileCheckMutex_;
   static bool file_exists(const std::string & filename);
@@ -85,8 +84,7 @@ GenericReader<HType, PortTag>::GenericReader(const std::string &name,
     //gui_filename_(get_ctx()->subVar("filename"), ""),
     //gui_from_env_(get_ctx()->subVar("from-env"),""),
     objectPortName_(SCIRun::Dataflow::Networks::PortId(0, objectPortName)),
-    old_filemodification_(0),
-    useCustomImporter_(false)
+    old_filemodification_(0)
 {
   INITIALIZE_PORT(Filename);
   INITIALIZE_PORT(FileLoaded);
@@ -94,14 +92,6 @@ GenericReader<HType, PortTag>::GenericReader(const std::string &name,
 
 template <class HType, class PortTag> 
 Core::Thread::Mutex GenericReader<HType,PortTag>::fileCheckMutex_("GenericReader");
-
-template <class HType, class PortTag> 
-bool
-GenericReader<HType, PortTag>::call_importer(const std::string &/*filename*/,
-				    HType & /*handle*/ )
-{
-  return false;
-}
 
 template <class HType, class PortTag> 
 bool
@@ -142,14 +132,14 @@ GenericReader<HType, PortTag>::execute()
   
   // Read the status of this file so we can compare modification timestamps
 
-  if(filename_.empty()) 
+  if (filename_.empty()) 
   {
     error("No file has been selected.  Please choose a file.");
     return;
   } 
   else if (!file_exists(filename_)) 
   {
-    if (!useCustomImporter_)
+    if (!useCustomImporter(filename_))
     {
       error("File '" + filename_ + "' not found.");
       return;
@@ -183,7 +173,7 @@ GenericReader<HType, PortTag>::execute()
 
     remark("loading file " +filename_);
     
-    if (useCustomImporter_)
+    if (useCustomImporter(filename_))
     {
       if (!call_importer(filename_, handle))
       {

@@ -67,6 +67,6 @@ NullModuleState::TransientValueOption NullModuleState::getTransientValue(const s
   return TransientValueOption();
 }
 
-void NullModuleState::setTransientValue(const std::string& name, const TransientValue& value)
+void NullModuleState::setTransientValue(const std::string& name, const TransientValue& value, bool b)
 {
 }

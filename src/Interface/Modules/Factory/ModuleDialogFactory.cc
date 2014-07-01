@@ -56,6 +56,11 @@
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
+#include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
+#include <Interface/Modules/Fields/FairMeshDialog.h>
+#include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
+#include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
+#include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
@@ -72,7 +77,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace boost::assign;
 
-ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse) : parentToUse_(parentToUse) 
+ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse) : parentToUse_(parentToUse)
 {
   addDialogsToMakerMap1();
   addDialogsToMakerMap2();
@@ -119,6 +124,11 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
     ADD_MODULE_DIALOG(ConvertMatrixType, ConvertMatrixTypeDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemDialog)
+    ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
+    ADD_MODULE_DIALOG(FairMesh, FairMeshDialog)
+    ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
+    ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
+    ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
   ;
 }
 

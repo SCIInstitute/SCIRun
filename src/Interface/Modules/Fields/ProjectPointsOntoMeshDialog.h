@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,19 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <Core/Datatypes/Legacy/Field/Field.h>
-//#include <Core/Datatypes/Legacy/Field/Mesh.h>
-//#include <Modules/Fields/FieldToMesh.h>
-//
-//using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Modules::Fields;
-//
-//FieldToMesh::FieldToMesh() : Module(ModuleLookupInfo("FieldToMesh", "NewField", "SCIRun"), false)
-//{
-//}
-//
-//void FieldToMesh::execute()
-//{
-//  auto field = getRequiredInput(Field);
-//  sendOutput(Mesh, field->mesh());
-//}
+#ifndef INTERFACE_MODULES_PROJECT_POINTS_ONTO_MESH_H
+#define INTERFACE_MODULES_PROJECT_POINTS_ONTO_MESH_H
+
+#include "Interface/Modules/Fields/ui_ProjectPointsOntoMesh.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
+
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE ProjectPointsOntoMeshDialog : public ModuleDialogGeneric, 
+  public Ui::ProjectPointsOntoMesh
+{
+	Q_OBJECT
+	
+public:
+  ProjectPointsOntoMeshDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+private Q_SLOTS:
+    void push();
+};
+
+}
+}
+
+#endif

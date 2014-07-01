@@ -33,6 +33,7 @@
 #include <Core/Thread/Mutex.h>
 #include <map>
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 #include <Core/ImportExport/share.h>
 
 namespace SCIRun {
@@ -47,9 +48,11 @@ public:
   virtual std::string fileExtension() const = 0;
   virtual std::string fileMagic() const = 0;
 
-  virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::Log& log) const = 0;
-  virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::Log& log) const = 0;
+  virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
+  virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const = 0;
   virtual bool equals(const GenericIEPluginInterface<Data>& other) const = 0;
+  virtual bool hasReader() const = 0;
+  virtual bool hasWriter() const = 0;
 };
 
 template <class Data>
@@ -72,28 +75,31 @@ public:
   virtual std::string pluginname() const override { return pluginname_; }
   virtual std::string fileExtension() const override { return fileextension_; }
   virtual std::string fileMagic() const override { return filemagic_; }
+  virtual bool hasReader() const { return filereader_ != nullptr; }
+  virtual bool hasWriter() const { return filewriter_ != nullptr; }
 
-  virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::Log& log) const override;
-  virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::Log& log) const override;
+  virtual boost::shared_ptr<Data> readFile(const std::string& filename, Core::Logging::LoggerHandle log) const override;
+  virtual bool writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const override;
   virtual bool equals(const GenericIEPluginInterface<Data>& other) const override;
-
-  const std::string pluginname_;
-  const std::string fileextension_;
-  const std::string filemagic_;
-
-  boost::shared_ptr<Data> (*filereader_)(Core::Logging::Log& pr, const char *filename);
-  bool (*filewriter_)(Core::Logging::Log& pr,
-    boost::shared_ptr<Data> f, const char *filename);
 
   IEPluginLegacyAdapter(const std::string &name,
     const std::string &fileextension,
     const std::string &filemagic,
-    boost::shared_ptr<Data> (*freader)(Core::Logging::Log& pr, const char *filename) = 0,
-    bool (*fwriter)(Core::Logging::Log& pr, boost::shared_ptr<Data> f, const char *filename) = 0);
+    boost::shared_ptr<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename) = 0,
+    bool (*fwriter)(Core::Logging::LoggerHandle pr, boost::shared_ptr<Data> f, const char *filename) = 0);
 
   ~IEPluginLegacyAdapter();
 
   bool operator==(const IEPluginLegacyAdapter& other) const;
+
+private:
+  const std::string pluginname_;
+  const std::string fileextension_;
+  const std::string filemagic_;
+
+  boost::shared_ptr<Data> (*filereader_)(Core::Logging::LoggerHandle pr, const char *filename);
+  bool (*filewriter_)(Core::Logging::LoggerHandle pr,
+    boost::shared_ptr<Data> f, const char *filename);
 };
 
 template <class Data>
@@ -160,11 +166,10 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
   }
 
   Core::Thread::Guard s(lock_.get());
-  auto itr = pluginTable_->begin();
-  while (itr != pluginTable_->end())
+  BOOST_FOREACH(const typename PluginMap::value_type& plugin, *pluginTable_)
   {
-    results.push_back((*itr).first);
-    ++itr;
+    if (plugin.second->hasReader())
+      results.push_back(plugin.first);
   }
 }
 
@@ -177,11 +182,10 @@ void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& r
   }
 
   Core::Thread::Guard s(lock_.get());
-  auto itr = pluginTable_->begin();
-  while (itr != pluginTable_->end())
+  BOOST_FOREACH(const typename PluginMap::value_type& plugin, *pluginTable_)
   {
-    results.push_back((*itr).first);
-    ++itr;
+    if (plugin.second->hasWriter())
+      results.push_back(plugin.first);
   }
 }
 
@@ -216,8 +220,8 @@ template <class Data>
 IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
   const std::string& fextension,
   const std::string& fmagic,
-  boost::shared_ptr<Data> (*freader)(Core::Logging::Log& pr, const char *filename),
-  bool (*fwriter)(Core::Logging::Log& pr, boost::shared_ptr<Data> f, const char *filename))
+  boost::shared_ptr<Data> (*freader)(Core::Logging::LoggerHandle pr, const char *filename),
+  bool (*fwriter)(Core::Logging::LoggerHandle pr, boost::shared_ptr<Data> f, const char *filename))
   : pluginname_(pname),
   fileextension_(fextension),
   filemagic_(fmagic),
@@ -273,13 +277,13 @@ IEPluginLegacyAdapter<Data>::~IEPluginLegacyAdapter()
 }
 
 template <class Data>
-boost::shared_ptr<Data> IEPluginLegacyAdapter<Data>::readFile(const std::string& filename, Core::Logging::Log& log) const
+boost::shared_ptr<Data> IEPluginLegacyAdapter<Data>::readFile(const std::string& filename, Core::Logging::LoggerHandle log) const
 {
   return filereader_(log, filename.c_str());
 }
 
 template <class Data>
-bool IEPluginLegacyAdapter<Data>::writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::Log& log) const
+bool IEPluginLegacyAdapter<Data>::writeFile(boost::shared_ptr<Data> f, const std::string& filename, Core::Logging::LoggerHandle log) const
 {
   return filewriter_(log, f, filename.c_str());
 }
@@ -304,41 +308,63 @@ bool IEPluginLegacyAdapter<Data>::operator==(const IEPluginLegacyAdapter<Data>& 
 }
 
 template <class Data>
-std::string defaultTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
+std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
 {
   return "";
 }
 
 template <>
-std::string defaultTypeForFile(const GenericIEPluginManager<Field>* mgr)
+SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Field>* mgr);
+
+SCISHARE std::string fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter);
+
+template <class Data>
+std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>& mgr, const std::string& defaultType, const std::vector<std::string>& pluginNames)
 {
-  return "SCIRun Field File (*.fld)";
+  std::ostringstream types;
+  types << defaultType;
+
+  BOOST_FOREACH(const std::string& name, pluginNames)
+  {
+    auto pl = mgr.get_plugin(name);
+    types << ";;" << name;
+    if (!pl->fileExtension().empty())
+    {
+      types << " (*." << pl->fileExtension() << ")";
+    }
+    else
+    {
+      types << " (.*)";
+    }
+  }
+
+  return types.str();
 }
 
 template <class Data>
-std::string makeGuiTypesList(const GenericIEPluginManager<Data>& mgr)
+std::string makeGuiTypesListForImport(const GenericIEPluginManager<Data>& mgr)
 {
   std::vector<std::string> importers;
   mgr.get_importer_list(importers);
 
-  std::ostringstream importtypes;
-  importtypes << defaultTypeForFile(&mgr);
+  return printPluginDescriptionsForFilter(mgr, defaultImportTypeForFile(&mgr), importers);
+}
 
-  for (size_t i = 0; i < importers.size(); i++)
-  {
-    auto pl = mgr.get_plugin(importers[i]);
-    importtypes << ";;" << importers[i];
-    if (!pl->fileExtension().empty())
-    {
-       importtypes << " (*." << pl->fileExtension() << ")";
-    }
-    else
-    {
-      importtypes << " (.*)";
-    }
-  }
+template <class Data>
+std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0)
+{
+  return "";
+}
 
-  return importtypes.str();
+template <>
+SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr);
+
+template <class Data>
+std::string makeGuiTypesListForExport(const GenericIEPluginManager<Data>& mgr)
+{
+  std::vector<std::string> exporters;
+  mgr.get_exporter_list(exporters);
+  return printPluginDescriptionsForFilter(mgr, defaultExportTypeForFile(&mgr), exporters);
 }
 
 }

@@ -47,7 +47,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
 
-ObjToFieldReader::ObjToFieldReader(Log& log) : log_(log) {}
+ObjToFieldReader::ObjToFieldReader(LoggerHandle log) : log_(log) {}
 
 bool
 ObjToFieldReader::read(const std::string& filename, FieldHandle& field_handle)
@@ -56,7 +56,7 @@ ObjToFieldReader::read(const std::string& filename, FieldHandle& field_handle)
   inputfile.open(filename.c_str());
   if (! inputfile)
   {
-    log_ << ERROR_LOG << "Failed to open input file " << filename;
+    if (log_) log_->error("Failed to open input file " + filename);
     return false;
   }
 
@@ -91,8 +91,9 @@ ObjToFieldReader::read(const std::string& filename, FieldHandle& field_handle)
     {
       lss >> str >> x >> y >> z;
     }
-    catch (...) {
-      log_ << ERROR_LOG << "Parsing line " << line << " failed.";
+    catch (...) 
+    {
+      if (log_) log_->error("Parsing line " + line + " failed.");
       return false;
     }
 
@@ -121,17 +122,18 @@ ObjToFieldReader::write(const std::string& filename, const FieldHandle& field)
   std::ofstream os;
   const VMesh* mesh = field->vmesh();
 
-  if(mesh->num_nodes() == 0) { return false; }
+  if (mesh->num_nodes() == 0) { return false; }
 
   os.open(filename.c_str(), std::ios::out);
-  if(!os) { return false; }
+  if (!os) { return false; }
 
   os << "# written by SCIRun\n";
 
   {
     VMesh::Node::size_type iter;
     VMesh::Node::size_type end = mesh->num_nodes();
-    for(iter = 0; iter != end; ++iter) {
+    for (iter = 0; iter != end; ++iter) 
+    {
       Point p;
       mesh->get_point(p, iter);
       os << "v " << p.x() << " " << p.y() << " " << p.z() << "\n";
@@ -143,7 +145,8 @@ ObjToFieldReader::write(const std::string& filename, const FieldHandle& field)
     VMesh::Face::iterator end;
     VMesh::Node::array_type faceNodes(4);
     mesh->end(end);
-    for(mesh->begin(iter); iter != end; ++iter) {
+    for (mesh->begin(iter); iter != end; ++iter) 
+    {
       mesh->get_nodes(faceNodes, *iter);
       // OBJ face indices are 1-based.  Seriously.
       os << "f " << faceNodes[0]+1 << " " << faceNodes[1]+1 << " "

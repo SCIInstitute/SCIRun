@@ -27,10 +27,34 @@
 */
 
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <boost/regex.hpp>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 
 IEPluginManagerManager::IEPluginManagerManager() {}
+
+std::string SCIRun::fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter)
+{
+  LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter received " << fileFilter << std::endl);
+  boost::regex r("(.*) \\(\\*.*\\)");
+  boost::smatch what;
+  regex_match(fileFilter, what, r);
+  LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter returning " << what[1] << std::endl);
+  return what[1];
+}
+
+template <>
+std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Field>* mgr)
+{
+  return "SCIRun Field File (*.fld)";
+}
+
+template <>
+std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr)
+{
+  return "SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld)";
+}
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
 

@@ -29,37 +29,34 @@
 #ifndef CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEDISTANCEFIELD_H
 #define CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEDISTANCEFIELD_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+        ALGORITHM_PARAMETER_DECL(Truncate);
+        ALGORITHM_PARAMETER_DECL(TruncateDistance);
+        ALGORITHM_PARAMETER_DECL(BasisType);
+        ALGORITHM_PARAMETER_DECL(OutputFieldDatatype);
+        ALGORITHM_PARAMETER_DECL(OutputValueField);
 
-namespace SCIRunAlgo {
+        class SCISHARE CalculateDistanceFieldAlgo : public AlgorithmBase
+        {
+        public:
+          CalculateDistanceFieldAlgo();
 
-using namespace SCIRun;
+          bool runImpl(FieldHandle input, FieldHandle object, FieldHandle& output) const;
+          bool runImpl(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value) const;
 
-class SCISHARE CalculateDistanceFieldAlgo : public AlgoBase 
-{
-  public:
-    /// Set defaults
-    CalculateDistanceFieldAlgo()
-    {
-      add_bool("truncate",false);
-      add_scalar("truncate_distance",1.0);
-      add_option("basistype","same as input","same as input|constant|linear");
-      add_option("datatype","double","char|unsigned char|short|unsigned short|int|unsigned int|float|double");
-    }
+          static const AlgorithmOutputName DistanceField;
+          static const AlgorithmOutputName ValueField;
 
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle object, FieldHandle& output);
-    bool run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value);
-};
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+        };
 
-} // end namespace SCIRunAlgo
+      }}}}
 
 #endif 

@@ -26,27 +26,48 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/DistanceField/CalculateDistanceField.h>
-
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Thread/Thread.h>
-
-#include <float.h>
-
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Logging/Log.h>
+#include <Core/Thread/Parallel.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
+ALGORITHM_PARAMETER_DEF(Fields, Truncate);
+ALGORITHM_PARAMETER_DEF(Fields, TruncateDistance);
+ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDatatype);
+ALGORITHM_PARAMETER_DEF(Fields, OutputValueField);
 
-class CalculateDistanceFieldP {
+CalculateDistanceFieldAlgo::CalculateDistanceFieldAlgo()
+{
+  using namespace Parameters;
+  addParameter(Truncate, false);
+  addParameter(TruncateDistance, 1.0);
+  addParameter(OutputValueField, false);
+  add_option(BasisType, "same as input","same as input|constant|linear");
+  add_option(OutputFieldDatatype, "double","char|unsigned char|short|unsigned short|int|unsigned int|float|double");
+}
+
+namespace detail
+{
+
+class CalculateDistanceFieldP 
+{
   public:
-    CalculateDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField*  ofield, AlgoBase* algo) :
-      imesh(imesh), objmesh(objmesh), ofield(ofield), algo_(algo) {}
+    CalculateDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField*  ofield, const AlgorithmBase* algo) :
+      imesh(imesh), objmesh(objmesh), objfield(0), ofield(ofield), vfield(0), algo_(algo) {}
 
-    CalculateDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField* objfield, VField*  ofield, VField* vfield, AlgoBase* algo) :
+    CalculateDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField* objfield, VField*  ofield, VField* vfield, const AlgorithmBase* algo) :
       imesh(imesh), objmesh(objmesh), objfield(objfield), ofield(ofield), vfield(vfield), algo_(algo)  {}
 
     void parallel(int proc, int nproc)
@@ -55,9 +76,9 @@ class CalculateDistanceFieldP {
       VMesh::size_type num_evalues = ofield->num_evalues();
     
       double max = DBL_MAX;
-      if (algo_->get_bool("truncate"))
+      if (algo_->get(Parameters::Truncate).getBool())
       {
-        max = algo_->get_scalar("truncate_distance");
+        max = algo_->get(Parameters::TruncateDistance).getDouble();
       }
       
       double val = 0.0;
@@ -76,7 +97,7 @@ class CalculateDistanceFieldP {
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
           ofield->set_value(val,idx);
           
-          if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+          if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
       else if (ofield->basis_order() == 1)
@@ -92,7 +113,7 @@ class CalculateDistanceFieldP {
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
           ofield->set_value(val,idx);
           
-          if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+          if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
         }  
       }
       else if (ofield->basis_order() > 1)
@@ -108,7 +129,7 @@ class CalculateDistanceFieldP {
           if(!(objmesh->find_closest_elem(val,p2,fidx,p,max))) val = max;
           ofield->set_value(val,idx);
           
-          if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+          if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
         }  
       }    
     }
@@ -118,7 +139,7 @@ class CalculateDistanceFieldP {
       VMesh::size_type num_values = ofield->num_values();
       VMesh::size_type num_evalues = ofield->num_evalues();
     
-      if (algo_->get_bool("truncate"))
+      if (algo_->get(Parameters::Truncate).getBool())
       {
         // Cannot do both at the same time
         if (proc == 0) algo_->warning("Closest value has been requested, disabling truncated distance map.");
@@ -146,7 +167,7 @@ class CalculateDistanceFieldP {
             ofield->set_value(val,idx);
             objfield->interpolate(scalar,coords,fidx);
             vfield->set_value(scalar,idx);
-            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
         }
         else if (objfield->is_vector())
@@ -160,7 +181,7 @@ class CalculateDistanceFieldP {
             ofield->set_value(val,idx);
             objfield->interpolate(vec,coords,fidx);
             vfield->set_value(vec,idx);
-            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
         }
         else if (objfield->is_tensor())
@@ -174,7 +195,7 @@ class CalculateDistanceFieldP {
             ofield->set_value(val,idx);
             objfield->interpolate(tensor,coords,fidx);
             vfield->set_value(tensor,idx);
-            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
         }        
       }
@@ -198,7 +219,7 @@ class CalculateDistanceFieldP {
             objfield->interpolate(scalar,coords,fidx);
             vfield->set_value(scalar,idx);
             
-            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
         }
         else if (objfield->is_vector())
@@ -213,7 +234,7 @@ class CalculateDistanceFieldP {
             objfield->interpolate(vec,coords,fidx);
             vfield->set_value(vec,idx);
             
-            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
         }
         else if (objfield->is_tensor())
@@ -228,7 +249,7 @@ class CalculateDistanceFieldP {
             objfield->interpolate(tensor,coords,fidx);
             vfield->set_value(tensor,idx);
             
-            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }
         }
       }
@@ -251,7 +272,7 @@ class CalculateDistanceFieldP {
             objfield->interpolate(scalar,coords,fidx);
             vfield->set_value(scalar,idx);
             
-            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }  
         }
         else if (objfield->is_vector())
@@ -265,7 +286,7 @@ class CalculateDistanceFieldP {
             objfield->interpolate(vec,coords,fidx);
             vfield->set_value(vec,idx);
             
-            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }  
         }
         else if (objfield->is_tensor())
@@ -279,7 +300,7 @@ class CalculateDistanceFieldP {
             objfield->interpolate(tensor,coords,fidx);
             vfield->set_value(tensor,idx);
             
-            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress(idx,end); cnt = 0; } }
+            if (proc == 0) { cnt++; if (cnt == 100) { algo_->update_progress_max(idx,end); cnt = 0; } }
           }  
         }
       }    
@@ -302,44 +323,45 @@ class CalculateDistanceFieldP {
     VField*  objfield;
     VField*  ofield;
     VField*  vfield;
-    AlgoBase* algo_;
+    const AlgorithmBase* algo_;
 };
+}
 
+//TODO refactor duplication
 
 bool
-CalculateDistanceFieldAlgo::
-run(FieldHandle input, FieldHandle object, FieldHandle& output)
+CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, FieldHandle& output) const
 {
-  algo_start("CalculateDistanceField");
+  ScopedAlgorithmStatusReporter asr(this, "CalculateDistanceField");
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (object.get_rep() == 0)
+  if (!object)
   {
     error("No object field");
-    algo_end(); return (false);
+    return (false);
   }
 
   // Determine output type
   FieldInformation fo(input);
   if (fo.is_nodata()) fo.make_lineardata();
 
-  if (check_option("basistype","linear")) fo.make_lineardata();
-  if (check_option("basistype","constant")) fo.make_constantdata();
+  if (check_option(Parameters::BasisType,"linear")) fo.make_lineardata();
+  if (check_option(Parameters::BasisType,"constant")) fo.make_constantdata();
 
-  fo.set_data_type(get_option("datatype"));
+  fo.set_data_type(get_option(Parameters::OutputFieldDatatype));
 
   fo.make_double();
   output = CreateField(fo,input->mesh());
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   VMesh* imesh = input->vmesh();
@@ -350,49 +372,47 @@ run(FieldHandle input, FieldHandle object, FieldHandle& output)
   if (imesh->num_nodes() == 0)
   {
     warning("Input Field does not contain any nodes, setting distance to maximum.");    
-    algo_end(); return (true);
+    return (true);
   }
-      
     
   if (objmesh->num_nodes() == 0)
   {
     warning("Object Field does not contain any nodes, setting distance to maximum.");
     ofield->set_all_values(DBL_MAX);
     
-    algo_end(); return (true);
+    return (true);
   }
-    
   
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
 
   if (ofield->basis_order() > 2)
   {
     error("Cannot add distance data to field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  CalculateDistanceFieldP palgo(imesh,objmesh,ofield,this);
-  Thread::parallel(&palgo,&CalculateDistanceFieldP::parallel,Thread::numProcessors(),Thread::numProcessors());
+  detail::CalculateDistanceFieldP palgo(imesh,objmesh,ofield,this);
+  auto task_i = [&palgo,this](int i) { palgo.parallel(i, Parallel::NumCores()); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
 
-  algo_end(); return (true);
+  return (true);
 }
 
 bool
-CalculateDistanceFieldAlgo::
-run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value)
+CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value) const
 {
-  algo_start("CalculateDistanceField");
+  ScopedAlgorithmStatusReporter asr(this, "CalculateDistanceField");
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (object.get_rep() == 0)
+  if (!object)
   {
     error("No object field");
-    algo_end(); return (false);
+    return (false);
   }
 
   // Determine output type
@@ -404,29 +424,29 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
   if (fb.is_nodata())
   {
     error("Object field does not contain any values");
-    algo_end(); return (false);  
+    return (false);  
   }
   // Create Value mesh with same type as object type
 
   fo.set_data_type(fb.get_data_type());
   value = CreateField(fo,input->mesh());
 
-  if (check_option("basistype","linear")) fo.make_lineardata();
-  if (check_option("basistype","constant")) fo.make_constantdata();
+  if (check_option(Parameters::BasisType,"linear")) fo.make_lineardata();
+  if (check_option(Parameters::BasisType,"constant")) fo.make_constantdata();
 
-  fo.set_data_type(get_option("datatype"));
+  fo.set_data_type(get_option(Parameters::OutputFieldDatatype));
   distance = CreateField(fo,input->mesh());
   
-  if (distance.get_rep() == 0)
+  if (!distance)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (value.get_rep() == 0)
+  if (!value)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   VMesh* imesh = input->vmesh();
@@ -445,7 +465,7 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
     dfield->set_all_values(DBL_MAX);
     vfield->clear_all_values();
     
-    algo_end(); return (true);
+    return (true);
   }
   
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
@@ -453,16 +473,38 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
   if (distance->basis_order() > 2)
   {
     error("Cannot add distance data to field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  CalculateDistanceFieldP palgo(imesh,objmesh,objfield,dfield,vfield,this);
-  Thread::parallel(&palgo,&CalculateDistanceFieldP::parallel2,Thread::numProcessors(),Thread::numProcessors());
+  detail::CalculateDistanceFieldP palgo(imesh,objmesh,objfield,dfield,vfield,this);
+  auto task_i = [&palgo,this](int i) { palgo.parallel2(i, Parallel::NumCores()); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
 
-  algo_end(); return (true);
-
+  return (true);
 }
 
+const AlgorithmOutputName CalculateDistanceFieldAlgo::DistanceField("DistanceField");
+const AlgorithmOutputName CalculateDistanceFieldAlgo::ValueField("ValueField");
 
+AlgorithmOutput CalculateDistanceFieldAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(Variables::InputField);
+  auto objectField = input.get<Field>(Variables::ObjectField);
 
-} // end namespace SCIRunAlgo
+  FieldHandle distance, value;
+  if (get(Parameters::OutputValueField).getBool())
+  {
+    if (!runImpl(inputField, objectField, distance, value))
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  }
+  else
+  {
+    if (!runImpl(inputField, objectField, distance))
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  }
+
+  AlgorithmOutput output;
+  output[DistanceField] = distance;
+  output[ValueField] = value;
+  return output;
+}
