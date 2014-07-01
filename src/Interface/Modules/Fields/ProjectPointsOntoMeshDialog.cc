@@ -26,49 +26,43 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <QtGui>
-#include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-void TextEditAppender::log(const QString& message) const 
+ProjectPointsOntoMeshDialog::ProjectPointsOntoMeshDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  text_->append(message);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  
+  connect(pointsOntoElementsRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(pointsOntoNodesRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
 }
 
-void TextEditAppender::error(const std::string& msg) const
+void ProjectPointsOntoMeshDialog::push()
 {
-  log("Error: " + QString::fromStdString(msg));
+  if (!pulling_)
+  {
+    using namespace Parameters;
+    state_->setValue(ProjectMethod, pointsOntoElementsRadioButton_->isChecked() ? std::string("elements") : std::string("nodes"));
+  }
 }
 
-void TextEditAppender::warning(const std::string& msg) const
+void ProjectPointsOntoMeshDialog::pull()
 {
-  log("Warning: " + QString::fromStdString(msg));
-}
+  Pulling p(this);
+  
+  using namespace Parameters;
+  auto method = state_->getValue(ProjectMethod).getString();
+  pointsOntoElementsRadioButton_->setChecked("elements" == method);
+  pointsOntoNodesRadioButton_->setChecked("nodes" == method);
 
-void TextEditAppender::remark(const std::string& msg) const
-{
-  log("Remark: " + QString::fromStdString(msg));
-}
-
-void TextEditAppender::status(const std::string& msg) const
-{
-  log(QString::fromStdString(msg));
-}
-
-QString TreeViewModuleGetter::text() const
-{
-  return tree_.currentItem()->text(0);
-}
-
-bool TreeViewModuleGetter::isModule() const
-{
-  auto current = tree_.currentItem();
-  return current->childCount() == 0 && current->parent();
-}
-
-NotePosition ComboBoxDefaultNotePositionGetter::position() const
-{
-  return NotePosition(combo_.currentIndex() + 1);
+  pull_newVersionToReplaceOld();
 }

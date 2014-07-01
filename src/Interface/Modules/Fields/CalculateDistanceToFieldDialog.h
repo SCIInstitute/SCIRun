@@ -1,13 +1,12 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,28 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_MapFieldDataFromNodeToElem_H 1
+#ifndef INTERFACE_MODULES_CALCULATE_DISTANCE_TO_FIELD_H
+#define INTERFACE_MODULES_CALCULATE_DISTANCE_TO_FIELD_H
 
-
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include "Interface/Modules/Fields/ui_calculatedistancetofield.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
+namespace Gui {
 
-class SCISHARE MapFieldDataFromNodeToElemAlgo : public AlgorithmBase
+class SCISHARE CalculateDistanceToFieldDialog : public ModuleDialogGeneric,
+  public Ui::CalculateDistanceToField
 {
-  public:
-    MapFieldDataFromNodeToElemAlgo();
-    
-    static AlgorithmParameterName Method;
-    FieldHandle run(FieldHandle input_field) const; 
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+	Q_OBJECT
 
+public:
+  CalculateDistanceToFieldDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
 };
 
-}}}}
+}
+}
+
 #endif

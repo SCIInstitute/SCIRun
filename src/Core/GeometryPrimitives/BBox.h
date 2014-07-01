@@ -196,7 +196,11 @@ class BBox {
       { return cmax_; }
 
     inline Vector diagonal() const
-      { ASSERT(is_valid_); return cmax_-cmin_; }
+    { 
+      //TODO: needs invariant check, or refactoring.
+      ASSERT(is_valid_); 
+      return cmax_-cmin_; 
+    }
 
     inline bool inside(const Point &p) const 
     {

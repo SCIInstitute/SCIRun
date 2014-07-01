@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,29 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#ifndef MODULES_FIELDS_FIELDTOMESH_H
-//#define MODULES_FIELDS_FIELDTOMESH_H
-//
-//#include <Dataflow/Network/Module.h>
-//#include <Modules/Fields/share.h>
-//
-//namespace SCIRun {
-//  namespace Modules {
-//    namespace Fields {
-//
-//class SCISHARE FieldToMesh : public SCIRun::Dataflow::Networks::Module,
-//  public Has1InputPort<FieldPortTag>,
-//  public Has1OutputPort<MeshPortTag>
-//{
-//  public:
-//    FieldToMesh();
-//
-//    virtual void execute();
-//
-//    INPUT_PORT(0, Field, LegacyField);
-//    OUTPUT_PORT(0, Mesh, LegacyMesh);
-//};
-//
-//}}}
-//
-//#endif
+#include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
+
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+CalculateDistanceToFieldDialog::CalculateDistanceToFieldDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+  addCheckBoxManager(truncateDistanceCheckBox_, Parameters::Truncate);
+  addDoubleSpinBoxManager(truncateDoubleSpinBox_, Parameters::TruncateDistance);
+  addComboBoxManager(basisTypeComboBox_, Parameters::BasisType);
+  addComboBoxManager(dataTypeComboBox_, Parameters::OutputFieldDatatype);
+}
+
+void CalculateDistanceToFieldDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

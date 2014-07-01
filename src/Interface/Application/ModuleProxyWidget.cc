@@ -234,7 +234,6 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
   }
   return QGraphicsItem::itemChange(change, value);
 }
-
 void ModuleProxyWidget::createPortPositionProviders()
 {
   //std::cout << "create PPPs" << std::endl;

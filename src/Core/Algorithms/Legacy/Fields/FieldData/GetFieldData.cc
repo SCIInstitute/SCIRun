@@ -52,18 +52,15 @@ GetFieldDataAlgo::GetFieldDataAlgo()
 
 }
 
-AlgorithmInputName GetFieldDataAlgo::InputField("InputField");
-AlgorithmOutputName GetFieldDataAlgo::OutputMatrix("OutputMatrix");
-
 AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto input_field = input.get<Field>(InputField);
+  auto input_field = input.get<Field>(Variables::InputField);
  
   DenseMatrixHandle output_matrix;
   output_matrix = run(input_field);
   
   AlgorithmOutput output;
-  output[OutputMatrix] = output_matrix;
+  output[Variables::OutputMatrix] = output_matrix;
 
   return output;
 }

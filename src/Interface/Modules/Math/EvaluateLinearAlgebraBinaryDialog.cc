@@ -87,5 +87,6 @@ void EvaluateLinearAlgebraBinaryDialog::pushOperationToState()
 
 void EvaluateLinearAlgebraBinaryDialog::pull()
 {
+  //TODO convert to new widget managers
   setSelectedOperator(state_->getValue(Variables::Operator).getInt());
 }
