@@ -39,11 +39,14 @@ class DialogErrorControl: public QObject
 	Q_OBJECT
 public:
 	explicit DialogErrorControl(QWidget* parent);
-	int counter_; 
 	void increaseCounter(); 
-
+	bool showDialog(); 
+	
 	public Q_SLOTS:
 		void resetCounter(); 
+
+private:
+		int counter_; 
 };
 }
 }

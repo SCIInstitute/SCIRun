@@ -29,7 +29,6 @@
 #include <QtGui>
 #include <iostream>
 #include <Interface/Application/ModuleLogWindow.h>
-#include <Core/Application/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h> 
 #include <Interface/Application/DialogErrorControl.h> 
 
@@ -55,8 +54,8 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
 		dialogErrorControl_->increaseCounter(); 
-	if (SCIRun::Core::Preferences::Instance().showModuleErrorDialogs && dialogErrorControl_->counter_ <= 5)
-		QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
+		if(dialogErrorControl_->showDialog())
+				QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
 }
 
 ModuleLogger::ModuleLogger(ModuleLogWindow* window)

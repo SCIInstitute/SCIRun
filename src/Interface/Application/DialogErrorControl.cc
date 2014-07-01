@@ -28,12 +28,20 @@
 
 #include <iostream> 
 #include <Interface/Application/DialogErrorControl.h>
+#include <Core/Application/Preferences.h>
 
 using namespace SCIRun::Gui;
 
 DialogErrorControl::DialogErrorControl(QWidget*parent) : counter_(0)
 {
 
+}
+bool DialogErrorControl::showDialog()
+{
+	if (SCIRun::Core::Preferences::Instance().showModuleErrorDialogs && counter_ <= 5)
+			return true;
+	else 
+			return false; 
 }
 void DialogErrorControl::resetCounter()
 { 
