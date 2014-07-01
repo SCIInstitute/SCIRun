@@ -59,7 +59,7 @@ void SetupRHSforTDCSandTMSDialog::push()
       AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), tableWidget_5->item(i,1)->text().toDouble());
       elc_vals_in_table.push_back(elc_i);
     }
-    state_->setValue(SCIRun::Modules::BrainStimulator::SetupRHSforTDCSandTMSModule::ElectrodeTableValues(), elc_vals_in_table);
+    state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
   }
 }
 

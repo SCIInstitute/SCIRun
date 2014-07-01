@@ -38,6 +38,7 @@ namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
 
+  ALGORITHM_PARAMETER_DECL(ElectrodeTableValues);
   ALGORITHM_PARAMETER_DECL(ELECTRODE_VALUES);
 
   class SCISHARE SetupRHSforTDCSandTMSAlgorithm : public AlgorithmBase
@@ -47,8 +48,6 @@ namespace BrainStimulator {
     SetupRHSforTDCSandTMSAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
     SCIRun::Core::Datatypes::DenseMatrixHandle run(FieldHandle fh, int num_of_elc) const;
-
-    static AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElectrodeTableValues();
     
     static AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
     static AlgorithmInputName ELECTRODE_COUNT;

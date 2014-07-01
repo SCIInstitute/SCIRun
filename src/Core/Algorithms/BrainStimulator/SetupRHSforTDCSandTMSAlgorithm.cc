@@ -48,6 +48,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodeTableValues);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ELECTRODE_VALUES);
 
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
