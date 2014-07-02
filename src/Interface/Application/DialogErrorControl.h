@@ -30,6 +30,7 @@
 
 #include <QObject>
 
+static const int MAX_DIALOGS_SHOWN = 5; 
 
 namespace SCIRun {
 namespace Gui {
