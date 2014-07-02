@@ -26,43 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_CALCULATEFIELDDATA5_H__
-#define MODULES_LEGACY_FIELDS_CALCULATEFIELDDATA5_H__
+#ifndef MODULES_LEGACY_FIELDS_MapFieldDataOntoNodes_H__
+#define MODULES_LEGACY_FIELDS_MapFieldDataOntoNodes_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-  class NewArrayMathEngine;
+namespace Modules {
+namespace Fields {
 
-  namespace Modules {
-    namespace Fields {
+  class SCISHARE MapFieldDataOntoNodes : public Dataflow::Networks::Module,
+    public Has3InputPorts<FieldPortTag, FieldPortTag, FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
+  {
+  public:
+    MapFieldDataOntoNodes();
 
-      class SCISHARE CalculateFieldData : public Dataflow::Networks::Module,
-        public Has3InputPorts<DynamicPortTag<FieldPortTag>, StringPortTag, DynamicPortTag<MatrixPortTag>>,
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        CalculateFieldData();
+    virtual void execute();
+    virtual void setStateDefaults();
+    
+    INPUT_PORT(0, Source, LegacyField);
+    INPUT_PORT(1, Weights, LegacyField);
+    INPUT_PORT(2, Destination, LegacyField);
+    OUTPUT_PORT(0, OutputField, LegacyField);
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-        virtual bool hasDynamicPorts() const override { return true; }
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
 
-        INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
-        INPUT_PORT(1, Function, String);
-        INPUT_PORT_DYNAMIC(2, InputArrays, Matrix);
-        OUTPUT_PORT(0, OutputField, LegacyField);
-
-        static Core::Algorithms::AlgorithmParameterName FunctionString;
-        static Core::Algorithms::AlgorithmParameterName FormatString;
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      private:
-        bool addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int index) const;
-      };
-
-    }
-  }
-}
+}}}
 
 #endif

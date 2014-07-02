@@ -26,16 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
 
-namespace SCIRun {
+//#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
+
+const ModuleLookupInfo MapFieldDataOntoNodes::staticInfo_("MapFieldDataOntoNodes", "ChangeFieldData", "SCIRun");
 
 /// @class MapFieldDataOntoNodes
 /// @brief Maps data from one mesh or point cloud to another mesh or point
 /// cloud. The output mesh will have the data located at the nodes.
 
+/*
 class MapFieldDataOntoNodes : public Module {
   public:
     MapFieldDataOntoNodes(GuiContext*);
@@ -52,23 +60,29 @@ class MapFieldDataOntoNodes : public Module {
     
     SCIRunAlgo::MapFieldDataOntoNodesAlgo algo_;    
 };
+*/
 
-
-DECLARE_MAKER(MapFieldDataOntoNodes)
-
-MapFieldDataOntoNodes::MapFieldDataOntoNodes(GuiContext* ctx) :
-  Module("MapFieldDataOntoNodes", ctx, Source, "ChangeFieldData", "SCIRun"),
-  gui_quantity_(get_ctx()->subVar("quantity"),"value"),
-  gui_value_(get_ctx()->subVar("value"),"interpolateddata"),
-  gui_outside_value_(get_ctx()->subVar("outside-value"),0.0),
-  gui_max_distance_(get_ctx()->subVar("max-distance"),DBL_MAX)
+MapFieldDataOntoNodes::MapFieldDataOntoNodes() : Module(staticInfo_)
+//   gui_quantity_(get_ctx()->subVar("quantity"),"value"),
+//   gui_value_(get_ctx()->subVar("value"),"interpolateddata"),
+//   gui_outside_value_(get_ctx()->subVar("outside-value"),0.0),
+//   gui_max_distance_(get_ctx()->subVar("max-distance"),DBL_MAX)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Source);
+  INITIALIZE_PORT(Weights);
+  INITIALIZE_PORT(Destination);
+  INITIALIZE_PORT(OutputField);
+}
+
+void MapFieldDataOntoNodes::setStateDefaults()
+{
+
 }
 
 void
 MapFieldDataOntoNodes::execute()
 {
+#if 0
   FieldHandle source, destination, weights, output;
   
   get_input_handle("Source",source,true);
@@ -89,50 +103,5 @@ MapFieldDataOntoNodes::execute()
     if(!(algo_.run(source,weights,destination,output))) return;
     send_output_handle("Output",output,true);
   }
+#endif
 }
-
-void
-MapFieldDataOntoNodes::post_read()
-{
-  std::string old_module_name = get_old_modulename();
-  const std::string modName = get_ctx()->getfullname() + "-";
-  std::string val;
-  
-  // Backwards compatibility
-  
-  if (old_module_name == "MapFieldDataOntoFieldNodes")
-  {
-    // Convert from ModalMapping module
-    if( TCLInterface::get(modName+"mappingmethod", val, get_ctx()) )
-    {
-      if (val == "ClosestNodalData") val = "closestnodedata";
-      TCLInterface::set(modName+"value", val, get_ctx());
-    }
-
-    if( TCLInterface::get(modName+"def-value", val, get_ctx()) )
-      TCLInterface::set(modName+"outside-value", val, get_ctx());
- 
-    IPortHandle wport;
-    get_iport_handle("Weights",wport);
-    
-    if (wport->nconnections() == 1)
-    {
-      // Swap connections
-      ConnectionHandle con = wport->connection(0);
-      std::string imod = con->imod->get_id();
-      std::string omod = con->omod->get_id();
-      int iport = con->iport->get_which_port();
-      int oport = con->oport->get_which_port();
-      
-      // Free handle
-      con = 0;
-      std::string command = "addConnection "+omod+" "+to_string(oport)+" "+imod+" "+to_string(iport+1);
-      TCLInterface::eval(command);
-      command = "deleteConnection "+omod+" "+to_string(oport)+" "+imod+" "+to_string(iport);
-      TCLInterface::eval(command);
-    }
-  }
-}
-
-} // End namespace SCIRun
-
