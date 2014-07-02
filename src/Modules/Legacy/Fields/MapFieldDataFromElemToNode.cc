@@ -51,8 +51,7 @@ MapFieldDataFromElemToNodeModule::MapFieldDataFromElemToNodeModule()
 
 void MapFieldDataFromElemToNodeModule::setStateDefaults()
 {
-  auto state = get_state();
-  state->setValue(MapFieldDataFromElemToNodeAlgo::Method, std::string("interpolation"));
+  setStateStringFromAlgoOption(MapFieldDataFromElemToNodeAlgo::Method);
 }
 
 void MapFieldDataFromElemToNodeModule::execute()
