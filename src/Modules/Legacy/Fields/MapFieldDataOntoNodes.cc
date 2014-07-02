@@ -28,12 +28,6 @@
 
 #include <Core/Algorithms/Fields/Mapping/MapFieldDataOntoNodes.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
-
-#include <float.h>
-
 namespace SCIRun {
 
 using namespace SCIRun;
