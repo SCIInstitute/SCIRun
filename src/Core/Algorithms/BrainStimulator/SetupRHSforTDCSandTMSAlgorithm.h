@@ -47,7 +47,8 @@ namespace BrainStimulator {
     //Outputs run(const Inputs& input, const Parameters& params = 0) const;
     SetupRHSforTDCSandTMSAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-    SCIRun::Core::Datatypes::DenseMatrixHandle run(FieldHandle fh, int num_of_elc) const;
+
+    SCIRun::Core::Datatypes::DenseMatrixHandle run(FieldHandle fh, std::vector<Variable, std::allocator<Variable>> elcs, int num_of_elc) const;
     
     static AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
     static AlgorithmInputName ELECTRODE_COUNT;

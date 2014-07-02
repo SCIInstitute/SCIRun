@@ -61,85 +61,74 @@ AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
 //const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
 //const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::COILS_FIELD("COILS_FIELD");
 
-
-
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
-  
+  addParameter(Parameters::ELECTRODE_VALUES, 0); // just a default value, will be replaced with vector
 }
 
 AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   auto elc_coil_pos_and_normal = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto elc_count               = input.get<Matrix>(ELECTRODE_COUNT);
-
-  //! try:
-  auto elc_values = get(Parameters::ELECTRODE_VALUES).getList();
-  for (int i=0; i<elc_values.size(); i++)
-  {
-    std::cout << elc_values[i].name_ << "=" << elc_values[i].value_ << std::endl;
-  //  auto elecName = electrodes[i].name_;
-  //  auto elecValue = electrodes[i].getDouble();
-  //  // need a consistency check:
-  //  auto expectedElecName = electrodeName(i);
+  
+  // obtaining electrode values from the state
+  auto all_elc_values = get(Parameters::ELECTRODE_VALUES).getList();
+  //for (int i=0; i<elc_values.size(); i++)
+  //{
+  //  //std::cout << elc_values[i].name_ << "=" << elc_values[i].value_ << std::endl;
+  //  auto elecName = elc_values[i].name_; // consistency check:
+  //  auto elecValue = elc_values[i].getDouble();
+  //  auto expectedElecName = Name("elc" + boost::lexical_cast<std::string>(i)); //ElecrodeParameterName(i);
   //  EXPECT_EQ(elecName, expectedElecName); // if not, electrodes are being stored out of order. 
-  //  //You may not care about the name--if so just ignore the above.
-  }
+  //}
   
   // obtaining number of electrodes
-  DenseMatrixHandle elc_count_dense (new DenseMatrix(matrix_cast::as_dense(elc_count)->block(0,0,elc_count->nrows(),elc_count->ncols()))); 
+  auto elc_count = input.get<Matrix>(ELECTRODE_COUNT);
+  DenseMatrixHandle elc_count_dense (new DenseMatrix(matrix_cast::as_dense(elc_count)->block(0,0,elc_count->nrows(),elc_count->ncols())));
   int num_of_elc = elc_count_dense->coeff(0,0);
   
-  // building the output rhs
+  // making the rhs, sending it back as output
   AlgorithmOutput output;
-  DenseMatrixHandle rhs = run(elc_coil_pos_and_normal, num_of_elc);
+  DenseMatrixHandle rhs = run(elc_coil_pos_and_normal, all_elc_values, num_of_elc);
   output[RHS] = rhs;
   return output;
-
-//  auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
-//  auto tri2 = input.get<Field>(ELECTRODE_TRIANGULATION2);
-//  auto coil = input.get<Field>(COIL);
-//  auto coil2 = input.get<Field>(COIL2);
-//  ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
-//  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
-//  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
-//  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
-//  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");
-//  output[ELECTRODES_FIELD] = out1;
-//  output[COILS_FIELD] = out2;
 }
 
-DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, int num_of_elc) const
-{  
+DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, std::vector<Variable, std::allocator<Variable>> elcs, int num_of_elc) const
+{
   if (num_of_elc > 128) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes given exceeds what is possible ");}
   else if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
   
   if (!fh) THROW_ALGORITHM_INPUT_ERROR("Input field was not allocated ");
   
+  // storing only desired amount of electrodes to pass to run method
+  std::vector<Variable, std::allocator<Variable>> elcs_wanted; 
+  for (int i=0; i<num_of_elc; i++)
+    elcs_wanted.push_back(elcs[i]);
+
   VField* vfield = fh->vfield();
  
-  // making sure current intensities of the electrodes together are greater than 10e-6
-  double check_value = 0;
-  for (int i=0; i<num_of_elc; i++)
+  // making sure current magnitudes of the electrodes summed are greater than 10e-6
+  double min_current = 0;
+  for (int i=0; i<elcs_wanted.size(); i++)
   {
-    double temp = 10.0;// TODO electrode_values[i]/1000.0;
+    double temp = elcs_wanted[i].getDouble();
     if (temp < 0.0)
       temp = temp*(-1.0);
-    check_value += temp;
+    min_current += temp;
   }
-  if (check_value < 0.00001) THROW_ALGORITHM_INPUT_ERROR("Electrode current intensities are negligible ");
+  if (min_current < 0.00001) remark("Electrode current intensities are negligible");
   
   int node_elements  = vfield->vmesh()->num_nodes();
-  int total_elements = node_elements + num_of_elc;
+  int total_elements = node_elements + elcs_wanted.size();
   
   DenseMatrixHandle output (boost::make_shared<DenseMatrix>(total_elements,1));
   int cnt = 0;
   for (int i=0; i < total_elements; i++)
   {
     if (i < node_elements)
-      (*output)(i,0) = 0.0;
+      (*output)(i,0) = 0.0; // for the nodes
     else
-      (*output)(i,0) = 5.0; // TODO electrode_values[i-node_elements]/1000.0; // converting to Amps
+      (*output)(i,0) = elcs_wanted[i-node_elements].getDouble()/1000.0; // for electrodes ~ converting to Amps
     
     cnt++;
     if (cnt == total_elements/4)

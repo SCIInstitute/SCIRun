@@ -51,7 +51,7 @@ void SetupRHSforTDCSandTMSDialog::push()
 {
   if (!pulling_)
   {
-    // storing electrode values (from table) into vector then attaching them to state map
+    // updating electrode values (from table) into vector then attaching them to state map
     int rows = tableWidget_5->rowCount();
     std::vector<AlgorithmParameter> elc_vals_in_table;
     for (int i=0; i<rows; i++)
@@ -64,7 +64,10 @@ void SetupRHSforTDCSandTMSDialog::push()
 }
 
 void SetupRHSforTDCSandTMSDialog::pull()
-{ 
+{
+  // obatining initial values, recursive
+  push();
+
   Pulling p(this);
 }
 

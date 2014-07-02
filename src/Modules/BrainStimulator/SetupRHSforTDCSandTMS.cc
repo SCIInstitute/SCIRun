@@ -66,12 +66,11 @@ void SetupRHSforTDCSandTMSModule::execute()
 
   // obtaining electrode values from state map
   auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).getList();
-  
-  for (int i=0; i<elc_vals_from_state.size(); i++)
-    std::cout << "elcTable" << i << " = " << elc_vals_from_state[i].value_ << std::endl;
- 
   algo().set(Parameters::ELECTRODE_VALUES, elc_vals_from_state);
 
+  //for (int i=0; i<elc_vals_from_state.size(); i++)
+  //  std::cout << "elcTable" << i << " = " << elc_vals_from_state[i].value_ << std::endl;
+ 
   if (needToExecute())
   {
     //algorithm input
