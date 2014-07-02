@@ -65,8 +65,7 @@ void SetupRHSforTDCSandTMSDialog::push()
 
 void SetupRHSforTDCSandTMSDialog::pull()
 {
-  // obatining initial values, recursive
-  push();
+  // TODO obatining initial values, recursive
 
   Pulling p(this);
 }
