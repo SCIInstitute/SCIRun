@@ -47,6 +47,7 @@ SET(Core_Datatypes_HEADERS
   DenseMatrix.h
   DenseColumnMatrix.h
   Geometry.h
+  HasId.h
   Matrix.h
   MatrixComparison.h
   MatrixFwd.h

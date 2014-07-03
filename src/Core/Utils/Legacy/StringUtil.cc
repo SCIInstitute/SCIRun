@@ -394,4 +394,3 @@ strip_surrounding_spaces(std::string& str)
 }
 
 } // End namespace SCIRun
-

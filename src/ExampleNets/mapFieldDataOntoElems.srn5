@@ -967,7 +967,7 @@
 				<moduleId2_>ViewScene:5</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>2</id>
+					<id>0</id>
 				</port2_>
 			</item>
 		</connections>

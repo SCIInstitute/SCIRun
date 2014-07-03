@@ -40,6 +40,7 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/HasId.h>
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Utils/StringUtil.h>
 #include <Core/Algorithms/Base/share.h>
@@ -220,7 +221,7 @@ namespace Algorithms {
   typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
   typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
 
-  class SCISHARE AlgorithmInterface 
+  class SCISHARE AlgorithmInterface : public HasIntegerId
   {
   public:
     virtual ~AlgorithmInterface() {}
@@ -256,10 +257,12 @@ namespace Algorithms {
     virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key);
 
   protected:
+    void dumpAlgoState() const;
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
     void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
   private:
-    std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
+    typedef std::map<AlgorithmParameterName, AlgorithmParameter> ParameterMap;
+    ParameterMap parameters_;
   };
 
   class SCISHARE AlgoInputBuilder

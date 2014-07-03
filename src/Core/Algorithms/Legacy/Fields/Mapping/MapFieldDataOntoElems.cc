@@ -1263,6 +1263,7 @@ const AlgorithmInputName MapFieldDataOntoElemsAlgo::Weights("Weights");
 
 AlgorithmOutput MapFieldDataOntoElemsAlgo::run_generic(const AlgorithmInput& input) const
 {
+  dumpAlgoState();
   auto source = input.get<Field>(Source);
   auto destination = input.get<Field>(Destination);
   auto weights = input.get<Field>(Weights);
