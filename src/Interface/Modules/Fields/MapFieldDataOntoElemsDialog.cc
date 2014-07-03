@@ -42,12 +42,12 @@ MapFieldDataOntoElemsDialog::MapFieldDataOntoElemsDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addComboBoxManager(methodComboBox_, MapFieldDataFromNodeToElemAlgo::Method);
-  addComboBoxManager(methodComboBox_, MapFieldDataFromNodeToElemAlgo::Method);
-  addComboBoxManager(methodComboBox_, MapFieldDataFromNodeToElemAlgo::Method);
-  addComboBoxManager(methodComboBox_, MapFieldDataFromNodeToElemAlgo::Method);
-  addDoubleSpinBoxManager()
-  addDoubleLineEditManager()
+  addComboBoxManager(quantityComboBox_, Parameters::Quantity);
+  addComboBoxManager(interpolationComboBox_, Parameters::InterpolationModel);
+  addComboBoxManager(sampleMethodComboBox_, Parameters::SampleMethod);
+  addComboBoxManager(samplePointsComboBox_, Parameters::SamplePoints);
+  addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
+  addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
 }
 
 void MapFieldDataOntoElemsDialog::pull()
