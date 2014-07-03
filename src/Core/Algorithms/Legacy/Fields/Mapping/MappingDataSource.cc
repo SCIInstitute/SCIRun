@@ -2156,7 +2156,7 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
     double def_value_;
     
     VMesh::Node::index_type node_;
-    VMesh::Node::index_type wnode_;
+    mutable VMesh::Node::index_type wnode_;
 };
 
 
@@ -2464,8 +2464,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
     VMesh::points_type      points_;
 
     VMesh::Node::index_type node_;
-    VMesh::Node::index_type wnode_;
-
+    mutable VMesh::Node::index_type wnode_;
 };
 
 class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
