@@ -55,8 +55,6 @@ class SCISHARE SetupRHSforTDCSandTMSModule : public Dataflow::Networks::Module,
     OUTPUT_PORT(0, RHS, Matrix);
 //    OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
 //    OUTPUT_PORT(1, COILS_FIELD, LegacyField);
-
-    static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
 };
 
 }}}

@@ -41,6 +41,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
@@ -61,6 +62,9 @@ AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
 //const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
 //const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::COILS_FIELD("COILS_FIELD");
 
+
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
+
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
   addParameter(Parameters::ELECTRODE_VALUES, 0); // just a default value, will be replaced with vector
@@ -72,14 +76,17 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   
   // obtaining electrode values from the state
   auto all_elc_values = get(Parameters::ELECTRODE_VALUES).getList();
-  //for (int i=0; i<elc_values.size(); i++)
-  //{
-  //  //std::cout << elc_values[i].name_ << "=" << elc_values[i].value_ << std::endl;
-  //  auto elecName = elc_values[i].name_; // consistency check:
-  //  auto elecValue = elc_values[i].getDouble();
-  //  auto expectedElecName = Name("elc" + boost::lexical_cast<std::string>(i)); //ElecrodeParameterName(i);
-  //  EXPECT_EQ(elecName, expectedElecName); // if not, electrodes are being stored out of order. 
-  //}
+  
+  // consistency check:
+  for (int i=0; i<all_elc_values.size(); i++)
+  {
+    std::cout << all_elc_values[i].name_ << "=" << all_elc_values[i].value_ << std::endl;
+    auto elecName = all_elc_values[i].name_; 
+    auto elecValue = all_elc_values[i].getDouble();
+    auto expectedElecName = SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(i); //ElecrodeParameterName(i);
+    if(elecName.name_.compare(expectedElecName.name_) != 0) // if so, electrodes are being stored out of order.
+      THROW_ALGORITHM_PROCESSING_ERROR("Values are being stored out of order!");
+  }
   
   // obtaining number of electrodes
   auto elc_count = input.get<Matrix>(ELECTRODE_COUNT);
@@ -89,6 +96,7 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   // making the rhs, sending it back as output
   AlgorithmOutput output;
   DenseMatrixHandle rhs = run(elc_coil_pos_and_normal, all_elc_values, num_of_elc);
+
   output[RHS] = rhs;
   return output;
 }

@@ -54,6 +54,7 @@ namespace BrainStimulator {
     static AlgorithmInputName ELECTRODE_COUNT;
     static AlgorithmOutputName RHS;
     
+    static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
 //    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
 //    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
 //    static const AlgorithmInputName COIL;

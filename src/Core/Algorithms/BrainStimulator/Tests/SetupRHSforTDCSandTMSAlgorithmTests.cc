@@ -100,8 +100,6 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesSimple)
     EXPECT_EQ(compare[i], o->coeff(i,0));
 }
 
-
-
 TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnElem)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;

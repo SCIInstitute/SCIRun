@@ -65,8 +65,20 @@ void SetupRHSforTDCSandTMSDialog::push()
 
 void SetupRHSforTDCSandTMSDialog::pull()
 {
-  // TODO obatining initial values, recursive
-
+  // obtaining initial values, pulling hasn't been set
+  if (!pulling_)
+  {
+    std::vector<AlgorithmParameter> elc_vals_in_table;
+    int rows = tableWidget_5->rowCount();
+    for (int i=0; i<rows; i++)
+    {
+      AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), tableWidget_5->item(i,1)->text().toDouble());
+      elc_vals_in_table.push_back(elc_i);
+    }
+    Pulling p(this); // prevents from re-entering if statement when next line executes
+    state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
+  }
+  
   Pulling p(this);
 }
 
