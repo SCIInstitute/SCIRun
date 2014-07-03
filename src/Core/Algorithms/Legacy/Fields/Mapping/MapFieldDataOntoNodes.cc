@@ -44,6 +44,15 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
+MapFieldDataOntoNodesAlgo()
+{
+  add_option("quantity","value","value|gradient|gradientnorm|flux");
+  add_option("value","interpolateddata","interpolateddata|closestnodedata|closestinterpolateddata");
+  add_scalar("outside_value",0.0);
+  add_scalar("max_distance",DBL_MAX);
+
+}
+
 class MapFieldDataOntoNodesPAlgo
 {
   public:

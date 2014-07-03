@@ -37,22 +37,18 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/FieldInformation.h>
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+
+MapFieldDataOntoElemsAlgo()
+{
+  add_option("quantity","value","value|gradient|gradientnorm|flux");
+  add_option("value","interpolateddata","interpolateddataonly|interpolateddata|closestnodedata|closestinterpolateddata");
+  add_option("sample_points","regular1","regular1|regular2|regular3|regular4|regular5|gaussian1|gaussian2|gaussian3");
+  add_option("sample_method","average","average|integrate|min|max|sum|mostcommon|median");
+  add_scalar("outside_value",0.0);
+  add_scalar("max_distance",DBL_MAX);
+}
 
 namespace SCIRunAlgo {
-
-#ifdef _WIN32
-typedef __int64 int64;  
-typedef unsigned __int64 uint64;  
-#define INT64_VAL(x) x##i64
-#define UINT64_VAL(x) x##ui64
-#else
-typedef long long int64;
-typedef unsigned long long uint64;
-#define INT64_VAL(x) x##ll
-#define UINT64_VAL(x) x##ull
-#endif
 
 using namespace SCIRun;
 

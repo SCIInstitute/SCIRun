@@ -27,12 +27,12 @@
 */
 
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
-
-//#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
@@ -43,30 +43,7 @@ const ModuleLookupInfo MapFieldDataOntoNodes::staticInfo_("MapFieldDataOntoNodes
 /// @brief Maps data from one mesh or point cloud to another mesh or point
 /// cloud. The output mesh will have the data located at the nodes.
 
-/*
-class MapFieldDataOntoNodes : public Module {
-  public:
-    MapFieldDataOntoNodes(GuiContext*);
-    virtual ~MapFieldDataOntoNodes() {}
-
-    virtual void execute();
-    virtual void post_read();
-
-  private:
-    GuiString gui_quantity_;
-    GuiString gui_value_;
-    GuiDouble gui_outside_value_;
-    GuiDouble gui_max_distance_;
-    
-    SCIRunAlgo::MapFieldDataOntoNodesAlgo algo_;    
-};
-*/
-
 MapFieldDataOntoNodes::MapFieldDataOntoNodes() : Module(staticInfo_)
-//   gui_quantity_(get_ctx()->subVar("quantity"),"value"),
-//   gui_value_(get_ctx()->subVar("value"),"interpolateddata"),
-//   gui_outside_value_(get_ctx()->subVar("outside-value"),0.0),
-//   gui_max_distance_(get_ctx()->subVar("max-distance"),DBL_MAX)
 {
   INITIALIZE_PORT(Source);
   INITIALIZE_PORT(Weights);
@@ -76,32 +53,33 @@ MapFieldDataOntoNodes::MapFieldDataOntoNodes() : Module(staticInfo_)
 
 void MapFieldDataOntoNodes::setStateDefaults()
 {
-
+  setStateStringFromAlgoOption(Parameters::Quantity);
+  setStateStringFromAlgoOption(Parameters::InterpolationModel);
+  setStateDoubleFromAlgo(Parameters::OutsideValue);
+  setStateDoubleFromAlgo(Parameters::MaxDistance);
 }
 
 void
 MapFieldDataOntoNodes::execute()
 {
-#if 0
-  FieldHandle source, destination, weights, output;
+  auto source = getRequiredInput(Source);
+  auto destination = getRequiredInput(Destination);
+  auto weights = getOptionalInput(Weights);
   
-  get_input_handle("Source",source,true);
-  get_input_handle("Destination",destination,true);
-  get_input_handle("Weights",weights,false);
-  
-  if (inputs_changed_ || !oport_cached("Output") ||
-    gui_quantity_.changed() || gui_value_.changed() ||
-    gui_outside_value_.changed() || gui_max_distance_.changed())
+//   if (inputs_changed_ || !oport_cached("Output") ||
+//     gui_quantity_.changed() || gui_value_.changed() ||
+//     gui_outside_value_.changed() || gui_max_distance_.changed())
+  if (needToExecute())
   {
     update_state(Executing);
     
-    algo_.set_option("quantity",gui_quantity_.get());
-    algo_.set_option("value",gui_value_.get());
-    algo_.set_scalar("outside_value",gui_outside_value_.get());
-    algo_.set_scalar("max_distance",gui_max_distance_.get());
+    setAlgoOptionFromState(Parameters::Quantity);
+    setAlgoOptionFromState(Parameters::InterpolationModel);
+    setAlgoDoubleFromState(Parameters::OutsideValue);
+    setAlgoDoubleFromState(Parameters::MaxDistance);
   
-    if(!(algo_.run(source,weights,destination,output))) return;
-    send_output_handle("Output",output,true);
+    auto output = algo().run_generic(make_input((Source, source)(Destination, destination)(Weights, optionalAlgoInput(weights))));
+
+    sendOutputFromAlgorithm(OutputField, output);
   }
-#endif
 }
