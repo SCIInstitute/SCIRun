@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -52,6 +52,13 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun;
 
+ALGORITHM_PARAMETER_DEF(Fields, Quantity);
+ALGORITHM_PARAMETER_DEF(Fields, InterpolationModel);
+ALGORITHM_PARAMETER_DEF(Fields, SamplePoints);
+ALGORITHM_PARAMETER_DEF(Fields, SampleMethod);
+ALGORITHM_PARAMETER_DEF(Fields, OutsideValue);
+ALGORITHM_PARAMETER_DEF(Fields, MaxDistance);
+
 MapFieldDataOntoElemsAlgo::MapFieldDataOntoElemsAlgo()
 {
   using namespace Parameters;
@@ -71,25 +78,25 @@ class MapFieldDataOntoElemsPAlgo
     explicit MapFieldDataOntoElemsPAlgo(unsigned int numProcs) :
     algo_(0), is_flux_(false), has_nan_(false), def_value_(0),
       barrier_("MapFieldDataOntoElemsPAlgo Barrier", numProcs), nproc(numProcs) {}
-      
+
     void parallel(int proc);
 
     FieldHandle sfield_;
     FieldHandle wfield_;
     FieldHandle ofield_;
-    
+
     const AlgorithmBase* algo_;
-    
+
     bool is_flux_;
     bool has_nan_;
-    
+
     double def_value_;
-    
+
     std::vector<bool> success_;
-  
+
   private:
     Barrier barrier_;
-    
+
     inline bool exist(double d)
     {
       return IsFinite(d);
@@ -117,14 +124,14 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
   barrier_.wait();
 
   MappingDataSourceHandle datasource = CreateDataSource(sfield_,wfield_,algo_);
-  
-  if (!datasource) 
+
+  if (!datasource)
   {
     success_[proc] = false;
   }
 
   barrier_.wait();
-  
+
   for (unsigned int j=0; j<nproc; j++)
   {
     if (success_[j] == false)
@@ -135,25 +142,25 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
   }
 
   barrier_.wait();
-  
+
   def_value_ = algo_->get(Parameters::OutsideValue).getDouble();
-  
+
   VMesh* omesh = ofield_->vmesh();
   VField* ofield = ofield_->vfield();
-  
+
   VMesh::Elem::size_type  num_elems = omesh->num_elems();
   VField::size_type       localsize = num_elems/nproc;
   VField::index_type      start = localsize*proc;
   VField::index_type      end = localsize*(proc+1);
   if (proc == nproc-1) end = num_elems;
 
-  std::vector<VMesh::coords_type> coords; 
+  std::vector<VMesh::coords_type> coords;
   std::vector<double> weights;
   std::vector<Point> points;
-              
-  std::string sample_points = algo_->get_option(Parameters::SamplePoints);            
+
+  std::string sample_points = algo_->get_option(Parameters::SamplePoints);
   std::string sample_method = algo_->get_option(Parameters::SampleMethod);
-              
+
   if (sample_points == "regular1")
   {
     omesh->get_regular_scheme(coords,weights,1);
@@ -190,12 +197,12 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
   {
     if (proc == 0) algo_->error("Sampling points are not defined for this type of mesh");
     success_[proc] = false;
-    barrier_.wait(); 
-    return;     
+    barrier_.wait();
+    return;
   }
-               
+
   int cnt = 0;
-  
+
   if (has_nan_)
   {
     if (is_flux_)
@@ -235,7 +242,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           if (num > 0) val *= vol; else val = def_value_;
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-        }      
+        }
       }
       else if (sample_method== "min")
       {
@@ -247,11 +254,11 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           for (size_t j=0; j<grads.size();j++) values[j] = Dot(grads[j],norms[j]);
           val = DBL_MAX;
           for (size_t j=0; j<values.size(); j++) if (exist(values[j])) if (values[j] < val) val = values[j];
-          if (val == DBL_MAX) val = def_value_; 
+          if (val == DBL_MAX) val = def_value_;
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-        }      
-      }    
+        }
+      }
       else if (sample_method== "max")
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
@@ -262,10 +269,10 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           for (size_t j=0; j<grads.size();j++) values[j] = Dot(grads[j],norms[j]);
           val = -DBL_MAX;
           for (size_t j=0; j<values.size(); j++) if (exist(values[j])) if (values[j] > val) val = values[j];
-          if (val == -DBL_MAX) val = def_value_; 
+          if (val == -DBL_MAX) val = def_value_;
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-        }      
+        }
       }
       else if (sample_method== "sum")
       {
@@ -317,7 +324,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       }
       else if (sample_method== "median")
       {
-        std::vector<double> median;      
+        std::vector<double> median;
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
         {
           omesh->minterpolate(points,coords,idx);
@@ -345,8 +352,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         if (proc == 0) algo_->error("Sampling method was not defined for flux data");
         success_[proc] = false;
-        barrier_.wait(); 
-        return;       
+        barrier_.wait();
+        return;
       }
     }
     else
@@ -381,7 +388,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             if (num > 0) val *= vol;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
+          }
         }
         else if (sample_method== "min")
         {
@@ -394,8 +401,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             if (val == DBL_MAX) val = def_value_;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
-        }    
+          }
+        }
         else if (sample_method== "max")
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
@@ -407,7 +414,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             if (val == -DBL_MAX) val = def_value_;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
+          }
         }
         else if (sample_method== "sum")
         {
@@ -423,7 +430,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           }
         }
         else if (sample_method== "mostcommon")
-        { 
+        {
           std::vector<double> common;
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
           {
@@ -481,8 +488,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(); 
-          return;       
+          barrier_.wait();
+          return;
         }
       }
       else if (datasource->is_vector())
@@ -509,12 +516,12 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             omesh->minterpolate(points,coords,idx);
             vol = omesh->get_size(idx);
             datasource->get_data(values,points);
-            val = Vector(0,0,0); 
+            val = Vector(0,0,0);
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += values[j]*weights[j]; }
             val *= vol;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
+          }
         }
         else if (sample_method== "sum")
         {
@@ -532,9 +539,9 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(); 
-          return;       
-        }    
+          barrier_.wait();
+          return;
+        }
       }
       else
       {
@@ -565,7 +572,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             val = val*vol;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
+          }
         }
         else if (sample_method== "sum")
         {
@@ -583,10 +590,10 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(); 
-          return;       
-        }    
-      }  
+          barrier_.wait();
+          return;
+        }
+      }
     }
   }
   else
@@ -629,7 +636,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           val *= vol;
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-        }      
+        }
       }
       else if (sample_method== "min")
       {
@@ -643,8 +650,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           for (size_t j=1; j<values.size(); j++) if (values[j] < val) val = values[j];
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-        }      
-      }    
+        }
+      }
       else if (sample_method== "max")
       {
         for (VMesh::Elem::index_type idx=start; idx<end; idx++)
@@ -657,7 +664,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           for (size_t j=1; j<values.size(); j++) if (values[j] > val) val = values[j];
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-        }      
+        }
       }
       else if (sample_method== "sum")
       {
@@ -717,8 +724,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
       {
         if (proc == 0) algo_->error("Sampling method was not defined for flux data");
         success_[proc] = false;
-        barrier_.wait(); 
-        return;       
+        barrier_.wait();
+        return;
       }
     }
     else
@@ -754,7 +761,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             val *= vol;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
+          }
         }
         else if (sample_method== "min")
         {
@@ -766,8 +773,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             for (size_t j=1; j<values.size(); j++) if (values[j] < val) val = values[j];
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
-        }    
+          }
+        }
         else if (sample_method== "max")
         {
           for (VMesh::Elem::index_type idx=start; idx<end; idx++)
@@ -778,7 +785,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             for (size_t j=1; j<values.size(); j++) if (values[j] > val) val = values[j];
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
+          }
         }
         else if (sample_method== "sum")
         {
@@ -832,8 +839,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(); 
-          return;       
+          barrier_.wait();
+          return;
         }
       }
       else if (datasource->is_vector())
@@ -866,7 +873,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             val *= vol;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
+          }
         }
         else if (sample_method== "sum")
         {
@@ -884,9 +891,9 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(); 
-          return;       
-        }    
+          barrier_.wait();
+          return;
+        }
       }
       else
       {
@@ -918,7 +925,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
             val = val*vol;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
-          }      
+          }
         }
         else if (sample_method== "sum")
         {
@@ -936,13 +943,13 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(); 
-          return;       
-        }    
-      }  
+          barrier_.wait();
+          return;
+        }
+      }
     }
   }
-  
+
   // Wait until all of the threads are done
   success_[proc] = true;
   barrier_.wait();
@@ -953,7 +960,7 @@ bool
 MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, FieldHandle destination, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "MapFieldDataOntoElems");
-  
+
   if (!source)
   {
     error("No source field");
@@ -972,20 +979,20 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
 
   std::string quantity = get_option(Parameters::Quantity);
   std::string value = get_option(Parameters::InterpolationModel);
-  
+
   if (value == "closestnodedata")
   {
     if (!fi.is_lineardata())
     {
       error("Closest node data only works for source data located at the nodes.");
-      return (false);      
+      return (false);
     }
   }
 
   if (fi.is_nodata())
   {
     error("No data in source field.");
-    return (false);       
+    return (false);
   }
 
   if (weights)
@@ -996,17 +1003,17 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
       if (!wfi.is_lineardata())
       {
         error("Closest node data only works for weights data located at the nodes.");
-        return (false);      
+        return (false);
       }
     }
-    
+
     if (wfi.is_nodata())
     {
       error("No data in weights field.");
-      return (false);       
+      return (false);
     }
   }
-  
+
   // Make sure output equals quantity to be computed
 
   if (quantity == "value")
@@ -1060,12 +1067,12 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
       error("Weights field needs to be a scalar or a tensor.");
       return (false);
     }
-  
-    if (fo.is_scalar() && wfi.is_tensor()) 
+
+    if (fo.is_scalar() && wfi.is_tensor())
     {
       fo.make_tensor();
     }
-    
+
     if (fo.is_tensor() && wfi.is_tensor())
     {
       error("Weights and source field cannot be both tensor data.");
@@ -1076,7 +1083,7 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
   // Create new output field
   output = CreateField(fo,destination->mesh());
   output->vfield()->resize_values();
-  
+
   if (!output)
   {
     error("Could not allocate output field");
@@ -1086,13 +1093,13 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
   // Number of threads is equal to the number of cores
   int np = Parallel::NumCores();
   // Run algorithm in parallel
-  detail::MapFieldDataOntoElemsPAlgo algo(np);  
-  
+  detail::MapFieldDataOntoElemsPAlgo algo(np);
+
   algo.sfield_ = source;
   algo.wfield_ = weights;
   algo.ofield_ = output;
   algo.algo_ = this;
-    
+
   algo.success_.resize(np,true);
   // Mark whether it is a flux computation
   algo.is_flux_ = false;
@@ -1117,7 +1124,7 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
   }
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
-  
+
   return (true);
 }
 
@@ -1125,7 +1132,7 @@ bool
 MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "MapFieldDataOntoElems");
-  
+
   if (!source)
   {
     error("No source field");
@@ -1144,22 +1151,22 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
 
   std::string quantity = get_option(Parameters::Quantity);
   std::string value = get_option(Parameters::InterpolationModel);
-  
+
   if (value == "closestnodedata")
   {
     if (!fi.is_lineardata())
     {
       error("Closest node data only works for source data located at the nodes.");
-      return (false);      
+      return (false);
     }
   }
 
   if (fi.is_nodata())
   {
     error("No data in source field.");
-    return (false);       
+    return (false);
   }
-  
+
   // Make sure output equals quantity to be computed
 
   if (quantity == "value")
@@ -1207,22 +1214,22 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   // Create new output field
   output = CreateField(fo,destination->mesh());
   output->vfield()->resize_values();
-  
+
   if (!output)
   {
     error("Could not allocate output field");
     return (false);
   }
-  
+
   // Number of threads is equal to the number of cores
   int np = Parallel::NumCores();
   // Run algorithm in parallel
   detail::MapFieldDataOntoElemsPAlgo algo(np);
-  
+
   algo.sfield_ = source;
   algo.ofield_ = output;
   algo.algo_ = this;
-  
+
   algo.success_.resize(np,true);
   // Mark whether it is a flux computation
   algo.is_flux_ = quantity == "flux";
@@ -1246,6 +1253,20 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   }
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
-  
+
   return (true);
+}
+
+AlgorithmOutput MapFieldDataOntoElemsAlgo::run_generic(const AlgorithmInput& input) const
+{
+  throw 1;
+  // auto input_field = input.get<Field>(Variables::InputField);
+  //
+  // FieldHandle output_field;
+  // output_field = run(input_field);
+  //
+  // AlgorithmOutput output;
+  // output[Variables::OutputField] = output_field;
+  //
+  // return output;
 }

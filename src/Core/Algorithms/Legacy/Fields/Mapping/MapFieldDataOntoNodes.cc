@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -66,20 +66,20 @@ class MapFieldDataOntoNodesPAlgo
 {
   public:
     explicit MapFieldDataOntoNodesPAlgo(unsigned int numProcs) :
-    algo_(0), is_flux_(false), 
+    algo_(0), is_flux_(false),
       barrier_("MapFieldDataOntoNodesPAlgo Barrier", numProcs), nproc(numProcs) {}
-      
+
     void parallel(int proc);
 
     FieldHandle sfield_;
     FieldHandle wfield_;
     FieldHandle ofield_;
-    
+
     const AlgorithmBase* algo_;
-    
+
     bool is_flux_;
     std::vector<bool> success_;
-  
+
   private:
     Barrier barrier_;
     unsigned int nproc;
@@ -89,34 +89,34 @@ void
 MapFieldDataOntoNodesPAlgo::parallel(int proc)
 {
   success_[proc] = true;
-    
+
   // Each thread has its own Datasource class, so it can preallocate array internally
   MappingDataSourceHandle datasource = CreateDataSource(sfield_,wfield_,algo_);
-  
-  if (!datasource) 
+
+  if (!datasource)
   {
     success_[proc] = false;
   }
 
   barrier_.wait();
-  
+
   for (unsigned int j=0; j<nproc; j++)
   {
-    if (!success_[j]) 
+    if (!success_[j])
       return;
   }
 
   barrier_.wait();
-  
+
   VMesh* omesh = ofield_->vmesh();
   VField* ofield = ofield_->vfield();
-  
+
   VMesh::Node::size_type  num_nodes = omesh->num_nodes();
   VField::size_type       localsize = num_nodes/nproc;
   VField::index_type      start = localsize*proc;
   VField::index_type      end = localsize*(proc+1);
   if (proc == nproc-1) end = num_nodes;
-              
+
   int cnt = 0;
   if (is_flux_)
   {
@@ -166,7 +166,7 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc)
         ofield->set_value(val,idx);
         if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
       }
-    }  
+    }
   }
   // Wait until all of the threads are done
   success_[proc] = true;
@@ -179,7 +179,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
     FieldHandle destination, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "MapFieldDataOntoNodes");
-  
+
   if (!source)
   {
     error("No source field");
@@ -198,20 +198,20 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
 
   std::string quantity = get_option(Parameters::Quantity);
   std::string value = get_option(Parameters::InterpolationModel);
-  
+
   if (value == "closestnodedata")
   {
     if (!fi.is_lineardata())
     {
       error("Closest node data only works for source data located at the nodes.");
-      return (false);      
+      return (false);
     }
   }
-  
+
   if (fi.is_nodata())
   {
     error("No data in source field.");
-    return (false);       
+    return (false);
   }
 
   if (weights)
@@ -222,17 +222,17 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
       if (!wfi.is_lineardata())
       {
         error("Closest node data only works for weights data located at the nodes.");
-        return (false);      
+        return (false);
       }
     }
-    
+
     if (wfi.is_nodata())
     {
       error("No data in weights field.");
-      return (false);       
+      return (false);
     }
   }
-  
+
   // Make sure output equals quantity to be computed
 
   if (quantity == "value")
@@ -286,12 +286,12 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
       error("Weights field needs to be a scalar or a tensor.");
       return (false);
     }
-  
-    if (fo.is_scalar() && wfi.is_tensor()) 
+
+    if (fo.is_scalar() && wfi.is_tensor())
     {
       fo.make_tensor();
     }
-    
+
     if (fo.is_tensor() && wfi.is_tensor())
     {
       error("Weights and source field cannot be both tensor data.");
@@ -302,30 +302,30 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   // Create new output field
   output = CreateField(fo,destination->mesh());
   output->vfield()->resize_values();
-  
+
   if (!output)
   {
     error("Could not allocate output field");
     return (false);
   }
-  
+
   // Number of threads is equal to the number of cores
   int np = Parallel::NumCores();
   // Run algorithm in parallel
-  detail::MapFieldDataOntoNodesPAlgo algo(np);  
-  
+  detail::MapFieldDataOntoNodesPAlgo algo(np);
+
   algo.sfield_ = source;
   algo.wfield_ = weights;
   algo.ofield_ = output;
   algo.algo_ = this;
-  
+
   algo.success_.resize(np,true);
   // Mark whether it is a flux computation
   algo.is_flux_ = quantity == "flux";
 
   auto task_i = [&algo,this](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
- 
+
  // Check whether algorithm succeeded
   for (int j=0; j<np; j++)
   {
@@ -338,7 +338,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   }
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
-  
+
   return (true);
 }
 
@@ -346,7 +346,7 @@ bool
 MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr (this, "MapFieldDataOntoNodes");
-  
+
   if (!source)
   {
     error("No source field");
@@ -365,22 +365,22 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
 
   std::string quantity = get_option(Parameters::Quantity);
   std::string value = get_option(Parameters::InterpolationModel);
-  
+
   if (value == "closestnodedata")
   {
     if (!fi.is_lineardata())
     {
       error("Closest node data only works for source data located at the nodes.");
-      return (false);      
+      return (false);
     }
   }
-  
+
   if (fi.is_nodata())
   {
     error("No data in source field.");
-    return (false);       
+    return (false);
   }
-  
+
   // Make sure output equals quantity to be computed
 
   if (quantity == "value")
@@ -428,29 +428,29 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   // Create new output field
   output = CreateField(fo,destination->mesh());
   output->vfield()->resize_values();
-  
+
   if (!output)
   {
     error("Could not allocate output field");
     return (false);
   }
-  
+
   // Number of threads is equal to the number of cores
   int np = Parallel::NumCores();
   // Run algorithm in parallel
   detail::MapFieldDataOntoNodesPAlgo algo(np);
-  
+
   algo.sfield_ = source;
   algo.ofield_ = output;
   algo.algo_ = this;
- 
+
   algo.success_.resize(np,true);
   // Mark whether it is a flux computation
   algo.is_flux_ = quantity == "flux";
 
   auto task_i = [&algo,this](int i) { algo.parallel(i); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
- 
+
  // Check whether algorithm succeeded
   for (int j=0; j<np; j++)
   {
@@ -463,6 +463,22 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   }
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
-  
+
   return (true);
+}
+
+AlgorithmOutput MapFieldDataOntoNodesAlgo::run_generic(const AlgorithmInput& input) const
+{
+  throw 1;
+  /*
+  auto input_field = input.get<Field>(Variables::InputField);
+
+  FieldHandle output_field;
+  output_field = run(input_field);
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = output_field;
+
+  return output;
+  */
 }
