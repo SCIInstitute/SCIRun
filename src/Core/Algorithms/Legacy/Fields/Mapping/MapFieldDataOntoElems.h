@@ -50,10 +50,8 @@ class SCISHARE MapFieldDataOntoElemsAlgo : public AlgorithmBase
   public:
     MapFieldDataOntoElemsAlgo();
 
-    bool runImpl(FieldHandle source, FieldHandle weights, 
-             FieldHandle destination, FieldHandle& output);
-
-    bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output);
+    bool runImpl(FieldHandle source, FieldHandle weights, FieldHandle destination, FieldHandle& output) const;
+    bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 };

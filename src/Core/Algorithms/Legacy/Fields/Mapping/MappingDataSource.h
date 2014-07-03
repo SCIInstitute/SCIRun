@@ -26,24 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-
-#include <Core/Algorithms/Util/AlgoBase.h>
+#ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPPING_DATA_SOURCE_H__
+#define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPPING_DATA_SOURCE_H__
 
 #include <vector>
-
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-// Class for ecxtracting data from a field
+// Class for extracting data from a field
 
-class SCISHARE MappingDataSource : public UsedWithLockingHandle<Mutex>
+class SCISHARE MappingDataSource
 {
   public: 
     // Constructor
@@ -81,3 +76,5 @@ bool SCISHARE CreateDataSource(MappingDataSourceHandle& handle,
 
 
 } // end namespace SCIRunAlgo
+
+#endif

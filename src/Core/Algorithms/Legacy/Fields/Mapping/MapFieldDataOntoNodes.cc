@@ -26,25 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Thread/Thread.h>
+#include <Core/Thread/Parallel.h>
 #include <Core/Thread/Barrier.h>
 
-#include <Core/Algorithms/Fields/Mapping/MapFieldDataOntoNodes.h>
-#include <Core/Algorithms/Fields/Mapping/MappingDataSource.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+//#include <Core/Algorithms/Legacy/Fields/Mapping/MappingDataSource.h>
 
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun;
 
-MapFieldDataOntoNodesAlgo()
+MapFieldDataOntoNodesAlgo::MapFieldDataOntoNodesAlgo()
 {
   add_option("quantity","value","value|gradient|gradientnorm|flux");
   add_option("value","interpolateddata","interpolateddata|closestnodedata|closestinterpolateddata");
@@ -53,6 +60,7 @@ MapFieldDataOntoNodesAlgo()
 
 }
 
+namespace detail {
 class MapFieldDataOntoNodesPAlgo
 {
   public:
@@ -65,7 +73,7 @@ class MapFieldDataOntoNodesPAlgo
     FieldHandle wfield_;
     FieldHandle ofield_;
     
-    AlgoBase * algo_;
+    const AlgorithmBase* algo_;
     
     bool is_flux_;
     std::vector<bool> success_;
@@ -160,25 +168,24 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc, int nproc)
   success_[proc] = true;
   barrier_.wait(nproc);
 }
-
+}
 
 bool
-MapFieldDataOntoNodesAlgo::
-run(FieldHandle source, FieldHandle weights,
-    FieldHandle destination, FieldHandle& output)
+MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
+    FieldHandle destination, FieldHandle& output) const
 {
-  algo_start("MapFieldDataOntoNodes");
+  ScopedAlgorithmStatusReporter asr(this, "MapFieldDataOntoNodes");
   
-  if (source.get_rep() == 0)
+  if (!source)
   {
     error("No source field");
-    algo_end(); return (false);
+    return (false);
   }
 
   if (destination.get_rep() == 0)
   {
     error("No destination field");
-    algo_end(); return (false);
+    return (false);
   }
 
   FieldInformation fi(source);
@@ -193,14 +200,14 @@ run(FieldHandle source, FieldHandle weights,
     if (!fi.is_lineardata())
     {
       error("Closest node data only works for source data located at the nodes.");
-      algo_end(); return (false);      
+      return (false);      
     }
   }
   
   if (fi.is_nodata())
   {
     error("No data in source field.");
-    algo_end(); return (false);       
+    return (false);       
   }
 
   if (weights.get_rep())
@@ -211,14 +218,14 @@ run(FieldHandle source, FieldHandle weights,
       if (!wfi.is_lineardata())
       {
         error("Closest node data only works for weights data located at the nodes.");
-        algo_end(); return (false);      
+        return (false);      
       }
     }
     
     if (wfi.is_nodata())
     {
       error("No data in weights field.");
-      algo_end(); return (false);       
+      return (false);       
     }
   }
   
@@ -235,7 +242,7 @@ run(FieldHandle source, FieldHandle weights,
     if (!fi.is_scalar())
     {
       error("Gradient can only be calculated on a scalar field.");
-      algo_end(); return (false);
+      return (false);
     }
     fo.make_vector();
   }
@@ -245,7 +252,7 @@ run(FieldHandle source, FieldHandle weights,
     if (!fi.is_scalar())
     {
       error("Gradient can only be calculated on a scalar field.");
-      algo_end(); return (false);
+      return (false);
     }
     fo.make_double();
   }
@@ -256,12 +263,12 @@ run(FieldHandle source, FieldHandle weights,
     if (!fi.is_scalar())
     {
       error("Flux can only be calculated on a scalar field.");
-      algo_end(); return (false);
+      return (false);
     }
     if (!fo.is_surface())
     {
       error("Flux can only be computed for surfaces meshes as destination");
-      algo_end(); return (false);
+      return (false);
     }
     fo.make_double();
   }
@@ -273,7 +280,7 @@ run(FieldHandle source, FieldHandle weights,
     if ((!wfi.is_tensor())&&(!wfi.is_scalar()))
     {
       error("Weights field needs to be a scalar or a tensor.");
-      algo_end(); return (false);
+      return (false);
     }
   
     if (fo.is_scalar() && wfi.is_tensor()) 
@@ -284,7 +291,7 @@ run(FieldHandle source, FieldHandle weights,
     if (fo.is_tensor() && wfi.is_tensor())
     {
       error("Weights and source field cannot be both tensor data.");
-      algo_end(); return (false);
+      return (false);
     }
   }
 
@@ -295,7 +302,7 @@ run(FieldHandle source, FieldHandle weights,
   if (output.get_rep() == 0)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   // Run algorithm in parallel
@@ -324,32 +331,30 @@ run(FieldHandle source, FieldHandle weights,
     {
       // Should not be able to get here
       error("The algorithm failed for an unknown reason.");
-      algo_end(); return (false);
+      return (false);
     }
   }
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
   
-  algo_end(); return (true);
+  return (true);
 }
 
-
 bool
-MapFieldDataOntoNodesAlgo::
-run(FieldHandle source, FieldHandle destination, FieldHandle& output)
+MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const
 {
-  algo_start("MapFieldDataOntoNodes");
+  ScopedAlgorithmStatusReporter asr (this, "MapFieldDataOntoNodes");
   
-  if (source.get_rep() == 0)
+  if (!source)
   {
     error("No source field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (destination.get_rep() == 0)
+  if (!destination)
   {
     error("No destination field");
-    algo_end(); return (false);
+    return (false);
   }
 
   FieldInformation fi(source);
@@ -364,14 +369,14 @@ run(FieldHandle source, FieldHandle destination, FieldHandle& output)
     if (!fi.is_lineardata())
     {
       error("Closest node data only works for source data located at the nodes.");
-      algo_end(); return (false);      
+      return (false);      
     }
   }
   
   if (fi.is_nodata())
   {
     error("No data in source field.");
-    algo_end(); return (false);       
+    return (false);       
   }
   
   // Make sure output equals quantity to be computed
@@ -381,13 +386,13 @@ run(FieldHandle source, FieldHandle destination, FieldHandle& output)
     // Copy the output datatype
     fo.set_data_type(fi.get_data_type());
   }
-  else  if (quantity == "gradient")
+  else if (quantity == "gradient")
   {
     // Output will be a vector
     if (!fi.is_scalar())
     {
       error("Gradient can only be calculated on a scalar field.");
-      algo_end(); return (false);
+      return (false);
     }
     fo.make_vector();
   }
@@ -397,7 +402,7 @@ run(FieldHandle source, FieldHandle destination, FieldHandle& output)
     if (!fi.is_scalar())
     {
       error("Gradient can only be calculated on a scalar field.");
-      algo_end(); return (false);
+      return (false);
     }
     fo.make_double();
   }
@@ -408,12 +413,12 @@ run(FieldHandle source, FieldHandle destination, FieldHandle& output)
     if (!fi.is_scalar())
     {
       error("Flux can only be calculated on a scalar field.");
-      algo_end(); return (false);
+      return (false);
     }
     if (!fo.is_surface())
     {
       error("Flux can only be computed for surfaces meshes as destination");
-      algo_end(); return (false);
+      return (false);
     }
     fo.make_double();
   }
@@ -422,10 +427,10 @@ run(FieldHandle source, FieldHandle destination, FieldHandle& output)
   output = CreateField(fo,destination->mesh());
   output->vfield()->resize_values();
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   // Run algorithm in parallel
@@ -453,14 +458,11 @@ run(FieldHandle source, FieldHandle destination, FieldHandle& output)
     {
       // Should not be able to get here
       error("The algorithm failed for an unknown reason.");
-      algo_end(); return (false);
+      return (false);
     }
   }
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
   
-  algo_end(); return (true);
+  return (true);
 }
-
-
-} // end namespace SCIRunAlgo
