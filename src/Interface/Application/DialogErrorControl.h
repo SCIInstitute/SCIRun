@@ -25,56 +25,30 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+#ifndef INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
+#define	INTERFACE_APPLICATION_DIALOGERRORCONTROL_H
 
-#ifndef INTERFACE_APPLICATION_MODULELOGWINDOW_H
-#define INTERFACE_APPLICATION_MODULELOGWINDOW_H
+#include <QObject>
 
-#include "ui_ModuleLogWindow.h"
-
-#include <Core/Logging/LoggerInterface.h>
-#include <Dataflow/Network/NetworkFwd.h>
-
+static const int MAX_DIALOGS_SHOWN = 5; 
 
 namespace SCIRun {
 namespace Gui {
 
-class DialogErrorControl; 
-
-class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
+class DialogErrorControl: public QObject
 {
 	Q_OBJECT
-	
 public:
-  explicit ModuleLogWindow(const QString& moduleName, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
-public Q_SLOTS:
-  void appendMessage(const QString& message, const QColor& color = Qt::black);
-  void popupMessageBox(const QString& message);
-
-Q_SIGNALS:
-  void messageReceived(const QColor& color);
+	explicit DialogErrorControl(QWidget* parent);
+	void increaseCounter(); 
+	bool showDialog(); 
 	
+	public Q_SLOTS:
+		void resetCounter(); 
+
 private:
-  QString moduleName_;
-	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
+		int counter_; 
 };
-
-class ModuleLogger : public QObject, public Core::Logging::LegacyLoggerInterface
-{
-  Q_OBJECT
-public:
-  explicit ModuleLogger(ModuleLogWindow* window);
-  virtual void error(const std::string& msg) const;
-  virtual void warning(const std::string& msg) const;
-  virtual void remark(const std::string& msg) const;
-  virtual void status(const std::string& msg) const;
-
-Q_SIGNALS:
-  void logSignal(const QString& message, const QColor& color) const;
-  void alert(const QColor& color) const;
-  void popup(const QString& message) const;
-};
-
 }
 }
-
 #endif
