@@ -1257,16 +1257,23 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   return (true);
 }
 
+const AlgorithmInputName MapFieldDataOntoElemsAlgo::Source("Source");
+const AlgorithmInputName MapFieldDataOntoElemsAlgo::Destination("Destination");
+const AlgorithmInputName MapFieldDataOntoElemsAlgo::Weights("Weights");
+
 AlgorithmOutput MapFieldDataOntoElemsAlgo::run_generic(const AlgorithmInput& input) const
 {
-  throw 1;
-  // auto input_field = input.get<Field>(Variables::InputField);
-  //
-  // FieldHandle output_field;
-  // output_field = run(input_field);
-  //
-  // AlgorithmOutput output;
-  // output[Variables::OutputField] = output_field;
-  //
-  // return output;
+  auto source = input.get<Field>(Source);
+  auto destination = input.get<Field>(Destination);
+  auto weights = input.get<Field>(Weights);
+
+  FieldHandle outputField;
+
+  if (!runImpl(source, weights, destination, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False thrown on legacy run call");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+
+  return output;
 }

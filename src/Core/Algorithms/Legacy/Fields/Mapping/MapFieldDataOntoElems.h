@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -53,9 +53,13 @@ class SCISHARE MapFieldDataOntoElemsAlgo : public AlgorithmBase
     bool runImpl(FieldHandle source, FieldHandle weights, FieldHandle destination, FieldHandle& output) const;
     bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
 
+    static const AlgorithmInputName Source;
+    static const AlgorithmInputName Destination;
+    static const AlgorithmInputName Weights;
+
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 };
 
       }}}}
 
-#endif 
+#endif

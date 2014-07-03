@@ -467,18 +467,23 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   return (true);
 }
 
+const AlgorithmInputName MapFieldDataOntoNodesAlgo::Source("Source");
+const AlgorithmInputName MapFieldDataOntoNodesAlgo::Destination("Destination");
+const AlgorithmInputName MapFieldDataOntoNodesAlgo::Weights("Weights");
+
 AlgorithmOutput MapFieldDataOntoNodesAlgo::run_generic(const AlgorithmInput& input) const
 {
-  throw 1;
-  /*
-  auto input_field = input.get<Field>(Variables::InputField);
+  auto source = input.get<Field>(Source);
+  auto destination = input.get<Field>(Destination);
+  auto weights = input.get<Field>(Weights);
 
-  FieldHandle output_field;
-  output_field = run(input_field);
+  FieldHandle outputField;
+
+  if (!runImpl(source, weights, destination, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False thrown on legacy run call");
 
   AlgorithmOutput output;
-  output[Variables::OutputField] = output_field;
+  output[Variables::OutputField] = outputField;
 
   return output;
-  */
 }
