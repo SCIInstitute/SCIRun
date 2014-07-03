@@ -32,6 +32,7 @@
 #include <vector>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -47,13 +48,13 @@ class SCISHARE MappingDataSource
     MappingDataSource();
     virtual ~MappingDataSource();
     
-    virtual void get_data(double& data, const Geometry::Point& p) const;
-    virtual void get_data(Geometry::Vector& data, const Geometry::Point& p) const;
-    virtual void get_data(Geometry::Tensor& data, const Geometry::Point& p) const;
+    virtual void get_data(double& data, const Geometry::Point& p) const = 0;
+    virtual void get_data(Geometry::Vector& data, const Geometry::Point& p) const = 0;
+    virtual void get_data(Geometry::Tensor& data, const Geometry::Point& p) const = 0;
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Geometry::Point>& p) const;
-    virtual void get_data(std::vector<Geometry::Vector>& data, const std::vector<Geometry::Point>& p) const;
-    virtual void get_data(std::vector<Geometry::Tensor>& data, const std::vector<Geometry::Point>& p) const;
+    virtual void get_data(std::vector<double>& data, const std::vector<Geometry::Point>& p) const = 0;
+    virtual void get_data(std::vector<Geometry::Vector>& data, const std::vector<Geometry::Point>& p) const = 0;
+    virtual void get_data(std::vector<Geometry::Tensor>& data, const std::vector<Geometry::Point>& p) const = 0;
     
     bool is_double() const;
     bool is_scalar() const;
