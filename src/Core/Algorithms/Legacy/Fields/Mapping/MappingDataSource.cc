@@ -29,24 +29,7 @@
 #include <Core/Math/MiscMath.h>
 #include <Core/Algorithms/Fields/Mapping/MappingDataSource.h>
 
-namespace SCIRunAlgo {
-
-#ifdef _WIN32
-typedef __int64 int64;  
-typedef unsigned __int64 uint64;  
-#define INT64_VAL(x) x##i64
-#define UINT64_VAL(x) x##ui64
-#else
-typedef long long int64;
-typedef unsigned long long uint64;
-#define INT64_VAL(x) x##ll
-#define UINT64_VAL(x) x##ull
-#endif
-using namespace SCIRun;
-
-// Constructor of base class
 MappingDataSource::MappingDataSource() :
-  UsedWithLockingHandle<Mutex>("DataSource Mutex"),
   is_double_(false), is_vector_(false), is_tensor_(false) 
 {}
 
@@ -3472,6 +3455,3 @@ CreateDataSource(MappingDataSourceHandle& handle,
 
   return (false);
 }
-
-
-} // end namespace SCIRunAlgo

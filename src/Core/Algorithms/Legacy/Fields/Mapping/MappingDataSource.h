@@ -30,33 +30,35 @@
 #define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPPING_DATA_SOURCE_H__
 
 #include <vector>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
 // Class for extracting data from a field
 
 class SCISHARE MappingDataSource
 {
   public: 
-    // Constructor
     MappingDataSource();
     virtual ~MappingDataSource();
     
-    virtual void get_data(double& data, Point& p);
-    virtual void get_data(Vector& data, Point& p);
-    virtual void get_data(Tensor& data, Point& p);
+    virtual void get_data(double& data, const Geometry::Point& p) const;
+    virtual void get_data(Geometry::Vector& data, const Geometry::Point& p) const;
+    virtual void get_data(Geometry::Tensor& data, const Geometry::Point& p) const;
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p);
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p);
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p);
+    virtual void get_data(std::vector<double>& data, const std::vector<Geometry::Point>& p) const;
+    virtual void get_data(std::vector<Geometry::Vector>& data, const std::vector<Geometry::Point>& p) const;
+    virtual void get_data(std::vector<Geometry::Tensor>& data, const std::vector<Geometry::Point>& p) const;
     
-    bool is_double();
-    bool is_scalar();
-    bool is_vector();
-    bool is_tensor();
+    bool is_double() const;
+    bool is_scalar() const;
+    bool is_vector() const;
+    bool is_tensor() const;
 
   protected:
     bool is_double_;
@@ -64,17 +66,10 @@ class SCISHARE MappingDataSource
     bool is_tensor_;
 };
 
-typedef LockingHandle<MappingDataSource> MappingDataSourceHandle;
+typedef boost::shared_ptr<MappingDataSource> MappingDataSourceHandle;
 
+MappingDataSourceHandle SCISHARE CreateDataSource(FieldHandle sfield, FieldHandle wfield, const AlgorithmBase* algo);
 
-// Function for creating it
-
-bool SCISHARE CreateDataSource(MappingDataSourceHandle& handle, 
-                      FieldHandle& sfield,
-                      FieldHandle& wfield, 
-                      AlgoBase* algo);
-
-
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif

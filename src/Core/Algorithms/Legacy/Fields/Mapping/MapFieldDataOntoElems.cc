@@ -30,7 +30,7 @@
 #include <Core/Thread/Barrier.h>
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
-//#include <Core/Algorithms/Fields/Mapping/MappingDataSource.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MappingDataSource.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Matrix.h>
@@ -54,12 +54,13 @@ using namespace SCIRun;
 
 MapFieldDataOntoElemsAlgo::MapFieldDataOntoElemsAlgo()
 {
-  add_option("quantity","value","value|gradient|gradientnorm|flux");
-  add_option("value","interpolateddata","interpolateddataonly|interpolateddata|closestnodedata|closestinterpolateddata");
-  add_option("sample_points","regular1","regular1|regular2|regular3|regular4|regular5|gaussian1|gaussian2|gaussian3");
-  add_option("sample_method","average","average|integrate|min|max|sum|mostcommon|median");
-  add_scalar("outside_value",0.0);
-  add_scalar("max_distance",DBL_MAX);
+  using namespace Parameters;
+  add_option(Quantity, "value", "value|gradient|gradientnorm|flux");
+  add_option(InterpolationModel, "interpolateddata","interpolateddataonly|interpolateddata|closestnodedata|closestinterpolateddata");
+  add_option(SamplePoints, "regular1","regular1|regular2|regular3|regular4|regular5|gaussian1|gaussian2|gaussian3");
+  add_option(SampleMethod, "average","average|integrate|min|max|sum|mostcommon|median");
+  addParameter(OutsideValue, 0.0);
+  addParameter(MaxDistance, std::numeric_limits<double>::max());
 }
 
 namespace detail {
@@ -67,16 +68,17 @@ namespace detail {
 class MapFieldDataOntoElemsPAlgo
 {
   public:
-    MapFieldDataOntoElemsPAlgo() :
-      barrier_("MapFieldDataOntoElemsPAlgo Barrier") {}
+    explicit MapFieldDataOntoElemsPAlgo(unsigned int numProcs) :
+    algo_(0), is_flux_(false), has_nan_(false), def_value_(0),
+      barrier_("MapFieldDataOntoElemsPAlgo Barrier", numProcs), nproc(numProcs) {}
       
-    void parallel(int proc, int nproc);
+    void parallel(int proc);
 
     FieldHandle sfield_;
     FieldHandle wfield_;
     FieldHandle ofield_;
     
-    AlgorithmBase* algo_;
+    const AlgorithmBase* algo_;
     
     bool is_flux_;
     bool has_nan_;
@@ -103,28 +105,27 @@ class MapFieldDataOntoElemsPAlgo
       return (exist(d.xx())&&exist(d.xy())&&exist(d.xz())&&
               exist(d.yy())&&exist(d.yz())&&exist(d.zz()));
     }
-    
+    unsigned int nproc;
 };
 
-}
-
 void
-MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
+MapFieldDataOntoElemsPAlgo::parallel(int proc)
 {
   // Each thread has its own Datasource class, so it can preallocate array internally
-  MappingDataSourceHandle datasource;
   success_[proc] = true;
 
-  barrier_.wait(nproc);
+  barrier_.wait();
+
+  MappingDataSourceHandle datasource = CreateDataSource(sfield_,wfield_,algo_);
   
-  if(!(CreateDataSource(datasource,sfield_,wfield_,algo_))) 
+  if (!datasource) 
   {
     success_[proc] = false;
   }
 
-  barrier_.wait(nproc);
+  barrier_.wait();
   
-  for (int j=0; j<nproc; j++)
+  for (unsigned int j=0; j<nproc; j++)
   {
     if (success_[j] == false)
     {
@@ -133,9 +134,9 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
     }
   }
 
-  barrier_.wait(nproc);
+  barrier_.wait();
   
-  def_value_ = algo_->get_scalar("outside_value");
+  def_value_ = algo_->get(Parameters::OutsideValue).getDouble();
   
   VMesh* omesh = ofield_->vmesh();
   VField* ofield = ofield_->vfield();
@@ -150,8 +151,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
   std::vector<double> weights;
   std::vector<Point> points;
               
-  std::string sample_points = algo_->get_option("sample_points");            
-  std::string sample_method = algo_->get_option("sample_method");            
+  std::string sample_points = algo_->get_option(Parameters::SamplePoints);            
+  std::string sample_method = algo_->get_option(Parameters::SampleMethod);
               
   if (sample_points == "regular1")
   {
@@ -189,7 +190,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
   {
     if (proc == 0) algo_->error("Sampling points are not defined for this type of mesh");
     success_[proc] = false;
-    barrier_.wait(nproc); 
+    barrier_.wait(); 
     return;     
   }
                
@@ -217,7 +218,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += values[j]; num++; }
           if (num > 0) val /= num; else val = def_value_;
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
       }
       else if (sample_method== "integrate")
@@ -233,7 +234,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += values[j]*weights[j]; num++; }
           if (num > 0) val *= vol; else val = def_value_;
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }      
       }
       else if (sample_method== "min")
@@ -248,7 +249,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           for (size_t j=0; j<values.size(); j++) if (exist(values[j])) if (values[j] < val) val = values[j];
           if (val == DBL_MAX) val = def_value_; 
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }      
       }    
       else if (sample_method== "max")
@@ -263,7 +264,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           for (size_t j=0; j<values.size(); j++) if (exist(values[j])) if (values[j] > val) val = values[j];
           if (val == -DBL_MAX) val = def_value_; 
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }      
       }
       else if (sample_method== "sum")
@@ -278,7 +279,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           for (size_t j=0; j<values.size(); j++) if(exist(val)) { val += values[j]; num++; }
           if (num == 0) val = def_value_;
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
       }
       else if (sample_method== "mostcommon")
@@ -294,7 +295,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           for (size_t j=0; j<values.size();j++) if (exist(values[j])) common.push_back(values[j]);
           if (common.size() > 0)
           {
-            sort(common.begin(),common.end());
+            std::sort(common.begin(),common.end());
             val =0.0; rval =0.0;
             size_t rnum =0; size_t p = 0; size_t n = 0;
             while (p <common.size())
@@ -311,7 +312,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             rval = def_value_;
           }
           ofield->set_value(rval,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
       }
       else if (sample_method== "median")
@@ -327,8 +328,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           for (size_t j=0; j<values.size();j++) if (exist(values[j])) median.push_back(values[j]);
           if (median.size() > 0)
           {
-            sort(median.begin(),median.end());
-            int x = static_cast<index_type>(median.size()/2);
+            std::sort(median.begin(),median.end());
+            index_type x = static_cast<index_type>(median.size()/2);
             if (median.size()%2) val = (median[x]+median[x+1])*0.5;
             else val = median[x];
           }
@@ -337,14 +338,14 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             val = def_value_;
           }
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
       }
       else
       {
         if (proc == 0) algo_->error("Sampling method was not defined for flux data");
         success_[proc] = false;
-        barrier_.wait(nproc); 
+        barrier_.wait(); 
         return;       
       }
     }
@@ -365,7 +366,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += values[j]; num++; }
             if (num > 0) val = val/num; else val = def_value_;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "integrate")
@@ -379,7 +380,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(val)) { val += values[j]*weights[j]; num++; }
             if (num > 0) val *= vol;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }
         else if (sample_method== "min")
@@ -392,7 +393,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { if (values[j] < val) val = values[j]; }
             if (val == DBL_MAX) val = def_value_;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }    
         else if (sample_method== "max")
@@ -405,7 +406,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { if (values[j] > val) val = values[j]; }
             if (val == -DBL_MAX) val = def_value_;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }
         else if (sample_method== "sum")
@@ -418,7 +419,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) { if (exist(values[j])) { val += values[j]; num++;} }
             if (num == 0) val = def_value_;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "mostcommon")
@@ -432,7 +433,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { common.push_back(values[j]); }
             if (common.size() > 0)
             {
-              sort(common.begin(),common.end());
+              std::sort(common.begin(),common.end());
               val =0.0; rval =0.0;
               size_t rnum =0; size_t p = 0; size_t n = 0;
               while (p <common.size())
@@ -449,7 +450,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
               rval = def_value_;
             }
             ofield->set_value(rval,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "median")
@@ -463,8 +464,8 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { median.push_back(values[j]); }
             if (median.size())
             {
-              sort(median.begin(),median.end());
-              int x = static_cast<index_type>(median.size()/2);
+              std::sort(median.begin(),median.end());
+              index_type x = static_cast<index_type>(median.size()/2);
               if (median.size()%2) val = (median[x]+median[x+1])*0.5;
               else val = median[x];
             }
@@ -473,14 +474,14 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
               val = def_value_;
             }
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(nproc); 
+          barrier_.wait(); 
           return;       
         }
       }
@@ -498,7 +499,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += values[j]; num++; }
             if (num > 0) val = val*(1.0/num); else val = def_value_;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "integrate")
@@ -512,7 +513,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += values[j]*weights[j]; }
             val *= vol;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }
         else if (sample_method== "sum")
@@ -524,14 +525,14 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             val = Vector(0,0,0);
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += values[j]; }
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(nproc); 
+          barrier_.wait(); 
           return;       
         }    
       }
@@ -549,7 +550,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += values[j]; num++; }
             if (num > 0) val = val*(1.0/num);
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "integrate")
@@ -563,7 +564,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += weights[j]*values[j]; }
             val = val*vol;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }
         else if (sample_method== "sum")
@@ -575,14 +576,14 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             val = Tensor(0);
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { val += values[j]; }
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(nproc); 
+          barrier_.wait(); 
           return;       
         }    
       }  
@@ -611,7 +612,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           for (size_t j=1; j<values.size(); j++) val += values[j];
           val *= scale;
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
       }
       else if (sample_method== "integrate")
@@ -627,7 +628,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           for (size_t j=1; j<values.size(); j++) val += values[j]*weights[j];
           val *= vol;
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }      
       }
       else if (sample_method== "min")
@@ -641,7 +642,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           val = values[0];
           for (size_t j=1; j<values.size(); j++) if (values[j] < val) val = values[j];
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }      
       }    
       else if (sample_method== "max")
@@ -655,7 +656,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           val = values[0];
           for (size_t j=1; j<values.size(); j++) if (values[j] > val) val = values[j];
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }      
       }
       else if (sample_method== "sum")
@@ -669,7 +670,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           val = values[0];
           for (size_t j=1; j<values.size(); j++) val += values[j];
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
       }
       else if (sample_method== "mostcommon")
@@ -680,7 +681,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
           for (size_t j=0; j<grads.size();j++) values[j] = Dot(grads[j],norms[j]);
-          sort(values.begin(),values.end());
+          std::sort(values.begin(),values.end());
           val =0.0; rval =0.0;
           size_t rnum =0; size_t p = 0; size_t n = 0;
           while (p <values.size())
@@ -693,7 +694,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           }
 
           ofield->set_value(rval,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
       }
       else if (sample_method== "median")
@@ -704,19 +705,19 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
           for (size_t j=0; j<grads.size();j++) values[j] = Dot(grads[j],norms[j]);
-          sort(values.begin(),values.end());
-          int x = static_cast<index_type>(values.size()/2);
+          std::sort(values.begin(),values.end());
+          index_type x = static_cast<index_type>(values.size()/2);
           if (values.size()%2) val = (values[x]+values[x+1])*0.5;
           else val = values[x];
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+          if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
       }
       else
       {
         if (proc == 0) algo_->error("Sampling method was not defined for flux data");
         success_[proc] = false;
-        barrier_.wait(nproc); 
+        barrier_.wait(); 
         return;       
       }
     }
@@ -738,7 +739,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=1; j<values.size(); j++) val += values[j];
             val *= scale;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "integrate")
@@ -752,7 +753,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=1; j<values.size(); j++) val += values[j]*weights[j];
             val *= vol;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }
         else if (sample_method== "min")
@@ -764,7 +765,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             val = values[0];
             for (size_t j=1; j<values.size(); j++) if (values[j] < val) val = values[j];
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }    
         else if (sample_method== "max")
@@ -776,7 +777,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             val = values[0];
             for (size_t j=1; j<values.size(); j++) if (values[j] > val) val = values[j];
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }
         else if (sample_method== "sum")
@@ -788,7 +789,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             val = values[0];
             for (size_t j=1; j<values.size(); j++) val += values[j];
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "mostcommon")
@@ -797,7 +798,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           {
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
-            sort(values.begin(),values.end());
+            std::sort(values.begin(),values.end());
             val =0.0; rval =0.0;
             size_t rnum =0; size_t p = 0; size_t n = 0;
             while (p <values.size())
@@ -810,7 +811,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             }
 
             ofield->set_value(rval,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "median")
@@ -819,19 +820,19 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
           {
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
-            sort(values.begin(),values.end());
-            int x = static_cast<index_type>(values.size()/2);
+            std::sort(values.begin(),values.end());
+            index_type x = static_cast<index_type>(values.size()/2);
             if (values.size()%2) val = (values[x]+values[x+1])*0.5;
             else val = values[x];
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(nproc); 
+          barrier_.wait(); 
           return;       
         }
       }
@@ -850,7 +851,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=1; j<values.size(); j++) val += values[j];
             val *= scale;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "integrate")
@@ -864,7 +865,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=1; j<values.size(); j++) val += values[j]*weights[j];
             val *= vol;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }
         else if (sample_method== "sum")
@@ -876,14 +877,14 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             val = values[0];
             for (size_t j=1; j<values.size(); j++) val += values[j];
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(nproc); 
+          barrier_.wait(); 
           return;       
         }    
       }
@@ -902,7 +903,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=1; j<values.size(); j++) val += values[j];
             val = val* scale;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else if (sample_method== "integrate")
@@ -916,7 +917,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             for (size_t j=1; j<values.size(); j++) val += values[j]*weights[j];
             val = val*vol;
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }      
         }
         else if (sample_method== "sum")
@@ -928,14 +929,14 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
             val = values[0];
             for (size_t j=1; j<values.size(); j++) val += values[j];
             ofield->set_value(val,idx);
-            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+            if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
         }
         else
         {
           if (proc == 0) algo_->error("Sampling method was not defined for this type of data");
           success_[proc] = false;
-          barrier_.wait(nproc); 
+          barrier_.wait(); 
           return;       
         }    
       }  
@@ -944,9 +945,9 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc, int nproc)
   
   // Wait until all of the threads are done
   success_[proc] = true;
-  barrier_.wait(nproc);
+  barrier_.wait();
 }
-
+}
 
 bool
 MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, FieldHandle destination, FieldHandle& output) const
@@ -969,8 +970,8 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
   FieldInformation fo(destination);
   fo.make_constantdata();
 
-  std::string quantity = get_option("quantity");
-  std::string value = get_option("value");
+  std::string quantity = get_option(Parameters::Quantity);
+  std::string value = get_option(Parameters::InterpolationModel);
   
   if (value == "closestnodedata")
   {
@@ -1082,32 +1083,33 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
     return (false);
   }
 
+  // Number of threads is equal to the number of cores
+  int np = Parallel::NumCores();
   // Run algorithm in parallel
-  MapFieldDataOntoElemsPAlgo algo;  
+  detail::MapFieldDataOntoElemsPAlgo algo(np);  
   
   algo.sfield_ = source;
   algo.wfield_ = weights;
   algo.ofield_ = output;
   algo.algo_ = this;
     
-  // Number of threads is equal to the number of cores
-  int np = Thread::numProcessors();
   algo.success_.resize(np,true);
   // Mark whether it is a flux computation
   algo.is_flux_ = false;
   if (quantity == "flux") algo.is_flux_ = true;
 
   algo.has_nan_ = false;
-  std::string valuestr = get_option("value");
+  std::string valuestr = get_option(Parameters::InterpolationModel);
   if (valuestr == "interpolateddataonly") algo.has_nan_ = true;
 
   // Parallel algorithm
-  Thread::parallel(&algo,&MapFieldDataOntoElemsPAlgo::parallel,np,np);
+  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
 
- // Check whether algorithm succeeded
+  // Check whether algorithm succeeded
   for (int j=0; j<np; j++)
   {
-    if (algo.success_[j] == false)
+    if (!algo.success_[j])
     {
       // We get here if sample_method is incorrect
       return (false);
@@ -1140,8 +1142,8 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   FieldInformation fo(destination);
   fo.make_constantdata();
 
-  std::string quantity = get_option("quantity");
-  std::string value = get_option("value");
+  std::string quantity = get_option(Parameters::Quantity);
+  std::string value = get_option(Parameters::InterpolationModel);
   
   if (value == "closestnodedata")
   {
@@ -1211,34 +1213,34 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
     error("Could not allocate output field");
     return (false);
   }
-
+  
+  // Number of threads is equal to the number of cores
+  int np = Parallel::NumCores();
   // Run algorithm in parallel
-  MapFieldDataOntoElemsPAlgo algo;  
+  detail::MapFieldDataOntoElemsPAlgo algo(np);
   
   algo.sfield_ = source;
   algo.ofield_ = output;
   algo.algo_ = this;
-    
-  // Number of threads is equal to the number of cores
-  int np = Thread::numProcessors();
+  
   algo.success_.resize(np,true);
   // Mark whether it is a flux computation
-  algo.is_flux_ = false;
-  if (quantity == "flux") algo.is_flux_ = true;
+  algo.is_flux_ = quantity == "flux";
 
   algo.has_nan_ = false;
-  std::string valuestr = get_option("value");
+  std::string valuestr = get_option(Parameters::InterpolationModel);
   if (valuestr == "interpolateddataonly") algo.has_nan_ = true;
 
   // Parallel algorithm
-  Thread::parallel(&algo,&MapFieldDataOntoElemsPAlgo::parallel,np,np);
+  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
 
  // Check whether algorithm succeeded
   for (int j=0; j<np; j++)
   {
-    if (algo.success_[j] == false)
+    if (!algo.success_[j])
     {
-      // We get herer if sample_method is incorrect
+      // We get here if sample_method is incorrect
       return (false);
     }
   }

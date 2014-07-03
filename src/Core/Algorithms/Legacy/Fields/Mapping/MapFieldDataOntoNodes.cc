@@ -30,7 +30,7 @@
 #include <Core/Thread/Barrier.h>
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
-//#include <Core/Algorithms/Legacy/Fields/Mapping/MappingDataSource.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MappingDataSource.h>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -53,21 +53,23 @@ using namespace SCIRun;
 
 MapFieldDataOntoNodesAlgo::MapFieldDataOntoNodesAlgo()
 {
-  add_option("quantity","value","value|gradient|gradientnorm|flux");
-  add_option("value","interpolateddata","interpolateddata|closestnodedata|closestinterpolateddata");
-  add_scalar("outside_value",0.0);
-  add_scalar("max_distance",DBL_MAX);
-
+  using namespace Parameters;
+  add_option(Quantity, "value", "value|gradient|gradientnorm|flux");
+  add_option(InterpolationModel, "interpolateddata", "interpolateddata|closestnodedata|closestinterpolateddata");
+  addParameter(OutsideValue, 0.0);
+  addParameter(MaxDistance, std::numeric_limits<double>::max());
 }
 
 namespace detail {
+
 class MapFieldDataOntoNodesPAlgo
 {
   public:
-    MapFieldDataOntoNodesPAlgo() :
-      barrier_("MapFieldDataOntoNodesPAlgo Barrier") {}
+    explicit MapFieldDataOntoNodesPAlgo(unsigned int numProcs) :
+    algo_(0), is_flux_(false), 
+      barrier_("MapFieldDataOntoNodesPAlgo Barrier", numProcs), nproc(numProcs) {}
       
-    void parallel(int proc, int nproc);
+    void parallel(int proc);
 
     FieldHandle sfield_;
     FieldHandle wfield_;
@@ -79,30 +81,32 @@ class MapFieldDataOntoNodesPAlgo
     std::vector<bool> success_;
   
   private:
-    Barrier  barrier_;
+    Barrier barrier_;
+    unsigned int nproc;
 };
 
 void
-MapFieldDataOntoNodesPAlgo::parallel(int proc, int nproc)
+MapFieldDataOntoNodesPAlgo::parallel(int proc)
 {
   success_[proc] = true;
     
   // Each thread has its own Datasource class, so it can preallocate array internally
-  MappingDataSourceHandle datasource;
+  MappingDataSourceHandle datasource = CreateDataSource(sfield_,wfield_,algo_);
   
-  if(!(CreateDataSource(datasource,sfield_,wfield_,algo_))) 
+  if (!datasource) 
   {
     success_[proc] = false;
   }
 
-  barrier_.wait(nproc);
+  barrier_.wait();
   
-  for (int j=0; j<nproc; j++)
+  for (unsigned int j=0; j<nproc; j++)
   {
-    if (success_[j] == false) return;
+    if (!success_[j]) 
+      return;
   }
 
-  barrier_.wait(nproc);
+  barrier_.wait();
   
   VMesh* omesh = ofield_->vmesh();
   VField* ofield = ofield_->vfield();
@@ -124,7 +128,7 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc, int nproc)
       omesh->get_normal(norm,idx);
       datasource->get_data(val,p);
       ofield->set_value(Dot(val,norm),idx);
-      if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+      if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
     }
   }
   else
@@ -138,7 +142,7 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc, int nproc)
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
-        if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+        if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
       }
     }
     else if (datasource->is_vector())
@@ -149,7 +153,7 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc, int nproc)
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
-        if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+        if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
       }
     }
     else
@@ -160,13 +164,13 @@ MapFieldDataOntoNodesPAlgo::parallel(int proc, int nproc)
         omesh->get_center(p,idx);
         datasource->get_data(val,p);
         ofield->set_value(val,idx);
-        if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress(idx,end); } }
+        if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
       }
     }  
   }
   // Wait until all of the threads are done
   success_[proc] = true;
-  barrier_.wait(nproc);
+  barrier_.wait();
 }
 }
 
@@ -182,7 +186,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
     return (false);
   }
 
-  if (destination.get_rep() == 0)
+  if (!destination)
   {
     error("No destination field");
     return (false);
@@ -192,8 +196,8 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   FieldInformation fo(destination);
   fo.make_lineardata();
 
-  std::string quantity = get_option("quantity");
-  std::string value = get_option("value");
+  std::string quantity = get_option(Parameters::Quantity);
+  std::string value = get_option(Parameters::InterpolationModel);
   
   if (value == "closestnodedata")
   {
@@ -210,7 +214,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
     return (false);       
   }
 
-  if (weights.get_rep())
+  if (weights)
   {
     FieldInformation wfi(weights);
     if (value == "closestnodedata")
@@ -274,7 +278,7 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   }
 
   // Incorporate the weights and alter the datatype to reflect that
-  if (weights.get_rep())
+  if (weights)
   {
     FieldInformation wfi(weights);
     if ((!wfi.is_tensor())&&(!wfi.is_scalar()))
@@ -299,35 +303,33 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   output = CreateField(fo,destination->mesh());
   output->vfield()->resize_values();
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not allocate output field");
     return (false);
   }
   
+  // Number of threads is equal to the number of cores
+  int np = Parallel::NumCores();
   // Run algorithm in parallel
-  MapFieldDataOntoNodesPAlgo algo;  
+  detail::MapFieldDataOntoNodesPAlgo algo(np);  
   
   algo.sfield_ = source;
   algo.wfield_ = weights;
   algo.ofield_ = output;
   algo.algo_ = this;
-    
-  // Number of threads is equal to the number of cores
-  int np = Thread::numProcessors();
+  
   algo.success_.resize(np,true);
   // Mark whether it is a flux computation
-  algo.is_flux_ = false;
-  if (quantity == "flux") algo.is_flux_ = true;
+  algo.is_flux_ = quantity == "flux";
 
-
-  // Parallel algorithm
-  Thread::parallel(&algo,&MapFieldDataOntoNodesPAlgo::parallel,np,np);
+  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
  
  // Check whether algorithm succeeded
   for (int j=0; j<np; j++)
   {
-    if (algo.success_[j] == false)
+    if (!algo.success_[j])
     {
       // Should not be able to get here
       error("The algorithm failed for an unknown reason.");
@@ -361,8 +363,8 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   FieldInformation fo(destination);
   fo.make_lineardata();
 
-  std::string quantity = get_option("quantity");
-  std::string value = get_option("value");
+  std::string quantity = get_option(Parameters::Quantity);
+  std::string value = get_option(Parameters::InterpolationModel);
   
   if (value == "closestnodedata")
   {
@@ -433,28 +435,26 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
     return (false);
   }
   
+  // Number of threads is equal to the number of cores
+  int np = Parallel::NumCores();
   // Run algorithm in parallel
-  MapFieldDataOntoNodesPAlgo algo;  
+  detail::MapFieldDataOntoNodesPAlgo algo(np);
   
   algo.sfield_ = source;
   algo.ofield_ = output;
   algo.algo_ = this;
-    
-  // Number of threads is equal to the number of cores
-  int np = Thread::numProcessors();
+ 
   algo.success_.resize(np,true);
   // Mark whether it is a flux computation
-  algo.is_flux_ = false;
-  if (quantity == "flux") algo.is_flux_ = true;
+  algo.is_flux_ = quantity == "flux";
 
-
-  // Parallel algorithm
-  Thread::parallel(&algo,&MapFieldDataOntoNodesPAlgo::parallel,np,np);
+  auto task_i = [&algo,this](int i) { algo.parallel(i); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
  
  // Check whether algorithm succeeded
   for (int j=0; j<np; j++)
   {
-    if (algo.success_[j] == false)
+    if (!algo.success_[j])
     {
       // Should not be able to get here
       error("The algorithm failed for an unknown reason.");
