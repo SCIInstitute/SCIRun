@@ -433,10 +433,10 @@ class InterpolatedGradientNormSource : public MappingDataSource {
     double def_value_;
 
     // temp variables that need allocation for first tine use
-    std::vector<StackVector<double,3> > grads_;
+    mutable std::vector<StackVector<double,3> > grads_;
 
-    VMesh::ElemGradient       eg_;
-    VMesh::MultiElemGradient  meg_;
+    mutable VMesh::ElemGradient       eg_;
+    mutable VMesh::MultiElemGradient  meg_;
 };
 
 
@@ -1822,7 +1822,7 @@ class ClosestNodeDataSource : public MappingDataSource {
     VMesh  *smesh_;
     double def_value_;
 
-    VMesh::Node::index_type node_;
+    mutable VMesh::Node::index_type node_;
 };
 
 class ClosestNodeWeightedDataSource : public MappingDataSource {
@@ -2156,7 +2156,7 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
 
     double def_value_;
 
-    VMesh::Node::index_type node_;
+    mutable VMesh::Node::index_type node_;
     mutable VMesh::Node::index_type wnode_;
 };
 
@@ -3124,7 +3124,7 @@ namespace
 {
   bool is_valid(MappingDataSourceHandle handle)
   {
-    return handle && handle->is_scalar() || handle->is_vector() || handle->is_tensor();
+    return handle && (handle->is_scalar() || handle->is_vector() || handle->is_tensor());
   }
 
   MappingDataSourceHandle validHandle(MappingDataSource* ptr)
@@ -3137,12 +3137,12 @@ namespace
 MappingDataSourceHandle SCIRun::Core::Algorithms::Fields::CreateDataSource(FieldHandle sfield, FieldHandle wfield, const AlgorithmBase* algo)
 {
   std::string quantity = algo->get_option(Parameters::Quantity);
-  std::string value =  algo->get_option(Parameters::InterpolationModel);
+  const std::string value =  algo->get_option(Parameters::InterpolationModel);
 
-  double def_value = algo->get(Parameters::OutsideValue);
-  double max_dist = algo->get(Parameters::MaxDistance);
+  const double def_value = algo->get(Parameters::OutsideValue).getDouble();
+  const double max_dist = algo->get(Parameters::MaxDistance).getDouble();
 
-  double nan_value = std::numeric_limits<double>::quiet_NaN();
+  const double nan_value = std::numeric_limits<double>::quiet_NaN();
 
   if (quantity == "flux") quantity = "gradient";
 
@@ -3303,7 +3303,7 @@ MappingDataSourceHandle SCIRun::Core::Algorithms::Fields::CreateDataSource(Field
       }
       else
       {
-        return validHandle(new InterpolatedWeightedTensorGradientNormSource(sfield,wfield););
+        return validHandle(new InterpolatedWeightedTensorGradientNormSource(sfield,wfield));
       }
     }
     else

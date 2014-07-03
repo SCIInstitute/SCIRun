@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -44,18 +44,18 @@ namespace SCIRun {
 
 class SCISHARE MappingDataSource
 {
-  public: 
+  public:
     MappingDataSource();
     virtual ~MappingDataSource();
-    
-    virtual void get_data(double& data, const Geometry::Point& p) const = 0;
-    virtual void get_data(Geometry::Vector& data, const Geometry::Point& p) const = 0;
-    virtual void get_data(Geometry::Tensor& data, const Geometry::Point& p) const = 0;
 
-    virtual void get_data(std::vector<double>& data, const std::vector<Geometry::Point>& p) const = 0;
-    virtual void get_data(std::vector<Geometry::Vector>& data, const std::vector<Geometry::Point>& p) const = 0;
-    virtual void get_data(std::vector<Geometry::Tensor>& data, const std::vector<Geometry::Point>& p) const = 0;
-    
+    virtual void get_data(double& data, const Geometry::Point& p) const;
+    virtual void get_data(Geometry::Vector& data, const Geometry::Point& p) const;
+    virtual void get_data(Geometry::Tensor& data, const Geometry::Point& p) const;
+
+    virtual void get_data(std::vector<double>& data, const std::vector<Geometry::Point>& p) const;
+    virtual void get_data(std::vector<Geometry::Vector>& data, const std::vector<Geometry::Point>& p) const;
+    virtual void get_data(std::vector<Geometry::Tensor>& data, const std::vector<Geometry::Point>& p) const;
+
     bool is_double() const;
     bool is_scalar() const;
     bool is_vector() const;
