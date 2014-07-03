@@ -259,7 +259,9 @@ FieldHandle MapFieldDataFromElemToNodeAlgo::run(FieldHandle input_field) const
    
    if (fi.is_lineardata())
    {
-    THROW_ALGORITHM_INPUT_ERROR("Data is already located at nodes"); 
+      output = input_field;
+      remark("Data is already at the nodes"); 
+      return output;
    }
    
    if (!(fi.is_constantdata()))
