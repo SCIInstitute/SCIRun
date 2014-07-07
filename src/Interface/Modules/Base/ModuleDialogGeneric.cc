@@ -231,6 +231,38 @@ void ModuleDialogGeneric::addLineEditManager(QLineEdit* lineEdit, const Algorith
   addWidgetSlotManager(boost::make_shared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
 }
 
+class DoubleLineEditSlotManager : public WidgetSlotManager
+{
+public:
+  DoubleLineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) :
+      WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit)
+      {
+        connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
+      }
+      virtual void pull() override
+      {
+        auto newValue = QString::number(state_->getValue(stateKey_).getDouble());
+        if (newValue != lineEdit_->text())
+        {
+          lineEdit_->setText(newValue);
+          LOG_DEBUG("In new version of pull code for DoubleLineEdit: " << newValue.toStdString());
+        }
+      }
+      virtual void pushImpl() override
+      {
+        LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
+        state_->setValue(stateKey_, boost::lexical_cast<double>(lineEdit_->text().toStdString()));
+      }
+private:
+  AlgorithmParameterName stateKey_;
+  QLineEdit* lineEdit_;
+};
+
+void ModuleDialogGeneric::addDoubleLineEditManager(QLineEdit* lineEdit, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<DoubleLineEditSlotManager>(state_, *this, stateKey, lineEdit));
+}
+
 class SpinBoxSlotManager : public WidgetSlotManager
 {
 public:

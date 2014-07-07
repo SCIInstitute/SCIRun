@@ -47,8 +47,8 @@ namespace SCIRun {
         virtual void setStateDefaults() {}
 
         INPUT_PORT(0, Source, LegacyField);
-	INPUT_PORT(1, Destination, LegacyField);
-	INPUT_PORT(2, Mapping, Matrix);
+        INPUT_PORT(1, Destination, LegacyField);
+        INPUT_PORT(2, Mapping, Matrix);
         OUTPUT_PORT(0, Output, LegacyField);
       };
 

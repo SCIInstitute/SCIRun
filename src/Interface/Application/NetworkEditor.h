@@ -42,6 +42,7 @@ class QMenu;
 class QToolBar;
 class QAction;
 class QGraphicsScene;
+class DialogErrorControl; 
 Q_DECLARE_METATYPE (std::string)
 
 namespace SCIRun {
@@ -98,6 +99,7 @@ Q_SIGNALS:
   class ConnectionLine;
   class ModuleWidget;
   class NetworkEditorControllerGuiProxy;
+	class DialogErrorControl;
 
   class NetworkEditor : public QGraphicsView, 
     public SCIRun::Dataflow::Networks::ExecutableLookup, 
@@ -108,7 +110,8 @@ Q_SIGNALS:
 	  Q_OBJECT
 	
   public:
-    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent = 0);
+    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg, 
+				boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
     ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -206,7 +209,7 @@ Q_SIGNALS:
 
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
-
+		boost::shared_ptr<DialogErrorControl> dialogErrorControl_; 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
     boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;

@@ -53,6 +53,7 @@ class OutputPortWidget;
 class PositionProvider;
 class NetworkEditor;
 class PortWidgetManager;
+class DialogErrorControl; 
 
 class ModuleWidget : public QFrame, 
   public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module, public HasNotes
@@ -60,7 +61,7 @@ class ModuleWidget : public QFrame,
 	Q_OBJECT
 	
 public:
-  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
     QWidget* parent = 0);
   ~ModuleWidget();
 
@@ -144,6 +145,7 @@ private:
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
+	boost::shared_ptr<DialogErrorControl> dialogErrorControl_; 
 
   void addPortLayouts();
   void addInputPortsToLayout();

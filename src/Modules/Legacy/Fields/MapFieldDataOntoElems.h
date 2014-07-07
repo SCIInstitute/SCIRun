@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -25,40 +25,35 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/Datatype.h 
-#ifndef CORE_DATATYPES_DATATYPE_H
-#define CORE_DATATYPES_DATATYPE_H 
 
-#include <Core/Persistent/Persistent.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Datatypes/HasId.h>
-#include <Core/Datatypes/share.h>
+#ifndef MODULES_LEGACY_FIELDS_MapFieldDataOntoElems_H__
+#define MODULES_LEGACY_FIELDS_MapFieldDataOntoElems_H__
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+namespace Modules {
+namespace Fields {
 
-  class SCISHARE Datatype : public Persistent, public HasIntegerId
+  class SCISHARE MapFieldDataOntoElements : public Dataflow::Networks::Module,
+    public Has3InputPorts<FieldPortTag, FieldPortTag, FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
   {
   public:
-    Datatype();
-    virtual ~Datatype();
-    Datatype(const Datatype& other);
-    Datatype& operator=(const Datatype& rhs);
+    MapFieldDataOntoElements();
 
-    typedef HasIntegerId::id_type id_type;
+    virtual void execute();
+    virtual void setStateDefaults();
+    
+    INPUT_PORT(0, Source, LegacyField);
+    INPUT_PORT(1, Weights, LegacyField);
+    INPUT_PORT(2, Destination, LegacyField);
+    OUTPUT_PORT(0, OutputField, LegacyField);
 
-    /// @todo
-    template <typename T>
-    const T* as() const
-    {
-      return dynamic_cast<const T*>(this);
-    }
-
-    virtual Datatype* clone() const = 0;
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 
 }}}
-
 
 #endif

@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,40 +25,32 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/Datatype.h 
-#ifndef CORE_DATATYPES_DATATYPE_H
-#define CORE_DATATYPES_DATATYPE_H 
 
-#include <Core/Persistent/Persistent.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Datatypes/HasId.h>
-#include <Core/Datatypes/share.h>
+#include <Interface/Modules/Fields/MapFieldDataOntoElemsDialog.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Core/Logging/Log.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-  class SCISHARE Datatype : public Persistent, public HasIntegerId
-  {
-  public:
-    Datatype();
-    virtual ~Datatype();
-    Datatype(const Datatype& other);
-    Datatype& operator=(const Datatype& rhs);
+MapFieldDataOntoElemsDialog::MapFieldDataOntoElemsDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addComboBoxManager(quantityComboBox_, Parameters::Quantity);
+  addComboBoxManager(interpolationComboBox_, Parameters::InterpolationModel);
+  addComboBoxManager(sampleMethodComboBox_, Parameters::SampleMethod);
+  addComboBoxManager(samplePointsComboBox_, Parameters::SamplePoints);
+  addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
+  addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
+}
 
-    typedef HasIntegerId::id_type id_type;
-
-    /// @todo
-    template <typename T>
-    const T* as() const
-    {
-      return dynamic_cast<const T*>(this);
-    }
-
-    virtual Datatype* clone() const = 0;
-  };
-
-}}}
-
-
-#endif
+void MapFieldDataOntoElemsDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -52,17 +52,17 @@ class MapFieldDataFromSourceToDestinationClosestDataPAlgo
   public:
     MapFieldDataFromSourceToDestinationClosestDataPAlgo() :
       barrier_(" MapFieldDataFromSourceToDestinationClosestDataPAlgo Barrier") {}
-      
+
     void parallel(int proc, int nproc);
 
     VField* sfield_;
     VField* dfield_;
     VMesh*  smesh_;
     VMesh*  dmesh_;
-    
+
     double  maxdist_;
     AlgoBase * algo_;
-    
+
   private:
     Barrier  barrier_;
 };
@@ -78,14 +78,14 @@ MapFieldDataFromSourceToDestinationClosestDataPAlgo::parallel(int proc, int npro
   if (proc == nproc-1) end = num_values;
 
   barrier_.wait(nproc);
-  
+
   int cnt = 0;
-  
+
   if (dfield_->basis_order() == 0 && sfield_->basis_order() == 0)
   {
     Point p, r;
     VMesh::Elem::index_type didx;
-    
+
     for (VMesh::Elem::index_type idx=start; idx<end;idx++)
     {
       dmesh_->get_center(p,idx);
@@ -154,7 +154,7 @@ MapFieldDataFromSourceToDestinationClosestDataPAlgo::parallel(int proc, int npro
       if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
     }
   }
-  
+
   barrier_.wait(nproc);
 }
 
@@ -168,20 +168,20 @@ class MapFieldDataFromSourceToDestinationSingleDestinationPAlgo
   public:
     MapFieldDataFromSourceToDestinationSingleDestinationPAlgo() :
       barrier_(" MapFieldDataFromSourceToDestinationSingleDestinationPAlgo Barrier") {}
-      
+
     void parallel(int proc, int nproc);
 
     VField* sfield_;
     VField* dfield_;
     VMesh*  smesh_;
     VMesh*  dmesh_;
-    
+
     std::vector<index_type> tcc_;
     std::vector<index_type> cc_;
-  
+
     double  maxdist_;
     AlgoBase* algo_;
-    
+
   private:
     Barrier  barrier_;
 };
@@ -204,7 +204,7 @@ MapFieldDataFromSourceToDestinationSingleDestinationPAlgo::parallel(int proc, in
 
   barrier_.wait(nproc);
   int cnt = 0;
-  
+
   if (sfield_->basis_order() == 0 && dfield_->basis_order() == 0)
   {
     Point p, r;
@@ -283,7 +283,7 @@ MapFieldDataFromSourceToDestinationSingleDestinationPAlgo::parallel(int proc, in
       if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
     }
   }
-  
+
   barrier_.wait(nproc);
 
   // Copy the data thread safe
@@ -316,17 +316,17 @@ class MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo
   public:
     MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo() :
       barrier_(" MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo Barrier") {}
-      
+
     void parallel(int proc, int nproc);
 
     VField* sfield_;
     VField* dfield_;
     VMesh*  smesh_;
     VMesh*  dmesh_;
-    
+
     double  maxdist_;
     AlgoBase*  algo_;
-    
+
   private:
     Barrier  barrier_;
 };
@@ -342,17 +342,17 @@ MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo::parallel(int proc, int
   if (proc == nproc-1) end = num_values;
 
   barrier_.wait(nproc);
-  
+
   int cnt = 0;
   if (dfield_->basis_order() == 0 && sfield_->basis_order() == 0)
   {
     Point p, r;
     VMesh::Elem::index_type didx;
-    
+
     for (VMesh::Elem::index_type idx=start; idx<end;idx++)
     {
       dmesh_->get_center(p,idx);
-    
+
       double dist;
       if(smesh_->find_closest_elem(dist,r,didx,p))
       {
@@ -433,11 +433,11 @@ MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo::parallel(int proc, int
 
 bool
 MapFieldDataFromSourceToDestinationAlgo::
-run(FieldHandle source, FieldHandle destination, 
+run(FieldHandle source, FieldHandle destination,
     FieldHandle& output)
 {
   algo_start("MapFieldDataFromSourceToDestination");
-  
+
   if (source.get_rep() == 0)
   {
     error("No source field");
@@ -453,16 +453,16 @@ run(FieldHandle source, FieldHandle destination,
   FieldInformation fis(source);
   FieldInformation fid(destination);
   fid.set_data_type(fis.get_data_type());
-  
+
   if (fid.is_nodata()) fid.make_lineardata();
   output = CreateField(fid,destination->mesh());
-  
+
   if (output.get_rep() == 0)
   {
     error("Could not allocate output field");
     algo_end(); return (false);
   }
-  
+
   // Determine output type
 
   VMesh* smesh = source->vmesh();
@@ -474,7 +474,7 @@ run(FieldHandle source, FieldHandle destination,
   dfield->resize_values();
   dfield->clear_all_values();
   dfield->set_all_values(get_scalar("default_value"));
-  
+
   std::string method = get_option("method");
   int sbasis_order = sfield->basis_order();
   int dbasis_order = dfield->basis_order();
@@ -482,20 +482,20 @@ run(FieldHandle source, FieldHandle destination,
   if (sbasis_order < 0)
   {
     error("Source field basis order needs to constant or linear");
-    algo_end(); return (false);  
+    algo_end(); return (false);
   }
 
   if (dbasis_order < 0)
   {
     error("Destination field basis order needs to constant or linear");
-    algo_end(); return (false);  
+    algo_end(); return (false);
   }
 
   if (method == "closestdata")
   {
     if (sbasis_order == 0) smesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
     else smesh->synchronize(Mesh::FIND_CLOSEST_NODE_E);
-  } 
+  }
   else if(method == "singledestination")
   {
     if (dbasis_order == 0) dmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
@@ -516,7 +516,7 @@ run(FieldHandle source, FieldHandle destination,
   }
 
   double maxdist = get_scalar("max_distance");
-    
+
   if (method == "closestdata")
   {
     MapFieldDataFromSourceToDestinationClosestDataPAlgo algo;
@@ -526,7 +526,7 @@ run(FieldHandle source, FieldHandle destination,
     algo.dmesh_ = dmesh;
     algo.maxdist_ = maxdist;
     algo.algo_ = this;
-    
+
     int np = Thread::numProcessors();
     Thread::parallel(&algo,&MapFieldDataFromSourceToDestinationClosestDataPAlgo::parallel,np,np);
   }
@@ -539,13 +539,13 @@ run(FieldHandle source, FieldHandle destination,
     algo.dmesh_ = dmesh;
     algo.maxdist_ = maxdist;
     algo.algo_ = this;
-    
+
     int np = Thread::numProcessors();
     np = 1;
     Thread::parallel(&algo,&MapFieldDataFromSourceToDestinationSingleDestinationPAlgo::parallel,np,np);
   }
   else if (method == "interpolateddata")
-  { 
+  {
     MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo algo;
     algo.sfield_ = sfield;
     algo.dfield_ = dfield;
@@ -555,11 +555,11 @@ run(FieldHandle source, FieldHandle destination,
     algo.algo_ = this;
 
     int np = Thread::numProcessors();
-    Thread::parallel(&algo,&MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo::parallel,np,np);  
+    Thread::parallel(&algo,&MapFieldDataFromSourceToDestinationInterpolatedDataPAlgo::parallel,np,np);
   }
- 
+
   dfield->copy_properties(destination->vfield());
-  
+
   algo_end(); return (true);
 }
 

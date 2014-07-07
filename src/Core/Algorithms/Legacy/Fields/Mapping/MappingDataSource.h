@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,42 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-
-#include <Core/Algorithms/Util/AlgoBase.h>
+#ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPPING_DATA_SOURCE_H__
+#define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPPING_DATA_SOURCE_H__
 
 #include <vector>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-namespace SCIRunAlgo {
+// Class for extracting data from a field
 
-using namespace SCIRun;
-
-// Class for ecxtracting data from a field
-
-class SCISHARE MappingDataSource : public UsedWithLockingHandle<Mutex>
+class SCISHARE MappingDataSource
 {
-  public: 
-    // Constructor
+  public:
     MappingDataSource();
     virtual ~MappingDataSource();
-    
-    virtual void get_data(double& data, Point& p);
-    virtual void get_data(Vector& data, Point& p);
-    virtual void get_data(Tensor& data, Point& p);
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p);
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p);
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p);
-    
-    bool is_double();
-    bool is_scalar();
-    bool is_vector();
-    bool is_tensor();
+    virtual void get_data(double& data, const Geometry::Point& p) const;
+    virtual void get_data(Geometry::Vector& data, const Geometry::Point& p) const;
+    virtual void get_data(Geometry::Tensor& data, const Geometry::Point& p) const;
+
+    virtual void get_data(std::vector<double>& data, const std::vector<Geometry::Point>& p) const;
+    virtual void get_data(std::vector<Geometry::Vector>& data, const std::vector<Geometry::Point>& p) const;
+    virtual void get_data(std::vector<Geometry::Tensor>& data, const std::vector<Geometry::Point>& p) const;
+
+    bool is_double() const;
+    bool is_scalar() const;
+    bool is_vector() const;
+    bool is_tensor() const;
 
   protected:
     bool is_double_;
@@ -69,15 +67,10 @@ class SCISHARE MappingDataSource : public UsedWithLockingHandle<Mutex>
     bool is_tensor_;
 };
 
-typedef LockingHandle<MappingDataSource> MappingDataSourceHandle;
+typedef boost::shared_ptr<MappingDataSource> MappingDataSourceHandle;
 
+MappingDataSourceHandle SCISHARE CreateDataSource(FieldHandle sfield, FieldHandle wfield, const AlgorithmBase* algo);
 
-// Function for creating it
+}}}}
 
-bool SCISHARE CreateDataSource(MappingDataSourceHandle& handle, 
-                      FieldHandle& sfield,
-                      FieldHandle& wfield, 
-                      AlgoBase* algo);
-
-
-} // end namespace SCIRunAlgo
+#endif

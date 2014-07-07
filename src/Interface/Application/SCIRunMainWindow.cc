@@ -49,6 +49,7 @@
 #include <Core/Logging/LoggerInterface.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
+#include <Interface/Application/DialogErrorControl.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
@@ -75,6 +76,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 	setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
   
+	dialogErrorControl_.reset(new DialogErrorControl(this)); 
   setupNetworkEditor();
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
@@ -133,7 +135,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   executeBar->addActions(networkProgressBar_->actions());
   connect(actionExecute_All_, SIGNAL(triggered()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
-	
+  
+  connect(actionExecute_All_, SIGNAL(triggered()), dialogErrorControl_.get(), SLOT(resetCounter())); 
+
 	scrollAreaWidgetContents_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
   sep->setSeparator(true);
@@ -285,7 +289,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
-  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, scrollAreaWidgetContents_);
+  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   //networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);

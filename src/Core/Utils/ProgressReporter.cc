@@ -39,8 +39,10 @@
 ///
 
 #include <Core/Utils/ProgressReporter.h>
+#include <Core/Utils/StringUtil.h>
 
 using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core;
 
 //ProgressReporter::ProgressReporter() :
 //  progressCurrent_(/*"ProgressReporter::progress_amount_", */0),
@@ -51,3 +53,12 @@ using namespace SCIRun::Core::Utility;
 ProgressReporter::~ProgressReporter()
 {
 }
+
+
+int AtomicCounter::operator()() const
+{
+  counter_.fetch_add(1);
+  return counter_;
+}
+
+boost::atomic<int> AtomicCounter::counter_(0);

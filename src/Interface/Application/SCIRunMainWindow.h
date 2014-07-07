@@ -67,6 +67,7 @@ public:
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
+
 public Q_SLOTS:
   void executeAll();
 protected:
@@ -107,6 +108,7 @@ private:
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
+  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_; 
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
