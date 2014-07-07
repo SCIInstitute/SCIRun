@@ -1,0 +1,12 @@
+language: cpp
+
+compiler: clang
+
+before_install: 
+- sudo pip install cpp-coveralls
+
+script:
+- ./configure --ENABLE_GCOV_DATA_FILES:BOOL=ON
+
+after_success:
+- coveralls --exclude Externals
