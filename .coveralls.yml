@@ -3,7 +3,7 @@ language: cpp
 compiler: clang
 
 before_install: 
-- sudo pip install cpp-coveralls
+- sudo apt-get install cpp-coveralls
 
 script:
 - ./configure --ENABLE_GCOV_DATA_FILES:BOOL=ON
