@@ -43,7 +43,9 @@ void SimpleSink::waitForData()
 
 SCIRun::Core::Datatypes::DatatypeHandleOption SimpleSink::receive()
 {
-  return data_;
+  auto data = data_;
+  setHasData(false);
+  return data;
 }
 
 void SimpleSink::setHasData(bool dataPresent) 
