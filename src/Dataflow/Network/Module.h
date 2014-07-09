@@ -389,6 +389,50 @@ namespace Networks {
     virtual bool needToExecute() const override { return true; }
   };
 
+  class SCISHARE InputsChangedChecker
+  {
+  public:
+    virtual ~InputsChangedChecker() {}
+
+    virtual bool inputsChanged() const = 0;
+  };
+
+  typedef boost::shared_ptr<InputsChangedChecker> InputsChangedCheckerHandle;
+
+  class SCISHARE StateChangedChecker
+  {
+  public:
+    virtual ~StateChangedChecker() {}
+
+    virtual bool stateChanged() const = 0;
+  };
+
+  typedef boost::shared_ptr<StateChangedChecker> StateChangedCheckerHandle;
+
+  class SCISHARE OutputPortsCachedChecker
+  {
+  public:
+    virtual ~OutputPortsCachedChecker() {}
+
+    virtual bool outputPortsCached() const = 0;
+  };
+
+  typedef boost::shared_ptr<OutputPortsCachedChecker> OutputPortsCachedCheckerHandle;
+
+  class SCISHARE DynamicReexecutionStrategy : public ModuleReexecutionStrategy
+  {
+  public:
+    DynamicReexecutionStrategy(
+      InputsChangedCheckerHandle inputsChanged,
+      StateChangedCheckerHandle stateChanged,
+      OutputPortsCachedCheckerHandle outputsCached);
+    virtual bool needToExecute() const override;
+  private:
+    InputsChangedCheckerHandle inputsChanged_;
+    StateChangedCheckerHandle stateChanged_;
+    OutputPortsCachedCheckerHandle outputsCached_;
+  };
+
 }}
 
 

@@ -533,3 +533,18 @@ void ModuleWithAsyncDynamicPorts::portRemovedSlot(const ModuleId& mid, const Por
     portRemovedSlotImpl(pid);
   }
 }
+
+DynamicReexecutionStrategy::DynamicReexecutionStrategy(
+  InputsChangedCheckerHandle inputsChanged,
+  StateChangedCheckerHandle stateChanged,
+  OutputPortsCachedCheckerHandle outputsCached) : inputsChanged_(inputsChanged), stateChanged_(stateChanged), outputsCached_(outputsCached) 
+{
+  ENSURE_NOT_NULL(inputsChanged_, "InputsChangedChecker");
+  ENSURE_NOT_NULL(stateChanged_, "StateChangedChecker");
+  ENSURE_NOT_NULL(outputsCached_, "OutputPortsCachedChecker");
+}
+
+bool DynamicReexecutionStrategy::needToExecute() const
+{
+  return inputsChanged_->inputsChanged() || stateChanged_->stateChanged() || !outputsCached_->outputPortsCached();
+}
