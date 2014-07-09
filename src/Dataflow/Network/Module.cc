@@ -84,6 +84,8 @@ Module::Module(const ModuleLookupInfo& info,
   log.flush();
   
   initStateObserver(state_.get());
+
+  setRexecutionStrategy(boost::make_shared<AlwaysReexecuteStrategy>());
 }
 
 Module::~Module()
@@ -481,9 +483,22 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
 
 bool Module::needToExecute() const  
 {
+  if (reexecute_)
+    return reexecute_->needToExecute();
+  
   return true;
   //return newStatePresent() || inputsChanged();
     /// @todo: || !oports_cached()
+}
+
+ModuleReexecutionStrategyHandle Module::getRexecutionStrategy() const
+{
+  return reexecute_;
+}
+
+void Module::setRexecutionStrategy(ModuleReexecutionStrategyHandle caching)
+{
+  reexecute_ = caching;
 }
 
 bool Module::inputsChanged() const

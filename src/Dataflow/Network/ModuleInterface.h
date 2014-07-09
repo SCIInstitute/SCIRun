@@ -77,6 +77,16 @@ namespace Networks {
   
   typedef boost::function<void(bool)> UiToggleFunc;
 
+  class SCISHARE ModuleReexecutionStrategy
+  {
+  public:
+    virtual ~ModuleReexecutionStrategy() {}
+
+    virtual bool needToExecute() const = 0;
+  };
+
+  typedef boost::shared_ptr<ModuleReexecutionStrategy> ModuleReexecutionStrategyHandle;
+
   /// @todo: interface is getting bloated, segregate it.
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
   {
@@ -121,6 +131,9 @@ namespace Networks {
     /// @todo:
     // need to hook up input ports for new data coming in, and output ports for cached state.
     virtual bool needToExecute() const = 0;
+
+    virtual ModuleReexecutionStrategyHandle getRexecutionStrategy() const = 0;
+    virtual void setRexecutionStrategy(ModuleReexecutionStrategyHandle caching) = 0;
 
     virtual void setStateDefaults() = 0;
 

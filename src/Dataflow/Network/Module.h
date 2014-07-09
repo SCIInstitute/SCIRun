@@ -120,7 +120,10 @@ namespace Networks {
 
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const { return algo_; }
 
-    virtual bool needToExecute() const;
+    virtual bool needToExecute() const override;
+
+    virtual ModuleReexecutionStrategyHandle getRexecutionStrategy() const override;
+    virtual void setRexecutionStrategy(ModuleReexecutionStrategyHandle caching) override;
 
     virtual bool hasDynamicPorts() const 
     {
@@ -270,6 +273,8 @@ namespace Networks {
     boost::atomic<ExecutionState> executionState_;
     std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
 
+    ModuleReexecutionStrategyHandle reexecute_;
+
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
     UiToggleFunc uiToggleFunc_;
@@ -376,6 +381,12 @@ namespace Networks {
     virtual size_t add_input_port(InputPortHandle h) override;
   private:
     bool asyncConnected_;
+  };
+
+  class SCISHARE AlwaysReexecuteStrategy : public ModuleReexecutionStrategy
+  {
+  public:
+    virtual bool needToExecute() const override { return true; }
   };
 
 }}

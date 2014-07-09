@@ -104,6 +104,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(clone, DatatypeSinkInterface*());
           MOCK_METHOD1(setHasData, void(bool));
           MOCK_METHOD0(waitForData, void());
+          MOCK_METHOD0(invalidateProvider, void());
           MOCK_METHOD0(receive, Core::Datatypes::DatatypeHandleOption());
           MOCK_CONST_METHOD0(hasChanged, bool());
           MOCK_METHOD1(connectDataHasChanged, boost::signals2::connection(const DataHasChangedSignalType::slot_type&));

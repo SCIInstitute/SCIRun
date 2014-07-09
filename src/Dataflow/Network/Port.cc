@@ -126,6 +126,12 @@ void InputPort::attach(Connection* conn)
   Port::attach(conn);
 }
 
+void InputPort::detach(Connection* conn)
+{
+  sink_->invalidateProvider();
+  Port::detach(conn);
+}
+
 InputPortInterface* InputPort::clone() const
 {
   DatatypeSinkInterfaceHandle sink(sink_->clone());

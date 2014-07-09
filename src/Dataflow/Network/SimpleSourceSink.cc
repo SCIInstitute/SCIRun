@@ -31,8 +31,9 @@ DEALINGS IN THE SOFTWARE.
 #include <Dataflow/Network/SimpleSourceSink.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-SimpleSink::SimpleSink() : previousId_(-1), hasData_(false)
+SimpleSink::SimpleSink() : hasData_(false)
 {
 }
 
@@ -41,33 +42,53 @@ void SimpleSink::waitForData()
   //do nothing
 }
 
-SCIRun::Core::Datatypes::DatatypeHandleOption SimpleSink::receive()
+bool SimpleSink::portCaching_(true);
+bool SimpleSink::portCaching() { return portCaching_; }
+void SimpleSink::setPortCaching(bool b) { portCaching_ = b; }
+
+DatatypeHandleOption SimpleSink::receive()
 {
-  auto data = data_;
-  setHasData(false);
-  return data;
+  if (dataProvider_)
+  {
+    auto data = dataProvider_();
+    previousId_ = data->id();
+    //setHasData(false);
+
+    if (!portCaching())
+      invalidateProvider();
+
+    if (hasChanged())
+      /*emit*/ dataHasChanged_(data);
+    return data;
+  }
+  return DatatypeHandleOption();
 }
 
 void SimpleSink::setHasData(bool dataPresent) 
 { 
   hasData_ = dataPresent; 
 
-  if (hasData_)
-  /*emit*/ dataHasChanged_(data_);
+//  if (hasData_ && hasChanged())
+  
 
-  if (!hasData_)
-    data_.reset();
+  //if (!hasData_)
+  //  previousId_.reset();
 }
 
-void SimpleSink::setData(SCIRun::Core::Datatypes::DatatypeHandle data)
+void SimpleSink::setData(DataProvider dataProvider)
 {
-  if (data_)
-    previousId_ = data_->id();
-  else if (data)
-    previousId_ = data->id();
+  dataProvider_ = dataProvider;
 
-  data_ = data;
-  setHasData(true);
+  if (dataProvider_)
+  {
+    auto data = dataProvider_();
+    if (data)
+    {
+      if (!previousId_)
+        previousId_ = data->id();
+      setHasData(true);
+    }
+  }
 }
 
 DatatypeSinkInterface* SimpleSink::clone() const
@@ -77,9 +98,14 @@ DatatypeSinkInterface* SimpleSink::clone() const
 
 bool SimpleSink::hasChanged() const 
 {
-  if (!data_)
+  if (!dataProvider_ || !previousId_)
     return false;
-  return previousId_ == data_->id();
+  return *previousId_ == dataProvider_()->id();
+}
+
+void SimpleSink::invalidateProvider()
+{
+  dataProvider_ = 0;
 }
 
 boost::signals2::connection SimpleSink::connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber)
@@ -87,10 +113,13 @@ boost::signals2::connection SimpleSink::connectDataHasChanged(const DataHasChang
   return dataHasChanged_.connect(subscriber);
 }
 
-void SimpleSource::send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data)
+void SimpleSource::send(DatatypeSinkInterfaceHandle receiver, DatatypeHandle data)
 {
-  SimpleSink* sink = dynamic_cast<SimpleSink*>(receiver.get());
+  auto sink = dynamic_cast<SimpleSink*>(receiver.get());
   if (!sink)
     THROW_INVALID_ARGUMENT("SimpleSource can only send to SimpleSinks");
-  sink->setData(data);
+
+  data_ = data;
+  sink->setData([this]() { return data_; });
+  //addDeleteListener(sink);
 }

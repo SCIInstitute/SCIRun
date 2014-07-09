@@ -48,6 +48,7 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Network/SimpleSourceSink.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
@@ -83,16 +84,44 @@ namespace
     return m;
   }
   const DenseMatrix Zero(DenseMatrix::Zero(3,3));
-
-  ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
-  {
-    ModuleLookupInfo info;
-    info.module_name_ = moduleName;
-    return network.add_module(info);
-  }
 }
 
-TEST(PortCachingUnitTest, TestNeedToExecute)
+namespace Testing
+{
+  class MockModuleReexecutionStrategy : public ModuleReexecutionStrategy
+  {
+  public:
+    MOCK_CONST_METHOD0(needToExecute, bool());
+  };
+
+  typedef boost::shared_ptr<MockModuleReexecutionStrategy> MockModuleReexecutionStrategyPtr;
+}
+
+#if GTEST_HAS_COMBINE
+
+using ::testing::Bool;
+using ::testing::Values;
+using ::testing::Combine;
+
+class PortCachingUnitTest : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool> >
+{
+public:
+  PortCachingUnitTest() : 
+    portCaching_(::std::tr1::get<0>(GetParam())),
+    needToExecute_(::std::tr1::get<1>(GetParam()))
+  {
+  }
+protected:
+  bool portCaching_, needToExecute_;
+};
+
+INSTANTIATE_TEST_CASE_P(
+  TestNeedToExecute,
+  PortCachingUnitTest,
+  Combine(Bool(), Bool())
+  );
+
+TEST_P(PortCachingUnitTest, TestNeedToExecute)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
@@ -108,7 +137,6 @@ TEST(PortCachingUnitTest, TestNeedToExecute)
   EXPECT_EQ(3, network->nmodules());
 
   network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 0));
-  EXPECT_EQ(1, network->nconnections());
   network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, network->nconnections());
 
@@ -116,23 +144,44 @@ TEST(PortCachingUnitTest, TestNeedToExecute)
   ASSERT_TRUE(sendModule != nullptr);
   NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
+
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
   sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
 
-  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-  //manually execute the network, in the correct order.
-  send->execute();
-  process->execute();
-  receive->execute();
+  Testing::MockModuleReexecutionStrategyPtr mockNeedToExecute(new NiceMock<Testing::MockModuleReexecutionStrategy>);
+  process->setRexecutionStrategy(mockNeedToExecute);
 
-  ASSERT_TRUE(evalModule->executeCalled_);
-  ASSERT_TRUE(evalModule->expensiveComputationDone_);
+  {
+    evalModule->resetFlags();
+    std::cout << "NeedToExecute = " << needToExecute_ << ", PortCaching = " << portCaching_ << std::endl;
+    EXPECT_CALL(*mockNeedToExecute, needToExecute()).Times(1).WillOnce(Return(needToExecute_));
+    SimpleSink::setPortCaching(portCaching_);
+
+    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    
+    send->execute();
+    process->execute();
+    if (needToExecute_)
+      receive->execute();
+    else
+      EXPECT_THROW(receive->execute(), NoHandleOnPortException);
+
+    EXPECT_TRUE(evalModule->executeCalled_);
+    EXPECT_EQ(evalModule->expensiveComputationDone_, needToExecute_);
+  }
+  
+  std::cout << "Rest of test" << std::endl;
+  EXPECT_CALL(*mockNeedToExecute, needToExecute()).WillRepeatedly(Return(true));
 
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
   ASSERT_TRUE(receiveModule != nullptr);
-  ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
+
+  if (evalModule->expensiveComputationDone_)
+  {
+    ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
+  }
 
   evalModule->resetFlags();
   send->execute();
@@ -141,6 +190,7 @@ TEST(PortCachingUnitTest, TestNeedToExecute)
   receive->execute();
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 
+  evalModule->resetFlags();
   send->execute();
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
   process->get_state()->setValue(Variables::ScalarValue, 2.0);
@@ -149,3 +199,4 @@ TEST(PortCachingUnitTest, TestNeedToExecute)
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 }
 
+#endif
