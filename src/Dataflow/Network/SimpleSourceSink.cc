@@ -42,9 +42,9 @@ void SimpleSink::waitForData()
   //do nothing
 }
 
-bool SimpleSink::portCaching_(true);
-bool SimpleSink::portCaching() { return portCaching_; }
-void SimpleSink::setPortCaching(bool b) { portCaching_ = b; }
+bool SimpleSink::globalPortCaching_(true); /// @todo: configurable on a port-by-port basis
+bool SimpleSink::globalPortCachingFlag() { return globalPortCaching_; }
+void SimpleSink::setGlobalPortCachingFlag(bool value) { globalPortCaching_ = value; }
 
 DatatypeHandleOption SimpleSink::receive()
 {
@@ -54,7 +54,7 @@ DatatypeHandleOption SimpleSink::receive()
     previousId_ = data->id();
     //setHasData(false);
 
-    if (!portCaching())
+    if (!globalPortCachingFlag())
       invalidateProvider();
 
     if (hasChanged())

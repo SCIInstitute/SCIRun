@@ -57,15 +57,15 @@ namespace SCIRun
         virtual void invalidateProvider();
         virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber);
 
-        static bool portCaching();
-        static void setPortCaching(bool b);
+        static bool globalPortCachingFlag();
+        static void setGlobalPortCachingFlag(bool value);
 
       private:
         DataProvider dataProvider_;
         boost::optional<SCIRun::Core::Datatypes::Datatype::id_type> previousId_;
         bool hasData_;
         DataHasChangedSignalType dataHasChanged_;
-        static bool portCaching_;
+        static bool globalPortCaching_;
       };
     
       /*

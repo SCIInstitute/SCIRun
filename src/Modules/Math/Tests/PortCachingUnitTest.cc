@@ -157,7 +157,7 @@ TEST_P(PortCachingUnitTest, TestNeedToExecute)
     evalModule->resetFlags();
     std::cout << "NeedToExecute = " << needToExecute_ << ", PortCaching = " << portCaching_ << std::endl;
     EXPECT_CALL(*mockNeedToExecute, needToExecute()).Times(1).WillOnce(Return(needToExecute_));
-    SimpleSink::setPortCaching(portCaching_);
+    SimpleSink::setGlobalPortCachingFlag(portCaching_);
 
     process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
     
