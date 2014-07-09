@@ -38,7 +38,7 @@
 #include <Core/Datatypes/MatrixIO.h>
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+#include <Modules/Basic/NeedToExecuteTester.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
@@ -51,7 +51,6 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -103,7 +102,7 @@ TEST(PortCachingUnitTest, TestNeedToExecute)
   auto network = controller.getNetwork();
   
   ModuleHandle send = controller.addModule("SendTestMatrix");
-  ModuleHandle process = controller.addModule("EvaluateLinearAlgebraUnary");
+  ModuleHandle process = controller.addModule("NeedToExecuteTester");
   ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
 
   EXPECT_EQ(3, network->nmodules());
@@ -115,8 +114,9 @@ TEST(PortCachingUnitTest, TestNeedToExecute)
 
   SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
-  EvaluateLinearAlgebraUnaryModule* evalModule = dynamic_cast<EvaluateLinearAlgebraUnaryModule*>(process.get());
+  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
+  ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
   sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
@@ -127,23 +127,25 @@ TEST(PortCachingUnitTest, TestNeedToExecute)
   process->execute();
   receive->execute();
 
+  ASSERT_TRUE(evalModule->executeCalled_);
+  ASSERT_TRUE(evalModule->expensiveComputationDone_);
+
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
   ASSERT_TRUE(receiveModule != nullptr);
   ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
 
-  EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
-
+  evalModule->resetFlags();
   send->execute();
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   process->execute();
   receive->execute();
-  EXPECT_EQ(input->transpose(), *receiveModule->latestReceivedMatrix());
+  EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 
   send->execute();
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
   process->get_state()->setValue(Variables::ScalarValue, 2.0);
   process->execute();
   receive->execute();
-  EXPECT_EQ(2.0 * *input, *receiveModule->latestReceivedMatrix());
+  EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 }
 

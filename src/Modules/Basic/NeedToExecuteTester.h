@@ -25,31 +25,35 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Basic/SendTestMatrix.cc
 
-#include <iostream>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Modules/Basic/SendTestMatrix.h>
+#ifndef MODULES_BASIC_NEED_TO_EXECUTE_TESTER_H
+#define MODULES_BASIC_NEED_TO_EXECUTE_TESTER_H
 
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/share.h>
 
-SendTestMatrixModule::SendTestMatrixModule()
-  : Module(ModuleLookupInfo("SendTestMatrix", "Testing", "SCIRun"))
-{
-  INITIALIZE_PORT(TestMatrix);
-}
-
-void SendTestMatrixModule::execute()
-{
-  data_ = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue("MatrixToSend"));
-
-  if (!data_)
+namespace SCIRun {
+namespace Modules {
+namespace Basic {
+  
+  class SCISHARE NeedToExecuteTester : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
   {
-    error("SendTestMatrix error: data is null.");
-    return;
-  }
+  public:
+    NeedToExecuteTester();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+    
+    INPUT_PORT(0, TestMatrixIn, DenseMatrix);
+    OUTPUT_PORT(0, TestMatrixOut, DenseMatrix);
 
-  sendOutput(TestMatrix, data_);
-}
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+    bool expensiveComputationDone_, executeCalled_;
+    void resetFlags();
+  };
+
+}}}
+
+#endif

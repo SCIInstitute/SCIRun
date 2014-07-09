@@ -25,31 +25,42 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Basic/SendTestMatrix.cc
 
 #include <iostream>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Modules/Basic/SendTestMatrix.h>
+#include <Modules/Basic/NeedToExecuteTester.h>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-SendTestMatrixModule::SendTestMatrixModule()
-  : Module(ModuleLookupInfo("SendTestMatrix", "Testing", "SCIRun"))
+const ModuleLookupInfo NeedToExecuteTester::staticInfo_("NeedToExecuteTester", "Testing", "SCIRun");
+
+NeedToExecuteTester::NeedToExecuteTester() : Module(staticInfo_, false), expensiveComputationDone_(false), executeCalled_(false)
 {
-  INITIALIZE_PORT(TestMatrix);
+  INITIALIZE_PORT(TestMatrixIn);
+  INITIALIZE_PORT(TestMatrixOut);
 }
 
-void SendTestMatrixModule::execute()
+void NeedToExecuteTester::setStateDefaults()
 {
-  data_ = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue("MatrixToSend"));
 
-  if (!data_)
+}
+
+void NeedToExecuteTester::execute()
+{
+  executeCalled_ = true;
+
+  auto in = getRequiredInput(TestMatrixIn);
+
+  if (needToExecute())
   {
-    error("SendTestMatrix error: data is null.");
-    return;
+    expensiveComputationDone_ = true;
+    sendOutput(TestMatrixOut, in);
   }
+}
 
-  sendOutput(TestMatrix, data_);
+void NeedToExecuteTester::resetFlags()
+{
+  executeCalled_ = expensiveComputationDone_ = false;
 }
