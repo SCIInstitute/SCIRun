@@ -170,6 +170,19 @@ TEST_P(PortCachingUnitTest, TestNeedToExecute)
 
     EXPECT_TRUE(evalModule->executeCalled_);
     EXPECT_EQ(evalModule->expensiveComputationDone_, needToExecute_);
+
+    if (portCaching_ && evalModule->expensiveComputationDone_)
+    {
+      // to simulate real life behavior
+      EXPECT_CALL(*mockNeedToExecute, needToExecute()).Times(1).WillOnce(Return(false));
+      evalModule->resetFlags();
+      send->execute();
+      process->execute();
+      receive->execute();
+
+      EXPECT_TRUE(evalModule->executeCalled_);
+      EXPECT_FALSE(evalModule->expensiveComputationDone_);
+    }
   }
   
   std::cout << "Rest of test" << std::endl;
