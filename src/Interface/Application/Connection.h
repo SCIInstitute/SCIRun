@@ -42,6 +42,7 @@ namespace SCIRun {
 namespace Gui {
 
 class PortWidget;
+class ModuleWidget; 
 
 class ConnectionDrawStrategy
 {
@@ -159,6 +160,7 @@ public:
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
   void setType(ConnectionDrawType type);
   ConnectionDrawType getType() const;
+	void getModuleXCoordinates(); 
 Q_SIGNALS:
   void typeChanged(ConnectionDrawStrategyPtr drawerMaker);
 private:
