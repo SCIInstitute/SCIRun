@@ -141,12 +141,12 @@ protected:
 };
 
 INSTANTIATE_TEST_CASE_P(
-  TestNeedToExecute,
+  TestWithMockReexecute,
   PortCachingUnitTest,
   Combine(Bool(), Bool())
   );
 
-TEST_P(PortCachingUnitTest, TestNeedToExecute)
+TEST_P(PortCachingUnitTest, TestWithMockReexecute)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
@@ -237,8 +237,70 @@ TEST_P(PortCachingUnitTest, TestNeedToExecute)
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 }
 
-TEST_F(PortCachingUnitTest, TestNeedToExecuteRealVersion)
+class ReexecuteStrategyUnitTest : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool> >
 {
+public:
+  ReexecuteStrategyUnitTest() : 
+    inputsChanged_(::std::tr1::get<0>(GetParam())),
+    stateChanged_(::std::tr1::get<1>(GetParam())),
+    oportsCached_(::std::tr1::get<2>(GetParam()))
+  {
+  }
+protected:
+  bool inputsChanged_, stateChanged_, oportsCached_;
+};
+
+INSTANTIATE_TEST_CASE_P(
+  TestAllCombinationsWithMocks,
+  ReexecuteStrategyUnitTest,
+  Combine(Bool(), Bool(), Bool())
+  );
+
+INSTANTIATE_TEST_CASE_P(
+  TestNeedToExecuteWithRealInputsChanged,
+  ReexecuteStrategyUnitTest,
+  Combine(Bool(), Bool(), Bool())
+  );
+
+INSTANTIATE_TEST_CASE_P(
+  TestNeedToExecuteWithRealStateChanged,
+  ReexecuteStrategyUnitTest,
+  Combine(Bool(), Bool(), Bool())
+  );
+
+INSTANTIATE_TEST_CASE_P(
+  TestNeedToExecuteWithRealOportsCached,
+  ReexecuteStrategyUnitTest,
+  Combine(Bool(), Bool(), Bool())
+  );
+
+TEST_P(ReexecuteStrategyUnitTest, TestAllCombinationsWithMocks)
+{
+  // plug in 3 substrategies:
+  //   StateChangedChecker
+  //   InputsChangedChecker
+  //   OPortCachedChecker
+  // Class just does a disjunction of above 3 booleans
+
+  Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
+  ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
+  Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
+  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
+  Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
+  ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(oportsCached_));
+  ModuleReexecutionStrategyHandle realNeedToExecute(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, mockOutputPortsCached));
+
+  std::cout << "NeedToExecute = " << true << 
+    ", inputsChanged_ = " << inputsChanged_ <<
+    ", stateChanged_ = " << stateChanged_ <<
+    ", oportsCached_ = " << oportsCached_ << std::endl;
+  EXPECT_EQ(inputsChanged_ || stateChanged_ || !oportsCached_, realNeedToExecute->needToExecute());
+}
+
+
+TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
+{
+  FAIL() << "todo";
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
@@ -250,8 +312,11 @@ TEST_F(PortCachingUnitTest, TestNeedToExecuteRealVersion)
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
   ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
 
+  EXPECT_EQ(3, network->nmodules());
+
   network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 0));
   network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
+  EXPECT_EQ(2, network->nconnections());
 
   SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
@@ -263,32 +328,45 @@ TEST_F(PortCachingUnitTest, TestNeedToExecuteRealVersion)
   DenseMatrixHandle input = matrix1();
   sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
 
-  // plug in 3 substrategies:
-  //   StateChangedChecker
-  //   InputsChangedChecker
-  //   OPortCachedChecker
-  // Class just does a disjunction of above 3 booleans
-
   Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
+  ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
+  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
   Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
-  ModuleReexecutionStrategyHandle realNeedToExecute(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, mockOutputPortsCached));
-  process->setRexecutionStrategy(realNeedToExecute);
+  ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(oportsCached_));
+  ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, mockOutputPortsCached));
+
+  process->setRexecutionStrategy(realNeedToExecuteWithPartialMocks);
 
   {
     evalModule->resetFlags();
-    SimpleSink::setGlobalPortCachingFlag(true);
 
     process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
 
     send->execute();
     process->execute();
-    receive->execute();
+    if (realNeedToExecuteWithPartialMocks->needToExecute())
+      receive->execute();
+    else
+      EXPECT_THROW(receive->execute(), NoHandleOnPortException);
 
     EXPECT_TRUE(evalModule->executeCalled_);
-    EXPECT_EQ(evalModule->expensiveComputationDone_, needToExecute_);
+    //EXPECT_EQ(evalModule->expensiveComputationDone_, needToExecute_);
 
+    if (evalModule->expensiveComputationDone_)
+    {
+      // to simulate real life behavior
+      evalModule->resetFlags();
+      send->execute();
+      process->execute();
+      receive->execute();
+
+      EXPECT_TRUE(evalModule->executeCalled_);
+      EXPECT_FALSE(evalModule->expensiveComputationDone_);
+    }
   }
+
+  std::cout << "Rest of test" << std::endl;
 
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
   ASSERT_TRUE(receiveModule != nullptr);
@@ -297,7 +375,208 @@ TEST_F(PortCachingUnitTest, TestNeedToExecuteRealVersion)
   {
     ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
   }
-  
+
+  evalModule->resetFlags();
+  send->execute();
+  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  process->execute();
+  receive->execute();
+  EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
+
+  evalModule->resetFlags();
+  send->execute();
+  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  process->get_state()->setValue(Variables::ScalarValue, 2.0);
+  process->execute();
+  receive->execute();
+  EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
+}
+
+TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
+{
+  FAIL() << "todo";
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af);
+
+  auto network = controller.getNetwork();
+
+  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle process = controller.addModule("NeedToExecuteTester");
+  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+
+  EXPECT_EQ(3, network->nmodules());
+
+  network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 0));
+  network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
+  EXPECT_EQ(2, network->nconnections());
+
+  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  ASSERT_TRUE(sendModule != nullptr);
+  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  ASSERT_TRUE(evalModule != nullptr);
+
+  ASSERT_FALSE(evalModule->executeCalled_);
+
+  DenseMatrixHandle input = matrix1();
+  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+
+  Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
+  ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
+  Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
+  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
+  Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
+  ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(oportsCached_));
+  ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, mockOutputPortsCached));
+
+  process->setRexecutionStrategy(realNeedToExecuteWithPartialMocks);
+
+  {
+    evalModule->resetFlags();
+
+    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+
+    send->execute();
+    process->execute();
+    if (realNeedToExecuteWithPartialMocks->needToExecute())
+      receive->execute();
+    else
+      EXPECT_THROW(receive->execute(), NoHandleOnPortException);
+
+    EXPECT_TRUE(evalModule->executeCalled_);
+    //EXPECT_EQ(evalModule->expensiveComputationDone_, needToExecute_);
+
+    if (evalModule->expensiveComputationDone_)
+    {
+      // to simulate real life behavior
+      evalModule->resetFlags();
+      send->execute();
+      process->execute();
+      receive->execute();
+
+      EXPECT_TRUE(evalModule->executeCalled_);
+      EXPECT_FALSE(evalModule->expensiveComputationDone_);
+    }
+  }
+
+  std::cout << "Rest of test" << std::endl;
+
+  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
+  ASSERT_TRUE(receiveModule != nullptr);
+
+  if (evalModule->expensiveComputationDone_)
+  {
+    ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
+  }
+
+  evalModule->resetFlags();
+  send->execute();
+  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  process->execute();
+  receive->execute();
+  EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
+
+  evalModule->resetFlags();
+  send->execute();
+  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  process->get_state()->setValue(Variables::ScalarValue, 2.0);
+  process->execute();
+  receive->execute();
+  EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
+}
+
+TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
+{
+  FAIL() << "todo";
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af);
+
+  auto network = controller.getNetwork();
+
+  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle process = controller.addModule("NeedToExecuteTester");
+  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+
+  EXPECT_EQ(3, network->nmodules());
+
+  network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 0));
+  network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
+  EXPECT_EQ(2, network->nconnections());
+
+  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  ASSERT_TRUE(sendModule != nullptr);
+  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  ASSERT_TRUE(evalModule != nullptr);
+
+  ASSERT_FALSE(evalModule->executeCalled_);
+
+  DenseMatrixHandle input = matrix1();
+  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+
+  Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
+  ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
+  Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
+  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
+  Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
+  ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(oportsCached_));
+  ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, mockOutputPortsCached));
+
+  process->setRexecutionStrategy(realNeedToExecuteWithPartialMocks);
+
+  {
+    evalModule->resetFlags();
+
+    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+
+    send->execute();
+    process->execute();
+    if (realNeedToExecuteWithPartialMocks->needToExecute())
+      receive->execute();
+    else
+      EXPECT_THROW(receive->execute(), NoHandleOnPortException);
+
+    EXPECT_TRUE(evalModule->executeCalled_);
+    //EXPECT_EQ(evalModule->expensiveComputationDone_, needToExecute_);
+
+    if (evalModule->expensiveComputationDone_)
+    {
+      // to simulate real life behavior
+      evalModule->resetFlags();
+      send->execute();
+      process->execute();
+      receive->execute();
+
+      EXPECT_TRUE(evalModule->executeCalled_);
+      EXPECT_FALSE(evalModule->expensiveComputationDone_);
+    }
+  }
+
+  std::cout << "Rest of test" << std::endl;
+
+  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
+  ASSERT_TRUE(receiveModule != nullptr);
+
+  if (evalModule->expensiveComputationDone_)
+  {
+    ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
+  }
+
+  evalModule->resetFlags();
+  send->execute();
+  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  process->execute();
+  receive->execute();
+  EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
+
+  evalModule->resetFlags();
+  send->execute();
+  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  process->get_state()->setValue(Variables::ScalarValue, 2.0);
+  process->execute();
+  receive->execute();
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 }
 
