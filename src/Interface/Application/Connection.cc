@@ -435,18 +435,6 @@ ConnectionDrawType ConnectionFactory::getType() const
   return currentType_;
 }
 
-void ConnectionFactory::getModuleXCoordinates()
-{
-		
-		QList<QGraphicsItem*> list = scene_->items(); 
-
-		Q_FOREACH(QGraphicsItem* item, list)
-    {
-				qreal f = item->boundingRect().x(); 
-				std::cout<< f << std::endl; 
-    }
-}
-
 ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer() const
 {
   switch (currentType_)
