@@ -53,7 +53,7 @@ Required:
 
   All platforms:
     CMake 2.8.11
-      Root cmake file is SCIRunGUIPrototype/src/CMakeLists.txt.
+      Root cmake file is SCIRun/src/CMakeLists.txt.
       Building in the source directory is not permitted.
       Make sure BUILD_SHARED_LIBS is on (default setting).
 
