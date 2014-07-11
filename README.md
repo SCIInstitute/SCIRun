@@ -1,6 +1,6 @@
 ![alt text](http://www.sci.utah.edu/images/banners/splash-scirun.png "")
 
-## SCIRun 5 Prototype
+## SCIRun 5
 https://github.com/SCIInstitute/SCIRun
 
 [![Build Status](https://travis-ci.org/SCIInstitute/SCIRun.svg)](https://travis-ci.org/SCIInstitute/SCIRun)
@@ -8,7 +8,7 @@ https://github.com/SCIInstitute/SCIRun
 
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
 
-- [SCIRun 5 Prototype](#user-content-scirun-5-prototype)
+- [SCIRun 5](#user-content-scirun-5)
 	- [Summary](#user-content-summary)
 		- [Download Location](#user-content-download-location)
 	- [Goals](#user-content-goals)
@@ -27,8 +27,8 @@ https://github.com/SCIInstitute/SCIRun
 
 ### Summary
 
-| Warning! |  SCIRun 5 is pre-alpha software, do not use for real science yet.  |
-|:--------:|:------------------------------------------------------------------:|
+| Warning! |  SCIRun 5 is alpha software, you may use for real science but beware of instability.  |
+|:--------:|:-------------------------------------------------------------------------------------:|
 
 ####Download Location
 http://sci.utah.edu/devbuilds/scirun5/
