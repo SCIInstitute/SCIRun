@@ -243,7 +243,6 @@ Known Bugs
 * SolveLinearSystem Jacobi method does not converge when used with AddKnownsToLinearSystem
 * JoinFields crashes when Merge duplicate elements is selected
 * ShowField crashes if attempting to display data value text in a field with no data
-* JoinFields crashes if Merge duplicate elements is selected
 * ShowTextureSlices crashes when its output port is used more than once.
 * InsertHexVolSheet creates invalid elements
 * ExtractIsosurface creates crossing elements
@@ -258,7 +257,6 @@ Known Bugs
 * torso-tank-bem.srn network fails if cage is moved
 * ExportNrrdsToMatlab doens't preserve header information
 * ViewSlices module not ported properly from SCIRun 3
-* TriSurf mesh get_edges with nodes argument broken
 
 Resolved Bugs
 =============
@@ -291,3 +289,4 @@ Resolved Bugs
 * Crash when displaying text in LatVol (duplicate)
 * SparseRowMatrix::put cannot put values in matrix if number of non-zero values 0
 * Visualization test networks hang on Ubuntu when executed on startup 
+* TriSurf mesh get_edges with nodes argument broken
