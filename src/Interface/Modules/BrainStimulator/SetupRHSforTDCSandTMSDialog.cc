@@ -44,7 +44,7 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   // connecting all table cell positions (int = row, int = col)
-  connect(tableWidget_5, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
+  connect(electrode_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }
 
 void SetupRHSforTDCSandTMSDialog::push()
@@ -52,11 +52,11 @@ void SetupRHSforTDCSandTMSDialog::push()
   if (!pulling_)
   {
     // updating electrode values (from table) into vector then attaching them to state map
-    int rows = tableWidget_5->rowCount();
+    int rows = electrode_tableWidget->rowCount();
     std::vector<AlgorithmParameter> elc_vals_in_table;
     for (int i=0; i<rows; i++)
     {
-      AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), tableWidget_5->item(i,1)->text().toDouble());
+      AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), electrode_tableWidget->item(i,1)->text().toDouble());
       elc_vals_in_table.push_back(elc_i);
     }
     state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
@@ -65,20 +65,17 @@ void SetupRHSforTDCSandTMSDialog::push()
 
 void SetupRHSforTDCSandTMSDialog::pull()
 {
+  Pulling p(this); // prevents from re-entering if statement when next line executes
+
   // obtaining initial values, pulling hasn't been set
-  if (!pulling_)
+  std::vector<AlgorithmParameter> elc_vals_in_table;
+  int rows = tableWidget_5->rowCount();
+  for (int i=0; i<rows; i++)
   {
-    std::vector<AlgorithmParameter> elc_vals_in_table;
-    int rows = tableWidget_5->rowCount();
-    for (int i=0; i<rows; i++)
-    {
-      AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), tableWidget_5->item(i,1)->text().toDouble());
-      elc_vals_in_table.push_back(elc_i);
-    }
-    Pulling p(this); // prevents from re-entering if statement when next line executes
-    state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
+    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), tableWidget_5->item(i,1)->text().toDouble());
+    elc_vals_in_table.push_back(elc_i);
   }
-  
-  Pulling p(this);
+  state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
+ 
 }
 

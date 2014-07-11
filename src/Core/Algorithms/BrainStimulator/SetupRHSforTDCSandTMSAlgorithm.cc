@@ -55,13 +55,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, ELECTRODE_VALUES);
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COUNT("ELECTRODE_COUNT");
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
-//const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_TRIANGULATION("ELECTRODE_TRIANGULATION");
-//const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_TRIANGULATION2("ELECTRODE_TRIANGULATION2");
-//const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::COIL("COIL");
-//const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::COIL2("COIL2");
-//const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
-//const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::COILS_FIELD("COILS_FIELD");
-
 
 AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
 
@@ -101,7 +94,7 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   return output;
 }
 
-DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, std::vector<Variable, std::allocator<Variable>> elcs, int num_of_elc) const
+DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, const std::vector<Variable>& elcs, int num_of_elc) const
 {
   if (num_of_elc > 128) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes given exceeds what is possible ");}
   else if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
@@ -119,9 +112,7 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, std::vecto
   double min_current = 0;
   for (int i=0; i<elcs_wanted.size(); i++)
   {
-    double temp = elcs_wanted[i].getDouble();
-    if (temp < 0.0)
-      temp = temp*(-1.0);
+    double temp = std::fabs(elcs_wanted[i].getDouble());
     min_current += temp;
   }
   if (min_current < 0.00001) remark("Electrode current intensities are negligible");
@@ -142,7 +133,7 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, std::vecto
     if (cnt == total_elements/4)
     {
       cnt = 0;
-      update_progress((double)i/total_elements);
+      update_progress_max(i, total_elements);
     }
   }
   return output;

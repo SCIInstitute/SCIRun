@@ -44,12 +44,6 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
  INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
  INITIALIZE_PORT(ELECTRODE_COUNT);
  INITIALIZE_PORT(RHS);
-// INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
-// INITIALIZE_PORT(ELECTRODE_TRIANGULATION2);
-// INITIALIZE_PORT(COIL);
-// INITIALIZE_PORT(COIL2);
-// INITIALIZE_PORT(ELECTRODES_FIELD);
-// INITIALIZE_PORT(COILS_FIELD);
 }
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
@@ -68,10 +62,7 @@ void SetupRHSforTDCSandTMSModule::execute()
  
   if (needToExecute())
   {
-    //algorithm input
     auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_COUNT, elc_count)));
-
-    //algorithm output
 	  sendOutputFromAlgorithm(RHS, output);
   }
 }

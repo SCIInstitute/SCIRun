@@ -81,9 +81,4 @@ void SetConductivitiesToTetMeshModule::execute()
     //algorithm output
     sendOutputFromAlgorithm(OUTPUTMESH, output);
   }
-
-  // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
-  //algorithm parameter
-  //algo_->set(Variables::AppendMatrixOption, param);
 }

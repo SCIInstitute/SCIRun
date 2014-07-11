@@ -87,7 +87,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesSimple)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 10;
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), i);
@@ -104,10 +104,8 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnElem)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 128;
-  std::vector<double> compare;
-  for (int i=0; i<6; i++)
-    compare.push_back(0); // for nodes
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<double> compare(6,0); // nodes are 6 zero values
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     int temp = rand() % 100;
@@ -127,10 +125,8 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnNode)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 128;
-  std::vector<double> compare;
-  for (int i=0; i<6; i++)
-    compare.push_back(0); // for nodes
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<double> compare(6,0);
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     int temp = rand() % 100;
@@ -148,10 +144,8 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfVectorOnElem)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 128;
-  std::vector<double> compare;
-  for (int i=0; i<6; i++)
-    compare.push_back(0); // for nodes
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<double> compare(6,0);
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     int temp = rand() % 100;
@@ -168,10 +162,8 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfVectorOnNode)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 128;
-  std::vector<double> compare;
-  for (int i=0; i<6; i++)
-    compare.push_back(0); // for nodes
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<double> compare(6,0);
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     int temp = rand() % 100;
@@ -188,10 +180,8 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshVectorOnNode)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 128;
-  std::vector<double> compare;
-  for (int i=0; i<7; i++)
-    compare.push_back(0); // for nodes
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<double> compare(7,0);
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     int temp = rand() % 100;
@@ -208,10 +198,8 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshVectorOnElem)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 128;
-  std::vector<double> compare;
-  for (int i=0; i<7; i++)
-    compare.push_back(0); // for nodes
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<double> compare(7,0);
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     int temp = rand() % 100;
@@ -228,10 +216,8 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshScalarOnElem)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 128;
-  std::vector<double> compare;
-  for (int i=0; i<7; i++)
-    compare.push_back(0); // for nodes
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<double> compare(7,0);
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     int temp = rand() % 100;
@@ -248,10 +234,8 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshScalarOnNode)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 128;
-  std::vector<double> compare;
-  for (int i=0; i<7; i++)
-    compare.push_back(0); // for nodes
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<double> compare(7,0);
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     int temp = rand() % 100;
@@ -268,7 +252,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, NegativeNumberOfElectrodesGivenTetMeshScala
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = -10;
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<Variable> elc;
   AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(0)), 1.0);
   elc.push_back(elc_i);
   EXPECT_THROW(algo.run(CreateTetMeshScalarOnElem(), elc, m), AlgorithmInputException);
@@ -277,7 +261,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ElectrodeNumberExceedsWhatIsPossible)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
   int m = 360;
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<Variable> elc;
   AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(0)), 1.0);
   elc.push_back(elc_i);
   EXPECT_THROW(algo.run(CreateTetMeshScalarOnElem(), elc, m), AlgorithmInputException);
@@ -287,7 +271,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, NullFieldGivenAsInput)
   SetupRHSforTDCSandTMSAlgorithm algo;
   FieldHandle f;
   int m = 10;
-  std::vector<Variable, std::allocator<Variable>> elc;
+  std::vector<Variable> elc;
   for (int i=0; i<m; i++)
   {
     AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), i);

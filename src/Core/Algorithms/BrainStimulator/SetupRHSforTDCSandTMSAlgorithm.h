@@ -44,23 +44,16 @@ namespace BrainStimulator {
   class SCISHARE SetupRHSforTDCSandTMSAlgorithm : public AlgorithmBase
   {
   public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
     SetupRHSforTDCSandTMSAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    SCIRun::Core::Datatypes::DenseMatrixHandle run(FieldHandle fh, std::vector<Variable, std::allocator<Variable>> elcs, int num_of_elc) const;
+    SCIRun::Core::Datatypes::DenseMatrixHandle run(FieldHandle fh, const std::vector<Variable>& elcs, int num_of_elc) const;
     
     static AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
     static AlgorithmInputName ELECTRODE_COUNT;
     static AlgorithmOutputName RHS;
     
     static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
-//    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-//    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-//    static const AlgorithmInputName COIL;
-//    static const AlgorithmInputName COIL2;
-//    static const AlgorithmOutputName ELECTRODES_FIELD;
-//    static const AlgorithmOutputName COILS_FIELD;
   };
 
 }}}}
