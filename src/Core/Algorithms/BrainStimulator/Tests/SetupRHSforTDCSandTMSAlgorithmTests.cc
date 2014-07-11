@@ -63,7 +63,6 @@ namespace
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
   }
-  
   FieldHandle CreateTriSurfVectorOnElem()
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld");
@@ -79,6 +78,17 @@ namespace
   FieldHandle CreateTriSurfScalarOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+  }
+}
+
+void makeRandomValues(int m, std::vector<Variable>& elc, std::vector<double>& compare)
+{
+  for (int i=0; i<m; i++)
+  {
+    int temp = rand() % 100;
+    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
+    elc.push_back(elc_i);
+    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
   }
 }
 
@@ -106,19 +116,11 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnElem)
   int m = 128;
   std::vector<double> compare(6,0); // nodes are 6 zero values
   std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    int temp = rand() % 100;
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
-    elc.push_back(elc_i);
-    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
-  }
+  makeRandomValues(m, elc, compare);
   auto o = algo.run(CreateTriSurfScalarOnElem(), elc, m);
   for (int i=0; i<o->nrows(); i++)
     EXPECT_EQ(compare[i], o->coeff(i,0));
 }
-
-
 
 
 TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnNode)
@@ -127,13 +129,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnNode)
   int m = 128;
   std::vector<double> compare(6,0);
   std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    int temp = rand() % 100;
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
-    elc.push_back(elc_i);
-    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
-  }
+  makeRandomValues(m, elc, compare);
   auto o = algo.run(CreateTriSurfScalarOnNode(), elc, m);
   for (int i=0; i<o->nrows(); i++)
     EXPECT_EQ(compare[i], o->coeff(i,0));
@@ -146,13 +142,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfVectorOnElem)
   int m = 128;
   std::vector<double> compare(6,0);
   std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    int temp = rand() % 100;
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
-    elc.push_back(elc_i);
-    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
-  }
+  makeRandomValues(m, elc, compare);
   auto o = algo.run(CreateTriSurfVectorOnElem(), elc, m);
   for (int i=0; i<o->nrows(); i++)
     EXPECT_EQ(compare[i], o->coeff(i,0));
@@ -164,13 +154,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfVectorOnNode)
   int m = 128;
   std::vector<double> compare(6,0);
   std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    int temp = rand() % 100;
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
-    elc.push_back(elc_i);
-    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
-  }
+  makeRandomValues(m, elc, compare);
   auto o = algo.run(CreateTriSurfVectorOnNode(), elc, m);
   for (int i=0; i<o->nrows(); i++)
     EXPECT_EQ(compare[i], o->coeff(i,0));
@@ -182,13 +166,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshVectorOnNode)
   int m = 128;
   std::vector<double> compare(7,0);
   std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    int temp = rand() % 100;
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
-    elc.push_back(elc_i);
-    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
-  }
+  makeRandomValues(m, elc, compare);
   auto o = algo.run(CreateTetMeshVectorOnNode(), elc, m);
   for (int i=0; i<o->nrows(); i++)
     EXPECT_EQ(compare[i], o->coeff(i,0));
@@ -200,13 +178,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshVectorOnElem)
   int m = 128;
   std::vector<double> compare(7,0);
   std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    int temp = rand() % 100;
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
-    elc.push_back(elc_i);
-    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
-  }
+  makeRandomValues(m, elc, compare);
   auto o = algo.run(CreateTetMeshVectorOnElem(), elc, m);
   for (int i=0; i<o->nrows(); i++)
     EXPECT_EQ(compare[i], o->coeff(i,0));
@@ -218,13 +190,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshScalarOnElem)
   int m = 128;
   std::vector<double> compare(7,0);
   std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    int temp = rand() % 100;
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
-    elc.push_back(elc_i);
-    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
-  }
+  makeRandomValues(m, elc, compare);
   auto o = algo.run(CreateTetMeshScalarOnElem(), elc, m);
   for (int i=0; i<o->nrows(); i++)
     EXPECT_EQ(compare[i], o->coeff(i,0));
@@ -236,13 +202,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshScalarOnNode)
   int m = 128;
   std::vector<double> compare(7,0);
   std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    int temp = rand() % 100;
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
-    elc.push_back(elc_i);
-    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
-  }
+  makeRandomValues(m, elc, compare);
   auto o = algo.run(CreateTetMeshScalarOnNode(), elc, m);
   for (int i=0; i<o->nrows(); i++)
     EXPECT_EQ(compare[i], o->coeff(i,0));
