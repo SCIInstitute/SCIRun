@@ -25,40 +25,36 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/Datatype.h 
-#ifndef CORE_DATATYPES_DATATYPE_H
-#define CORE_DATATYPES_DATATYPE_H 
 
-#include <Core/Persistent/Persistent.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Datatypes/HasId.h>
+#ifndef CORE_DATATYPES_HAS_ID_H
+#define CORE_DATATYPES_HAS_ID_H 
+
+#include <Core/Utils/StringUtil.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
-namespace Datatypes {
 
-  class SCISHARE Datatype : public Persistent, public HasIntegerId
+  /// @todo: split out
+  template <typename IdType, typename IdGenerator>
+  class HasId
   {
   public:
-    Datatype();
-    virtual ~Datatype();
-    Datatype(const Datatype& other);
-    Datatype& operator=(const Datatype& rhs);
-
-    typedef HasIntegerId::id_type id_type;
-
-    /// @todo
-    template <typename T>
-    const T* as() const
+    typedef IdType id_type;
+    HasId() : id_(generator_()) {}
+    IdType id() const
     {
-      return dynamic_cast<const T*>(this);
+      return id_;
     }
-
-    virtual Datatype* clone() const = 0;
+  private:
+    IdGenerator generator_;
+    const IdType id_;
   };
+   
 
-}}}
+  typedef HasId<int, AtomicCounter> HasIntegerId;
+
+}}
 
 
 #endif

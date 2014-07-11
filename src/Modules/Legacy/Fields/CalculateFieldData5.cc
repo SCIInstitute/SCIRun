@@ -55,7 +55,7 @@ using namespace SCIRun::Modules::Fields;
 };
 */
 
-ModuleLookupInfo CalculateFieldData::staticInfo_("CalculateFieldData", "ChangeFieldData", "SCIRun");
+const ModuleLookupInfo CalculateFieldData::staticInfo_("CalculateFieldData", "ChangeFieldData", "SCIRun");
 AlgorithmParameterName CalculateFieldData::FunctionString("FunctionString");
 AlgorithmParameterName CalculateFieldData::FormatString("FormatString");
 

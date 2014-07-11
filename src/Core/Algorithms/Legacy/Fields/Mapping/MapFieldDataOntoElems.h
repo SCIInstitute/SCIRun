@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,43 +30,36 @@
 #ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAONTOELEMS_H
 #define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAONTOELEMS_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-#include <float.h>
+        ALGORITHM_PARAMETER_DECL(Quantity);
+        ALGORITHM_PARAMETER_DECL(InterpolationModel);
+        ALGORITHM_PARAMETER_DECL(SamplePoints);
+        ALGORITHM_PARAMETER_DECL(SampleMethod);
+        ALGORITHM_PARAMETER_DECL(OutsideValue);
+        ALGORITHM_PARAMETER_DECL(MaxDistance);
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE MapFieldDataOntoElemsAlgo : public AlgoBase
+class SCISHARE MapFieldDataOntoElemsAlgo : public AlgorithmBase
 {
   public:
-    /// Set defaults
-    MapFieldDataOntoElemsAlgo()
-    {
-      add_option("quantity","value","value|gradient|gradientnorm|flux");
-      add_option("value","interpolateddata","interpolateddataonly|interpolateddata|closestnodedata|closestinterpolateddata");
-      add_option("sample_points","regular1","regular1|regular2|regular3|regular4|regular5|gaussian1|gaussian2|gaussian3");
-      add_option("sample_method","average","average|integrate|min|max|sum|mostcommon|median");
-      add_scalar("outside_value",0.0);
-      add_scalar("max_distance",DBL_MAX);
-    }
+    MapFieldDataOntoElemsAlgo();
 
-    /// run the algorithm
-    bool run(FieldHandle source, FieldHandle weights, 
-             FieldHandle destination, FieldHandle& output);
+    bool runImpl(FieldHandle source, FieldHandle weights, FieldHandle destination, FieldHandle& output) const;
+    bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
 
-    bool run(FieldHandle source, FieldHandle destination, FieldHandle& output);
+    static const AlgorithmInputName Source;
+    static const AlgorithmInputName Destination;
+    static const AlgorithmInputName Weights;
+
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 };
 
-} //namespace
+      }}}}
 
-#endif 
+#endif

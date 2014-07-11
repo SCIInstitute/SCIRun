@@ -32,9 +32,11 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/foreach.hpp>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Logging/ConsoleLogger.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
@@ -44,9 +46,7 @@ Name::Name(const std::string& name) : name_(name)
 {
   if (!std::all_of(name.begin(), name.end(), isalnum))
   {
-    //std::cout << "APN not accessible from Python: " << name << std::endl;
-    /// @todo: log this, exception is overkill.
-    //THROW_INVALID_ARGUMENT("Algorithm parameter name must be alphanumeric");
+    LOG_DEBUG("AlgorithmParameterName not accessible from Python: " << name << std::endl);
   }
 }
 
@@ -225,6 +225,18 @@ bool AlgorithmParameterList::check_option(const AlgorithmParameterName& key, con
   std::string currentValue;
   get_option(key, currentValue);
   return boost::iequals(value, currentValue);
+}
+
+void AlgorithmParameterList::dumpAlgoState() const
+{
+  std::ostringstream ostr;
+  ostr << "Algorithm state for " << typeid(*this).name() << " id#" << id() << std::endl;
+  
+  BOOST_FOREACH(const ParameterMap::value_type& pair, parameters_)
+  {
+    ostr << "\t" << pair.first.name() << ": " << pair.second.value_ << std::endl;
+  }
+  LOG_DEBUG(ostr.str());
 }
 
 bool SCIRun::Core::Algorithms::operator==(const AlgoOption& lhs, const AlgoOption& rhs)

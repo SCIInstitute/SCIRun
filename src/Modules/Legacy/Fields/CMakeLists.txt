@@ -62,6 +62,8 @@ SET(Modules_Legacy_Fields_HEADERS
   ApplyMappingMatrix.h
   MapFieldDataFromElemToNode.h
   MapFieldDataFromNodeToElem.h
+  MapFieldDataOntoElems.h
+  MapFieldDataOntoNodes.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -76,8 +78,8 @@ SET(Modules_Legacy_Fields_SRCS
   #SmoothVecFieldMedian.cc
   #SetFieldDataToConstantValue.cc
   #RemoveUnusedNodes.cc
-  #MapFieldDataOntoNodes.cc
-  #MapFieldDataOntoElems.cc
+  MapFieldDataOntoNodes.cc
+  MapFieldDataOntoElems.cc
   #CleanupTetMesh.cc
   #MatchDomainLabels.cc
   SplitFieldByDomain.cc
