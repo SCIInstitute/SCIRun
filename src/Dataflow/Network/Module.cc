@@ -62,7 +62,7 @@ Module::Module(const ModuleLookupInfo& info,
   const std::string& version)
   : info_(info), 
   id_(info_.module_name_, instanceCount_++),
-  inputsChanged_(false),
+  inputsChanged_(true),
   has_ui_(hasUi), 
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   executionState_(ModuleInterface::Waiting)
@@ -232,7 +232,11 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   }
   
   if (!inputsChanged_)
+  {
+    LOG_DEBUG(id_ << " :: inputsChanged is false, querying port for value.");
     inputsChanged_ = port->hasChanged();
+    LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
+  }
   return port->getData();
 }
 
@@ -484,7 +488,11 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
 bool Module::needToExecute() const  
 {
   if (reexecute_)
-    return reexecute_->needToExecute();
+  {
+    auto val = reexecute_->needToExecute();
+    LOG_DEBUG("Using real needToExecute strategy object, value is: " << val << std::endl);
+    return val;
+  }
   
   return true;
   //return newStatePresent() || inputsChanged();

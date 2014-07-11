@@ -131,6 +131,7 @@ namespace Networks {
     }
 
     bool oport_connected(const PortId& id) const;
+    bool inputsChanged() const;
 
     template <class Type, size_t N>
     struct PortNameBase
@@ -255,7 +256,7 @@ namespace Networks {
     boost::shared_ptr<T> checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 
     boost::atomic<bool> inputsChanged_;
-    bool inputsChanged() const;
+    
 
     friend class Builder;
 
