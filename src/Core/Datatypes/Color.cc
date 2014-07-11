@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -36,7 +36,7 @@
 using namespace SCIRun::Core::Datatypes;
 
 ColorRGB::ColorRGB()
-  : r_(0.0), g_(0.0), b_(0.0)
+  : r_(1.0), g_(1.0), b_(1.0)
 {
 }
 
@@ -45,7 +45,7 @@ ColorRGB::ColorRGB(double r, double g, double b)
 {
 }
 
-ColorRGB::ColorRGB(const std::string& rgb) : r_(0.0), g_(0.0), b_(0.0)
+ColorRGB::ColorRGB(const std::string& rgb) : r_(1.0), g_(1.0), b_(1.0)
 {
   try
   {
