@@ -129,7 +129,7 @@
            <x>0</x>
            <y>20</y>
            <width>411</width>
-           <height>91</height>
+           <height>182</height>
           </rect>
          </property>
          <property name="minimumSize">
@@ -138,6 +138,21 @@
            <height>91</height>
           </size>
          </property>
+         <attribute name="horizontalHeaderVisible">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="horizontalHeaderCascadingSectionResizes">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>150</number>
+         </attribute>
+         <attribute name="horizontalHeaderMinimumSectionSize">
+          <number>27</number>
+         </attribute>
+         <attribute name="verticalHeaderCascadingSectionResizes">
+          <bool>false</bool>
+         </attribute>
          <row>
           <property name="text">
            <string>1</string>
@@ -786,6 +801,12 @@
          <column>
           <property name="text">
            <string>Current intensity [mA]</string>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+            <kerning>true</kerning>
+           </font>
           </property>
          </column>
          <item row="0" column="0">
