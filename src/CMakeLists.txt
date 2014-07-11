@@ -84,9 +84,9 @@ SET(SCIRUN_VERSION_STRING "${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
 #
 # Based on Seg3D settings...
 
-SET(APPLICATION_NAME "SCIRunGUIPrototype" CACHE INTERNAL "Application name" FORCE)
+SET(APPLICATION_NAME "SCIRun" CACHE INTERNAL "Application name" FORCE)
 # TODO: temporary hack to allow testing
-SET(TEST_APPLICATION_NAME "SCIRunGUIPrototype_test" CACHE INTERNAL "Application name" FORCE)
+SET(TEST_APPLICATION_NAME "SCIRun_test" CACHE INTERNAL "Application name" FORCE)
 # add others?
 SET(APPLICATION_EXTENSION ".net" CACHE INTERNAL "Network file extension" FORCE)
 SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
