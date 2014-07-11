@@ -64,12 +64,12 @@ DatatypeHandleOption SimpleSink::receive()
   return DatatypeHandleOption();
 }
 
-void SimpleSink::setHasData(bool dataPresent) 
-{ 
-  hasData_ = dataPresent; 
+void SimpleSink::setHasData(bool dataPresent)
+{
+  hasData_ = dataPresent;
 
 //  if (hasData_ && hasChanged())
-  
+
 
   //if (!hasData_)
   //  previousId_.reset();
@@ -85,7 +85,11 @@ void SimpleSink::setData(DataProvider dataProvider)
     if (data)
     {
       if (!previousId_)
+      {
+
         previousId_ = data->id();
+        //std::cout << "Sink prevId set to = " << *previousId_ << std::endl;
+      }
       setHasData(true);
     }
   }
@@ -96,11 +100,11 @@ DatatypeSinkInterface* SimpleSink::clone() const
   return new SimpleSink;
 }
 
-bool SimpleSink::hasChanged() const 
+bool SimpleSink::hasChanged() const
 {
   if (!dataProvider_ || !previousId_)
     return false;
-  return *previousId_ == dataProvider_()->id();
+  return *previousId_ != dataProvider_()->id();
 }
 
 void SimpleSink::invalidateProvider()

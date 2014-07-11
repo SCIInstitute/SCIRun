@@ -60,10 +60,10 @@ Module::Module(const ModuleLookupInfo& info,
   AlgorithmFactoryHandle algoFactory,
   ModuleStateFactoryHandle stateFactory,
   const std::string& version)
-  : info_(info), 
+  : info_(info),
   id_(info_.module_name_, instanceCount_++),
   inputsChanged_(true),
-  has_ui_(hasUi), 
+  has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   executionState_(ModuleInterface::Waiting)
 {
@@ -82,7 +82,7 @@ Module::Module(const ModuleLookupInfo& info,
       log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
   log.flush();
-  
+
   initStateObserver(state_.get());
 
   setRexecutionStrategy(boost::make_shared<AlwaysReexecuteStrategy>());
@@ -126,7 +126,7 @@ void Module::do_execute() throw()
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   setExecutionState(ModuleInterface::Executing);
 
-  try 
+  try
   {
     execute();
   }
@@ -164,16 +164,17 @@ void Module::do_execute() throw()
   //iports_.apply(boost::bind(&PortInterface::finish, _1));
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
-  status("MODULE FINISHED: " + id_.id_);  
+  status("MODULE FINISHED: " + id_.id_);
   /// @todo: need separate logger per module
   //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
   setExecutionState(ModuleInterface::Completed);
   resetStateChanged();
+  std::cout << id_ << " inputsChanged set to false post-execute" << std::endl;
   inputsChanged_ = false;
   executeEnds_(id_);
 }
 
-ModuleStateHandle Module::get_state() 
+ModuleStateHandle Module::get_state()
 {
   return state_;
 }
@@ -183,7 +184,7 @@ const ModuleStateHandle Module::get_state() const
   return state_;
 }
 
-void Module::set_state(ModuleStateHandle state) 
+void Module::set_state(ModuleStateHandle state)
 {
   state_ = state;
 }
@@ -207,12 +208,12 @@ size_t Module::add_output_port(OutputPortHandle h)
   return oports_.add(h);
 }
 
-bool Module::hasInputPort(const PortId& id) const 
+bool Module::hasInputPort(const PortId& id) const
 {
   return iports_.hasPort(id);
 }
 
-bool Module::hasOutputPort(const PortId& id) const 
+bool Module::hasOutputPort(const PortId& id) const
 {
   return oports_.hasPort(id);
 }
@@ -230,12 +231,14 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   {
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is dynamic, get_dynamic_input_handles must be called."));
   }
-  
+
   if (!inputsChanged_)
   {
     LOG_DEBUG(id_ << " :: inputsChanged is false, querying port for value.");
+    std::cout << id_ << " :: inputsChanged is false, querying port for value." << std::endl;
     inputsChanged_ = port->hasChanged();
     LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
+    std::cout << id_ << ":: inputsChanged is now " << inputsChanged_<< std::endl;
   }
   return port->getData();
 }
@@ -285,7 +288,7 @@ std::vector<OutputPortHandle> Module::outputPorts() const
   return oports_.view();
 }
 
-Module::Builder::Builder() 
+Module::Builder::Builder()
 {
 }
 
@@ -299,7 +302,7 @@ class DummyModule : public Module
 {
 public:
   explicit DummyModule(const ModuleLookupInfo& info) : Module(info) {}
-  virtual void execute() 
+  virtual void execute()
   {
     std::ostringstream ostr;
     ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
@@ -408,14 +411,14 @@ void Module::setUiVisible(bool visible)
 }
 
 void Module::setLogger(SCIRun::Core::Logging::LoggerHandle log)
-{ 
-  log_ = log; 
+{
+  log_ = log;
   if (algo_)
     algo_->setLogger(log);
 }
 
 void Module::setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func)
-{ 
+{
   updaterFunc_ = func;
   if (algo_)
     algo_->setUpdaterFunc(func);
@@ -485,15 +488,16 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
   executionState_ = state;
 }
 
-bool Module::needToExecute() const  
+bool Module::needToExecute() const
 {
   if (reexecute_)
   {
     auto val = reexecute_->needToExecute();
+    std::cout << id_ << " Using real needToExecute strategy object, value is: " << val << std::endl;
     LOG_DEBUG("Using real needToExecute strategy object, value is: " << val << std::endl);
     return val;
   }
-  
+
   return true;
   //return newStatePresent() || inputsChanged();
     /// @todo: || !oports_cached()
@@ -545,7 +549,7 @@ void ModuleWithAsyncDynamicPorts::portRemovedSlot(const ModuleId& mid, const Por
 DynamicReexecutionStrategy::DynamicReexecutionStrategy(
   InputsChangedCheckerHandle inputsChanged,
   StateChangedCheckerHandle stateChanged,
-  OutputPortsCachedCheckerHandle outputsCached) : inputsChanged_(inputsChanged), stateChanged_(stateChanged), outputsCached_(outputsCached) 
+  OutputPortsCachedCheckerHandle outputsCached) : inputsChanged_(inputsChanged), stateChanged_(stateChanged), outputsCached_(outputsCached)
 {
   ENSURE_NOT_NULL(inputsChanged_, "InputsChangedChecker");
   ENSURE_NOT_NULL(stateChanged_, "StateChangedChecker");

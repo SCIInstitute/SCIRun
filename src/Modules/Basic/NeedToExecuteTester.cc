@@ -49,12 +49,15 @@ void NeedToExecuteTester::setStateDefaults()
 
 void NeedToExecuteTester::execute()
 {
+  std::cout << "NTET::execute()" << std::endl;
   executeCalled_ = true;
+  std::cout << "NTET::execute() executeCalled true" << std::endl;
 
   auto in = getRequiredInput(TestMatrixIn);
-
+std::cout << "NTET::execute() getInput" << std::endl;
   if (needToExecute())
   {
+    std::cout << "NTET::execute() needToExecute is true" << std::endl;
     expensiveComputationDone_ = true;
     sendOutput(TestMatrixOut, in);
   }
