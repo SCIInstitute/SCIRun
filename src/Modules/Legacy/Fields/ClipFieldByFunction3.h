@@ -53,7 +53,7 @@ namespace SCIRun {
         INPUT_PORT(1, Function, String);
         INPUT_PORT_DYNAMIC(2, InputArrays, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
-        OUPTUT_PORT(1, Mapping, Matrix);
+        OUTPUT_PORT(1, Mapping, Matrix);
 
         static const Core::Algorithms::AlgorithmParameterName FunctionString;
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;

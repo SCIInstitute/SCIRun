@@ -26,15 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Parser/ArrayMathEngine.h>
-
-#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
-
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Parser/ArrayMathEngine.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
+#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -72,10 +72,10 @@ void ClipFieldByFunction::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(FunctionString, std::string("DATA < 0"));
-  state->setValue(ClipMethod, std::string("onenode"));
+  state->setValue(Parameters::ClipMethod, std::string("onenode"));
 }
 
-void ClipFieldByFunction3::execute()
+void ClipFieldByFunction::execute()
 {
   auto fields = getRequiredDynamicInputs(InputFields);
   auto func = getOptionalInput(Function);
@@ -107,14 +107,13 @@ void ClipFieldByFunction3::execute()
     std::string method = state->getValue(Parameters::ClipMethod).getString();
     if (field->vmesh()->is_pointcloudmesh()) method = "element";
 
-    const int basis_order = method == "element" ? basis_order = 0 : 1;
+    const int basis_order = method == "element" ? 0 : 1;
 
     if (field->vmesh()->is_empty())
     {
       warning("Input mesh does not contain any nodes: copying input to output");
-      MatrixHandle mapping;
-      send_output_handle("Field", field);
-      send_output_handle("Mapping", mapping);
+      sendOutput(OutputField, field);
+      sendOutput(Mapping, MatrixHandle());
       return;
     }
   
@@ -151,13 +150,13 @@ void ClipFieldByFunction3::execute()
     if(!(engine.add_input_fielddata_element("ELEMENT",field,basis_order))) return;
 
     //TODO: increase this past 5
-    if (!addFieldVariableIfPresent(fields, engine, 2))
+    if (!addFieldVariableIfPresent(fields, engine, basis_order, 2))
       return;
-    if (!addFieldVariableIfPresent(fields, engine, 3))
+    if (!addFieldVariableIfPresent(fields, engine, basis_order, 3))
       return;
-    if (!addFieldVariableIfPresent(fields, engine, 4))
+    if (!addFieldVariableIfPresent(fields, engine, basis_order, 4))
       return;
-    if (!addFieldVariableIfPresent(fields, engine, 5))
+    if (!addFieldVariableIfPresent(fields, engine, basis_order, 5))
       return;
 
     // Loop through all matrices and add them to the engine as well

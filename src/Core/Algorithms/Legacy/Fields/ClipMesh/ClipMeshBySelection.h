@@ -51,7 +51,7 @@ public:
     bool runImpl(FieldHandle input,
              FieldHandle selection,
              FieldHandle& output,
-             MatrixHandle& mapping) const;
+                 Datatypes::MatrixHandle& mapping) const;
 
   static const AlgorithmInputName SelectionField;
   static const AlgorithmOutputName Mapping;
