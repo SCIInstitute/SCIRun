@@ -66,13 +66,18 @@ const AlgorithmParameterName ClipFieldByFunction::FunctionString("FunctionString
 ClipFieldByFunction::ClipFieldByFunction()
   : Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputFields);
+  INITIALIZE_PORT(Function);
+  INITIALIZE_PORT(InputArrays);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(Mapping);
 }
 
 void ClipFieldByFunction::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(FunctionString, std::string("DATA < 0"));
-  state->setValue(Parameters::ClipMethod, std::string("onenode"));
+  setStateStringFromAlgoOption(Parameters::ClipMethod);
 }
 
 void ClipFieldByFunction::execute()
