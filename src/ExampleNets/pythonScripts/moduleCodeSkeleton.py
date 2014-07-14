@@ -37,6 +37,10 @@ def makeModuleUnitTestFile(path, name):
 def editModuleCMake(path, name):
 	print "module cmake edit: ", path, name
 
+def addModuleToFactory(path, name):
+	uiPath = os.path.join(path, "Modules/Factory")
+	print "module factory edit: ", uiPath, name
+
 def makeAlgorithmHeaderFile(path, name):
 	algoPath = os.path.join(path, "Core/Algorithms/Field/")
 	algoFile = os.path.join(algoPath, name + "Algo.h")
@@ -55,6 +59,10 @@ def makeAlgorithmUnitTestFile(path, name):
 def editAlgorithmCMake(path, name):
 	print "algorithm cmake edit: ", path, name
 
+def addAlgorithmToFactory(path, name):
+	uiPath = os.path.join(path, "Core/Algorithms/Factory")
+	print "algorithm factory edit: ", uiPath, name
+
 def makeUIDesignerFile(path, name):
 	print "ui designer file: ", path, name
 
@@ -70,23 +78,30 @@ def editUICMake(path, name):
 	uiPath = os.path.join(path, "Interface/Modules/Fields/")
 	print "UI cmake edit: ", uiPath, name
 
+def addUIToFactory(path, name):
+	uiPath = os.path.join(path, "Interface/Modules/Factory/")
+	print "UI factory edit: ", uiPath, name
+
 def makeModuleFiles(path, name):
 	makeModuleHeaderFile(path, name)
 	makeModuleSourceFile(path, name)
 	makeModuleUnitTestFile(path, name)
 	editModuleCMake(path, name)
+	addModuleToFactory(path, name)
 
 def makeAlgorithmFiles(path, name):
 	makeAlgorithmHeaderFile(path, name)
 	makeAlgorithmSourceFile(path, name)
 	makeAlgorithmUnitTestFile(path, name)
 	editAlgorithmCMake(path, name)
+	addAlgorithmToFactory(path, name)
 
 def makeUIFiles(path, name):
 	makeUIDesignerFile(path, name)
 	makeUIHeaderFile(path, name)
 	makeUISourceFile(path, name)
 	editUICMake(path, name)
+	addUIToFactory(path, name)
 
 try:
 	moduleName = sys.argv[1]
