@@ -56,7 +56,6 @@ namespace SCIRun {
         OUPTUT_PORT(1, Mapping, Matrix);
 
         static const Core::Algorithms::AlgorithmParameterName FunctionString;
-        static const Core::Algorithms::AlgorithmParameterName ClipMethod;
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
         bool addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int basis_order, int index) const;

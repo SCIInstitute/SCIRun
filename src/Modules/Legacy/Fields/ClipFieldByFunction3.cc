@@ -31,7 +31,7 @@
 #include <Core/Datatypes/Field.h>
 #include <Core/Parser/ArrayMathEngine.h>
 
-#include <Core/Algorithms/Fields/ClipMesh/ClipMeshBySelection.h>
+#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -39,6 +39,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
@@ -61,7 +62,6 @@ class ClipFieldByFunction3 : public Module {
 
 const ModuleLookupInfo ClipFieldByFunction::staticInfo_("ClipFieldByFunction", "NewField", "SCIRun");
 const AlgorithmParameterName ClipFieldByFunction::FunctionString("FunctionString");
-const AlgorithmParameterName ClipFieldByFunction::ClipMethod("ClipMethod");
   
 ClipFieldByFunction::ClipFieldByFunction()
   : Module(staticInfo_)
@@ -70,8 +70,9 @@ ClipFieldByFunction::ClipFieldByFunction()
 
 void ClipFieldByFunction::setStateDefaults()
 {
-  //guifunction_(get_ctx()->subVar("function"),"DATA < 0"),
-  //guimethod_(get_ctx()->subVar("method"),"onenode")
+  auto state = get_state();
+  state->setValue(FunctionString, std::string("DATA < 0"));
+  state->setValue(ClipMethod, std::string("onenode"));
 }
 
 void ClipFieldByFunction3::execute()
@@ -103,7 +104,7 @@ void ClipFieldByFunction3::execute()
     }
   
     auto field = fields[0];
-    std::string method = state->getValue(ClipMethod).getString();
+    std::string method = state->getValue(Parameters::ClipMethod).getString();
     if (field->vmesh()->is_pointcloudmesh()) method = "element";
 
     const int basis_order = method == "element" ? basis_order = 0 : 1;
@@ -175,7 +176,6 @@ void ClipFieldByFunction3::execute()
       if (!(engine.add_input_matrix(matrixname,matrices[p]))) return;
     }
     
-    
     if(!(engine.add_output_fielddata("RESULT",field,basis_order,"char"))) return;
 
     // Add an object for getting the index and size of the array.
@@ -184,28 +184,26 @@ void ClipFieldByFunction3::execute()
     if(!(engine.add_size("SIZE"))) return;
 
     // Define the function we are using for clipping:
-    std::string function = guifunction_.get();
+    std::string function = state->getValue(FunctionString).getString();
     if (function.find("RESULT") == std::string::npos)
-      function = std::string("RESULT = ") + function;
+      function = "RESULT = " + function;
 
-    if(!(engine.add_expressions(function))) return;
+    if (!engine.add_expressions(function)) return;
 
     // Actual engine call, which does the dynamic compilation, the creation of the
     // code for all the objects, as well as inserting the function and looping 
     // over every data point
 
-    if (!(engine.run())) return;
+    if (!engine.run()) return;
 
     // Get the result from the engine
-    FieldHandle sfield, ofield;
-    MatrixHandle mapping;
+    FieldHandle sfield;
     engine.get_field("RESULT",sfield);    
     
-    clipping_algo_.set_option("method",method);
-    if (!(clipping_algo_.run(field,sfield,ofield,mapping)))
-      return;
+    algo().set_option(Parameters::ClipMethod, method);
+    auto output = algo().run_generic(make_input((Variables::InputField, field)(SelectionField, sfield)));
 
-    sendOutputFromAlgorithm(OutputField, ofield);
+    sendOutputFromAlgorithm(OutputField, output);
     sendOutputFromAlgorithm(Mapping, output);
   }
 }

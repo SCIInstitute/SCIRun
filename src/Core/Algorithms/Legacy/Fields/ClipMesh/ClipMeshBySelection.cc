@@ -38,6 +38,12 @@
 #include <algorithm>
 #include <set>
 
+ClipMeshBySelectionAlgo()
+{
+  add_option("method","one","element|onenode|majoritynodes|allnodes");
+  add_bool("build_mapping",true);
+}
+
 namespace SCIRunAlgo {
 
 using namespace SCIRun;

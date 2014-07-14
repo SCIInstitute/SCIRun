@@ -30,43 +30,36 @@
 #ifndef CORE_ALGORITHMS_FIELDS_CLIPMESH_CLIPMESHBYSELECTION_H
 #define CORE_ALGORITHMS_FIELDS_CLIPMESH_CLIPMESHBYSELECTION_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE ClipMeshBySelectionAlgo : public AlgoBase
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+        
+        ALGORITHM_PARAMETER_DECL(ClipMethod);
+        
+class SCISHARE ClipMeshBySelectionAlgo : public AlgorithmBase
 {
-  public:
-    /// Set defaults
-    ClipMeshBySelectionAlgo()
-    {
-      add_option("method","one","element|onenode|majoritynodes|allnodes");
-      add_bool("build_mapping",true);
-    }
+public:
+  ClipMeshBySelectionAlgo();
   
-    /// run the algorithm
-    bool run(FieldHandle input, 
+    bool runImpl(FieldHandle input,
              FieldHandle selection,
-             FieldHandle& output);
-    bool run(FieldHandle input, 
+             FieldHandle& output) const;
+    bool runImpl(FieldHandle input,
              FieldHandle selection,
              FieldHandle& output,
-             MatrixHandle& mapping);
+             MatrixHandle& mapping) const;
 
+  static const AlgorithmInputName SelectionField;
+  static const AlgorithmOutputName Mapping;
+  
+  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 };
 
-} // end namespace SCIRunAlgo
+      }}}}
 
 #endif
 
