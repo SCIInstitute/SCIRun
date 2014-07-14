@@ -26,12 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 /// @class MapFieldDataFromSourceToDestination
 /// @brief MapFieldDataFromSourceToDestination takes a field and finds data
@@ -41,6 +45,7 @@ namespace SCIRun {
 /// input, the first of which, Source, contains geometry and data values;
 /// the second, Destination, contains geometry only.
  
+  /*
 class MapFieldDataFromSourceToDestination : public Module
 {
   public:
@@ -56,57 +61,64 @@ class MapFieldDataFromSourceToDestination : public Module
 
     SCIRunAlgo::MapFieldDataFromSourceToDestinationAlgo algo_;
 };
+*/
 
+const ModuleLookupInfo MapFieldDataFromSourceToDestination::staticInfo_("MapFieldDataFromSourceToDestination", "ChangeFieldData", "SCIRun");
 
-DECLARE_MAKER(MapFieldDataFromSourceToDestination)
-
-MapFieldDataFromSourceToDestination::MapFieldDataFromSourceToDestination(GuiContext* ctx) : 
-  Module("MapFieldDataFromSourceToDestination", ctx, Filter, "ChangeFieldData", "SCIRun"),
-  gui_interpolation_basis_(get_ctx()->subVar("interpolation_basis"), "linear"),
-  gui_map_source_to_single_dest_(get_ctx()->subVar("map_source_to_single_dest"), 0),
-  gui_exhaustive_search_max_dist_(get_ctx()->subVar("exhaustive_search_max_dist"), -1.0),
-  gui_default_value_(get_ctx()->subVar("default-value"),0.0)
+MapFieldDataFromSourceToDestination::MapFieldDataFromSourceToDestination() :
+  Module(staticInfo_)
+//  gui_interpolation_basis_(get_ctx()->subVar("interpolation_basis"), "linear"),
+//  gui_map_source_to_single_dest_(get_ctx()->subVar("map_source_to_single_dest"), 0),
+//  gui_exhaustive_search_max_dist_(get_ctx()->subVar("exhaustive_search_max_dist"), -1.0),
 {
+  INITIALIZE_PORT(Source);
+  INITIALIZE_PORT(Destination);
+  INITIALIZE_PORT(Remapped_Destination);
 }
 
-
-void
-MapFieldDataFromSourceToDestination::execute()
+void MapFieldDataFromSourceToDestination::setStateDefaults()
 {
-  FieldHandle source,destination,output;
+  setStateDoubleFromAlgo(Parameters::DefaultValue);
+  auto state = get_state();
+  state->setValue(InterpolationBasis, std::string("linear"));
+  setStateDoubleFromAlgo(Parameters::MaxDistance);
+  state->setValue(map_source_to_single_dest, false);
+}
 
-  get_input_handle( "Source",source, true );
-  get_input_handle( "Destination", destination, true );
+void MapFieldDataFromSourceToDestination::execute()
+{
+  auto source = getRequiredInput(Source);
+  auto destination = getRequiredInput(Destination);
 
-  if( inputs_changed_  ||
-      gui_interpolation_basis_.changed() ||
-      gui_map_source_to_single_dest_.changed()  ||
-      gui_exhaustive_search_max_dist_.changed() ||
-      gui_default_value_.changed() ||
-      !oport_cached("Remapped Destination") ) 
+//  if( inputs_changed_  ||
+//      gui_interpolation_basis_.changed() ||
+//      gui_map_source_to_single_dest_.changed()  ||
+//      gui_exhaustive_search_max_dist_.changed() ||
+//      gui_default_value_.changed() ||
+//      !oport_cached("Remapped Destination") )
+  if (needToExecute())
   {
     update_state(Executing);
-    
-    std::string interpolation_basis = gui_interpolation_basis_.get();
+  
+    auto state = get_state();
+  
+    std::string interpolation_basis = state->getValue(InterpolationBasis).getString();
     if (interpolation_basis == "linear") 
     {
-      algo_.set_option("method","interpolateddata");
+      algo().set_option(Parameters::MappingMethod, "interpolateddata");
     }
     else
     {
-      if (gui_map_source_to_single_dest_.get())
-        algo_.set_option("method","singledestination");
+      if (state->getValue(map_source_to_single_dest).getBool())
+        algo().set_option(Parameters::MappingMethod, "singledestination");
       else
-        algo_.set_option("method","closestdata");
+        algo().set_option(Parameters::MappingMethod, "closestdata");
     }
-    
-    algo_.set_scalar("default_value",gui_default_value_.get());
-    algo_.set_scalar("max_distance",gui_exhaustive_search_max_dist_.get());
-    algo_.run(source,destination,output);
-    
-    // Send the data downstream
-    send_output_handle("Remapped Destination", output);
+  
+    setAlgoDoubleFromState(Parameters::DefaultValue);
+    setAlgoDoubleFromState(Parameters::MaxDistance);
+
+    auto output = algo().run_generic(make_input((Source, source)(Destination, destination)));
+    sendOutputFromAlgorithm(Remapped_Destination, output);
   }
 }
-
-} // End namespace SCIRun

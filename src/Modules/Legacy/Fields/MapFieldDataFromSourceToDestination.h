@@ -26,34 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_LEGACY_FIELDS_MapFieldDataFromSourceToDestination_H__
+#define MODULES_LEGACY_FIELDS_MapFieldDataFromSourceToDestination_H__
 
-#ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
-#define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
-
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
-        
-        ALGORITHM_PARAMETER_DECL(DefaultValue);
-        ALGORITHM_PARAMETER_DECL(MaxDistance);
-        ALGORITHM_PARAMETER_DECL(MappingMethod);
-        
-class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase
-{
-public:
-  MapFieldDataFromSourceToDestinationAlgo();
+namespace Modules {
+namespace Fields {
 
-  bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
+  class SCISHARE MapFieldDataFromSourceToDestination : public Dataflow::Networks::Module,
+    public Has2InputPorts<FieldPortTag, FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
+  {
+  public:
+    MapFieldDataFromSourceToDestination();
+
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+    
+    INPUT_PORT(0, Source, LegacyField);
+    INPUT_PORT(1, Destination, LegacyField);
+    OUTPUT_PORT(0, Remapped_Destination, LegacyField);
   
-  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-  
-  static const Core::Algorithms::AlgorithmOutputName Remapped_Destination;
-};
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    static const Core::Algorithms::AlgorithmParameterName InterpolationBasis;
+    static const Core::Algorithms::AlgorithmParameterName map_source_to_single_dest;
+  };
 
-      }}}}
+}}}
 
-#endif 
+#endif

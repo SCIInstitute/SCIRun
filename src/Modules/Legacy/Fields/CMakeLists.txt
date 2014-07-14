@@ -65,6 +65,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataFromNodeToElem.h
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
+  MapFieldDataFromSourceToDestination.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -109,7 +110,7 @@ SET(Modules_Legacy_Fields_SRCS
   #EditMeshBoundingBox.cc
   #ExtractIsosurfaceByFunction.cc
   #GenerateMedialAxisPoints.cc
-  #MapFieldDataFromSourceToDestination.cc
+  MapFieldDataFromSourceToDestination.cc
   #MaskLatVolWithTriSurf.cc
   #RemoveHexVolSheet.cc
   FairMesh.cc
