@@ -39,6 +39,7 @@ namespace SCIRun {
       namespace Fields {
         
         ALGORITHM_PARAMETER_DECL(ClipMethod);
+        ALGORITHM_PARAMETER_DECL(BuildMapping);
         
 class SCISHARE ClipMeshBySelectionAlgo : public AlgorithmBase
 {
