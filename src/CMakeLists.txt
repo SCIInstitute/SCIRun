@@ -59,6 +59,14 @@ MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 OPTION(BUILD_HEADLESS "Build headless version, without Qt" OFF)
 MARK_AS_ADVANCED(BUILD_HEADLESS)
 
+########################################################################
+# Configure Windows executable to run with or without the console
+
+IF(WIN32)
+  OPTION(SCIRUN_SHOW_CONSOLE "Show Windows console when running SCIRun (useful for debugging)." ON)
+  MARK_AS_ADVANCED(SCIRUN_SHOW_CONSOLE)
+ENDIF()
+
 
 ########################################################################
 # Set default CMAKE_BUILD_TYPE
@@ -727,17 +735,22 @@ SET(CPACK_PACKAGE_INSTALL_DIRECTORY
 
 # other platform settings will be built up from here
 IF(APPLE)
+
  SET(CPACK_PACKAGE_DEFAULT_LOCATION "/Applications/")
  SET(CPACK_TOPLEVEL_TAG "")
+
  IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    SET(CPACK_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
    SET(CMAKE_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
- ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+ ENDIF()
+
  SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
  SET(CPACK_STRIP_FILES TRUE)
  SET(CPACK_SOURCE_STRIP_FILES TRUE)
  SET(CPACK_PACKAGE_EXECUTABLES "${APPLICATION_NAME}.app" "${APPLICATION_NAME}")
-ELSE IF(WIN32 AND NOT UNIX)
+
+ELSEIF(WIN32 AND NOT UNIX)
+
   # There is a bug in NSIS that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backslashes.
   SET(CPACK_PACKAGE_ICON "${PACKAGING_ICON}")
@@ -774,6 +787,7 @@ ELSE IF(WIN32 AND NOT UNIX)
         DeleteRegKey HKCR '${APPLICATION_EXTENSION}'
         DeleteRegKey HKCR '${APPLICATION_NAME}'
   ")
+
 ENDIF()
 
 INCLUDE(CPack)
