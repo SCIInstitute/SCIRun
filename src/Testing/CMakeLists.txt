@@ -43,19 +43,19 @@ ENDIF()
 IF(RUN_BASIC_REGRESSION_TESTS)
 
    IF(WIN32)
-     SET(EXE_LOC ${SCIRun5Prototype_BINARY_DIR}/${BUILD_TYPE}/SCIRunGUIPrototype.exe CACHE PATH "Path to SCIRun executable")
+     SET(EXE_LOC ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/SCIRun.exe CACHE PATH "Path to SCIRun executable")
    ELSE(WIN32)
      # TODO: change once testing works with app bundle
      IF(APPLE)
-       SET(EXE_LOC ${SCIRun5Prototype_BINARY_DIR}/${TEST_APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
+       SET(EXE_LOC ${SCIRun_BINARY_DIR}/${TEST_APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
      ELSE()
-       SET(EXE_LOC ${SCIRun5Prototype_BINARY_DIR}/${APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
+       SET(EXE_LOC ${SCIRun_BINARY_DIR}/${APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
      ENDIF()
    ENDIF()
    MESSAGE(STATUS "Using executable: ${EXE_LOC} to test networks")
    
   # Run all the possible .srn files in src/ExampleNets
-  FILE(GLOB_RECURSE scirun_srns "${SCIRun5Prototype_SOURCE_DIR}/ExampleNets/regression/*.srn5")
+  FILE(GLOB_RECURSE scirun_srns "${SCIRun_SOURCE_DIR}/ExampleNets/regression/*.srn5")
   FOREACH(srn ${scirun_srns})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
     #SET(SRN_ROOT_NAMES "${SRN_ROOT_NAMES} ${srn_name}" CACHE INTERNAL "List of root net names that correspond with image names")
