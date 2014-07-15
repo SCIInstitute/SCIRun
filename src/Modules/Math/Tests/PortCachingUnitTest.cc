@@ -107,7 +107,7 @@ namespace Testing
   class MockStateChangedChecker : public StateChangedChecker
   {
   public:
-    MOCK_CONST_METHOD0(stateChanged, bool());
+    MOCK_CONST_METHOD0(newStatePresent, bool());
   };
 
   typedef boost::shared_ptr<MockStateChangedChecker> MockStateChangedCheckerPtr;
@@ -131,6 +131,37 @@ public:
   virtual bool inputsChanged() const override
   {
     return module_.inputsChanged();
+  }
+private:
+  Module& module_;
+};
+
+class StateChangedCheckerImpl : public StateChangedChecker
+{
+public:
+  explicit StateChangedCheckerImpl(Module& module) : module_(module)
+  {
+  }
+  virtual bool newStatePresent() const override
+  {
+    return module_.newStatePresent();
+  }
+private:
+  Module& module_;
+};
+
+class OutputPortsCachedCheckerImpl : public OutputPortsCachedChecker
+{
+public:
+  explicit OutputPortsCachedCheckerImpl(Module& module) : module_(module)
+  {
+  }
+  virtual bool outputPortsCached() const override
+  {
+    auto outputs = module_.outputPorts();
+    auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out->hasData(); });
+    std::cout << "Real OutputPortsCachedCheckerImpl: returning " << ret << std::endl;
+    return ret;
   }
 private:
   Module& module_;
@@ -282,7 +313,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestAllCombinationsWithMocks)
   Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
   ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
-  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
+  ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(stateChanged_));
   Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
   ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(oportsCached_));
   ModuleReexecutionStrategyHandle realNeedToExecute(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, mockOutputPortsCached));
@@ -326,7 +357,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
   std::cout << "RealInputsChanged, stateChanged = " << stateChanged_ << " oportsCached = " << oportsCached_ << std::endl;
   InputsChangedCheckerHandle realInputsChanged(new InputsChangedCheckerImpl(*evalModule));
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
-  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
+  ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(stateChanged_));
   Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
   ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(oportsCached_));
   ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(realInputsChanged, mockStateChanged, mockOutputPortsCached));
@@ -357,7 +388,6 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
       send->execute();
       process->execute();
       receive->execute();
-      //EXPECT_FALSE(realNeedToExecuteWithPartialMocks->needToExecute());
 
       EXPECT_TRUE(evalModule->executeCalled_);
       EXPECT_FALSE(evalModule->expensiveComputationDone_);
@@ -375,33 +405,9 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
       EXPECT_TRUE(evalModule->expensiveComputationDone_);
     }
   }
-
-//   std::cout << "Rest of test" << std::endl;
-//
-//   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
-//   ASSERT_TRUE(receiveModule != nullptr);
-//
-//   if (evalModule->expensiveComputationDone_)
-//   {
-//     ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
-//   }
-//
-//   evalModule->resetFlags();
-//   send->execute();
-//   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-//   process->execute();
-//   receive->execute();
-//   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
-//
-//   evalModule->resetFlags();
-//   send->execute();
-//   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
-//   process->get_state()->setValue(Variables::ScalarValue, 2.0);
-//   process->execute();
-//   receive->execute();
-//   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 }
 
+#if 0
 TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
 {
   FAIL() << "todo";
@@ -435,7 +441,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
   Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
   ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
-  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
+  ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(stateChanged_));
   Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
   ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(oportsCached_));
   ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, mockOutputPortsCached));
@@ -495,7 +501,8 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
   receive->execute();
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 }
-
+#endif
+#if 0
 TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
 {
   FAIL() << "todo";
@@ -529,7 +536,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
   Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
   ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
-  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
+  ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(stateChanged_));
   Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
   ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(oportsCached_));
   ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, mockOutputPortsCached));
@@ -589,7 +596,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
   receive->execute();
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 }
-
+#endif
 #endif
 
 class ReexecuteStrategySimpleUnitTest : public ::testing::Test
@@ -638,7 +645,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
   std::cout << "RealInputsChanged, stateChanged = " << stateChanged_ << " oportsCached = " << oportsCached_ << std::endl;
   InputsChangedCheckerHandle realInputsChanged(new InputsChangedCheckerImpl(*evalModule));
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
-  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
+  ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(stateChanged_));
   Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
   ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(true));
   ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(realInputsChanged, mockStateChanged, mockOutputPortsCached));
@@ -693,7 +700,6 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
 
 TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
 {
-  FAIL() << "todo";
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
@@ -721,13 +727,13 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
   DenseMatrixHandle input = matrix1();
   sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
 
-  std::cout << "RealInputsChanged, stateChanged = " << stateChanged_ << " oportsCached = " << oportsCached_ << std::endl;
-  InputsChangedCheckerHandle realInputsChanged(new InputsChangedCheckerImpl(*evalModule));
-  Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
-  ON_CALL(*mockStateChanged, stateChanged()).WillByDefault(Return(stateChanged_));
+  std::cout << "RealStateChanged, inputsChanged = " << inputsChanged_ << " oportsCached = " << oportsCached_ << std::endl;
+  StateChangedCheckerHandle realStateChanged(new StateChangedCheckerImpl(*evalModule));
+  Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
+  ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
   Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
   ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(true));
-  ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(realInputsChanged, mockStateChanged, mockOutputPortsCached));
+  ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(mockInputsChanged, realStateChanged, mockOutputPortsCached));
 
   process->setRexecutionStrategy(realNeedToExecuteWithPartialMocks);
 
@@ -750,7 +756,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
     ASSERT_TRUE(evalModule->expensiveComputationDone_);
     if (evalModule->expensiveComputationDone_)
     {
-      //inputs haven't changed.
+      //state hasn't changed.
       evalModule->resetFlags();
       std::cout << "EXECUTION 2 2 2 2 2 2 2" << std::endl;
       send->do_execute();
@@ -761,11 +767,112 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
       EXPECT_TRUE(evalModule->executeCalled_);
       EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
-      DenseMatrixHandle input = matrix2();
-      sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+      process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
 
       std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
-      //inputs have changed
+      //state has changed
+      evalModule->resetFlags();
+      send->do_execute();
+      process->do_execute();
+      receive->do_execute();
+
+      EXPECT_TRUE(evalModule->executeCalled_);
+      EXPECT_TRUE(evalModule->expensiveComputationDone_);
+    }
+  }
+}
+
+TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af);
+
+  auto network = controller.getNetwork();
+
+  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle process = controller.addModule("NeedToExecuteTester");
+  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+
+  EXPECT_EQ(3, network->nmodules());
+
+  network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 0));
+  auto oportId = network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
+  EXPECT_EQ(2, network->nconnections());
+
+  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  ASSERT_TRUE(sendModule != nullptr);
+  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  ASSERT_TRUE(evalModule != nullptr);
+
+  ASSERT_FALSE(evalModule->executeCalled_);
+
+  DenseMatrixHandle input = matrix1();
+  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+
+  std::cout << "RealOportsCached, inputsChanged = " << inputsChanged_ << " stateChanged = " << stateChanged_ << std::endl;
+  Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
+  ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(stateChanged_));
+  Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
+  ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
+  OutputPortsCachedCheckerHandle realOportsCached(new OutputPortsCachedCheckerImpl(*evalModule));
+
+  ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, realOportsCached));
+
+  process->setRexecutionStrategy(realNeedToExecuteWithPartialMocks);
+
+  {
+    SimpleSink::setGlobalPortCachingFlag(true);
+    evalModule->resetFlags();
+
+    process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+
+    bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
+    ASSERT_TRUE(initialNeedToExecute);
+    std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1 1" << std::endl;
+    send->do_execute();
+    process->do_execute();
+    receive->do_execute();
+
+    EXPECT_TRUE(evalModule->executeCalled_);
+    EXPECT_EQ(evalModule->expensiveComputationDone_, initialNeedToExecute);
+    ASSERT_TRUE(realOportsCached->outputPortsCached());
+
+    ASSERT_TRUE(evalModule->expensiveComputationDone_);
+    if (evalModule->expensiveComputationDone_)
+    {
+      evalModule->resetFlags();
+      std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2 2 2" << std::endl;
+      send->do_execute();
+      process->do_execute();
+      receive->do_execute();
+      EXPECT_FALSE(realNeedToExecuteWithPartialMocks->needToExecute());
+
+      EXPECT_TRUE(evalModule->executeCalled_);
+      EXPECT_FALSE(evalModule->expensiveComputationDone_);
+
+      //Invalidate iport by disconnecting/reconnecting
+      network->disconnect(oportId);
+      EXPECT_EQ(1, network->nconnections());
+      network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
+      EXPECT_EQ(2, network->nconnections());
+
+      std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
+      
+      evalModule->resetFlags();
+      EXPECT_TRUE(send->do_execute());
+      EXPECT_TRUE(process->do_execute());
+      EXPECT_FALSE(receive->do_execute());
+
+      EXPECT_TRUE(evalModule->executeCalled_);
+      EXPECT_FALSE(evalModule->expensiveComputationDone_);
+
+      //Invalidate oport by changing flag
+      SimpleSink::setGlobalPortCachingFlag(false);
+
+      std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 4 4 4 4 4 4" << std::endl;
+
       evalModule->resetFlags();
       send->do_execute();
       process->do_execute();

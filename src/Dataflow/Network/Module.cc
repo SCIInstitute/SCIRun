@@ -117,7 +117,7 @@ size_t Module::num_output_ports() const
   return oports_.size();
 }
 
-void Module::do_execute() throw()
+bool Module::do_execute() throw()
 {
   executeBegins_(id_);
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
@@ -125,10 +125,12 @@ void Module::do_execute() throw()
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   setExecutionState(ModuleInterface::Executing);
+  bool returnCode = false;
 
   try
   {
     execute();
+    returnCode = true;
   }
   catch(const std::bad_alloc&)
   {
@@ -169,9 +171,10 @@ void Module::do_execute() throw()
   //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
   setExecutionState(ModuleInterface::Completed);
   resetStateChanged();
-  std::cout << id_ << " inputsChanged set to false post-execute" << std::endl;
+  //std::cout << id_ << " inputsChanged set to false post-execute" << std::endl;
   inputsChanged_ = false;
   executeEnds_(id_);
+  return returnCode;
 }
 
 ModuleStateHandle Module::get_state()
@@ -234,11 +237,9 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
 
   if (!inputsChanged_)
   {
-    LOG_DEBUG(id_ << " :: inputsChanged is false, querying port for value.");
-    std::cout << id_ << " :: inputsChanged is false, querying port for value." << std::endl;
+    //LOG_DEBUG(id_ << " :: inputsChanged is false, querying port for value.");
     inputsChanged_ = port->hasChanged();
-    LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
-    std::cout << id_ << ":: inputsChanged is now " << inputsChanged_<< std::endl;
+    //LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
   }
   return port->getData();
 }
@@ -499,8 +500,6 @@ bool Module::needToExecute() const
   }
 
   return true;
-  //return newStatePresent() || inputsChanged();
-    /// @todo: || !oports_cached()
 }
 
 ModuleReexecutionStrategyHandle Module::getRexecutionStrategy() const
@@ -558,5 +557,5 @@ DynamicReexecutionStrategy::DynamicReexecutionStrategy(
 
 bool DynamicReexecutionStrategy::needToExecute() const
 {
-  return inputsChanged_->inputsChanged() || stateChanged_->stateChanged() || !outputsCached_->outputPortsCached();
+  return inputsChanged_->inputsChanged() || stateChanged_->newStatePresent() || !outputsCached_->outputPortsCached();
 }

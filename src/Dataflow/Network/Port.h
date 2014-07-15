@@ -121,6 +121,7 @@ public:
   virtual void sendData(Core::Datatypes::DatatypeHandle data);
   virtual bool isInput() const { return false; } //boo
   virtual bool isDynamic() const { return false; } /// @todo: design dynamic output ports
+  virtual bool hasData() const override;
 private:
   DatatypeSourceInterfaceHandle source_;
 };

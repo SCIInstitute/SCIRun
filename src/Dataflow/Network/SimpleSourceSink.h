@@ -33,6 +33,7 @@
 
 #include <Dataflow/Network/DataflowInterfaces.h>
 #include <boost/function.hpp>
+#include <set>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun
@@ -47,10 +48,11 @@ namespace SCIRun
       {
       public:
         SimpleSink();
+        ~SimpleSink();
         virtual void waitForData();
         virtual SCIRun::Core::Datatypes::DatatypeHandleOption receive();
-        virtual bool hasData() const { return hasData_; }
-        virtual void setHasData(bool dataPresent);
+        //virtual bool hasData() const { return hasData_; }
+        //virtual void setHasData(bool dataPresent);
         virtual DatatypeSinkInterface* clone() const;
         virtual bool hasChanged() const;
         void setData(DataProvider dataProvider);
@@ -63,9 +65,10 @@ namespace SCIRun
       private:
         DataProvider dataProvider_;
         boost::optional<SCIRun::Core::Datatypes::Datatype::id_type> previousId_;
-        bool hasData_;
         DataHasChangedSignalType dataHasChanged_;
         static bool globalPortCaching_;
+        static void invalidateAll();
+        static std::set<SimpleSink*> instances_;
       };
     
       /*
@@ -85,9 +88,15 @@ namespace SCIRun
       class SCISHARE SimpleSource : public DatatypeSourceInterface
       {
       public:
+        SimpleSource();
+        ~SimpleSource();
         virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data);
+        virtual bool hasData() const;
+
+        static void clearAllSources();
       private:
         SCIRun::Core::Datatypes::DatatypeHandle data_;
+        static std::set<SimpleSource*> instances_;
       };
     }
   }

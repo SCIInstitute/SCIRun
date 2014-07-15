@@ -45,6 +45,7 @@ namespace Networks {
   public:
     virtual ~DatatypeSourceInterface() {}
     virtual void send(DatatypeSinkInterfaceHandle receiver, Core::Datatypes::DatatypeHandle data) = 0;
+    virtual bool hasData() const = 0;
   };
 
   typedef boost::signals2::signal<void(SCIRun::Core::Datatypes::DatatypeHandle)> DataHasChangedSignalType;
@@ -55,8 +56,8 @@ namespace Networks {
     virtual ~DatatypeSinkInterface() {}
     
     // "mailbox" interface
-    virtual bool hasData() const = 0;
-    virtual void setHasData(bool dataPresent) = 0;
+    //virtual bool hasData() const = 0;
+    //virtual void setHasData(bool dataPresent) = 0;
 
     virtual DatatypeSinkInterface* clone() const = 0;
 

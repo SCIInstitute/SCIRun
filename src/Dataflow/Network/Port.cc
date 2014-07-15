@@ -172,3 +172,8 @@ void OutputPort::sendData(DatatypeHandle data)
       source_->send(c->iport_->sink(), data);
   }
 }
+
+bool OutputPort::hasData() const
+{
+  return source_->hasData();
+}

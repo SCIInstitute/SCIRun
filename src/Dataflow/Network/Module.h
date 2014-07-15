@@ -87,7 +87,7 @@ namespace Networks {
     virtual std::vector<OutputPortHandle> outputPorts() const;
 
     /// @todo: execute signal here.
-    virtual void do_execute() throw(); //--C++11--will throw nothing
+    virtual bool do_execute() throw(); //--C++11--will throw nothing
     virtual ModuleStateHandle get_state();
     virtual const ModuleStateHandle get_state() const;
     virtual void set_state(ModuleStateHandle state);
@@ -405,7 +405,7 @@ namespace Networks {
   public:
     virtual ~StateChangedChecker() {}
 
-    virtual bool stateChanged() const = 0;
+    virtual bool newStatePresent() const = 0;
   };
 
   typedef boost::shared_ptr<StateChangedChecker> StateChangedCheckerHandle;

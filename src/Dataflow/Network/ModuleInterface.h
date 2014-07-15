@@ -95,7 +95,7 @@ namespace Networks {
 
     virtual ModuleStateHandle get_state() = 0;
 
-    virtual void do_execute() = 0;
+    virtual bool do_execute() = 0;
 
     enum ExecutionState 
     {
