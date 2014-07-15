@@ -99,6 +99,8 @@ namespace SCIRun {
           auto pc = new QAction("Port Caching", parent);
           pc->setCheckable(true);
           connect(pc, SIGNAL(triggered(bool)), parent, SLOT(portCachingChanged(bool)));
+          //TODO for now: disable
+          pc->setEnabled(false);
           //TODO:
           //pc->setChecked(parent->getCached())...or something
           actions.append(pc);

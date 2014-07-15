@@ -122,51 +122,6 @@ namespace Testing
 
 }
 
-class InputsChangedCheckerImpl : public InputsChangedChecker
-{
-public:
-  explicit InputsChangedCheckerImpl(Module& module) : module_(module)
-  {
-  }
-  virtual bool inputsChanged() const override
-  {
-    return module_.inputsChanged();
-  }
-private:
-  Module& module_;
-};
-
-class StateChangedCheckerImpl : public StateChangedChecker
-{
-public:
-  explicit StateChangedCheckerImpl(Module& module) : module_(module)
-  {
-  }
-  virtual bool newStatePresent() const override
-  {
-    return module_.newStatePresent();
-  }
-private:
-  Module& module_;
-};
-
-class OutputPortsCachedCheckerImpl : public OutputPortsCachedChecker
-{
-public:
-  explicit OutputPortsCachedCheckerImpl(Module& module) : module_(module)
-  {
-  }
-  virtual bool outputPortsCached() const override
-  {
-    auto outputs = module_.outputPorts();
-    auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out->hasData(); });
-    std::cout << "Real OutputPortsCachedCheckerImpl: returning " << ret << std::endl;
-    return ret;
-  }
-private:
-  Module& module_;
-};
-
 #if GTEST_HAS_COMBINE
 
 using ::testing::Bool;
@@ -324,7 +279,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestAllCombinationsWithMocks)
     ", oportsCached_ = " << oportsCached_ << std::endl;
   EXPECT_EQ(inputsChanged_ || stateChanged_ || !oportsCached_, realNeedToExecute->needToExecute());
 }
-
+#if 0
 TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
@@ -407,7 +362,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
   }
 }
 
-#if 0
+
 TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
 {
   FAIL() << "todo";

@@ -434,6 +434,33 @@ namespace Networks {
     OutputPortsCachedCheckerHandle outputsCached_;
   };
 
+  class SCISHARE InputsChangedCheckerImpl : public InputsChangedChecker
+  {
+  public:
+    explicit InputsChangedCheckerImpl(Module& module);
+    virtual bool inputsChanged() const override;
+  private:
+    Module& module_;
+  };
+
+  class SCISHARE StateChangedCheckerImpl : public StateChangedChecker
+  {
+  public:
+    explicit StateChangedCheckerImpl(Module& module);
+    virtual bool newStatePresent() const override;
+  private:
+    Module& module_;
+  };
+
+  class SCISHARE OutputPortsCachedCheckerImpl : public OutputPortsCachedChecker
+  {
+  public:
+    explicit OutputPortsCachedCheckerImpl(Module& module);
+    virtual bool outputPortsCached() const override;
+  private:
+    Module& module_;
+  };
+
 }}
 
 

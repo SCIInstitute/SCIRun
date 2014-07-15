@@ -559,3 +559,31 @@ bool DynamicReexecutionStrategy::needToExecute() const
 {
   return inputsChanged_->inputsChanged() || stateChanged_->newStatePresent() || !outputsCached_->outputPortsCached();
 }
+
+InputsChangedCheckerImpl::InputsChangedCheckerImpl(Module& module) : module_(module)
+{
+}
+bool InputsChangedCheckerImpl::inputsChanged() const 
+{
+  return module_.inputsChanged();
+}
+
+StateChangedCheckerImpl::StateChangedCheckerImpl(Module& module) : module_(module)
+{
+}
+bool StateChangedCheckerImpl::newStatePresent() const 
+{
+  return module_.newStatePresent();
+}
+
+OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(Module& module) : module_(module)
+{
+}
+
+bool OutputPortsCachedCheckerImpl::outputPortsCached() const 
+{
+  auto outputs = module_.outputPorts();
+  auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out->hasData(); });
+  //std::cout << "Real OutputPortsCachedCheckerImpl: returning " << ret << std::endl;
+  return ret;
+}
