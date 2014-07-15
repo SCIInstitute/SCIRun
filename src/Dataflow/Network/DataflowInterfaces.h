@@ -44,7 +44,8 @@ namespace Networks {
   {
   public:
     virtual ~DatatypeSourceInterface() {}
-    virtual void send(DatatypeSinkInterfaceHandle receiver, Core::Datatypes::DatatypeHandle data) = 0;
+    virtual void cacheData(Core::Datatypes::DatatypeHandle data) = 0;
+    virtual void send(DatatypeSinkInterfaceHandle receiver) const = 0;
     virtual bool hasData() const = 0;
   };
 

@@ -90,8 +90,9 @@ namespace SCIRun
       public:
         SimpleSource();
         ~SimpleSource();
-        virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data);
-        virtual bool hasData() const;
+        virtual void cacheData(Core::Datatypes::DatatypeHandle data) override;
+        virtual void send(DatatypeSinkInterfaceHandle receiver) const override;
+        virtual bool hasData() const override;
 
         static void clearAllSources();
       private:

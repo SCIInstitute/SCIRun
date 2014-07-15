@@ -122,8 +122,8 @@ namespace Networks {
 
     virtual bool needToExecute() const override;
 
-    virtual ModuleReexecutionStrategyHandle getRexecutionStrategy() const override;
-    virtual void setRexecutionStrategy(ModuleReexecutionStrategyHandle caching) override;
+    virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const override;
+    virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override;
 
     virtual bool hasDynamicPorts() const 
     {
@@ -460,6 +460,8 @@ namespace Networks {
   private:
     Module& module_;
   };
+
+  SCISHARE ModuleReexecutionStrategyHandle makeDynamicReexecutionStrategy(Module& module);
 
 }}
 

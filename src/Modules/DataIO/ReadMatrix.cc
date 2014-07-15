@@ -54,8 +54,11 @@ void ReadMatrixModule::execute()
   else
     filename_ = (*fileOption)->value();
 
-  algo().set(Variables::Filename, filename_);
-  auto output = algo().run_generic(makeNullInput());
-  sendOutputFromAlgorithm(MatrixLoaded, output);
-  sendOutput(FileLoaded, boost::make_shared<String>(filename_));
+  if (needToExecute())
+  {
+    algo().set(Variables::Filename, filename_);
+    auto output = algo().run_generic(makeNullInput());
+    sendOutputFromAlgorithm(MatrixLoaded, output);
+    sendOutput(FileLoaded, boost::make_shared<String>(filename_));
+  }
 }

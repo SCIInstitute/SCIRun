@@ -85,7 +85,8 @@ Module::Module(const ModuleLookupInfo& info,
 
   initStateObserver(state_.get());
 
-  setRexecutionStrategy(boost::make_shared<AlwaysReexecuteStrategy>());
+  //setReexecutionStrategy(boost::make_shared<AlwaysReexecuteStrategy>());
+  setReexecutionStrategy(makeDynamicReexecutionStrategy(*this));
 }
 
 Module::~Module()
@@ -494,20 +495,19 @@ bool Module::needToExecute() const
   if (reexecute_)
   {
     auto val = reexecute_->needToExecute();
-    std::cout << id_ << " Using real needToExecute strategy object, value is: " << val << std::endl;
-    LOG_DEBUG("Using real needToExecute strategy object, value is: " << val << std::endl);
+    LOG_DEBUG(id_ << " Using real needToExecute strategy object, value is: " << val << std::endl);
     return val;
   }
 
   return true;
 }
 
-ModuleReexecutionStrategyHandle Module::getRexecutionStrategy() const
+ModuleReexecutionStrategyHandle Module::getReexecutionStrategy() const
 {
   return reexecute_;
 }
 
-void Module::setRexecutionStrategy(ModuleReexecutionStrategyHandle caching)
+void Module::setReexecutionStrategy(ModuleReexecutionStrategyHandle caching)
 {
   reexecute_ = caching;
 }
@@ -563,16 +563,20 @@ bool DynamicReexecutionStrategy::needToExecute() const
 InputsChangedCheckerImpl::InputsChangedCheckerImpl(Module& module) : module_(module)
 {
 }
+
 bool InputsChangedCheckerImpl::inputsChanged() const 
 {
+  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << module_.inputsChanged() << std::endl);
   return module_.inputsChanged();
 }
 
 StateChangedCheckerImpl::StateChangedCheckerImpl(Module& module) : module_(module)
 {
 }
+
 bool StateChangedCheckerImpl::newStatePresent() const 
 {
+  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << module_.newStatePresent() << std::endl);
   return module_.newStatePresent();
 }
 
@@ -584,6 +588,14 @@ bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
   auto outputs = module_.outputPorts();
   auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out->hasData(); });
-  //std::cout << "Real OutputPortsCachedCheckerImpl: returning " << ret << std::endl;
+  LOG_DEBUG(module_.get_id() << " OutputPortsCachedCheckerImpl, returns " << ret << std::endl);
   return ret;
+}
+
+ModuleReexecutionStrategyHandle SCIRun::Dataflow::Networks::makeDynamicReexecutionStrategy(Module& module)
+{
+  return boost::make_shared<DynamicReexecutionStrategy>(
+    boost::make_shared<InputsChangedCheckerImpl>(module),
+    boost::make_shared<StateChangedCheckerImpl>(module),
+    boost::make_shared<OutputPortsCachedCheckerImpl>(module));
 }

@@ -176,7 +176,7 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
   sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
 
   Testing::MockModuleReexecutionStrategyPtr mockNeedToExecute(new NiceMock<Testing::MockModuleReexecutionStrategy>);
-  process->setRexecutionStrategy(mockNeedToExecute);
+  process->setReexecutionStrategy(mockNeedToExecute);
 
   {
     evalModule->resetFlags();
@@ -605,7 +605,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
   ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(true));
   ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(realInputsChanged, mockStateChanged, mockOutputPortsCached));
 
-  process->setRexecutionStrategy(realNeedToExecuteWithPartialMocks);
+  process->setReexecutionStrategy(realNeedToExecuteWithPartialMocks);
 
   {
     SimpleSink::setGlobalPortCachingFlag(true);
@@ -690,7 +690,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
   ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(true));
   ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(mockInputsChanged, realStateChanged, mockOutputPortsCached));
 
-  process->setRexecutionStrategy(realNeedToExecuteWithPartialMocks);
+  process->setReexecutionStrategy(realNeedToExecuteWithPartialMocks);
 
   {
     SimpleSink::setGlobalPortCachingFlag(true);
@@ -775,7 +775,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
 
   ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(mockInputsChanged, mockStateChanged, realOportsCached));
 
-  process->setRexecutionStrategy(realNeedToExecuteWithPartialMocks);
+  process->setReexecutionStrategy(realNeedToExecuteWithPartialMocks);
 
   {
     SimpleSink::setGlobalPortCachingFlag(true);

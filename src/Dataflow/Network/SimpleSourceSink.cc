@@ -142,13 +142,17 @@ boost::signals2::connection SimpleSink::connectDataHasChanged(const DataHasChang
   return dataHasChanged_.connect(subscriber);
 }
 
-void SimpleSource::send(DatatypeSinkInterfaceHandle receiver, DatatypeHandle data)
+void SimpleSource::cacheData(DatatypeHandle data)
+{
+  data_ = data;
+}
+
+void SimpleSource::send(DatatypeSinkInterfaceHandle receiver) const
 {
   auto sink = dynamic_cast<SimpleSink*>(receiver.get());
   if (!sink)
     THROW_INVALID_ARGUMENT("SimpleSource can only send to SimpleSinks");
 
-  data_ = data;
   sink->setData([this]() { return data_; });
   //addDeleteListener(sink);
 }

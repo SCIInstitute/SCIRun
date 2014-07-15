@@ -116,7 +116,8 @@ namespace SCIRun {
         class MockDatatypeSource : public DatatypeSourceInterface
         {
         public:
-          MOCK_METHOD2(send, void(DatatypeSinkInterfaceHandle, Core::Datatypes::DatatypeHandle));
+          MOCK_METHOD1(cacheData, void(Core::Datatypes::DatatypeHandle));
+          MOCK_CONST_METHOD1(send, void(DatatypeSinkInterfaceHandle));
           MOCK_CONST_METHOD0(hasData, bool());
         };
 

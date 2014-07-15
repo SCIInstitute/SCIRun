@@ -132,8 +132,8 @@ namespace Networks {
     // need to hook up input ports for new data coming in, and output ports for cached state.
     virtual bool needToExecute() const = 0;
 
-    virtual ModuleReexecutionStrategyHandle getRexecutionStrategy() const = 0;
-    virtual void setRexecutionStrategy(ModuleReexecutionStrategyHandle caching) = 0;
+    virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const = 0;
+    virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) = 0;
 
     virtual void setStateDefaults() = 0;
 

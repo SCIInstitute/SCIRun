@@ -27,6 +27,7 @@
 */
 
 #include <Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 
@@ -48,11 +49,13 @@ void StateChangeObserver::initStateObserver(ModuleStateInterface* state)
 
 void StateChangeObserver::stateChanged()
 {
+  LOG_DEBUG("StateChangeObserver::stateChanged()" << std::endl);
   stateChanged_ = true;
 }
 
 void StateChangeObserver::resetStateChanged()
 {
+  LOG_DEBUG("StateChangeObserver::resetStateChanged()" << std::endl);
   stateChanged_ = false;
 }
 

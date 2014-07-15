@@ -75,7 +75,8 @@ TEST_F(OutputPortTest, SendSomeData)
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
   
-  EXPECT_CALL(*mockSource, send(_, dataToPush));
+  EXPECT_CALL(*mockSource, cacheData(dataToPush));
+  EXPECT_CALL(*mockSource, send(_));
   outputPort->sendData(dataToPush);
 }
 
@@ -91,7 +92,8 @@ TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
 
-  EXPECT_CALL(*mockSource, send(_, dataToPush)).Times(0);
+  EXPECT_CALL(*mockSource, cacheData(dataToPush)).Times(1);
+  EXPECT_CALL(*mockSource, send(_)).Times(0);
   outputPort->sendData(dataToPush);
 }
 
@@ -119,6 +121,7 @@ TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
 
-  EXPECT_CALL(*mockSource, send(_, dataToPush)).Times(2);
+  EXPECT_CALL(*mockSource, cacheData(dataToPush)).Times(1);
+  EXPECT_CALL(*mockSource, send(_)).Times(2);
   outputPort->sendData(dataToPush);
 }
