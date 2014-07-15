@@ -36,6 +36,8 @@
 ///   University of Utah
 ///@date  March 2001
 ///
+/// @class CreateLatVol
+/// @image html CreateLatVol.png
 
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Core/GeometryPrimitives/Point.h>
