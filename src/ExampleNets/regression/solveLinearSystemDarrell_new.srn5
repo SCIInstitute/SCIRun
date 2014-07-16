@@ -79,7 +79,7 @@
 				</second>
 			</item>
 			<item>
-				<first>SolveLinearSystem:5</first>
+				<first>SolveLinearSystem:4</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -97,7 +97,7 @@
 								<second>
 									<name>MaxIterations</name>
 									<value>
-										<which>1</which>
+										<which>0</which>
 										<value>500</value>
 									</value>
 								</second>
@@ -134,7 +134,7 @@
 									<name>TargetError</name>
 									<value>
 										<which>1</which>
-										<value>1.0000000000000001e-005</value>
+										<value>0.00069999999999999988</value>
 									</value>
 								</second>
 							</item>
@@ -180,7 +180,7 @@
 					<name>MatrixLoaded</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SolveLinearSystem:5</moduleId2_>
+				<moduleId2_>SolveLinearSystem:4</moduleId2_>
 				<port2_>
 					<name>RHS</name>
 					<id>0</id>
@@ -192,14 +192,14 @@
 					<name>MatrixLoaded</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SolveLinearSystem:5</moduleId2_>
+				<moduleId2_>SolveLinearSystem:4</moduleId2_>
 				<port2_>
 					<name>LHS</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SolveLinearSystem:5</moduleId1_>
+				<moduleId1_>SolveLinearSystem:4</moduleId1_>
 				<port1_>
 					<name>Solution</name>
 					<id>0</id>
@@ -211,7 +211,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SolveLinearSystem:5</moduleId1_>
+				<moduleId1_>SolveLinearSystem:4</moduleId1_>
 				<port1_>
 					<name>Solution</name>
 					<id>0</id>
@@ -249,10 +249,10 @@
 			</second>
 		</item>
 		<item>
-			<first>SolveLinearSystem:5</first>
+			<first>SolveLinearSystem:4</first>
 			<second>
-				<first>-1285</first>
-				<second>-309</second>
+				<first>-1035</first>
+				<second>-304</second>
 			</second>
 		</item>
 		<item>
