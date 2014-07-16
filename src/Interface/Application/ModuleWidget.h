@@ -43,6 +43,7 @@
 #include <Dataflow/Network/ExecutableObject.h>
 
 class QGraphicsProxyWidget;
+class QDockWidget;
 
 namespace SCIRun {
 namespace Gui {
@@ -136,7 +137,8 @@ private:
   void addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void hookUpGeneralPortSignals(PortWidget* port) const;
   std::string moduleId_;
-  boost::scoped_ptr<class ModuleDialogGeneric> dialog_;
+  class ModuleDialogGeneric* dialog_;
+  QDockWidget* dockable_;
   void makeOptionsDialog();
   void setupModuleActions();
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);

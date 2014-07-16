@@ -120,6 +120,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   colorLocked_(false),
   theModule_(theModule),
   moduleId_(theModule->get_id()),
+  dialog_(0),
+  dockable_(0),
   inputPortLayout_(0),
   outputPortLayout_(0),
   editor_(ed),
@@ -401,10 +403,11 @@ ModuleWidget::~ModuleWidget()
     p->deleteConnections();
   
   GuiLogger::Instance().log("Module deleted.");
-  if (dialog_ != nullptr)
+  if (dialog_)
   {
+    dockable_->hide();
     dialog_->close();
-    dialog_.reset();
+    delete dockable_;
   }
   theModule_->setLogger(LoggerHandle());
   delete logWindow_;
@@ -475,15 +478,24 @@ boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
 
 void ModuleWidget::makeOptionsDialog()
 {
-  if (!dialog_)
+  if (theModule_->has_ui())
   {
-    if (!dialogFactory_)
-      dialogFactory_.reset(new ModuleDialogFactory(SCIRunMainWindow::Instance()));
+    if (!dialog_)
+    {
+      if (!dialogFactory_)
+        dialogFactory_.reset(new ModuleDialogFactory(SCIRunMainWindow::Instance()));
 
-    dialog_.reset(dialogFactory_->makeDialog(moduleId_, theModule_->get_state()));
-    dialog_->pull();
-    connect(dialog_.get(), SIGNAL(executeButtonPressed()), this, SLOT(execute()));
-    connect(this, SIGNAL(moduleExecuted()), dialog_.get(), SLOT(moduleExecuted()));
+      dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
+      dialog_->pull();
+      connect(dialog_, SIGNAL(executeButtonPressed()), this, SLOT(execute()));
+      connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
+      dockable_ = new QDockWidget(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
+      dockable_->setWidget(dialog_);
+      dockable_->setAllowedAreas(Qt::RightDockWidgetArea);
+      dockable_->setAutoFillBackground(true);
+      SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
+      dockable_->hide();
+    }
   }
 }
 
@@ -492,10 +504,13 @@ boost::shared_ptr<ClosestPortFinder> ModuleWidget::closestPortFinder_;
 
 void ModuleWidget::showOptionsDialog()
 {
-  makeOptionsDialog();
-  dialog_->show();
-  dialog_->raise();
-  dialog_->activateWindow();
+  if (dialog_)
+  {
+    makeOptionsDialog();
+    dockable_->show();
+    dockable_->raise();
+    dockable_->activateWindow();
+  }
 }
 
 void ModuleWidget::updateProgressBar(double percent)

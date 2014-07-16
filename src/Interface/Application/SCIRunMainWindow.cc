@@ -210,6 +210,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
 
   setupInputWidgets();
+
+  configurationDockWidget_->hide();
 }
 
 void SCIRunMainWindow::initialize()
