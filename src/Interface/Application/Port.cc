@@ -180,7 +180,7 @@ void PortWidget::paintEvent(QPaintEvent* event)
   QPainter painter(this);
   painter.fillRect(QRect(QPoint(), size), color());
   QPoint lightStart = isInput() ? QPoint(0,5) : QPoint(0,0);
-  QColor lightColor = isLightOn() ? Qt::red : Qt::black;
+  QColor lightColor = isLightOn() ? Qt::cyan : Qt::black;
   painter.fillRect(QRect(lightStart, QSize(size.width(), 2)), lightColor);
 }
 
