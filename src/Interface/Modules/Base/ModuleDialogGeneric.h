@@ -35,6 +35,7 @@
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/bimap.hpp>
+#include <boost/signals2/connection.hpp>
 #include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
@@ -88,6 +89,7 @@ namespace Gui {
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     std::vector<WidgetSlotManagerPtr> slotManagers_;
+    boost::signals2::connection stateConnection_;
   };
 
 }

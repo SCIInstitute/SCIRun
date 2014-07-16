@@ -122,6 +122,7 @@ public:
   virtual bool isInput() const { return false; } //boo
   virtual bool isDynamic() const { return false; } /// @todo: design dynamic output ports
   virtual bool hasData() const override;
+  virtual void attach(Connection* conn) override;
 private:
   DatatypeSourceInterfaceHandle source_;
 };

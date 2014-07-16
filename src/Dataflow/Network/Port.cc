@@ -182,3 +182,11 @@ bool OutputPort::hasData() const
   LOG_DEBUG(id() << " OutputPort::hasData returns " << ret << std::endl);
   return ret;
 }
+
+void OutputPort::attach(Connection* conn)
+{
+  if (conn && conn->iport_)
+    source_->send(conn->iport_->sink());
+
+  Port::attach(conn);
+}

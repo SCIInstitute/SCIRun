@@ -39,17 +39,28 @@ ModuleStateInterfaceFactory::~ModuleStateInterfaceFactory()
 {
 }
 
-StateChangeObserver::StateChangeObserver() : stateChanged_(true) {}
+StateChangeObserver::StateChangeObserver() : stateChanged_(true) 
+{
+  LOG_DEBUG("StateChangeObserver()" << std::endl);
+}
+
+StateChangeObserver::~StateChangeObserver()
+{
+  LOG_DEBUG("~StateChangeObserver()" << std::endl);
+}
 
 void StateChangeObserver::initStateObserver(ModuleStateInterface* state)
 {
   if (state)
-    state->connect_state_changed(boost::bind(&StateChangeObserver::stateChanged, this));
+  {
+    LOG_DEBUG("StateChangeObserver::initStateObserver() SUCCESS, connecting to state" << std::endl);
+    conn_ = state->connect_state_changed(boost::bind(&StateChangeObserver::stateChanged, this));
+  }
 }
 
 void StateChangeObserver::stateChanged()
 {
-  LOG_DEBUG("StateChangeObserver::stateChanged()" << std::endl);
+  LOG_DEBUG("################### StateChangeObserver::stateChanged()" << std::endl);
   stateChanged_ = true;
 }
 

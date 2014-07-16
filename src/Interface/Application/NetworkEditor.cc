@@ -202,6 +202,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
     connect(module, SIGNAL(dynamicPortChanged()), proxy, SLOT(createPortPositionProviders()));
   }
   
+  LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
   
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));

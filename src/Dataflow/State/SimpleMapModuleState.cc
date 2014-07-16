@@ -85,15 +85,18 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   
   if (newValue)
   {
-    log << DEBUG_LOG << "----signaling from state map: " << parameterName.name_ << ", " << to_string(value);
+    log << DEBUG_LOG << "----signaling from state map: (" << parameterName.name_ << ", " << to_string(value) << "), num_slots = " << stateChangedSignal_.num_slots();
     log.flush();
+    
     stateChangedSignal_();
   }
 }
 
 boost::signals2::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
 {
-  return stateChangedSignal_.connect(subscriber);
+  auto conn = stateChangedSignal_.connect(subscriber);
+  LOG_DEBUG("SimpleMapModuleState::connect_state_changed, num_slots = " << stateChangedSignal_.num_slots() << std::endl);
+  return conn;
 }
 
 ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const

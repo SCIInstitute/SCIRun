@@ -106,12 +106,14 @@ namespace Networks {
   {
   public:
     StateChangeObserver();
+    ~StateChangeObserver();
     void initStateObserver(ModuleStateInterface* state);
     void stateChanged();
     void resetStateChanged();
     bool newStatePresent() const;
   private:
     boost::atomic<bool> stateChanged_;
+    boost::signals2::connection conn_;
   };
 
 }}}
