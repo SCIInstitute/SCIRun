@@ -178,6 +178,8 @@ void OutputPort::sendData(DatatypeHandle data)
 
 bool OutputPort::hasData() const
 {
+  if (!source_)
+    return false;
   auto ret = source_->hasData();
   LOG_DEBUG(id() << " OutputPort::hasData returns " << ret << std::endl);
   return ret;
@@ -185,7 +187,7 @@ bool OutputPort::hasData() const
 
 void OutputPort::attach(Connection* conn)
 {
-  if (conn && conn->iport_)
+  if (hasData() && conn && conn->iport_)
     source_->send(conn->iport_->sink());
 
   Port::attach(conn);

@@ -191,6 +191,7 @@ const ModuleStateHandle Module::get_state() const
 void Module::set_state(ModuleStateHandle state)
 {
   state_ = state;
+  initStateObserver(state_.get());
 }
 
 AlgorithmBase& Module::algo()
@@ -566,7 +567,7 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(Module& module) : module_(mod
 
 bool InputsChangedCheckerImpl::inputsChanged() const 
 {
-  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << module_.inputsChanged() << std::endl);
+  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << module_.inputsChanged()/* << std::endl*/);
   return module_.inputsChanged();
 }
 
@@ -576,7 +577,7 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(Module& module) : module_(modul
 
 bool StateChangedCheckerImpl::newStatePresent() const 
 {
-  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << module_.newStatePresent() << std::endl);
+  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << module_.newStatePresent()/* << std::endl*/);
   return module_.newStatePresent();
 }
 
@@ -588,7 +589,7 @@ bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
   auto outputs = module_.outputPorts();
   auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out->hasData(); });
-  LOG_DEBUG(module_.get_id() << " OutputPortsCachedCheckerImpl, returns " << ret << std::endl);
+  LOG_DEBUG(module_.get_id() << " OutputPortsCachedCheckerImpl, returns " << ret/* << std::endl*/);
   return ret;
 }
 
