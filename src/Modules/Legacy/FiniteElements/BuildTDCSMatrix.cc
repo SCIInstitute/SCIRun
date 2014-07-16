@@ -61,10 +61,13 @@ void BuildTDCSMatrix::execute()
   auto ElectrodeElementType = getRequiredInput(Electrode_Element_Type);
   auto ElectrodeElementDefinition = getRequiredInput(Electrode_Element_Definition);
   auto ContactImpedance = getRequiredInput(Contact_Impedance);
- 
-  auto output = algo().run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Electrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
 
-  sendOutputFromAlgorithm(TDCSMatrix,output);
+  if (needToExecute())
+  {
+    auto output = algo().run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Electrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
+
+    sendOutputFromAlgorithm(TDCSMatrix,output);
+  }
 }
 
 
