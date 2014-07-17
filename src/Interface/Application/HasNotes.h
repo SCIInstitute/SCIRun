@@ -26,74 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_NOTE_H
-#define INTERFACE_APPLICATION_NOTE_H
+#ifndef INTERFACE_APPLICATION_HAS_NOTES_H
+#define INTERFACE_APPLICATION_HAS_NOTES_H
 
-#include <Interface/Application/PositionProvider.h>
-#include <boost/shared_ptr.hpp>
-#include <QString>
-#include <QFont>
-#include <QColor>
-#include <QPointF>
+#include <Interface/Application/NoteEditor.h>
 
 class QAction;
-class QGraphicsItem;
-class QGraphicsTextItem;
-class QGraphicsScene;
 
 namespace SCIRun {
 namespace Gui {
-
-  enum NotePosition
-  {
-    Default,
-    None,
-    Tooltip,
-    Top,
-    Left, 
-    Right, 
-    Bottom
-  };
-
-  struct Note
-  {
-    QString html_;
-    NotePosition position_; 
-  };
   
-  class NoteDisplayStrategy
+  class HasNotes 
   {
   public:
-    virtual ~NoteDisplayStrategy() {}
-    virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const = 0;
-  };
-
-  typedef boost::shared_ptr<NoteDisplayStrategy> NoteDisplayStrategyPtr;
-  class ModuleWidgetNoteDisplayStrategy;
-  class ConnectionNoteDisplayStrategy;
-
-  class NoteDisplayHelper
-  {
-  public:
-    virtual ~NoteDisplayHelper();
+    HasNotes(const std::string& name, bool positionAdjustable);
+    virtual ~HasNotes();
+    void connectNoteEditorToAction(QAction* action);
+    void connectUpdateNote(QObject* obj);
+    void setCurrentNote(const Note& note) { currentNote_ = note; }
   protected:
-    explicit NoteDisplayHelper(NoteDisplayStrategyPtr display);
-    virtual void setNoteGraphicsContext() = 0;
-    void updateNoteImpl(const Note& note);
-    void updateNotePosition();
-    void setDefaultNotePositionImpl(NotePosition position);
-    QGraphicsItem* item_;
-    QGraphicsScene* scene_;
-    PositionProviderPtr positioner_;
     void destroy();
   private:
-    QGraphicsTextItem* note_;
-    NotePosition notePosition_, defaultNotePosition_;
-    NoteDisplayStrategyPtr displayStrategy_;
+    NoteEditor noteEditor_;
+    Note currentNote_;
+    /// @todo: extract and make atomic
     bool destroyed_;
-
-    QPointF relativeNotePosition();
   };
+
 }
 }
 

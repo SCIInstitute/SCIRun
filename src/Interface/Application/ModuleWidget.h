@@ -37,12 +37,14 @@
 #include <set>
 #include <deque>
 #include <Interface/Application/Note.h>
+#include <Interface/Application/HasNotes.h>
 #include <Interface/Application/PositionProvider.h>
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ExecutableObject.h>
 
 class QGraphicsProxyWidget;
+class QDockWidget;
 
 namespace SCIRun {
 namespace Gui {
@@ -109,6 +111,9 @@ public Q_SLOTS:
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
   void removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
+  void pinUI();
+  void hideUI();
+  void showUI();
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -136,7 +141,8 @@ private:
   void addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void hookUpGeneralPortSignals(PortWidget* port) const;
   std::string moduleId_;
-  boost::scoped_ptr<class ModuleDialogGeneric> dialog_;
+  class ModuleDialogGeneric* dialog_;
+  QDockWidget* dockable_;
   void makeOptionsDialog();
   void setupModuleActions();
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);

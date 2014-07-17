@@ -163,6 +163,9 @@ Q_SIGNALS:
     void addModuleViaDoubleClickedTreeItem();
     void selectAll();
     void del();
+    void pinAllModuleUIs();
+    void hideAllModuleUIs();
+    void restoreAllModuleUIs();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
