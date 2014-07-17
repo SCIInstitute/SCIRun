@@ -168,8 +168,6 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
 	input.push_back(CreateEmptyLatVol(8,9,10));
 	algo_.runImpl(input,output); 
 	EXPECT_TRUE(algo_.runImpl(input, output));
-	//EXPECT_EQ(output->vmesh()->num_nodes(), output->vmesh()->num_nodes());
-	//EXPECT_EQ(1,1); 
 }
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
@@ -181,7 +179,6 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
 	auto outputObj = algo_.run_generic(make_input((JoinFieldsAlgo::InputFields, input)));
 	FieldHandle output = outputObj.get<Field>(Core::Algorithms::Variables::OutputField);
 	EXPECT_EQ(output->vmesh()->num_nodes(),output->vmesh()->num_nodes());
-	//EXPECT_EQ(1,1);
 }
 
 INSTANTIATE_TEST_CASE_P(
