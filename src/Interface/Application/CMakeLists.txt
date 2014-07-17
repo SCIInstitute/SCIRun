@@ -67,6 +67,7 @@ SET(Interface_Application_HEADERS
   GuiCommandFactory.h
   GuiCommands.h
   GuiLogger.h
+  HasNotes.h
   MainWindowCollaborators.h
   ModuleLogWindow.h
   ModuleWidget.h

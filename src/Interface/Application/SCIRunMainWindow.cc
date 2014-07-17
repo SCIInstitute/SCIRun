@@ -80,17 +80,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 	dialogErrorControl_.reset(new DialogErrorControl(this)); 
   setupNetworkEditor();
 
-  actionExecute_All_->setStatusTip(tr("Execute all modules"));
-  actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
-  actionNew_->setStatusTip(tr("New network"));
-  actionNew_->setWhatsThis(tr("Click this option to start editing a blank network file."));
-  actionSave_->setStatusTip(tr("Save network"));
-  actionSave_->setWhatsThis(tr("Click this option to save the current network to disk."));
-  actionLoad_->setStatusTip(tr("Load network"));
-  actionLoad_->setWhatsThis(tr("Click this option to load a new network file from disk."));
-  actionEnterWhatsThisMode_ = QWhatsThis::createAction(this);
-  actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
-  actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
+  setTipsAndWhatsThis();
 
   connect(actionExecute_All_, SIGNAL(triggered()), this, SLOT(executeAll()));
   connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
@@ -128,6 +118,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   standardBar->addAction(actionSave_);
   standardBar->addAction(actionRunScript_);
   standardBar->addAction(actionEnterWhatsThisMode_);
+  standardBar->addAction(actionPinAllModuleUIs_);
+  standardBar->addAction(actionRestoreAllModuleUIs_);
+  standardBar->addAction(actionHideAllModuleUIs_);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
 	executeBar->addAction(actionExecute_All_);
@@ -167,6 +160,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionDelete_->setShortcut(QKeySequence::Delete);
 
   connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
+  connect(actionPinAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(pinAllModuleUIs()));
+  connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
+  connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
 
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
@@ -211,6 +207,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
 
   setupInputWidgets();
+
+  configurationDockWidget_->hide();
 }
 
 void SCIRunMainWindow::initialize()
@@ -245,6 +243,24 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
 
   prefs_->setRegressionTestDataDir();
+}
+
+void SCIRunMainWindow::setTipsAndWhatsThis()
+{
+  actionExecute_All_->setStatusTip(tr("Execute all modules"));
+  actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
+  actionNew_->setStatusTip(tr("New network"));
+  actionNew_->setWhatsThis(tr("Click this option to start editing a blank network file."));
+  actionSave_->setStatusTip(tr("Save network"));
+  actionSave_->setWhatsThis(tr("Click this option to save the current network to disk."));
+  actionLoad_->setStatusTip(tr("Load network"));
+  actionLoad_->setWhatsThis(tr("Click this option to load a new network file from disk."));
+  actionEnterWhatsThisMode_ = QWhatsThis::createAction(this);
+  actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
+  actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
+  actionHideAllModuleUIs_->setWhatsThis("Hides all module UI windows.");
+  actionRestoreAllModuleUIs_->setWhatsThis("Restores all module UI windows.");
+  actionPinAllModuleUIs_->setWhatsThis("Pins all module UI windows to right side of main window.");
 }
 
 void SCIRunMainWindow::setupInputWidgets()
@@ -511,6 +527,9 @@ void SCIRunMainWindow::setActionIcons()
   actionUndo_->setIcon(QIcon::fromTheme("edit-undo"));
   actionRedo_->setIcon(QIcon::fromTheme("edit-redo"));
   //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/hideAll.png"));
+  actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/rightAll.png"));
+  actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/showAll.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)

@@ -87,6 +87,7 @@ private:
 private:
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
+  void setTipsAndWhatsThis();
   bool okToContinue();
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();

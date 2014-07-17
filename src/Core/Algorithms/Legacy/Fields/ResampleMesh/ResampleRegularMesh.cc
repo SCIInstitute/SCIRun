@@ -64,9 +64,6 @@ ResampleRegularMeshAlgo::ResampleRegularMeshAlgo()
 
   // resample none = keep as is, number= specify new number of samples
   //          factor = multiply number of samples by a factor 
-  //add_option("resamplex","none","none|number|factor");
-  //add_option("resampley","none","none|number|factor");
-  //add_option("resamplez","none","none|number|factor");
 
   addParameter(Parameters::ResampleXDim, 0.5);
   addParameter(Parameters::ResampleYDim, 0.5);
@@ -74,10 +71,6 @@ ResampleRegularMeshAlgo::ResampleRegularMeshAlgo()
   addParameter(Parameters::ResampleXDimUseScalingFactor, true);
   addParameter(Parameters::ResampleYDimUseScalingFactor, true);
   addParameter(Parameters::ResampleZDimUseScalingFactor, true);
-
-  //addParameter("xnumber",128);
-  //addParameter("ynumber",128);
-  //addParameter("znumber",128);
 }
 
 ///////////////////////////////////////////////////////
