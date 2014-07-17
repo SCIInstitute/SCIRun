@@ -90,7 +90,7 @@ SET(Core_Basis_SRCS
   TriQuadraticLgn.cc
 )
 
-ADD_LIBRARY(Core_Basis 
+SCIRUN_ADD_LIBRARY(Core_Basis 
   ${Core_Basis_HEADERS}
   ${Core_Basis_SRCS}
 )

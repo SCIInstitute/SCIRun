@@ -58,7 +58,11 @@ SET(Core_Parser_SRCS
   Parser.cc
 )
 
-ADD_LIBRARY(Core_Parser ${Core_Parser_HEADERS} ${Core_Parser_SRCS})
+SCIRUN_ADD_LIBRARY(Core_Parser
+  ${Core_Parser_HEADERS}
+  ${Core_Parser_SRCS}
+)
+
 TARGET_LINK_LIBRARIES(Core_Parser 
                       #Core_Algorithms_Math
 					  Core_Datatypes_Legacy_Field

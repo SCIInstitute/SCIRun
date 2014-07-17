@@ -53,7 +53,10 @@ SET(Modules_Legacy_Bundle_SRCS
   #JoinBundles.cc
 )
 
-ADD_LIBRARY(Modules_Legacy_Bundle ${Modules_Legacy_Bundle_HEADERS} ${Modules_Legacy_Bundle_SRCS})
+SCIRUN_ADD_LIBRARY(Modules_Legacy_Bundle
+  ${Modules_Legacy_Bundle_HEADERS}
+  ${Modules_Legacy_Bundle_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Bundle
   Dataflow_Network

@@ -61,7 +61,7 @@ SET(Core_Datatypes_HEADERS
   String.h
 )
 
-ADD_LIBRARY(Core_Datatypes 
+SCIRUN_ADD_LIBRARY(Core_Datatypes 
   ${Core_Datatypes_HEADERS}
   ${Core_Datatypes_SRCS}
 )

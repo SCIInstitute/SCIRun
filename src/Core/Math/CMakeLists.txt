@@ -59,7 +59,7 @@ SET(Core_Math_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Math 
+SCIRUN_ADD_LIBRARY(Core_Math 
   ${Core_Math_HEADERS}
   ${Core_Math_SRCS}
 )

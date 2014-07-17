@@ -41,7 +41,7 @@ SET(Modules_BrainStimulator_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_BrainStimulator 
+SCIRUN_ADD_LIBRARY(Modules_BrainStimulator 
   ${Modules_BrainStimulator_HEADERS}
   ${Modules_BrainStimulator_SRCS}
 )

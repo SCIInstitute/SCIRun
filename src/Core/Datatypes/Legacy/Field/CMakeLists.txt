@@ -97,7 +97,7 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   VMesh.cc		    	
 )
 
-ADD_LIBRARY(Core_Datatypes_Legacy_Field
+SCIRUN_ADD_LIBRARY(Core_Datatypes_Legacy_Field
   ${Core_Datatypes_Legacy_Field_SRCS}
   ${Core_Datatypes_Legacy_Field_HEADERS}
 )

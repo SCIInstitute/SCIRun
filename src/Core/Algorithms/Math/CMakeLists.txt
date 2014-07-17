@@ -53,7 +53,7 @@ SET(Algorithms_Math_HEADERS
   AddKnownsToLinearSystem.h
 )
 
-ADD_LIBRARY(Algorithms_Math 
+SCIRUN_ADD_LIBRARY(Algorithms_Math 
   ${Algorithms_Math_HEADERS}
   ${Algorithms_Math_SRCS}
 )

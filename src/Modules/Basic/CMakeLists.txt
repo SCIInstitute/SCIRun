@@ -51,7 +51,7 @@ SET(Modules_Basic_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_Basic 
+SCIRUN_ADD_LIBRARY(Modules_Basic 
   ${Modules_Basic_HEADERS}
   ${Modules_Basic_SRCS}
 )
