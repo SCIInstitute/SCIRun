@@ -1,7 +1,7 @@
 #!/usr/bin env python
 
 # import glob
-import os, sys
+import os, sys, fileinput
 # import time
 # import SCIRunPythonAPI; from SCIRunPythonAPI import *
 #
@@ -19,68 +19,75 @@ import os, sys
 # 		thefile.write("%s\n\t%s\n" % (f,v))
 #
 
+def makeFileFromTemplate(path, newPath, placeholder, name):
+	templatefile = open(path, 'r')
+	outputFile = open(newPath, 'w')
+	outputFile.writelines([line.replace(placeholder, name) for line in templatefile.readlines()])
+
 def makeModuleHeaderFile(path, name):
 	modPath = os.path.join(path, "Modules/Fields/")
 	modFile = os.path.join(modPath, name + ".h")
-	print "module header: ", modFile
+	templatefile = os.path.join(modPath, "ModuleTemplate.h")
+	makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
+	print("module header: ", modFile)
 
 def makeModuleSourceFile(path, name):
 	modPath = os.path.join(path, "Modules/Fields/")
 	modFile = os.path.join(modPath, name + ".cc")
-	print "module source: ", modFile
+	print("module source: ", modFile)
 
 def makeModuleUnitTestFile(path, name):
 	modPath = os.path.join(path, "Modules/Fields/Tests/")
 	modFile = os.path.join(modPath, name + "Test.cc")
-	print "module unit test: ", modFile
+	print("module unit test: ", modFile)
 
 def editModuleCMake(path, name):
-	print "module cmake edit: ", path, name
+	print("module cmake edit: ", path, name)
 
 def addModuleToFactory(path, name):
 	uiPath = os.path.join(path, "Modules/Factory")
-	print "module factory edit: ", uiPath, name
+	print("module factory edit: ", uiPath, name)
 
 def makeAlgorithmHeaderFile(path, name):
 	algoPath = os.path.join(path, "Core/Algorithms/Field/")
 	algoFile = os.path.join(algoPath, name + "Algo.h")
-	print "algo header: ", algoFile
+	print("algo header: ", algoFile)
 
 def makeAlgorithmSourceFile(path, name):
 	algoPath = os.path.join(path, "Core/Algorithms/Field/")
 	algoFile = os.path.join(algoPath, name + "Algo.cc")
-	print "algo source: ", algoFile
+	print("algo source: ", algoFile)
 
 def makeAlgorithmUnitTestFile(path, name):
 	algoPath = os.path.join(path, "Core/Algorithms/Field/Tests/")
 	algoFile = os.path.join(algoPath, name + "AlgoTest.cc")
-	print "algo unit test: ", algoFile
+	print("algo unit test: ", algoFile)
 
 def editAlgorithmCMake(path, name):
-	print "algorithm cmake edit: ", path, name
+	print("algorithm cmake edit: ", path, name)
 
 def addAlgorithmToFactory(path, name):
 	uiPath = os.path.join(path, "Core/Algorithms/Factory")
-	print "algorithm factory edit: ", uiPath, name
+	print("algorithm factory edit: ", uiPath, name)
 
 def makeUIDesignerFile(path, name):
-	print "ui designer file: ", path, name
+	print("ui designer file: ", path, name)
 
 def makeUIHeaderFile(path, name):
 	uiPath = os.path.join(path, "Interface/Modules/Fields/")
-	print "ui header", uiPath, name
+	print("ui header", uiPath, name)
 
 def makeUISourceFile(path, name):
 	uiPath = os.path.join(path, "Interface/Modules/Fields/")
-	print "ui source: ", uiPath, name
+	print("ui source: ", uiPath, name)
 
 def editUICMake(path, name):
 	uiPath = os.path.join(path, "Interface/Modules/Fields/")
-	print "UI cmake edit: ", uiPath, name
+	print("UI cmake edit: ", uiPath, name)
 
 def addUIToFactory(path, name):
 	uiPath = os.path.join(path, "Interface/Modules/Factory/")
-	print "UI factory edit: ", uiPath, name
+	print("UI factory edit: ", uiPath, name)
 
 def makeModuleFiles(path, name):
 	makeModuleHeaderFile(path, name)
@@ -106,16 +113,16 @@ def makeUIFiles(path, name):
 try:
 	moduleName = sys.argv[1]
 except:
-	print "Usage:", sys.argv[0], " moduleName [makeUI]"; sys.exit(1)
+	print("Usage:", sys.argv[0], " moduleName [makeUI]"); sys.exit(1)
 
 try:
 	makeUI = sys.argv[2]
 except:
 	makeUI = False
-	print "UI flag not specified, not generating UI files"
+	print("UI flag not specified, not generating UI files")
 
-#print os.getcwd()
-#print os.path.abspath(os.path.join(os.getcwd(), '../../'))
+#print(os.getcwd()
+#print(os.path.abspath(os.path.join(os.getcwd(), '../../'))
 
 srcRoot = os.path.abspath(os.path.join(os.getcwd(), '../../'))
 
