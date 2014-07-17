@@ -27,6 +27,7 @@
 
 IF(UNIX)
   # temporary - needed to make Travis CI build work
+  # TODO: revisit and delete when CMake 2.8.11 or greater is available
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
 ELSE()
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
@@ -204,16 +205,6 @@ ENDIF()
 
 # should be installed by default, searching system paths only
 IF(APPLE)
-  FIND_PROGRAM(AWK
-    NAMES awk
-  )
-  MARK_AS_ADVANCED(AWK)
-
-  FIND_PROGRAM(SED
-    NAMES sed
-  )
-  MARK_AS_ADVANCED(SED)
-
   FIND_PROGRAM(MACDEPLOYQT
     NAMES macdeployqt
   )
@@ -446,6 +437,17 @@ ENDMACRO()
 MACRO(SCIRUN_ADD_TEST_DIR directory)
   IF(BUILD_TESTING)
     ADD_SUBDIRECTORY(${directory})
+  ENDIF()
+ENDMACRO()
+
+MACRO(SCIRUN_ADD_LIBRARY library)
+  ADD_LIBRARY(${library} ${ARGN})
+  #LIST(APPEND tmp ${library} ${LIBRARY_LIST})
+  #SET(LIBRARY_LIST ${tmp} CACHE INTERNAL "List of unit tests." FORCE)
+
+  # Set up installer package
+  IF(WIN32)
+    INSTALL(TARGETS ${library} RUNTIME DESTINATION bin CONFIGURATIONS Release)
   ENDIF()
 ENDMACRO()
 
@@ -729,8 +731,7 @@ SET(CPACK_PACKAGE_VERSION_MAJOR "${SCIRUN_VERSION_MAJOR}")
 SET(CPACK_PACKAGE_VERSION_MINOR "${SCIRUN_VERSION_MINOR}")
 SET(CPACK_PACKAGE_VERSION_PATCH "${SCIRUN_VERSION_PATCH}")
 
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY 
-    "${APPLICATION_NAME} ${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${APPLICATION_NAME} ${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
 
 
 # other platform settings will be built up from here
@@ -799,6 +800,6 @@ OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
 MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
 
 IF(ENABLE_GCOV_DATA_FILES)
- SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
- SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-ENDIF(ENABLE_GCOV_DATA_FILES)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF()

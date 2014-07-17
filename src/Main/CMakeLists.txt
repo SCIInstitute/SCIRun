@@ -91,9 +91,9 @@ TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
 IF(APPLE)
   SET(BUILD_BUNDLE TRUE)
 
-  IF(${AWK} MATCHES "NOTFOUND" OR ${SED} MATCHES "NOTFOUND" OR ${MACDEPLOYQT} MATCHES "NOTFOUND")
+  IF(${MACDEPLOYQT} MATCHES "NOTFOUND")
     SET(BUILD_BUNDLE FALSE)
-    MESSAGE(WARNING "Awk, sed and macdeployqt are required to build the SCIRun app bundle. Please ensure that both are installed and in your path.")
+    MESSAGE(WARNING "macdeployqt is required to build the SCIRun app bundle. Please ensure that both are installed and in your path.")
   ENDIF()
 ENDIF()
 
@@ -106,7 +106,7 @@ IF(APPLE AND BUILD_BUNDLE)
     ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME} 
       POST_BUILD
         # configure Qt libs
-        # TODO: starting with debug level output, reduce later...
+        # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
         COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
 
         COMMAND cp -Rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
@@ -124,6 +124,9 @@ IF(APPLE AND BUILD_BUNDLE)
   INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
 
 ELSEIF(WIN32)
+
+  # Note: installer is created from Release build only!
+
   GET_FILENAME_COMPONENT(QTCORENAME ${QT_QTCORE_LIBRARY_RELEASE} NAME_WE)
   GET_FILENAME_COMPONENT(QTGUINAME ${QT_QTGUI_LIBRARY_RELEASE} NAME_WE)
   GET_FILENAME_COMPONENT(QTOPENGLNAME ${QT_QTOPENGL_LIBRARY_RELEASE} NAME_WE)
@@ -135,6 +138,8 @@ ELSEIF(WIN32)
       ${QT_BINARY_DIR}/${QTOPENGLNAME}.dll
     DESTINATION bin)
 
+  # bit hack-y, but easier than listing all the TARGET libraries at the moment
+  #INSTALL(TARGETS ${LIBRARY_LIST} RUNTIME DESTINATION bin CONFIGURATIONS Release)
 
 ENDIF()
 
