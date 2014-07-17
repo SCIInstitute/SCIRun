@@ -36,6 +36,7 @@
 #include <Dataflow/Network/ConnectionId.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Note.h>
+#include <Interface/Application/HasNotes.h>
 #include <Core/Utils/Exception.h>
 
 namespace SCIRun {

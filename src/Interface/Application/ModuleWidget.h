@@ -37,6 +37,7 @@
 #include <set>
 #include <deque>
 #include <Interface/Application/Note.h>
+#include <Interface/Application/HasNotes.h>
 #include <Interface/Application/PositionProvider.h>
 
 #include <Dataflow/Network/NetworkFwd.h>

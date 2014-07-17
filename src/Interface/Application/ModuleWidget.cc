@@ -174,6 +174,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
 
+  //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SLOT(deleteLater()));
+
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
   connectUpdateNote(this);
 
@@ -402,18 +404,31 @@ ModuleWidget::~ModuleWidget()
   Q_FOREACH (PortWidget* p, ports_->getAllPorts())
     p->deleteConnections();
   
-  GuiLogger::Instance().log("Module deleted.");
-  if (dialog_)
-  {
-    dockable_->hide();
-    dialog_->close();
-    delete dockable_;
-  }
+  //GuiLogger::Instance().log("Module deleted.");
+  
   theModule_->setLogger(LoggerHandle());
-  delete logWindow_;
+  
 
   if (deletedFromGui_)
+  {
+    if (dialog_)
+    {
+      dialog_->close();
+    }
+    
+    if (dockable_)
+    {
+      //dockable_->hide();
+      //dockable_->deleteLater();
+      SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
+      delete dockable_;
+    }
+    
+    delete logWindow_;
+    logWindow_ = 0;
+
     Q_EMIT removeModule(ModuleId(moduleId_));
+  }
 }
 
 void ModuleWidget::trackConnections()
@@ -483,13 +498,13 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialog_)
     {
       if (!dialogFactory_)
-        dialogFactory_.reset(new ModuleDialogFactory(SCIRunMainWindow::Instance()));
+        dialogFactory_.reset(new ModuleDialogFactory(0));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();
       connect(dialog_, SIGNAL(executeButtonPressed()), this, SLOT(execute()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
-      dockable_ = new QDockWidget(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
+      dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setWidget(dialog_);
       dockable_->setAllowedAreas(Qt::RightDockWidgetArea);
       dockable_->setAutoFillBackground(true);

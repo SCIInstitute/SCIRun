@@ -31,15 +31,17 @@
 #include <QtGui>
 #include <Core/Logging/Log.h>
 #include <Interface/Application/Note.h>
+#include <Interface/Application/HasNotes.h>
 #include <Interface/Application/NoteEditor.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
-HasNotes::HasNotes(const std::string& name, bool positionAdjustable) : destroyed_(false)
+HasNotes::HasNotes(const std::string& name, bool positionAdjustable) : 
+  noteEditor_(QString::fromStdString(name), positionAdjustable, 0),
+  destroyed_(false)
 {
-  noteEditor_ = new NoteEditor(QString::fromStdString(name), positionAdjustable, SCIRunMainWindow::Instance());
 }
 
 HasNotes::~HasNotes()
@@ -51,20 +53,19 @@ void HasNotes::destroy()
 {
   if (!destroyed_)
   {
-    delete noteEditor_;
     destroyed_ = true;
   }
 }
 
 void HasNotes::connectNoteEditorToAction(QAction* action)
 {
-  QObject::connect(action, SIGNAL(triggered()), noteEditor_, SLOT(show()));
-  QObject::connect(action, SIGNAL(triggered()), noteEditor_, SLOT(raise()));
+  QObject::connect(action, SIGNAL(triggered()), &noteEditor_, SLOT(show()));
+  QObject::connect(action, SIGNAL(triggered()), &noteEditor_, SLOT(raise()));
 }
 
 void HasNotes::connectUpdateNote(QObject* obj)
 {
-  QObject::connect(noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
+  QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
 }
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : 

@@ -736,6 +736,12 @@ void NetworkEditor::restoreAllModuleUIs()
 
 NetworkEditor::~NetworkEditor()
 {
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->setDeletedFromGui(false);
+  }
   clear();
 }
 
