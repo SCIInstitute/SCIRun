@@ -556,3 +556,18 @@ bool ModuleWidget::hasDynamicPorts() const
 {
   return theModule_->hasDynamicPorts();
 }
+
+void ModuleWidget::pinUI()
+{
+  dockable_->setFloating(false);
+}
+
+void ModuleWidget::hideUI()
+{
+  dockable_->hide();
+}
+
+void ModuleWidget::showUI()
+{
+  dockable_->show();
+}

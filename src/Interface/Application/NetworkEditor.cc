@@ -704,6 +704,36 @@ void NetworkEditor::selectAll()
   }
 }
 
+void NetworkEditor::pinAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->pinUI();
+  }
+}
+
+void NetworkEditor::hideAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->hideUI();
+  }
+}
+
+void NetworkEditor::restoreAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->showUI();
+  }
+}
+
 NetworkEditor::~NetworkEditor()
 {
   clear();

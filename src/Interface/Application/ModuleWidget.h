@@ -110,6 +110,9 @@ public Q_SLOTS:
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
   void removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
+  void pinUI();
+  void hideUI();
+  void showUI();
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
