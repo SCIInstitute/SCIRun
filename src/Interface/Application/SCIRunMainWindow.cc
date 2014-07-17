@@ -151,7 +151,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 	scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
 	scrollArea_->viewport()->setAutoFillBackground(true);	
 
-	logTextBrowser_->setText("Hello! Welcome to the SCIRun5 Prototype.");
+	logTextBrowser_->setText("Hello! Welcome to SCIRun 5.");
 
  
 
@@ -418,7 +418,7 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
     recentFiles_.prepend(currentFile_);
     updateRecentFileActions();
   }
-  setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("SCIRun 5 Prototype")));
+  setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("SCIRun")));
 }
 
 QString SCIRunMainWindow::strippedName(const QString& fullFileName)
