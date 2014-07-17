@@ -85,8 +85,9 @@ Module::Module(const ModuleLookupInfo& info,
 
   initStateObserver(state_.get());
 
-  //setReexecutionStrategy(boost::make_shared<AlwaysReexecuteStrategy>());
-  setReexecutionStrategy(makeDynamicReexecutionStrategy(*this));
+  //TODO: configure via command line flag as advanced option.
+  setReexecutionStrategy(boost::make_shared<AlwaysReexecuteStrategy>());
+  //setReexecutionStrategy(makeDynamicReexecutionStrategy(*this));
 }
 
 Module::~Module()
