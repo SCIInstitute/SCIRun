@@ -44,8 +44,10 @@ public:
   explicit DeveloperConsole(QWidget* parent = 0);
 public Q_SLOTS:
   void executorButtonClicked();
+  void globalPortCacheButtonClicked();
 Q_SIGNALS:
   void executorChosen(int type);
+  void globalPortCachingChanged(bool enable);
 };
 
 }

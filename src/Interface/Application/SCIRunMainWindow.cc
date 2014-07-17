@@ -53,6 +53,7 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
+#include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences.h>
 #include <Core/Logging/Log.h>
@@ -771,12 +772,20 @@ void SCIRunMainWindow::setupDevConsole()
   addDockWidget(Qt::TopDockWidgetArea, devConsole_);
   actionDevConsole_->setShortcut(QKeySequence("`"));
   connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
+  connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
 }
 
 void SCIRunMainWindow::setExecutor(int type)
 {
-  Log::get() << DEBUG_LOG << "Executor of type " << type << " selected"  << std::endl;
+  LOG_DEBUG("Executor of type " << type << " selected"  << std::endl);
   networkEditor_->getNetworkEditorController()->setExecutorType(type);
+}
+
+void SCIRunMainWindow::setGlobalPortCaching(bool enable)
+{
+  LOG_DEBUG("Global port caching flag set to " << (enable ? "true" : "false") << std::endl);
+  //TODO: encapsulate better
+  SimpleSink::setGlobalPortCachingFlag(enable);
 }
 
 void SCIRunMainWindow::readDefaultNotePosition(int index)

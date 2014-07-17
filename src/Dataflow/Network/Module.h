@@ -87,7 +87,7 @@ namespace Networks {
     virtual std::vector<OutputPortHandle> outputPorts() const;
 
     /// @todo: execute signal here.
-    virtual void do_execute() throw(); //--C++11--will throw nothing
+    virtual bool do_execute() throw(); //--C++11--will throw nothing
     virtual ModuleStateHandle get_state();
     virtual const ModuleStateHandle get_state() const;
     virtual void set_state(ModuleStateHandle state);
@@ -120,7 +120,10 @@ namespace Networks {
 
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const { return algo_; }
 
-    virtual bool needToExecute() const;
+    virtual bool needToExecute() const override;
+
+    virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const override;
+    virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override;
 
     virtual bool hasDynamicPorts() const 
     {
@@ -128,6 +131,7 @@ namespace Networks {
     }
 
     bool oport_connected(const PortId& id) const;
+    bool inputsChanged() const;
 
     template <class Type, size_t N>
     struct PortNameBase
@@ -252,7 +256,7 @@ namespace Networks {
     boost::shared_ptr<T> checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 
     boost::atomic<bool> inputsChanged_;
-    bool inputsChanged() const;
+    
 
     friend class Builder;
 
@@ -269,6 +273,8 @@ namespace Networks {
     ErrorSignalType errorSignal_;
     boost::atomic<ExecutionState> executionState_;
     std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
+
+    ModuleReexecutionStrategyHandle reexecute_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
@@ -377,6 +383,85 @@ namespace Networks {
   private:
     bool asyncConnected_;
   };
+
+  class SCISHARE AlwaysReexecuteStrategy : public ModuleReexecutionStrategy
+  {
+  public:
+    virtual bool needToExecute() const override { return true; }
+  };
+
+  class SCISHARE InputsChangedChecker
+  {
+  public:
+    virtual ~InputsChangedChecker() {}
+
+    virtual bool inputsChanged() const = 0;
+  };
+
+  typedef boost::shared_ptr<InputsChangedChecker> InputsChangedCheckerHandle;
+
+  class SCISHARE StateChangedChecker
+  {
+  public:
+    virtual ~StateChangedChecker() {}
+
+    virtual bool newStatePresent() const = 0;
+  };
+
+  typedef boost::shared_ptr<StateChangedChecker> StateChangedCheckerHandle;
+
+  class SCISHARE OutputPortsCachedChecker
+  {
+  public:
+    virtual ~OutputPortsCachedChecker() {}
+
+    virtual bool outputPortsCached() const = 0;
+  };
+
+  typedef boost::shared_ptr<OutputPortsCachedChecker> OutputPortsCachedCheckerHandle;
+
+  class SCISHARE DynamicReexecutionStrategy : public ModuleReexecutionStrategy
+  {
+  public:
+    DynamicReexecutionStrategy(
+      InputsChangedCheckerHandle inputsChanged,
+      StateChangedCheckerHandle stateChanged,
+      OutputPortsCachedCheckerHandle outputsCached);
+    virtual bool needToExecute() const override;
+  private:
+    InputsChangedCheckerHandle inputsChanged_;
+    StateChangedCheckerHandle stateChanged_;
+    OutputPortsCachedCheckerHandle outputsCached_;
+  };
+
+  class SCISHARE InputsChangedCheckerImpl : public InputsChangedChecker
+  {
+  public:
+    explicit InputsChangedCheckerImpl(Module& module);
+    virtual bool inputsChanged() const override;
+  private:
+    Module& module_;
+  };
+
+  class SCISHARE StateChangedCheckerImpl : public StateChangedChecker
+  {
+  public:
+    explicit StateChangedCheckerImpl(Module& module);
+    virtual bool newStatePresent() const override;
+  private:
+    Module& module_;
+  };
+
+  class SCISHARE OutputPortsCachedCheckerImpl : public OutputPortsCachedChecker
+  {
+  public:
+    explicit OutputPortsCachedCheckerImpl(Module& module);
+    virtual bool outputPortsCached() const override;
+  private:
+    Module& module_;
+  };
+
+  SCISHARE ModuleReexecutionStrategyHandle makeDynamicReexecutionStrategy(Module& module);
 
 }}
 
