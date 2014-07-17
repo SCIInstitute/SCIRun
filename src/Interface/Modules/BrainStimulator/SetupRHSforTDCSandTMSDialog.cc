@@ -43,6 +43,29 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+
+  //electrode_tableWidget = new QTableWidget(this);
+  electrode_tableWidget->setRowCount(128);
+  electrode_tableWidget->setColumnCount(2);
+
+  QStringList tableHeader;
+  tableHeader<<"Electrode"<<"Current intensity [mA]";
+  electrode_tableWidget->setHorizontalHeaderLabels(tableHeader);
+
+  for (int i=0; i<128; i++)
+  {
+    // setting the name of the electrode
+    electrode_tableWidget->setItem(i, 0, new QTableWidgetItem("elc"+QString::number(i)));
+    
+    // seting the inital values of the electrodes
+    if (i == 0)
+      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(1.0)));
+    else if (i == 1)
+      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(-1.0)));
+    else if (i > 1)
+      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(0.0)));
+  }
+  
   // connecting all table cell positions (int = row, int = col)
   connect(electrode_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }

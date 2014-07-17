@@ -73,7 +73,6 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   // consistency check:
   for (int i=0; i<all_elc_values.size(); i++)
   {
-    std::cout << all_elc_values[i].name_ << "=" << all_elc_values[i].value_ << std::endl;
     auto elecName = all_elc_values[i].name_; 
     auto elecValue = all_elc_values[i].getDouble();
     auto expectedElecName = SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(i); //ElecrodeParameterName(i);
