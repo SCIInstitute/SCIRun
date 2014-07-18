@@ -445,7 +445,7 @@ MACRO(SCIRUN_ADD_LIBRARY library)
   #LIST(APPEND tmp ${library} ${LIBRARY_LIST})
   #SET(LIBRARY_LIST ${tmp} CACHE INTERNAL "List of unit tests." FORCE)
 
-  # Set up installer package
+  # Set up installer package (Release build only)
   IF(WIN32)
     INSTALL(TARGETS ${library} RUNTIME DESTINATION bin CONFIGURATIONS Release)
   ENDIF()
