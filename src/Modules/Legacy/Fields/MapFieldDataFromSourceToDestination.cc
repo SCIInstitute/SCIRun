@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,12 +39,12 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 /// @class MapFieldDataFromSourceToDestination
 /// @brief MapFieldDataFromSourceToDestination takes a field and finds data
-/// values for the destination geometry and outputs the resulting Field. 
+/// values for the destination geometry and outputs the resulting Field.
 ///
 /// @detail The MapFieldDataFromSourceToDestination module takes two Fields as
 /// input, the first of which, Source, contains geometry and data values;
 /// the second, Destination, contains geometry only.
- 
+
   /*
 class MapFieldDataFromSourceToDestination : public Module
 {
@@ -78,15 +78,18 @@ MapFieldDataFromSourceToDestination::MapFieldDataFromSourceToDestination() :
 
 void MapFieldDataFromSourceToDestination::setStateDefaults()
 {
+  #ifdef SCIRUN4_CODE_TO_BE_IMPLEMENTED_LATER
   setStateDoubleFromAlgo(Parameters::DefaultValue);
   auto state = get_state();
   state->setValue(InterpolationBasis, std::string("linear"));
   setStateDoubleFromAlgo(Parameters::MaxDistance);
   state->setValue(map_source_to_single_dest, false);
+  #endif
 }
 
 void MapFieldDataFromSourceToDestination::execute()
 {
+  throw "not implemented";
   auto source = getRequiredInput(Source);
   auto destination = getRequiredInput(Destination);
 
@@ -99,11 +102,12 @@ void MapFieldDataFromSourceToDestination::execute()
   if (needToExecute())
   {
     update_state(Executing);
-  
+
     auto state = get_state();
-  
+    #ifdef SCIRUN4_CODE_TO_BE_IMPLEMENTED_LATER
+
     std::string interpolation_basis = state->getValue(InterpolationBasis).getString();
-    if (interpolation_basis == "linear") 
+    if (interpolation_basis == "linear")
     {
       algo().set_option(Parameters::MappingMethod, "interpolateddata");
     }
@@ -114,11 +118,12 @@ void MapFieldDataFromSourceToDestination::execute()
       else
         algo().set_option(Parameters::MappingMethod, "closestdata");
     }
-  
+
     setAlgoDoubleFromState(Parameters::DefaultValue);
     setAlgoDoubleFromState(Parameters::MaxDistance);
 
     auto output = algo().run_generic(make_input((Source, source)(Destination, destination)));
     sendOutputFromAlgorithm(Remapped_Destination, output);
+    #endif
   }
 }
