@@ -34,6 +34,8 @@ def makeModuleHeaderFile(path, name):
 def makeModuleSourceFile(path, name):
 	modPath = os.path.join(path, "Modules/Fields/")
 	modFile = os.path.join(modPath, name + ".cc")
+	templatefile = os.path.join(modPath, "ModuleTemplate.cc")
+	makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
 	print("module source: ", modFile)
 
 def makeModuleUnitTestFile(path, name):

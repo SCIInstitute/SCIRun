@@ -26,29 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_InterfaceWithCleaver_H
-#define MODULES_FIELDS_InterfaceWithCleaver_H
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Fields/@ModuleName@.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+//#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace Fields {
-  
-  class SCISHARE InterfaceWithCleaverModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<DynamicPortTag<FieldPortTag>>,
-    public Has1OutputPort<FieldPortTag>
-  {
-  public:
-    InterfaceWithCleaverModule();
-    virtual void execute();
-    virtual void setStateDefaults();
-    virtual bool hasDynamicPorts() const override { return true; }
-    INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
-    OUTPUT_PORT(0, OutputField, LegacyField);
-    
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-  };
-}}}
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-#endif
+const ModuleLookupInfo @ModuleName@::staticInfo_("@ModuleName@", "NewField", "SCIRun");
+
+@ModuleName@::@ModuleName@() : Module(staticInfo_, false)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
+
+void @ModuleName@::setStateDefaults()
+{
+  auto state = get_state();
+}
+
+void @ModuleName@::execute()
+{
+  auto field = getRequiredInput(InputField);
+
+  //auto output = algo().run_generic(make_input((InputField, field)));
+
+  sendOutput(OutputField, field);
+}
