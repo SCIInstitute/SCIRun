@@ -40,7 +40,7 @@ def makeModuleSourceFile(path, name):
 
 def makeModuleUnitTestFile(path, name):
   modPath = os.path.join(path, "Modules/Fields/Tests/")
-  modFile = os.path.join(modPath, name + "Test.cc")
+  modFile = os.path.join(modPath, name + "Tests.cc")
   templatefile = os.path.join(modPath, "../../Template/ModuleUnitTest.cc")
   makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
   print("module unit test: ", modFile)
@@ -64,7 +64,7 @@ def editModuleTestCMake(path, name):
   modPath = os.path.join(path, "Modules/Fields/Tests/")
   cmakeFile = os.path.join(modPath, "CMakeLists.txt")
   replaceLineSrc = "SET(Modules_Fields_Tests_SRCS"
-  editCMake(cmakeFile, name, replaceLineSrc, "", False)
+  editCMake(cmakeFile, name + "Tests", replaceLineSrc, "", False)
 
 def addModuleToFactory(path, name):
   factorypath = os.path.join(path, "Modules/Factory/ModuleFactoryImpl1.cc") #factoryfile = open(factorypath, 'w')
@@ -122,7 +122,7 @@ def makeModuleFiles(path, name):
 	makeModuleSourceFile(path, name)
 	makeModuleUnitTestFile(path, name)
 	editModuleCMake(path, name)
-  editModuleTestCMake(path, name)
+	editModuleTestCMake(path, name)
 	addModuleToFactory(path, name)
 
 def makeAlgorithmFiles(path, name):
