@@ -24,26 +24,21 @@ def makeFileFromTemplate(path, newPath, placeholder, name):
 	outputFile = open(newPath, 'w')
 	outputFile.writelines([line.replace(placeholder, name) for line in templatefile.readlines()])
 
-def makeModuleHeaderFile(path, name):
-	modPath = os.path.join(path, "Modules/Fields/")
-	modFile = os.path.join(modPath, name + ".h")
-	templatefile = os.path.join(modPath, "../Template/ModuleTemplate.h")
+def makeModuleFile(rootpath, name, filepath, extension, templatefilepath):
+	modPath = os.path.join(rootpath, filepath)
+	modFile = os.path.join(modPath, name + extension)
+	templatefile = os.path.join(modPath, templatefilepath)
 	makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
-	print("module header: ", modFile)
+	print("module file: ", modFile)
+
+def makeModuleHeaderFile(path, name):
+	makeModuleFile(path, name, "Modules/Fields/", ".h", "../Template/ModuleTemplate.h")
 
 def makeModuleSourceFile(path, name):
-	modPath = os.path.join(path, "Modules/Fields/")
-	modFile = os.path.join(modPath, name + ".cc")
-	templatefile = os.path.join(modPath, "../Template/ModuleTemplate.cc")
-	makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
-	print("module source: ", modFile)
+	makeModuleFile(path, name, "Modules/Fields/", ".cc", "../Template/ModuleTemplate.cc")
 
 def makeModuleUnitTestFile(path, name):
-  modPath = os.path.join(path, "Modules/Fields/Tests/")
-  modFile = os.path.join(modPath, name + "Tests.cc")
-  templatefile = os.path.join(modPath, "../../Template/ModuleUnitTest.cc")
-  makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
-  print("module unit test: ", modFile)
+	makeModuleFile(path, name, "Modules/Fields/Tests", "Tests.cc", "../../Template/ModuleUnitTest.cc")
 
 def editCMake(file, name, srcLine, headerLine, doHeader):
   for line in fileinput.input(file, inplace=True):
