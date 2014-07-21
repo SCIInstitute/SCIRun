@@ -1,23 +1,6 @@
 #!/usr/bin env python
 
-# import glob
 import os, sys, fileinput
-# import time
-# import SCIRunPythonAPI; from SCIRunPythonAPI import *
-#
-# def allFields(path):
-# 	names = []
-# 	for dirname, dirnames, filenames in os.walk(path):
-# 		for filename in filenames:
-# 			if filename.endswith("fld"):
-# 				names.append(os.path.join(dirname, filename))
-# 	return names
-#
-# def printList(list, name):
-# 	thefile = open(name, 'w')
-# 	for f,v in list:
-# 		thefile.write("%s\n\t%s\n" % (f,v))
-#
 
 def makeFileFromTemplate(path, newPath, placeholder, name):
 	templatefile = open(path, 'r')
@@ -134,16 +117,20 @@ def makeUIFiles(path, name):
 	editUICMake(path, name)
 	addUIToFactory(path, name)
 
+ 
 try:
 	moduleName = sys.argv[1]
 except:
-	print("Usage:", sys.argv[0], " moduleName [makeUI]"); sys.exit(1)
+	print("Usage:", sys.argv[0], " moduleName [--algo] [--ui]"); sys.exit(1)
 
-try:
-	makeUI = sys.argv[2]
-except:
-	makeUI = False
+restofargs = sys.argv[2:]
+makeAlgo = "--algo" in restofargs
+makeUI = "--ui" in restofargs
+
+if not makeUI:
 	print("UI flag not specified, not generating UI files")
+if not makeAlgo:
+	print("Algo flag not specified, not generating algorithm files")
 
 #print(os.getcwd()
 #print(os.path.abspath(os.path.join(os.getcwd(), '../../'))
@@ -156,7 +143,8 @@ srcRoot = os.path.abspath(os.path.join(os.getcwd(), '../../'))
 #count = 0
 
 makeModuleFiles(srcRoot, moduleName)
-makeAlgorithmFiles(srcRoot, moduleName)
+if makeAlgo:
+	makeAlgorithmFiles(srcRoot, moduleName)
 if makeUI:
 	makeUIFiles(srcRoot, moduleName)
 
