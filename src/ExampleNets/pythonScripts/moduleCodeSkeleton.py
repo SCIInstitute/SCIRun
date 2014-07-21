@@ -45,16 +45,20 @@ def makeModuleUnitTestFile(path, name):
   makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
   print("module unit test: ", modFile)
 
+def editCMake(file, name, srcLine, headerLine, doHeader):
+  for line in fileinput.input(file, inplace=True):
+    line = line.replace(srcLine, srcLine + "\n  " + name + ".cc")
+    if doHeader:
+      line = line.replace(headerLine, headerLine + "\n  " + name + ".h")
+    sys.stdout.write(line)
+  print("cmake edit: ", file, name)
+
 def editModuleCMake(path, name):
   modPath = os.path.join(path, "Modules/Fields/")
   cmakeFile = os.path.join(modPath, "CMakeLists.txt")
   replaceLineSrc = "SET(Modules_Fields_SRCS"
   replaceLineHeader = "SET(Modules_Fields_HEADERS"
-  for line in fileinput.input(cmakeFile, inplace=True):
-    line = line.replace(replaceLineSrc, replaceLineSrc + "\n  " + name + ".cc")
-    line = line.replace(replaceLineHeader, replaceLineHeader + "\n  " + name + ".h")
-    sys.stdout.write(line)
-  print("module cmake edit: ", path, name)
+  editCMake(cmakeFile, name, replaceLineSrc, replaceLineHeader, True)
 
 def addModuleToFactory(path, name):
   factorypath = os.path.join(path, "Modules/Factory/ModuleFactoryImpl1.cc") #factoryfile = open(factorypath, 'w')
