@@ -75,7 +75,7 @@ def editAlgorithmCMake(path, name):
 	cmakeFile = os.path.join(modPath, "CMakeLists.txt")
 	replaceLineSrc = "SET(Algorithms_Field_SRCS"
 	replaceLineHeader = "SET(Algorithms_Field_HEADERS"
-	editCMake(cmakeFile, name, replaceLineSrc, replaceLineHeader, True)
+	editCMake(cmakeFile, name + "Algo", replaceLineSrc, replaceLineHeader, True)
 	print("algorithm cmake edit: ", path, name)
 
 def editAlgorithmTestCMake(path, name):
