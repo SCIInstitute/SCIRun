@@ -56,11 +56,11 @@ def addModuleToFactory(path, name):
 
 def makeAlgorithmFile(rootpath, name, filepath, extension, templatefilepath):
 	algoPath = os.path.join(rootpath, filepath)
-	algoFile = os.path.join(modPath, name + extension)
+	algoFile = os.path.join(algoPath, name + extension)
 	templatefile = os.path.join(algoPath, templatefilepath)
 	makeFileFromTemplate(templatefile, algoFile, "@AlgorithmName@", name)
 	print("algorithm file: ", algoFile)
-	
+
 def makeAlgorithmHeaderFile(path, name):
 	makeAlgorithmFile(path, name, "Core/Algorithms/Field/", "Algo.h", "../Template/AlgorithmTemplate.h")
 
@@ -68,7 +68,7 @@ def makeAlgorithmSourceFile(path, name):
 	makeAlgorithmFile(path, name, "Core/Algorithms/Field/", "Algo.cc", "../Template/AlgorithmTemplate.cc")
 
 def makeAlgorithmUnitTestFile(path, name):
-	makeAlgorithmFile(path, name, "Core/Algorithms/Field/Tests/", "AlgoTests.cc", "../../Template/AlgoUnitTest.cc")
+	makeAlgorithmFile(path, name, "Core/Algorithms/Field/Tests/", "AlgoTests.cc", "../../Template/AlgorithmTestTemplate.cc")
 
 def editAlgorithmCMake(path, name):
 	modPath = os.path.join(path, "Core/Algorithms/Field/")
@@ -77,7 +77,7 @@ def editAlgorithmCMake(path, name):
 	replaceLineHeader = "SET(Algorithms_Field_HEADERS"
 	editCMake(cmakeFile, name, replaceLineSrc, replaceLineHeader, True)
 	print("algorithm cmake edit: ", path, name)
-	
+
 def editAlgorithmTestCMake(path, name):
   modPath = os.path.join(path, "Core/Algorithms/Field/Tests/")
   cmakeFile = os.path.join(modPath, "CMakeLists.txt")
@@ -120,7 +120,7 @@ def makeAlgorithmFiles(path, name):
 	makeAlgorithmSourceFile(path, name)
 	makeAlgorithmUnitTestFile(path, name)
 	editAlgorithmCMake(path, name)
-	editAlgorithmTestCMake(path, name)
+	#editAlgorithmTestCMake(path, name)
 	addAlgorithmToFactory(path, name)
 
 def makeUIFiles(path, name):
@@ -130,7 +130,7 @@ def makeUIFiles(path, name):
 	editUICMake(path, name)
 	addUIToFactory(path, name)
 
- 
+
 try:
 	moduleName = sys.argv[1]
 except:
