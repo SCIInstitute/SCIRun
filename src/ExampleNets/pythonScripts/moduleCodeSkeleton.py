@@ -41,6 +41,8 @@ def makeModuleSourceFile(path, name):
 def makeModuleUnitTestFile(path, name):
 	modPath = os.path.join(path, "Modules/Fields/Tests/")
 	modFile = os.path.join(modPath, name + "Test.cc")
+  templatefile = os.path.join(modPath, "../Template/ModuleUnitTest.cc")
+  makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
 	print("module unit test: ", modFile)
 
 #def editModuleCMake(path, name):
