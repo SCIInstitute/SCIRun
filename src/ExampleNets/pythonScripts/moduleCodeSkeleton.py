@@ -39,11 +39,11 @@ def makeModuleSourceFile(path, name):
 	print("module source: ", modFile)
 
 def makeModuleUnitTestFile(path, name):
-	modPath = os.path.join(path, "Modules/Fields/Tests/")
-	modFile = os.path.join(modPath, name + "Test.cc")
-  templatefile = os.path.join(modPath, "../Template/ModuleUnitTest.cc")
+  modPath = os.path.join(path, "Modules/Fields/Tests/")
+  modFile = os.path.join(modPath, name + "Test.cc")
+  templatefile = os.path.join(modPath, "../../Template/ModuleUnitTest.cc")
   makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
-	print("module unit test: ", modFile)
+  print("module unit test: ", modFile)
 
 #def editModuleCMake(path, name):
 #	print("module cmake edit: ", path, name)
