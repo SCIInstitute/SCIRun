@@ -33,13 +33,21 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Field/@AlgorithmName@Algo.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
-TEST(@AlgorithmName@Algo, InsertTestsHere)
+TEST(@AlgorithmName@AlgoTests, CanCreateFromFactory)
+{
+  HardCodedAlgorithmFactory factory;
+  auto algo = factory.create("@AlgorithmName@", 0);
+  ASSERT_TRUE(algo != nullptr);
+}
+
+TEST(@AlgorithmName@AlgoTests, InsertRealTestsHere)
 {
   @AlgorithmName@Algo algo;
   FAIL() << "TODO"; 

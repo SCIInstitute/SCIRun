@@ -82,7 +82,7 @@ def editAlgorithmTestCMake(path, name):
   modPath = os.path.join(path, "Core/Algorithms/Field/Tests/")
   cmakeFile = os.path.join(modPath, "CMakeLists.txt")
   replaceLineSrc = "SET(Algorithms_Field_Tests_SRCS"
-  editCMake(cmakeFile, name + "Tests", replaceLineSrc, "", False)
+  editCMake(cmakeFile, name + "AlgoTests", replaceLineSrc, "", False)
 
 def addAlgorithmToFactory(path, name):
 	uiPath = os.path.join(path, "Core/Algorithms/Factory")
@@ -120,7 +120,7 @@ def makeAlgorithmFiles(path, name):
 	makeAlgorithmSourceFile(path, name)
 	makeAlgorithmUnitTestFile(path, name)
 	editAlgorithmCMake(path, name)
-	#editAlgorithmTestCMake(path, name)
+	editAlgorithmTestCMake(path, name)
 	addAlgorithmToFactory(path, name)
 
 def makeUIFiles(path, name):
