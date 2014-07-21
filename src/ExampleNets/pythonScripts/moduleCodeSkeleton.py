@@ -27,14 +27,14 @@ def makeFileFromTemplate(path, newPath, placeholder, name):
 def makeModuleHeaderFile(path, name):
 	modPath = os.path.join(path, "Modules/Fields/")
 	modFile = os.path.join(modPath, name + ".h")
-	templatefile = os.path.join(modPath, "ModuleTemplate.h")
+	templatefile = os.path.join(modPath, "../Template/ModuleTemplate.h")
 	makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
 	print("module header: ", modFile)
 
 def makeModuleSourceFile(path, name):
 	modPath = os.path.join(path, "Modules/Fields/")
 	modFile = os.path.join(modPath, name + ".cc")
-	templatefile = os.path.join(modPath, "ModuleTemplate.cc")
+	templatefile = os.path.join(modPath, "../Template/ModuleTemplate.cc")
 	makeFileFromTemplate(templatefile, modFile, "@ModuleName@", name)
 	print("module source: ", modFile)
 
