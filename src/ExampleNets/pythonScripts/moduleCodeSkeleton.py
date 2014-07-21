@@ -48,9 +48,11 @@ def makeModuleUnitTestFile(path, name):
 
 def addModuleToFactory(path, name):
   factorypath = os.path.join(path, "Modules/Factory/ModuleFactoryImpl1.cc") #factoryfile = open(factorypath, 'w')
-  replaceLine = "//#include <Modules/Fields/@ModuleName@.h>"
+  replaceLine1 = "//#include <Modules/Fields/@ModuleName@.h>"
+  replaceLine2 = "  // insert module desc here"
   for line in fileinput.input(factorypath, inplace=True):
-    line = line.replace(replaceLine, "#include <Modules/Fields/" + name + ".h>\n" + replaceLine)
+    line = line.replace(replaceLine1, "#include <Modules/Fields/" + name + ".h>\n" + replaceLine1)
+    line = line.replace(replaceLine2, "  addModuleDesc<" + name + ">(\"Status\", \"Description\");\n" + replaceLine2)
     sys.stdout.write(line)
   print("module factory edit: ", factorypath, name)
 
