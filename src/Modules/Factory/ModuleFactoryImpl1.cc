@@ -85,6 +85,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Modules/Basic/AsyncPortTestModule.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
+//#include <Modules/Fields/@ModuleName@.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
