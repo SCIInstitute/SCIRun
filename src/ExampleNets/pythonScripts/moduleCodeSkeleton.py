@@ -43,12 +43,16 @@ def makeModuleUnitTestFile(path, name):
 	modFile = os.path.join(modPath, name + "Test.cc")
 	print("module unit test: ", modFile)
 
-def editModuleCMake(path, name):
-	print("module cmake edit: ", path, name)
+#def editModuleCMake(path, name):
+#	print("module cmake edit: ", path, name)
 
 def addModuleToFactory(path, name):
-	uiPath = os.path.join(path, "Modules/Factory")
-	print("module factory edit: ", uiPath, name)
+  factorypath = os.path.join(path, "Modules/Factory/ModuleFactoryImpl1.cc") #factoryfile = open(factorypath, 'w')
+  replaceLine = "//#include <Modules/Fields/@ModuleName@.h>"
+  for line in fileinput.input(factorypath, inplace=True):
+    line = line.replace(replaceLine, "#include <Modules/Fields/" + name + ".h>\n" + replaceLine)
+    sys.stdout.write(line)
+  print("module factory edit: ", factorypath, name)
 
 def makeAlgorithmHeaderFile(path, name):
 	algoPath = os.path.join(path, "Core/Algorithms/Field/")
@@ -95,7 +99,7 @@ def makeModuleFiles(path, name):
 	makeModuleHeaderFile(path, name)
 	makeModuleSourceFile(path, name)
 	makeModuleUnitTestFile(path, name)
-	editModuleCMake(path, name)
+	#editModuleCMake(path, name)
 	addModuleToFactory(path, name)
 
 def makeAlgorithmFiles(path, name):
