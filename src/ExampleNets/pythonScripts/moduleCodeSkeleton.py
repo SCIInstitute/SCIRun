@@ -54,23 +54,35 @@ def addModuleToFactory(path, name):
     sys.stdout.write(line)
   print("module factory edit: ", factorypath, name)
 
+def makeAlgorithmFile(rootpath, name, filepath, extension, templatefilepath):
+	algoPath = os.path.join(rootpath, filepath)
+	algoFile = os.path.join(modPath, name + extension)
+	templatefile = os.path.join(algoPath, templatefilepath)
+	makeFileFromTemplate(templatefile, algoFile, "@AlgorithmName@", name)
+	print("algorithm file: ", algoFile)
+	
 def makeAlgorithmHeaderFile(path, name):
-	algoPath = os.path.join(path, "Core/Algorithms/Field/")
-	algoFile = os.path.join(algoPath, name + "Algo.h")
-	print("algo header: ", algoFile)
+	makeAlgorithmFile(path, name, "Core/Algorithms/Field/", "Algo.h", "../Template/AlgorithmTemplate.h")
 
 def makeAlgorithmSourceFile(path, name):
-	algoPath = os.path.join(path, "Core/Algorithms/Field/")
-	algoFile = os.path.join(algoPath, name + "Algo.cc")
-	print("algo source: ", algoFile)
+	makeAlgorithmFile(path, name, "Core/Algorithms/Field/", "Algo.cc", "../Template/AlgorithmTemplate.cc")
 
 def makeAlgorithmUnitTestFile(path, name):
-	algoPath = os.path.join(path, "Core/Algorithms/Field/Tests/")
-	algoFile = os.path.join(algoPath, name + "AlgoTest.cc")
-	print("algo unit test: ", algoFile)
+	makeAlgorithmFile(path, name, "Core/Algorithms/Field/Tests/", "AlgoTests.cc", "../../Template/AlgoUnitTest.cc")
 
 def editAlgorithmCMake(path, name):
+	modPath = os.path.join(path, "Core/Algorithms/Field/")
+	cmakeFile = os.path.join(modPath, "CMakeLists.txt")
+	replaceLineSrc = "SET(Algorithms_Field_SRCS"
+	replaceLineHeader = "SET(Algorithms_Field_HEADERS"
+	editCMake(cmakeFile, name, replaceLineSrc, replaceLineHeader, True)
 	print("algorithm cmake edit: ", path, name)
+	
+def editAlgorithmTestCMake(path, name):
+  modPath = os.path.join(path, "Core/Algorithms/Field/Tests/")
+  cmakeFile = os.path.join(modPath, "CMakeLists.txt")
+  replaceLineSrc = "SET(Algorithms_Field_Tests_SRCS"
+  editCMake(cmakeFile, name + "Tests", replaceLineSrc, "", False)
 
 def addAlgorithmToFactory(path, name):
 	uiPath = os.path.join(path, "Core/Algorithms/Factory")
@@ -108,6 +120,7 @@ def makeAlgorithmFiles(path, name):
 	makeAlgorithmSourceFile(path, name)
 	makeAlgorithmUnitTestFile(path, name)
 	editAlgorithmCMake(path, name)
+	editAlgorithmTestCMake(path, name)
 	addAlgorithmToFactory(path, name)
 
 def makeUIFiles(path, name):
