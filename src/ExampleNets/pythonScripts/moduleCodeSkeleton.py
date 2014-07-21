@@ -60,6 +60,12 @@ def editModuleCMake(path, name):
   replaceLineHeader = "SET(Modules_Fields_HEADERS"
   editCMake(cmakeFile, name, replaceLineSrc, replaceLineHeader, True)
 
+def editModuleTestCMake(path, name):
+  modPath = os.path.join(path, "Modules/Fields/Tests/")
+  cmakeFile = os.path.join(modPath, "CMakeLists.txt")
+  replaceLineSrc = "SET(Modules_Fields_Tests_SRCS"
+  editCMake(cmakeFile, name, replaceLineSrc, "", False)
+
 def addModuleToFactory(path, name):
   factorypath = os.path.join(path, "Modules/Factory/ModuleFactoryImpl1.cc") #factoryfile = open(factorypath, 'w')
   replaceLine1 = "//#include <Modules/Fields/@ModuleName@.h>"
@@ -116,6 +122,7 @@ def makeModuleFiles(path, name):
 	makeModuleSourceFile(path, name)
 	makeModuleUnitTestFile(path, name)
 	editModuleCMake(path, name)
+  editModuleTestCMake(path, name)
 	addModuleToFactory(path, name)
 
 def makeAlgorithmFiles(path, name):
