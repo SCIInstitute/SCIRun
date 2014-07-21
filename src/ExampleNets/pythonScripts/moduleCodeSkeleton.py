@@ -45,7 +45,7 @@ def editModuleTestCMake(path, name):
   editCMake(cmakeFile, name + "Tests", replaceLineSrc, "", False)
 
 def addModuleToFactory(path, name):
-  factorypath = os.path.join(path, "Modules/Factory/ModuleFactoryImpl1.cc") #factoryfile = open(factorypath, 'w')
+  factorypath = os.path.join(path, "Modules/Factory/ModuleFactoryImpl1.cc")
   replaceLine1 = "//#include <Modules/Fields/@ModuleName@.h>"
   replaceLine2 = "  // insert module desc here"
   for line in fileinput.input(factorypath, inplace=True):
@@ -85,8 +85,14 @@ def editAlgorithmTestCMake(path, name):
   editCMake(cmakeFile, name + "AlgoTests", replaceLineSrc, "", False)
 
 def addAlgorithmToFactory(path, name):
-	uiPath = os.path.join(path, "Core/Algorithms/Factory")
-	print("algorithm factory edit: ", uiPath, name)
+	factorypath = os.path.join(path, "Core/Algorithms/Factory/HardCodedAlgorithmFactory.cc")
+	replaceLine1 = "#include <boost/functional/factory.hpp>"
+	replaceLine2 = "    ;"
+	for line in fileinput.input(factorypath, inplace=True):
+		line = line.replace(replaceLine1, "#include <Core/Algorithms/Field/" + name + "Algo.h>\n" + replaceLine1)
+		line = line.replace(replaceLine2, "      ADD_MODULE_ALGORITHM(" + name + ", " + name + "Algo)\n" + replaceLine2)
+		sys.stdout.write(line)
+	print("algo factory edit: ", factorypath, name)
 
 def makeUIDesignerFile(path, name):
 	print("ui designer file: ", path, name)
