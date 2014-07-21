@@ -37,6 +37,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
