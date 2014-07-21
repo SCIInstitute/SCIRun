@@ -121,6 +121,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   standardBar->addAction(actionPinAllModuleUIs_);
   standardBar->addAction(actionRestoreAllModuleUIs_);
   standardBar->addAction(actionHideAllModuleUIs_);
+  //setUnifiedTitleAndToolBarOnMac(true);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
 	executeBar->addAction(actionExecute_All_);
