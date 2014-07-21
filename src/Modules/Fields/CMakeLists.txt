@@ -26,8 +26,18 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-FILE(GLOB Modules_Fields_SRCS *.cc)
-FILE(GLOB Modules_Fields_HEADERS *.h)
+SET(Modules_Fields_SRCS
+  CreateScalarFieldDataBasic.cc
+  ReportFieldInfo.cc
+  InterfaceWithCleaver.cc
+)
+
+SET(Modules_Fields_HEADERS
+  InterfaceWithCleaver.h
+  CreateScalarFieldDataBasic.h
+  ReportFieldInfo.h
+  share.h
+)
 
 ADD_LIBRARY(Modules_Fields
   ${Modules_Fields_HEADERS}
