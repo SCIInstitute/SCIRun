@@ -26,30 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SOLVELINEARSYSTEMDIALOG_H
-#define INTERFACE_MODULES_SOLVELINEARSYSTEMDIALOG_H
+#ifndef INTERFACE_MODULES_@ModuleName@DIALOG_H
+#define INTERFACE_MODULES_@ModuleName@DIALOG_H
 
-#include "Interface/Modules/Math/ui_SolveLinearSystem.h"
+#include "Interface/Modules/Math/ui_@ModuleName@.h"
 #include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE SolveLinearSystemDialog : public ModuleDialogGeneric, 
-  public Ui::SolveLinearSystem
+class SCISHARE @ModuleName@Dialog : public ModuleDialogGeneric,
+  public Ui::@ModuleName@
 {
 	Q_OBJECT
 	
 public:
-  SolveLinearSystemDialog(const std::string& name, 
+  @ModuleName@Dialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-private:
-  boost::shared_ptr<class SolveLinearSystemDialogImpl> impl_;
+  virtual void pull() override;
 };
 
 }
