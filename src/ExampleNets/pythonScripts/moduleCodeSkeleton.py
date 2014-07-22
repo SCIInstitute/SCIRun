@@ -154,7 +154,7 @@ makeUI = "--ui" in restofargs
 if not makeUI:
 	print("UI flag not specified, not generating UI files")
 if not makeAlgo:
-	print("Algo flag not specified, not generating algorithm files")
+	print("Algo flag not specified, not generating algorithm files--unless UI is selected")
 
 #print(os.getcwd()
 #print(os.path.abspath(os.path.join(os.getcwd(), '../../'))
@@ -164,5 +164,6 @@ srcRoot = os.path.abspath(os.path.join(os.getcwd(), '../../'))
 makeModuleFiles(srcRoot, moduleName)
 if makeAlgo:
 	makeAlgorithmFiles(srcRoot, moduleName)
-if makeUI:
+if makeUI: # requires algo files for state names.
+	makeAlgorithmFiles(srcRoot, moduleName)
 	makeUIFiles(srcRoot, moduleName)
