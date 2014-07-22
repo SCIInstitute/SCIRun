@@ -41,8 +41,8 @@ using namespace SCIRun::Core::Algorithms::Fields;
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckboxManager(knob1CheckBox_, Parameters::Knob1);
-  addDoubleSpinBoxManager(knob2DoubleSpinBox_, Parameters::Knob2);
+  addCheckBoxManager(knob1CheckBox_, Parameters::Knob1);
+  addDoubleSpinBoxManager(knob2SpinBox_, Parameters::Knob2);
 }
 
 void @ModuleName@Dialog::pull()
