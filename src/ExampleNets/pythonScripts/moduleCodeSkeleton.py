@@ -94,16 +94,21 @@ def addAlgorithmToFactory(path, name):
 		sys.stdout.write(line)
 	print("algo factory edit: ", factorypath, name)
 
+def makeUIFile(rootpath, name, filepath, extension, templatefilepath):
+	uiPath = os.path.join(rootpath, filepath)
+	uiFile = os.path.join(uiPath, name + extension)
+	templatefile = os.path.join(uiPath, templatefilepath)
+	makeFileFromTemplate(templatefile, uiFile, "@ModuleName@", name)
+	print("UI file: ", uiFile)
+
 def makeUIDesignerFile(path, name):
-	print("ui designer file: ", path, name)
+	makeUIFile(path, name, "Interface/Modules/Fields/", ".ui", "../Template/ModuleDesignerFile.ui")
 
 def makeUIHeaderFile(path, name):
-	uiPath = os.path.join(path, "Interface/Modules/Fields/")
-	print("ui header", uiPath, name)
+	makeUIFile(path, name, "Interface/Modules/Fields/", "Dialog.h", "../Template/ModuleDialog.h")
 
 def makeUISourceFile(path, name):
-	uiPath = os.path.join(path, "Interface/Modules/Fields/")
-	print("ui source: ", uiPath, name)
+	makeUIFile(path, name, "Interface/Modules/Fields/", "Dialog.cc", "../Template/ModuleDialog.cc")
 
 def editUICMake(path, name):
 	uiPath = os.path.join(path, "Interface/Modules/Fields/")
@@ -156,35 +161,8 @@ if not makeAlgo:
 
 srcRoot = os.path.abspath(os.path.join(os.getcwd(), '../../'))
 
-#values = []
-#files = []
-
-#count = 0
-
 makeModuleFiles(srcRoot, moduleName)
 if makeAlgo:
 	makeAlgorithmFiles(srcRoot, moduleName)
 if makeUI:
 	makeUIFiles(srcRoot, moduleName)
-
-# these meshes had some issues that crashed scirun, fixed in 5 now:
-#r"time-dependent\25feb97_sock_closed" not in file and
-#if (r"UCSD\heart-canine" not in file):
-#
-# for file in allFields(dir):
-# 	count += 1
-# 	read = addModule("ReadField")
-# 	read.Filename = file
-# 	files.append(file)
-# 	show = addModule("ReportFieldInfo")
-# 	prnt = addModule("PrintDatatype")
-# 	read.output[0] >> show.input.Input
-# 	show.output[0] >> prnt.input[0]
-# 	executeAll()
-# 	time.sleep(1)
-# 	v = prnt.ReceivedValue
-# 	values.append(v)
-# 	[removeModule(m.id) for m in modules()]
-#
-#
-# printList(zip(files, values), r'E:\fieldTypesAll2.txt')
