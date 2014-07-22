@@ -28,15 +28,16 @@
 
 #include <Modules/Fields/@ModuleName@.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-//#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Core/Algorithms/Field/@ModuleName@Algo.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 const ModuleLookupInfo @ModuleName@::staticInfo_("@ModuleName@", "NewField", "SCIRun");
 
-@ModuleName@::@ModuleName@() : Module(staticInfo_, false)
+@ModuleName@::@ModuleName@() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
@@ -45,13 +46,17 @@ const ModuleLookupInfo @ModuleName@::staticInfo_("@ModuleName@", "NewField", "SC
 void @ModuleName@::setStateDefaults()
 {
   auto state = get_state();
+  setStateBoolFromAlgo(Parameters::Knob1);
+  setStateDoubleFromAlgo(Parameters::Knob2);
 }
 
 void @ModuleName@::execute()
 {
   auto field = getRequiredInput(InputField);
 
-  //auto output = algo().run_generic(make_input((InputField, field)));
+  setAlgoBoolFromState(Parameters::Knob1);
+  setAlgoDoubleFromState(Parameters::Knob2);
+  auto output = algo().run_generic(make_input((InputField, field)));
 
-  sendOutput(OutputField, field);
+  sendOutputFromAlgorithm(OutputField, output);
 }
