@@ -23,11 +23,14 @@ def makeModuleSourceFile(path, name):
 def makeModuleUnitTestFile(path, name):
 	makeModuleFile(path, name, "Modules/Fields/Tests", "Tests.cc", "../../Template/ModuleUnitTest.cc")
 
-def editCMake(file, name, srcLine, headerLine, doHeader):
+def editCMake(file, name, srcLine, headerLine = "", formLine = ""):
   for line in fileinput.input(file, inplace=True):
-    line = line.replace(srcLine, srcLine + "\n  " + name + ".cc")
-    if doHeader:
+    if len(srcLine) > 0:
+		  line = line.replace(srcLine, srcLine + "\n  " + name + ".cc")
+    if len(headerLine) > 0:
       line = line.replace(headerLine, headerLine + "\n  " + name + ".h")
+    if len(formLine) > 0:
+      line = line.replace(formLine, formLine + "\n  " + name + ".ui")
     sys.stdout.write(line)
   print("cmake edit: ", file, name)
 
@@ -36,13 +39,13 @@ def editModuleCMake(path, name):
   cmakeFile = os.path.join(modPath, "CMakeLists.txt")
   replaceLineSrc = "SET(Modules_Fields_SRCS"
   replaceLineHeader = "SET(Modules_Fields_HEADERS"
-  editCMake(cmakeFile, name, replaceLineSrc, replaceLineHeader, True)
+  editCMake(cmakeFile, name, replaceLineSrc, replaceLineHeader)
 
 def editModuleTestCMake(path, name):
   modPath = os.path.join(path, "Modules/Fields/Tests/")
   cmakeFile = os.path.join(modPath, "CMakeLists.txt")
   replaceLineSrc = "SET(Modules_Fields_Tests_SRCS"
-  editCMake(cmakeFile, name + "Tests", replaceLineSrc, "", False)
+  editCMake(cmakeFile, name + "Tests", replaceLineSrc)
 
 def addModuleToFactory(path, name):
   factorypath = os.path.join(path, "Modules/Factory/ModuleFactoryImpl1.cc")
@@ -71,18 +74,18 @@ def makeAlgorithmUnitTestFile(path, name):
 	makeAlgorithmFile(path, name, "Core/Algorithms/Field/Tests/", "AlgoTests.cc", "../../Template/AlgorithmTestTemplate.cc")
 
 def editAlgorithmCMake(path, name):
-	modPath = os.path.join(path, "Core/Algorithms/Field/")
-	cmakeFile = os.path.join(modPath, "CMakeLists.txt")
+	algoPath = os.path.join(path, "Core/Algorithms/Field/")
+	cmakeFile = os.path.join(algoPath, "CMakeLists.txt")
 	replaceLineSrc = "SET(Algorithms_Field_SRCS"
 	replaceLineHeader = "SET(Algorithms_Field_HEADERS"
-	editCMake(cmakeFile, name + "Algo", replaceLineSrc, replaceLineHeader, True)
+	editCMake(cmakeFile, name + "Algo", replaceLineSrc, replaceLineHeader)
 	print("algorithm cmake edit: ", path, name)
 
 def editAlgorithmTestCMake(path, name):
   modPath = os.path.join(path, "Core/Algorithms/Field/Tests/")
   cmakeFile = os.path.join(modPath, "CMakeLists.txt")
   replaceLineSrc = "SET(Algorithms_Field_Tests_SRCS"
-  editCMake(cmakeFile, name + "AlgoTests", replaceLineSrc, "", False)
+  editCMake(cmakeFile, name + "AlgoTests", replaceLineSrc)
 
 def addAlgorithmToFactory(path, name):
 	factorypath = os.path.join(path, "Core/Algorithms/Factory/HardCodedAlgorithmFactory.cc")
@@ -102,7 +105,7 @@ def makeUIFile(rootpath, name, filepath, extension, templatefilepath):
 	print("UI file: ", uiFile)
 
 def makeUIDesignerFile(path, name):
-	makeUIFile(path, name, "Interface/Modules/Fields/", ".ui", "../Template/ModuleDesignerFile.ui")
+	makeUIFile(path, name, "Interface/Modules/Fields/", "Dialog.ui", "../Template/ModuleDesignerFile.ui")
 
 def makeUIHeaderFile(path, name):
 	makeUIFile(path, name, "Interface/Modules/Fields/", "Dialog.h", "../Template/ModuleDialog.h")
@@ -112,6 +115,11 @@ def makeUISourceFile(path, name):
 
 def editUICMake(path, name):
 	uiPath = os.path.join(path, "Interface/Modules/Fields/")
+	cmakeFile = os.path.join(uiPath, "CMakeLists.txt")
+	replaceLineSrc = "SET(Interface_Modules_Fields_SOURCES"
+	replaceLineHeader = "SET(Interface_Modules_Fields_HEADERS"
+	replaceLineUI = "SET(Interface_Modules_Fields_FORMS"
+	editCMake(cmakeFile, name + "Dialog", replaceLineSrc, replaceLineHeader, replaceLineUI)
 	print("UI cmake edit: ", uiPath, name)
 
 def addUIToFactory(path, name):
