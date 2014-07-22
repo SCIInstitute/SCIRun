@@ -123,10 +123,10 @@ def editUICMake(path, name):
 	print("UI cmake edit: ", uiPath, name)
 
 def addUIToFactory(path, name):
-	uiPath = os.path.join(path, "Interface/Modules/Factory/")
+	uiPath = os.path.join(path, "Interface/Modules/Factory/ModuleDialogFactory.cc")
 	replaceLine1 = "#include <boost/assign.hpp>"
 	replaceLine2 = "  ;"
-	for line in fileinput.input(factorypath, inplace=True):
+	for line in fileinput.input(uiPath, inplace=True):
 		line = line.replace(replaceLine1, "#include <Interface/Modules/Fields/" + name + "Dialog.h>\n" + replaceLine1)
 		line = line.replace(replaceLine2, "    ADD_MODULE_DIALOG(" + name + ", " + name + "Dialog)\n" + replaceLine2)
 		sys.stdout.write(line)
