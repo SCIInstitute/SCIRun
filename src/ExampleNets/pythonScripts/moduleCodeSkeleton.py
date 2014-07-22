@@ -124,6 +124,12 @@ def editUICMake(path, name):
 
 def addUIToFactory(path, name):
 	uiPath = os.path.join(path, "Interface/Modules/Factory/")
+	replaceLine1 = "#include <boost/assign.hpp>"
+	replaceLine2 = "  ;"
+	for line in fileinput.input(factorypath, inplace=True):
+		line = line.replace(replaceLine1, "#include <Interface/Modules/Fields/" + name + "Dialog.h>\n" + replaceLine1)
+		line = line.replace(replaceLine2, "    ADD_MODULE_DIALOG(" + name + ", " + name + "Dialog)\n" + replaceLine2)
+		sys.stdout.write(line)
 	print("UI factory edit: ", uiPath, name)
 
 def makeModuleFiles(path, name):
