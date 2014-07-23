@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2014 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -28,7 +28,7 @@
 
 An installer is available for OS X (10.7 or greater).
 
-SCIRun 5 prototype build instructions
+SCIRun 5 build instructions
 
 Required:
 
@@ -65,10 +65,10 @@ CMake Build Generators:
     Visual Studio 2010 C++
 
   OS X (tested on 10.7 and 10.8):
-    Unix Makfiles (Xcode not currently supported)
+    Unix Makefiles (Xcode not currently supported)
 
   Linux (tested on Ubuntu 12.10):
-    Unix Makfiles
+    Unix Makefiles
 
 Unix Makefiles notes:
   Parallel builds can be used:
