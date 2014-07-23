@@ -25,38 +25,35 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/ReportMatrixInfo.cc
 
-#include <Modules/Math/ReportMatrixInfo.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Scalar.h>
+#ifndef MODULES_BASIC_NEED_TO_EXECUTE_TESTER_H
+#define MODULES_BASIC_NEED_TO_EXECUTE_TESTER_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/share.h>
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) 
-{
-  INITIALIZE_PORT(InputMatrix);
-  INITIALIZE_PORT(NumRows);
-  INITIALIZE_PORT(NumCols);
-  INITIALIZE_PORT(NumElements);
-}
-
-void ReportMatrixInfoModule::execute()
-{
-  auto matrix = getRequiredInput(InputMatrix);
-
-  if (needToExecute())
+namespace SCIRun {
+namespace Modules {
+namespace Basic {
+  
+  class SCISHARE NeedToExecuteTester : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
   {
-    auto output = algo().run_generic(make_input((InputMatrix, matrix)));
-    get_state()->setTransientValue("ReportedInfo", output.getTransient(), true);
+  public:
+    NeedToExecuteTester();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+    
+    INPUT_PORT(0, TestMatrixIn, DenseMatrix);
+    OUTPUT_PORT(0, TestMatrixOut, DenseMatrix);
 
-    auto info = optional_any_cast_or_default<SCIRun::Core::Algorithms::Math::ReportMatrixInfoAlgorithm::Outputs>(output.getTransient());
-    /// @todo: requires knowledge of algorithm type
-    sendOutput(NumRows, boost::make_shared<Int32>(info.get<1>()));
-    sendOutput(NumCols, boost::make_shared<Int32>(info.get<2>()));
-    sendOutput(NumElements, boost::make_shared<Int32>(info.get<3>()));
-  }
-}
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+    bool expensiveComputationDone_, executeCalled_;
+    void resetFlags();
+  };
+
+}}}
+
+#endif

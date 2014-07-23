@@ -38,6 +38,7 @@ DeveloperConsole::DeveloperConsole(QWidget* parent /* = 0 */) : QDockWidget(pare
   connect(serialExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
   connect(parallelExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
   connect(improvedParallelExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
+  connect(globalPortCacheButton_, SIGNAL(stateChanged(int)), this, SLOT(globalPortCacheButtonClicked()));
 }
 
 void DeveloperConsole::executorButtonClicked()
@@ -48,4 +49,9 @@ void DeveloperConsole::executorButtonClicked()
     Q_EMIT executorChosen(1);
   else if (improvedParallelExecutionRadioButton_->isChecked())
     Q_EMIT executorChosen(2);
+}
+
+void DeveloperConsole::globalPortCacheButtonClicked()
+{
+  Q_EMIT globalPortCachingChanged(globalPortCacheButton_->isChecked());
 }

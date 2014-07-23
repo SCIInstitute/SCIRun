@@ -25,38 +25,35 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/ReportMatrixInfo.cc
 
-#include <Modules/Math/ReportMatrixInfo.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Scalar.h>
+#ifndef INTERFACE_APPLICATION_HAS_NOTES_H
+#define INTERFACE_APPLICATION_HAS_NOTES_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
+#include <Interface/Application/NoteEditor.h>
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) 
-{
-  INITIALIZE_PORT(InputMatrix);
-  INITIALIZE_PORT(NumRows);
-  INITIALIZE_PORT(NumCols);
-  INITIALIZE_PORT(NumElements);
-}
+class QAction;
 
-void ReportMatrixInfoModule::execute()
-{
-  auto matrix = getRequiredInput(InputMatrix);
-
-  if (needToExecute())
+namespace SCIRun {
+namespace Gui {
+  
+  class HasNotes 
   {
-    auto output = algo().run_generic(make_input((InputMatrix, matrix)));
-    get_state()->setTransientValue("ReportedInfo", output.getTransient(), true);
+  public:
+    HasNotes(const std::string& name, bool positionAdjustable);
+    virtual ~HasNotes();
+    void connectNoteEditorToAction(QAction* action);
+    void connectUpdateNote(QObject* obj);
+    void setCurrentNote(const Note& note) { currentNote_ = note; }
+  protected:
+    void destroy();
+  private:
+    NoteEditor noteEditor_;
+    Note currentNote_;
+    /// @todo: extract and make atomic
+    bool destroyed_;
+  };
 
-    auto info = optional_any_cast_or_default<SCIRun::Core::Algorithms::Math::ReportMatrixInfoAlgorithm::Outputs>(output.getTransient());
-    /// @todo: requires knowledge of algorithm type
-    sendOutput(NumRows, boost::make_shared<Int32>(info.get<1>()));
-    sendOutput(NumCols, boost::make_shared<Int32>(info.get<2>()));
-    sendOutput(NumElements, boost::make_shared<Int32>(info.get<3>()));
-  }
 }
+}
+
+#endif

@@ -142,42 +142,44 @@ GenericWriter<HType, PortTag>::execute()
     error("No filename specified.");
     return;
   }
-
+  if (needToExecute())
+  {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  update_state(Executing);  
+    update_state(Executing);  
 #endif
-  remark("saving file " + filename_);
+    remark("saving file " + filename_);
 
-  if (!overwrite()) return;
- 
-  if (useCustomExporter(filename_))
-  {
-    if (!call_exporter(filename_))
+    if (!overwrite()) return;
+
+    if (useCustomExporter(filename_))
     {
-      error("Export failed.");
-      return;
-    }
-  }
-  else
-  {
-    PiostreamPtr stream;
-    if (filetype_ == "Binary")
-    {
-      stream = auto_ostream(filename_, "Binary", getLogger());
+      if (!call_exporter(filename_))
+      {
+        error("Export failed.");
+        return;
+      }
     }
     else
     {
-      stream = auto_ostream(filename_, "Text", getLogger());
-    }
+      PiostreamPtr stream;
+      if (filetype_ == "Binary")
+      {
+        stream = auto_ostream(filename_, "Binary", getLogger());
+      }
+      else
+      {
+        stream = auto_ostream(filename_, "Text", getLogger());
+      }
 
-    if (stream->error())
-    {
-      error("Could not open file for writing" + filename_);
+      if (stream->error())
+      {
+        error("Could not open file for writing" + filename_);
+      }
+      else
+      {
+        Pio(*stream, handle_);
+      } 
     }
-    else
-    {
-      Pio(*stream, handle_);
-    } 
   }
 }
 

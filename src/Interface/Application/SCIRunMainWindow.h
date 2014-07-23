@@ -87,6 +87,7 @@ private:
 private:
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
+  void setTipsAndWhatsThis();
   bool okToContinue();
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
@@ -135,6 +136,7 @@ private Q_SLOTS:
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
   void handleCheckedModuleEntry(QTreeWidgetItem* item, int column);
   void setExecutor(int type);
+  void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
   void updateMiniView();
   void showPythonWarning(bool visible);

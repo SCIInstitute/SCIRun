@@ -9,5 +9,8 @@
         <file>Resources/save.png</file>
         <file>Resources/terminal.png</file>
         <file>Resources/script.png</file>
+        <file>Resources/hideAll.png</file>
+        <file>Resources/rightAll.png</file>
+        <file>Resources/showAll.png</file>
     </qresource>
 </RCC>

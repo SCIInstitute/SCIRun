@@ -202,6 +202,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
     connect(module, SIGNAL(dynamicPortChanged()), proxy, SLOT(createPortPositionProviders()));
   }
   
+  LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
   
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
@@ -704,8 +705,44 @@ void NetworkEditor::selectAll()
   }
 }
 
+void NetworkEditor::pinAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->pinUI();
+  }
+}
+
+void NetworkEditor::hideAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->hideUI();
+  }
+}
+
+void NetworkEditor::restoreAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->showUI();
+  }
+}
+
 NetworkEditor::~NetworkEditor()
 {
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->setDeletedFromGui(false);
+  }
   clear();
 }
 

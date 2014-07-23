@@ -25,38 +25,45 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/ReportMatrixInfo.cc
 
-#include <Modules/Math/ReportMatrixInfo.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Scalar.h>
+#include <iostream>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Modules/Basic/NeedToExecuteTester.h>
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) 
+const ModuleLookupInfo NeedToExecuteTester::staticInfo_("NeedToExecuteTester", "Testing", "SCIRun");
+
+NeedToExecuteTester::NeedToExecuteTester() : Module(staticInfo_, false), expensiveComputationDone_(false), executeCalled_(false)
 {
-  INITIALIZE_PORT(InputMatrix);
-  INITIALIZE_PORT(NumRows);
-  INITIALIZE_PORT(NumCols);
-  INITIALIZE_PORT(NumElements);
+  INITIALIZE_PORT(TestMatrixIn);
+  INITIALIZE_PORT(TestMatrixOut);
 }
 
-void ReportMatrixInfoModule::execute()
+void NeedToExecuteTester::setStateDefaults()
 {
-  auto matrix = getRequiredInput(InputMatrix);
 
+}
+
+void NeedToExecuteTester::execute()
+{
+  std::cout << "NTET::execute()" << std::endl;
+  executeCalled_ = true;
+  std::cout << "NTET::execute() executeCalled true" << std::endl;
+
+  auto in = getRequiredInput(TestMatrixIn);
+std::cout << "NTET::execute() getInput" << std::endl;
   if (needToExecute())
   {
-    auto output = algo().run_generic(make_input((InputMatrix, matrix)));
-    get_state()->setTransientValue("ReportedInfo", output.getTransient(), true);
-
-    auto info = optional_any_cast_or_default<SCIRun::Core::Algorithms::Math::ReportMatrixInfoAlgorithm::Outputs>(output.getTransient());
-    /// @todo: requires knowledge of algorithm type
-    sendOutput(NumRows, boost::make_shared<Int32>(info.get<1>()));
-    sendOutput(NumCols, boost::make_shared<Int32>(info.get<2>()));
-    sendOutput(NumElements, boost::make_shared<Int32>(info.get<3>()));
+    std::cout << "NTET::execute() needToExecute is true" << std::endl;
+    expensiveComputationDone_ = true;
+    sendOutput(TestMatrixOut, in);
   }
+}
+
+void NeedToExecuteTester::resetFlags()
+{
+  executeCalled_ = expensiveComputationDone_ = false;
 }
