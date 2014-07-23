@@ -56,7 +56,7 @@ void @ModuleName@::execute()
 
   setAlgoBoolFromState(Parameters::Knob1);
   setAlgoDoubleFromState(Parameters::Knob2);
-  auto output = algo().run_generic(make_input((InputField, field)));
+  auto output = algo().run(make_input((InputField, field)));
 
   sendOutputFromAlgorithm(OutputField, output);
 }
