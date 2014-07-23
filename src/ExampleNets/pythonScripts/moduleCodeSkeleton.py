@@ -159,23 +159,17 @@ def makeUIFiles(path, name):
 try:
 	moduleName = sys.argv[1]
 except:
-	print("Usage:", sys.argv[0], " moduleName [--algo] [--ui]"); sys.exit(1)
+	print("Usage:", sys.argv[0], " moduleName [--ui]"); sys.exit(1)
 
 restofargs = sys.argv[2:]
-makeAlgo = "--algo" in restofargs
 makeUI = "--ui" in restofargs
 
 if not makeUI:
 	print("UI flag not specified, not generating UI files")
-  #if not makeAlgo:
-#print("Algo flag not specified, not generating algorithm files--unless UI is selected")
-
-#print(os.getcwd()
-#print(os.path.abspath(os.path.join(os.getcwd(), '../../'))
 
 srcRoot = os.path.abspath(os.path.join(os.getcwd(), '../../'))
 
 makeModuleFiles(srcRoot, moduleName)
 makeAlgorithmFiles(srcRoot, moduleName)
-if makeUI: # requires algo files for state names.
+if makeUI:
 	makeUIFiles(srcRoot, moduleName)
