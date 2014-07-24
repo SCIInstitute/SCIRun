@@ -336,7 +336,7 @@ function (CopyShaders src_shader_dir dest_shader_dir)
     file(COPY ${src_shader_dir}/ DESTINATION ${dest_shader_dir}
       FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                            GROUP_READ
+                            GROUP_READ GROUP_EXECUTE
                             WORLD_READ WORLD_EXECUTE)
   endif()
 endfunction()
@@ -346,7 +346,7 @@ function (CopyAssets src_asset_dir dest_asset_dir)
     file(COPY ${src_asset_dir}/ DESTINATION ${dest_asset_dir}
       FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                            GROUP_READ
+                            GROUP_READ GROUP_EXECUTE
                             WORLD_READ WORLD_EXECUTE)
   endif()
 endfunction()
@@ -442,8 +442,6 @@ ENDMACRO()
 
 MACRO(SCIRUN_ADD_LIBRARY library)
   ADD_LIBRARY(${library} ${ARGN})
-  #LIST(APPEND tmp ${library} ${LIBRARY_LIST})
-  #SET(LIBRARY_LIST ${tmp} CACHE INTERNAL "List of unit tests." FORCE)
 
   # Set up installer package (Release build only)
   IF(WIN32)
