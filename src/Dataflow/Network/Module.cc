@@ -524,7 +524,7 @@ void Module::addPortConnection(const boost::signals2::connection& con)
   portConnections_.emplace_back(new boost::signals2::scoped_connection(con));
 }
 
-ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info) : Module(info), asyncConnected_(false)
+ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info) : Module(info)
 {
 }
 
@@ -568,7 +568,7 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(Module& module) : module_(mod
 
 bool InputsChangedCheckerImpl::inputsChanged() const 
 {
-  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << module_.inputsChanged()/* << std::endl*/);
+  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << module_.inputsChanged());
   return module_.inputsChanged();
 }
 
@@ -578,7 +578,7 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(Module& module) : module_(modul
 
 bool StateChangedCheckerImpl::newStatePresent() const 
 {
-  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << module_.newStatePresent()/* << std::endl*/);
+  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << module_.newStatePresent());
   return module_.newStatePresent();
 }
 
@@ -590,7 +590,7 @@ bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
   auto outputs = module_.outputPorts();
   auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out->hasData(); });
-  LOG_DEBUG(module_.get_id() << " OutputPortsCachedCheckerImpl, returns " << ret/* << std::endl*/);
+  LOG_DEBUG(module_.get_id() << " OutputPortsCachedCheckerImpl, returns " << ret);
   return ret;
 }
 

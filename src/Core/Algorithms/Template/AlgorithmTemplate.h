@@ -26,33 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
-#define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
+#ifndef CORE_ALGORITHMS_FIELDS_@AlgorithmName@_H
+#define CORE_ALGORITHMS_FIELDS_@AlgorithmName@_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Core/Algorithms/Field/share.h>
 
 namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
-        
-        ALGORITHM_PARAMETER_DECL(DefaultValue);
-        ALGORITHM_PARAMETER_DECL(MaxDistance);
-        ALGORITHM_PARAMETER_DECL(MappingMethod);
-        
-class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase
-{
-public:
-  MapFieldDataFromSourceToDestinationAlgo();
 
-  bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
-  
-  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-  
-  static const Core::Algorithms::AlgorithmOutputName Remapped_Destination;
-};
+        ALGORITHM_PARAMETER_DECL(Knob1);
+        ALGORITHM_PARAMETER_DECL(Knob2);
+
+        class SCISHARE @AlgorithmName@Algo : public AlgorithmBase
+        {
+        public:
+          @AlgorithmName@Algo();
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+        };
 
       }}}}
 

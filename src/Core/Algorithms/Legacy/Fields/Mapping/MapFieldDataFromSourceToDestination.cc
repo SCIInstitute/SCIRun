@@ -39,6 +39,13 @@
 // for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
+MapFieldDataFromSourceToDestinationAlgo()
+{
+  add_scalar("default_value",0.0);
+  add_scalar("max_distance",-1.0);
+  add_option("method","interpolateddata","interpolateddata|closestdata|singledestination");
+}
+
 namespace SCIRunAlgo {
 
 using namespace SCIRun;

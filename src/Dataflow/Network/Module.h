@@ -380,8 +380,6 @@ namespace Networks {
   protected:
     virtual void portRemovedSlotImpl(const PortId& pid) = 0;
     virtual size_t add_input_port(InputPortHandle h) override;
-  private:
-    bool asyncConnected_;
   };
 
   class SCISHARE AlwaysReexecuteStrategy : public ModuleReexecutionStrategy

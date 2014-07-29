@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,33 +27,29 @@
 */
 
 
-#ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
-#define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
+#ifndef MODULES_FIELDS_@ModuleName@_H
+#define MODULES_FIELDS_@ModuleName@_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/share.h>
 
 namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
-        
-        ALGORITHM_PARAMETER_DECL(DefaultValue);
-        ALGORITHM_PARAMETER_DECL(MaxDistance);
-        ALGORITHM_PARAMETER_DECL(MappingMethod);
-        
-class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase
-{
-public:
-  MapFieldDataFromSourceToDestinationAlgo();
-
-  bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
+namespace Modules {
+namespace Fields {
   
-  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+  class SCISHARE @ModuleName@ : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
+  {
+  public:
+    @ModuleName@();
+    virtual void execute();
+    virtual void setStateDefaults();
+    INPUT_PORT(0, InputField, LegacyField);
+    OUTPUT_PORT(0, OutputField, LegacyField);
   
-  static const Core::Algorithms::AlgorithmOutputName Remapped_Destination;
-};
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
+}}}
 
-      }}}}
-
-#endif 
+#endif

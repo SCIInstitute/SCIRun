@@ -227,34 +227,6 @@ void ClipFieldByFunction2::execute()
   }
 }
 
-
-void
-ClipFieldByFunction2::tcl_command(GuiArgs& args, void* userdata)
-{
-  if(args.count() < 2)
-  {
-    args.error("ClipFieldByFunction2 needs a minor command");
-    return;
-  }
-
-  if( args[1] == "gethelp" )
-  {
-    return;
-  }
-  else
-  {
-    Module::tcl_command(args, userdata);
-  }
-}
-
-void
-ClipFieldByFunction2::presave()
-{
-  // update gui_function_ before saving.
-  TCLInterface::execute(get_id() + " update_text");
-}
-
-
 } // End namespace ModelCreation
 
 

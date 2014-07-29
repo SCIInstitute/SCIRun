@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Fields/@ModuleName@.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
-#ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
-#define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
+using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::TestUtils;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+//using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
-
-namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
-        
-        ALGORITHM_PARAMETER_DECL(DefaultValue);
-        ALGORITHM_PARAMETER_DECL(MaxDistance);
-        ALGORITHM_PARAMETER_DECL(MappingMethod);
-        
-class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase
+class @ModuleName@UnitTest : public ModuleTest
 {
-public:
-  MapFieldDataFromSourceToDestinationAlgo();
 
-  bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
-  
-  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-  
-  static const Core::Algorithms::AlgorithmOutputName Remapped_Destination;
 };
 
-      }}}}
+TEST_F(@ModuleName@UnitTest, ThrowsForNullInput)
+{
+  auto mod = makeModule("@ModuleName@");
+  FieldHandle nullField;
+  stubPortNWithThisData(mod, 0, nullField);
+  EXPECT_THROW(mod->execute(), NullHandleOnPortException);
+}
 
-#endif 
+TEST_F(@ModuleName@UnitTest, FillInBehavioralTestsHere)
+{
+  FAIL() << "todo: fill in module tests here";
+}

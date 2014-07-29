@@ -26,34 +26,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Algorithms/Field/@AlgorithmName@Algo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Logging/Log.h>
 
-#ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
-#define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+ALGORITHM_PARAMETER_DEF(Fields, Knob1);
+ALGORITHM_PARAMETER_DEF(Fields, Knob2);
 
-namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
-        
-        ALGORITHM_PARAMETER_DECL(DefaultValue);
-        ALGORITHM_PARAMETER_DECL(MaxDistance);
-        ALGORITHM_PARAMETER_DECL(MappingMethod);
-        
-class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase
+@AlgorithmName@Algo::@AlgorithmName@Algo()
 {
-public:
-  MapFieldDataFromSourceToDestinationAlgo();
+  using namespace Parameters;
+  addParameter(Knob1, false);
+  addParameter(Knob2, 1.0);
+}
 
-  bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
+AlgorithmOutput @AlgorithmName@Algo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(Variables::InputField);
   
-  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-  
-  static const Core::Algorithms::AlgorithmOutputName Remapped_Destination;
-};
+  FieldHandle outputField(inputField->deep_clone());
+  double knob2 = get(Parameters::Knob2).getDouble();
+  if (get(Parameters::Knob1).getBool())
+  {
+    // do something
+  }
+  else
+  {
+    // do something else
+  }
 
-      }}}}
-
-#endif 
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
+}
