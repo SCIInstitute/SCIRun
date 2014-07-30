@@ -44,7 +44,7 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  int total_electrodes = 128;
+  const int total_electrodes = 128;
 
   electrode_tableWidget->setRowCount(total_electrodes);
   electrode_tableWidget->setColumnCount(2);
