@@ -31,6 +31,7 @@
 #ifndef CORE_APPLICATION_PREFERENCES_H
 #define CORE_APPLICATION_PREFERENCES_H
 
+#include <boost/filesystem/path.hpp>
 #include <Core/Utils/Singleton.h>
 #include <Core/Application/share.h>
 
@@ -51,6 +52,8 @@ namespace SCIRun
       bool showModuleErrorDialogs;
       bool saveBeforeExecute;
       bool useNewViewSceneMouseControls;
+    
+      boost::filesystem::path dataDirectory;
 	
 	    //void save_state();
 	

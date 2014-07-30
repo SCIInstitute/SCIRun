@@ -36,6 +36,7 @@
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/filesystem/path.hpp>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
@@ -109,6 +110,7 @@ namespace Algorithms {
     int getInt() const;
     double getDouble() const;
     std::string getString() const;
+    boost::filesystem::path getFilename() const;
     bool getBool() const;
     Datatypes::DatatypeHandle getDatatype() const;
     std::vector<Variable> getList() const;

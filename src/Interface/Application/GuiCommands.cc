@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QtGui>
 #include <Core/Application/Application.h>
+#include <Core/Application/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/GuiLogger.h>
@@ -145,6 +146,7 @@ bool SetupDataDirectoryCommandGui::execute()
   auto dir = Application::Instance().parameters()->dataDirectory().get();
   std::cout << "setup data dir: " << dir << std::endl;
   
+  Core::Preferences::dataDirectory = dir;
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
   
   return true;
