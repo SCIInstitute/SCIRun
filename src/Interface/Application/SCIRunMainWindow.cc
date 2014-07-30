@@ -50,6 +50,7 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
@@ -1013,4 +1014,12 @@ void SCIRunMainWindow::displayAcknowledgement()
 void SCIRunMainWindow::setDataDirectory(const QString& dir)
 {
   scirunDataLineEdit_->setText(dir);
+  scirunDataLineEdit_->setToolTip(dir);
+  if (!dir.isEmpty())
+    RemembersFileDialogDirectory::setStartingDir(dir);
+}
+
+QString SCIRunMainWindow::dataDirectory() const
+{
+  return scirunDataLineEdit_->text();
 }

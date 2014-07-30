@@ -68,6 +68,7 @@ public:
   void quit();
   void runPythonScript(const QString& scriptFileName);
   void setDataDirectory(const QString& scriptFileName);
+  QString dataDirectory() const;
 
 public Q_SLOTS:
   void executeAll();

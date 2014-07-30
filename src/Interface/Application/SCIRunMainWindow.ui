@@ -370,7 +370,7 @@
         <enum>QTabWidget::Triangular</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="networkEditorTab_">
         <property name="whatsThis">
@@ -659,12 +659,22 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QLineEdit" name="scirunDataLineEdit_"/>
+                <widget class="QLineEdit" name="scirunDataLineEdit_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
                <item row="0" column="2">
                 <widget class="QPushButton" name="scirunDataPushButton_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
-                  <string>Set</string>
+                  <string>Set...</string>
                  </property>
                 </widget>
                </item>
