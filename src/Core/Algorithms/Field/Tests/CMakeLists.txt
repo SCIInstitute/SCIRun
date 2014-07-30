@@ -53,6 +53,7 @@ SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
 TARGET_LINK_LIBRARIES(Algorithms_Field_Tests
   Algorithms_DataIO
   Algorithms_Field
+  Algorithms_Factory
   Core_Datatypes_Legacy_Field
   Core_Algorithms_Legacy_Fields
   Testing_Utils

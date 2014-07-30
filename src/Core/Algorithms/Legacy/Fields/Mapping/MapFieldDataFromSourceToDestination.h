@@ -28,38 +28,32 @@
 
 
 #ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
-#define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H 1
+#define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgoBase
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+        
+        ALGORITHM_PARAMETER_DECL(DefaultValue);
+        ALGORITHM_PARAMETER_DECL(MaxDistance);
+        ALGORITHM_PARAMETER_DECL(MappingMethod);
+        
+class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase
 {
-  public:
-    /// Set defaults
-    MapFieldDataFromSourceToDestinationAlgo()
-    {
-      add_scalar("default_value",0.0);
-      add_scalar("max_distance",-1.0);
-      add_option("method","interpolateddata","interpolateddata|closestdata|singledestination");
-    }
+public:
+  MapFieldDataFromSourceToDestinationAlgo();
 
-    /// run the algorithm
-    bool run(FieldHandle source, FieldHandle destination, FieldHandle& output);
+  bool runImpl(FieldHandle source, FieldHandle destination, FieldHandle& output) const;
+  
+  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+  
+  static const Core::Algorithms::AlgorithmOutputName Remapped_Destination;
 };
 
-} //namespace
+      }}}}
 
 #endif 

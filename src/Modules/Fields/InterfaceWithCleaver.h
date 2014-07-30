@@ -47,7 +47,7 @@ namespace Fields {
     INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
     
-    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 }}}
 

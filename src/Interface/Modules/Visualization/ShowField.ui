@@ -7,8 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>458</width>
-    <height>793</height>
+    <height>787</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>780</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>

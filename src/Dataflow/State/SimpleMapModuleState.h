@@ -41,6 +41,7 @@ namespace State {
   {
   public:
     SimpleMapModuleState();
+    SimpleMapModuleState(SimpleMapModuleState&& rhs);
     SimpleMapModuleState(const SimpleMapModuleState& rhs);
     SimpleMapModuleState& operator=(const SimpleMapModuleState& rhs);
     virtual const Value getValue(const Name& name) const;

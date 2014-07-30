@@ -44,7 +44,8 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   if (state_)
   {
     //TODO: replace with pull_newVersion
-    state_->connect_state_changed([this]() { pull(); });
+    LOG_DEBUG("ModuleDialogGeneric connecting to state" << std::endl);
+    stateConnection_ = state_->connect_state_changed([this]() { pull(); });
   }
 }
 

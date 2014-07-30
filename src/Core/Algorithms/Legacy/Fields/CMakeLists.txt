@@ -27,6 +27,7 @@
 #
 
 SET(Core_Algorithms_Legacy_Fields_HEADERS
+  ClipMesh/ClipMeshBySelection.h
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
   DistanceField/CalculateDistanceField.h
@@ -74,7 +75,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #Cleanup/CleanupTetMesh.cc
   #Cleanup/RemoveUnusedNodes.cc
   #ClipMesh/ClipMeshByIsovalue.cc
-  #ClipMesh/ClipMeshBySelection.cc
+  ClipMesh/ClipMeshBySelection.cc
   #CollectFields/CollectPointClouds.cc
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.cc
   #ConvertMeshType/ConvertMeshToTetVolMesh.cc

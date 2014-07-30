@@ -60,10 +60,10 @@ Module::Module(const ModuleLookupInfo& info,
   AlgorithmFactoryHandle algoFactory,
   ModuleStateFactoryHandle stateFactory,
   const std::string& version)
-  : info_(info), 
+  : info_(info),
   id_(info_.module_name_, instanceCount_++),
-  inputsChanged_(false),
-  has_ui_(hasUi), 
+  inputsChanged_(true),
+  has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   executionState_(ModuleInterface::Waiting)
 {
@@ -82,8 +82,12 @@ Module::Module(const ModuleLookupInfo& info,
       log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
   log.flush();
-  
+
   initStateObserver(state_.get());
+
+  //TODO: configure via command line flag as advanced option.
+  setReexecutionStrategy(boost::make_shared<AlwaysReexecuteStrategy>());
+  //setReexecutionStrategy(makeDynamicReexecutionStrategy(*this));
 }
 
 Module::~Module()
@@ -115,7 +119,7 @@ size_t Module::num_output_ports() const
   return oports_.size();
 }
 
-void Module::do_execute() throw()
+bool Module::do_execute() throw()
 {
   executeBegins_(id_);
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
@@ -123,10 +127,12 @@ void Module::do_execute() throw()
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   setExecutionState(ModuleInterface::Executing);
+  bool returnCode = false;
 
-  try 
+  try
   {
     execute();
+    returnCode = true;
   }
   catch(const std::bad_alloc&)
   {
@@ -162,16 +168,18 @@ void Module::do_execute() throw()
   //iports_.apply(boost::bind(&PortInterface::finish, _1));
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
-  status("MODULE FINISHED: " + id_.id_);  
+  status("MODULE FINISHED: " + id_.id_);
   /// @todo: need separate logger per module
   //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
   setExecutionState(ModuleInterface::Completed);
   resetStateChanged();
+  //std::cout << id_ << " inputsChanged set to false post-execute" << std::endl;
   inputsChanged_ = false;
   executeEnds_(id_);
+  return returnCode;
 }
 
-ModuleStateHandle Module::get_state() 
+ModuleStateHandle Module::get_state()
 {
   return state_;
 }
@@ -181,9 +189,10 @@ const ModuleStateHandle Module::get_state() const
   return state_;
 }
 
-void Module::set_state(ModuleStateHandle state) 
+void Module::set_state(ModuleStateHandle state)
 {
   state_ = state;
+  initStateObserver(state_.get());
 }
 
 AlgorithmBase& Module::algo()
@@ -205,12 +214,12 @@ size_t Module::add_output_port(OutputPortHandle h)
   return oports_.add(h);
 }
 
-bool Module::hasInputPort(const PortId& id) const 
+bool Module::hasInputPort(const PortId& id) const
 {
   return iports_.hasPort(id);
 }
 
-bool Module::hasOutputPort(const PortId& id) const 
+bool Module::hasOutputPort(const PortId& id) const
 {
   return oports_.hasPort(id);
 }
@@ -228,9 +237,13 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   {
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is dynamic, get_dynamic_input_handles must be called."));
   }
-  
+
   if (!inputsChanged_)
+  {
+    //LOG_DEBUG(id_ << " :: inputsChanged is false, querying port for value.");
     inputsChanged_ = port->hasChanged();
+    //LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
+  }
   return port->getData();
 }
 
@@ -279,7 +292,7 @@ std::vector<OutputPortHandle> Module::outputPorts() const
   return oports_.view();
 }
 
-Module::Builder::Builder() 
+Module::Builder::Builder()
 {
 }
 
@@ -293,7 +306,7 @@ class DummyModule : public Module
 {
 public:
   explicit DummyModule(const ModuleLookupInfo& info) : Module(info) {}
-  virtual void execute() 
+  virtual void execute()
   {
     std::ostringstream ostr;
     ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
@@ -402,14 +415,14 @@ void Module::setUiVisible(bool visible)
 }
 
 void Module::setLogger(SCIRun::Core::Logging::LoggerHandle log)
-{ 
-  log_ = log; 
+{
+  log_ = log;
   if (algo_)
     algo_->setLogger(log);
 }
 
 void Module::setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func)
-{ 
+{
   updaterFunc_ = func;
   if (algo_)
     algo_->setUpdaterFunc(func);
@@ -479,11 +492,26 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
   executionState_ = state;
 }
 
-bool Module::needToExecute() const  
+bool Module::needToExecute() const
 {
+  if (reexecute_)
+  {
+    auto val = reexecute_->needToExecute();
+    LOG_DEBUG(id_ << " Using real needToExecute strategy object, value is: " << val << std::endl);
+    return val;
+  }
+
   return true;
-  //return newStatePresent() || inputsChanged();
-    /// @todo: || !oports_cached()
+}
+
+ModuleReexecutionStrategyHandle Module::getReexecutionStrategy() const
+{
+  return reexecute_;
+}
+
+void Module::setReexecutionStrategy(ModuleReexecutionStrategyHandle caching)
+{
+  reexecute_ = caching;
 }
 
 bool Module::inputsChanged() const
@@ -496,7 +524,7 @@ void Module::addPortConnection(const boost::signals2::connection& con)
   portConnections_.emplace_back(new boost::signals2::scoped_connection(con));
 }
 
-ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info) : Module(info), asyncConnected_(false)
+ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info) : Module(info)
 {
 }
 
@@ -517,4 +545,59 @@ void ModuleWithAsyncDynamicPorts::portRemovedSlot(const ModuleId& mid, const Por
   {
     portRemovedSlotImpl(pid);
   }
+}
+
+DynamicReexecutionStrategy::DynamicReexecutionStrategy(
+  InputsChangedCheckerHandle inputsChanged,
+  StateChangedCheckerHandle stateChanged,
+  OutputPortsCachedCheckerHandle outputsCached) : inputsChanged_(inputsChanged), stateChanged_(stateChanged), outputsCached_(outputsCached)
+{
+  ENSURE_NOT_NULL(inputsChanged_, "InputsChangedChecker");
+  ENSURE_NOT_NULL(stateChanged_, "StateChangedChecker");
+  ENSURE_NOT_NULL(outputsCached_, "OutputPortsCachedChecker");
+}
+
+bool DynamicReexecutionStrategy::needToExecute() const
+{
+  return inputsChanged_->inputsChanged() || stateChanged_->newStatePresent() || !outputsCached_->outputPortsCached();
+}
+
+InputsChangedCheckerImpl::InputsChangedCheckerImpl(Module& module) : module_(module)
+{
+}
+
+bool InputsChangedCheckerImpl::inputsChanged() const 
+{
+  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << module_.inputsChanged());
+  return module_.inputsChanged();
+}
+
+StateChangedCheckerImpl::StateChangedCheckerImpl(Module& module) : module_(module)
+{
+}
+
+bool StateChangedCheckerImpl::newStatePresent() const 
+{
+  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << module_.newStatePresent());
+  return module_.newStatePresent();
+}
+
+OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(Module& module) : module_(module)
+{
+}
+
+bool OutputPortsCachedCheckerImpl::outputPortsCached() const 
+{
+  auto outputs = module_.outputPorts();
+  auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out->hasData(); });
+  LOG_DEBUG(module_.get_id() << " OutputPortsCachedCheckerImpl, returns " << ret);
+  return ret;
+}
+
+ModuleReexecutionStrategyHandle SCIRun::Dataflow::Networks::makeDynamicReexecutionStrategy(Module& module)
+{
+  return boost::make_shared<DynamicReexecutionStrategy>(
+    boost::make_shared<InputsChangedCheckerImpl>(module),
+    boost::make_shared<StateChangedCheckerImpl>(module),
+    boost::make_shared<OutputPortsCachedCheckerImpl>(module));
 }

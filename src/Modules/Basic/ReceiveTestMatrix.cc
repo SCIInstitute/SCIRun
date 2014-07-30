@@ -36,7 +36,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
 ReceiveTestMatrixModule::ReceiveTestMatrixModule()
-  : Module(ModuleLookupInfo("ReceiveTestMatrix", "Math", "SCIRun"))
+  : Module(ModuleLookupInfo("ReceiveTestMatrix", "Testing", "SCIRun"))
 {
   INITIALIZE_PORT(Input);
 }

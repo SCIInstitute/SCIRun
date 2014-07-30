@@ -47,6 +47,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateGradients.h
   CalculateVectorMagnitudes.h
   CalculateSignedDistanceToField.h
+  ClipFieldByFunction3.h
   ConvertQuadSurfToTriSurf.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
@@ -64,6 +65,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataFromNodeToElem.h
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
+  MapFieldDataFromSourceToDestination.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -98,7 +100,7 @@ SET(Modules_Legacy_Fields_SRCS
   #ChooseField.cc
   #ClipFieldByFunction.cc
   #ClipFieldByFunction2.cc
-  #ClipFieldByFunction3.cc
+  ClipFieldByFunction3.cc
   #ClipFieldByMesh.cc
   #ClipFieldToFieldOrWidget.cc
   #ClipLatVolByIndicesOrWidget.cc
@@ -108,7 +110,7 @@ SET(Modules_Legacy_Fields_SRCS
   #EditMeshBoundingBox.cc
   #ExtractIsosurfaceByFunction.cc
   #GenerateMedialAxisPoints.cc
-  #MapFieldDataFromSourceToDestination.cc
+  MapFieldDataFromSourceToDestination.cc
   #MaskLatVolWithTriSurf.cc
   #RemoveHexVolSheet.cc
   FairMesh.cc

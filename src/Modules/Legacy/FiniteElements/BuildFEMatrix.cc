@@ -55,9 +55,7 @@ void BuildFEMatrix::execute()
 
   auto conductivity = getOptionalInput(Conductivity_Table);
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || gui_use_basis_.changed() || !oport_cached("Stiffness Matrix") )
-#endif
+  if (needToExecute())
   {
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     algo().set("generate_basis", gui_use_basis_.get());

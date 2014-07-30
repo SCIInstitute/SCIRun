@@ -296,7 +296,6 @@ public:
 
   //////////////////////////////////////////////////////////////////
   
-  /// Construct a new mesh;
   TriSurfMesh();
   
   /// Copy a mesh, needed for detaching the mesh from a field   

@@ -76,7 +76,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
     {
       ModuleHandle module = controller_->addModule(modPair.second.module);
       module->set_id(modPair.first);
-      ModuleStateHandle state(modPair.second.state.clone());
+      ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
       module->set_state(state);
     }
   }
