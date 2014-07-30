@@ -81,8 +81,7 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   
   // obtaining number of electrodes
   auto elc_count = input.get<Matrix>(ELECTRODE_COUNT);
-  DenseMatrixHandle elc_count_dense (new DenseMatrix(matrix_cast::as_dense(elc_count)->block(0,0,elc_count->nrows(),elc_count->ncols())));
-  int num_of_elc = elc_count_dense->coeff(0,0);
+  int num_of_elc = elc_count->get(0,0);
   
   // making the rhs, sending it back as output
   AlgorithmOutput output;
