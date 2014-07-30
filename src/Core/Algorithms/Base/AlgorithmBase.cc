@@ -70,6 +70,11 @@ std::string AlgorithmParameter::getString() const
   return v ? *v : "";
 }
 
+boost::filesystem::path AlgorithmParameter::getFilename() const
+{
+  return boost::filesystem::path(getString());
+}
+
 bool AlgorithmParameter::getBool() const
 {
   const bool* v = boost::get<bool>(&value_);
@@ -147,6 +152,11 @@ const AlgorithmParameter& AlgorithmParameterList::get(const AlgorithmParameterNa
 void AlgorithmParameterList::addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue)
 {
   parameters_[key] = AlgorithmParameter(key, defaultValue);
+}
+
+AlgorithmStatusReporter::AlgorithmStatusReporter() 
+{
+  setUpdaterFunc(defaultUpdaterFunc_);
 }
 
 AlgorithmStatusReporter::UpdaterFunc AlgorithmStatusReporter::defaultUpdaterFunc_([](double r) { std::cout << "Algorithm at " << std::setiosflags(std::ios::fixed) << std::setprecision(2) << r*100 << "% complete" << std::endl;});

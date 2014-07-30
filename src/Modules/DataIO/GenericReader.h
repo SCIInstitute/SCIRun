@@ -129,7 +129,7 @@ GenericReader<HType, PortTag>::execute()
   {
     get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
   }
-  filename_ = get_state()->getValue(SCIRun::Core::Algorithms::Variables::Filename).getFilename();
+  filename_ = get_state()->getValue(SCIRun::Core::Algorithms::Variables::Filename).getFilename().string();
 
   
   // Read the status of this file so we can compare modification timestamps

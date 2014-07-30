@@ -27,11 +27,20 @@
 */
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Application/Preferences.h>
 
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+using namespace SCIRun::Core::Algorithms;
+//
 
-/// @todo
+TEST(FilenameVariableTests, CanIncludeDataDirectory)
+{
+  SCIRun::Core::Preferences::Instance().dataDirectory = "E:\\scirun\\trunk_ref\\SCIRunData\\aneurysm";
+  AlgorithmParameter file(Name("filename"), std::string("%DATADIR%/aneurysm-mra.lvs.fld"));
+  auto str = file.getString();
+  std::cout << str << std::endl;
+  auto path = file.getFilename().string();
+  std::cout << path << std::endl;
+
+  FAIL() << "todo";
+}

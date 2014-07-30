@@ -143,10 +143,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
-    AlgorithmStatusReporter() 
-    {
-      setUpdaterFunc(defaultUpdaterFunc_);
-    }
+    AlgorithmStatusReporter();
     ~AlgorithmStatusReporter() {}
         
     virtual void report_start(const std::string& tag) const {}
