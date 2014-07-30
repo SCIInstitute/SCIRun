@@ -41,6 +41,9 @@ namespace Core {
 namespace Algorithms {
 namespace Fields {
   
+  ALGORITHM_PARAMETER_DECL(Knob1);
+  ALGORITHM_PARAMETER_DECL(Knob2);
+  
   class SCISHARE ReportFieldInfoAlgorithm : public AlgorithmBase
   {
   public:

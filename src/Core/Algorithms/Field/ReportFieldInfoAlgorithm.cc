@@ -41,6 +41,9 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
 
+ALGORITHM_PARAMETER_DEF(Fields, Knob1);
+ALGORITHM_PARAMETER_DEF(Fields, Knob2);
+
 ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attributes(FieldHandle f) const
 {
   VField* vfield = f->vfield();
