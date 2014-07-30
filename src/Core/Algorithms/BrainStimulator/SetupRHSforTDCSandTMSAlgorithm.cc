@@ -118,20 +118,12 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, const std:
   int total_elements = node_elements + elcs_wanted.size();
   
   DenseMatrixHandle output (boost::make_shared<DenseMatrix>(total_elements,1));
-  int cnt = 0;
   for (int i=0; i < total_elements; i++)
   {
     if (i < node_elements)
       (*output)(i,0) = 0.0; // for the nodes
     else
       (*output)(i,0) = elcs_wanted[i-node_elements].getDouble()/1000.0; // for electrodes ~ converting to Amps
-    
-    cnt++;
-    if (cnt == total_elements/4)
-    {
-      cnt = 0;
-      update_progress_max(i, total_elements);
-    }
   }
   return output;
 }
