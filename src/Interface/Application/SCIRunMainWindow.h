@@ -67,6 +67,7 @@ public:
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
+  void setDataDirectory(const QString& scriptFileName);
 
 public Q_SLOTS:
   void executeAll();

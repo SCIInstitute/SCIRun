@@ -139,3 +139,13 @@ bool RunPythonScriptCommandGui::execute()
   SCIRunMainWindow::Instance()->runPythonScript(QString::fromStdString(script.string()));
   return true;
 }
+
+bool SetupDataDirectoryCommandGui::execute()
+{
+  auto dir = Application::Instance().parameters()->dataDirectory().get();
+  std::cout << "setup data dir: " << dir << std::endl;
+  
+  SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
+  
+  return true;
+}

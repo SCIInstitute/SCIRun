@@ -77,6 +77,12 @@ namespace Console {
   public:
     virtual bool execute();
   };
+  
+  class SCISHARE SetupDataDirectoryCommand : public Core::Commands::ConsoleCommand
+  {
+  public:
+    virtual bool execute();
+  };
 
 }}}
 
