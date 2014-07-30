@@ -93,7 +93,7 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
 
 DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, const std::vector<Variable>& elcs, int num_of_elc) const
 {
-  if (num_of_elc > 128) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes given exceeds what is possible ");}
+  if (num_of_elc > total_electrodes) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes given exceeds what is possible ");}
   else if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
   
   if (!fh) THROW_ALGORITHM_INPUT_ERROR("Input field was not allocated ");

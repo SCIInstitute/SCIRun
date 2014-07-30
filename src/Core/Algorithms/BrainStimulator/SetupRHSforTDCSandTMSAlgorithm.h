@@ -54,6 +54,9 @@ namespace BrainStimulator {
     static AlgorithmOutputName RHS;
     
     static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
+
+  private:
+    static const int total_electrodes = 128;
   };
 
 }}}}
