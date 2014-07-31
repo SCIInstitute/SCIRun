@@ -525,25 +525,24 @@ ConnectionLine* NetworkEditor::getSingleConnectionSelected()
 void NetworkEditor::unselectConnectionGroup()
 {
 	QList<QGraphicsItem*> items = scene_->selectedItems(); 
-	if(items.count() == 3) 
+	if (items.count() == 3) 
 	{
 		int hasConnection = 0; 
 		int	hasWidgets = 0;
-		ConnectionLine* cL; ModuleProxyWidget* mPW;
 
 		Q_FOREACH(QGraphicsItem* item, items)
 		{
-			if(cL = qgraphicsitem_cast<ConnectionLine*>(item))
+			if (auto cL = qgraphicsitem_cast<ConnectionLine*>(item))
 			{
 				++hasConnection;
 				items.push_front(cL); 
 			}
-			if(mPW = qgraphicsitem_cast<ModuleProxyWidget*>(item))
+			if (auto mPW = qgraphicsitem_cast<ModuleProxyWidget*>(item))
 				++hasWidgets;
 		}
 		if(hasConnection == 1 && hasWidgets == 2)
 		{
-			if(cL = qgraphicsitem_cast<ConnectionLine*>(items.first()))
+			if (auto cL = qgraphicsitem_cast<ConnectionLine*>(items.first()))
 			{
 				auto selectedPair = cL->getConnectedToModuleId(); 
 
