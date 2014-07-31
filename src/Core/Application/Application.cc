@@ -90,10 +90,11 @@ void Application::readCommandLine(int argc, const char* argv[])
   Logging::Log::get().setVerbose(parameters()->verboseMode());
 
 //   // boost workaround
-//   boost::filesystem::path dummy("foo");
+
 #ifdef _MSC_VER
   // fix for https://svn.boost.org/trac/boost/ticket/6320
-  boost::filesystem::path::imbue( std::locale( "" ) );
+  std::cout << "buggg" << std::endl;
+  boost::filesystem::path::imbue( std::locale( "" ) );     boost::filesystem::path dummy("foo");
 #endif
   //std::cout <<  << std::endl;
 }
