@@ -78,8 +78,9 @@ boost::filesystem::path AlgorithmParameter::getFilename() const
   Guard g(AlgorithmParameterHelper::lock_.get());
 #ifdef _MSC_VER
   // fix for https://svn.boost.org/trac/boost/ticket/6320
-  std::cout << "buggg111" << std::endl;
-  boost::filesystem::path::imbue( std::locale( "" ) );  boost::filesystem::path dummy("foo");
+  //std::cout << "buggg111" << std::endl;
+  boost::filesystem::path::imbue( std::locale( "" ) );  
+  boost::filesystem::path dummy("foo");
 #endif
 
   auto stringPath = getString();
@@ -116,7 +117,15 @@ void AlgorithmParameterHelper::setDataDir(const boost::filesystem::path& path)
 {
   dataDir_ = path;
 
-  std::cout << "TO WORKAROUND BOOST PATH WINDOWS BUG: " << dataDir_.string() << std::endl;
+#ifdef _MSC_VER
+  // fix for https://svn.boost.org/trac/boost/ticket/6320
+  //std::cout << "buggg111" << std::endl;
+  boost::filesystem::path::imbue( std::locale( "" ) );  
+  boost::filesystem::path dummy("foo");
+  std::string d = dummy.string();
+#endif
+
+  //std::cout << "TO WORKAROUND BOOST PATH WINDOWS BUG: " << dataDir_.string() << std::endl;
 }
 
 boost::filesystem::path AlgorithmParameterHelper::dataDir()

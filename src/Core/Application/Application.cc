@@ -89,14 +89,12 @@ void Application::readCommandLine(int argc, const char* argv[])
 
   Logging::Log::get().setVerbose(parameters()->verboseMode());
 
-//   // boost workaround
-
 #ifdef _MSC_VER
   // fix for https://svn.boost.org/trac/boost/ticket/6320
-  std::cout << "buggg" << std::endl;
-  boost::filesystem::path::imbue( std::locale( "" ) );     boost::filesystem::path dummy("foo");
+  //std::cout << "buggg" << std::endl;
+  boost::filesystem::path::imbue( std::locale( "" ) );     
+  boost::filesystem::path dummy("foo");
 #endif
-  //std::cout <<  << std::endl;
 }
 
 NetworkEditorControllerHandle Application::controller()
