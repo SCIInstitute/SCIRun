@@ -27,8 +27,13 @@
  */
 
 #include <Core/Application/Preferences.h>
+#include <Core/Logging/Log.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <boost/filesystem.hpp>
 
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms;
 
 CORE_SINGLETON_IMPLEMENTATION( Preferences );
 
@@ -36,6 +41,37 @@ Preferences::Preferences() :
   showModuleErrorDialogs(true), saveBeforeExecute(false), useNewViewSceneMouseControls(false)
 {	
 }
+
+
+boost::filesystem::path Preferences::dataDirectory() const
+{
+  return dataDir_;
+}
+
+void Preferences::setDataDirectory(const boost::filesystem::path& path)
+{
+  dataDir_ = path;
+
+  if (!boost::filesystem::exists(path))
+    Log::get() << WARN << "Data directory " << path << " does not exist." << std::endl;
+  if (!boost::filesystem::is_directory(path))
+    Log::get() << WARN << "Data directory " << path << " is not a directory." << std::endl;
+  //else
+  //  dataDir_ = boost::filesystem::canonical(dataDir_);
+
+  if ((*--dataDir_.end()) == boost::filesystem::path::preferred_separator)
+    std::cout << "HELLO I END IN A SLASH" << std::endl;
+
+  AlgorithmParameterHelper::setDataDir(dataDir_);
+  AlgorithmParameterHelper::setDataDirPlaceholder(dataDirectoryPlaceholder());
+}
+
+/// @todo: not sure where this should go.
+std::string Preferences::dataDirectoryPlaceholder() const
+{
+  return "%SCIRUNDATADIR%";
+}
+
 
 /// @todo
 //void PreferencesManager::initialize()

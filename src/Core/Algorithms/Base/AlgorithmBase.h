@@ -122,6 +122,18 @@ namespace Algorithms {
   
   typedef Variable AlgorithmParameter;
 
+  class SCISHARE AlgorithmParameterHelper
+  {
+  public:
+    static void setDataDir(const boost::filesystem::path& path);
+    static boost::filesystem::path dataDir();
+    static void setDataDirPlaceholder(const std::string& str);
+    static std::string dataDirPlaceholder();
+  private:
+    static boost::filesystem::path dataDir_;
+    static std::string dataDirPlaceholder_;
+  };
+
   class SCISHARE AlgorithmLogger : public Core::Logging::LegacyLoggerInterface
   {
   public:

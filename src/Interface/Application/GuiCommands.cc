@@ -146,7 +146,7 @@ bool SetupDataDirectoryCommandGui::execute()
   auto dir = Application::Instance().parameters()->dataDirectory().get();
   std::cout << "setup data dir: " << dir << std::endl;
   
-  Core::Preferences::Instance().dataDirectory = dir;
+  Core::Preferences::Instance().setDataDirectory(dir);
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
   
   return true;

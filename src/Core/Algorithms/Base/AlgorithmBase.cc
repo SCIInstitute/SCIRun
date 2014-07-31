@@ -32,6 +32,8 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <Core/Utils/StringUtil.h>
 #include <boost/foreach.hpp>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -72,7 +74,9 @@ std::string AlgorithmParameter::getString() const
 
 boost::filesystem::path AlgorithmParameter::getFilename() const
 {
-  return boost::filesystem::path(getString());
+  auto stringPath = getString();
+  SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), "");
+  return AlgorithmParameterHelper::dataDir() / stringPath;
 }
 
 bool AlgorithmParameter::getBool() const
@@ -97,6 +101,29 @@ DatatypeHandle AlgorithmParameter::getDatatype() const
 {
   return data_;
 }
+
+void AlgorithmParameterHelper::setDataDir(const boost::filesystem::path& path)
+{
+  dataDir_ = path;
+}
+
+boost::filesystem::path AlgorithmParameterHelper::dataDir()
+{
+  return dataDir_;
+}
+
+void AlgorithmParameterHelper::setDataDirPlaceholder(const std::string& str)
+{
+  dataDirPlaceholder_ = str;
+}
+
+std::string AlgorithmParameterHelper::dataDirPlaceholder()
+{
+  return dataDirPlaceholder_;
+}
+
+boost::filesystem::path AlgorithmParameterHelper::dataDir_;
+std::string AlgorithmParameterHelper::dataDirPlaceholder_;
 
 AlgorithmLogger::AlgorithmLogger() : defaultLogger_(new ConsoleLogger)
 {

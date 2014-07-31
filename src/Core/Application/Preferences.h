@@ -53,13 +53,16 @@ namespace SCIRun
       bool saveBeforeExecute;
       bool useNewViewSceneMouseControls;
     
-      boost::filesystem::path dataDirectory;
+      std::string dataDirectoryPlaceholder() const;
+
+      boost::filesystem::path dataDirectory() const;
+      void setDataDirectory(const boost::filesystem::path& path);
 	
 	    //void save_state();
 	
     private:
 	    //void initialize_states();
-	
+	    boost::filesystem::path dataDir_;
     };
 
 }}
