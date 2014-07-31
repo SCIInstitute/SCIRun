@@ -81,3 +81,13 @@ TEST(FilenameVariableTests, CanReplaceDataDirectoryMacSlashAtEnd)
   EXPECT_EQ("/Users/scirun/trunk_ref/SCIRunData//aneurysm/aneurysm-mra.lvs.fld", pathFromState);
 #endif
 }
+
+TEST(FilenameVariableTests, PreservesPathIfNoPlaceholder)
+{
+  Preferences::Instance().setDataDirectory("E:\\scirun\\trunk_ref\\SCIRunData");
+  const std::string path = "E:\\scirun\\aneurysm\\aneurysm-mra.lvs.fld";
+  AlgorithmParameter fileParameter(Name("filename"), path);
+  EXPECT_EQ(path, fileParameter.getString());
+  auto pathFromState = fileParameter.getFilename().string();
+  EXPECT_EQ("E:\\scirun\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
+}

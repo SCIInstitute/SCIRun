@@ -75,8 +75,9 @@ std::string AlgorithmParameter::getString() const
 boost::filesystem::path AlgorithmParameter::getFilename() const
 {
   auto stringPath = getString();
-  SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), "");
-  return AlgorithmParameterHelper::dataDir() / stringPath;
+  if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), ""))
+    return AlgorithmParameterHelper::dataDir() / stringPath;
+  return stringPath;
 }
 
 bool AlgorithmParameter::getBool() const
