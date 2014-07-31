@@ -59,8 +59,10 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path)
   //else
   //  dataDir_ = boost::filesystem::canonical(dataDir_);
 
-  if ((*--dataDir_.end()) == boost::filesystem::path::preferred_separator)
-    std::cout << "HELLO I END IN A SLASH" << std::endl;
+  if (dataDir_.string().back() == boost::filesystem::path::preferred_separator)
+  {
+    dataDir_.remove_filename();
+  }
 
   AlgorithmParameterHelper::setDataDir(dataDir_);
   AlgorithmParameterHelper::setDataDirPlaceholder(dataDirectoryPlaceholder());
