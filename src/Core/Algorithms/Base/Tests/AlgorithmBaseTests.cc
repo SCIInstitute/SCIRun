@@ -40,7 +40,9 @@ TEST(FilenameVariableTests, CanReplaceDataDirectoryWindows)
   AlgorithmParameter fileParameter(Name("filename"), path);
   EXPECT_EQ(path, fileParameter.getString());
   auto pathFromState = fileParameter.getFilename().string();
+#ifdef WIN32
   EXPECT_EQ("E:\\scirun\\trunk_ref\\SCIRunData\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
+#endif
 }
 
 TEST(FilenameVariableTests, CanReplaceDataDirectoryMac)
@@ -60,7 +62,9 @@ TEST(FilenameVariableTests, CanReplaceDataDirectoryWindowsSlashAtEnd)
   AlgorithmParameter fileParameter(Name("filename"), path);
   EXPECT_EQ(path, fileParameter.getString());
   auto pathFromState = fileParameter.getFilename().string();
+#ifdef WIN32
   EXPECT_EQ("E:\\scirun\\trunk_ref\\SCIRunData\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
+#endif
 }
 
 TEST(FilenameVariableTests, CanReplaceDataDirectoryMacSlashAtEnd)
