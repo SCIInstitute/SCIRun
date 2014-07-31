@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+/// @todo Documentation Core/Command/GlobalCommandBuilderFromCommandLine.cc
+
 #include <iostream>
 #include <boost/make_shared.hpp>
 #include <Core/Command/CommandQueue.h>

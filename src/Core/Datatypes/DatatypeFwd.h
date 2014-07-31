@@ -58,6 +58,7 @@ namespace Datatypes {
   class Bundle;
 
   typedef boost::shared_ptr<String> StringHandle;
+  typedef boost::shared_ptr<GeometryObject> GeometryHandle;
 }}
 
   class Field;

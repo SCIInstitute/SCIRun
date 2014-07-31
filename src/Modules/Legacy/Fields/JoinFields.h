@@ -36,6 +36,9 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+	/// @class JoinFields
+	/// This module glues any number of input fields into one output field. 
+
       class SCISHARE JoinFields : public Dataflow::Networks::Module,
         public Has1InputPort<DynamicPortTag<FieldPortTag>>,
         public Has1OutputPort<FieldPortTag>
@@ -50,8 +53,8 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-        static Core::Algorithms::AlgorithmParameterName ForcePointCloud;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Core::Algorithms::AlgorithmParameterName ForcePointCloud;
       };
 
     }

@@ -60,6 +60,7 @@ TARGET_LINK_LIBRARIES(Modules_DataIO
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Algorithms_DataIO
+  Core_ImportExport
   ${SCI_BOOST_LIBRARY}
 )
 

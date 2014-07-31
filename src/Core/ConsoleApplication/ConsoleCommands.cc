@@ -44,7 +44,6 @@ bool LoadFileCommandConsole::execute()
   if (inputFile)
   {
     auto filename = *inputFile;
-    //SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile.get()));
 
     /// @todo: real logger
     std::cout << "Attempting load of " + filename << std::endl;

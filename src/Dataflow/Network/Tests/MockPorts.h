@@ -72,6 +72,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(id, PortId());
           MOCK_CONST_METHOD0(hasChanged, bool());
           MOCK_METHOD1(setIndex, void(size_t));
+          MOCK_METHOD1(connectDataOnPortHasChanged, boost::signals2::connection(const DataOnPortHasChangedSignalType::slot_type&));
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
@@ -92,6 +93,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_CONST_METHOD0(id, PortId());
           MOCK_METHOD1(setIndex, void(size_t));
+          MOCK_CONST_METHOD0(hasData, bool());
         };
 
         typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
@@ -99,12 +101,14 @@ namespace SCIRun {
         class MockDatatypeSink : public DatatypeSinkInterface
         {
         public:
-          MOCK_CONST_METHOD0(hasData, bool());
+          //MOCK_CONST_METHOD0(hasData, bool());
           MOCK_CONST_METHOD0(clone, DatatypeSinkInterface*());
-          MOCK_METHOD1(setHasData, void(bool));
+          //MOCK_METHOD1(setHasData, void(bool));
           MOCK_METHOD0(waitForData, void());
+          MOCK_METHOD0(invalidateProvider, void());
           MOCK_METHOD0(receive, Core::Datatypes::DatatypeHandleOption());
           MOCK_CONST_METHOD0(hasChanged, bool());
+          MOCK_METHOD1(connectDataHasChanged, boost::signals2::connection(const DataHasChangedSignalType::slot_type&));
         };
 
         typedef boost::shared_ptr<MockDatatypeSink> MockDatatypeSinkPtr;
@@ -112,7 +116,9 @@ namespace SCIRun {
         class MockDatatypeSource : public DatatypeSourceInterface
         {
         public:
-          MOCK_METHOD2(send, void(DatatypeSinkInterfaceHandle, Core::Datatypes::DatatypeHandle));
+          MOCK_METHOD1(cacheData, void(Core::Datatypes::DatatypeHandle));
+          MOCK_CONST_METHOD1(send, void(DatatypeSinkInterfaceHandle));
+          MOCK_CONST_METHOD0(hasData, bool());
         };
 
         typedef boost::shared_ptr<MockDatatypeSource> MockDatatypeSourcePtr;

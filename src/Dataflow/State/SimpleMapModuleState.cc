@@ -37,8 +37,15 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
-SimpleMapModuleState::SimpleMapModuleState()
+SimpleMapModuleState::SimpleMapModuleState() 
 {
+}
+
+SimpleMapModuleState::SimpleMapModuleState(SimpleMapModuleState&& rhs)
+  : stateMap_(std::move(rhs.stateMap_)), 
+  transientStateMap_(std::move(rhs.transientStateMap_))
+{
+  stateChangedSignal_.swap(rhs.stateChangedSignal_);
 }
 
 SimpleMapModuleState::SimpleMapModuleState(const SimpleMapModuleState& rhs)
@@ -77,7 +84,6 @@ bool SimpleMapModuleState::containsKey(const Name& name) const
 
 void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value)
 {
-  Log& log = Log::get();
   auto oldLocation = stateMap_.find(parameterName);
   bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value_ == value);
 
@@ -85,15 +91,16 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   
   if (newValue)
   {
-    log << DEBUG_LOG << "----signaling from state map: " << parameterName.name_ << ", " << to_string(value);
-    log.flush();
+    LOG_DEBUG("----signaling from state map: (" << parameterName.name_ << ", " << to_string(value) << "), num_slots = " << stateChangedSignal_.num_slots() << std::endl);
     stateChangedSignal_();
   }
 }
 
 boost::signals2::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
 {
-  return stateChangedSignal_.connect(subscriber);
+  auto conn = stateChangedSignal_.connect(subscriber);
+  LOG_DEBUG("SimpleMapModuleState::connect_state_changed, num_slots = " << stateChangedSignal_.num_slots() << std::endl);
+  return conn;
 }
 
 ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
@@ -110,11 +117,17 @@ SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientVal
   return i != transientStateMap_.end() ? boost::make_optional(i->second) : TransientValueOption();
 }
 
-void SimpleMapModuleState::setTransientValue(const std::string& name, const TransientValue& value)
+void SimpleMapModuleState::setTransientValue(const std::string& name, const TransientValue& value, bool fireSignal)
 {
   transientStateMap_[name] = value;
 
-  stateChangedSignal_();  /// @todo: ???
+  if (fireSignal)
+    fireTransientStateChangeSignal();
+}
+
+void SimpleMapModuleState::fireTransientStateChangeSignal()
+{
+  stateChangedSignal_();
 }
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const

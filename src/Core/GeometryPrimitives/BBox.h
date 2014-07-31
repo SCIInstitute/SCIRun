@@ -26,9 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/GeometryPrimitives/ BBox.cc/.h GeomFwd.h
-///  Plane.cc/.h Point.cc/.h PointVectorOperators.h SearchGridT.h 
-///  Transform.cc/.h Vector.cc/.h
+/// @todo Documentation Core/GeometryPrimitives/BBox.h
 
 #ifndef CORE_GEOMETRY_BBOX_H
 #define CORE_GEOMETRY_BBOX_H 1
@@ -198,7 +196,11 @@ class BBox {
       { return cmax_; }
 
     inline Vector diagonal() const
-      { ASSERT(is_valid_); return cmax_-cmin_; }
+    { 
+      //TODO: needs invariant check, or refactoring.
+      ASSERT(is_valid_); 
+      return cmax_-cmin_; 
+    }
 
     inline bool inside(const Point &p) const 
     {

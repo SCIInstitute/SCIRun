@@ -42,6 +42,7 @@
 
 #include <boost/function.hpp>
 #include <boost/variant.hpp>
+#include <boost/noncopyable.hpp>
 // Include files needed for Windows
 #include <Core/Parser/share.h>
 
@@ -102,7 +103,7 @@ class SCISHARE ArrayMathFunction : public ParserFunction {
 // an effort is made to store them all in the same array, to minimize
 // page swapping
 
-class SCISHARE ArrayMathProgramCode {
+  class SCISHARE ArrayMathProgramCode : boost::noncopyable {
   public:
   
     // Constructor
@@ -249,6 +250,8 @@ class SCISHARE ArrayMathProgramCode {
     // Sequence size
     size_type     size_;
 };
+  
+  typedef boost::shared_ptr<ArrayMathProgramCode> ArrayMathProgramCodePtr;
 
 
 
@@ -264,7 +267,7 @@ class SCISHARE ArrayMathProgramVariable
     double*     data_;
 };
 
- //TODO replace with boost::variant
+ /// @todo replace with boost::variant
 class SCISHARE ArrayMathProgramSource {
 
   public:
@@ -306,7 +309,7 @@ class SCISHARE ArrayMathProgramSource {
 };
 
 
-class SCISHARE ArrayMathProgram {
+  class SCISHARE ArrayMathProgram : boost::noncopyable {
   
   public:
     ArrayMathProgram() : num_proc_(Core::Thread::Parallel::NumCores()), barrier_("ArrayMathProgram", num_proc_)
@@ -382,7 +385,7 @@ class SCISHARE ArrayMathProgram {
     { buffer_.resize(size); return buffer_.empty() ? 0 : (&(buffer_[0])); } 
 
     // Set variables which we use as temporal information structures
-    // TODO: need to remove them at some point
+    /// @todo: need to remove them at some point
     void set_const_variable(size_t j, ArrayMathProgramVariableHandle handle)
       { const_variables_[j] = handle; }
     void set_single_variable(size_t j, ArrayMathProgramVariableHandle handle)
@@ -398,11 +401,11 @@ class SCISHARE ArrayMathProgram {
       { return (sequential_variables_[np][j]); }
 
     // Set program code
-    void set_const_program_code(size_t j, ArrayMathProgramCode pc)
+    void set_const_program_code(size_t j, ArrayMathProgramCodePtr pc)
       { const_functions_[j] = pc; }
-    void set_single_program_code(size_t j, ArrayMathProgramCode pc)
+    void set_single_program_code(size_t j, ArrayMathProgramCodePtr pc)
       { single_functions_[j] = pc; }
-    void set_sequential_program_code(size_t j, size_t np, ArrayMathProgramCode pc)
+    void set_sequential_program_code(size_t j, size_t np, ArrayMathProgramCodePtr pc)
       { sequential_functions_[np][j] = pc; }
     
     // Code to find the pointers that are given for sources and sinks  
@@ -439,9 +442,9 @@ class SCISHARE ArrayMathProgram {
     std::vector<std::vector<ArrayMathProgramVariableHandle> > sequential_variables_;
     
     // Program code
-    std::vector<ArrayMathProgramCode> const_functions_;
-    std::vector<ArrayMathProgramCode> single_functions_;
-    std::vector<std::vector<ArrayMathProgramCode> > sequential_functions_;
+    std::vector<ArrayMathProgramCodePtr> const_functions_;
+    std::vector<ArrayMathProgramCodePtr> single_functions_;
+    std::vector<std::vector<ArrayMathProgramCodePtr> > sequential_functions_;
     
     ParserProgramHandle pprogram_;
     

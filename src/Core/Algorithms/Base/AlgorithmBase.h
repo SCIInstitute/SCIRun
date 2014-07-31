@@ -40,6 +40,7 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/HasId.h>
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Utils/StringUtil.h>
 #include <Core/Algorithms/Base/share.h>
@@ -220,7 +221,7 @@ namespace Algorithms {
   typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
   typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
 
-  class SCISHARE AlgorithmInterface 
+  class SCISHARE AlgorithmInterface : public HasIntegerId
   {
   public:
     virtual ~AlgorithmInterface() {}
@@ -236,7 +237,7 @@ namespace Algorithms {
     */
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
-    virtual void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) = 0;
+    virtual bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) = 0;
     virtual const AlgorithmParameter& get(const AlgorithmParameterName& key) const = 0;
   };
 
@@ -245,20 +246,23 @@ namespace Algorithms {
   {
   public:
     AlgorithmParameterList();
-    void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
+    bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
     const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
 
     bool set_option(const AlgorithmParameterName& key, const std::string& value);
     bool get_option(const AlgorithmParameterName& key, std::string& value) const;
     std::string get_option(const AlgorithmParameterName& key) const;
+    bool check_option(const AlgorithmParameterName& key, const std::string& value) const;
 
-    virtual void keyNotFoundPolicy(const AlgorithmParameterName& key);
+    virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key);
 
   protected:
+    void dumpAlgoState() const;
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
     void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
   private:
-    std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
+    typedef std::map<AlgorithmParameterName, AlgorithmParameter> ParameterMap;
+    ParameterMap parameters_;
   };
 
   class SCISHARE AlgoInputBuilder
@@ -293,6 +297,7 @@ namespace Algorithms {
   {
   public:
     virtual ~AlgorithmBase();
+    AlgorithmOutput run(const AlgorithmInput& input) const { return run_generic(input); }
   };
   
   class SCISHARE AlgorithmCollaborator
@@ -319,7 +324,10 @@ namespace Algorithms {
 }}}
 
 #define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() list .build()
+#define withInputData(list) make_input(list)
 #define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
 #define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
+#define ALGORITHM_PARAMETER_DECL(name) namespace Parameters { SCISHARE extern const SCIRun::Core::Algorithms::AlgorithmParameterName name; }
+#define ALGORITHM_PARAMETER_DEF(ns, name) const SCIRun::Core::Algorithms::AlgorithmParameterName SCIRun::Core::Algorithms::ns::Parameters::name(#name);
 
 #endif

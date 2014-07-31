@@ -65,7 +65,8 @@ namespace Networks {
     typedef boost::any TransientValue;
     typedef boost::optional<TransientValue> TransientValueOption;
     virtual TransientValueOption getTransientValue(const std::string& name) const = 0;
-    virtual void setTransientValue(const std::string& name, const TransientValue& value) = 0;
+    virtual void setTransientValue(const std::string& name, const TransientValue& value, bool fireSignal) = 0;
+    virtual void fireTransientStateChangeSignal() = 0;
 
     typedef boost::signals2::signal<void()> state_changed_sig_t;
 
@@ -105,12 +106,14 @@ namespace Networks {
   {
   public:
     StateChangeObserver();
+    ~StateChangeObserver();
     void initStateObserver(ModuleStateInterface* state);
     void stateChanged();
     void resetStateChanged();
     bool newStatePresent() const;
   private:
     boost::atomic<bool> stateChanged_;
+    boost::signals2::connection conn_;
   };
 
 }}}

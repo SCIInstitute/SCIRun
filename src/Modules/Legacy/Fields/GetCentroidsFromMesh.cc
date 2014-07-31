@@ -37,7 +37,8 @@
 
 namespace SCIRun {
 
-
+/// @class GetCentroidsFromMesh
+/// @brief This module computes a PointCloudField containing all of the element centers for a field. 
 
 class GetCentroidsFromMesh : public Module {
   public:

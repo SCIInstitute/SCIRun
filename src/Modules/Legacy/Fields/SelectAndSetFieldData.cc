@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/SelectAndSetFieldData.cc
 
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
@@ -39,6 +38,11 @@
 #include <Dataflow/Network/Ports/StringPort.h>
 
 namespace SCIRun {
+
+
+/// @class SelectAndSetFieldData
+/// @brief This module selects a function based on the input values of the field
+/// and then applies this function to assign a new value to the field.
 
 class SelectAndSetFieldData : public Module {
   public:

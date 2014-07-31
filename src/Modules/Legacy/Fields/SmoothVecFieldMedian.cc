@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/SmoothVecFieldMedian.cc
 
 #include <Core/Algorithms/Fields/FieldData/SmoothVecFieldMedian.h>
 
@@ -37,6 +36,10 @@
 namespace SCIRun {
 
 //using namespace SCIRun;
+
+/// @class SmoothVecFieldMedian
+/// @brief This function smoothes vectors assigned to the elements of a mesh
+/// using a median filter. 
 
 class SmoothVecFieldMedian : public Module 
 {

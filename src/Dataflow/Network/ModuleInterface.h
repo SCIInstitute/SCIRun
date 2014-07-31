@@ -77,6 +77,16 @@ namespace Networks {
   
   typedef boost::function<void(bool)> UiToggleFunc;
 
+  class SCISHARE ModuleReexecutionStrategy
+  {
+  public:
+    virtual ~ModuleReexecutionStrategy() {}
+
+    virtual bool needToExecute() const = 0;
+  };
+
+  typedef boost::shared_ptr<ModuleReexecutionStrategy> ModuleReexecutionStrategyHandle;
+
   /// @todo: interface is getting bloated, segregate it.
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
   {
@@ -85,7 +95,7 @@ namespace Networks {
 
     virtual ModuleStateHandle get_state() = 0;
 
-    virtual void do_execute() = 0;
+    virtual bool do_execute() = 0;
 
     enum ExecutionState 
     {
@@ -114,9 +124,6 @@ namespace Networks {
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
 
     /// @todo: name too clunky.
-    virtual void preExecutionInitialization() {}
-
-    /// @todo: name too clunky.
     /// Called before the module is to be destroyed. More importantly, called
     /// before the UI widget is to be destroyed.
     virtual void preDestruction() {}
@@ -124,6 +131,9 @@ namespace Networks {
     /// @todo:
     // need to hook up input ports for new data coming in, and output ports for cached state.
     virtual bool needToExecute() const = 0;
+
+    virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const = 0;
+    virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) = 0;
 
     virtual void setStateDefaults() = 0;
 

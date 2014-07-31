@@ -24,6 +24,9 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   
+   Author: Spencer Frisby
+   Date:   May 2014
 */
 #include <iostream>
 #include <Core/Datatypes/String.h>
@@ -33,9 +36,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -52,7 +52,12 @@ SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(Mo
 
 void SetConductivitiesToTetMeshModule::setStateDefaults()
 {
-  /// @todo
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skin());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skull());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Electrode());
 }
 
 void SetConductivitiesToTetMeshModule::execute()
@@ -60,17 +65,20 @@ void SetConductivitiesToTetMeshModule::execute()
   auto mesh = getRequiredInput(MESH);
   auto skull = getOptionalInput(INHOMOGENEOUS_SKULL);
   auto wm = getOptionalInput(ANISOTROPIC_WM);
-   // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
-
-  //algorithm parameter
-  //algo_->set(Variables::AppendMatrixOption, param);
  
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skull());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::CSF());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::GM());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::WM());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Electrode());
   
-  //algorithm input and run
-  auto output = algo().run_generic(make_input((MESH, mesh)(INHOMOGENEOUS_SKULL, optionalAlgoInput(skull))(ANISOTROPIC_WM, optionalAlgoInput(wm))));
-
-  //algorithm output
-  sendOutputFromAlgorithm(OUTPUTMESH, output);
-
+  if (needToExecute())
+  {
+    //algorithm input and run
+    auto output = algo().run_generic(make_input((MESH, mesh)(INHOMOGENEOUS_SKULL, optionalAlgoInput(skull))(ANISOTROPIC_WM, optionalAlgoInput(wm))));
+    
+    //algorithm output
+    sendOutputFromAlgorithm(OUTPUTMESH, output);
+  }
 }

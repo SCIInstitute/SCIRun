@@ -26,11 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Render/ViewScene.cc
-
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Logging/Log.h>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
@@ -43,10 +42,12 @@
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Thread;
 
 ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
+Mutex ViewScene::mutex_("ViewScene");
 
-ViewScene::ViewScene() : Module(staticInfo_)
+ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
 {
   INITIALIZE_PORT(GeneralGeom);
 }
@@ -57,27 +58,36 @@ void ViewScene::setStateDefaults()
   //none yet, but LOTS to come...
 }
 
-void ViewScene::preExecutionInitialization()
+void ViewScene::portRemovedSlotImpl(const PortId& pid)
 {
-  /// @todo: Detect if we are running headless; if so, cerate a system-specifc
-  //       OpenGL context *and* spire. Otherwise, just lookup via transient
-  //       values.
+  //lock for state modification
+  {
+    Guard lock(mutex_.get());
+    auto loc = activeGeoms_.find(pid);
+    if (loc != activeGeoms_.end())
+      activeGeoms_.erase(loc);
+    updateTransientList();
+  }
+  get_state()->fireTransientStateChangeSignal();
 }
 
-void ViewScene::preDestruction()
+void ViewScene::updateTransientList()
 {
-}
+  auto transient = get_state()->getTransientValue("geomData");
 
-void ViewScene::execute()
-{
+  auto geoms = optional_any_cast_or_default<GeomListPtr>(transient);
+  if (!geoms)
+  {
+    geoms.reset(new GeomList());
+  }
+  auto activeHandles = activeGeoms_ | boost::adaptors::map_values;
+  geoms->clear();
+  geoms->insert(activeHandles.begin(), activeHandles.end());
+
   // Grab geometry inputs and pass them along in a transient value to the GUI
   // thread where they will be transported to Spire.
   // NOTE: I'm not implementing mutex locks for this now. But for production
   // purposes, they NEED to be in there!
-  auto geoms = getRequiredDynamicInputs(GeneralGeom);
-
-  boost::shared_ptr<std::list<boost::shared_ptr<GeometryObject>>> list(
-      new std::list<boost::shared_ptr<GeometryObject>>(geoms.begin(), geoms.end()));
 
   // Pass geometry object up through transient... really need to be concerned
   // about the lifetimes of the buffers we have in GeometryObject. Need to
@@ -87,6 +97,28 @@ void ViewScene::execute()
   // I thought about dynamic casting geometry object to a weak_ptr, but I don't
   // know where it will be destroyed. For now, it will have have stale pointer
   // data lying around in it... yuck.
-  get_state()->setTransientValue("geomData", list);
+  get_state()->setTransientValue("geomData", geoms, false);
+}
+
+void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
+{
+  //lock for state modification
+  {
+    LOG_DEBUG("ViewScene::asyncExecute before locking");
+    Guard lock(mutex_.get());
+
+    LOG_DEBUG("ViewScene::asyncExecute after locking");
+
+    GeometryHandle geom = boost::dynamic_pointer_cast<GeometryObject>(data);
+    if (!geom)
+    {
+      error("Logical error: not a geometry object on ViewScene");
+      return;
+    }
+
+    activeGeoms_[pid] = geom;
+    updateTransientList();
+  }
+  get_state()->fireTransientStateChangeSignal();
 }
 

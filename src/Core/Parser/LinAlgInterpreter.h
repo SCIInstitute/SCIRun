@@ -243,7 +243,7 @@ class SCISHARE LinAlgProgram {
       { single_functions_.resize(sz); }
 
     // Set variables which we use as temporal information structures
-    // TODO: need to remove them at some point
+    /// @todo: need to remove them at some point
     void set_const_variable(size_t j, LinAlgProgramVariableHandle& handle)
       { const_variables_[j] = handle; }
     void set_single_variable(size_t j, LinAlgProgramVariableHandle& handle)

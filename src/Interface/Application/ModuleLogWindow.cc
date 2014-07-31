@@ -29,23 +29,20 @@
 #include <QtGui>
 #include <iostream>
 #include <Interface/Application/ModuleLogWindow.h>
-#include <Core/Application/Preferences.h>
+#include <Interface/Application/SCIRunMainWindow.h> 
+#include <Interface/Application/DialogErrorControl.h> 
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
-namespace
-{
-  int moveIncrement = 40;
-}
 
-ModuleLogWindow::ModuleLogWindow(const QString& moduleName, QWidget* parent) : QDialog(parent), moduleName_(moduleName)
+ModuleLogWindow::ModuleLogWindow(const QString& moduleName, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent) : QDialog(parent), moduleName_(moduleName), 
+		dialogErrorControl_(dialogErrorControl)
 {
-  setupUi(this);
-  setModal(false);
-  setWindowTitle("Log for " + moduleName);
+	setupUi(this);
+	setModal(false);  
+	setWindowTitle("Log for " + moduleName);
   setVisible(false);
-
   connect(buttonBox->button(QDialogButtonBox::Discard), SIGNAL(clicked()), logTextEdit_, SLOT(clear()));
 }
 
@@ -56,8 +53,9 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
-  if (SCIRun::Core::Preferences::Instance().moduleErrorDialogState)
-    QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
+		dialogErrorControl_->increaseCounter(); 
+		if(dialogErrorControl_->showDialog())
+				QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
 }
 
 ModuleLogger::ModuleLogger(ModuleLogWindow* window)

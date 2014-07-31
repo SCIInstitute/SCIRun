@@ -36,6 +36,9 @@ namespace SCIRun {
 
 using namespace SCIRun;
 
+/// @class InsertEnvironmentIntoBundle 
+/// @brief Collects the current environment variables into a bundle. 
+
 class InsertEnvironmentIntoBundle : public Module {
 public:
   InsertEnvironmentIntoBundle(GuiContext*);

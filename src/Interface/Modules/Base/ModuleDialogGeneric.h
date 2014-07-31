@@ -34,10 +34,14 @@
 #include <QtGui>
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/bimap.hpp>
+#include <boost/signals2/connection.hpp>
 #include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
 namespace Gui {
+
+  typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
 
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
@@ -71,16 +75,21 @@ namespace Gui {
       ~Pulling() { m_->pulling_ = false; }
       ModuleDialogGeneric* m_;
     };
-    
+
     void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap);
     void addTextEditManager(QTextEdit* textEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addDoubleLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addSpinBoxManager(QSpinBox* spinBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addDoubleSpinBoxManager(QDoubleSpinBox* spinBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addCheckBoxManager(QCheckBox* checkBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addCheckableButtonManager(QAbstractButton* checkable, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     std::vector<WidgetSlotManagerPtr> slotManagers_;
+    boost::signals2::connection stateConnection_;
   };
 
 }

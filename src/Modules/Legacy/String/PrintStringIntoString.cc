@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/String/PrintStringIntoString.cc
 
 #include <stdio.h>
 #include <Dataflow/Network/Module.h>
@@ -40,6 +39,9 @@
 namespace SCIRun {
 
 using namespace SCIRun;
+
+/// @class PrintStringIntoString
+/// @brief This module does a sprintf with input strings into a new string. 
 
 class PrintStringIntoString : public Module {
   public:

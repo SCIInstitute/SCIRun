@@ -35,6 +35,7 @@
 SET(Interface_Application_SOURCES 
   ClosestPortFinder.cc
   DeveloperConsole.cc
+  DialogErrorControl.cc
   GuiApplication.cc
   GuiCommandFactory.cc
   GuiCommands.cc
@@ -61,10 +62,12 @@ SET(Interface_Application_SOURCES
 SET(Interface_Application_HEADERS
   ClosestPortFinder.h
   DeveloperConsole.h
+  DialogErrorControl.h
   GuiApplication.h
   GuiCommandFactory.h
   GuiCommands.h
   GuiLogger.h
+  HasNotes.h
   MainWindowCollaborators.h
   ModuleLogWindow.h
   ModuleWidget.h

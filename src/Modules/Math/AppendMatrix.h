@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/AppendMatrix.h
 
 #ifndef MODULES_MATH_APPENDMATRIX_H
 #define MODULES_MATH_APPENDMATRIX_H
@@ -36,6 +35,9 @@
 namespace SCIRun {
 namespace Modules {
 namespace Math {
+
+  /// @class AppendMatrixModule
+  /// @brief Append the rows or columns of a matrix to a base matrix. 
 
   class SCISHARE AppendMatrixModule : public SCIRun::Dataflow::Networks::Module,
     public Has3InputPorts<MatrixPortTag, MatrixPortTag, DynamicPortTag<MatrixPortTag>>,

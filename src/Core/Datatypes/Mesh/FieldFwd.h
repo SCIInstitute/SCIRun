@@ -26,10 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Mesh/ FieldFwd.h
-///  LatticeVolumeMeshRegister.h MeshFacade.hMeshFacadeIterators.h 
-///  MeshFactory.cc/.h MeshTraits.h TriSurfMeshRegister.h VirtualMeshFacade.h
-///  VirtualMeshFactory.cc/.h
+/// @todo Documentation Core/Datatypes/Mesh/FieldFwd.h
 
 #ifndef CORE_DATATYPES_FIELD_FWD_H
 #define CORE_DATATYPES_FIELD_FWD_H

@@ -49,6 +49,9 @@ public:
   static const AlgorithmParameterName Filename;
   static const AlgorithmParameterName BuildConvergence;
   static const AlgorithmParameterName ColorMapName;
+  static const AlgorithmParameterName FileTypeList;
+  static const AlgorithmParameterName FileExtension;
+  static const AlgorithmParameterName FileTypeName;
   
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmInputName FirstMatrix;
@@ -57,6 +60,7 @@ public:
   static const AlgorithmInputName RHS;
   static const AlgorithmInputName MatrixToWrite;
   static const AlgorithmInputName InputField;
+  static const AlgorithmInputName ObjectField;
   static const AlgorithmInputName ListOfInputFields;
 
   static const AlgorithmOutputName MatrixInfo;
@@ -65,6 +69,7 @@ public:
   static const AlgorithmOutputName MatrixLoaded;
   static const AlgorithmOutputName Solution;
   static const AlgorithmOutputName OutputField;
+  static const AlgorithmOutputName OutputMatrix;
   static const AlgorithmOutputName ListOfOutputFields;
 };
 

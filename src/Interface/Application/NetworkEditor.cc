@@ -55,7 +55,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, 
-  boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent) 
+  boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent) 
   : QGraphicsView(parent),
   scene_(new QGraphicsScene(parent)),
   lastModulePosition_(0,0),
@@ -63,7 +63,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
-  zLevelManager_(new ZLevelManager(scene_))
+  zLevelManager_(new ZLevelManager(scene_)),
+	dialogErrorControl_(dialogErrorControl) 
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
@@ -119,12 +120,9 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
-  ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module);
+  ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
   
-  //TODO: this depends on the ModuleWidget's dialog being created, since that will change some module state.
-  module->preExecutionInitialization();
-
   setupModuleWidget(moduleWidget);
   Q_EMIT modified();
 }
@@ -204,6 +202,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
     connect(module, SIGNAL(dynamicPortChanged()), proxy, SLOT(createPortPositionProviders()));
   }
   
+  LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
   
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
@@ -211,7 +210,6 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   proxy->setZValue(zLevelManager_->max());
   proxy->setVisible(true);
-  proxy->setSelected(true);
   proxy->setPos(lastModulePosition_);
   lastModulePosition_ += moduleAddIncrement;
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
@@ -220,6 +218,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(modified()));
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
+ 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
   
@@ -313,7 +312,7 @@ NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
     ModuleWidget* first = getModule(items.first());
     ModuleWidget* second = getModule(items.last());
     if (first && second)
-      return ModulePair(first, second);
+		return ModulePair(first, second); 
   }
   return ModulePair();
 }
@@ -397,7 +396,7 @@ void NetworkEditor::updateActions()
   const bool hasSelection = !scene_->selectedItems().isEmpty();
   const bool isNode = (selectedModule() != 0);
   const bool isLink = (selectedLink() != 0);
-  const bool isNodePair = (selectedModulePair() != ModulePair());
+  //const bool isNodePair = (selectedModulePair() != ModulePair());
 
   //cutAction_->setEnabled(isNode);
   //copyAction_->setEnabled(isNode);
@@ -475,8 +474,11 @@ void NetworkEditor::addNewModuleAtPosition(const QPoint& position)
 
 void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 {
-  defaultModulePosition_ += moduleAddIncrement.toPoint();
-  addNewModuleAtPosition(defaultModulePosition_);
+  if (moduleSelectionGetter_->isModule())
+  {
+    defaultModulePosition_ += moduleAddIncrement.toPoint();
+    addNewModuleAtPosition(defaultModulePosition_);
+  }
 }
 
 void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
@@ -489,11 +491,68 @@ void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
 }
 
-void NetworkEditor::mousePressEvent(QMouseEvent *event)
+void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 {
-  if (event->button() != Qt::LeftButton)
-    Q_EMIT networkEditorMouseButtonPressed();
-  QGraphicsView::mousePressEvent(event);
+	if (event->button() != Qt::LeftButton)
+		Q_EMIT networkEditorMouseButtonPressed();
+	
+	if(ConnectionLine* cL = getSingleConnectionSelected())
+		if(event->buttons() & Qt::LeftButton)
+			if(!(event->modifiers() & Qt::ControlModifier))
+		{
+			auto selectedPair = cL->getConnectedToModuleId();
+
+			findById(scene_->items(),selectedPair.front())->setSelected(true);
+			findById(scene_->items(),selectedPair.back())->setSelected(true);
+		}
+	QGraphicsView::mouseMoveEvent(event); 
+}
+
+void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
+{
+	unselectConnectionGroup(); 
+	QGraphicsView::mouseReleaseEvent(event);
+}
+
+ConnectionLine* NetworkEditor::getSingleConnectionSelected()
+{
+	ConnectionLine* connectionSelected = 0;
+	auto item = scene_->selectedItems();
+	if(item.count() == 1 && (connectionSelected = qgraphicsitem_cast<ConnectionLine*>(item.first())))
+		return connectionSelected; 
+	return connectionSelected; 
+}
+void NetworkEditor::unselectConnectionGroup()
+{
+	QList<QGraphicsItem*> items = scene_->selectedItems(); 
+	if(items.count() == 3) 
+	{
+		int hasConnection = 0; 
+		int	hasWidgets = 0;
+		ConnectionLine* cL; ModuleProxyWidget* mPW;
+
+		Q_FOREACH(QGraphicsItem* item, items)
+		{
+			if(cL = qgraphicsitem_cast<ConnectionLine*>(item))
+			{
+				++hasConnection;
+				items.push_front(cL); 
+			}
+			if(mPW = qgraphicsitem_cast<ModuleProxyWidget*>(item))
+				++hasWidgets;
+		}
+		if(hasConnection == 1 && hasWidgets == 2)
+		{
+			if(cL = qgraphicsitem_cast<ConnectionLine*>(items.first()))
+			{
+				auto selectedPair = cL->getConnectedToModuleId(); 
+
+				cL->setSelected(false);  
+				findById(scene_->items(),selectedPair.front())->setSelected(false);
+				findById(scene_->items(),selectedPair.back())->setSelected(false);
+			}
+		}	
+	}
 }
 
 SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions() const
@@ -506,7 +565,6 @@ SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePosit
       positions->modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
     }
   }
-
   return positions;
 }
 
@@ -647,8 +705,44 @@ void NetworkEditor::selectAll()
   }
 }
 
+void NetworkEditor::pinAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->pinUI();
+  }
+}
+
+void NetworkEditor::hideAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->hideUI();
+  }
+}
+
+void NetworkEditor::restoreAllModuleUIs()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->showUI();
+  }
+}
+
 NetworkEditor::~NetworkEditor()
 {
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->setDeletedFromGui(false);
+  }
   clear();
 }
 

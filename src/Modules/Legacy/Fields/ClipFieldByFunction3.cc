@@ -25,77 +25,79 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ClipFieldByFunction3.cc
 
-// Include all code for the dynamic engine
+#include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Parser/ArrayMathEngine.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#include <Core/Algorithms/Fields/ClipMesh/ClipMeshBySelection.h>
+#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-
-namespace SCIRun {
-
+/// @class ClipFieldByFunction3
+/// @brief This module selects a subset of one or more (up to three) fields
+/// using a function. 
+/*
 class ClipFieldByFunction3 : public Module {
   public:
     ClipFieldByFunction3(GuiContext*);
 
     virtual void execute();
-    virtual void tcl_command(GuiArgs&, void*);
-
-    virtual void presave();
-    
+  
   private:
     GuiString guifunction_;  
     GuiString guimethod_;
     SCIRunAlgo::ClipMeshBySelectionAlgo clipping_algo_;
 };
+*/
 
-
-DECLARE_MAKER(ClipFieldByFunction3)
-ClipFieldByFunction3::ClipFieldByFunction3(GuiContext* ctx)
-  : Module("ClipFieldByFunction3", ctx, Source, "NewField", "SCIRun"),
-    guifunction_(get_ctx()->subVar("function"),"DATA < 0"),
-    guimethod_(get_ctx()->subVar("method"),"onenode")
+const ModuleLookupInfo ClipFieldByFunction::staticInfo_("ClipFieldByFunction", "NewField", "SCIRun");
+const AlgorithmParameterName ClipFieldByFunction::FunctionString("FunctionString");
+  
+ClipFieldByFunction::ClipFieldByFunction()
+  : Module(staticInfo_)
 {
-  clipping_algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputFields);
+  INITIALIZE_PORT(Function);
+  INITIALIZE_PORT(InputArrays);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(Mapping);
 }
 
-
-void ClipFieldByFunction3::execute()
+void ClipFieldByFunction::setStateDefaults()
 {
-  // Define local handles of data objects:
-  FieldHandle field, field2, field3;
-  StringHandle func;
-  std::vector<MatrixHandle> matrices;
+  auto state = get_state();
+  state->setValue(FunctionString, std::string("DATA < 0"));
+  setStateStringFromAlgoOption(Parameters::ClipMethod);
+}
 
-  // Get the new input data:  
-  get_input_handle("Field1",field,true);
-  get_input_handle("Field2",field2,false);
-  get_input_handle("Field3",field3,false);
-
-  if (get_input_handle("Function",func,false))
+void ClipFieldByFunction::execute()
+{
+  auto fields = getRequiredDynamicInputs(InputFields);
+  auto func = getOptionalInput(Function);
+  auto state = get_state();
+  if (func)
   {
-    if (func.get_rep())
+    if (*func)
     {
-      guifunction_.set(func->get());
-      get_ctx()->reset();  
+      state->setValue(FunctionString, (*func)->value());
     }
-  }  
-  get_dynamic_input_handles("Array",matrices,false);
-
-  TCLInterface::eval(get_id()+" update_text");
-
-  // Only do work if needed:
-  if (inputs_changed_ || guifunction_.changed() || guimethod_.changed() ||
-      !oport_cached("Field") || !oport_cached("Mapping"))
+  }
+  
+  auto matrices = getOptionalDynamicInputs(InputArrays);
+  
+//  if (inputs_changed_ || guifunction_.changed() || guimethod_.changed() ||
+//      !oport_cached("Field") || !oport_cached("Mapping"))
+  if (needToExecute())
   {
     update_state(Executing);
     // Get number of matrix ports with data (the last one is always empty)
@@ -105,33 +107,31 @@ void ClipFieldByFunction3::execute()
       error("This module cannot handle more than 23 input matrices.");
       return;
     }
+  
+    auto field = fields[0];
+    std::string method = state->getValue(Parameters::ClipMethod).getString();
+    if (field->vmesh()->is_pointcloudmesh()) method = "element";
 
-    std::string method = guimethod_.get();
-    if (field.get_rep()) if (field->vmesh()->is_pointcloudmesh()) method = "element";
-
-    int basis_order = 1;
-    if (method == "element") basis_order = 0;
-
-    int field_basis_order = field->vfield()->basis_order();
+    const int basis_order = method == "element" ? 0 : 1;
 
     if (field->vmesh()->is_empty())
     {
       warning("Input mesh does not contain any nodes: copying input to output");
-      MatrixHandle mapping;
-      send_output_handle("Field", field);
-      send_output_handle("Mapping", mapping);
+      sendOutput(OutputField, field);
+      sendOutput(Mapping, MatrixHandle());
       return;
     }
+  
+    const int field_basis_order = field->vfield()->basis_order();
 
     NewArrayMathEngine engine;
-    engine.set_progress_reporter(this);
+    engine.setLogger(this);
 
     // Create the DATA object for the function
     // DATA is the data on the field
     if (basis_order == field_basis_order)
     {
       if(!(engine.add_input_fielddata("DATA",field))) return;
-      if(!(engine.add_input_fielddata("DATA1",field))) return;
     }
     else
     {
@@ -147,52 +147,22 @@ void ClipFieldByFunction3::execute()
       warning(oss.str());
     }
     
-    // Create the POS, X,Y,Z, data location objects.  
-
+    // Create the POS, X,Y,Z, data location objects.
     if(!(engine.add_input_fielddata_location("POS",field,basis_order))) return;
-    if(!(engine.add_input_fielddata_location("POS1",field,basis_order))) return;
     if(!(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order))) return;
-    if(!(engine.add_input_fielddata_coordinates("X1","Y1","Z1",field,basis_order))) return;
 
     // Create the ELEMENT object describing element properties
     if(!(engine.add_input_fielddata_element("ELEMENT",field,basis_order))) return;
-    if(!(engine.add_input_fielddata_element("ELEMENT1",field,basis_order))) return;
 
-    if (field2.get_rep())
-    {
-      int field_basis_order2 = field2->vfield()->basis_order();
-      if (basis_order == field_basis_order2)
-      {
-        if(!(engine.add_input_fielddata("DATA2",field2))) return;
-      }
-      
-      // Create the POS, X,Y,Z, data location objects.  
-
-      if(!(engine.add_input_fielddata_location("POS2",field2,basis_order))) return;
-      if(!(engine.add_input_fielddata_coordinates("X2","Y2","Z2",field2,basis_order))) return;
-
-      // Create the ELEMENT object describing element properties
-      if(!(engine.add_input_fielddata_element("ELEMENT2",field2,basis_order))) return;    
-    }
-
-
-    if (field3.get_rep())
-    {
-      int field_basis_order3 = field3->vfield()->basis_order();
-      if (basis_order == field_basis_order3)
-      {
-        if(!(engine.add_input_fielddata("DATA3",field3))) return;
-      }
-      
-      // Create the POS, X,Y,Z, data location objects.  
-
-      if(!(engine.add_input_fielddata_location("POS3",field3,basis_order))) return;
-      if(!(engine.add_input_fielddata_coordinates("X3","Y3","Z3",field3,basis_order))) return;
-
-      // Create the ELEMENT object describing element properties
-      if(!(engine.add_input_fielddata_element("ELEMENT3",field3,basis_order))) return;    
-    }
-
+    //TODO: increase this past 5
+    if (!addFieldVariableIfPresent(fields, engine, basis_order, 2))
+      return;
+    if (!addFieldVariableIfPresent(fields, engine, basis_order, 3))
+      return;
+    if (!addFieldVariableIfPresent(fields, engine, basis_order, 4))
+      return;
+    if (!addFieldVariableIfPresent(fields, engine, basis_order, 5))
+      return;
 
     // Loop through all matrices and add them to the engine as well
     char mname = 'A';
@@ -200,7 +170,7 @@ void ClipFieldByFunction3::execute()
     
     for (size_t p = 0; p < numinputs; p++)
     {
-      if (matrices[p].get_rep() == 0)
+      if (!matrices[p])
       {
         error("No matrix was found on input port.");
         return;      
@@ -210,7 +180,6 @@ void ClipFieldByFunction3::execute()
       if (!(engine.add_input_matrix(matrixname,matrices[p]))) return;
     }
     
-    
     if(!(engine.add_output_fielddata("RESULT",field,basis_order,"char"))) return;
 
     // Add an object for getting the index and size of the array.
@@ -218,61 +187,60 @@ void ClipFieldByFunction3::execute()
     if(!(engine.add_index("INDEX"))) return;
     if(!(engine.add_size("SIZE"))) return;
 
-
     // Define the function we are using for clipping:
-    std::string function = guifunction_.get();
+    std::string function = state->getValue(FunctionString).getString();
     if (function.find("RESULT") == std::string::npos)
-      function = std::string("RESULT = ") + function;
+      function = "RESULT = " + function;
 
-    if(!(engine.add_expressions(function))) return;
+    if (!engine.add_expressions(function)) return;
 
     // Actual engine call, which does the dynamic compilation, the creation of the
     // code for all the objects, as well as inserting the function and looping 
     // over every data point
 
-    if (!(engine.run())) return;
+    if (!engine.run()) return;
 
     // Get the result from the engine
-    FieldHandle  sfield, ofield;    
-    MatrixHandle mapping;
+    FieldHandle sfield;
     engine.get_field("RESULT",sfield);    
     
-    clipping_algo_.set_option("method",guimethod_.get());
-    if(!(clipping_algo_.run(field,sfield,ofield,mapping))) return;
+    algo().set_option(Parameters::ClipMethod, method);
+    auto output = algo().run_generic(make_input((Variables::InputField, field)(ClipMeshBySelectionAlgo::SelectionField, sfield)));
 
-    send_output_handle("Field", ofield);
-    send_output_handle("Mapping", mapping);
+    sendOutputFromAlgorithm(OutputField, output);
+    sendOutputFromAlgorithm(Mapping, output);
   }
 }
 
-
-void
-ClipFieldByFunction3::tcl_command(GuiArgs& args, void* userdata)
+bool ClipFieldByFunction::addFieldVariableIfPresent(const FieldList& fields, NewArrayMathEngine& engine, int basis_order, int index) const
 {
-  if(args.count() < 2)
+  if (fields.size() >= index)
   {
-    args.error("ClipFieldByFunction3 needs a minor command");
-    return;
+    auto field = fields[index-1];
+    if (field) //this should always be true since dynamic values are filtered for nulls
+    {
+      auto indexStr = boost::lexical_cast<std::string>(index);
+      auto vStr = boost::lexical_cast<std::string>(index - 1);
+    
+      int field_basis_order = field->vfield()->basis_order();
+      if (basis_order == field_basis_order)
+      {
+        if(!engine.add_input_fielddata("DATA" + indexStr, field))
+          return false;
+        if(!engine.add_input_fielddata("v" + vStr, field))
+          return false;
+      }
+      // Create the POS, X,Y,Z, data location objects.
+      
+      if(!engine.add_input_fielddata_location("POS" + indexStr, field, basis_order))
+        return false;
+      if(!engine.add_input_fielddata_coordinates("X" + indexStr,"Y" + indexStr,"Z" + indexStr,field, basis_order))
+        return false;
+      
+      // Create the ELEMENT object describing element properties
+      if(!engine.add_input_fielddata_element("ELEMENT" + indexStr, field, basis_order))
+        return false;
+    }
   }
-
-  if( args[1] == "gethelp" )
-  {
-    return;
-  }
-  else
-  {
-    Module::tcl_command(args, userdata);
-  }
+  return true;
 }
-
-void
-ClipFieldByFunction3::presave()
-{
-  // update gui_function_ before saving.
-  TCLInterface::execute(get_id() + " update_text");
-}
-
-
-} // End namespace ModelCreation
-
-

@@ -29,8 +29,11 @@
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromElemToNode.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
@@ -43,6 +46,11 @@
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -55,7 +63,6 @@
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
-#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
@@ -63,6 +70,9 @@
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 #include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
+#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
+#include <boost/functional/factory.hpp>
+#include <boost/assign.hpp>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -71,88 +81,80 @@ using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace boost::assign;
 
-/// @todo: add unit test 
+/// @todo: add unit test
 
-HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
+HardCodedAlgorithmFactory::HardCodedAlgorithmFactory()
+{
+  addToMakerMap();
+  addToMakerMap2();
+}
+
+#define ADD_MODULE_ALGORITHM(module, algorithm) (#module, boost::factory<algorithm*>())
+
+void HardCodedAlgorithmFactory::addToMakerMap()
+{
+  if (factoryMap_.empty())
+  {
+    insert(factoryMap_)
+      ADD_MODULE_ALGORITHM(GetFieldBoundary, GetFieldBoundaryAlgo)
+      ADD_MODULE_ALGORITHM(SolveLinearSystem, SolveLinearSystemAlgo)
+      ADD_MODULE_ALGORITHM(CalculateSignedDistanceToField, CalculateSignedDistanceFieldAlgo)
+      ADD_MODULE_ALGORITHM(CalculateGradients, CalculateGradientsAlgo)
+      ADD_MODULE_ALGORITHM(ConvertQuadSurfToTriSurf, ConvertMeshToTriSurfMeshAlgo)
+      ADD_MODULE_ALGORITHM(AlignMeshBoundingBoxes, AlignMeshBoundingBoxesAlgo)
+      ADD_MODULE_ALGORITHM(GetFieldNodes, GetMeshNodesAlgo)     /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+      ADD_MODULE_ALGORITHM(ElectrodeCoilSetup, ElectrodeCoilSetupAlgorithm)
+      ADD_MODULE_ALGORITHM(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshAlgorithm)
+      ADD_MODULE_ALGORITHM(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSAlgorithm)
+      ADD_MODULE_ALGORITHM(GenerateROIStatistics, GenerateROIStatisticsAlgorithm)
+      ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
+      ADD_MODULE_ALGORITHM(ReportFieldInfo, ReportFieldInfoAlgorithm)
+      ADD_MODULE_ALGORITHM(ReportMatrixInfo, ReportMatrixInfoAlgorithm)
+      ADD_MODULE_ALGORITHM(AppendMatrix, AppendMatrixAlgorithm)
+      ADD_MODULE_ALGORITHM(ReadMatrix, ReadMatrixAlgorithm)
+      ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
+      ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryAlgorithm)
+      ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryAlgorithm)
+      ADD_MODULE_ALGORITHM(ConvertMeshToIrregularMesh, ConvertMeshToIrregularMeshAlgo)
+      ADD_MODULE_ALGORITHM(ReadMesh, TextToTriSurfFieldAlgorithm)
+      ADD_MODULE_ALGORITHM(AddKnownsToLinearSystem, AddKnownsToLinearSystemAlgo)
+      ADD_MODULE_ALGORITHM(CalculateVectorMagnitudes, CalculateVectorMagnitudesAlgo)
+      ADD_MODULE_ALGORITHM(BuildFEMatrix, BuildFEMatrixAlgo)
+      ADD_MODULE_ALGORITHM(GetDomainBoundary, GetDomainBoundaryAlgo)
+      ADD_MODULE_ALGORITHM(InterfaceWithCleaver, InterfaceWithCleaverAlgorithm)
+      ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo)
+      ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
+      ADD_MODULE_ALGORITHM(JoinFields, JoinFieldsAlgo)
+      ADD_MODULE_ALGORITHM(SplitFieldByDomain, SplitFieldByDomainAlgo)
+      ADD_MODULE_ALGORITHM(ApplyMappingMatrix, ApplyMappingMatrixAlgo)
+      ADD_MODULE_ALGORITHM(SelectSubMatrix, SelectSubMatrixAlgorithm)
+      ADD_MODULE_ALGORITHM(ConvertMatrixType, ConvertMatrixTypeAlgorithm)
+      ADD_MODULE_ALGORITHM(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemAlgo)
+      ADD_MODULE_ALGORITHM(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeAlgo)
+      ADD_MODULE_ALGORITHM(ResampleRegularMesh, ResampleRegularMeshAlgo)
+      ADD_MODULE_ALGORITHM(FairMesh, FairMeshAlgo)
+      ADD_MODULE_ALGORITHM(ScaleFieldMeshAndData, ScaleFieldMeshAndDataAlgo)
+      ADD_MODULE_ALGORITHM(ConvertFieldBasis, ConvertFieldBasisTypeAlgo)
+      ADD_MODULE_ALGORITHM(ProjectPointsOntoMesh, ProjectPointsOntoMeshAlgo)
+      ADD_MODULE_ALGORITHM(CalculateDistanceToField, CalculateDistanceFieldAlgo)
+      ADD_MODULE_ALGORITHM(CalculateDistanceToFieldBoundary, CalculateDistanceFieldAlgo)
+      ADD_MODULE_ALGORITHM(MapFieldDataOntoNodes, MapFieldDataOntoNodesAlgo)
+      ADD_MODULE_ALGORITHM(MapFieldDataOntoElems, MapFieldDataOntoElemsAlgo)
+      ADD_MODULE_ALGORITHM(ClipFieldByFunction, ClipMeshBySelectionAlgo)
+    ;
+  }
+}
 
 AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName, const AlgorithmCollaborator* algoCollaborator) const
 {
   AlgorithmHandle h;
 
-  if (moduleName == "GetFieldBoundary")
-    h.reset(new GetFieldBoundaryAlgo);
-  else if (moduleName == "SolveLinearSystem")
-    h.reset(new SolveLinearSystemAlgo);
-  else if (moduleName == "CalculateSignedDistanceToField")
-    h.reset(new CalculateSignedDistanceFieldAlgo);
-  else if (moduleName == "CalculateGradients")
-    h.reset(new CalculateGradientsAlgo);
-  else if (moduleName == "ConvertQuadSurfToTriSurf")
-    h.reset(new ConvertMeshToTriSurfMeshAlgo);
-  else if (moduleName == "AlignMeshBoundingBoxes")
-    h.reset(new AlignMeshBoundingBoxesAlgo);
-  else if (moduleName == "GetFieldNodes") /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
-    h.reset(new GetMeshNodesAlgo);    
-  else if (moduleName == "ElectrodeCoilSetup")
-    h.reset(new ElectrodeCoilSetupAlgorithm);     
-  else if (moduleName == "SetConductivitiesToTetMesh")
-    h.reset(new SetConductivitiesToTetMeshAlgorithm); 
-  else if (moduleName == "SetupRHSforTDCSandTMS")
-    h.reset(new SetupRHSforTDCSandTMSAlgorithm);   
-  else if (moduleName == "GenerateROIStatistics")
-    h.reset(new GenerateROIStatisticsAlgorithm);        
-  else if (moduleName == "SetFieldNodes")
-    h.reset(new SetMeshNodesAlgo);
-  else if (moduleName == "ReportFieldInfo")
-    h.reset(new ReportFieldInfoAlgorithm);
-  else if (moduleName == "ReportMatrixInfo")
-    h.reset(new ReportMatrixInfoAlgorithm);
-  else if (moduleName == "AppendMatrix")
-    h.reset(new AppendMatrixAlgorithm);
-  else if (moduleName == "ReadMatrix")
-    h.reset(new ReadMatrixAlgorithm);
-  else if (moduleName == "WriteMatrix")
-    h.reset(new WriteMatrixAlgorithm);
-  else if (moduleName == "EvaluateLinearAlgebraUnary")
-    h.reset(new EvaluateLinearAlgebraUnaryAlgorithm);
-  else if (moduleName == "EvaluateLinearAlgebraBinary")
-    h.reset(new EvaluateLinearAlgebraBinaryAlgorithm);
-  else if (moduleName == "ConvertMeshToIrregularMesh")
-    h.reset(new ConvertMeshToIrregularMeshAlgo);
-  else if (moduleName == "ReadMesh")
-    h.reset(new TextToTriSurfFieldAlgorithm);
-  else if (moduleName == "BuildTDCSMatrix")
-    h.reset(new BuildTDCSMatrixAlgo);
-  else if (moduleName == "AddKnownsToLinearSystem")
-    h.reset(new AddKnownsToLinearSystemAlgo);  
-  else if (moduleName == "CalculateVectorMagnitudes")
-    h.reset(new CalculateVectorMagnitudesAlgo); 
-  else if (moduleName == "BuildFEMatrix")
-    h.reset(new BuildFEMatrixAlgo);
-  else if (moduleName == "GetDomainBoundary")
-    h.reset(new GetDomainBoundaryAlgo);
-  else if (moduleName == "InterfaceWithCleaver")
-    h.reset(new InterfaceWithCleaverAlgorithm);      
-  else if (moduleName == "GetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
-    h.reset(new GetFieldDataAlgo);
-  else if (moduleName == "SetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
-    h.reset(new SetFieldDataAlgo);    
-  else if (moduleName == "JoinFields")
-    h.reset(new JoinFieldsAlgo);
-  else if (moduleName == "SplitFieldByDomain")
-    h.reset(new SplitFieldByDomainAlgo);
-  else if (moduleName == "ApplyMappingMatrix")
-    h.reset(new ApplyMappingMatrixAlgo); 
-  else if (moduleName == "SelectSubMatrix")
-    h.reset(new SelectSubMatrixAlgorithm);   
-  else if (moduleName == "ConvertMatrixType")
-    h.reset(new ConvertMatrixTypeAlgorithm);  
-  else if (moduleName == "MapFieldDataFromNodeToElem")
-    h.reset(new MapFieldDataFromNodeToElemAlgo);    
-  else if (moduleName == "MapFieldDataFromElemToNode")
-    h.reset(new MapFieldDataFromElemToNodeAlgo);      
-    
+  auto func = factoryMap_.find(moduleName);
+  if (func != factoryMap_.end())
+    h.reset((func->second)());
+
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());

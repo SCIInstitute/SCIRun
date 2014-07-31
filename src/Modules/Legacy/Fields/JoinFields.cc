@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/JoinFields.cc
 
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -40,8 +39,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
-ModuleLookupInfo JoinFields::staticInfo_("JoinFields", "NewField", "SCIRun");
-AlgorithmParameterName JoinFields::ForcePointCloud("ForcePointCloud");
+const ModuleLookupInfo JoinFields::staticInfo_("JoinFields", "NewField", "SCIRun");
+const AlgorithmParameterName JoinFields::ForcePointCloud("ForcePointCloud");
 
 JoinFields::JoinFields() : Module(staticInfo_)
 {

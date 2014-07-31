@@ -146,12 +146,12 @@ namespace SCIRun
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false), 
   NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
-  fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer), menu_(0)
+  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(0), menuOpen_(0)
 {
   if (fromPort_)
   {
     fromPort_->addConnection(this);
-    fromPort_->turn_on_light();
+    fromPort_->turn_on_light(); 
   }
   else
     LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
@@ -164,9 +164,13 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
     LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
 
   if (fromPort_ && toPort_)
+  {
     setColor(fromPort_->color());
+	placeHoldingColor_ = fromPort_->color();
+  }
 
-  setFlags(QGraphicsItem::ItemIsSelectable);
+  setFlags( ItemIsSelectable| ItemIsMovable | ItemSendsGeometryChanges);
+  
   //TODO: need dynamic zValue
   setZValue(1); 
   setToolTip("Left - Highlight*\nDouble-Left - Menu");
@@ -176,7 +180,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   connectUpdateNote(this);
 
   setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
-
+  
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
 }
@@ -200,7 +204,7 @@ void ConnectionLine::destroy()
     }
     drawer_.reset();
     Q_EMIT deleted(id_);
-    GuiLogger::Instance().log("Connection deleted.");
+    //GuiLogger::Instance().log("Connection deleted.");
     HasNotes::destroy();
     NoteDisplayHelper::destroy();
     destroyed_ = true;
@@ -235,11 +239,28 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
     drawer_ = cds;
     trackNodes();
   }
+} 
+void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+	this-> setColor(placeHoldingColor_);
+	menuOpen_ = false; 
+  QGraphicsPathItem::mouseReleaseEvent(event);
 }
+void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{	 
+	this->setAcceptedMouseButtons(Qt::LeftButton);
 
+	if(!menuOpen_ )
+	{
+		placeHoldingColor_ = this -> color();
+		this -> setColor(Qt::red);	
+	}
+  QGraphicsPathItem::mousePressEvent(event);
+}
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   auto action = menu_->exec(event->screenPos());
+  menuOpen_ = true; 
   if (action && action->text() == deleteAction)
   {
     scene()->removeItem(this);
@@ -249,8 +270,33 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
     //std::cout << "POP UP NOTES EDITOR. Done. TODO: display note." << std::endl;
   }
+  QGraphicsPathItem::mouseDoubleClickEvent(event);
+}
+void ConnectionLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+  QGraphicsPathItem::mouseMoveEvent(event);
 }
 
+QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+	//Position drag movement relative to movement in network. Otherwise CL moves relative to modules as though they are the whole scene (faster, CL moves out of modules). 
+	if (change == ItemPositionChange && scene())
+	{
+		QPointF newPos = value.toPointF();
+		newPos.setX(0);
+		newPos.setY(0);
+		return newPos;
+	}
+	return QGraphicsItem::itemChange(change, value);
+}
+
+std::list<SCIRun::Dataflow::Networks::ModuleId> ConnectionLine::getConnectedToModuleId()
+{
+	std::list<SCIRun::Dataflow::Networks::ModuleId> mp; 
+	mp.push_front(toPort_->getUnderlyingModuleId()); 
+	mp.push_front(fromPort_->getUnderlyingModuleId());
+	return mp; 
+}
 void ConnectionLine::setNoteGraphicsContext() 
 {
   scene_ = scene();

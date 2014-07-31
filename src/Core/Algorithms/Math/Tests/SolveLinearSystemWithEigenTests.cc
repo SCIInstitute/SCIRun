@@ -37,7 +37,9 @@
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/MatrixIO.h>
+#define register
 #include <Eigen/Sparse>
+#undef register
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 
@@ -50,6 +52,9 @@ using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
 
+/// @todo: remove these Eigen tests if they are duplicates of existing SLS tests. Other tests below need to live in separate files.
+
+#if 0
 TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystemWithEigenClasses)
 { 
   int n = 3;
@@ -210,7 +215,7 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, ThrowsOnNegativeMaxIterations)
 
   EXPECT_THROW(algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, -1)), AlgorithmInputException);
 }
-
+#endif
 TEST(SparseMatrixReadTest, RegexOfScirun4Format)
 {
   EigenMatrixFromScirunAsciiFormatConverter converter;
@@ -260,7 +265,10 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
   a << 1, 0, 3.5,
     -1, 2, 0;
 
+  EXPECT_EQ(a, *matrix_convert::to_dense(mat));
+#if !DEBUG
   EXPECT_EQ(to_string(a), to_string(mat->castForPrinting()));
+#endif
 }
 
 TEST(EigenSparseSolverTest, CanSolveTinySystem)

@@ -36,11 +36,12 @@
 using namespace SCIRun::Gui;
 
 PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor),
-  regressionMode_(false), saveBeforeExecute_(false)
+  regressionMode_(false)
 {
   setupUi(this);
   connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
   connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateSaveBeforeExecuteOption(int)));
+  connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
 }
 
 void PreferencesWindow::updateRegressionTestDataDir()
@@ -61,23 +62,34 @@ void PreferencesWindow::setRegressionTestDataDir()
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
 {
-  setDisableModuleErrorDialogs(SCIRun::Core::Preferences::Instance().moduleErrorDialogState = (state == 0));
+  SCIRun::Core::Preferences::Instance().showModuleErrorDialogs = (state == 0);
+  LOG_DEBUG("showModuleErrorDialogs is " << (state == 0));
 }
 
 void PreferencesWindow::updateSaveBeforeExecuteOption(int state)
 {
-  setSaveBeforeExecute(SCIRun::Core::Preferences::Instance().saveBeforeExecute = (state != 0));
+  SCIRun::Core::Preferences::Instance().saveBeforeExecute = (state != 0);
   LOG_DEBUG("saveBeforeExecute is " << (state != 0));
 }
 
 void PreferencesWindow::setSaveBeforeExecute(bool mode)
 {
-  saveBeforeExecute_ = mode;
+  updateSaveBeforeExecuteOption(mode ? 1 : 0);
   saveBeforeExecuteCheckBox_->setChecked(mode);
 }
 
 void PreferencesWindow::setDisableModuleErrorDialogs(bool mode)
 {
-  disableModuleErrorDialogs_ = mode;
+  updateModuleErrorDialogOption(mode ? 1 : 0);
   moduleErrorDialogDisableCheckbox_->setChecked(mode);
+}
+
+bool PreferencesWindow::disableModuleErrorDialogs() const
+{
+  return !SCIRun::Core::Preferences::Instance().showModuleErrorDialogs;
+}
+
+bool PreferencesWindow::saveBeforeExecute() const
+{
+  return SCIRun::Core::Preferences::Instance().saveBeforeExecute;
 }

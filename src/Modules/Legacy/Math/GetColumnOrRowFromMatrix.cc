@@ -27,16 +27,11 @@
 */
 
 
-///
-///@class GetColumnOrRowFromMatrix
-///@brief Select a row or column of a matrix
-///
 ///@author
-///   David Weinstein
-///   Department of Computer Science
+///   David Weinstein,
+///   Department of Computer Science,
 ///   University of Utah
 ///@date  June 1999
-///
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/ColumnMatrix.h>
@@ -53,6 +48,13 @@
 #endif
 
 namespace SCIRun {
+
+/// @class GetColumnOrRowFromMatrix
+/// @brief Select a row or column of a matrix
+///
+/// This module allows users to select a singe row or column from a matrix.
+/// The user can also select a range of rows or columns and send them to the
+/// output port one at a time. 
 
 class GetColumnOrRowFromMatrix : public Module {
   GuiString row_or_col_;

@@ -55,11 +55,14 @@
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Interface/Modules/Fields/CreateFieldDataDialog.h>
-#include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
-#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
-#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
+#include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
+#include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
+#include <Interface/Modules/Fields/FairMeshDialog.h>
+#include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
+#include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
+#include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
+#include <Interface/Modules/Fields/MapFieldDataOntoElemsDialog.h>
+#include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
@@ -68,97 +71,78 @@
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 #include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
 
+#include <boost/assign.hpp>
+#include <boost/functional/factory.hpp>
+#include <boost/foreach.hpp>
+
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace boost::assign;
 
-ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse) : parentToUse_(parentToUse) {}
+ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse) : parentToUse_(parentToUse)
+{
+  addDialogsToMakerMap1();
+  addDialogsToMakerMap2();
+}
+
+void ModuleDialogFactory::addDialogsToMakerMap1()
+{
+  insert(dialogMakerMap_)
+    ADD_MODULE_DIALOG(SendScalar, SendScalarDialog)
+    ADD_MODULE_DIALOG(ReceiveScalar, ReceiveScalarDialog)
+    ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixDialog)
+    ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
+    ADD_MODULE_DIALOG(ReadMesh, ReadMeshDialog)
+    ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)
+    ADD_MODULE_DIALOG(WriteField, WriteFieldDialog)
+    ADD_MODULE_DIALOG(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryDialog)
+    ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
+    ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
+    ADD_MODULE_DIALOG(ShowField, ShowFieldDialog)
+    ADD_MODULE_DIALOG(AppendMatrix, AppendMatrixDialog)
+    ADD_MODULE_DIALOG(CreateMatrix, CreateMatrixDialog)
+    ADD_MODULE_DIALOG(CreateString, CreateStringDialog)
+    ADD_MODULE_DIALOG(PrintDatatype, PrintDatatypeDialog)
+    ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
+    ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
+    ADD_MODULE_DIALOG(MatrixAsVectorField, MatrixAsVectorFieldDialog)
+    ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
+    ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
+    ADD_MODULE_DIALOG(CreateLatVol, CreateLatVolDialog)
+    ADD_MODULE_DIALOG(CreateStandardColorMap, CreateBasicColorMapDialog)
+    ADD_MODULE_DIALOG(GetDomainBoundary, GetDomainBoundaryDialog)
+    ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
+    ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)
+    ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
+    ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
+    ADD_MODULE_DIALOG(CreateFieldData, CreateFieldDataDialog)
+    ADD_MODULE_DIALOG(CalculateFieldData, CalculateFieldDataDialog)
+    ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
+    ADD_MODULE_DIALOG(InterfaceWithCleaver, InterfaceWithCleaverDialog)
+    ADD_MODULE_DIALOG(SelectSubMatrix, SelectSubMatrixDialog)
+    ADD_MODULE_DIALOG(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeDialog)
+    ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)
+    ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
+    ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
+    ADD_MODULE_DIALOG(ConvertMatrixType, ConvertMatrixTypeDialog)
+    ADD_MODULE_DIALOG(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemDialog)
+    ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
+    ADD_MODULE_DIALOG(FairMesh, FairMeshDialog)
+    ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
+    ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
+    ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
+    ADD_MODULE_DIALOG(MapFieldDataOntoElems, MapFieldDataOntoElemsDialog)
+    ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
+  ;
+}
 
 ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state)
 {
-  if (moduleId.find("SendScalar") != std::string::npos)
-    return new SendScalarDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ReceiveScalar") != std::string::npos)
-    return new ReceiveScalarDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ReadMatrix") != std::string::npos)
-    return new ReadMatrixDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("WriteMatrix") != std::string::npos)
-    return new WriteMatrixDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ReadMesh") != std::string::npos)
-    return new ReadMeshDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ReadField") != std::string::npos)
-    return new ReadFieldDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("WriteField") != std::string::npos)
-    return new WriteFieldDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("EvaluateLinearAlgebraUnary") != std::string::npos)
-    return new EvaluateLinearAlgebraUnaryDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("EvaluateLinearAlgebraBinary") != std::string::npos)
-    return new EvaluateLinearAlgebraBinaryDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ShowString") != std::string::npos)
-    return new ShowStringDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ShowField") != std::string::npos)
-    return new ShowFieldDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("AppendMatrix") != std::string::npos)
-    return new AppendMatrixDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("CreateMatrix") != std::string::npos)
-    return new CreateMatrixDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("CreateString") != std::string::npos)
-    return new CreateStringDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("PrintDatatype") != std::string::npos)
-    return new PrintDatatypeDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ReportMatrixInfo") != std::string::npos)
-    return new ReportMatrixInfoDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ReportFieldInfo") != std::string::npos)
-    return new ReportFieldInfoDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("MatrixAsVectorField") != std::string::npos)
-    return new MatrixAsVectorFieldDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ViewScene") != std::string::npos)
-    return new ViewSceneDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("SolveLinearSystem") != std::string::npos)
-    return new SolveLinearSystemDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("CreateLatVol") != std::string::npos)
-    return new CreateLatVolDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("tDCSSimulator") != std::string::npos)
-    return new TDCSSimulatorDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ElectrodeCoilSetup") != std::string::npos)
-    return new ElectrodeCoilSetupDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("SetConductivitiesToTetMesh") != std::string::npos)
-    return new SetConductivitiesToTetMeshDialog(moduleId, state, parentToUse_); 
-  if (moduleId.find("GenerateROIStatistics") != std::string::npos)
-    return new GenerateROIStatisticsDialog(moduleId, state, parentToUse_); 
-  if (moduleId.find("SetupRHSforTDCSandTMS") != std::string::npos)
-    return new SetupRHSforTDCSandTMSDialog(moduleId, state, parentToUse_);       
-  if (moduleId.find("CreateStandardColorMap") != std::string::npos)
-    return new CreateBasicColorMapDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("GetDomainBoundary") != std::string::npos)
-    return new GetDomainBoundaryDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("JoinFields") != std::string::npos)
-    return new JoinFieldsDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("InsertFieldsIntoBundle") != std::string::npos)
-    return new InsertFieldsIntoBundleDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("GetFieldsFromBundle") != std::string::npos)
-    return new GetFieldsFromBundleDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("SplitFieldByDomain") != std::string::npos)
-    return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("CreateFieldData") != std::string::npos)
-    return new CreateFieldDataDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("SetFieldData") != std::string::npos)
-    return new SetFieldDataDialog(moduleId, state, parentToUse_);   
-  if (moduleId.find("InterfaceWithCleaver") != std::string::npos)
-    return new InterfaceWithCleaverDialog(moduleId, state, parentToUse_);   
-  if (moduleId.find("SelectSubMatrix") != std::string::npos)
-    return new SelectSubMatrixDialog(moduleId, state, parentToUse_);  
-  if (moduleId.find("MapFieldDataFromElemToNode") != std::string::npos)
-    return new MapFieldDataFromElemToNodeDialog(moduleId, state, parentToUse_);            
-  if (moduleId.find("InsertFieldsIntoBundle") != std::string::npos)
-    return new InsertFieldsIntoBundleDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("GetFieldsFromBundle") != std::string::npos)
-    return new GetFieldsFromBundleDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("SplitFieldByDomain") != std::string::npos)
-    return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ConvertMatrixType") != std::string::npos)
-    return new ConvertMatrixTypeDialog(moduleId, state, parentToUse_);  
-  if (moduleId.find("MapFieldDataFromNodeToElem") != std::string::npos)
-    return new MapFieldDataFromNodeToElemDialog(moduleId, state, parentToUse_);  
-  else
-    return new ModuleDialogBasic(moduleId, parentToUse_);
+  BOOST_FOREACH(const DialogMakerMap::value_type& makerPair, dialogMakerMap_)
+  {
+    if (moduleId.find(makerPair.first) != std::string::npos)
+      return makerPair.second(moduleId, state, parentToUse_);
+  }
+
+  return new ModuleDialogBasic(moduleId, parentToUse_);
 }

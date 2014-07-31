@@ -32,6 +32,8 @@
 #define DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 
 #include <Dataflow/Network/DataflowInterfaces.h>
+#include <boost/function.hpp>
+#include <set>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun
@@ -40,21 +42,33 @@ namespace SCIRun
   {
     namespace Networks
     {
+      typedef boost::function<SCIRun::Core::Datatypes::DatatypeHandle()> DataProvider;
+
       class SCISHARE SimpleSink : public DatatypeSinkInterface
       {
       public:
         SimpleSink();
+        ~SimpleSink();
         virtual void waitForData();
         virtual SCIRun::Core::Datatypes::DatatypeHandleOption receive();
-        virtual bool hasData() const { return hasData_; }
-        virtual void setHasData(bool dataPresent);
+        //virtual bool hasData() const { return hasData_; }
+        //virtual void setHasData(bool dataPresent);
         virtual DatatypeSinkInterface* clone() const;
         virtual bool hasChanged() const;
-        void setData(SCIRun::Core::Datatypes::DatatypeHandle data);
+        void setData(DataProvider dataProvider);
+        virtual void invalidateProvider();
+        virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber);
+
+        static bool globalPortCachingFlag();
+        static void setGlobalPortCachingFlag(bool value);
+
       private:
-        SCIRun::Core::Datatypes::DatatypeHandle data_;
-        SCIRun::Core::Datatypes::Datatype::id_type previousId_;
-        bool hasData_;
+        DataProvider dataProvider_;
+        boost::optional<SCIRun::Core::Datatypes::Datatype::id_type> previousId_;
+        DataHasChangedSignalType dataHasChanged_;
+        static bool globalPortCaching_;
+        static void invalidateAll();
+        static std::set<SimpleSink*> instances_;
       };
     
       /*
@@ -74,7 +88,16 @@ namespace SCIRun
       class SCISHARE SimpleSource : public DatatypeSourceInterface
       {
       public:
-        virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data);
+        SimpleSource();
+        ~SimpleSource();
+        virtual void cacheData(Core::Datatypes::DatatypeHandle data) override;
+        virtual void send(DatatypeSinkInterfaceHandle receiver) const override;
+        virtual bool hasData() const override;
+
+        static void clearAllSources();
+      private:
+        SCIRun::Core::Datatypes::DatatypeHandle data_;
+        static std::set<SimpleSource*> instances_;
       };
     }
   }

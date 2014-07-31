@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -53,7 +53,7 @@ class FindClosestNodesFromPointFieldPAlgo
   public:
     FindClosestNodesFromPointFieldPAlgo() :
       barrier_("FindClosestNodesFromPointFieldPAlgo Barrier") {}
-      
+
     void parallel(int proc, int nproc);
 
     VField* sfield_;
@@ -62,12 +62,12 @@ class FindClosestNodesFromPointFieldPAlgo
     VMesh*  smesh_;
     VMesh*  dmesh_;
     VMesh*  omesh_;
-    
+
     AlgoBase*  algo_;
 
     std::vector<double> mindist_array_;
 
-    
+
   private:
     Barrier  barrier_;
 };
@@ -82,26 +82,26 @@ FindClosestNodesFromPointFieldPAlgo::parallel(int proc, int nproc)
   VField::index_type end = localsize*(proc+1);
   if (proc == nproc-1) end = num_values;
   if (proc == 0) mindist_array_.resize(num_values,DBL_MAX);
-  
+
   barrier_.wait(nproc);
 
-  
+
   VMesh::size_type num_snodes = smesh_->num_nodes();
-    
+
   int cnt = 0;
   if (dfield_->basis_order() == 0)
   {
     Point p, r;
     VMesh::Elem::index_type didx;
-    
+
     for (VMesh::Elem::index_type idx=start; idx<end;idx++)
     {
       Vector v;
       double val;
       dfield_->get_value(v,idx);
 
-      double mindist = DBL_MAX;  
-      
+      double mindist = DBL_MAX;
+
       Point d = v.asPoint();
       VMesh::Node::index_type didx = -1;
       for (VMesh::Node::index_type sidx = 0 ; sidx < num_snodes; sidx++)
@@ -124,15 +124,15 @@ FindClosestNodesFromPointFieldPAlgo::parallel(int proc, int nproc)
   {
     Point p, r;
     VMesh::Node::index_type didx;
-    
+
     for (VMesh::Node::index_type idx=start; idx<end;idx++)
     {
       Vector v;
       double val;
       dfield_->get_value(v,idx);
 
-      double mindist = DBL_MAX;  
-      
+      double mindist = DBL_MAX;
+
       Point d = v.asPoint();
       VMesh::Node::index_type didx = -1;
       for (VMesh::Node::index_type sidx = 0 ; sidx < num_snodes; sidx++)
@@ -149,7 +149,7 @@ FindClosestNodesFromPointFieldPAlgo::parallel(int proc, int nproc)
 
       ofield_->set_value(didx,idx);
       mindist_array_[idx] = mindist;
-    }  
+    }
   }
 
   barrier_.wait(nproc);
@@ -158,11 +158,11 @@ FindClosestNodesFromPointFieldPAlgo::parallel(int proc, int nproc)
 
 bool
 FindClosestNodesFromPointFieldAlgo::
-run(FieldHandle source, FieldHandle destination, 
+run(FieldHandle source, FieldHandle destination,
     FieldHandle& output)
 {
   algo_start("FindClosestNodesFromPointField");
-  
+
   if (source.get_rep() == 0)
   {
     error("No source field");
@@ -177,22 +177,22 @@ run(FieldHandle source, FieldHandle destination,
 
   FieldInformation fis(source);
   FieldInformation fid(destination);
-  
+
   fid.set_data_type("int");
   output = CreateField(fid,destination->mesh());
-  
+
   if (output.get_rep() == 0)
   {
     error("Could not allocate output field");
     algo_end(); return (false);
   }
-  
+
   // Determine output type
 
   VMesh* smesh = source->vmesh();
   VMesh* dmesh = destination->vmesh();
   VMesh* omesh = output->vmesh();
-  
+
   VField* sfield = source->vfield();
   VField* dfield = destination->vfield();
   VField* ofield = output->vfield();
@@ -201,13 +201,13 @@ run(FieldHandle source, FieldHandle destination,
   ofield->resize_values();
   ofield->clear_all_values();
   ofield->set_all_values(get_scalar("default_value"));
-  
+
   int dbasis_order = dfield->basis_order();
 
   if (dbasis_order < 0)
   {
     error("Destination field basis order needs to constant or linear");
-    algo_end(); return (false);  
+    algo_end(); return (false);
   }
 
   if (!(dfield->is_vector()))
@@ -237,10 +237,10 @@ run(FieldHandle source, FieldHandle destination,
   algo.algo_ = this;
 
   int np = Thread::numProcessors();
-  Thread::parallel(&algo,&FindClosestNodesFromPointFieldPAlgo::parallel,np,np);  
- 
+  Thread::parallel(&algo,&FindClosestNodesFromPointFieldPAlgo::parallel,np,np);
+
   // Filter not used values
- 
+
   VMesh::size_type num_nodes = smesh->num_nodes();
   VField::size_type num_values = ofield->num_values();
   for (VField::index_type idx=0; idx< num_nodes; idx++)
@@ -251,14 +251,14 @@ run(FieldHandle source, FieldHandle destination,
     {
       index_type nidx;
       ofield->get_value(nidx,ii);
-      
+
       if (nidx == idx && algo.mindist_array_[ii] < mindist)
       {
         mindist = algo.mindist_array_[ii];
         keep_index = ii;
       }
     }
-  
+
     for (VMesh::index_type ii=0; ii<num_values; ii++)
     {
       index_type nidx;
@@ -267,10 +267,10 @@ run(FieldHandle source, FieldHandle destination,
         ofield->set_value(-1,ii);
     }
   }
- 
- 
+
+
   ofield->copy_properties(dfield);
-  
+
   algo_end(); return (true);
 }
 

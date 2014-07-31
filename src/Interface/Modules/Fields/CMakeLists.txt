@@ -1,23 +1,23 @@
 
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2012 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -31,40 +31,64 @@ SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
   GetDomainBoundary.ui
   JoinFields.ui
+  FairMesh.ui
   ReportFieldInfoDialog.ui
   SplitFieldByDomain.ui
   CreateFieldData.ui
+  CalculateFieldData.ui
   InterfaceWithCleaverDialog.ui
   SetFieldDataDialog.ui
   MapFieldDataFromElemToNodeDialog.ui
   MapFieldDataFromNodeToElemDialog.ui
+  resampleregularmesh.ui #TODO: fix case
+  ProjectPointsOntoMesh.ui
+  calculatedistancetofield.ui #TODO: fix case
+  calculatedistancetofieldboundary.ui #TODO: fix case
+  MapFieldDataOntoElems.ui
+  MapFieldDataOntoNodes.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
   CreateLatVolDialog.h
   CreateFieldDataDialog.h
+  CalculateFieldDataDialog.h
   GetDomainBoundaryDialog.h
   JoinFieldsDialog.h
+  FairMeshDialog.h
   ReportFieldInfoDialog.h
   SplitFieldByDomainDialog.h
   InterfaceWithCleaverDialog.h
   SetFieldDataDialog.h
   MapFieldDataFromElemToNodeDialog.h
   MapFieldDataFromNodeToElemDialog.h
+  ResampleRegularMeshDialog.h
+  ProjectPointsOntoMeshDialog.h
+  CalculateDistanceToFieldDialog.h
+  CalculateDistanceToFieldBoundaryDialog.h
+  MapFieldDataOntoElemsDialog.h
+  MapFieldDataOntoNodesDialog.h
   share.h
 )
 
-SET(Interface_Modules_Fields_SOURCES 
+SET(Interface_Modules_Fields_SOURCES
   CreateLatVolDialog.cc
   CreateFieldDataDialog.cc
+  CalculateFieldDataDialog.cc
   GetDomainBoundaryDialog.cc
   JoinFieldsDialog.cc
+  FairMeshDialog.cc
   ReportFieldInfoDialog.cc
   SplitFieldByDomainDialog.cc
   InterfaceWithCleaverDialog.cc
   SetFieldDataDialog.cc
   MapFieldDataFromElemToNodeDialog.cc
   MapFieldDataFromNodeToElemDialog.cc
+  ResampleRegularMeshDialog.cc
+  ProjectPointsOntoMeshDialog.cc
+  CalculateDistanceToFieldDialog.cc
+  CalculateDistanceToFieldBoundaryDialog.cc
+  MapFieldDataOntoElemsDialog.cc
+  MapFieldDataOntoNodesDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})
@@ -77,11 +101,11 @@ ADD_LIBRARY(Interface_Modules_Fields
   ${Interface_Modules_Fields_SOURCES}
 )
 
-TARGET_LINK_LIBRARIES(Interface_Modules_Fields 
+TARGET_LINK_LIBRARIES(Interface_Modules_Fields
   Algorithms_Field
   Modules_Fields
   Interface_Modules_Base
-  Dataflow_Modules_Legacy_Fields
+  Modules_Legacy_Fields
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
@@ -89,5 +113,5 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Fields
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Fields)
 ENDIF(BUILD_SHARED_LIBS)
-  
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

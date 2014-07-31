@@ -53,7 +53,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset) 
+ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset)
 {
 }
 
@@ -112,7 +112,7 @@ namespace
 }
 
 
-ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QFrame(parent), HasNotes(theModule->get_id(), true),
   ports_(new PortWidgetManager),
@@ -120,6 +120,9 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   colorLocked_(false),
   theModule_(theModule),
   moduleId_(theModule->get_id()),
+  dialog_(0),
+  dockable_(0),
+  dialogErrorControl_(dialogErrorControl),
   inputPortLayout_(0),
   outputPortLayout_(0),
   editor_(ed),
@@ -140,7 +143,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   progressBar_->setMaximum(100);
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
-  
+
   addPortLayouts();
   addPorts(*theModule_);
   optionsButton_->setVisible(theModule_->has_ui());
@@ -151,7 +154,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   {
     resize(width() + extraWidth + extraModuleWidth, height());
   }
-   
+
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(showOptionsDialog()));
   makeOptionsDialog();
 
@@ -161,8 +164,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   setupModuleActions();
 
   progressBar_->setTextVisible(false);
-  
-  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
+
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), dialogErrorControl_, SCIRunMainWindow::Instance());
   connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(show()));
   connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(raise()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
@@ -271,12 +274,12 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
 
 void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
 {
-  connect(port, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)), 
+  connect(port, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
     this, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
-  connect(port, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
+  connect(port, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));
-  connect(port, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)), 
+  connect(port, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
 }
 
@@ -370,9 +373,9 @@ bool PortWidgetManager::removeDynamicPort(const PortId& pid, QHBoxLayout* layout
   {
     auto widget = *iter;
     inputPorts_.erase(iter);
-    
+
     reindexInputs();
-    
+
     layout->removeWidget(widget);
     delete widget;
 
@@ -398,18 +401,32 @@ ModuleWidget::~ModuleWidget()
   deleting_ = true;
   Q_FOREACH (PortWidget* p, ports_->getAllPorts())
     p->deleteConnections();
-  
-  GuiLogger::Instance().log("Module deleted.");
-  if (dialog_ != nullptr)
-  {
-    dialog_->close();
-    dialog_.reset();
-  }
+
+  //GuiLogger::Instance().log("Module deleted.");
+
   theModule_->setLogger(LoggerHandle());
-  delete logWindow_;
+
 
   if (deletedFromGui_)
+  {
+    if (dialog_)
+    {
+      dialog_->close();
+    }
+
+    if (dockable_)
+    {
+      //dockable_->hide();
+      //dockable_->deleteLater();
+      SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
+      delete dockable_;
+    }
+
+    delete logWindow_;
+    logWindow_ = 0;
+
     Q_EMIT removeModule(ModuleId(moduleId_));
+  }
 }
 
 void ModuleWidget::trackConnections()
@@ -474,15 +491,25 @@ boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
 
 void ModuleWidget::makeOptionsDialog()
 {
-  if (!dialog_)
+  if (theModule_->has_ui())
   {
-    if (!dialogFactory_)
-      dialogFactory_.reset(new ModuleDialogFactory(SCIRunMainWindow::Instance()));
+    if (!dialog_)
+    {
+      if (!dialogFactory_)
+        dialogFactory_.reset(new ModuleDialogFactory(0));
 
-    dialog_.reset(dialogFactory_->makeDialog(moduleId_, theModule_->get_state()));
-    dialog_->pull();
-    connect(dialog_.get(), SIGNAL(executeButtonPressed()), this, SLOT(execute()));
-    connect(this, SIGNAL(moduleExecuted()), dialog_.get(), SLOT(moduleExecuted()));
+      dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
+      dialog_->pull();
+      connect(dialog_, SIGNAL(executeButtonPressed()), this, SLOT(execute()));
+      connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
+      dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
+      dockable_->setWidget(dialog_);
+      dockable_->setMinimumSize(dialog_->minimumSize());
+      dockable_->setAllowedAreas(Qt::RightDockWidgetArea);
+      dockable_->setAutoFillBackground(true);
+      SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
+      dockable_->hide();
+    }
   }
 }
 
@@ -491,10 +518,18 @@ boost::shared_ptr<ClosestPortFinder> ModuleWidget::closestPortFinder_;
 
 void ModuleWidget::showOptionsDialog()
 {
-  makeOptionsDialog();
-  dialog_->show();
-  dialog_->raise();
-  dialog_->activateWindow();
+  if (dialog_)
+  {
+    makeOptionsDialog();
+    dockable_->show();
+    dockable_->raise();
+    dockable_->activateWindow();
+    //TODO--more special viewscene code...
+    if (dialog_->windowTitle().startsWith("ViewScene"))
+    {
+      dockable_->setFloating(true);
+    }
+  }
 }
 
 void ModuleWidget::updateProgressBar(double percent)
@@ -515,7 +550,7 @@ void ModuleWidget::launchDocumentation()
   std::string url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + getModule()->get_module_name();
 
   QUrl qurl(QString::fromStdString(url), QUrl::TolerantMode);
-  
+
   if (!QDesktopServices::openUrl(qurl))
     GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
 }
@@ -539,4 +574,19 @@ void ModuleWidget::connectNewModule(const SCIRun::Dataflow::Networks::PortDescri
 bool ModuleWidget::hasDynamicPorts() const
 {
   return theModule_->hasDynamicPorts();
+}
+
+void ModuleWidget::pinUI()
+{
+  dockable_->setFloating(false);
+}
+
+void ModuleWidget::hideUI()
+{
+  dockable_->hide();
+}
+
+void ModuleWidget::showUI()
+{
+  dockable_->show();
 }

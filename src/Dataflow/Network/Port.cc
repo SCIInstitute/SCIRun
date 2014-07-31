@@ -28,7 +28,6 @@
 
 /// @todo Documentation Dataflow/Network/Port.cc
 
-#include <iostream>
 #include <boost/foreach.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Core/Datatypes/Datatype.h>
@@ -37,6 +36,7 @@
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
@@ -64,8 +64,7 @@ void Port::detach(Connection* conn)
   auto pos = std::find(connections_.begin(), connections_.end(), conn);
   if (pos == connections_.end())
   {
-    /// @todo: use real logger here
-    std::cerr << "Port::detach: Connection not found";
+    LOG_DEBUG(id() << " Port::detach: Connection not found" << std::endl);
   }
   connections_.erase(pos);
 }
@@ -126,6 +125,13 @@ void InputPort::attach(Connection* conn)
   Port::attach(conn);
 }
 
+void InputPort::detach(Connection* conn)
+{
+  if (sink_)
+    sink_->invalidateProvider();
+  Port::detach(conn);
+}
+
 InputPortInterface* InputPort::clone() const
 {
   DatatypeSinkInterfaceHandle sink(sink_->clone());
@@ -138,6 +144,11 @@ InputPortInterface* InputPort::clone() const
 bool InputPort::hasChanged() const
 {
   return sink()->hasChanged();
+}
+
+boost::signals2::connection InputPort::connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber)
+{
+  return sink()->connectDataHasChanged([this, subscriber] (DatatypeHandle data) { subscriber(this->id(), data); });
 }
 
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)
@@ -153,11 +164,31 @@ OutputPort::~OutputPort()
 
 void OutputPort::sendData(DatatypeHandle data)
 {
+  source_->cacheData(data);
+
   if (0 == nconnections())
     return;
+
   BOOST_FOREACH(Connection* c, connections_)
   {
     if (c && c->iport_)
-      source_->send(c->iport_->sink(), data);
+      source_->send(c->iport_->sink());
   }
+}
+
+bool OutputPort::hasData() const
+{
+  if (!source_)
+    return false;
+  auto ret = source_->hasData();
+  LOG_DEBUG(id() << " OutputPort::hasData returns " << ret << std::endl);
+  return ret;
+}
+
+void OutputPort::attach(Connection* conn)
+{
+  if (hasData() && conn && conn->iport_)
+    source_->send(conn->iport_->sink());
+
+  Port::attach(conn);
 }

@@ -26,16 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Legacy/Fields/RegisterWithCorrespondences.cc
+#include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
 
-///
-///@file  RegisterWithCorrespondences.cc
-///
-///@author
-///   darrell
-///  
-/// TODAY'S DATE HERE
-///
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Field.h>
@@ -46,6 +39,9 @@ namespace SCIRun {
 
 using namespace SCIRun;
 
+/// @class RegisterWithCorrespondences
+/// @brief This module allows you to morph using a thin plate spline algorithm
+/// one point set or mesh to another point set or mesh. 
 
 class RegisterWithCorrespondences : public Module {
 public:
@@ -113,3 +109,4 @@ RegisterWithCorrespondences::execute()
 } // End namespace SCIRun
 
 
+#endif

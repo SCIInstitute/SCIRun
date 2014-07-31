@@ -35,6 +35,9 @@
 namespace SCIRun {
   namespace Modules {
     namespace Bundles {
+      
+      /// @class InsertMatricesIntoBundle
+      /// @brief This module inserts a matrix object into a bundle.
 
       class SCISHARE InsertMatricesIntoBundle : public Dataflow::Networks::Module,
         public Has2InputPorts<BundlePortTag, DynamicPortTag<MatrixPortTag>>,

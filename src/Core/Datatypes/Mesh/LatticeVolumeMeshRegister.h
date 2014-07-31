@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Mesh/LatticeVolumeMeshRegister.h
+
 #ifndef CORE_DATATYPES_MESH_LATVOLMESHREGISTER_H
 #define CORE_DATATYPES_MESH_LATVOLMESHREGISTER_H 
 

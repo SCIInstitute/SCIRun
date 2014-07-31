@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ClipFieldByFunction2.cc
 
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
@@ -40,8 +39,10 @@
 #include <Dataflow/Network/Ports/StringPort.h>
 #include <Dataflow/Network/Module.h>
 
-
 namespace SCIRun {
+
+/// @class ClipFieldByFunction2
+/// @brief This module selects a subset of one or two fields using a function. 
 
 class ClipFieldByFunction2 : public Module {
   public:
@@ -225,34 +226,6 @@ void ClipFieldByFunction2::execute()
     send_output_handle("Mapping", mapping);
   }
 }
-
-
-void
-ClipFieldByFunction2::tcl_command(GuiArgs& args, void* userdata)
-{
-  if(args.count() < 2)
-  {
-    args.error("ClipFieldByFunction2 needs a minor command");
-    return;
-  }
-
-  if( args[1] == "gethelp" )
-  {
-    return;
-  }
-  else
-  {
-    Module::tcl_command(args, userdata);
-  }
-}
-
-void
-ClipFieldByFunction2::presave()
-{
-  // update gui_function_ before saving.
-  TCLInterface::execute(get_id() + " update_text");
-}
-
 
 } // End namespace ModelCreation
 

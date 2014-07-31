@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/MapFieldDataFromNodeToElem.cc
+
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromNodeToElem.h>
 #include <Core/Datatypes/Matrix.h>
@@ -39,6 +39,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+/// @brief This module contains several filters for converting data that is
+/// stored in the nodes to data that is stored in the elements.
+
 MapFieldDataFromNodeToElemModule::MapFieldDataFromNodeToElemModule()
   : Module(ModuleLookupInfo("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun"), true)
 {
@@ -48,22 +51,21 @@ MapFieldDataFromNodeToElemModule::MapFieldDataFromNodeToElemModule()
 
 void MapFieldDataFromNodeToElemModule::setStateDefaults()
 {
-  auto state = get_state();
-  state->setValue(MapFieldDataFromNodeToElemAlgo::Method, std::string("interpolation"));
+  setStateStringFromAlgoOption(MapFieldDataFromNodeToElemAlgo::Method);
 }
 
 void MapFieldDataFromNodeToElemModule::execute()
-{ 
+{
   FieldHandle input = getRequiredInput(InputField);
-  
+
   if (needToExecute())
   {
-   update_state(Executing);
-   
-   algo().set_option(MapFieldDataFromNodeToElemAlgo::Method, get_state()->getValue(MapFieldDataFromNodeToElemAlgo::Method).getString());
-  
-   auto output = algo().run_generic(make_input((InputField, input)));
-  
-   sendOutputFromAlgorithm(OutputField, output); 
+    update_state(Executing);
+
+    setAlgoOptionFromState(MapFieldDataFromNodeToElemAlgo::Method);
+
+    auto output = algo().run_generic(make_input((InputField, input)));
+
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }

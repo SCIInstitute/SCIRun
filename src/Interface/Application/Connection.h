@@ -36,6 +36,7 @@
 #include <Dataflow/Network/ConnectionId.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Note.h>
+#include <Interface/Application/HasNotes.h>
 #include <Core/Utils/Exception.h>
 
 namespace SCIRun {
@@ -65,16 +66,24 @@ public:
   ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer);
   ~ConnectionLine();
   void setColor(const QColor& color);
-  QColor color() const;
+  QColor color() const; 
+  std::list<SCIRun::Dataflow::Networks::ModuleId> getConnectedToModuleId(); 
+  
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
   void updateNote(const Note& note);
+
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
 protected:
-  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override; 
+  void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+  void mouseMoveEvent(QGraphicsSceneMouseEvent * event) override; 
+  QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
   virtual void setNoteGraphicsContext() override;
+   
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
@@ -83,6 +92,8 @@ private:
   void destroy();
   bool destroyed_;
   class ConnectionMenu* menu_;
+  bool menuOpen_; 
+  QColor placeHoldingColor_;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};
@@ -90,7 +101,7 @@ struct InvalidConnection : virtual Core::ExceptionBase {};
 class ConnectionInProgress
 {
 public:
-  virtual ~ConnectionInProgress() {}
+	virtual ~ConnectionInProgress() {}
   virtual void update(const QPointF& end) = 0;
 };
 

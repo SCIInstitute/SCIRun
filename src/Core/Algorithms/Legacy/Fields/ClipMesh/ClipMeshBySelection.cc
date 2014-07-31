@@ -26,74 +26,80 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/ClipMesh/ClipMeshBySelection.h>
+#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
 
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Logging/Log.h>
 
-#include <sci_hash_map.h>
+//#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
 
-namespace SCIRunAlgo {
-
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+ALGORITHM_PARAMETER_DEF(Fields, ClipMethod);
+ALGORITHM_PARAMETER_DEF(Fields, BuildMapping);
+
+ClipMeshBySelectionAlgo::ClipMeshBySelectionAlgo()
+{
+  add_option(Parameters::ClipMethod, "onenode", "element|onenode|majoritynodes|allnodes");
+  addParameter(Parameters::BuildMapping, true);
+}
 
 // Version without building mapping matrix
 bool
-ClipMeshBySelectionAlgo::run(FieldHandle input,
+ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
                              FieldHandle selection,
-                             FieldHandle& output)
+                             FieldHandle& output) const
 {
   // Store old setting
-  bool temp = get_bool("build_mapping");
-  set_bool("build_mapping",false);
+  bool temp = get(Parameters::BuildMapping).getBool();
+  //TODO: yuck
+  const_cast<ClipMeshBySelectionAlgo&>(*this).set(Parameters::BuildMapping, false);
   MatrixHandle dummy;
   // Run full algorithm
-  bool ret = run(input,selection,output,dummy);
+  bool ret = runImpl(input, selection, output, dummy);
   // Reset old setting
-  set_bool("build_mapping",temp);
-  // Return result
-  return (ret);
+  const_cast<ClipMeshBySelectionAlgo&>(*this).set(Parameters::BuildMapping, temp);
+  return ret;
 }
 
 // Version with building mapping matrix
 
 bool
-ClipMeshBySelectionAlgo::run(FieldHandle input,
+ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
                              FieldHandle selection,
                              FieldHandle& output,
-                             MatrixHandle& mapping)
+                             MatrixHandle& mapping) const
 {
-  // Mark that we are starting the algorithm, but do not report progress
-  algo_start("ClipMeshBySelection");
-  // Step 0:
-  // Safety test:
-  // Test whether we received actually a field. A handle can point to no object.
-  // Using a null handle will cause the program to crash. Hence it is a good
-  // policy to check all incoming handles and to see whether they point to actual
-  // objects.
+  ScopedAlgorithmStatusReporter asr(this, "ClipMeshBySelection");
 
-  // Handle: the function get_rep() returns the pointer contained in the handle
-  if (input.get_rep() == 0)
+  if (!input)
   {
-    // If we encounter a null pointer we return an error message and return to
-    // the program to deal with this error.
     error("No input field.");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (selection.get_rep() == 0)
+  if (!selection)
   {
-    // If we encounter a null pointer we return an error message and return to
-    // the program to deal with this error.
     error("No selection input field.");
-    algo_end(); return (false);
+    return (false);
   }
-
 
   // Step 1: determine the type of the input fields and determine what type the
   // output field should be.
@@ -104,25 +110,22 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
   if (fi.is_nonlinear())
   {
     error("This algorithm has not yet been defined for non-linear elements yet.");
-    algo_end(); return (false);
+    return (false);
   }
 
-  printf("Num Elems %d; Num Tets %d\n",static_cast<int>(input->vmesh()->num_elems()),static_cast<int>(selection->vfield()->num_values()));
+  LOG_DEBUG("Num Elems " << input->vmesh()->num_elems() << "; Num Tets " << selection->vfield()->num_values() << std::endl);
 
   FieldInformation fo(input);
   fo.make_unstructuredmesh();
 
   output = CreateField(fo);
-  if (output.get_rep() == 0)
+  if (!output)
   {
-    // If we encounter a null pointer we return an error message and return to
-    // the program to deal with this error.
     error("Could not generate output field.");
-    algo_end(); return (false);
+    return (false);
   }
 
-  std::string method = get_option("method");
-
+  std::string method = get_option(Parameters::ClipMethod);
 
   VMesh*   imesh = input->vmesh();
   VMesh*   omesh =  output->vmesh();
@@ -144,13 +147,12 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
     std::vector<index_type> node_mapping2(imesh->num_nodes(),-1);
     std::vector<index_type> elem_mapping2(imesh->num_elems(),-1);
 
-    printf("Num Elems %d; Num Tets %d\n",static_cast<int>(imesh->num_elems()),static_cast<int>(sfield->num_values()));
-
+    LOG_DEBUG("Num Elems " << imesh->num_elems() << "; Num Tets " << sfield->num_values() << std::endl);
 
     if (imesh->num_elems() != sfield->num_values())
     {
       error("Number of elements in input mesh does not match number of values in selection mesh.");
-      algo_end(); return (false);
+      return (false);
     }
 
     VMesh::Node::array_type nodes;
@@ -158,7 +160,7 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
 
     int cnt = 0;
 
-    for(VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
+    for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
     {
       char val;
       sfield->get_value(val,idx);
@@ -180,7 +182,7 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
         elem_mapping[idx] = omesh->add_elem(nodes);
         elem_mapping2[elem_mapping[idx]] = idx;
       }
-      cnt++; if (cnt == 100) { cnt=0; update_progress(idx,num_elems);}
+      cnt++; if (cnt == 100) { cnt=0; update_progress_max(idx,num_elems);}
     }
 
     ofield->resize_values();
@@ -201,6 +203,8 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
         ofield->copy_value(ifield,node_mapping2[idx],idx);
       }
     }
+  
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
     bool build_mapping = get_bool("build_mapping");
     if (build_mapping)
@@ -219,7 +223,7 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
           if (!data.allocated())
           {
             error("Could not allocate enough memory.");
-            algo_end(); return (false);     
+            return (false);     
           }
           const SparseRowMatrix::Rows& rr = data.rows();
           const SparseRowMatrix::Columns& cc = data.columns();
@@ -251,7 +255,7 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
           if (!data.allocated())
           {
             error("Could not allocate enough memory.");
-            algo_end(); return (false);     
+            return (false);     
           }
           const SparseRowMatrix::Rows& rr = data.rows();
           const SparseRowMatrix::Columns& cc = data.columns();
@@ -268,12 +272,14 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
             vv[idx] = 1.0;
           }
 
-          mapping = new SparseRowMatrix(m,n,data,nnz);
+          mapping.reset(new SparseRowMatrix(m,n,data,nnz));
         }
       }
       // provide an empty matrix
-      if (mapping.get_rep() == 0) mapping = new DenseMatrix(0,0);
+      if (!mapping)
+        mapping.reset(new DenseMatrix(0,0));
     }
+#endif
   }
   else
   {
@@ -287,12 +293,13 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
     std::vector<index_type> node_mapping2(imesh->num_nodes(),-1);
     std::vector<index_type> elem_mapping2(imesh->num_elems(),-1);
 
-    printf("Num Nodes %d; Num Tets %d\n",static_cast<int>(imesh->num_nodes()),static_cast<int>(sfield->num_values()));
+    LOG_DEBUG("Num Nodes " << imesh->num_nodes() << "; Num Tets " << sfield->num_values() << std::endl);
+
 
     if (imesh->num_nodes() != sfield->num_values())
     {
       error("Number of nodes in input mesh does not match number of values in selection mesh.");
-      algo_end(); return (false);
+      return (false);
     }
 
     VMesh::Node::array_type nodes;
@@ -326,7 +333,7 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
         elem_mapping2[elem_mapping[idx]] = idx;
       }
 
-      cnt++; if (cnt == 100) { cnt=0; update_progress(idx,num_elems);}
+      cnt++; if (cnt == 100) { cnt=0; update_progress_max(idx,num_elems);}
     }
 
     ofield->resize_values();
@@ -347,8 +354,10 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
         ofield->copy_value(ifield,node_mapping2[idx],idx);
       }
     }
+  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
-    bool build_mapping = get_bool("build_mapping");
+    bool build_mapping = get(Parameters::BuildMapping).getBool();
     if (build_mapping)
     {
       size_type m,n,nnz;
@@ -365,7 +374,7 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
           if (!data.allocated())
           {
             error("Could not allocate enough memory.");
-            algo_end(); return (false);     
+            return (false);     
           }
           const SparseRowMatrix::Rows& rr = data.rows();
           const SparseRowMatrix::Columns& cc = data.columns();
@@ -397,7 +406,7 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
           if (!data.allocated())
           {
             error("Could not allocate enough memory.");
-            algo_end(); return (false);     
+            return (false);     
           }
           const SparseRowMatrix::Rows& rr = data.rows();
           const SparseRowMatrix::Columns& cc = data.columns();
@@ -417,15 +426,35 @@ ClipMeshBySelectionAlgo::run(FieldHandle input,
         }
       }
       // provide an empty matrix
-      if (mapping.get_rep() == 0) mapping = new DenseMatrix(0,0);
+      if (!mapping) mapping.reset(new DenseMatrix(0,0));
     }
+  #endif
   }
 
   /// Copy properties of the property manager
-	output->copy_properties(input.get_rep());
+  CopyProperties(*input, *output);
+//	output->copy_properties(input.get_rep());
 
   // Success:
-  algo_end(); return (true);
+  return (true);
 }
 
-} // End namespace SCIRunAlgo
+const AlgorithmInputName ClipMeshBySelectionAlgo::SelectionField("SelectionField");
+const AlgorithmOutputName ClipMeshBySelectionAlgo::Mapping("Mapping");
+
+AlgorithmOutput ClipMeshBySelectionAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(Variables::InputField);
+  auto selectionField = input.get<Field>(SelectionField);
+  
+  FieldHandle outputField;
+  MatrixHandle mapping;
+
+  if (!runImpl(inputField, selectionField, outputField, mapping))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  output[Mapping] = mapping;
+  return output;
+}

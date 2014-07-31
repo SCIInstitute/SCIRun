@@ -33,6 +33,9 @@
 
 using namespace SCIRun;
 
+/// @class ReportBundleInfo
+/// @brief This module lists all the objects stored in a bundle. 
+
 class ReportBundleInfo : public Module {
 public:
   ReportBundleInfo(GuiContext*);
@@ -53,25 +56,25 @@ ReportBundleInfo::ReportBundleInfo(GuiContext* ctx)
 
 void ReportBundleInfo::execute()
 {
-  //! Define the dataflow object
+  /// Define the dataflow object
   BundleHandle bundle;
 
-  //! Get the bundle from the module
+  /// Get the bundle from the module
   get_input_handle("bundle",bundle,true);
 
-  //! If the input changed we need to update output
+  /// If the input changed we need to update output
   if (inputs_changed_)
   {
     update_state(Executing);
     std::string tclinfostring;
    
-    //! Get number of objects in bundle
+    /// Get number of objects in bundle
     int numhandles = bundle->getNumHandles();
 
     std::string name;
     std::string type;
       
-    //! Loop through all objects and display name and type
+    /// Loop through all objects and display name and type
     for (int p=0; p < numhandles; p++)
     {
       name = bundle->getHandleName(p);

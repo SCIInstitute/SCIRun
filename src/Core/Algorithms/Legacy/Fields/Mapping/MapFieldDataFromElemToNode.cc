@@ -84,12 +84,12 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
 	
   index_type cnt = 0, c = 0;
   
-  if (method == "Interpolate")
+  if (method == "Interpolation")
   {
     algo->remark("Interpolation of piecewise constant data is done by averaging adjoining values");
   }
   
-  if ((method == "interpolation")||(method == "average"))
+  if ((method == "Interpolation")||(method == "Average"))
   {
    while (it != eit)
    {
@@ -114,7 +114,7 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
    }
    
   } else
-  if (method == "max")	
+  if (method == "Max")	
   {
     while (it != eit)
     {
@@ -141,7 +141,7 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
       }
     }
   } else
-  if (method == "min")	
+  if (method == "Min")	
   {
     while (it != eit)
     {
@@ -168,7 +168,7 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
       }
     }
   } else
-  if (method=="sum")
+  if (method=="Sum")
   {
     while (it != eit)
     {
@@ -191,7 +191,7 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
       }
     }
   } else
-  if (method == "median")
+  if (method == "Median")
   {
     std::vector<DATA> valarray;
     while (it != eit)
@@ -226,22 +226,20 @@ MapFieldDataFromElemToNodeT(const MapFieldDataFromElemToNodeAlgo *algo,
 
 MapFieldDataFromElemToNodeAlgo::MapFieldDataFromElemToNodeAlgo()
 {
-  add_option(Method,"interpolation","interpolation|average|min|max|sum|median|none");
+  add_option(Method,"Interpolation","Interpolation|Average|Min|Max|Sum|Median|None");
 }
 
-AlgorithmInputName MapFieldDataFromElemToNodeAlgo::InputField("InputField");
-AlgorithmOutputName MapFieldDataFromElemToNodeAlgo::OutputField("OutputField");
 AlgorithmParameterName MapFieldDataFromElemToNodeAlgo::Method("Method");
 
 AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto input_field = input.get<Field>(InputField);
+  auto input_field = input.get<Field>(Variables::InputField);
   
   FieldHandle output_field;
   output_field = run(input_field);
   
   AlgorithmOutput output;
-  output[OutputField] = output_field;
+  output[Variables::OutputField] = output_field;
 
   return output;
 }
@@ -261,7 +259,9 @@ FieldHandle MapFieldDataFromElemToNodeAlgo::run(FieldHandle input_field) const
    
    if (fi.is_lineardata())
    {
-    THROW_ALGORITHM_INPUT_ERROR("Data is already located at nodes"); 
+      output = input_field;
+      remark("Data is already at the nodes"); 
+      return output;
    }
    
    if (!(fi.is_constantdata()))

@@ -29,13 +29,12 @@
 
 ///
 /// @file  ReadMatrix.cc
-/// @brief Read a persistent matrix from a file
 /// 
 /// @author
 ///    Steven G. Parker
 ///    Department of Computer Science
 ///    University of Utah
-/// @date@date July 1994
+/// @date July 1994
 /// 
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
@@ -45,6 +44,11 @@
 namespace SCIRun {
 
 template class GenericReader<MatrixHandle>;
+
+/// @class ReadMatrix
+/// @brief This module reads a matrix from file
+///
+/// (a SCIRun .mat file and various other file formats using a plugin system). 
 
 class ReadMatrix : public GenericReader<MatrixHandle> {
   protected:

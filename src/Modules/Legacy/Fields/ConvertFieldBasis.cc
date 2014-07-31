@@ -25,18 +25,22 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ConvertFieldBasis.cc
 
-// Include the algorithm
-#include <Core/Algorithms/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Modules/Legacy/Fields/ConvertFieldBasis.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 
-// The module class
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-// We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
 
+/// @class ConvertFieldBasis
+/// @brief ConvertFieldBasis can modify the location of data in the input field.
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 namespace SCIRun {
 
 class ConvertFieldBasis : public Module {
@@ -54,30 +58,30 @@ class ConvertFieldBasis : public Module {
     GuiString fldname_;         // the field name
 
 };
+#endif
 
+ModuleLookupInfo ConvertFieldBasis::staticInfo_("ConvertFieldBasis", "ChangeFieldData", "SCIRun");
 
-DECLARE_MAKER(ConvertFieldBasis)
-
-ConvertFieldBasis::ConvertFieldBasis(GuiContext* ctx)
-  : Module("ConvertFieldBasis", ctx, Filter, "ChangeFieldData", "SCIRun"),
-    outputbasis_(get_ctx()->subVar("output-basis"), "Linear"),
-    inputbasis_(get_ctx()->subVar("inputdataat", false), "---"),
-    fldname_(get_ctx()->subVar("fldname", false), "---")
+ConvertFieldBasis::ConvertFieldBasis()
+  : Module(staticInfo_)
+    //outputbasis_(get_ctx()->subVar("output-basis"), "Linear"),
+    //inputbasis_(get_ctx()->subVar("inputdataat", false), "---"),
+    //fldname_(get_ctx()->subVar("fldname", false), "---")
 {
-  /// Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(Mapping);
 }
 
-ConvertFieldBasis::~ConvertFieldBasis()
+void ConvertFieldBasis::setStateDefaults()
 {
-  fldname_.set("---");
-  inputbasis_.set("---");
-}
 
+}
 
 void
 ConvertFieldBasis::execute()
 {
+#if 0
   /// Get the input field handle from the port.
   FieldHandle input_field_handle;
   get_input_handle( "Input",  input_field_handle, true );
@@ -124,8 +128,5 @@ ConvertFieldBasis::execute()
     send_output_handle("Output", output_field_handle);    
     send_output_handle("Mapping", mapping_matrix_handle);    
   }
+#endif
 }
-
-} // End namespace Moulding
-
-

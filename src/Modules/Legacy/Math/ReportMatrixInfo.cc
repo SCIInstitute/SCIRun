@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Math/ReportMatrixInfo.cc
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Util/StringUtil.h>
@@ -36,6 +35,9 @@
 #include <Core/Datatypes/MatrixTypeConverter.h>
 
 namespace SCIRun {
+
+/// @class ReportMatrixInfo
+/// @brief This module is used to view the attributes of matrices. 
 
 class ReportMatrixInfo : public Module {
 private:

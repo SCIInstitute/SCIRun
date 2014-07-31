@@ -67,6 +67,7 @@ public:
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
+
 public Q_SLOTS:
   void executeAll();
 protected:
@@ -81,10 +82,12 @@ private:
   PythonConsoleWidget* pythonConsole_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
+  QStringList favoriteModuleNames_;
   
 private:
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
+  void setTipsAndWhatsThis();
   bool okToContinue();
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
@@ -106,6 +109,7 @@ private:
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
+  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_; 
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
@@ -130,12 +134,15 @@ private Q_SLOTS:
   void chooseBackgroundColor();
   void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
+  void handleCheckedModuleEntry(QTreeWidgetItem* item, int column);
   void setExecutor(int type);
+  void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
   void updateMiniView();
   void showPythonWarning(bool visible);
   void makeModulesLargeSize();
   void makeModulesSmallSize();
+  void displayAcknowledgement();
   void exitApplication(int code);
 };
 

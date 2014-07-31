@@ -50,17 +50,23 @@
    <property name="checkable">
     <bool>false</bool>
    </property>
-   <widget class="QLineEdit" name="scalarValueReceived_">
+   <widget class="QDoubleSpinBox" name="scalarValueReceived_">
     <property name="geometry">
      <rect>
       <x>30</x>
       <y>30</y>
-      <width>113</width>
-      <height>20</height>
+      <width>141</width>
+      <height>22</height>
      </rect>
     </property>
-    <property name="readOnly">
-     <bool>true</bool>
+    <property name="decimals">
+     <number>5</number>
+    </property>
+    <property name="minimum">
+     <double>-100000000.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>100000000.000000000000000</double>
     </property>
    </widget>
   </widget>

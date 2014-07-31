@@ -156,12 +156,3 @@ TEST(EigenDenseMatrixBinaryOperationTests, CanSubtract)
   PRINT_MATRIX(m - m);
   EXPECT_EQ(m - m, Zero);
 }
-
-/// @todo: compare to v4.
-TEST(EigenDenseMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
-{
-  DenseMatrix sum = matrix1() + matrixNonSquare();
-  std::cout << sum.rows() << std::endl;
-  std::cout << sum.cols() << std::endl;
-  PRINT_MATRIX(sum);
-}

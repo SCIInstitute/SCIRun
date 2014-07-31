@@ -36,6 +36,9 @@ namespace SCIRun {
   namespace Modules {
     namespace Bundles {
 
+      /// @class GetMatricesFromBundle
+      /// @brief This module retrieves a matrix object from a bundle.
+
       class SCISHARE GetMatricesFromBundle : public Dataflow::Networks::Module,
         public Has1InputPort<BundlePortTag>,
         public Has7OutputPorts<BundlePortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>

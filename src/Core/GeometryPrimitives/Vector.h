@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/GeometryPrimitives/Vector.h
+
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////

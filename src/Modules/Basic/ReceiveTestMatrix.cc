@@ -36,7 +36,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
 ReceiveTestMatrixModule::ReceiveTestMatrixModule()
-  : Module(ModuleLookupInfo("ReceiveTestMatrix", "Math", "SCIRun"))
+  : Module(ModuleLookupInfo("ReceiveTestMatrix", "Testing", "SCIRun"))
 {
   INITIALIZE_PORT(Input);
 }
@@ -45,5 +45,5 @@ void ReceiveTestMatrixModule::execute()
 {
   auto data = getRequiredInput(Input);
   latestValue_ = data;
-  get_state()->setTransientValue("ReceivedMatrix", latestValue_);
+  get_state()->setTransientValue("ReceivedMatrix", latestValue_, true);
 }

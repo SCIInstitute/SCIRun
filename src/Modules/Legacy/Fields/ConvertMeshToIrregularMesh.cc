@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/ConvertMeshToIrregularMesh.cc
 
 // Include the algorithm
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
@@ -40,6 +39,9 @@
 #include <Dataflow/Modules/Fields/share.h>
 
 namespace SCIRun {
+
+/// @class ConvertMeshToIrregularMesh
+/// @brief This module loads a regular mesh and converts it to an irregular mesh.
 
 class ConvertMeshToIrregularMesh : public Module
 {

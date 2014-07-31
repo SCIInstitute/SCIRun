@@ -299,7 +299,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       if (modulePositionEditor_)
         modulePositionEditor_->moveModules(xml->modulePositions);
       else
-        std::cout << "module position editor is null" << std::endl;
+        Log::get() << INFO <<  "module position editor is null, module positions at default" << std::endl;
     }
     catch (ExceptionBase& e)
     {
@@ -312,7 +312,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 
 void NetworkEditorController::clear()
 {
-  //std::cout << "NetworkEditorController::clear()" << std::endl;
+  LOG_DEBUG("NetworkEditorController::clear()" << std::endl);
 }
 
 void NetworkEditorController::executeAll(const ExecutableLookup* lookup)

@@ -42,21 +42,17 @@ class SCISHARE SetFieldDataAlgo : public AlgorithmBase
 {
   public:
     SetFieldDataAlgo();
-    FieldHandle run(FieldHandle input_field, Datatypes::DenseMatrixHandle input_matrix) const; 
-    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
-    bool GetScalarFieldDataV( FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
-    bool GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const; 
-    bool GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
-    #endif
+
+    static AlgorithmParameterName keepTypeCheckBox;
+    
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+    
+    FieldHandle run(FieldHandle input_field, Datatypes::DenseMatrixHandle input_matrix) const;
+
     bool verify_input_data(FieldHandle& input_field, Datatypes::DenseMatrixHandle& data, size_type& numvals,FieldInformation& fi) const;
     bool setscalardata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
     bool setvectordata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
     bool settensordata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
-    static AlgorithmInputName InputField;
-    static AlgorithmInputName InputMatrix;
-    static AlgorithmOutputName OutputField;
-    static AlgorithmParameterName keepTypeCheckBox;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 };
 
 }}}}

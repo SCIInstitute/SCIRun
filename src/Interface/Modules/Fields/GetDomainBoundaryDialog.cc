@@ -44,21 +44,24 @@ GetDomainBoundaryDialog::GetDomainBoundaryDialog(const std::string& name, Module
   
   connect(compartmentRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(compartmentsRangeRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  addCheckBoxManager(disconnectBoundariesCheckBox_, GetDomainBoundaryAlgo::DisconnectBoundaries);
-  addCheckBoxManager(excludeInnerBoundaryCheckBox_, GetDomainBoundaryAlgo::NoInnerBoundary);
-  addCheckBoxManager(includeInnerBoundaryCheckBox_, GetDomainBoundaryAlgo::InnerBoundaryOnly);
-  addSpinBoxManager(maxCompartmentSpinner_, GetDomainBoundaryAlgo::MaxRange);
-  addSpinBoxManager(minCompartmentSpinner_, GetDomainBoundaryAlgo::MinRange);
-  addSpinBoxManager(valueCompartmentSpinner_, GetDomainBoundaryAlgo::Domain);
-  addCheckBoxManager(outerBoundaryCheckBox_,GetDomainBoundaryAlgo::AddOuterBoundary);
+
+  using namespace Parameters;
+  addCheckBoxManager(disconnectBoundariesCheckBox_, DisconnectBoundaries);
+  addCheckBoxManager(excludeInnerBoundaryCheckBox_, NoInnerBoundary);
+  addCheckBoxManager(includeInnerBoundaryCheckBox_, InnerBoundaryOnly);
+  addSpinBoxManager(maxCompartmentSpinner_, MaxRange);
+  addSpinBoxManager(minCompartmentSpinner_, MinRange);
+  addSpinBoxManager(valueCompartmentSpinner_, Domain);
+  addCheckBoxManager(outerBoundaryCheckBox_,AddOuterBoundary);
 }
 
 void GetDomainBoundaryDialog::push()
 {
   if (!pulling_)
   {
-    state_->setValue(GetDomainBoundaryAlgo::UseRange, !compartmentRadioButton_->isChecked());
-    state_->setValue(GetDomainBoundaryAlgo::UseRange, compartmentsRangeRadioButton_->isChecked());
+    using namespace Parameters;
+    state_->setValue(UseRange, !compartmentRadioButton_->isChecked());
+    state_->setValue(UseRange, compartmentsRangeRadioButton_->isChecked());
   }
 }
 
@@ -66,8 +69,9 @@ void GetDomainBoundaryDialog::pull()
 {
   Pulling p(this);
   
-  compartmentRadioButton_->setChecked(!state_->getValue(GetDomainBoundaryAlgo::UseRange).getBool());
-  compartmentsRangeRadioButton_->setChecked(state_->getValue(GetDomainBoundaryAlgo::UseRange).getBool());
+  using namespace Parameters;
+  compartmentRadioButton_->setChecked(!state_->getValue(UseRange).getBool());
+  compartmentsRangeRadioButton_->setChecked(state_->getValue(UseRange).getBool());
 
   pull_newVersionToReplaceOld();
 }

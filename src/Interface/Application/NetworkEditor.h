@@ -42,6 +42,7 @@ class QMenu;
 class QToolBar;
 class QAction;
 class QGraphicsScene;
+class DialogErrorControl; 
 Q_DECLARE_METATYPE (std::string)
 
 namespace SCIRun {
@@ -98,6 +99,7 @@ Q_SIGNALS:
   class ConnectionLine;
   class ModuleWidget;
   class NetworkEditorControllerGuiProxy;
+	class DialogErrorControl;
 
   class NetworkEditor : public QGraphicsView, 
     public SCIRun::Dataflow::Networks::ExecutableLookup, 
@@ -108,7 +110,8 @@ Q_SIGNALS:
 	  Q_OBJECT
 	
   public:
-    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent = 0);
+    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg, 
+				boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
     ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -142,10 +145,12 @@ Q_SIGNALS:
     boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
   protected:
-    virtual void dropEvent(QDropEvent* event);
-    virtual void dragEnterEvent(QDragEnterEvent* event);
-    virtual void dragMoveEvent(QDragMoveEvent* event);
-    void mousePressEvent(QMouseEvent *event);
+    virtual void dropEvent(QDropEvent* event) override;
+    virtual void dragEnterEvent(QDragEnterEvent* event) override;
+    virtual void dragMoveEvent(QDragMoveEvent* event) override;
+    virtual void mouseMoveEvent(QMouseEvent *event) override;
+    virtual void mouseReleaseEvent(QMouseEvent *event) override; 
+
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -158,6 +163,9 @@ Q_SIGNALS:
     void addModuleViaDoubleClickedTreeItem();
     void selectAll();
     void del();
+    void pinAllModuleUIs();
+    void hideAllModuleUIs();
+    void restoreAllModuleUIs();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -189,7 +197,8 @@ Q_SIGNALS:
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
     void addNewModuleAtPosition(const QPoint& position);
-
+    ConnectionLine* getSingleConnectionSelected();
+    void unselectConnectionGroup(); 
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;
@@ -203,7 +212,7 @@ Q_SIGNALS:
 
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
-
+		boost::shared_ptr<DialogErrorControl> dialogErrorControl_; 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
     boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;

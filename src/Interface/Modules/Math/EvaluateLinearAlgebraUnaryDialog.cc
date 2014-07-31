@@ -104,6 +104,7 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState()
 
 void EvaluateLinearAlgebraUnaryDialog::pull()
 {
+  //TODO convert to new widget managers
   setSelectedOperator(state_->getValue(Variables::Operator).getInt());
   scalarLineEdit_->setText(QString::number(state_->getValue(Variables::ScalarValue).getDouble()));
 }

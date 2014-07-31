@@ -25,236 +25,81 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/MapFieldDataOntoElems.cc
 
-#include <Core/Algorithms/Fields/Mapping/MapFieldDataOntoElems.h>
+#include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
-
-#include <float.h>
-
-namespace SCIRun {
-
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-class MapFieldDataOntoElems : public Module {
-  public:
-    MapFieldDataOntoElems(GuiContext*);
-    virtual ~MapFieldDataOntoElems() {}
+const ModuleLookupInfo MapFieldDataOntoElements::staticInfo_("MapFieldDataOntoElems", "ChangeFieldData", "SCIRun");
 
-    virtual void execute();
-    virtual void post_read();
-  
-  private:
-    GuiString gui_quantity_;
-    GuiString gui_value_;
-    GuiString gui_sample_points_;
-    GuiString gui_sample_method_;
-    GuiDouble gui_outside_value_;
-    GuiDouble gui_max_distance_;
-    
-    SCIRunAlgo::MapFieldDataOntoElemsAlgo algo_;
-};
+/// @class MapFieldDataOntoElems
+/// @brief Maps data from one mesh to another mesh. The output mesh will have
+/// the data located on the elements. 
 
-
-DECLARE_MAKER(MapFieldDataOntoElems)
-
-MapFieldDataOntoElems::MapFieldDataOntoElems(GuiContext* ctx) :
-  Module("MapFieldDataOntoElems", ctx, Source, "ChangeFieldData", "SCIRun"),
-  gui_quantity_(get_ctx()->subVar("quantity"),"value"),
-  gui_value_(get_ctx()->subVar("value"),"interpolateddata"),
-  gui_sample_points_(get_ctx()->subVar("sample-points"),"regular2"),
-  gui_sample_method_(get_ctx()->subVar("sample-method"),"average"),
-  gui_outside_value_(get_ctx()->subVar("outside-value"),0.0),
-  gui_max_distance_(get_ctx()->subVar("max-distance"),DBL_MAX)  
+MapFieldDataOntoElements::MapFieldDataOntoElements() : Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Source);
+  INITIALIZE_PORT(Weights);
+  INITIALIZE_PORT(Destination);
+  INITIALIZE_PORT(OutputField);
+}
+
+void MapFieldDataOntoElements::setStateDefaults()
+{
+  setStateStringFromAlgoOption(Parameters::Quantity);
+  setStateStringFromAlgoOption(Parameters::InterpolationModel);
+  setStateStringFromAlgoOption(Parameters::SamplePoints);
+  setStateStringFromAlgoOption(Parameters::SampleMethod);
+  setStateDoubleFromAlgo(Parameters::OutsideValue);
+  setStateDoubleFromAlgo(Parameters::MaxDistance);
 }
 
 void
-MapFieldDataOntoElems::execute()
+MapFieldDataOntoElements::execute()
 {
-  FieldHandle source, destination, weights, output;
-  
-  get_input_handle("Source",source,true);
-  get_input_handle("Weights",weights,false);
-  if(!(get_input_handle("Destination",destination,false)))
+  auto source = getRequiredInput(Source);
+  auto weights = getOptionalInput(Weights);
+
+  auto destination = getOptionalInput(Destination);
+  if (!destination)
   {
     //----------
     // Backwards compatibility:
     // Weights port did not always exist
-    if (weights.get_rep()) destination = weights;
-    else { error("No destination input field."); return; }
+    if (weights && *weights) 
+      destination = weights;
+    else 
+    { 
+      error("No destination input field."); 
+      return;
+    }
     //----------
   }
   
-  if (inputs_changed_ || !oport_cached("Output") ||
-    gui_quantity_.changed() || gui_value_.changed() ||
-    gui_sample_points_.changed() || gui_sample_method_.changed() ||
-    gui_outside_value_.changed() || gui_max_distance_.changed())
+//   if (inputs_changed_ || !oport_cached("Output") ||
+//     gui_quantity_.changed() || gui_value_.changed() ||
+//     gui_sample_points_.changed() || gui_sample_method_.changed() ||
+//     gui_outside_value_.changed() || gui_max_distance_.changed())
+  if (needToExecute())
   {
     update_state(Executing);
 
-    algo_.set_option("quantity",gui_quantity_.get());
-    algo_.set_option("value",gui_value_.get());
-    algo_.set_option("sample_points",gui_sample_points_.get());
-    algo_.set_option("sample_method",gui_sample_method_.get());
-    algo_.set_scalar("outside_value",gui_outside_value_.get());
-    algo_.set_scalar("max_distance",gui_max_distance_.get());
-  
-    if(!(algo_.run(source,weights,destination,output))) return;
-    send_output_handle("Output",output,true);
+    setAlgoOptionFromState(Parameters::Quantity);
+    setAlgoOptionFromState(Parameters::InterpolationModel);
+    setAlgoOptionFromState(Parameters::SampleMethod);
+    setAlgoOptionFromState(Parameters::SamplePoints);
+    setAlgoDoubleFromState(Parameters::OutsideValue);
+    setAlgoDoubleFromState(Parameters::MaxDistance);
+
+    auto output = algo().run_generic(make_input((Source, source)(Destination, optionalAlgoInput(destination))(Weights, optionalAlgoInput(weights))));
+
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
-
-void
-MapFieldDataOntoElems::post_read()
-{
-  std::string old_module_name = get_old_modulename();
-  const std::string modName = get_ctx()->getfullname() + "-";
-  std::string val;
-  
-  // Backwards compatibility
-  
-  if (old_module_name == "ModalMapping")
-  {
-    // Convert from ModalMapping module
-    if( TCLInterface::get(modName+"mappingmethod", val, get_ctx()) )
-    {
-      if (val == "ClosestNodalData") val = "closestnodedata";
-      TCLInterface::set(modName+"value", val, get_ctx());
-    }
-    if( TCLInterface::get(modName+"integrationmethod", val, get_ctx()) )
-      TCLInterface::set(modName+"sample-points", val, get_ctx());
-      
-    if( TCLInterface::get(modName+"integrationfilter", val, get_ctx()) )
-    {
-      // This option no longer exists
-      if (val == "WeightedAverage") val = "average";
-      if (val == "maximum" || val == "Maximum" ) val = "max";
-      if (val == "minimum" || val == "Minimum") val = "min";
-
-      TCLInterface::set(modName+"sample-method", val, get_ctx());
-    }
-    if( TCLInterface::get(modName+"def-value", val, get_ctx()) )
-      TCLInterface::set(modName+"outside-value", val, get_ctx());
- 
-    FieldIPortHandle wport;
-    get_iport_handle("Weights",wport);
-    
-    if (wport->nconnections() == 1)
-    {
-      // Swap connections
-      ConnectionHandle con = wport->connection(0);
-      std::string imod = con->imod->get_id();
-      std::string omod = con->omod->get_id();
-      int iport = con->iport->get_which_port();
-      int oport = con->oport->get_which_port();
-      
-      // Free handle
-      con = 0;
-      std::string command = "addConnection "+omod+" "+to_string(oport)+" "+imod+" "+to_string(iport+1);
-      TCLInterface::eval(command);
-      command = "deleteConnection "+omod+" "+to_string(oport)+" "+imod+" "+to_string(iport);
-      TCLInterface::eval(command);
-    }
-  }
-
-  if (old_module_name == "MapFieldDataGradientOntoField")
-  {
-    // Convert from ModalMapping module
-    if( TCLInterface::get(modName+"mappingmethod", val, get_ctx()) )
-    {
-      if (val == "ClosestNodalData") val = "closestnodedata";
-      TCLInterface::set(modName+"value", val, get_ctx());
-    }
-    if( TCLInterface::get(modName+"integrationmethod", val, get_ctx()) )
-    {
-      TCLInterface::set(modName+"sample-points", val, get_ctx());
-    }
-    if( TCLInterface::get(modName+"integrationfilter", val, get_ctx()) )
-    {
-      // This option no longer exists
-      if (val == "WeightedAverage") val = "average";
-      if (val == "maximum" || val == "Maximum" ) val = "max";
-      if (val == "minimum" || val == "Minimum") val = "min";
-
-      TCLInterface::set(modName+"sample-method", val, get_ctx());
-    }
-    if( TCLInterface::get(modName+"def-value", val, get_ctx()) )
-    {
-      TCLInterface::set(modName+"outside-value", val, get_ctx());
-    }
-    
-    TCLInterface::set(modName+"quantity","gradient",get_ctx());
-    if( TCLInterface::get(modName+"calcnorm", val, get_ctx()) )
-    {
-      if (val == "1") TCLInterface::set(modName+"quantity","gradientnorm",get_ctx());
-    }
-    
-    FieldIPortHandle wport;
-    get_iport_handle("Weights",wport);
-    
-    if (wport->nconnections() == 1)
-    {
-      // Swap connections
-      ConnectionHandle con = wport->connection(0);
-      std::string imod = con->imod->get_id();
-      std::string omod = con->omod->get_id();
-      int iport = con->iport->get_which_port();
-      int oport = con->oport->get_which_port();
-      
-      // Free handle
-      con = 0;
-      std::string command = "addConnection "+omod+" "+to_string(oport)+" "+imod+" "+to_string(iport+1);
-      TCLInterface::eval(command);
-      command = "deleteConnection "+omod+" "+to_string(oport)+" "+imod+" "+to_string(iport);
-      TCLInterface::eval(command);
-    }
-  }
-
-
-  if (old_module_name == "MapCurrentDensityOntoField")
-  {
-    // Convert from ModalMapping module
-    if( TCLInterface::get(modName+"mappingmethod", val, get_ctx()) )
-    {
-      if (val == "ClosestNodalData") val = "closestnodedata";
-      TCLInterface::set(modName+"value", val, get_ctx());
-    }
-    if( TCLInterface::get(modName+"integrationmethod", val, get_ctx()) )
-    {
-      TCLInterface::set(modName+"sample-points", val, get_ctx());
-    }
-    if( TCLInterface::get(modName+"integrationfilter", val, get_ctx()) )
-    {
-      // This option no longer exists
-      if (val == "WeightedAverage") val = "average";
-      if (val == "maximum" || val == "Maximum" ) val = "max";
-      if (val == "minimum" || val == "Minimum") val = "min";
-      
-      TCLInterface::set(modName+"sample-method", val, get_ctx());
-    }
-    if( TCLInterface::get(modName+"def-value", val, get_ctx()) )
-    {
-      TCLInterface::set(modName+"outside-value", val, get_ctx());
-    }
-    
-    TCLInterface::set(modName+"value","gradient",get_ctx());
-    if( TCLInterface::get(modName+"calcnorm", val, get_ctx()) )
-    {
-      if (val == "1") TCLInterface::set(modName+"quantity","gradientnorm",get_ctx());
-    }
-    if( TCLInterface::get(modName+"multiply-with-normal", val, get_ctx()) )
-    {
-      if (val == "1") TCLInterface::set(modName+"quantity","flux",get_ctx());
-    }
-  }
-}
-
-
-} // End namespace SCIRun
-
-

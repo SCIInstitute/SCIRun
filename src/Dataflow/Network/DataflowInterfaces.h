@@ -32,6 +32,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
+#include <boost/signals2/signal.hpp>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
@@ -43,23 +44,29 @@ namespace Networks {
   {
   public:
     virtual ~DatatypeSourceInterface() {}
-    virtual void send(DatatypeSinkInterfaceHandle receiver, Core::Datatypes::DatatypeHandle data) = 0;
+    virtual void cacheData(Core::Datatypes::DatatypeHandle data) = 0;
+    virtual void send(DatatypeSinkInterfaceHandle receiver) const = 0;
+    virtual bool hasData() const = 0;
   };
 
+  typedef boost::signals2::signal<void(SCIRun::Core::Datatypes::DatatypeHandle)> DataHasChangedSignalType;
+  
   class SCISHARE DatatypeSinkInterface
   {
   public:
     virtual ~DatatypeSinkInterface() {}
     
     // "mailbox" interface
-    virtual bool hasData() const = 0;
-    virtual void setHasData(bool dataPresent) = 0;
+    //virtual bool hasData() const = 0;
+    //virtual void setHasData(bool dataPresent) = 0;
 
     virtual DatatypeSinkInterface* clone() const = 0;
 
     virtual void waitForData() = 0;
     virtual Core::Datatypes::DatatypeHandleOption receive() = 0;
     virtual bool hasChanged() const = 0;
+    virtual void invalidateProvider() = 0;
+    virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber) = 0;
   };
 
 }}}

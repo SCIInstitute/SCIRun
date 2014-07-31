@@ -1,20 +1,20 @@
 /*
  * The MIT License
- * 
+ *
  * Copyright (c) 2009 Scientific Computing and Imaging Institute,
  * University of Utah.
- * 
- * 
+ *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
  * the rights to use, copy, modify, merge, publish, distribute, sublicense,
  * and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -23,164 +23,96 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-/// @todo Documentation Modules/Legacy/Fields/ResampleRegularMesh.cc
 
-#include <Core/Util/StringUtil.h>
+#include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 
-#include <Core/Algorithms/Fields/ResampleMesh/ResampleRegularMesh.h>
+#include <Core/Algorithms/Legacy/Fields/ResampleMesh/ResampleRegularMesh.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-namespace SCIRun {
-
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-class ResampleRegularMesh : public Module {
-  public:
-    ResampleRegularMesh(GuiContext*);
-    virtual ~ResampleRegularMesh() {}
+/// @class ResampleRegularMesh
+/// @brief Resample a regular mesh, such as a LatVol.
 
-    virtual void execute();
+ModuleLookupInfo ResampleRegularMesh::staticInfo_("ResampleRegularMesh", "ChangeMesh", "SCIRun");
 
-  private:
-    GuiString method_;
-    GuiDouble sigma_;
-    GuiDouble extend_;
-    GuiString xaxis_;
-    GuiString yaxis_;
-    GuiString zaxis_;
-
-    SCIRunAlgo::ResampleRegularMeshAlgo algo_;
-};
-
-
-DECLARE_MAKER(ResampleRegularMesh)
-
-ResampleRegularMesh::ResampleRegularMesh(GuiContext* ctx) :
-  Module("ResampleRegularMesh", ctx, Source, "ChangeMesh", "SCIRun"),
-  method_(get_ctx()->subVar("method"),"box"),
-  sigma_(get_ctx()->subVar("sigma"),1.0),
-  extend_(get_ctx()->subVar("extend"),1.0),
-  xaxis_(get_ctx()->subVar("xdim"),"x0.5"),
-  yaxis_(get_ctx()->subVar("ydim"),"x0.5"),
-  zaxis_(get_ctx()->subVar("zdim"),"x0.5")
+ResampleRegularMesh::ResampleRegularMesh() :
+  Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
+
+void ResampleRegularMesh::setStateDefaults()
+{
+  auto state = get_state();
+  
+  state->setValue(Parameters::ResampleMethod, std::string("box"));
+  setStateDoubleFromAlgo(Parameters::ResampleGaussianSigma);
+  setStateDoubleFromAlgo(Parameters::ResampleGaussianExtend);
+  setStateDoubleFromAlgo(Parameters::ResampleXDim);
+  setStateDoubleFromAlgo(Parameters::ResampleYDim);
+  setStateDoubleFromAlgo(Parameters::ResampleZDim);
+  setStateBoolFromAlgo(Parameters::ResampleXDimUseScalingFactor);
+  setStateBoolFromAlgo(Parameters::ResampleYDimUseScalingFactor);
+  setStateBoolFromAlgo(Parameters::ResampleZDimUseScalingFactor);
+}
+
+void ResampleRegularMesh::setDimensionParameter(const std::string& name, const AlgorithmParameterName& dim, const AlgorithmParameterName& useScaling)
+{
+  auto state = get_state();
+  auto dimValue = state->getValue(dim).getDouble();
+  if (state->getValue(useScaling).getBool())
+  {
+    if (dimValue <= 0) 
+    {
+      error(name + " axis has an incorrect factor");
+      return;
+    }
+  }
+  else
+  {
+    if (dimValue < 2)
+    {
+      error(name + " axis has an incorrect dimension");
+      return;
+    }
+  }
+  setAlgoDoubleFromState(dim);
+  setAlgoBoolFromState(useScaling);
 }
 
 void
 ResampleRegularMesh::execute()
 {
-  FieldHandle input, output;
-  
-  get_input_handle("Field",input,true);
-  
+  auto input = getRequiredInput(InputField);
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || method_.changed() || sigma_.changed() ||
       extend_.changed() || xaxis_.changed() || yaxis_.changed() ||
       zaxis_.changed() || !oport_cached("Field"))
+#endif
+  if (needToExecute())
   {
-    algo_.set_option("method",method_.get());
-    algo_.set_scalar("sigma",sigma_.get());
-    algo_.set_scalar("extend",extend_.get());
-    
-    std::string xaxis = xaxis_.get();
-    std::string::size_type xloc = xaxis.find("x");
-    
-    algo_.set_option("resamplex","none");
-    if (xloc != std::string::npos)
-    {
-      double factor = 0.0;
-      from_string(xaxis.substr(xloc+1),factor);
-      if (factor <= 0.0)
-      {
-        error("X axis has an incorrect factor");
-        return;
-      }
-      algo_.set_option("resamplex","factor");
-      algo_.set_scalar("xfactor",factor);
-    }
-    else
-    {
-      int number = 0;
-      from_string(xaxis,number);
-      if (number < 2)
-      {
-        error("X axis has an incorrect dimension");
-        return;        
-      }
-      algo_.set_option("resamplex","number");
-      algo_.set_int("xnumber",number);
-    }  
+    auto state = get_state();
 
-    std::string yaxis = yaxis_.get();
-    std::string::size_type yloc = yaxis.find("x");
-    
-    algo_.set_option("resampley","none");
-    if (yloc != std::string::npos)
-    {
-      double factor = 0.0;
-      from_string(yaxis.substr(yloc+1),factor);
-      if (factor <= 0.0)
-      {
-        error("Y axis has an incorrect factor");
-        return;
-      }
-      algo_.set_option("resampley","factor");
-      algo_.set_scalar("yfactor",factor);
-    }
-    else
-    {
-      int number = 0;
-      from_string(yaxis,number);
-      if (number < 2)
-      {
-        error("Y axis has an incorrect dimension");
-        return;        
-      }
-      algo_.set_option("resampley","number");
-      algo_.set_int("ynumber",number);
-    } 
-  
+    setAlgoOptionFromState(Parameters::ResampleMethod);
+    setAlgoDoubleFromState(Parameters::ResampleGaussianSigma);
+    setAlgoDoubleFromState(Parameters::ResampleGaussianExtend);
 
-    std::string zaxis = zaxis_.get();
-    std::string::size_type zloc = zaxis.find("x");
-    
-    algo_.set_option("resamplez","none");
-    if (zloc != std::string::npos)
-    {
-      double factor = 0.0;
-      from_string(zaxis.substr(zloc+1),factor);
-      if (factor <= 0.0)
-      {
-        error("Z axis has an incorrect factor");
-        return;
-      }
-      algo_.set_option("resamplez","factor");
-      algo_.set_scalar("zfactor",factor);
-    }
-    else
-    {
-      int number = 0;
-      from_string(zaxis,number);
-      if (number < 2)
-      {
-        error("Z axis has an incorrect dimension");
-        return;        
-      }
-      algo_.set_option("resamplez","number");
-      algo_.set_int("znumber",number);
-    } 
-  
-    if(!(algo_.run(input,output))) return;
-    
-    send_output_handle("Field",output,true);  
-  }  
+    setDimensionParameter("X", Parameters::ResampleXDim, Parameters::ResampleXDimUseScalingFactor);
+    setDimensionParameter("Y", Parameters::ResampleYDim, Parameters::ResampleYDimUseScalingFactor);
+    setDimensionParameter("Z", Parameters::ResampleZDim, Parameters::ResampleZDimUseScalingFactor);
+
+    auto output = algo().run_generic(make_input((InputField, input)));
+
+    sendOutputFromAlgorithm(OutputField, output);
+  }
 }
-
-} // End namespace SCIRun
-
-
