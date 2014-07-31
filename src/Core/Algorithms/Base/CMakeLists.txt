@@ -51,6 +51,7 @@ ENDIF(BUILD_SHARED_LIBS)
 TARGET_LINK_LIBRARIES(Algorithms_Base
   Core_Logging
   Core_Utils
+  Core_Thread
 )
 
 ADD_DEPENDENCIES(Algorithms_Base Boost_external)

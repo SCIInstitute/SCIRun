@@ -88,6 +88,14 @@ void Application::readCommandLine(int argc, const char* argv[])
   private_->parameters_ = private_->parser.parse(argc, argv);
 
   Logging::Log::get().setVerbose(parameters()->verboseMode());
+
+//   // boost workaround
+//   boost::filesystem::path dummy("foo");
+#ifdef _MSC_VER
+  // fix for https://svn.boost.org/trac/boost/ticket/6320
+  boost::filesystem::path::imbue( std::locale( "" ) );
+#endif
+  //std::cout <<  << std::endl;
 }
 
 NetworkEditorControllerHandle Application::controller()

@@ -43,6 +43,7 @@
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
 
 Name::Name(const std::string& name) : name_(name)
 {
@@ -74,10 +75,26 @@ std::string AlgorithmParameter::getString() const
 
 boost::filesystem::path AlgorithmParameter::getFilename() const
 {
+  Guard g(AlgorithmParameterHelper::lock_.get());
+#ifdef _MSC_VER
+  // fix for https://svn.boost.org/trac/boost/ticket/6320
+  boost::filesystem::path::imbue( std::locale( "" ) );
+#endif
+
+  bool b = true;
+  if (b)
+    std::cout << "getString" << std::endl;
   auto stringPath = getString();
-  if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), ""))
-    return AlgorithmParameterHelper::dataDir() / stringPath;
-  return stringPath;
+  if (b)
+    std::cout << "getString done" << std::endl;
+  //if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), ""))
+  //  return AlgorithmParameterHelper::dataDir() / stringPath;
+  if (b)
+    std::cout << "path" << std::endl;
+  boost::filesystem::path p(stringPath);
+  if (b)
+    std::cout << "path done" << std::endl;
+  return p;
 }
 
 bool AlgorithmParameter::getBool() const
@@ -106,6 +123,7 @@ DatatypeHandle AlgorithmParameter::getDatatype() const
 void AlgorithmParameterHelper::setDataDir(const boost::filesystem::path& path)
 {
   dataDir_ = path;
+  std::cout << "TO WORKAROUND BOOST PATH WINDOWS BUG: " << dataDir_.string() << std::endl;
 }
 
 boost::filesystem::path AlgorithmParameterHelper::dataDir()
@@ -125,6 +143,7 @@ std::string AlgorithmParameterHelper::dataDirPlaceholder()
 
 boost::filesystem::path AlgorithmParameterHelper::dataDir_;
 std::string AlgorithmParameterHelper::dataDirPlaceholder_;
+Mutex AlgorithmParameterHelper::lock_("fsbug");
 
 AlgorithmLogger::AlgorithmLogger() : defaultLogger_(new ConsoleLogger)
 {

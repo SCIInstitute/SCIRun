@@ -44,6 +44,7 @@
 #include <Core/Datatypes/HasId.h>
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Utils/StringUtil.h>
+#include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -129,6 +130,7 @@ namespace Algorithms {
     static boost::filesystem::path dataDir();
     static void setDataDirPlaceholder(const std::string& str);
     static std::string dataDirPlaceholder();
+    static Thread::Mutex lock_;
   private:
     static boost::filesystem::path dataDir_;
     static std::string dataDirPlaceholder_;

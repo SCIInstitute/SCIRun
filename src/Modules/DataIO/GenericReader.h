@@ -125,7 +125,7 @@ GenericReader<HType, PortTag>::execute()
   // If there is an optional input string set the filename to it in the GUI.
   /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
-  if (fileOption)
+  if (fileOption && *fileOption)
   {
     get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
   }
