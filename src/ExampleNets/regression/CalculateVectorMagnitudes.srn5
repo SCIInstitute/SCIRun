@@ -106,7 +106,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>/Users/spencer/Desktop/SCIRun/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld</value>
 									</value>
 								</second>
 							</item>
@@ -134,7 +134,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/spencer/Desktop/SCIRun/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld</value>
 									</value>
 								</second>
 							</item>
@@ -162,7 +162,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/spencer/Desktop/SCIRun/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld</value>
 									</value>
 								</second>
 							</item>
@@ -190,7 +190,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/spencer/Desktop/SCIRun/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld</value>
 									</value>
 								</second>
 							</item>
@@ -218,7 +218,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/spencer/Desktop/SCIRun/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/point_cloud/vector/pts_vector.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/point_cloud/vector/pts_vector.fld</value>
 									</value>
 								</second>
 							</item>
