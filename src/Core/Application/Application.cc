@@ -40,6 +40,7 @@
 #include <Core/IEPlugin/IEPluginInit.h>
 
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::CommandLine;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;
@@ -88,13 +89,6 @@ void Application::readCommandLine(int argc, const char* argv[])
   private_->parameters_ = private_->parser.parse(argc, argv);
 
   Logging::Log::get().setVerbose(parameters()->verboseMode());
-
-#ifdef _MSC_VER
-  // fix for https://svn.boost.org/trac/boost/ticket/6320
-  //std::cout << "buggg" << std::endl;
-  boost::filesystem::path::imbue( std::locale( "" ) );     
-  boost::filesystem::path dummy("foo");
-#endif
 }
 
 NetworkEditorControllerHandle Application::controller()

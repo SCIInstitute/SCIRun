@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <vector>
+#include <boost/thread.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
@@ -75,17 +76,21 @@ std::string AlgorithmParameter::getString() const
 
 boost::filesystem::path AlgorithmParameter::getFilename() const
 {
-  Guard g(AlgorithmParameterHelper::lock_.get());
+  {
 #ifdef _MSC_VER
-  // fix for https://svn.boost.org/trac/boost/ticket/6320
-  //std::cout << "buggg111" << std::endl;
-  boost::filesystem::path::imbue( std::locale( "" ) );  
-  boost::filesystem::path dummy("foo");
+    // fix for https://svn.boost.org/trac/boost/ticket/6320
+    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    Guard g(AlgorithmParameterHelper::lock_.get());
+    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    boost::filesystem::path::imbue( std::locale( "" ) );  
+    boost::filesystem::path dummy("boost bug workaround");
+    Log::get() << DEBUG_LOG << dummy.string() << std::endl;
 #endif
+  }
 
   auto stringPath = getString();
-  //if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), ""))
-  //  return AlgorithmParameterHelper::dataDir() / stringPath;
+  if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), ""))
+    return AlgorithmParameterHelper::dataDir() / stringPath;
   boost::filesystem::path p(stringPath);
   return p;
 }
@@ -116,16 +121,6 @@ DatatypeHandle AlgorithmParameter::getDatatype() const
 void AlgorithmParameterHelper::setDataDir(const boost::filesystem::path& path)
 {
   dataDir_ = path;
-
-#ifdef _MSC_VER
-  // fix for https://svn.boost.org/trac/boost/ticket/6320
-  //std::cout << "buggg111" << std::endl;
-  boost::filesystem::path::imbue( std::locale( "" ) );  
-  boost::filesystem::path dummy("foo");
-  std::string d = dummy.string();
-#endif
-
-  //std::cout << "TO WORKAROUND BOOST PATH WINDOWS BUG: " << dataDir_.string() << std::endl;
 }
 
 boost::filesystem::path AlgorithmParameterHelper::dataDir()
