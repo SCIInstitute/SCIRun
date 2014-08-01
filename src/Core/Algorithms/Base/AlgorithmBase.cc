@@ -228,8 +228,7 @@ DatatypeHandle& AlgorithmData::operator[](const Name& name)
 void AlgorithmParameterList::add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
 {
   std::set<std::string> opts;
-  auto lower = boost::to_lower_copy(options);
-  boost::split(opts, lower, boost::is_any_of("|"));
+  boost::split(opts, options, boost::is_any_of("|"));
   parameters_[key] = AlgorithmParameter(key, AlgoOption(defval, opts));
 }
 
@@ -241,12 +240,11 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
     return keyNotFoundPolicy(key);
   
   AlgoOption param = paramIt->second.getOption();
-  std::string valueLower = boost::to_lower_copy(value);
 
-  if (param.options_.find(valueLower) == param.options_.end())
-    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("parameter \"" + key.name_ + "\" has no option \"" + valueLower + "\""));
+  if (param.options_.find(value) == param.options_.end())
+    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("parameter \"" + key.name_ + "\" has no option \"" + value + "\""));
 
-  param.option_ = valueLower;
+  param.option_ = value;
   parameters_[key].value_ = param;
   return true;
 }
