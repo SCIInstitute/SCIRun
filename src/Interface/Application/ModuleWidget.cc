@@ -138,6 +138,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
     optionsButton_->setText("VIEW");
     optionsButton_->setToolTip("View renderer output");
     optionsButton_->resize(100, optionsButton_->height());
+    executePushButton_->hide();
     //progressBar_->setVisible(false); //this looks bad, need to insert a spacer or something. TODO later
   }
   progressBar_->setMaximum(100);
