@@ -138,7 +138,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/Dev/scirun_unit_test_data/SCIRunUnitTestData/SCIRun5/UnitTests/latVolWithNormData.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/latVolWithNormData.fld</value>
 									</value>
 								</second>
 							</item>

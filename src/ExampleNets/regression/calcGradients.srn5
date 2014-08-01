@@ -42,7 +42,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>E:/scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld</value>
 									</value>
 								</second>
 							</item>

@@ -86,7 +86,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/moritz/fe/fem_1e6_elements.fld.mat</value>
+										<value>%SCIRUNDATADIR%/Fields/buildFE/inputFields/fem_1e6_elements.fld.mat</value>
 									</value>
 								</second>
 							</item>
