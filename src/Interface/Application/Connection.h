@@ -42,7 +42,6 @@ namespace SCIRun {
 namespace Gui {
 
 class PortWidget;
-class ModuleWidget; 
 
 class ConnectionDrawStrategy
 {
