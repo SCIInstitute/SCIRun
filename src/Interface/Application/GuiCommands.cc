@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Application/NetworkEditor.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -144,7 +145,7 @@ bool RunPythonScriptCommandGui::execute()
 bool SetupDataDirectoryCommandGui::execute()
 {
   auto dir = Application::Instance().parameters()->dataDirectory().get();
-  std::cout << "setup data dir: " << dir << std::endl;
+  LOG_DEBUG("Data dir set to: " << dir << std::endl);
   
   Core::Preferences::Instance().setDataDirectory(dir);
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
