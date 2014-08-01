@@ -42,6 +42,7 @@ using namespace SCIRun;
 
 /// @class ReportFieldInfo
 /// @brief ReportFieldInfo is used to view the attributes of fields. 
+/// @image html ReportFieldInfo.png
 
 class ReportFieldInfo : public Module {
   public:
