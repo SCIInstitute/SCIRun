@@ -138,7 +138,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/spencer/Desktop/SCIRun/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld</value>
 									</value>
 								</second>
 							</item>
@@ -166,7 +166,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/spencer/Desktop/SCIRun/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld</value>
 									</value>
 								</second>
 							</item>
@@ -194,7 +194,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/spencer/Desktop/SCIRun/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld</value>
 									</value>
 								</second>
 							</item>
@@ -222,7 +222,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/spencer/Desktop/SCIRun/SCIRunUnitTestData/SCIRun5/UnitTests/_etfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld</value>
 									</value>
 								</second>
 							</item>
