@@ -60,11 +60,11 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   scene_(new QGraphicsScene(parent)),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
+  dialogErrorControl_(dialogErrorControl),
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
-  zLevelManager_(new ZLevelManager(scene_)),
-	dialogErrorControl_(dialogErrorControl) 
+  zLevelManager_(new ZLevelManager(scene_))
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
@@ -537,7 +537,7 @@ void NetworkEditor::unselectConnectionGroup()
 				++hasConnection;
 				items.push_front(cL); 
 			}
-			if (auto mPW = qgraphicsitem_cast<ModuleProxyWidget*>(item))
+			if (qgraphicsitem_cast<ModuleProxyWidget*>(item))
 				++hasWidgets;
 		}
 		if(hasConnection == 1 && hasWidgets == 2)
