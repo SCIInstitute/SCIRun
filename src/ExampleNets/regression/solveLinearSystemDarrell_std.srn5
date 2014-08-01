@@ -26,7 +26,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/UnitTests/CGDarrell/RHS.mat</value>
+										<value>%SCIRUNDATADIR%/Matrices/CGDarrell/RHS.mat</value>
 									</value>
 								</second>
 							</item>
@@ -54,7 +54,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/UnitTests/CGDarrell/A.mat</value>
+										<value>%SCIRUNDATADIR%/Matrices/CGDarrell/A.mat</value>
 									</value>
 								</second>
 							</item>
@@ -162,7 +162,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/stuff/CGDarrell/scirun5solutionFromNetwork.txt</value>
+										<value>%SCIRUNDATADIR%/TransientOutput/scirun5solutionFromNetwork.txt</value>
 									</value>
 								</second>
 							</item>

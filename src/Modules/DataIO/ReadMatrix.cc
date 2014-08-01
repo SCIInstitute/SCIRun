@@ -51,11 +51,6 @@ void ReadMatrixModule::execute()
 
   auto fileOption = getOptionalInput(Filename);
 
-  //if (!fileOption)
-  //  filename_ = get_state()->getValue(Variables::Filename).getString();
-  //else
-  //  filename_ = (*fileOption)->value();
-  
   if (fileOption && *fileOption)
   {
     get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
