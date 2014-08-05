@@ -25,36 +25,35 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-//
-//#ifndef MODULES_DATAIO_READ_MESH_H
-//#define MODULES_DATAIO_READ_MESH_H
-//
-//#include <Dataflow/Network/Module.h>
-//#include <Modules/DataIO/share.h>
-//
-//namespace SCIRun {
-//namespace Modules {
-//namespace DataIO {
-//  
-//  /// @todo: convert to ReadField once field support is in place
-//  class SCISHARE ReadMeshModule : public SCIRun::Dataflow::Networks::Module,
-//    public Has1InputPort<StringPortTag>,
-//    public Has2OutputPorts<MeshPortTag, StringPortTag>
-//  {
-//  public:
-//    ReadMeshModule();
-//
-//    virtual void execute();
-//    virtual void setStateDefaults() {}
-//
-//    INPUT_PORT(0, Filename, String);
-//    OUTPUT_PORT(0, OutputSampleField, LegacyMesh);
-//    OUTPUT_PORT(1, FileLoaded, String);
-//
-//  private:
-//    std::string filename_;
-//  };
-//
-//}}}
-//
-//#endif
+
+#ifndef MODULES_BASIC_NEED_TO_EXECUTE_TESTER_H
+#define MODULES_BASIC_NEED_TO_EXECUTE_TESTER_H
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/share.h>
+
+namespace SCIRun {
+namespace Modules {
+namespace Basic {
+  
+  class SCISHARE NeedToExecuteTester : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
+  {
+  public:
+    NeedToExecuteTester();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+    
+    INPUT_PORT(0, TestMatrixIn, DenseMatrix);
+    OUTPUT_PORT(0, TestMatrixOut, DenseMatrix);
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+    bool expensiveComputationDone_, executeCalled_;
+    void resetFlags();
+  };
+
+}}}
+
+#endif

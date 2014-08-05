@@ -67,6 +67,9 @@ public:
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
+  void setDataDirectory(const QString& scriptFileName);
+  QString dataDirectory() const;
+
 public Q_SLOTS:
   void executeAll();
 protected:
@@ -86,6 +89,7 @@ private:
 private:
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
+  void setTipsAndWhatsThis();
   bool okToContinue();
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
@@ -107,6 +111,7 @@ private:
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
+  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_; 
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
@@ -133,6 +138,7 @@ private Q_SLOTS:
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
   void handleCheckedModuleEntry(QTreeWidgetItem* item, int column);
   void setExecutor(int type);
+  void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
   void updateMiniView();
   void showPythonWarning(bool visible);

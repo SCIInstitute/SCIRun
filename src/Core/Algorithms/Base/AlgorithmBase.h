@@ -36,12 +36,15 @@
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/filesystem/path.hpp>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/HasId.h>
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Utils/StringUtil.h>
+#include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -108,6 +111,7 @@ namespace Algorithms {
     int getInt() const;
     double getDouble() const;
     std::string getString() const;
+    boost::filesystem::path getFilename() const;
     bool getBool() const;
     Datatypes::DatatypeHandle getDatatype() const;
     std::vector<Variable> getList() const;
@@ -118,6 +122,19 @@ namespace Algorithms {
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   
   typedef Variable AlgorithmParameter;
+
+  class SCISHARE AlgorithmParameterHelper
+  {
+  public:
+    static void setDataDir(const boost::filesystem::path& path);
+    static boost::filesystem::path dataDir();
+    static void setDataDirPlaceholder(const std::string& str);
+    static std::string dataDirPlaceholder();
+    static Thread::Mutex lock_;
+  private:
+    static boost::filesystem::path dataDir_;
+    static std::string dataDirPlaceholder_;
+  };
 
   class SCISHARE AlgorithmLogger : public Core::Logging::LegacyLoggerInterface
   {
@@ -140,10 +157,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
-    AlgorithmStatusReporter() 
-    {
-      setUpdaterFunc(defaultUpdaterFunc_);
-    }
+    AlgorithmStatusReporter();
     ~AlgorithmStatusReporter() {}
         
     virtual void report_start(const std::string& tag) const {}
@@ -220,7 +234,7 @@ namespace Algorithms {
   typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
   typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
 
-  class SCISHARE AlgorithmInterface 
+  class SCISHARE AlgorithmInterface : public HasIntegerId
   {
   public:
     virtual ~AlgorithmInterface() {}
@@ -256,10 +270,12 @@ namespace Algorithms {
     virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key);
 
   protected:
+    void dumpAlgoState() const;
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
     void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
   private:
-    std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
+    typedef std::map<AlgorithmParameterName, AlgorithmParameter> ParameterMap;
+    ParameterMap parameters_;
   };
 
   class SCISHARE AlgoInputBuilder
@@ -294,6 +310,7 @@ namespace Algorithms {
   {
   public:
     virtual ~AlgorithmBase();
+    AlgorithmOutput run(const AlgorithmInput& input) const { return run_generic(input); }
   };
   
   class SCISHARE AlgorithmCollaborator
@@ -320,6 +337,7 @@ namespace Algorithms {
 }}}
 
 #define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() list .build()
+#define withInputData(list) make_input(list)
 #define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
 #define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
 #define ALGORITHM_PARAMETER_DECL(name) namespace Parameters { SCISHARE extern const SCIRun::Core::Algorithms::AlgorithmParameterName name; }

@@ -30,4 +30,9 @@
 
 using namespace SCIRun::Gui;
 
+void RemembersFileDialogDirectory::setStartingDir(const QString& dir)
+{
+  currentDirectory_ = dir;
+}
+
 QString RemembersFileDialogDirectory::currentDirectory_(".");

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2013 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,17 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_READ_MESH_STATE_H
-#define MODULES_READ_MESH_STATE_H
+#ifndef INTERFACE_MODULES_MapFieldDataOntoElemsDialog_H
+#define INTERFACE_MODULES_MapFieldDataOntoElemsDialog_H
 
-#include <Dataflow/Network/Module.h>
+#include "Interface/Modules/Fields/ui_MapFieldDataOntoElems.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace DataIO {
-  /// @todo 
+namespace Gui {
 
+class SCISHARE MapFieldDataOntoElemsDialog : public ModuleDialogGeneric,
+  public Ui::MapFieldDataOntoElems
+{
+	Q_OBJECT
 
-}}}
+public:
+  MapFieldDataOntoElemsDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
+
+}
+}
 
 #endif

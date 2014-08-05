@@ -68,6 +68,9 @@ using namespace SCIRun::Core::Commands;
     else
       std::cout << "HEADLESS MODE" << std::endl;  /// @todo obviously
 
+    if (params->dataDirectory())
+      q->enqueue(cmdFactory_->create(SetupDataDirectory));
+  
     if (params->inputFile())
       q->enqueue(cmdFactory_->create(LoadNetworkFile));
     else if (params->pythonScriptFile())

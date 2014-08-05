@@ -29,6 +29,7 @@
 SET(Modules_Basic_SRCS
   AsyncPortTestModule.cc
   DynamicPortTester.cc
+  NeedToExecuteTester.cc
   ReceiveScalar.cc
   ReceiveTestMatrix.cc
   ReceiveScalarModuleState.cc
@@ -41,6 +42,7 @@ SET(Modules_Basic_SRCS
 SET(Modules_Basic_HEADERS
   AsyncPortTestModule.h
   DynamicPortTester.h
+  NeedToExecuteTester.h
   ReceiveScalar.h
   ReceiveScalarModuleState.h
   ReceiveTestMatrix.h

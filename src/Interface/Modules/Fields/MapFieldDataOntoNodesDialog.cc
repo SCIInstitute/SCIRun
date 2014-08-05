@@ -26,17 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Core/Logging/Log.h>
 
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
-  /// @todo 
+MapFieldDataOntoNodesDialog::MapFieldDataOntoNodesDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addComboBoxManager(quantityComboBox_, Parameters::Quantity);
+  addComboBoxManager(interpolationComboBox_, Parameters::InterpolationModel);
+  addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
+  addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
+}
 
-
-}}}
-
-#endif
+void MapFieldDataOntoNodesDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

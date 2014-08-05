@@ -60,24 +60,7 @@ namespace Gui {
     QString html_;
     NotePosition position_; 
   };
-
-  class HasNotes 
-  {
-  public:
-    HasNotes(const std::string& name, bool positionAdjustable);
-    virtual ~HasNotes();
-    void connectNoteEditorToAction(QAction* action);
-    void connectUpdateNote(QObject* obj);
-    void setCurrentNote(const Note& note) { currentNote_ = note; }
-  protected:
-    void destroy();
-  private:
-    class NoteEditor* noteEditor_;
-    Note currentNote_;
-    /// @todo: extract and make atomic
-    bool destroyed_;
-  };
-
+  
   class NoteDisplayStrategy
   {
   public:

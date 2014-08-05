@@ -39,8 +39,10 @@
 ///
 
 #include <Core/Utils/ProgressReporter.h>
+#include <Core/Utils/StringUtil.h>
 
 using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core;
 
 //ProgressReporter::ProgressReporter() :
 //  progressCurrent_(/*"ProgressReporter::progress_amount_", */0),
@@ -50,4 +52,22 @@ using namespace SCIRun::Core::Utility;
 
 ProgressReporter::~ProgressReporter()
 {
+}
+
+
+int AtomicCounter::operator()() const
+{
+  counter_.fetch_add(1);
+  return counter_;
+}
+
+boost::atomic<int> AtomicCounter::counter_(0);
+
+bool SCIRun::Core::replaceSubstring(std::string& str, const std::string& from, const std::string& to) 
+{
+  size_t start_pos = str.find(from);
+  if (start_pos == std::string::npos)
+    return false;
+  str.replace(start_pos, from.length(), to);
+  return true;
 }

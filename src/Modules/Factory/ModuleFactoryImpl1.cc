@@ -68,6 +68,9 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToField.h>
 #include <Modules/Legacy/Fields/CalculateDistanceToFieldBoundary.h>
+#include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
+#include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
+#include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -81,6 +84,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Modules/Basic/AsyncPortTestModule.h>
+#include <Modules/Basic/NeedToExecuteTester.h>
+//#include <Modules/Fields/@ModuleName@.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
@@ -136,6 +141,11 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToField>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
+  addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
+  addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
+  addModuleDesc<ClipFieldByFunction>("Real ported module", "...");
+  
+  // insert module desc here
 }
 
 void ModuleDescriptionLookup::addBundleModules()
@@ -155,4 +165,5 @@ void ModuleDescriptionLookup::addTestingModules()
   addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
   addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
   addModuleDesc<AsyncPortTestModule>("...", "ViewScene clone");
+  addModuleDesc<NeedToExecuteTester>("...", "...");
 }

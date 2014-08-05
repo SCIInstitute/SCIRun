@@ -33,21 +33,21 @@
 
 
 CONFIGURE_FILE (
-  "${SCIRun5Prototype_SOURCE_DIR}/include/sci_defs/error_testdefs.h.in"
-  "${SCIRun5Prototype_BINARY_DIR}/include/sci_defs/error_defs.h"
+  "${SCIRun_SOURCE_DIR}/include/sci_defs/error_testdefs.h.in"
+  "${SCIRun_BINARY_DIR}/include/sci_defs/error_defs.h"
 )
 
 CONFIGURE_FILE (
-  "${SCIRun5Prototype_SOURCE_DIR}/include/sci_defs/cmake_environment_testdefs.h.in"
-  "${SCIRun5Prototype_BINARY_DIR}/include/sci_defs/environment_defs.h"
+  "${SCIRun_SOURCE_DIR}/include/sci_defs/cmake_environment_testdefs.h.in"
+  "${SCIRun_BINARY_DIR}/include/sci_defs/environment_defs.h"
 )
 
 CONFIGURE_FILE (
-  "${SCIRun5Prototype_SOURCE_DIR}/include/sci_defs/cmake_config_testdefs.h.in"
-  "${SCIRun5Prototype_BINARY_DIR}/include/sci_defs/config_defs.h"
+  "${SCIRun_SOURCE_DIR}/include/sci_defs/cmake_config_testdefs.h.in"
+  "${SCIRun_BINARY_DIR}/include/sci_defs/config_defs.h"
 )
 
 CONFIGURE_FILE (
-  "${SCIRun5Prototype_SOURCE_DIR}/include/sci_defs/version_testdefs.h.in"
-  "${SCIRun5Prototype_BINARY_DIR}/include/sci_defs/version_defs.h"
+  "${SCIRun_SOURCE_DIR}/include/sci_defs/version_testdefs.h.in"
+  "${SCIRun_BINARY_DIR}/include/sci_defs/version_defs.h"
 )

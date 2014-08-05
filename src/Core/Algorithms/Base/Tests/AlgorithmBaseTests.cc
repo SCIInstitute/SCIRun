@@ -27,11 +27,67 @@
 */
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Application/Preferences.h>
 
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
 
-/// @todo
+TEST(FilenameVariableTests, CanReplaceDataDirectoryWindows)
+{
+  Preferences::Instance().setDataDirectory("E:\\scirun\\trunk_ref\\SCIRunData");
+  const std::string path = Preferences::Instance().dataDirectoryPlaceholder() + "\\aneurysm\\aneurysm-mra.lvs.fld";
+  AlgorithmParameter fileParameter(Name("filename"), path);
+  EXPECT_EQ(path, fileParameter.getString());
+  auto pathFromState = fileParameter.getFilename().string();
+#ifdef WIN32
+  EXPECT_EQ("E:\\scirun\\trunk_ref\\SCIRunData\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
+#endif
+}
+
+TEST(FilenameVariableTests, CanReplaceDataDirectoryMac)
+{
+  Preferences::Instance().setDataDirectory("/Users/scirun/trunk_ref/SCIRunData");
+  const std::string path = Preferences::Instance().dataDirectoryPlaceholder() + "/aneurysm/aneurysm-mra.lvs.fld";
+  AlgorithmParameter fileParameter(Name("filename"), path);
+  EXPECT_EQ(path, fileParameter.getString());
+  auto pathFromState = fileParameter.getFilename().string();
+  EXPECT_EQ("/Users/scirun/trunk_ref/SCIRunData/aneurysm/aneurysm-mra.lvs.fld", pathFromState);
+}
+
+TEST(FilenameVariableTests, CanReplaceDataDirectoryWindowsSlashAtEnd)
+{
+  Preferences::Instance().setDataDirectory("E:\\scirun\\trunk_ref\\SCIRunData\\");
+  const std::string path = Preferences::Instance().dataDirectoryPlaceholder() + "\\aneurysm\\aneurysm-mra.lvs.fld";
+  AlgorithmParameter fileParameter(Name("filename"), path);
+  EXPECT_EQ(path, fileParameter.getString());
+  auto pathFromState = fileParameter.getFilename().string();
+#ifdef WIN32
+  EXPECT_EQ("E:\\scirun\\trunk_ref\\SCIRunData\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
+#endif
+}
+
+TEST(FilenameVariableTests, CanReplaceDataDirectoryMacSlashAtEnd)
+{
+  Preferences::Instance().setDataDirectory("/Users/scirun/trunk_ref/SCIRunData/");
+  const std::string path = Preferences::Instance().dataDirectoryPlaceholder() + "/aneurysm/aneurysm-mra.lvs.fld";
+  AlgorithmParameter fileParameter(Name("filename"), path);
+  EXPECT_EQ(path, fileParameter.getString());
+  auto pathFromState = fileParameter.getFilename().string();
+#ifndef WIN32
+  EXPECT_EQ("/Users/scirun/trunk_ref/SCIRunData/aneurysm/aneurysm-mra.lvs.fld", pathFromState);
+#else
+  // windows won't remove forward slash, doesn't matter as long as above test passes.
+  EXPECT_EQ("/Users/scirun/trunk_ref/SCIRunData//aneurysm/aneurysm-mra.lvs.fld", pathFromState);
+#endif
+}
+
+TEST(FilenameVariableTests, PreservesPathIfNoPlaceholder)
+{
+  Preferences::Instance().setDataDirectory("E:\\scirun\\trunk_ref\\SCIRunData");
+  const std::string path = "E:\\scirun\\aneurysm\\aneurysm-mra.lvs.fld";
+  AlgorithmParameter fileParameter(Name("filename"), path);
+  EXPECT_EQ(path, fileParameter.getString());
+  auto pathFromState = fileParameter.getFilename().string();
+  EXPECT_EQ("E:\\scirun\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
+}

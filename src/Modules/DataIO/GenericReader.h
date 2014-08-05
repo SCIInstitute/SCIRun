@@ -125,10 +125,12 @@ GenericReader<HType, PortTag>::execute()
   // If there is an optional input string set the filename to it in the GUI.
   /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
-  if (!fileOption)
-    filename_ = get_state()->getValue(SCIRun::Core::Algorithms::Variables::Filename).getString();
-  else
-    filename_ = (*fileOption)->value();
+  if (fileOption && *fileOption)
+  {
+    get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
+  }
+  filename_ = get_state()->getValue(SCIRun::Core::Algorithms::Variables::Filename).getFilename().string();
+
   
   // Read the status of this file so we can compare modification timestamps
 
@@ -155,14 +157,12 @@ GenericReader<HType, PortTag>::execute()
 
   time_t new_filemodification = boost::filesystem::last_write_time(filename_);
 
-  if( 
+  if (needToExecute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    inputs_changed_ || filename_changed ||
+    || filename_changed ||
       new_filemodification != old_filemodification_ ||
       !oport_cached(0) ||
       !oport_cached("Filename") 
-#else
-    true
 #endif
       )
   {

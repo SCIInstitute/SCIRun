@@ -49,17 +49,11 @@ class ClipFieldByFunction : public Module {
     ClipFieldByFunction(GuiContext*);
 
     virtual void execute();
-    virtual void presave();
-    virtual void post_read();
-    
     
   private:
     GuiString guifunction_;  
     GuiString guimethod_;
     SCIRunAlgo::ClipMeshBySelectionAlgo clipping_algo_;
-    
-  private:
-    bool old_version_;
 };
 
 
@@ -67,8 +61,7 @@ DECLARE_MAKER(ClipFieldByFunction)
 ClipFieldByFunction::ClipFieldByFunction(GuiContext* ctx)
   : Module("ClipFieldByFunction", ctx, Source, "NewField", "SCIRun","2.0"),
     guifunction_(get_ctx()->subVar("function"),"DATA < 0"),
-    guimethod_(get_ctx()->subVar("method"),"onenode"),
-    old_version_(false)
+    guimethod_(get_ctx()->subVar("method"),"onenode")
 {
   clipping_algo_.set_progress_reporter(this);
 }
@@ -93,8 +86,6 @@ void ClipFieldByFunction::execute()
   }  
   get_dynamic_input_handles("Array",matrices,false);
 
-  TCLInterface::eval(get_id()+" update_text");
-
   // Only do work if needed:
   if (inputs_changed_ || guifunction_.changed() || guimethod_.changed() ||
       !oport_cached("Field") || !oport_cached("Mapping"))
@@ -109,7 +100,11 @@ void ClipFieldByFunction::execute()
     }
 
     std::string method = guimethod_.get();
-
+    if (field->vmesh()->is_pointcloudmesh()) method = "element";
+    
+    int basis_order = 1;
+    if (method == "element") basis_order = 0;
+    
     if (field->vmesh()->is_empty())
     {
       warning("Input mesh does not contain any nodes: copying input to output");
@@ -118,40 +113,17 @@ void ClipFieldByFunction::execute()
       send_output_handle("Mapping", mapping);
       return;
     }
-
-
+    
     int field_basis_order = field->vfield()->basis_order();
 
-    //-----------------------
-    /// Backwards compatiblity
-    if (get_old_version() == "1.0")
-    {
-//      if (field_basis_order == 0) method = "element";
-//      else if (method == "element") method ="allnodes";
-      guimethod_.set(method);
-    }
-    //-----------------------
-
-    if (field.get_rep()) if (field->vmesh()->is_pointcloudmesh()) method = "element";
-
-    int basis_order = 1;
-    if (method == "element") basis_order = 0;
-    
     NewArrayMathEngine engine;
     engine.set_progress_reporter(this);
     
     // Create the DATA object for the function
     // DATA is the data on the field
-
     if (basis_order == field_basis_order)
     {
       if(!(engine.add_input_fielddata("DATA",field))) return;
-
-      //-----------------------
-      // Backwards compatibility with version 3.0.2
-      if(!(engine.add_input_fielddata("v0",field))) return;
-      if(!(engine.add_input_fielddata("v",field))) return;
-      //-----------------------
     }
     else
     {
@@ -207,14 +179,6 @@ void ClipFieldByFunction::execute()
     {
       if(!(engine.add_output_fielddata("RESULT",field,basis_order,"char"))) return;
     }
-    else
-    {
-      //-----------------------
-      // Backwards compatibility with version 3.0.2
-      if(!(engine.add_output_fielddata("result",field,basis_order,"char"))) return;
-      has_RESULT = false;
-      //-----------------------
-    }
 
     // Add an object for getting the index and size of the array.
 
@@ -232,17 +196,6 @@ void ClipFieldByFunction::execute()
 
     if (!(engine.run()))
     {
-      //-----------------------
-      // Backwards compatibility with version 3.0.2
-      if (old_version_)
-      {
-        error("This module does not fully support backwards compatibility:");
-        error("C++/C functions are not supported in by this module anymore.");
-        error("Please review documentation to explore available functionality and grammar of this module.");
-        error("We are sorry for this inconvenience, but we do not longer support dynamically compiling code in SCIRun.");
-      }
-      //-----------------------
-      
       return;
     }
 
@@ -253,75 +206,12 @@ void ClipFieldByFunction::execute()
     {
       engine.get_field("RESULT",sfield);
     }
-    else
-    {
-      //-----------------------
-      // Backwards compatibility with version 3.0.2
-      engine.get_field("result",sfield);
-      //-----------------------
-    }
 
     clipping_algo_.set_option("method",method);
     if(!(clipping_algo_.run(field,sfield,ofield,mapping))) return;
 
     send_output_handle("Field", ofield);
     send_output_handle("Mapping", mapping);
-  }
-}
-
-
-void
-ClipFieldByFunction::presave()
-{
-  // update gui_function_ before saving.
-  TCLInterface::execute(get_id() + " update_text");
-}
-
-
-void
-ClipFieldByFunction::post_read()
-{
-  // Compatibility with version 3.0.2
-  std::string version = get_old_version();
-  if (version != get_version())
-  {
-    old_version_ = true;
-  }
-
-  const std::string modName = get_ctx()->getfullname() + "-";
-  std::string val;
-  
-  //-----------------------
-  // Backwards compatibility with intermediate version....
-
-  if( TCLInterface::get(modName+"mode", val, get_ctx()) )
-  {
-    TCLInterface::set(modName+"method", val, get_ctx());
-  }
-  //-----------------------
-  
-  std::string function;
-  TCLInterface::get(modName+"function", function, get_ctx());
-  if (function.find("return") != std::string::npos)
-  {
-    // Undo damage intermediate version
-    // At some point in time it was required to add a return statement
-    // to complete the function, this is imcompatible with newer and older
-    // modules, hence this will undo the damage
-    // This should fix most cases by stripping the return clause and adding
-    // RESULT = expression;
-    std::string::size_type loc = function.find("return");
-    function = function.substr(0,loc)+function.substr(loc+6);
-    function = "RESULT = "+ function;
-    
-    TCLInterface::set(modName+"function", function, get_ctx());
-  }
-
-  if( TCLInterface::get(modName+"outputdatatype", val, get_ctx()) )
-  {
-    if (val == "input 0 port") val = "same as input";
-      // Set the current values for the new names
-    TCLInterface::set(modName+"format", val, get_ctx());
   }
 }
 

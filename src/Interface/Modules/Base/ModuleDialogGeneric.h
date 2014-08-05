@@ -35,6 +35,7 @@
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/bimap.hpp>
+#include <boost/signals2/connection.hpp>
 #include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
@@ -79,6 +80,7 @@ namespace Gui {
     void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap);
     void addTextEditManager(QTextEdit* textEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addDoubleLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addSpinBoxManager(QSpinBox* spinBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addDoubleSpinBoxManager(QDoubleSpinBox* spinBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addCheckBoxManager(QCheckBox* checkBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
@@ -87,6 +89,7 @@ namespace Gui {
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     std::vector<WidgetSlotManagerPtr> slotManagers_;
+    boost::signals2::connection stateConnection_;
   };
 
 }

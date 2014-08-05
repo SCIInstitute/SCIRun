@@ -34,6 +34,7 @@
 #include <vector>
 #include <iterator>
 #include <boost/shared_ptr.hpp>
+#include <boost/atomic.hpp>
 #include <Core/Utils/share.h>
 
 namespace SCIRun 
@@ -95,6 +96,15 @@ std::vector<boost::shared_ptr<T>> upcast_range(const Cont& container)
 {
   return upcast_range<T>(container.begin(), container.end());
 }
+
+struct SCISHARE AtomicCounter
+{
+  int operator()() const;
+private:
+  static boost::atomic<int> counter_;
+};
+
+SCISHARE bool replaceSubstring(std::string& str, const std::string& from, const std::string& to);
 
 }}
 

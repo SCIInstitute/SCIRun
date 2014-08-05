@@ -32,7 +32,7 @@ ELSE()
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
 ENDIF(UNIX)
 
-PROJECT(SCIRun5Prototype)
+PROJECT(SCIRun)
 
 ###############################################################################
 # Don't allow the user to build in the src directory...
@@ -84,9 +84,9 @@ SET(SCIRUN_VERSION_STRING "${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
 #
 # Based on Seg3D settings...
 
-SET(APPLICATION_NAME "SCIRunGUIPrototype" CACHE INTERNAL "Application name" FORCE)
+SET(APPLICATION_NAME "SCIRun" CACHE INTERNAL "Application name" FORCE)
 # TODO: temporary hack to allow testing
-SET(TEST_APPLICATION_NAME "SCIRunGUIPrototype_test" CACHE INTERNAL "Application name" FORCE)
+SET(TEST_APPLICATION_NAME "SCIRun_test" CACHE INTERNAL "Application name" FORCE)
 # add others?
 SET(APPLICATION_EXTENSION ".net" CACHE INTERNAL "Network file extension" FORCE)
 SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
@@ -121,7 +121,7 @@ IF(BUILD_TESTING)
 
   # Hack BUILDNAME to differentiate from regular SCIRun builds
   # TODO: remove when transitioning to production code
-  SET(BUILDNAME "${BUILDNAME_SCIRun5Prototype}" CACHE STRING "Name of build on the dashboard")
+  SET(BUILDNAME "${BUILDNAME_SCIRun}" CACHE STRING "Name of build on the dashboard")
   MARK_AS_ADVANCED(BUILDNAME)
 
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
@@ -133,6 +133,13 @@ IF(BUILD_TESTING)
     MESSAGE( WARNING "Unit test resource path does not exist. Please set it correctly to run all the unit tests. Try mapping this svn path: https://gforge.sci.utah.edu/gf/project/sciruntests/scmsvn/?action=browse&path=%2FSCIRunUnitTestData%2FSCIRun5%2FUnitTests%2F" )
   ENDIF()
 
+  # adding a brand new path to store the github data repo location; eventually will replace above, and perhaps be another external project link.
+  SET(SCIRUN_TEST_RESOURCE_DIR "../../SCIRunTestData" CACHE PATH "Root for all github-based testing files")
+
+  IF(NOT EXISTS "${SCIRUN_TEST_RESOURCE_DIR}")
+    MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
+  ENDIF()
+  
   ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
@@ -440,7 +447,7 @@ IF(NOT BUILD_HEADLESS)
     INCLUDE(${QT_USE_FILE})
     ADD_DEFINITIONS(${QT_DEFINITIONS})
   ELSE()
-    MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun5Prototype")
+    MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun")
   ENDIF()
 
   ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
@@ -462,16 +469,16 @@ SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
-  ${SCIRun5Prototype_SOURCE_DIR}/
-  ${SCIRun5Prototype_SOURCE_DIR}/include
-  ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
-  ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
-  ${SCIRun5Prototype_SOURCE_DIR}/Externals/
-  ${SCIRun5Prototype_BINARY_DIR}/
-  ${SCIRun5Prototype_BINARY_DIR}/include
-  ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen
+  ${SCIRun_SOURCE_DIR}/
+  ${SCIRun_SOURCE_DIR}/include
+  ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
+  ${SCIRun_SOURCE_DIR}/Externals/gmock/include
+  ${SCIRun_SOURCE_DIR}/Externals/
+  ${SCIRun_BINARY_DIR}/
+  ${SCIRun_BINARY_DIR}/include
+  ${SCIRun_SOURCE_DIR}/Externals/eigen
   # TODO: set up include variable in log4cpp project
-  ${SCIRun5Prototype_SOURCE_DIR}/Externals/log4cpp/include
+  ${SCIRun_SOURCE_DIR}/Externals/log4cpp/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
 )
@@ -533,10 +540,10 @@ IF(CMAKE_BUILD_TYPE MATCHES "Debug")
 ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
 
 # sci_defs/environment_defs.h
-SET(scirun_src_dir "${SCIRun5Prototype_SOURCE_DIR}" CACHE INTERNAL "Path to SCIRun's src directory")
+SET(scirun_src_dir "${SCIRun_SOURCE_DIR}" CACHE INTERNAL "Path to SCIRun's src directory")
 # DV Technically, I don't have access to this variable once we fix building
 # these projets separately!!!
-SET(scirun_obj_dir ${SCIRun5Prototype_BINARY_DIR} CACHE INTERNAL "Path to SCIRun's binary directory")
+SET(scirun_obj_dir ${SCIRun_BINARY_DIR} CACHE INTERNAL "Path to SCIRun's binary directory")
 
 MARK_AS_ADVANCED(THROW_LEVEL ASSERTION_LEVEL DEF_HASH)
 # DV Add with_exc stuff from configure.ac

@@ -63,7 +63,7 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   addSpinBoxManager(maxIterationsSpinBox_, Variables::MaxIterations);
   addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
 
-  connect(methodComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
+  //connect(methodComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
   addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
   addComboBoxManager(methodComboBox_, Variables::Method, impl_->solverNameLookup_);
 }

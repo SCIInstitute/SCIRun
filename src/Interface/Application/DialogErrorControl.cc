@@ -26,5 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-/// @todo 
+#include <iostream> 
+#include <Interface/Application/DialogErrorControl.h>
+#include <Core/Application/Preferences.h>
+
+using namespace SCIRun::Gui;
+DialogErrorControl::DialogErrorControl(QWidget*parent) : counter_(0)
+{
+
+}
+bool DialogErrorControl::showDialog()
+{
+	if (SCIRun::Core::Preferences::Instance().showModuleErrorDialogs && counter_ <= MAX_DIALOGS_SHOWN)
+			return true;
+	else 
+			return false; 
+}
+void DialogErrorControl::resetCounter()
+{ 
+		counter_ = 0;
+}
+void DialogErrorControl::increaseCounter()
+{
+		++counter_; 
+}

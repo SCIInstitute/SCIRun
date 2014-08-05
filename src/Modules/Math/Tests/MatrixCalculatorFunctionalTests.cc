@@ -129,11 +129,13 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
   EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
 
+  send->execute();
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   process->execute();
   receive->execute();
   EXPECT_EQ(input->transpose(), *receiveModule->latestReceivedMatrix());
 
+  send->execute();
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
   process->get_state()->setValue(Variables::ScalarValue, 2.0);
   process->execute();

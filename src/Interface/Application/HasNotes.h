@@ -26,5 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-/// @todo 
+#ifndef INTERFACE_APPLICATION_HAS_NOTES_H
+#define INTERFACE_APPLICATION_HAS_NOTES_H
+
+#include <Interface/Application/NoteEditor.h>
+
+class QAction;
+
+namespace SCIRun {
+namespace Gui {
+  
+  class HasNotes 
+  {
+  public:
+    HasNotes(const std::string& name, bool positionAdjustable);
+    virtual ~HasNotes();
+    void connectNoteEditorToAction(QAction* action);
+    void connectUpdateNote(QObject* obj);
+    void setCurrentNote(const Note& note) { currentNote_ = note; }
+  protected:
+    void destroy();
+  private:
+    NoteEditor noteEditor_;
+    Note currentNote_;
+    /// @todo: extract and make atomic
+    bool destroyed_;
+  };
+
+}
+}
+
+#endif

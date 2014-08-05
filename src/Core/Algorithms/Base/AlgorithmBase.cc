@@ -28,25 +28,29 @@
 
 #include <iostream>
 #include <vector>
+#include <boost/thread.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <Core/Utils/StringUtil.h>
+#include <boost/foreach.hpp>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Logging/ConsoleLogger.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
 
 Name::Name(const std::string& name) : name_(name)
 {
   if (!std::all_of(name.begin(), name.end(), isalnum))
   {
-    //std::cout << "APN not accessible from Python: " << name << std::endl;
-    /// @todo: log this, exception is overkill.
-    //THROW_INVALID_ARGUMENT("Algorithm parameter name must be alphanumeric");
+    LOG_DEBUG("AlgorithmParameterName not accessible from Python: " << name << std::endl);
   }
 }
 
@@ -68,6 +72,27 @@ std::string AlgorithmParameter::getString() const
 {
   const std::string* v = boost::get<std::string>(&value_);
   return v ? *v : "";
+}
+
+boost::filesystem::path AlgorithmParameter::getFilename() const
+{
+  {
+#ifdef _MSC_VER
+    // fix for https://svn.boost.org/trac/boost/ticket/6320
+    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    Guard g(AlgorithmParameterHelper::lock_.get());
+    boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+    boost::filesystem::path::imbue( std::locale( "" ) );  
+    boost::filesystem::path dummy("boost bug workaround");
+    Log::get() << DEBUG_LOG << dummy.string() << std::endl;
+#endif
+  }
+
+  auto stringPath = getString();
+  if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), ""))
+    return AlgorithmParameterHelper::dataDir() / stringPath;
+  boost::filesystem::path p(stringPath);
+  return p;
 }
 
 bool AlgorithmParameter::getBool() const
@@ -92,6 +117,30 @@ DatatypeHandle AlgorithmParameter::getDatatype() const
 {
   return data_;
 }
+
+void AlgorithmParameterHelper::setDataDir(const boost::filesystem::path& path)
+{
+  dataDir_ = path;
+}
+
+boost::filesystem::path AlgorithmParameterHelper::dataDir()
+{
+  return dataDir_;
+}
+
+void AlgorithmParameterHelper::setDataDirPlaceholder(const std::string& str)
+{
+  dataDirPlaceholder_ = str;
+}
+
+std::string AlgorithmParameterHelper::dataDirPlaceholder()
+{
+  return dataDirPlaceholder_;
+}
+
+boost::filesystem::path AlgorithmParameterHelper::dataDir_;
+std::string AlgorithmParameterHelper::dataDirPlaceholder_;
+Mutex AlgorithmParameterHelper::lock_("fsbug");
 
 AlgorithmLogger::AlgorithmLogger() : defaultLogger_(new ConsoleLogger)
 {
@@ -149,6 +198,11 @@ void AlgorithmParameterList::addParameter(const AlgorithmParameterName& key, con
   parameters_[key] = AlgorithmParameter(key, defaultValue);
 }
 
+AlgorithmStatusReporter::AlgorithmStatusReporter() 
+{
+  setUpdaterFunc(defaultUpdaterFunc_);
+}
+
 AlgorithmStatusReporter::UpdaterFunc AlgorithmStatusReporter::defaultUpdaterFunc_([](double r) { std::cout << "Algorithm at " << std::setiosflags(std::ios::fixed) << std::setprecision(2) << r*100 << "% complete" << std::endl;});
 
 ScopedAlgorithmStatusReporter::ScopedAlgorithmStatusReporter(const AlgorithmStatusReporter* asr, const std::string& tag) : asr_(asr) 
@@ -174,8 +228,7 @@ DatatypeHandle& AlgorithmData::operator[](const Name& name)
 void AlgorithmParameterList::add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
 {
   std::set<std::string> opts;
-  auto lower = boost::to_lower_copy(options);
-  boost::split(opts, lower, boost::is_any_of("|"));
+  boost::split(opts, options, boost::is_any_of("|"));
   parameters_[key] = AlgorithmParameter(key, AlgoOption(defval, opts));
 }
 
@@ -187,12 +240,11 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
     return keyNotFoundPolicy(key);
   
   AlgoOption param = paramIt->second.getOption();
-  std::string valueLower = boost::to_lower_copy(value);
 
-  if (param.options_.find(valueLower) == param.options_.end())
-    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("parameter \"" + key.name_ + "\" has no option \"" + valueLower + "\""));
+  if (param.options_.find(value) == param.options_.end())
+    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("parameter \"" + key.name_ + "\" has no option \"" + value + "\""));
 
-  param.option_ = valueLower;
+  param.option_ = value;
   parameters_[key].value_ = param;
   return true;
 }
@@ -225,6 +277,18 @@ bool AlgorithmParameterList::check_option(const AlgorithmParameterName& key, con
   std::string currentValue;
   get_option(key, currentValue);
   return boost::iequals(value, currentValue);
+}
+
+void AlgorithmParameterList::dumpAlgoState() const
+{
+  std::ostringstream ostr;
+  ostr << "Algorithm state for " << typeid(*this).name() << " id#" << id() << std::endl;
+  
+  BOOST_FOREACH(const ParameterMap::value_type& pair, parameters_)
+  {
+    ostr << "\t" << pair.first.name() << ": " << pair.second.value_ << std::endl;
+  }
+  LOG_DEBUG(ostr.str());
 }
 
 bool SCIRun::Core::Algorithms::operator==(const AlgoOption& lhs, const AlgoOption& rhs)

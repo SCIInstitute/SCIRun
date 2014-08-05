@@ -98,7 +98,8 @@ class SCISHARE InputPort : public Port, public InputPortInterface
 public:
   InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink);
   virtual ~InputPort();
-  virtual void attach(Connection* conn);
+  virtual void attach(Connection* conn) override;
+  virtual void detach(Connection* conn) override;
   virtual DatatypeSinkInterfaceHandle sink() const;
   virtual Core::Datatypes::DatatypeHandleOption getData() const;
   virtual bool isInput() const { return true; } //boo
@@ -120,6 +121,8 @@ public:
   virtual void sendData(Core::Datatypes::DatatypeHandle data);
   virtual bool isInput() const { return false; } //boo
   virtual bool isDynamic() const { return false; } /// @todo: design dynamic output ports
+  virtual bool hasData() const override;
+  virtual void attach(Connection* conn) override;
 private:
   DatatypeSourceInterfaceHandle source_;
 };

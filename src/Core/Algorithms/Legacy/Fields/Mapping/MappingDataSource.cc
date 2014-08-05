@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,118 +26,104 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Algorithms/Legacy/Fields/Mapping/MappingDataSource.h>
 #include <Core/Math/MiscMath.h>
-#include <Core/Algorithms/Fields/Mapping/MappingDataSource.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Utils/Exception.h>
 
-namespace SCIRunAlgo {
-
-#ifdef _WIN32
-typedef __int64 int64;  
-typedef unsigned __int64 uint64;  
-#define INT64_VAL(x) x##i64
-#define UINT64_VAL(x) x##ui64
-#else
-typedef long long int64;
-typedef unsigned long long uint64;
-#define INT64_VAL(x) x##ll
-#define UINT64_VAL(x) x##ull
-#endif
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
 
-// Constructor of base class
 MappingDataSource::MappingDataSource() :
-  UsedWithLockingHandle<Mutex>("DataSource Mutex"),
-  is_double_(false), is_vector_(false), is_tensor_(false) 
+  is_double_(false), is_vector_(false), is_tensor_(false)
 {}
 
 MappingDataSource::~MappingDataSource()
 {}
 
-// Default implementations
+void MappingDataSource::get_data(double&, const Point&) const
+{ REPORT_NOT_IMPLEMENTED("get_data(double) was not implemented"); }
 
-void 
-MappingDataSource::get_data(double&, Point&)
-{ ASSERTFAIL("get_data(double) was not implemented"); }
+void MappingDataSource::get_data(Vector&, const Point&) const
+{ REPORT_NOT_IMPLEMENTED("get_data(Vector) was not implemented"); }
 
-void 
-MappingDataSource::get_data(Vector&, Point&)
-{ ASSERTFAIL("get_data(Vector) was not implemented"); }
+void MappingDataSource::get_data(Tensor&, const Point&) const
+{ REPORT_NOT_IMPLEMENTED("get_data(Tensor) was not implemented"); }
 
-void 
-MappingDataSource::get_data(Tensor&, Point&)
-{ ASSERTFAIL("get_data(Tensor) was not implemented"); }
+void MappingDataSource::get_data(std::vector<double>&, const std::vector<Point>&) const
+{ REPORT_NOT_IMPLEMENTED("get_data(std::vector<double>) was not implemented"); }
 
-void 
-MappingDataSource::get_data(std::vector<double>&, std::vector<Point>&)
-{ ASSERTFAIL("get_data(std::vector<double>) was not implemented"); }
+void MappingDataSource::get_data(std::vector<Vector>&, const std::vector<Point>&) const
+{ REPORT_NOT_IMPLEMENTED("get_data(std::vector<Vector>) was not implemented"); }
 
-void 
-MappingDataSource::get_data(std::vector<Vector>&, std::vector<Point>&)
-{ ASSERTFAIL("get_data(std::vector<Vector>) was not implemented"); }
-
-void 
-MappingDataSource::get_data(std::vector<Tensor>&, std::vector<Point>&)
-{ ASSERTFAIL("get_data(std::vector<Tensor>) was not implemented"); }
-
+void MappingDataSource::get_data(std::vector<Tensor>&, const std::vector<Point>&) const
+{ REPORT_NOT_IMPLEMENTED("get_data(std::vector<Tensor>) was not implemented"); }
 
 bool
-MappingDataSource::is_scalar()
+MappingDataSource::is_scalar() const
 { return (is_double_); }
 
 bool
-MappingDataSource::is_double()
+MappingDataSource::is_double() const
 { return (is_double_); }
 
 bool
-MappingDataSource::is_vector()
+MappingDataSource::is_vector() const
 { return (is_vector_); }
 
 bool
-MappingDataSource::is_tensor()
+MappingDataSource::is_tensor() const
 { return (is_tensor_); }
-
-// DataSource code
 
 // InterpolateData: find the data through interpolation
 
 class InterpolatedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       sfield_->interpolate(data,p,def_value_,ei_);
     }
 
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       sfield_->interpolate(data,p,Vector(def_value_,def_value_,def_value_),ei_);
     }
 
-    virtual void get_data(Tensor& data, Point& p)
+    virtual void get_data(Tensor& data, const Point& p) const override
     {
       sfield_->interpolate(data,p,Tensor(def_value_),ei_);
     }
-    
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       sfield_->minterpolate(data,p,def_value_,mei_);
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       sfield_->minterpolate(data,p,Vector(def_value_,def_value_,def_value_),mei_);
     }
-   
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p)
+
+    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       sfield_->minterpolate(data,p,Tensor(def_value_),mei_);
     }
-        
-    InterpolatedDataSource(FieldHandle& sfield,double def_value)
+
+    InterpolatedDataSource(FieldHandle sfield,double def_value)
     {
       sfield_ = sfield->vfield();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
       def_value_ = def_value;
-      
+
       if (sfield_->is_scalar()) is_double_ = true;
       if (sfield_->is_vector()) is_vector_ = true;
       if (sfield_->is_tensor()) is_tensor_ = true;
@@ -146,55 +132,55 @@ class InterpolatedDataSource : public MappingDataSource {
   private:
     VField                      *sfield_;
     double                       def_value_;
-    VMesh::ElemInterpolate       ei_;
-    VMesh::MultiElemInterpolate  mei_;
+    mutable VMesh::ElemInterpolate       ei_;
+    mutable VMesh::MultiElemInterpolate  mei_;
 };
 
 class InterpolatedWeightedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       double weight; wfield_->interpolate(weight,p,0.0,wei_);
       sfield_->interpolate(data,p,def_value_,ei_);
       data = data*weight;
     }
 
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       double weight; wfield_->interpolate(weight,p,0.0,wei_);
       sfield_->interpolate(data,p,Vector(0.0,0.0,0.0),ei_);
       data = data*weight;
     }
 
-    virtual void get_data(Tensor& data, Point& p)
+    virtual void get_data(Tensor& data, const Point& p) const override
     {
       double weight; wfield_->interpolate(weight,p,0.0,wei_);
       sfield_->interpolate(data,p,Tensor(def_value_),ei_);
       data = data*weight;
     }
-    
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->minterpolate(data,p,def_value_,mei_);
       for (size_t j=0; j<weights_.size(); j++) data[j] = weights_[j]*data[j];
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->minterpolate(data,p,Vector(def_value_,def_value_,def_value_),mei_);
       for (size_t j=0; j<weights_.size(); j++) data[j] = weights_[j]*data[j];
     }
-   
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p)
+
+    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->minterpolate(data,p,Tensor(def_value_),mei_);
       for (size_t j=0; j<weights_.size(); j++) data[j] = weights_[j]*data[j];
     }
-        
-    InterpolatedWeightedDataSource(FieldHandle& sfield,FieldHandle& wfield, double def_value)
+
+    InterpolatedWeightedDataSource(FieldHandle sfield,FieldHandle wfield, double def_value)
     {
       sfield_ = sfield->vfield();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
@@ -207,87 +193,83 @@ class InterpolatedWeightedDataSource : public MappingDataSource {
       if (sfield_->is_tensor()) is_tensor_ = true;
     }
 
-    virtual ~InterpolatedWeightedDataSource() {}
-
   private:
     VField *sfield_;
     VField *wfield_;
     double def_value_;
-    
+
     // Stored here we do not need to allocate this one each time
     // Its memory is allocated on first use
-    std::vector<double> weights_;
-    
-    VMesh::ElemInterpolate       ei_;
-    VMesh::MultiElemInterpolate  mei_;    
-    VMesh::ElemInterpolate       wei_;
-    VMesh::MultiElemInterpolate  wmei_;    
+    mutable std::vector<double> weights_;
+
+    mutable VMesh::ElemInterpolate       ei_;
+    mutable VMesh::MultiElemInterpolate  mei_;
+    mutable VMesh::ElemInterpolate       wei_;
+    mutable VMesh::MultiElemInterpolate  wmei_;
 };
 
 
 class InterpolatedWeightedTensorDataSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Tensor weight; wfield_->interpolate(weight,p,Tensor(0.0),wei_);
       sfield_->interpolate(data,p,Vector(def_value_,def_value_,def_value_),ei_);
       data = weight*data;
     }
 
-    virtual void get_data(Tensor& data, Point& p)
+    virtual void get_data(Tensor& data, const Point& p) const override
     {
       wfield_->interpolate(data,p,Tensor(0.0),wei_);
       double tdata; sfield_->interpolate(tdata,p,def_value_,ei_);
       data = data*tdata;
     }
-    
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,Tensor(0.0),wmei_);
       sfield_->minterpolate(data,p,Vector(def_value_,def_value_,def_value_),mei_);
       for (size_t j=0; j<weights_.size(); j++) data[j] = weights_[j]*data[j];
     }
-   
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p)
+
+    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(data,p,Tensor(0.0),wmei_);
       sfield_->minterpolate(tdata_,p,def_value_,mei_);
       for (size_t j=0; j<weights_.size(); j++) data[j] = tdata_[j]*data[j];
     }
-        
-    InterpolatedWeightedTensorDataSource(FieldHandle& sfield,FieldHandle& wfield, double def_value)
+
+    InterpolatedWeightedTensorDataSource(FieldHandle sfield,FieldHandle wfield, double def_value)
     {
       sfield_ = sfield->vfield();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
       wfield_ = wfield->vfield();
       wfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
       def_value_ = def_value;
-      
+
       if (sfield_->is_scalar()) is_tensor_ = true;
       if (sfield_->is_vector()) is_vector_ = true;
     }
-
-    virtual ~InterpolatedWeightedTensorDataSource() {}
 
   private:
     VField *sfield_;
     VField *wfield_;
     double def_value_;
-    
+
     // Stored here we do not need to allocate this one each time
     // Its memory is allocated on first use
-    std::vector<double> tdata_;
-    std::vector<Tensor> weights_;
-    
-    VMesh::ElemInterpolate       ei_;
-    VMesh::MultiElemInterpolate  mei_;    
-    VMesh::ElemInterpolate       wei_;
-    VMesh::MultiElemInterpolate  wmei_; 
+    mutable std::vector<double> tdata_;
+    mutable std::vector<Tensor> weights_;
+
+    mutable VMesh::ElemInterpolate       ei_;
+    mutable VMesh::MultiElemInterpolate  mei_;
+    mutable VMesh::ElemInterpolate       wei_;
+    mutable VMesh::MultiElemInterpolate  wmei_;
 };
 
 class InterpolatedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -295,7 +277,7 @@ class InterpolatedGradientSource : public MappingDataSource {
       data = Vector(grad[0],grad[1],grad[2]);
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       sfield_->mgradient(grads_,p,def_value_,meg_);
 
@@ -304,32 +286,30 @@ class InterpolatedGradientSource : public MappingDataSource {
         data[j] = Vector(grads_[j][0],grads_[j][1],grads_[j][2]);
     }
 
-    InterpolatedGradientSource(FieldHandle& sfield,double def_value = 0.0)
+    InterpolatedGradientSource(FieldHandle sfield,double def_value = 0.0)
     {
       sfield_ = sfield->vfield();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
-      
+
       is_vector_ = true;
       def_value_ = def_value;
     }
 
-    virtual ~InterpolatedGradientSource() {}
-
   private:
     VField *sfield_;
     double def_value_;
-    
+
     // temp variables that need allocation for first tine use
-    std::vector<StackVector<double,3> > grads_; 
-    
-    VMesh::ElemGradient       eg_;
-    VMesh::MultiElemGradient  meg_;     
+    mutable std::vector<StackVector<double,3> > grads_;
+
+    mutable VMesh::ElemGradient       eg_;
+    mutable VMesh::MultiElemGradient  meg_;
 };
 
 
 class InterpolatedWeightedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -339,7 +319,7 @@ class InterpolatedWeightedGradientSource : public MappingDataSource {
       data = weight*Vector(grad[0],grad[1],grad[2]);
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->mgradient(grads_,p,def_value_,meg_);
@@ -348,37 +328,35 @@ class InterpolatedWeightedGradientSource : public MappingDataSource {
         data[j] = weights_[j]*Vector(grads_[j][0],grads_[j][1],grads_[j][2]);
     }
 
-    InterpolatedWeightedGradientSource(FieldHandle& sfield, FieldHandle& wfield, double def_value = 0.0)
+    InterpolatedWeightedGradientSource(FieldHandle sfield, FieldHandle wfield, double def_value = 0.0)
     {
       sfield_ = sfield->vfield();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
       wfield_ = wfield->vfield();
       wfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
-      
+
       is_vector_ = true;
       def_value_ = def_value;
     }
-    
-    virtual ~InterpolatedWeightedGradientSource() {}
 
   private:
     VField *sfield_;
     VField *wfield_;
     double def_value_;
-    
+
     // temp variables that need allocation for first tine use
-    std::vector<StackVector<double,3> > grads_; 
-    std::vector<double> weights_;
-    
-    VMesh::ElemGradient       eg_;
-    VMesh::MultiElemGradient  meg_;       
-    VMesh::ElemInterpolate    wei_;
-    VMesh::MultiElemInterpolate wmei_;       
+    mutable std::vector<StackVector<double,3> > grads_;
+    mutable std::vector<double> weights_;
+
+    mutable VMesh::ElemGradient       eg_;
+    mutable VMesh::MultiElemGradient  meg_;
+    mutable VMesh::ElemInterpolate    wei_;
+    mutable VMesh::MultiElemInterpolate wmei_;
 };
 
 class InterpolatedWeightedTensorGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -388,7 +366,7 @@ class InterpolatedWeightedTensorGradientSource : public MappingDataSource {
       data = weight*Vector(grad[0],grad[1],grad[2]);
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       wfield_->minterpolate(weights_,p,0.0,wmei_);
       sfield_->mgradient(grads_,p,def_value_,meg_);
@@ -397,37 +375,35 @@ class InterpolatedWeightedTensorGradientSource : public MappingDataSource {
         data[j] = weights_[j]*Vector(grads_[j][0],grads_[j][1],grads_[j][2]);
     }
 
-    InterpolatedWeightedTensorGradientSource(FieldHandle& sfield, FieldHandle& wfield, double def_value = 0.0)
+    InterpolatedWeightedTensorGradientSource(FieldHandle sfield, FieldHandle wfield, double def_value = 0.0)
     {
       sfield_ = sfield->vfield();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
       wfield_ = wfield->vfield();
       wfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
-      
+
       is_vector_ = true;
       def_value_ = def_value;
     }
 
-    virtual ~InterpolatedWeightedTensorGradientSource() {}
-    
   private:
     VField *sfield_;
     VField *wfield_;
     double def_value_;
-    
-    // temp variables that need allocation for first tine use
-    std::vector<StackVector<double,3> > grads_; 
-    std::vector<Tensor> weights_;
 
-    VMesh::ElemGradient       eg_;
-    VMesh::MultiElemGradient  meg_;       
-    VMesh::ElemInterpolate    wei_;
-    VMesh::MultiElemInterpolate wmei_;       
+    // temp variables that need allocation for first tine use
+    mutable std::vector<StackVector<double,3> > grads_;
+    mutable std::vector<Tensor> weights_;
+
+    mutable VMesh::ElemGradient       eg_;
+    mutable VMesh::MultiElemGradient  meg_;
+    mutable VMesh::ElemInterpolate    wei_;
+    mutable VMesh::MultiElemInterpolate wmei_;
 };
 
 class InterpolatedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -435,7 +411,7 @@ class InterpolatedGradientNormSource : public MappingDataSource {
       data = (Vector(grad[0],grad[1],grad[2])).length();
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       sfield_->mgradient(grads_,p,def_value_,meg_);
       data.resize(grads_.size());
@@ -443,32 +419,30 @@ class InterpolatedGradientNormSource : public MappingDataSource {
         data[j] = (Vector(grads_[j][0],grads_[j][1],grads_[j][2])).length();
     }
 
-    InterpolatedGradientNormSource(FieldHandle& sfield, double def_value = 0.0)
+    InterpolatedGradientNormSource(FieldHandle sfield, double def_value = 0.0)
     {
       sfield_ = sfield->vfield();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
-      
+
       is_double_ = true;
       def_value_ = def_value;
     }
 
-    virtual ~InterpolatedGradientNormSource() {}
-
   private:
     VField *sfield_;
     double def_value_;
-    
+
     // temp variables that need allocation for first tine use
-    std::vector<StackVector<double,3> > grads_;
-    
-    VMesh::ElemGradient       eg_;
-    VMesh::MultiElemGradient  meg_;   
+    mutable std::vector<StackVector<double,3> > grads_;
+
+    mutable VMesh::ElemGradient       eg_;
+    mutable VMesh::MultiElemGradient  meg_;
 };
 
 
 class InterpolatedWeightedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -478,7 +452,7 @@ class InterpolatedWeightedGradientNormSource : public MappingDataSource {
       data = (weight*Vector(grad[0],grad[1],grad[2])).length();
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       sfield_->mgradient(grads_,p,def_value_,meg_);
       wfield_->minterpolate(weights_,p,0.0,wmei_);
@@ -487,37 +461,35 @@ class InterpolatedWeightedGradientNormSource : public MappingDataSource {
         data[j] = (weights_[j]*Vector(grads_[j][0],grads_[j][1],grads_[j][2])).length();
     }
 
-    InterpolatedWeightedGradientNormSource(FieldHandle& sfield, FieldHandle& wfield, double def_value = 0.0)
+    InterpolatedWeightedGradientNormSource(FieldHandle sfield, FieldHandle wfield, double def_value = 0.0)
     {
       sfield_ = sfield->vfield();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
       wfield_ = wfield->vfield();
       wfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
-      
+
       is_double_ = true;
       def_value_ = def_value;
     }
 
-    virtual ~InterpolatedWeightedGradientNormSource() {}
-    
   private:
     VField *sfield_;
     VField *wfield_;
     double def_value_;
-    
-    // temp variables that need allocation for first tine use
-    std::vector<StackVector<double,3> > grads_; 
-    std::vector<double> weights_;
 
-    VMesh::ElemGradient       eg_;
-    VMesh::MultiElemGradient  meg_;       
-    VMesh::ElemInterpolate    wei_;
-    VMesh::MultiElemInterpolate wmei_;       
+    // temp variables that need allocation for first tine use
+    mutable std::vector<StackVector<double,3> > grads_;
+    mutable std::vector<double> weights_;
+
+    mutable VMesh::ElemGradient       eg_;
+    mutable VMesh::MultiElemGradient  meg_;
+    mutable VMesh::ElemInterpolate    wei_;
+    mutable VMesh::MultiElemInterpolate wmei_;
 };
 
 class InterpolatedWeightedTensorGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       // use doubles to avoid quantization effects
       StackVector<double,3> grad;
@@ -527,7 +499,7 @@ class InterpolatedWeightedTensorGradientNormSource : public MappingDataSource {
       data = (weight*Vector(grad[0],grad[1],grad[2])).length();
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       sfield_->mgradient(grads_,p,def_value_,meg_);
       wfield_->minterpolate(weights_,p,0.0,wmei_);
@@ -536,38 +508,36 @@ class InterpolatedWeightedTensorGradientNormSource : public MappingDataSource {
         data[j] = (weights_[j]*Vector(grads_[j][0],grads_[j][1],grads_[j][2])).length();
     }
 
-    InterpolatedWeightedTensorGradientNormSource(FieldHandle& sfield, FieldHandle& wfield,double def_value = 0.0)
+    InterpolatedWeightedTensorGradientNormSource(FieldHandle sfield, FieldHandle wfield,double def_value = 0.0)
     {
       sfield_ = sfield->vfield();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
       wfield_ = wfield->vfield();
       wfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E);
-      
+
       is_double_ = true;
       def_value_ = def_value;
     }
-
-    virtual ~InterpolatedWeightedTensorGradientNormSource() {}
 
   private:
     VField *sfield_;
     VField *wfield_;
     double def_value_;
-    
-    // temp variables that need allocation for first tine use
-    std::vector<StackVector<double,3> > grads_; 
-    std::vector<Tensor> weights_;
 
-    VMesh::ElemGradient       eg_;
-    VMesh::MultiElemGradient  meg_;       
-    VMesh::ElemInterpolate    wei_;
-    VMesh::MultiElemInterpolate wmei_;       
+    // temp variables that need allocation for first tine use
+    mutable std::vector<StackVector<double,3> > grads_;
+    mutable std::vector<Tensor> weights_;
+
+    mutable VMesh::ElemGradient       eg_;
+    mutable VMesh::MultiElemGradient  meg_;
+    mutable VMesh::ElemInterpolate    wei_;
+    mutable VMesh::MultiElemInterpolate wmei_;
 };
 
 
 class ClosestInterpolatedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       if(!(sfield_->interpolate(data,p,def_value_)))
       {
@@ -586,7 +556,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       if(!(sfield_->interpolate(data,p)))
       {
@@ -605,7 +575,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(Tensor& data, Point& p)
+    virtual void get_data(Tensor& data, const Point& p) const override
     {
       if(!(sfield_->interpolate(data,p,Tensor(def_value_))))
       {
@@ -624,7 +594,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -646,7 +616,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -669,7 +639,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -691,8 +661,8 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
         }
       }
     }
-    
-    ClosestInterpolatedDataSource(FieldHandle& sfield,double def_value,double max_dist)
+
+    ClosestInterpolatedDataSource(FieldHandle sfield,double def_value,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -705,8 +675,6 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
       if (sfield_->is_tensor()) is_tensor_ = true;
     }
 
-    virtual ~ClosestInterpolatedDataSource() {}
-
   private:
     double  maxdist_;
     VField *sfield_;
@@ -716,7 +684,7 @@ class ClosestInterpolatedDataSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -733,7 +701,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
         {
           weight = 0.0;
         }
-      }    
+      }
       if(!(sfield_->interpolate(data,p,def_value_)))
       {
         double dist; Point r;
@@ -752,7 +720,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -769,7 +737,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
         {
           weight = 0.0;
         }
-      } 
+      }
       if(!(sfield_->interpolate(data,p,Vector(0.0,0.0,0.0))))
       {
         double dist; Point r;
@@ -788,7 +756,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       data = weight * data;
     }
 
-    virtual void get_data(Tensor& data, Point& p)
+    virtual void get_data(Tensor& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -805,7 +773,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
         {
           weight = 0.0;
         }
-      }     
+      }
       if(!(sfield_->interpolate(data,p,Tensor(def_value_))))
       {
         double dist; Point r;
@@ -824,7 +792,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       data = weight* data;
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -844,7 +812,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
           {
             weight = 0.0;
           }
-        } 
+        }
         if(!(sfield_->interpolate(data[j],p[j],def_value_)))
         {
           double dist; Point r;
@@ -864,7 +832,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -884,7 +852,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
           {
             weight = 0.0;
           }
-        } 
+        }
         if(!(sfield_->interpolate(data[j],p[j],Vector(0.0,0.0,0.0))))
         {
           double dist; Point r;
@@ -904,7 +872,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -924,7 +892,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
           {
             weight = 0.0;
           }
-        }       
+        }
         if(!(sfield_->interpolate(data[j],p[j],Tensor(def_value_))))
         {
           double dist; Point r;
@@ -943,8 +911,8 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
         data[j] = weight * data[j];
       }
     }
-    
-    ClosestInterpolatedWeightedDataSource(FieldHandle& sfield,FieldHandle& wfield,double& def_value,double max_dist)
+
+    ClosestInterpolatedWeightedDataSource(FieldHandle sfield,FieldHandle wfield,double def_value,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -960,8 +928,6 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
       if (sfield_->is_tensor()) is_tensor_ = true;
     }
 
-    virtual ~ClosestInterpolatedWeightedDataSource() {}
-
   private:
     double  maxdist_;
 
@@ -976,7 +942,7 @@ class ClosestInterpolatedWeightedDataSource : public MappingDataSource {
 class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
   public:
 
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Tensor weight;
       if(!(wfield_->interpolate(weight,p,Tensor(0.0))))
@@ -993,7 +959,7 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
         {
           weight = 0.0;
         }
-      } 
+      }
       if(!(sfield_->interpolate(data,p,Vector(0.0,0.0,0.0))))
       {
         double dist; Point r;
@@ -1012,7 +978,7 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
       data = weight * data;
     }
 
-    virtual void get_data(Tensor& data, Point& p)
+    virtual void get_data(Tensor& data, const Point& p) const override
     {
       if(!(wfield_->interpolate(data,p,Tensor(0.0))))
       {
@@ -1048,7 +1014,7 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
       data = tdata* data;
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -1068,7 +1034,7 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
           {
             weight = 0.0;
           }
-        } 
+        }
         if(!(sfield_->interpolate(data[j],p[j],Vector(0.0,0.0,0.0))))
         {
           double dist; Point r;
@@ -1088,7 +1054,7 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
@@ -1127,8 +1093,8 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
         data[j] = tdata * data[j];
       }
     }
-    
-    ClosestInterpolatedWeightedTensorDataSource(FieldHandle& sfield,FieldHandle& wfield,double& def_value,double max_dist)
+
+    ClosestInterpolatedWeightedTensorDataSource(FieldHandle sfield,FieldHandle wfield,double def_value,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -1144,8 +1110,6 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
       if (sfield_->is_tensor()) is_tensor_ = true;
     }
 
-    virtual ~ClosestInterpolatedWeightedTensorDataSource() {}
-
   private:
     double  maxdist_;
 
@@ -1157,10 +1121,10 @@ class ClosestInterpolatedWeightedTensorDataSource : public MappingDataSource {
     double def_value_;
 };
 
- 
+
 class ClosestInterpolatedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       StackVector<double,3> grad;
       if(!(sfield_->gradient(grad,p)))
@@ -1183,7 +1147,7 @@ class ClosestInterpolatedGradientSource : public MappingDataSource {
       data = Vector(grad[0],grad[1],grad[2]);
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1213,17 +1177,15 @@ class ClosestInterpolatedGradientSource : public MappingDataSource {
     }
 
 
-    ClosestInterpolatedGradientSource(FieldHandle& sfield,double max_dist)
+    ClosestInterpolatedGradientSource(FieldHandle sfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E|Mesh::FIND_CLOSEST_ELEM_E);
       maxdist_ = max_dist;
-      
+
       is_vector_ = true;
     }
-
-    virtual ~ClosestInterpolatedGradientSource() {}
 
   private:
     double  maxdist_;
@@ -1233,7 +1195,7 @@ class ClosestInterpolatedGradientSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -1250,7 +1212,7 @@ class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
         {
           weight = 0.0;
         }
-      }   
+      }
       StackVector<double,3> grad;
       if(!(sfield_->gradient(grad,p)))
       {
@@ -1274,7 +1236,7 @@ class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1295,7 +1257,7 @@ class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
           {
             weight = 0.0;
           }
-        }   
+        }
         if(!(sfield_->gradient(grad,p[j])))
         {
           double dist; Point r;
@@ -1320,7 +1282,7 @@ class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
     }
 
 
-    ClosestInterpolatedWeightedGradientSource(FieldHandle& sfield,FieldHandle& wfield,double max_dist)
+    ClosestInterpolatedWeightedGradientSource(FieldHandle sfield,FieldHandle wfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -1329,11 +1291,9 @@ class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
       wmesh_ =  wfield->vmesh();
       wfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E|Mesh::FIND_CLOSEST_ELEM_E);
       maxdist_ = max_dist;
-      
+
       is_vector_ = true;
     }
-
-    virtual ~ClosestInterpolatedWeightedGradientSource() {}
 
   private:
     double  maxdist_;
@@ -1345,7 +1305,7 @@ class ClosestInterpolatedWeightedGradientSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Tensor weight;
       if(!(wfield_->interpolate(weight,p,Tensor(0.0))))
@@ -1362,7 +1322,7 @@ class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource
         {
           weight = 0.0;
         }
-      }   
+      }
       StackVector<double,3> grad;
       if(!(sfield_->gradient(grad,p)))
       {
@@ -1386,7 +1346,7 @@ class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1407,7 +1367,7 @@ class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource
           {
             weight = 0.0;
           }
-        }   
+        }
         if(!(sfield_->gradient(grad,p[j])))
         {
           double dist; Point r;
@@ -1432,7 +1392,7 @@ class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource
     }
 
 
-    ClosestInterpolatedWeightedTensorGradientSource(FieldHandle& sfield,FieldHandle& wfield,double max_dist)
+    ClosestInterpolatedWeightedTensorGradientSource(FieldHandle sfield,FieldHandle wfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -1441,11 +1401,9 @@ class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource
       wmesh_ =  wfield->vmesh();
       wfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E|Mesh::FIND_CLOSEST_ELEM_E);
       maxdist_ = max_dist;
-      
+
       is_vector_ = true;
     }
-
-    virtual ~ClosestInterpolatedWeightedTensorGradientSource() {}
 
   private:
     double  maxdist_;
@@ -1457,7 +1415,7 @@ class ClosestInterpolatedWeightedTensorGradientSource : public MappingDataSource
 
 class ClosestInterpolatedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       StackVector<double,3> grad;
       if(!(sfield_->gradient(grad,p)))
@@ -1480,7 +1438,7 @@ class ClosestInterpolatedGradientNormSource : public MappingDataSource {
       data = (Vector(grad[0],grad[1],grad[2])).length();
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1510,18 +1468,16 @@ class ClosestInterpolatedGradientNormSource : public MappingDataSource {
     }
 
 
-    ClosestInterpolatedGradientNormSource(FieldHandle& sfield,double max_dist)
+    ClosestInterpolatedGradientNormSource(FieldHandle sfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
       sfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E|Mesh::FIND_CLOSEST_ELEM_E);
       maxdist_ = max_dist;
-      
+
       is_double_ = true;
     }
 
-    virtual ~ClosestInterpolatedGradientNormSource() {}
-    
   private:
     double  maxdist_;
     VField *sfield_;
@@ -1530,7 +1486,7 @@ class ClosestInterpolatedGradientNormSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       double weight;
       if(!(wfield_->interpolate(weight,p,0.0)))
@@ -1547,7 +1503,7 @@ class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
         {
           weight = 0.0;
         }
-      }   
+      }
       StackVector<double,3> grad;
       if(!(sfield_->gradient(grad,p)))
       {
@@ -1571,7 +1527,7 @@ class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1592,7 +1548,7 @@ class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
           {
             weight = 0.0;
           }
-        }   
+        }
         if(!(sfield_->gradient(grad,p[j])))
         {
           double dist; Point r;
@@ -1617,7 +1573,7 @@ class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
     }
 
 
-    ClosestInterpolatedWeightedGradientNormSource(FieldHandle& sfield,FieldHandle& wfield,double max_dist)
+    ClosestInterpolatedWeightedGradientNormSource(FieldHandle sfield,FieldHandle wfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -1626,11 +1582,9 @@ class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
       wmesh_ =  wfield->vmesh();
       wfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E|Mesh::FIND_CLOSEST_ELEM_E);
       maxdist_ = max_dist;
-      
+
       is_double_ = true;
     }
-
-    virtual ~ClosestInterpolatedWeightedGradientNormSource() {}
 
   private:
     double  maxdist_;
@@ -1642,7 +1596,7 @@ class ClosestInterpolatedWeightedGradientNormSource : public MappingDataSource {
 
 class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       Tensor weight;
       if(!(wfield_->interpolate(weight,p,Tensor(0.0))))
@@ -1659,7 +1613,7 @@ class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSo
         {
           weight = 0.0;
         }
-      }   
+      }
       StackVector<double,3> grad;
       if(!(sfield_->gradient(grad,p)))
       {
@@ -1683,7 +1637,7 @@ class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSo
       }
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       StackVector<double,3> grad;
@@ -1704,7 +1658,7 @@ class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSo
           {
             weight = 0.0;
           }
-        }   
+        }
         if(!(sfield_->gradient(grad,p[j])))
         {
           double dist; Point r;
@@ -1729,7 +1683,7 @@ class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSo
     }
 
 
-    ClosestInterpolatedWeightedTensorGradientNormSource(FieldHandle& sfield,FieldHandle& wfield,double max_dist)
+    ClosestInterpolatedWeightedTensorGradientNormSource(FieldHandle sfield,FieldHandle wfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -1738,11 +1692,9 @@ class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSo
       wmesh_ =  wfield->vmesh();
       wfield_->vmesh()->synchronize(Mesh::ELEM_LOCATE_E|Mesh::FIND_CLOSEST_ELEM_E);
       maxdist_ = max_dist;
-      
+
       is_double_ = true;
     }
-
-    virtual ~ClosestInterpolatedWeightedTensorGradientNormSource() {}
 
   private:
     double  maxdist_;
@@ -1754,11 +1706,11 @@ class ClosestInterpolatedWeightedTensorGradientNormSource : public MappingDataSo
 
 class ClosestNodeDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       Point r; double dist;
       smesh_->find_closest_node(dist,r,node_,p);
-      
+
       if (dist < maxdist_)
       {
         sfield_->get_value(data,node_);
@@ -1769,21 +1721,7 @@ class ClosestNodeDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(Vector& data, Point& p)
-    {
-      Point r; double dist;
-      smesh_->find_closest_node(dist,r,node_,p);
-      if (dist < maxdist_)
-      {
-        sfield_->get_value(data,node_);
-      }
-      else
-      {
-        data = def_value_;
-      }
-    }
-
-    virtual void get_data(Tensor& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       smesh_->find_closest_node(dist,r,node_,p);
@@ -1797,11 +1735,25 @@ class ClosestNodeDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(Tensor& data, const Point& p) const override
+    {
+      Point r; double dist;
+      smesh_->find_closest_node(dist,r,node_,p);
+      if (dist < maxdist_)
+      {
+        sfield_->get_value(data,node_);
+      }
+      else
+      {
+        data = def_value_;
+      }
+    }
+
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
-      {    
+      {
         Point r; double dist;
         smesh_->find_closest_node(dist,r,node_,p[j]);
         if (dist < maxdist_)
@@ -1815,11 +1767,11 @@ class ClosestNodeDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
-      {    
+      {
         Point r; double dist;
         smesh_->find_closest_node(dist,r,node_,p[j]);
         if (dist < maxdist_)
@@ -1833,11 +1785,11 @@ class ClosestNodeDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
-      {    
+      {
         Point r; double dist;
         smesh_->find_closest_node(dist,r,node_,p[j]);
         if (dist < maxdist_)
@@ -1850,8 +1802,8 @@ class ClosestNodeDataSource : public MappingDataSource {
         }
       }
     }
-    
-    ClosestNodeDataSource(FieldHandle& sfield,double def_value,double max_dist)
+
+    ClosestNodeDataSource(FieldHandle sfield,double def_value,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -1864,20 +1816,18 @@ class ClosestNodeDataSource : public MappingDataSource {
       if (sfield_->is_tensor()) is_tensor_ = true;
     }
 
-    virtual ~ClosestNodeDataSource() {}
-
   private:
     double  maxdist_;
     VField *sfield_;
     VMesh  *smesh_;
     double def_value_;
-    
-    VMesh::Node::index_type node_;
+
+    mutable VMesh::Node::index_type node_;
 };
 
 class ClosestNodeWeightedDataSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       Point r; double dist;
       double weight;
@@ -1902,7 +1852,7 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       double weight;
@@ -1927,7 +1877,7 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(Tensor& data, Point& p)
+    virtual void get_data(Tensor& data, const Point& p) const override
     {
       Point r; double dist;
       double weight;
@@ -1952,11 +1902,11 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
-      {    
+      {
         Point r; double dist;
         double weight;
         wmesh_->find_closest_node(dist,r,wnode_,p[j]);
@@ -1981,11 +1931,11 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
-      {    
+      {
         Point r; double dist;
         double weight;
         wmesh_->find_closest_node(dist,r,wnode_,p[j]);
@@ -2010,11 +1960,11 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
-      {    
+      {
         Point r; double dist;
         double weight;
         wmesh_->find_closest_node(dist,r,wnode_,p[j]);
@@ -2038,8 +1988,8 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
         data[j] = weight*data[j];
       }
     }
-    
-    ClosestNodeWeightedDataSource(FieldHandle& sfield,FieldHandle& wfield,double def_value,double max_dist)
+
+    ClosestNodeWeightedDataSource(FieldHandle sfield,FieldHandle wfield,double def_value,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -2056,8 +2006,6 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
       if (sfield_->is_tensor()) is_tensor_ = true;
     }
 
-    virtual ~ClosestNodeWeightedDataSource() {}
-
   private:
     double  maxdist_;
 
@@ -2067,14 +2015,14 @@ class ClosestNodeWeightedDataSource : public MappingDataSource {
     VMesh  *wmesh_;
 
     double def_value_;
-    
-    VMesh::Node::index_type node_;
-    VMesh::Node::index_type wnode_;
+
+    mutable VMesh::Node::index_type node_;
+    mutable VMesh::Node::index_type wnode_;
 };
 
 class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       Tensor weight;
@@ -2099,7 +2047,7 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
       data = weight*data;
     }
 
-    virtual void get_data(Tensor& data, Point& p)
+    virtual void get_data(Tensor& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -2123,12 +2071,12 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
       }
       data = tdata*data;
     }
-    
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
-      {    
+      {
         Point r; double dist;
         Tensor weight;
         wmesh_->find_closest_node(dist,r,wnode_,p[j]);
@@ -2153,11 +2101,11 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Tensor>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Tensor>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t j=0; j<p.size(); j++)
-      {    
+      {
         Point r; double dist;
         wmesh_->find_closest_node(dist,r,wnode_,p[j]);
         if (dist < maxdist_)
@@ -2181,8 +2129,8 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
         data[j] = tdata*data[j];
       }
     }
-    
-    ClosestNodeWeightedTensorDataSource(FieldHandle& wfield,FieldHandle& sfield,double def_value,double max_dist)
+
+    ClosestNodeWeightedTensorDataSource(FieldHandle wfield,FieldHandle sfield,double def_value,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -2198,8 +2146,6 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
       if (sfield_->is_tensor()) is_tensor_ = true;
     }
 
-    virtual ~ClosestNodeWeightedTensorDataSource() {}
-
   private:
     double  maxdist_;
 
@@ -2209,15 +2155,15 @@ class ClosestNodeWeightedTensorDataSource : public MappingDataSource {
     VMesh  *wmesh_;
 
     double def_value_;
-    
-    VMesh::Node::index_type node_;
-    VMesh::Node::index_type wnode_;
+
+    mutable VMesh::Node::index_type node_;
+    mutable VMesh::Node::index_type wnode_;
 };
 
 
 class ClosestNodeGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       smesh_->find_closest_node(dist,r,node_,p);
@@ -2228,11 +2174,11 @@ class ClosestNodeGradientSource : public MappingDataSource {
         sfield_->get_values(values_,nodes_);
         double val;
         sfield_->get_value(val,node_);
-        
+
         data[0] = 0.0;
         data[1] = 0.0;
         data[2] = 0.0;
-        
+
         double sxw = 0.0; double syw = 0.0; double szw = 0.0;
         for (size_t j=0; j<values_.size(); j++)
         {
@@ -2262,7 +2208,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
             szw += zw;
           }
         }
-        
+
         data[0] = data[0]/sxw;
         data[1] = data[1]/syw;
         data[2] = data[2]/szw;
@@ -2273,7 +2219,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2287,11 +2233,11 @@ class ClosestNodeGradientSource : public MappingDataSource {
           sfield_->get_values(values_,nodes_);
           double val;
           sfield_->get_value(val,node_);
-          
+
           data[k][0] = 0.0;
           data[k][1] = 0.0;
           data[k][2] = 0.0;
-          
+
           double sxw = 0.0; double syw = 0.0; double szw = 0.0;
           for (size_t j=0; j<values_.size(); j++)
           {
@@ -2321,7 +2267,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
               szw += zw;
             }
           }
-          
+
           data[k][0] = data[k][0]/sxw;
           data[k][1] = data[k][1]/syw;
           data[k][2] = data[k][2]/szw;
@@ -2329,11 +2275,11 @@ class ClosestNodeGradientSource : public MappingDataSource {
         else
         {
           data[k] = Vector(0.0,0.0,0.0);
-        }             
+        }
       }
     }
-    
-    ClosestNodeGradientSource(FieldHandle& sfield,double max_dist)
+
+    ClosestNodeGradientSource(FieldHandle sfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -2343,23 +2289,21 @@ class ClosestNodeGradientSource : public MappingDataSource {
       is_vector_ = true;
     }
 
-    virtual ~ClosestNodeGradientSource() {}
-
   private:
     double  maxdist_;
     VField *sfield_;
     VMesh  *smesh_;
 
-    std::vector<double>     values_;
-    VMesh::Node::array_type nodes_;
-    VMesh::points_type      points_;
+    mutable std::vector<double>     values_;
+    mutable VMesh::Node::array_type nodes_;
+    mutable VMesh::points_type      points_;
 
-    VMesh::Node::index_type node_;
+    mutable VMesh::Node::index_type node_;
 };
 
 class ClosestNodeWeightedGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -2372,7 +2316,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
       {
         weight = 0.0;
       }
-      
+
       smesh_->find_closest_node(dist,r,node_,p);
       if (dist < maxdist_)
       {
@@ -2381,11 +2325,11 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
         sfield_->get_values(values_,nodes_);
         double val;
         sfield_->get_value(val,node_);
-        
+
         data[0] = 0.0;
         data[1] = 0.0;
         data[2] = 0.0;
-        
+
         double sxw = 0.0; double syw = 0.0; double szw = 0.0;
         for (size_t j=0; j<values_.size(); j++)
         {
@@ -2415,7 +2359,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
             szw += zw;
           }
         }
-        
+
         data[0] = weight*data[0]/sxw;
         data[1] = weight*data[1]/syw;
         data[2] = weight*data[2]/szw;
@@ -2426,7 +2370,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2450,11 +2394,11 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
           sfield_->get_values(values_,nodes_);
           double val;
           sfield_->get_value(val,node_);
-          
+
           data[k][0] = 0.0;
           data[k][1] = 0.0;
           data[k][2] = 0.0;
-          
+
           double sxw = 0.0; double syw = 0.0; double szw = 0.0;
           for (size_t j=0; j<values_.size(); j++)
           {
@@ -2484,7 +2428,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
               szw += zw;
             }
           }
-          
+
           data[k][0] = (weight*data[k][0])/sxw;
           data[k][1] = (weight*data[k][1])/syw;
           data[k][2] = (weight*data[k][2])/szw;
@@ -2492,11 +2436,11 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
         else
         {
           data[k] = Vector(0.0,0.0,0.0);
-        }             
+        }
       }
     }
-    
-    ClosestNodeWeightedGradientSource(FieldHandle& sfield,FieldHandle& wfield,double max_dist)
+
+    ClosestNodeWeightedGradientSource(FieldHandle sfield,FieldHandle wfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -2509,8 +2453,6 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
       is_vector_ = true;
     }
 
-    virtual ~ClosestNodeWeightedGradientSource() {}
-
   private:
     double  maxdist_;
     VField *sfield_;
@@ -2518,18 +2460,17 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
     VField *wfield_;
     VMesh  *wmesh_;
 
-    std::vector<double>     values_;
-    VMesh::Node::array_type nodes_;
-    VMesh::points_type      points_;
+    mutable std::vector<double>     values_;
+    mutable VMesh::Node::array_type nodes_;
+    mutable VMesh::points_type      points_;
 
-    VMesh::Node::index_type node_;
-    VMesh::Node::index_type wnode_;
-
+    mutable VMesh::Node::index_type node_;
+    mutable VMesh::Node::index_type wnode_;
 };
 
 class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -2542,7 +2483,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
       {
         weight = 0.0;
       }
-      
+
       smesh_->find_closest_node(dist,r,node_,p);
       if (dist < maxdist_)
       {
@@ -2551,11 +2492,11 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
         sfield_->get_values(values_,nodes_);
         double val;
         sfield_->get_value(val,node_);
-        
+
         data[0] = 0.0;
         data[1] = 0.0;
         data[2] = 0.0;
-        
+
         double sxw = 0.0; double syw = 0.0; double szw = 0.0;
         for (size_t j=0; j<values_.size(); j++)
         {
@@ -2585,7 +2526,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
             szw += zw;
           }
         }
-        
+
         data[0] = data[0]/sxw;
         data[1] = data[1]/syw;
         data[2] = data[2]/szw;
@@ -2597,7 +2538,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<Vector>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<Vector>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2621,11 +2562,11 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
           sfield_->get_values(values_,nodes_);
           double val;
           sfield_->get_value(val,node_);
-          
+
           data[k][0] = 0.0;
           data[k][1] = 0.0;
           data[k][2] = 0.0;
-          
+
           double sxw = 0.0; double syw = 0.0; double szw = 0.0;
           for (size_t j=0; j<values_.size(); j++)
           {
@@ -2655,7 +2596,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
               szw += zw;
             }
           }
-          
+
           data[k][0] = (data[k][0])/sxw;
           data[k][1] = (data[k][1])/syw;
           data[k][2] = (data[k][2])/szw;
@@ -2664,11 +2605,11 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
         else
         {
           data[k] = Vector(0.0,0.0,0.0);
-        }             
+        }
       }
     }
-    
-    ClosestNodeWeightedTensorGradientSource(FieldHandle& sfield,FieldHandle& wfield,double max_dist)
+
+    ClosestNodeWeightedTensorGradientSource(FieldHandle sfield,FieldHandle wfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -2681,8 +2622,6 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
       is_vector_ = true;
     }
 
-    virtual ~ClosestNodeWeightedTensorGradientSource() {}
-
   private:
     double  maxdist_;
     VField *sfield_;
@@ -2690,12 +2629,12 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
     VField *wfield_;
     VMesh  *wmesh_;
 
-    std::vector<double>     values_;
-    VMesh::Node::array_type nodes_;
-    VMesh::points_type      points_;
+    mutable std::vector<double>     values_;
+    mutable VMesh::Node::array_type nodes_;
+    mutable VMesh::points_type      points_;
 
-    VMesh::Node::index_type node_;
-    VMesh::Node::index_type wnode_;    
+    mutable VMesh::Node::index_type node_;
+    mutable VMesh::Node::index_type wnode_;
 };
 
 
@@ -2703,7 +2642,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
 
 class ClosestNodeGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       Point r; double dist;
       smesh_->find_closest_node(dist,r,node_,p);
@@ -2714,11 +2653,11 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
         sfield_->get_values(values_,nodes_);
         double val; double datax; double datay; double dataz;
         sfield_->get_value(val,node_);
-        
+
         datax = 0.0;
         datay = 0.0;
         dataz = 0.0;
-        
+
         double sxw = 0.0; double syw = 0.0; double szw = 0.0;
         for (size_t j=0; j<values_.size(); j++)
         {
@@ -2748,7 +2687,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
             szw += zw;
           }
         }
-        
+
         datax = datax/sxw;
         datay = datay/syw;
         dataz = dataz/szw;
@@ -2760,7 +2699,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2774,11 +2713,11 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
           sfield_->get_values(values_,nodes_);
           double val;double datax; double datay; double dataz;
           sfield_->get_value(val,node_);
-          
+
           datax = 0.0;
           datay = 0.0;
           dataz = 0.0;
-          
+
           double sxw = 0.0; double syw = 0.0; double szw = 0.0;
           for (size_t j=0; j<values_.size(); j++)
           {
@@ -2808,7 +2747,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
               szw += zw;
             }
           }
-          
+
           datax = datax/sxw;
           datay = datay/syw;
           dataz = dataz/szw;
@@ -2817,11 +2756,11 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
         else
         {
           data[k] = 0.0;
-        }             
+        }
       }
     }
-    
-    ClosestNodeGradientNormSource(FieldHandle& sfield,double max_dist)
+
+    ClosestNodeGradientNormSource(FieldHandle sfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -2831,23 +2770,21 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
       is_double_ = true;
     }
 
-    virtual ~ClosestNodeGradientNormSource() {}
-    
   private:
     double  maxdist_;
     VField *sfield_;
     VMesh  *smesh_;
 
-    std::vector<double>     values_;
-    VMesh::Node::array_type nodes_;
-    VMesh::points_type      points_;
+    mutable std::vector<double>     values_;
+    mutable VMesh::Node::array_type nodes_;
+    mutable VMesh::points_type      points_;
 
-    VMesh::Node::index_type node_;
+    mutable VMesh::Node::index_type node_;
 };
 
 class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(Vector& data, Point& p)
+    virtual void get_data(Vector& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -2860,7 +2797,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
       {
         weight = 0.0;
       }
-      
+
       smesh_->find_closest_node(dist,r,node_,p);
       if (dist < maxdist_)
       {
@@ -2869,11 +2806,11 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
         sfield_->get_values(values_,nodes_);
         double val; double datax; double datay; double dataz;
         sfield_->get_value(val,node_);
-        
+
         datax = 0.0;
         datay = 0.0;
         dataz = 0.0;
-        
+
         double sxw = 0.0; double syw = 0.0; double szw = 0.0;
         for (size_t j=0; j<values_.size(); j++)
         {
@@ -2903,7 +2840,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
             szw += zw;
           }
         }
-        
+
         datax = weight*datax/sxw;
         datay = weight*datay/syw;
         dataz = weight*dataz/szw;
@@ -2915,7 +2852,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -2939,11 +2876,11 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
           sfield_->get_values(values_,nodes_);
           double val; double datax; double datay; double dataz;
           sfield_->get_value(val,node_);
-          
+
           datax = 0.0;
           datay = 0.0;
           dataz = 0.0;
-          
+
           double sxw = 0.0; double syw = 0.0; double szw = 0.0;
           for (size_t j=0; j<values_.size(); j++)
           {
@@ -2973,7 +2910,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
               szw += zw;
             }
           }
-          
+
           datax = (weight*datax)/sxw;
           datay = (weight*datay)/syw;
           dataz = (weight*dataz)/szw;
@@ -2982,11 +2919,11 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
         else
         {
           data[k] = 0.0;
-        }             
+        }
       }
     }
-    
-    ClosestNodeWeightedGradientNormSource(FieldHandle& sfield,FieldHandle& wfield,double max_dist)
+
+    ClosestNodeWeightedGradientNormSource(FieldHandle sfield, FieldHandle wfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -2999,8 +2936,6 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
       is_double_ = true;
     }
 
-    virtual ~ClosestNodeWeightedGradientNormSource() {}
-
   private:
     double  maxdist_;
     VField *sfield_;
@@ -3008,17 +2943,17 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
     VField *wfield_;
     VMesh  *wmesh_;
 
-    std::vector<double>     values_;
-    VMesh::Node::array_type nodes_;
-    VMesh::points_type      points_;
-    
-    VMesh::Node::index_type wnode_;
-    VMesh::Node::index_type node_;   
+    mutable std::vector<double>     values_;
+    mutable VMesh::Node::array_type nodes_;
+    mutable VMesh::points_type      points_;
+
+    mutable VMesh::Node::index_type wnode_;
+    mutable VMesh::Node::index_type node_;
 };
 
 class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
   public:
-    virtual void get_data(double& data, Point& p)
+    virtual void get_data(double& data, const Point& p) const override
     {
       Point r; double dist;
       wmesh_->find_closest_node(dist,r,wnode_,p);
@@ -3031,7 +2966,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
       {
         weight = 0.0;
       }
-      
+
       smesh_->find_closest_node(dist,r,node_,p);
       if (dist < maxdist_)
       {
@@ -3040,11 +2975,11 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
         sfield_->get_values(values_,nodes_);
         double val; double datax; double datay; double dataz;
         sfield_->get_value(val,node_);
-        
+
         datax = 0.0;
         datay = 0.0;
         dataz = 0.0;
-        
+
         double sxw = 0.0; double syw = 0.0; double szw = 0.0;
         for (size_t j=0; j<values_.size(); j++)
         {
@@ -3074,7 +3009,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
             szw += zw;
           }
         }
-        
+
         datax = datax/sxw;
         datay = datay/syw;
         dataz = dataz/szw;
@@ -3086,7 +3021,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
       }
     }
 
-    virtual void get_data(std::vector<double>& data, std::vector<Point>& p)
+    virtual void get_data(std::vector<double>& data, const std::vector<Point>& p) const override
     {
       data.resize(p.size());
       for (size_t k=0; k<p.size(); k++)
@@ -3110,11 +3045,11 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
           sfield_->get_values(values_,nodes_);
           double val; double datax; double datay; double dataz;
           sfield_->get_value(val,node_);
-          
+
           datax = 0.0;
           datay = 0.0;
           dataz = 0.0;
-          
+
           double sxw = 0.0; double syw = 0.0; double szw = 0.0;
           for (size_t j=0; j<values_.size(); j++)
           {
@@ -3152,11 +3087,11 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
         else
         {
           data[k] = 0.0;
-        }             
+        }
       }
     }
-    
-    ClosestNodeWeightedTensorGradientNormSource(FieldHandle& sfield,FieldHandle& wfield,double max_dist)
+
+    ClosestNodeWeightedTensorGradientNormSource(FieldHandle sfield,FieldHandle wfield,double max_dist)
     {
       sfield_ = sfield->vfield();
       smesh_ =  sfield->vmesh();
@@ -3169,8 +3104,6 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
       is_double_ = true;
     }
 
-    virtual ~ClosestNodeWeightedTensorGradientNormSource() {}
-
   private:
     double  maxdist_;
     VField *sfield_;
@@ -3178,300 +3111,260 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
     VField *wfield_;
     VMesh  *wmesh_;
 
-    std::vector<double>     values_;
-    VMesh::Node::array_type nodes_;
-    VMesh::points_type      points_;
+    mutable std::vector<double>     values_;
+    mutable VMesh::Node::array_type nodes_;
+    mutable VMesh::points_type      points_;
 
-    VMesh::Node::index_type wnode_;
-    VMesh::Node::index_type node_;   
+    mutable VMesh::Node::index_type wnode_;
+    mutable VMesh::Node::index_type node_;
 };
 
 
-
-bool
-CreateDataSource(MappingDataSourceHandle& handle, 
-                      FieldHandle& sfield,
-                      FieldHandle& wfield, 
-                      AlgoBase* algo)
+namespace
 {
-  std::string quantity = algo->get_option("quantity");
-  std::string value =  algo->get_option("value");
-  
-  double def_value = algo->get_scalar("outside_value");
-  double max_dist = algo->get_scalar("max_distance");
+  bool is_valid(MappingDataSourceHandle handle)
+  {
+    return handle && (handle->is_scalar() || handle->is_vector() || handle->is_tensor());
+  }
 
-  uint64 nan_value_temp = UINT64_VAL(0x7fffffffffffffff);
-  double nan_value = *(reinterpret_cast<double*>(&(nan_value_temp)));
-  
+  MappingDataSourceHandle validHandle(MappingDataSource* ptr)
+  {
+    MappingDataSourceHandle handle(ptr);
+    return is_valid(handle) ? handle : MappingDataSourceHandle();
+  }
+}
+
+MappingDataSourceHandle SCIRun::Core::Algorithms::Fields::CreateDataSource(FieldHandle sfield, FieldHandle wfield, const AlgorithmBase* algo)
+{
+  std::string quantity = algo->get_option(Parameters::Quantity);
+  const std::string value =  algo->get_option(Parameters::InterpolationModel);
+
+  const double def_value = algo->get(Parameters::OutsideValue).getDouble();
+  const double max_dist = algo->get(Parameters::MaxDistance).getDouble();
+
+  const double nan_value = std::numeric_limits<double>::quiet_NaN();
+
   if (quantity == "flux") quantity = "gradient";
 
   // Value of the data
   if (quantity == "value" && value == "interpolateddata")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new InterpolatedWeightedDataSource(sfield,wfield,def_value);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new InterpolatedWeightedDataSource(sfield,wfield,def_value));
       }
       else
       {
-        handle = new InterpolatedWeightedTensorDataSource(sfield,wfield,def_value);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new InterpolatedWeightedTensorDataSource(sfield,wfield,def_value));
       }
     }
     else
     {
-      handle = new InterpolatedDataSource(sfield,def_value);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor())
-      {
-        return (true);       
-      }
+      return validHandle(new InterpolatedDataSource(sfield,def_value));
     }
   }
   else if (quantity == "value" && value == "closestinterpolateddata")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new ClosestInterpolatedWeightedDataSource(sfield,wfield,def_value,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new ClosestInterpolatedWeightedDataSource(sfield,wfield,def_value,max_dist));
       }
       else
       {
-        handle = new ClosestInterpolatedWeightedTensorDataSource(sfield,wfield,def_value,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new ClosestInterpolatedWeightedTensorDataSource(sfield,wfield,def_value,max_dist));
       }
     }
     else
     {
-      handle = new ClosestInterpolatedDataSource(sfield,def_value,max_dist);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) 
-      {
-        return (true);          
-      }
+      return validHandle(new ClosestInterpolatedDataSource(sfield,def_value,max_dist));
     }
   }
   else if (quantity == "value" && value == "interpolateddataonly")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new InterpolatedWeightedDataSource(sfield,wfield,nan_value);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new InterpolatedWeightedDataSource(sfield,wfield,nan_value));
       }
       else
       {
-        handle = new InterpolatedWeightedTensorDataSource(sfield,wfield,nan_value);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new InterpolatedWeightedTensorDataSource(sfield,wfield,nan_value));
       }
     }
     else
     {
-      handle = new InterpolatedDataSource(sfield,nan_value);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor())
-      {
-        return (true);       
-      }
+      return validHandle(new InterpolatedDataSource(sfield,nan_value));
     }
   }
   else if (quantity == "value" && value == "closestnodedata")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new ClosestNodeWeightedDataSource(sfield,wfield,def_value,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new ClosestNodeWeightedDataSource(sfield,wfield,def_value,max_dist));
       }
       else
       {
-        handle = new ClosestNodeWeightedTensorDataSource(sfield,wfield,def_value,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new ClosestNodeWeightedTensorDataSource(sfield,wfield,def_value,max_dist));
       }
     }
     else
     {
-      handle = new ClosestNodeDataSource(sfield,def_value,max_dist);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);          
+      return validHandle(new ClosestNodeDataSource(sfield,def_value,max_dist));
     }
   }
   // Gradient of the data
   else if (quantity == "gradient" && value == "interpolateddata")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new InterpolatedWeightedGradientSource(sfield,wfield);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new InterpolatedWeightedGradientSource(sfield,wfield));
       }
       else
       {
-        handle = new InterpolatedWeightedTensorGradientSource(sfield,wfield);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new InterpolatedWeightedTensorGradientSource(sfield,wfield));
       }
     }
     else
     {
-      handle = new InterpolatedGradientSource(sfield);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);       
+      return validHandle(new InterpolatedGradientSource(sfield));
     }
   }
   else if (quantity == "gradient" && value == "interpolateddataonly")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new InterpolatedWeightedGradientSource(sfield,wfield,nan_value);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new InterpolatedWeightedGradientSource(sfield,wfield,nan_value));
       }
       else
       {
-        handle = new InterpolatedWeightedTensorGradientSource(sfield,wfield,nan_value);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new InterpolatedWeightedTensorGradientSource(sfield,wfield,nan_value));
       }
     }
     else
     {
-      handle = new InterpolatedGradientSource(sfield,nan_value);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);       
+      return validHandle(new InterpolatedGradientSource(sfield,nan_value));
     }
   }
   else if (quantity == "gradient" && value == "closestinterpolateddata")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new ClosestInterpolatedWeightedGradientSource(sfield,wfield,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new ClosestInterpolatedWeightedGradientSource(sfield,wfield,max_dist));
       }
       else
       {
-        handle = new ClosestInterpolatedWeightedTensorGradientSource(sfield,wfield,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new ClosestInterpolatedWeightedTensorGradientSource(sfield,wfield,max_dist));
       }
     }
     else
     {
-      handle = new ClosestInterpolatedGradientSource(sfield,max_dist);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);          
+      return validHandle(new ClosestInterpolatedGradientSource(sfield,max_dist));
     }
   }
   else if (quantity == "gradient" && value == "closestnodedata")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new ClosestNodeWeightedGradientSource(sfield,wfield,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new ClosestNodeWeightedGradientSource(sfield,wfield,max_dist));
       }
       else
       {
-        handle = new ClosestNodeWeightedTensorGradientSource(sfield,wfield,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new ClosestNodeWeightedTensorGradientSource(sfield,wfield,max_dist));
       }
     }
     else
     {
-      handle = new ClosestNodeGradientSource(sfield,max_dist);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);          
+      return validHandle(new ClosestNodeGradientSource(sfield,max_dist));
     }
   }
   // GradientNorm of the data
   else if (quantity == "gradientnorm" && value == "interpolateddata")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new InterpolatedWeightedGradientNormSource(sfield,wfield);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new InterpolatedWeightedGradientNormSource(sfield,wfield));
       }
       else
       {
-        handle = new InterpolatedWeightedTensorGradientNormSource(sfield,wfield);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new InterpolatedWeightedTensorGradientNormSource(sfield,wfield));
       }
     }
     else
     {
-      handle = new InterpolatedGradientNormSource(sfield);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);       
+      return validHandle(new InterpolatedGradientNormSource(sfield));
     }
   }
   else if (quantity == "gradientnorm" && value == "interpolateddataonly")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new InterpolatedWeightedGradientNormSource(sfield,wfield,nan_value);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new InterpolatedWeightedGradientNormSource(sfield,wfield,nan_value));
       }
       else
       {
-        handle = new InterpolatedWeightedTensorGradientNormSource(sfield,wfield,nan_value);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new InterpolatedWeightedTensorGradientNormSource(sfield,wfield,nan_value));
       }
     }
     else
     {
-      handle = new InterpolatedGradientNormSource(sfield,nan_value);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);       
+      return validHandle(new InterpolatedGradientNormSource(sfield,nan_value));
     }
   }
   else if (quantity == "gradientnorm" && value == "closestinterpolateddata")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new ClosestInterpolatedWeightedGradientNormSource(sfield,wfield,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new ClosestInterpolatedWeightedGradientNormSource(sfield,wfield,max_dist));
       }
       else
       {
-        handle = new ClosestInterpolatedWeightedTensorGradientNormSource(sfield,wfield,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new ClosestInterpolatedWeightedTensorGradientNormSource(sfield,wfield,max_dist));
       }
     }
     else
     {
-      handle = new ClosestInterpolatedGradientNormSource(sfield,max_dist);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);          
+      return validHandle(new ClosestInterpolatedGradientNormSource(sfield,max_dist));
     }
   }
   else if (quantity == "gradientnorm" && value == "closestnodedata")
   {
-    if (wfield.get_rep())
+    if (wfield)
     {
       if (wfield->vfield()->is_scalar())
       {
-        handle = new ClosestNodeWeightedGradientNormSource(sfield,wfield,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);
+        return validHandle(new ClosestNodeWeightedGradientNormSource(sfield,wfield,max_dist));
       }
       else
       {
-        handle = new ClosestNodeWeightedTensorGradientNormSource(sfield,wfield,max_dist);
-        if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);      
+        return validHandle(new ClosestNodeWeightedTensorGradientNormSource(sfield,wfield,max_dist));
       }
     }
     else
     {
-      handle = new ClosestNodeGradientNormSource(sfield,max_dist);
-      if (handle->is_scalar() || handle->is_vector() || handle->is_tensor()) return (true);          
+      return validHandle(new ClosestNodeGradientNormSource(sfield,max_dist));
     }
   }
 
-  return (false);
+  return nullptr;
 }
-
-
-} // end namespace SCIRunAlgo

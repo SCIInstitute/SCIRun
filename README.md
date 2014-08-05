@@ -1,14 +1,14 @@
 ![alt text](http://www.sci.utah.edu/images/banners/splash-scirun.png "")
 
-## SCIRun 5 Prototype
-https://github.com/SCIInstitute/SCIRunGUIPrototype
+## SCIRun 5
+https://github.com/SCIInstitute/SCIRun
 
-[![Build Status](https://travis-ci.org/SCIInstitute/SCIRunGUIPrototype.svg)](https://travis-ci.org/SCIInstitute/SCIRunGUIPrototype)
-[![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRunGUIPrototype/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRunGUIPrototype)
+[![Build Status](https://travis-ci.org/SCIInstitute/SCIRun.svg)](https://travis-ci.org/SCIInstitute/SCIRun)
+[![Coverage Status](https://coveralls.io/repos/SCIInstitute/SCIRun/badge.png)](https://coveralls.io/r/SCIInstitute/SCIRun)
 
 ##### [Contents](#user-content-scirun-5-prototype "generated with DocToc(http://doctoc.herokuapp.com/)")
 
-- [SCIRun 5 Prototype](#user-content-scirun-5-prototype)
+- [SCIRun 5](#user-content-scirun-5)
 	- [Summary](#user-content-summary)
 		- [Download Location](#user-content-download-location)
 	- [Goals](#user-content-goals)
@@ -27,8 +27,8 @@ https://github.com/SCIInstitute/SCIRunGUIPrototype
 
 ### Summary
 
-| Warning! |  SCIRun 5 is pre-alpha software, do not use for real science yet.  |
-|:--------:|:------------------------------------------------------------------:|
+| Warning! |  SCIRun 5 is alpha software, you may use for real science but beware of instability.  |
+|:--------:|:-------------------------------------------------------------------------------------:|
 
 ####Download Location
 http://sci.utah.edu/devbuilds/scirun5/
@@ -105,7 +105,7 @@ efficient middle layer, with support for Python scripting.
     + Build from source (http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz), or use system libraries if available.
 * All platforms
   - CMake 2.8
-    + Root cmake file is SCIRunGUIPrototype/src/CMakeLists.txt.
+    + Root cmake file is SCIRun/src/CMakeLists.txt.
     + Building in the source directory is not permitted.
     + Make sure BUILD_SHARED_LIBS is on (default setting).
     + BUILD_WITH_PYTHON works on Windows, not yet (easily) on MacOS.
@@ -124,7 +124,7 @@ efficient middle layer, with support for Python scripting.
   - make -j4 Boost_external && make -j4
 
 ### Documentation
-For documentation, please see: http://sciinstitute.github.io/SCIRunGUIPrototype/
+For documentation, please see: http://sciinstitute.github.io/SCIRun/
 
 ### Questions and Answers
 For help, email the testing mailing list at scirun5-testers@sci.utah.edu.

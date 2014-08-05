@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,16 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#ifndef MODULES_LEGACY_FIELDS_MapFieldDataOntoNodes_H__
+#define MODULES_LEGACY_FIELDS_MapFieldDataOntoNodes_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace DataIO {
-  /// @todo 
-  
+namespace Fields {
+
+  class SCISHARE MapFieldDataOntoNodes : public Dataflow::Networks::Module,
+    public Has3InputPorts<FieldPortTag, FieldPortTag, FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
+  {
+  public:
+    MapFieldDataOntoNodes();
+
+    virtual void execute();
+    virtual void setStateDefaults();
+    
+    INPUT_PORT(0, Source, LegacyField);
+    INPUT_PORT(1, Weights, LegacyField);
+    INPUT_PORT(2, Destination, LegacyField);
+    OUTPUT_PORT(0, OutputField, LegacyField);
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
 
 }}}
 

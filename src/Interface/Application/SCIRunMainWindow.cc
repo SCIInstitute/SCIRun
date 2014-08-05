@@ -49,9 +49,12 @@
 #include <Core/Logging/LoggerInterface.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
+#include <Interface/Application/DialogErrorControl.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
+#include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences.h>
 #include <Core/Logging/Log.h>
@@ -75,19 +78,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 	setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
   
+	dialogErrorControl_.reset(new DialogErrorControl(this)); 
   setupNetworkEditor();
 
-  actionExecute_All_->setStatusTip(tr("Execute all modules"));
-  actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
-  actionNew_->setStatusTip(tr("New network"));
-  actionNew_->setWhatsThis(tr("Click this option to start editing a blank network file."));
-  actionSave_->setStatusTip(tr("Save network"));
-  actionSave_->setWhatsThis(tr("Click this option to save the current network to disk."));
-  actionLoad_->setStatusTip(tr("Load network"));
-  actionLoad_->setWhatsThis(tr("Click this option to load a new network file from disk."));
-  actionEnterWhatsThisMode_ = QWhatsThis::createAction(this);
-  actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
-  actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
+  setTipsAndWhatsThis();
 
   connect(actionExecute_All_, SIGNAL(triggered()), this, SLOT(executeAll()));
   connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
@@ -125,6 +119,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   standardBar->addAction(actionSave_);
   standardBar->addAction(actionRunScript_);
   standardBar->addAction(actionEnterWhatsThisMode_);
+  standardBar->addAction(actionPinAllModuleUIs_);
+  standardBar->addAction(actionRestoreAllModuleUIs_);
+  standardBar->addAction(actionHideAllModuleUIs_);
+  //setUnifiedTitleAndToolBarOnMac(true);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
 	executeBar->addAction(actionExecute_All_);
@@ -133,7 +131,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   executeBar->addActions(networkProgressBar_->actions());
   connect(actionExecute_All_, SIGNAL(triggered()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
-	
+  
+  connect(actionExecute_All_, SIGNAL(triggered()), dialogErrorControl_.get(), SLOT(resetCounter())); 
+
 	scrollAreaWidgetContents_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
   sep->setSeparator(true);
@@ -147,7 +147,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 	scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
 	scrollArea_->viewport()->setAutoFillBackground(true);	
 
-	logTextBrowser_->setText("Hello! Welcome to the SCIRun5 Prototype.");
+	logTextBrowser_->setText("Hello! Welcome to SCIRun 5.");
 
  
 
@@ -162,6 +162,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionDelete_->setShortcut(QKeySequence::Delete);
 
   connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
+  connect(actionPinAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(pinAllModuleUIs()));
+  connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
+  connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
 
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
@@ -206,6 +209,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
 
   setupInputWidgets();
+
+  configurationDockWidget_->hide();
+  actionConfiguration_->setChecked(false);
 }
 
 void SCIRunMainWindow::initialize()
@@ -240,6 +246,24 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
 
   prefs_->setRegressionTestDataDir();
+}
+
+void SCIRunMainWindow::setTipsAndWhatsThis()
+{
+  actionExecute_All_->setStatusTip(tr("Execute all modules"));
+  actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
+  actionNew_->setStatusTip(tr("New network"));
+  actionNew_->setWhatsThis(tr("Click this option to start editing a blank network file."));
+  actionSave_->setStatusTip(tr("Save network"));
+  actionSave_->setWhatsThis(tr("Click this option to save the current network to disk."));
+  actionLoad_->setStatusTip(tr("Load network"));
+  actionLoad_->setWhatsThis(tr("Click this option to load a new network file from disk."));
+  actionEnterWhatsThisMode_ = QWhatsThis::createAction(this);
+  actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
+  actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
+  actionHideAllModuleUIs_->setWhatsThis("Hides all module UI windows.");
+  actionRestoreAllModuleUIs_->setWhatsThis("Restores all module UI windows.");
+  actionPinAllModuleUIs_->setWhatsThis("Pins all module UI windows to right side of main window.");
 }
 
 void SCIRunMainWindow::setupInputWidgets()
@@ -285,7 +309,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
-  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, scrollAreaWidgetContents_);
+  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   //networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -414,7 +438,7 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
     recentFiles_.prepend(currentFile_);
     updateRecentFileActions();
   }
-  setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("SCIRun 5 Prototype")));
+  setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("SCIRun")));
 }
 
 QString SCIRunMainWindow::strippedName(const QString& fullFileName)
@@ -506,6 +530,9 @@ void SCIRunMainWindow::setActionIcons()
   actionUndo_->setIcon(QIcon::fromTheme("edit-undo"));
   actionRedo_->setIcon(QIcon::fromTheme("edit-redo"));
   //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/hideAll.png"));
+  actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/rightAll.png"));
+  actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/showAll.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
@@ -748,12 +775,20 @@ void SCIRunMainWindow::setupDevConsole()
   addDockWidget(Qt::TopDockWidgetArea, devConsole_);
   actionDevConsole_->setShortcut(QKeySequence("`"));
   connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
+  connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
 }
 
 void SCIRunMainWindow::setExecutor(int type)
 {
-  Log::get() << DEBUG_LOG << "Executor of type " << type << " selected"  << std::endl;
+  LOG_DEBUG("Executor of type " << type << " selected"  << std::endl);
   networkEditor_->getNetworkEditorController()->setExecutorType(type);
+}
+
+void SCIRunMainWindow::setGlobalPortCaching(bool enable)
+{
+  LOG_DEBUG("Global port caching flag set to " << (enable ? "true" : "false") << std::endl);
+  //TODO: encapsulate better
+  SimpleSink::setGlobalPortCachingFlag(enable);
 }
 
 void SCIRunMainWindow::readDefaultNotePosition(int index)
@@ -974,4 +1009,17 @@ void SCIRunMainWindow::displayAcknowledgement()
 {
   QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment", 
     "CIBC software and the data sets provided on this web site are Open Source software projects that are principally funded through the SCI Institute's NIH/NCRR CIBC. For us to secure the funding that allows us to continue providing this software, we must have evidence of its utility. Thus we ask users of our software and data to acknowledge us in their publications and inform us of these publications. Please use the following acknowledgment and send us references to any publications, presentations, or successful funding applications that make use of the NIH/NCRR CIBC software or data sets we provide. <p> <i>This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545.</i>");
+}
+
+void SCIRunMainWindow::setDataDirectory(const QString& dir)
+{
+  scirunDataLineEdit_->setText(dir);
+  scirunDataLineEdit_->setToolTip(dir);
+  if (!dir.isEmpty())
+    RemembersFileDialogDirectory::setStartingDir(dir);
+}
+
+QString SCIRunMainWindow::dataDirectory() const
+{
+  return scirunDataLineEdit_->text();
 }

@@ -205,6 +205,7 @@ void ViewSceneDialog::addAutoViewButton()
   autoViewBtn->setText("Auto View");
   autoViewBtn->setAutoDefault(false);
   autoViewBtn->setDefault(false);
+  autoViewBtn->setShortcut(Qt::Key_0);
   connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
   mToolBar->addWidget(autoViewBtn);
   mToolBar->addSeparator();

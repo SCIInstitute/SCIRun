@@ -40,6 +40,7 @@
 #include <Core/IEPlugin/IEPluginInit.h>
 
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::CommandLine;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;

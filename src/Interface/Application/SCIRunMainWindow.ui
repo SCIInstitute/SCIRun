@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>1075</height>
+    <height>852</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1117</width>
-         <height>739</height>
+         <width>1114</width>
+         <height>477</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -137,6 +137,10 @@
     <addaction name="actionPythonConsole_"/>
     <addaction name="actionDevConsole_"/>
     <addaction name="actionPreferences_"/>
+    <addaction name="separator"/>
+    <addaction name="actionPinAllModuleUIs_"/>
+    <addaction name="actionHideAllModuleUIs_"/>
+    <addaction name="actionRestoreAllModuleUIs_"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -170,7 +174,7 @@
    <property name="minimumSize">
     <size>
      <width>299</width>
-     <height>322</height>
+     <height>328</height>
     </size>
    </property>
    <property name="features">
@@ -366,7 +370,7 @@
         <enum>QTabWidget::Triangular</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="networkEditorTab_">
         <property name="whatsThis">
@@ -642,7 +646,7 @@
                <rect>
                 <x>10</x>
                 <y>30</y>
-                <width>261</width>
+                <width>411</width>
                 <height>111</height>
                </rect>
               </property>
@@ -655,12 +659,22 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QLineEdit" name="scirunDataLineEdit_"/>
+                <widget class="QLineEdit" name="scirunDataLineEdit_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
                <item row="0" column="2">
                 <widget class="QPushButton" name="scirunDataPushButton_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
-                  <string>Set</string>
+                  <string>Set...</string>
                  </property>
                 </widget>
                </item>
@@ -1039,6 +1053,30 @@
   <action name="actionRunScript_">
    <property name="text">
     <string>Run Script...</string>
+   </property>
+  </action>
+  <action name="actionPinAllModuleUIs_">
+   <property name="text">
+    <string>Pin All Module UIs</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Right</string>
+   </property>
+  </action>
+  <action name="actionHideAllModuleUIs_">
+   <property name="text">
+    <string>Hide All Module UIs</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Down</string>
+   </property>
+  </action>
+  <action name="actionRestoreAllModuleUIs_">
+   <property name="text">
+    <string>Restore All Module UIs</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Up</string>
    </property>
   </action>
  </widget>

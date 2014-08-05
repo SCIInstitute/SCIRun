@@ -1,4 +1,4 @@
-#$ ./SCIRunGUIPrototype.exe --script="E:\git\SCIRunGUIPrototype\src\ExampleNets\eab.py" -E --headless
+#$ ./SCIRun.exe --script="E:\git\SCIRunGUIPrototype\src\ExampleNets\eab.py" -E --headless
 
 import glob
 import os

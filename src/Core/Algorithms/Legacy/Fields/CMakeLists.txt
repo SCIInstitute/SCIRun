@@ -27,6 +27,7 @@
 #
 
 SET(Core_Algorithms_Legacy_Fields_HEADERS
+  ClipMesh/ClipMeshBySelection.h
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
   DistanceField/CalculateDistanceField.h
@@ -58,6 +59,9 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/GetFieldData.h
   Mapping/MapFieldDataFromElemToNode.h
   Mapping/MapFieldDataFromNodeToElem.h
+  Mapping/MapFieldDataOntoNodes.h
+  Mapping/MapFieldDataOntoElems.h
+  Mapping/MappingDataSource.h
   ResampleMesh/ResampleRegularMesh.h
   SmoothMesh/FairMesh.h
   FieldData/ConvertFieldBasisType.h
@@ -71,7 +75,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #Cleanup/CleanupTetMesh.cc
   #Cleanup/RemoveUnusedNodes.cc
   #ClipMesh/ClipMeshByIsovalue.cc
-  #ClipMesh/ClipMeshBySelection.cc
+  ClipMesh/ClipMeshBySelection.cc
   #CollectFields/CollectPointClouds.cc
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.cc
   #ConvertMeshType/ConvertMeshToTetVolMesh.cc
@@ -113,9 +117,9 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   Mapping/MapFieldDataFromElemToNode.cc
   Mapping/MapFieldDataFromNodeToElem.cc
   #Mapping/MapFieldDataFromSourceToDestination.cc
-  #Mapping/MappingDataSource.cc
-  #Mapping/MapFieldDataOntoNodes.cc
-  #Mapping/MapFieldDataOntoElems.cc
+  Mapping/MappingDataSource.cc
+  Mapping/MapFieldDataOntoNodes.cc
+  Mapping/MapFieldDataOntoElems.cc
   #Mapping/MapFromPointField.cc
   #Mapping/FindClosestNodesFromPointField.cc
   #MarchingCubes/BaseMC.cc
