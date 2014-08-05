@@ -61,12 +61,12 @@ AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH"
 
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
-  addParameter(Skin(),      0.33);
+  addParameter(Skin(),      0.43);
   addParameter(SoftBone(),     0.02856);
   addParameter(HardBone(),     0.00640);
   addParameter(CSF(),       1.79);
   addParameter(GM(),        0.33);
-  addParameter(WM(),        0.14);
+  addParameter(WM(),        0.142);
   addParameter(Electrode(), 1.4);
 }
 
@@ -111,7 +111,7 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
     if (ival > 7 || ival < 1)
       THROW_ALGORITHM_INPUT_ERROR("Field values were outside the range 1-7 ");
   }
-  
+   
   // array holding conductivities
   double conductivies[] = {get(Skin()).getDouble(),
     get(SoftBone()).getDouble(), get(HardBone()).getDouble(),get(CSF()).getDouble(),

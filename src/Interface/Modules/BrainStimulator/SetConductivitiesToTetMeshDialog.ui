@@ -79,8 +79,11 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
          <property name="value">
-          <double>0.330000000000000</double>
+          <double>0.430000000000000</double>
          </property>
         </widget>
         <widget class="QDoubleSpinBox" name="HardBone_">
@@ -108,6 +111,9 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
          <property name="value">
           <double>1.790000000000000</double>
          </property>
@@ -133,6 +139,9 @@
            <width>81</width>
            <height>24</height>
           </rect>
+         </property>
+         <property name="decimals">
+          <number>5</number>
          </property>
          <property name="value">
           <double>1.400000000000000</double>
@@ -173,6 +182,9 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
          <property name="value">
           <double>0.330000000000000</double>
          </property>
@@ -199,8 +211,11 @@
            <height>24</height>
           </rect>
          </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
          <property name="value">
-          <double>0.140000000000000</double>
+          <double>0.142000000000000</double>
          </property>
         </widget>
         <widget class="QLabel" name="label_7">
