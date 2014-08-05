@@ -37,6 +37,8 @@ namespace Gui {
 
   class SCISHARE RemembersFileDialogDirectory
   {
+  public:
+    static void setStartingDir(const QString& dir);
   protected:
     QString dialogDirectory() const
     {

@@ -28,12 +28,14 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QtGui>
 #include <Core/Application/Application.h>
+#include <Core/Application/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -137,5 +139,16 @@ bool RunPythonScriptCommandGui::execute()
 {
   auto script = Application::Instance().parameters()->pythonScriptFile().get();
   SCIRunMainWindow::Instance()->runPythonScript(QString::fromStdString(script.string()));
+  return true;
+}
+
+bool SetupDataDirectoryCommandGui::execute()
+{
+  auto dir = Application::Instance().parameters()->dataDirectory().get();
+  LOG_DEBUG("Data dir set to: " << dir << std::endl);
+  
+  Core::Preferences::Instance().setDataDirectory(dir);
+  SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
+  
   return true;
 }

@@ -50,10 +50,13 @@ void WriteMatrixModule::execute()
   auto matrix = getRequiredInput(MatrixToWrite);
 
   auto fileOption = getOptionalInput(Filename);
-  if (!fileOption)
-    filename_ = get_state()->getValue(Variables::Filename).getString();
-  else
-    filename_ = (*fileOption)->value();
+
+  if (fileOption && *fileOption)
+  {
+    get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
+  }
+  auto path = get_state()->getValue(Variables::Filename).getFilename();
+  filename_ = path.string();
 
   if (needToExecute())
   {
