@@ -244,6 +244,7 @@ void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	this-> setColor(placeHoldingColor_);
 	menuOpen_ = false; 
+	this->setZValue(0); 
   QGraphicsPathItem::mouseReleaseEvent(event);
 }
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -253,7 +254,8 @@ void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	if(!menuOpen_ )
 	{
 		placeHoldingColor_ = this -> color();
-		this -> setColor(Qt::red);	
+		this -> setColor(Qt::red);
+		this->setZValue(100); 
 	}
   QGraphicsPathItem::mousePressEvent(event);
 }
