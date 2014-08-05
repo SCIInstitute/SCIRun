@@ -51,7 +51,7 @@ public:
       ("version,v", "prints out version information")
       ("execute,e", "executes the given network on startup")
       ("Execute,E", "executes the given network on startup and quits when done")
-      ("datadir,d", po::value<std::string>(), "scirun data directory--TODO")
+      ("datadir,d", po::value<std::string>(), "scirun data directory")
       ("regression,r", "regression test a network")
       ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("interactive,i", "interactive mode--TODO")
@@ -121,9 +121,10 @@ public:
   ApplicationParametersImpl(
     const boost::optional<std::string>& inputFile,
     const boost::optional<boost::filesystem::path>& pythonScriptFile,
+    const boost::optional<boost::filesystem::path>& dataDirectory,
     const boost::optional<std::string>& threadMode,
     const Flags& flags
-   ) : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), threadMode_(threadMode), flags_(flags)
+   ) : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory), threadMode_(threadMode), flags_(flags)
   {}
 
   virtual boost::optional<std::string> inputFile() const
@@ -134,6 +135,11 @@ public:
   virtual boost::optional<boost::filesystem::path> pythonScriptFile() const 
   {
     return pythonScriptFile_;
+  }
+
+  virtual boost::optional<boost::filesystem::path> dataDirectory() const
+  {
+    return dataDirectory_;
   }
 
   virtual bool help() const
@@ -184,6 +190,7 @@ public:
 private:
   boost::optional<std::string> inputFile_;
   boost::optional<boost::filesystem::path> pythonScriptFile_;
+  boost::optional<boost::filesystem::path> dataDirectory_;
   boost::optional<std::string> threadMode_;
   Flags flags_;
 };
@@ -210,11 +217,17 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     {
       pythonScriptFile = boost::filesystem::path(parsed["script"].as<std::string>());
     }
+    auto dataDirectory = boost::optional<boost::filesystem::path>();
+    if (parsed.count("datadir") != 0 && !parsed["datadir"].empty() && !parsed["datadir"].defaulted())
+    {
+      dataDirectory = boost::filesystem::path(parsed["datadir"].as<std::string>());
+    }
     auto threadMode = parsed.count("threadMode") != 0 ? parsed["threadMode"].as<std::string>() : boost::optional<std::string>();
     return boost::make_shared<ApplicationParametersImpl>
       (
       inputFile,
       pythonScriptFile,
+      dataDirectory,
       threadMode,
       ApplicationParametersImpl::Flags(
         parsed.count("help") != 0,

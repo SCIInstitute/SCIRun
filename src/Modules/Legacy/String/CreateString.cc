@@ -36,6 +36,7 @@ using namespace SCIRun;
 
 /// @class CreateString
 /// @brief This module can be used to create a string. 
+/// @image html CreateString.png "Create String"
 
 class CreateString : public Module {
 public:

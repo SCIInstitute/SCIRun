@@ -42,7 +42,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>E:/moritz/fe/fem_1e6_elements.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/buildFE/inputFields/fem_1e6_elements.fld</value>
 									</value>
 								</second>
 							</item>
@@ -86,7 +86,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/moritz/fe/fem_1e6_elements.fld.mat</value>
+										<value>%SCIRUNDATADIR%/TransientOutput/fem_1e6_elements.fld.mat</value>
 									</value>
 								</second>
 							</item>

@@ -36,6 +36,7 @@
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/filesystem/path.hpp>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
@@ -43,6 +44,7 @@
 #include <Core/Datatypes/HasId.h>
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Utils/StringUtil.h>
+#include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -109,6 +111,7 @@ namespace Algorithms {
     int getInt() const;
     double getDouble() const;
     std::string getString() const;
+    boost::filesystem::path getFilename() const;
     bool getBool() const;
     Datatypes::DatatypeHandle getDatatype() const;
     std::vector<Variable> getList() const;
@@ -119,6 +122,19 @@ namespace Algorithms {
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   
   typedef Variable AlgorithmParameter;
+
+  class SCISHARE AlgorithmParameterHelper
+  {
+  public:
+    static void setDataDir(const boost::filesystem::path& path);
+    static boost::filesystem::path dataDir();
+    static void setDataDirPlaceholder(const std::string& str);
+    static std::string dataDirPlaceholder();
+    static Thread::Mutex lock_;
+  private:
+    static boost::filesystem::path dataDir_;
+    static std::string dataDirPlaceholder_;
+  };
 
   class SCISHARE AlgorithmLogger : public Core::Logging::LegacyLoggerInterface
   {
@@ -141,10 +157,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
-    AlgorithmStatusReporter() 
-    {
-      setUpdaterFunc(defaultUpdaterFunc_);
-    }
+    AlgorithmStatusReporter();
     ~AlgorithmStatusReporter() {}
         
     virtual void report_start(const std::string& tag) const {}

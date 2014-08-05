@@ -138,6 +138,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
     optionsButton_->setText("VIEW");
     optionsButton_->setToolTip("View renderer output");
     optionsButton_->resize(100, optionsButton_->height());
+    executePushButton_->hide();
     //progressBar_->setVisible(false); //this looks bad, need to insert a spacer or something. TODO later
   }
   progressBar_->setMaximum(100);
@@ -148,6 +149,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   addPorts(*theModule_);
   optionsButton_->setVisible(theModule_->has_ui());
 
+  executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+
   int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
   int extraWidth = pixelWidth - moduleWidthThreshold;
   if (extraWidth > 0)
@@ -155,7 +158,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
     resize(width() + extraWidth + extraModuleWidth, height());
   }
 
-  connect(optionsButton_, SIGNAL(clicked()), this, SLOT(showOptionsDialog()));
+  connect(optionsButton_, SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
   makeOptionsDialog();
 
   connect(helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
@@ -516,19 +519,23 @@ void ModuleWidget::makeOptionsDialog()
 boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
 boost::shared_ptr<ClosestPortFinder> ModuleWidget::closestPortFinder_;
 
-void ModuleWidget::showOptionsDialog()
+void ModuleWidget::toggleOptionsDialog()
 {
   if (dialog_)
   {
-    makeOptionsDialog();
-    dockable_->show();
-    dockable_->raise();
-    dockable_->activateWindow();
-    //TODO--more special viewscene code...
-    if (dialog_->windowTitle().startsWith("ViewScene"))
+    if (dockable_->isHidden())
     {
-      dockable_->setFloating(true);
+      dockable_->show();
+      dockable_->raise();
+      dockable_->activateWindow();
+      //TODO--more special viewscene code...
+      if (dialog_->windowTitle().startsWith("ViewScene"))
+      {
+        dockable_->setFloating(true);
+      }
     }
+    else
+      hideUI();
   }
 }
 

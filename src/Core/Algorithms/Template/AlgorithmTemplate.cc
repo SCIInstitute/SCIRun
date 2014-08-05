@@ -39,9 +39,6 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-ALGORITHM_PARAMETER_DEF(Fields, Knob1);
-ALGORITHM_PARAMETER_DEF(Fields, Knob2);
-
 @AlgorithmName@Algo::@AlgorithmName@Algo()
 {
   using namespace Parameters;

@@ -29,12 +29,8 @@
 SET(Modules_DataIO_SRCS
   ReadField.cc
   ReadMatrix.cc
-  ReadMatrixState.cc
-  ReadMesh.cc
-  ReadMeshState.cc
   WriteField.cc
   WriteMatrix.cc
-  WriteMatrixState.cc
 )
 
 SET(Modules_DataIO_HEADERS
@@ -42,12 +38,8 @@ SET(Modules_DataIO_HEADERS
   GenericWriter.h
   ReadField.h
   ReadMatrix.h
-  ReadMatrixState.h
-  ReadMesh.h
-  ReadMeshState.h
   WriteField.h
   WriteMatrix.h
-  WriteMatrixState.h
 )
 
 ADD_LIBRARY(Modules_DataIO 
