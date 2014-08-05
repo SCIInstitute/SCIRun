@@ -51,7 +51,7 @@ SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
 
 void SetFieldDataModule::setStateDefaults()
 {
- setStateBoolFromAlgo(SetFieldDataAlgo::keepTypeCheckBox);
+  setStateBoolFromAlgo(SetFieldDataAlgo::keepTypeCheckBox);
 }
 
 void SetFieldDataModule::execute()
@@ -62,7 +62,7 @@ void SetFieldDataModule::execute()
 
   ///inputs_changed_ || !oport_cached("Matrix Nodes")
   if (needToExecute())
-  {    
+  {
     update_state(Executing);
 
     auto output = algo().run_generic(make_input((InputField, input_field)(InputMatrix, input_matrix)));

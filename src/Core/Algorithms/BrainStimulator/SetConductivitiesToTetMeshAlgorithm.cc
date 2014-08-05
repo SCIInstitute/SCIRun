@@ -49,38 +49,30 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skin() {return AlgorithmParameterName("Skin");}
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skull() {return AlgorithmParameterName("Skull");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::SoftBone() {return AlgorithmParameterName("Soft Bone");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::HardBone() {return AlgorithmParameterName("Hard Bone");}
 AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF() { return AlgorithmParameterName("CSF");}
 AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM() { return AlgorithmParameterName("GM");}
 AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM() { return AlgorithmParameterName("WM");}
 AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Electrode() { return AlgorithmParameterName("Electrode");}
 
 AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::MESH("MESH");
-AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::INHOMOGENEOUS_SKULL("INHOMOGENEOUS_SKULL");
-AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::ANISOTROPIC_WM("ANISOTROPIC_WM");
 AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH");
 
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
-  addParameter(Skin(),      0.33);
-  addParameter(Skull(),     0.01);
+  addParameter(Skin(),      0.43);
+  addParameter(SoftBone(),     0.02856);
+  addParameter(HardBone(),     0.00640);
   addParameter(CSF(),       1.79);
   addParameter(GM(),        0.33);
-  addParameter(WM(),        0.14);
+  addParameter(WM(),        0.142);
   addParameter(Electrode(), 1.4);
 }
 
 AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   auto mesh  = input.get<Field>(MESH);
-  auto skull = input.get<Matrix>(INHOMOGENEOUS_SKULL);
-  auto wm    = input.get<Matrix>(ANISOTROPIC_WM);
-
- /* ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");*/
  
   AlgorithmOutput output;
   
@@ -111,18 +103,18 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   if (vfield->is_vector())
     THROW_ALGORITHM_INPUT_ERROR("Function is not setup to work with vectors at this time ");
   
-  // making sure no field value (from the input) is outside the range 1-6
+  // making sure no field value (from the input) is outside the range 1-7
   double ival = 0;
   for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++)
   {
     vfield->get_value(ival, i);
-    if (ival > 6 || ival < 1)
-      THROW_ALGORITHM_INPUT_ERROR("Field values were outside the range 1-6 ");
+    if (ival > 7 || ival < 1)
+      THROW_ALGORITHM_INPUT_ERROR("Field values were outside the range 1-7 ");
   }
-  
+   
   // array holding conductivities
   double conductivies[] = {get(Skin()).getDouble(),
-    get(Skull()).getDouble(), get(CSF()).getDouble(),
+    get(SoftBone()).getDouble(), get(HardBone()).getDouble(),get(CSF()).getDouble(),
     get(GM()).getDouble(), get(WM()).getDouble(),
     get(Electrode()).getDouble()};
   
@@ -153,6 +145,9 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
         break;
       case 6:
         ofield->set_value(conductivies[5], i);
+        break;
+      case 7:
+        ofield->set_value(conductivies[6], i);
         break;
     }
     

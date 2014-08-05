@@ -24,6 +24,9 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+
+   Author: Spencer Frisby
+   Date:   July 2014
 */
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -32,57 +35,105 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
-#include <iostream>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/MatrixComparison.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
-    
-const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
-const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_TRIANGULATION("ELECTRODE_TRIANGULATION");
-const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_TRIANGULATION2("ELECTRODE_TRIANGULATION2");
-const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::COIL("COIL");
-const AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::COIL2("COIL2");
-const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
-const AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::COILS_FIELD("COILS_FIELD");
 
+ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodeTableValues);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, ELECTRODE_VALUES);
+
+AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
+AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COUNT("ELECTRODE_COUNT");
+AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
+
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
+
+SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
+{
+  addParameter(Parameters::ELECTRODE_VALUES, 0); // just a default value, will be replaced with vector
+}
 
 AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
-  auto tri2 = input.get<Field>(ELECTRODE_TRIANGULATION2);
-  auto coil = input.get<Field>(COIL);
-  auto coil2 = input.get<Field>(COIL2);
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");
-  //old-style run call, just put algorithm code here
-  //auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).getInt()));
-  // CODE HERE
-  FieldHandle out1,out2;
-
-  //Algorithm starts here:
-  //VField* vfield = elc_coil_pos_and_normal->vfield();
-   VMesh*  vmesh  = pos_orient->vmesh();
- 
-   std::cout << "a: " << vmesh->num_nodes() << std::endl;
-   //for (int i=0;i<vmesh->num_nodes();;i++)
-   //{
-   
-   
-   //}
-  //
-
-
+  auto elc_coil_pos_and_normal = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
+  
+  // obtaining electrode values from the state
+  auto all_elc_values = get(Parameters::ELECTRODE_VALUES).getList();
+  
+  // consistency check:
+  for (int i=0; i<all_elc_values.size(); i++)
+  {
+    auto elecName = all_elc_values[i].name_; 
+    auto elecValue = all_elc_values[i].getDouble();
+    auto expectedElecName = SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(i); //ElecrodeParameterName(i);
+    if(elecName.name_.compare(expectedElecName.name_) != 0) // if so, electrodes are being stored out of order.
+      THROW_ALGORITHM_PROCESSING_ERROR("Values are being stored out of order!");
+  }
+  
+  // obtaining number of electrodes
+  auto elc_count = input.get<Matrix>(ELECTRODE_COUNT);
+  DenseMatrixHandle elc_count_dense (new DenseMatrix(matrix_cast::as_dense(elc_count)->block(0,0,elc_count->nrows(),elc_count->ncols())));
+  int num_of_elc = elc_count_dense->coeff(0,0);
+  
+  // making the rhs, sending it back as output
   AlgorithmOutput output;
-  output[ELECTRODES_FIELD] = out1;
-  output[COILS_FIELD] = out2;
+  DenseMatrixHandle rhs = run(elc_coil_pos_and_normal, all_elc_values, num_of_elc);
+
+  output[RHS] = rhs;
+  return output;
+}
+
+DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle fh, const std::vector<Variable>& elcs, int num_of_elc) const
+{
+  if (num_of_elc > 128) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes given exceeds what is possible ");}
+  else if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
+  
+  if (!fh) THROW_ALGORITHM_INPUT_ERROR("Input field was not allocated ");
+  
+  // storing only desired amount of electrodes to pass to run method
+  std::vector<Variable, std::allocator<Variable>> elcs_wanted; 
+  for (int i=0; i<num_of_elc; i++)
+    elcs_wanted.push_back(elcs[i]);
+
+  VField* vfield = fh->vfield();
+ 
+  // making sure current magnitudes of the electrodes summed are greater than 10e-6
+  double min_current = 0;
+  for (int i=0; i<elcs_wanted.size(); i++)
+  {
+    double temp = std::fabs(elcs_wanted[i].getDouble());
+    min_current += temp;
+  }
+  if (min_current < 0.00001) remark("Electrode current intensities are negligible");
+  
+  int node_elements  = vfield->vmesh()->num_nodes();
+  int total_elements = node_elements + elcs_wanted.size();
+  
+  DenseMatrixHandle output (boost::make_shared<DenseMatrix>(total_elements,1));
+  int cnt = 0;
+  for (int i=0; i < total_elements; i++)
+  {
+    if (i < node_elements)
+      (*output)(i,0) = 0.0; // for the nodes
+    else
+      (*output)(i,0) = elcs_wanted[i-node_elements].getDouble()/1000.0; // for electrodes ~ converting to Amps
+    
+    cnt++;
+    if (cnt == total_elements/4)
+    {
+      cnt = 0;
+      update_progress_max(i, total_elements);
+    }
+  }
   return output;
 }

@@ -1,293 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-  <class>SetConductivitiesToTetMeshDialog</class>
-  <widget class="QWidget" name="SetConductivitiesToTetMeshDialog">
-    <property name="geometry">
+ <class>SetConductivitiesToTetMeshDialog</class>
+ <widget class="QWidget" name="SetConductivitiesToTetMeshDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>310</width>
+    <height>325</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SetConductivitiesToTetMeshDialog</string>
+  </property>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>291</width>
+     <height>301</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="VolumeConductor">
+    <attribute name="title">
+     <string>Volume Conductor</string>
+    </attribute>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>724</width>
-        <height>273</height>
+       <x>10</x>
+       <y>0</y>
+       <width>261</width>
+       <height>261</height>
       </rect>
-    </property>
-    <property name="windowTitle">
-      <string>SetConductivitiesToTetMeshDialog</string>
-    </property>
-    <widget class="QTabWidget" name="tabWidget">
-      <property name="geometry">
-        <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>691</width>
-          <height>251</height>
-        </rect>
-      </property>
-      <property name="currentIndex">
-        <number>0</number>
-      </property>
-      <widget class="QWidget" name="VolumeConductor">
-        <attribute name="title">
-          <string>Volume Conductor</string>
-        </attribute>
-        <widget class="QWidget" name="verticalLayoutWidget">
-          <property name="geometry">
-            <rect>
-              <x>10</x>
-              <y>0</y>
-              <width>261</width>
-              <height>211</height>
-            </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-              <widget class="QGroupBox" name="groupBox">
-                <property name="title">
-                  <string>Isotropic Conductivities [S/m]</string>
-                </property>
-                <widget class="QLabel" name="label_2">
-                  <property name="geometry">
-                    <rect>
-                      <x>60</x>
-                      <y>60</y>
-                      <width>62</width>
-                      <height>16</height>
-                    </rect>
-                  </property>
-                  <property name="text">
-                    <string>Skull:</string>
-                  </property>
-                </widget>
-                <widget class="QLabel" name="label_3">
-                  <property name="geometry">
-                    <rect>
-                      <x>60</x>
-                      <y>90</y>
-                      <width>62</width>
-                      <height>16</height>
-                    </rect>
-                  </property>
-                  <property name="text">
-                    <string>CSF:</string>
-                  </property>
-                </widget>
-                <widget class="QDoubleSpinBox" name="Skin_">
-                  <property name="geometry">
-                    <rect>
-                      <x>120</x>
-                      <y>30</y>
-                      <width>69</width>
-                      <height>24</height>
-                    </rect>
-                  </property>
-                  <property name="value">
-                    <double>0.330000000000000</double>
-                  </property>
-                </widget>
-                <widget class="QDoubleSpinBox" name="Skull_">
-                  <property name="geometry">
-                    <rect>
-                      <x>120</x>
-                      <y>60</y>
-                      <width>69</width>
-                      <height>24</height>
-                    </rect>
-                  </property>
-                  <property name="value">
-                    <double>0.010000000000000</double>
-                  </property>
-                </widget>
-                <widget class="QDoubleSpinBox" name="CSF_">
-                  <property name="geometry">
-                    <rect>
-                      <x>120</x>
-                      <y>90</y>
-                      <width>69</width>
-                      <height>24</height>
-                    </rect>
-                  </property>
-                  <property name="value">
-                    <double>1.790000000000000</double>
-                  </property>
-                </widget>
-                <widget class="QLabel" name="label_4">
-                  <property name="geometry">
-                    <rect>
-                      <x>30</x>
-                      <y>180</y>
-                      <width>62</width>
-                      <height>16</height>
-                    </rect>
-                  </property>
-                  <property name="text">
-                    <string>Electrode:</string>
-                  </property>
-                </widget>
-                <widget class="QDoubleSpinBox" name="Electrode_">
-                  <property name="geometry">
-                    <rect>
-                      <x>120</x>
-                      <y>180</y>
-                      <width>69</width>
-                      <height>24</height>
-                    </rect>
-                  </property>
-                  <property name="value">
-                    <double>1.400000000000000</double>
-                  </property>
-                </widget>
-                <widget class="QLabel" name="label">
-                  <property name="geometry">
-                    <rect>
-                      <x>60</x>
-                      <y>10</y>
-                      <width>62</width>
-                      <height>71</height>
-                    </rect>
-                  </property>
-                  <property name="text">
-                    <string>Skin:</string>
-                  </property>
-                </widget>
-                <widget class="QLabel" name="label_5">
-                  <property name="geometry">
-                    <rect>
-                      <x>60</x>
-                      <y>120</y>
-                      <width>62</width>
-                      <height>16</height>
-                    </rect>
-                  </property>
-                  <property name="text">
-                    <string>GM:</string>
-                  </property>
-                </widget>
-                <widget class="QDoubleSpinBox" name="GM_">
-                  <property name="geometry">
-                    <rect>
-                      <x>120</x>
-                      <y>120</y>
-                      <width>69</width>
-                      <height>24</height>
-                    </rect>
-                  </property>
-                  <property name="value">
-                    <double>0.330000000000000</double>
-                  </property>
-                </widget>
-                <widget class="QLabel" name="label_6">
-                  <property name="geometry">
-                    <rect>
-                      <x>60</x>
-                      <y>150</y>
-                      <width>62</width>
-                      <height>16</height>
-                    </rect>
-                  </property>
-                  <property name="text">
-                    <string>WM:</string>
-                  </property>
-                </widget>
-                <widget class="QDoubleSpinBox" name="WM_">
-                  <property name="geometry">
-                    <rect>
-                      <x>120</x>
-                      <y>150</y>
-                      <width>69</width>
-                      <height>24</height>
-                    </rect>
-                  </property>
-                  <property name="value">
-                    <double>0.140000000000000</double>
-                  </property>
-                </widget>
-              </widget>
-            </item>
-          </layout>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Isotropic Conductivities [S/m]</string>
+        </property>
+        <widget class="QLabel" name="label_2">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>100</y>
+           <width>71</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Hard bone:</string>
+         </property>
         </widget>
-        <widget class="QWidget" name="verticalLayoutWidget_2">
-          <property name="geometry">
-            <rect>
-              <x>280</x>
-              <y>0</y>
-              <width>391</width>
-              <height>211</height>
-            </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-              <widget class="QGroupBox" name="groupBox_2">
-                <property name="title">
-                  <string>Anisotropic (inhomogeneous) conductivities [S/m]</string>
-                </property>
-              </widget>
-            </item>
-            <item>
-              <widget class="QTableWidget" name="tableWidget_3">
-                <row>
-                  <property name="text">
-                    <string>Skull</string>
-                  </property>
-                </row>
-                <row>
-                  <property name="text">
-                    <string>Gray matter</string>
-                  </property>
-                </row>
-                <row>
-                  <property name="text">
-                    <string>White matter</string>
-                  </property>
-                </row>
-                <column>
-                  <property name="text">
-                    <string>Inhomo. dist.</string>
-                  </property>
-                </column>
-                <column>
-                  <property name="text">
-                    <string>Radial cond.</string>
-                  </property>
-                </column>
-                <column>
-                  <property name="text">
-                    <string>Tangential cond.</string>
-                  </property>
-                </column>
-                <item row="0" column="0">
-                  <property name="text">
-                    <string/>
-                  </property>
-                  <property name="checkState">
-                    <enum>Unchecked</enum>
-                  </property>
-                </item>
-                <item row="1" column="0">
-                  <property name="text">
-                    <string/>
-                  </property>
-                  <property name="checkState">
-                    <enum>Unchecked</enum>
-                  </property>
-                  <property name="flags">
-                    <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable|ItemIsEnabled|ItemIsTristate</set>
-                  </property>
-                </item>
-                <item row="2" column="0">
-                  <property name="text">
-                    <string/>
-                  </property>
-                  <property name="checkState">
-                    <enum>Unchecked</enum>
-                  </property>
-                </item>
-              </widget>
-            </item>
-          </layout>
+        <widget class="QLabel" name="label_3">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>130</y>
+           <width>62</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>CSF:</string>
+         </property>
         </widget>
-      </widget>
+        <widget class="QDoubleSpinBox" name="Skin_">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>40</y>
+           <width>81</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <double>0.430000000000000</double>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="HardBone_">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>100</y>
+           <width>81</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <double>0.006400000000000</double>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="CSF_">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>130</y>
+           <width>81</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <double>1.790000000000000</double>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_4">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>220</y>
+           <width>91</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Elec. Sponge:</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="Electrode_">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>220</y>
+           <width>81</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <double>1.400000000000000</double>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>40</y>
+           <width>62</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Skin:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_5">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>160</y>
+           <width>62</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>GM:</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="GM_">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>160</y>
+           <width>81</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <double>0.330000000000000</double>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_6">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>190</y>
+           <width>62</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>WM:</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="WM_">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>190</y>
+           <width>81</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <double>0.142000000000000</double>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_7">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>70</y>
+           <width>71</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Soft bone:</string>
+         </property>
+        </widget>
+        <widget class="QDoubleSpinBox" name="SoftBone_">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>70</y>
+           <width>81</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="decimals">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <double>0.028560000000000</double>
+         </property>
+        </widget>
+       </widget>
+      </item>
+     </layout>
     </widget>
+   </widget>
   </widget>
-  <layoutdefault spacing="6" margin="11"/>
-  <resources/>
-  <connections/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
 </ui>
