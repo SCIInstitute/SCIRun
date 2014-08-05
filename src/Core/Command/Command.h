@@ -79,6 +79,7 @@ namespace SCIRun
         PrintVersion,
         LoadNetworkFile,
         RunPythonScript,
+        SetupDataDirectory,
         ExecuteCurrentNetwork,
         SetupQuitAfterExecute,
         QuitCommand

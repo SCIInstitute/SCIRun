@@ -38,6 +38,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
+/// @class ConvertMatrixType
+/// @image html ConvertMatrixType.png 
 ConvertMatrixTypeAlgorithm::ConvertMatrixTypeAlgorithm()
 {
   addParameter(PassThrough(), true);

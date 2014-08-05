@@ -104,6 +104,8 @@ private:
   static boost::atomic<int> counter_;
 };
 
+SCISHARE bool replaceSubstring(std::string& str, const std::string& from, const std::string& to);
+
 }}
 
 namespace std

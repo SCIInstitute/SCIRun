@@ -75,6 +75,12 @@ namespace Gui {
   public:
     virtual bool execute();
   };
+
+  class SetupDataDirectoryCommandGui : public Core::Commands::GuiCommand
+  {
+  public:
+    virtual bool execute();
+  };
   
   class ShowSplashScreenGui : public Core::Commands::GuiCommand
   {
