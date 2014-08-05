@@ -37,7 +37,7 @@ namespace Modules {
 namespace BrainStimulator {
 
 class SCISHARE SetConductivitiesToTetMeshModule : public SCIRun::Dataflow::Networks::Module,
-  public Has3InputPorts<FieldPortTag, MatrixPortTag, MatrixPortTag>,
+  public Has1InputPort<FieldPortTag>,
   public Has1OutputPort<FieldPortTag>
 {
   public:
@@ -47,8 +47,6 @@ class SCISHARE SetConductivitiesToTetMeshModule : public SCIRun::Dataflow::Netwo
     virtual void setStateDefaults();
 
     INPUT_PORT(0, MESH, LegacyField);
-    INPUT_PORT(1, INHOMOGENEOUS_SKULL, Matrix);
-    INPUT_PORT(2, ANISOTROPIC_WM, Matrix);   
     OUTPUT_PORT(0, OUTPUTMESH, LegacyField);
 };
 

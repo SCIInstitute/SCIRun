@@ -45,7 +45,8 @@ namespace BrainStimulator {
       SetConductivitiesToTetMeshAlgorithm();
       FieldHandle run(FieldHandle fh) const;
       static AlgorithmParameterName Skin();
-      static AlgorithmParameterName Skull();
+      static AlgorithmParameterName SoftBone();
+      static AlgorithmParameterName HardBone();
       static AlgorithmParameterName CSF();
       static AlgorithmParameterName GM();
       static AlgorithmParameterName WM();
@@ -53,8 +54,6 @@ namespace BrainStimulator {
     
       AlgorithmOutput run_generic(const AlgorithmInput& input) const;
       static AlgorithmInputName MESH;
-      static AlgorithmInputName INHOMOGENEOUS_SKULL;
-      static AlgorithmInputName ANISOTROPIC_WM;
       static AlgorithmOutputName OUTPUTMESH;
   };
 

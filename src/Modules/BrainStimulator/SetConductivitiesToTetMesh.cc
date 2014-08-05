@@ -45,15 +45,14 @@ using namespace SCIRun::Dataflow::Networks;
 SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(ModuleLookupInfo("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(MESH);
- INITIALIZE_PORT(INHOMOGENEOUS_SKULL);
- INITIALIZE_PORT(ANISOTROPIC_WM);
  INITIALIZE_PORT(OUTPUTMESH);
 }
 
 void SetConductivitiesToTetMeshModule::setStateDefaults()
 {
   setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skin());
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skull());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::SoftBone());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::HardBone());
   setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF());
   setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM());
   setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM());
@@ -63,11 +62,10 @@ void SetConductivitiesToTetMeshModule::setStateDefaults()
 void SetConductivitiesToTetMeshModule::execute()
 {
   auto mesh = getRequiredInput(MESH);
-  auto skull = getOptionalInput(INHOMOGENEOUS_SKULL);
-  auto wm = getOptionalInput(ANISOTROPIC_WM);
  
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin());
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skull());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::SoftBone());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::HardBone());
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::CSF());
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::GM());
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::WM());
@@ -75,9 +73,9 @@ void SetConductivitiesToTetMeshModule::execute()
   
   if (needToExecute())
   {
-    //algorithm input and run
-    auto output = algo().run_generic(make_input((MESH, mesh)(INHOMOGENEOUS_SKULL, optionalAlgoInput(skull))(ANISOTROPIC_WM, optionalAlgoInput(wm))));
-    
+    //algorithm input and run, 
+    auto output = algo().run_generic(make_input((MESH, mesh)));
+   
     //algorithm output
     sendOutputFromAlgorithm(OUTPUTMESH, output);
   }
