@@ -53,7 +53,8 @@ namespace BrainStimulator {
     static AlgorithmInputName ELECTRODE_COUNT;
     static AlgorithmOutputName RHS;
     
-    static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
+    static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName (int i);
+    static void initialElectrodeValue (int row);
 
   private:
     static const int total_electrodes = 128;

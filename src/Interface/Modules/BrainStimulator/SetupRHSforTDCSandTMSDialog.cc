@@ -57,8 +57,11 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   {
     // setting the name of the electrode
     electrode_tableWidget->setItem(i, 0, new QTableWidgetItem("elc"+QString::number(i)));
-    
+
     // seting the inital values of the electrodes
+    /* extract a function called initialElectrodeValue(int row) and 
+       then call that instead of switching here. And better to push it down to the algorithm class 
+       as another static method. */
     if (i == 0)
       electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(1.0)));
     else if (i == 1)
@@ -80,7 +83,7 @@ void SetupRHSforTDCSandTMSDialog::push()
     std::vector<AlgorithmParameter> elc_vals_in_table;
     for (int i=0; i<rows; i++)
     {
-      AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), electrode_tableWidget->item(i,1)->text().toDouble());
+      AlgorithmParameter elc_i(SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(i), electrode_tableWidget->item(i,1)->text().toDouble());
       elc_vals_in_table.push_back(elc_i);
     }
     state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
@@ -96,7 +99,7 @@ void SetupRHSforTDCSandTMSDialog::pull()
   int rows = electrode_tableWidget->rowCount();
   for (int i=0; i<rows; i++)
   {
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), electrode_tableWidget->item(i,1)->text().toDouble());
+    AlgorithmParameter elc_i(SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(i), electrode_tableWidget->item(i,1)->text().toDouble());
     elc_vals_in_table.push_back(elc_i);
   }
   state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
