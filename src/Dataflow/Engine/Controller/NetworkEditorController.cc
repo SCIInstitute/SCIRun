@@ -297,7 +297,10 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         }
       }
       if (serializationManager_)
+      {
         serializationManager_->updateModulePositions(xml->modulePositions);
+        serializationManager_->updateModuleNotes(xml->moduleNotes);
+      }
       else
         Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;
     }

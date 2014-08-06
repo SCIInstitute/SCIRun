@@ -125,6 +125,7 @@ Q_SIGNALS:
     virtual void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
 
     virtual SCIRun::Dataflow::Networks::ModuleNotesHandle dumpModuleNotes() const;
+    virtual void updateModuleNotes(const SCIRun::Dataflow::Networks::ModuleNotes& moduleNotes);
 
     size_t numModules() const;
 

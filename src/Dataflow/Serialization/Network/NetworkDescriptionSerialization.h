@@ -63,21 +63,23 @@ namespace Networks {
 
   struct SCISHARE ModuleNoteXML
   {
-    std::string noteText;
-    int position, fontSize, colorR, colorG, colorB;
-    ModuleNoteXML(const std::string& text = "", int p = 0, int f = 12, int r = 0, int g = 0, int b = 0) :
-      noteText(text), position(p), fontSize(f), colorR(r), colorG(g), colorB(b) {}
+    std::string noteHTML, noteText;
+    int position, fontSize;
+    //, colorR, colorG, colorB;
+    ModuleNoteXML(const std::string& html = "", int p = 0, const std::string& text = "", int f = 12) :
+      noteHTML(html), noteText(text), position(p), fontSize(f)/*, colorR(r), colorG(g), colorB(b)*/ {}
   private:
     friend class boost::serialization::access;
     template <class Archive>
     void serialize(Archive& ar, const unsigned int version)
     {
+      ar & BOOST_SERIALIZATION_NVP(noteHTML);
       ar & BOOST_SERIALIZATION_NVP(noteText);
       ar & BOOST_SERIALIZATION_NVP(position);
       ar & BOOST_SERIALIZATION_NVP(fontSize);
-      ar & BOOST_SERIALIZATION_NVP(colorR);
-      ar & BOOST_SERIALIZATION_NVP(colorG);
-      ar & BOOST_SERIALIZATION_NVP(colorB);
+//       ar & BOOST_SERIALIZATION_NVP(colorR);
+//       ar & BOOST_SERIALIZATION_NVP(colorG);
+//       ar & BOOST_SERIALIZATION_NVP(colorB);
     } 
   };
 

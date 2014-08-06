@@ -120,7 +120,10 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
   NetworkFileHandle file(boost::make_shared<NetworkFile>());
   file->network = networkXML;
   if (nesm_)
+  {
     file->modulePositions = *nesm_->dumpModulePositions();
+    file->moduleNotes = *nesm_->dumpModuleNotes();
+  }
   return file;
 }
 

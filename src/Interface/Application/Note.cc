@@ -68,6 +68,12 @@ void HasNotes::connectUpdateNote(QObject* obj)
   QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
 }
 
+void HasNotes::setCurrentNote(const Note& note)
+{
+  currentNote_ = note;
+  //noteEditor_.setNoteText(note.html_);
+}
+
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : 
   item_(0), scene_(0), note_(0), 
   notePosition_(Default),
@@ -137,4 +143,11 @@ void NoteDisplayHelper::updateNotePosition()
     auto position = positioner_->currentPosition() + relativeNotePosition();
     note_->setPos(position);
   }
+}
+
+NoteInfo NoteDisplayHelper::info() const
+{
+  if (note_)
+    return NoteInfo(note_->toHtml().toStdString(), notePosition_, note_->toPlainText().toStdString(), note_->font().pointSize());
+  return NoteInfo();
 }

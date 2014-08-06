@@ -31,6 +31,7 @@
 
 #include <Interface/Application/PositionProvider.h>
 #include <boost/shared_ptr.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <QString>
 #include <QFont>
 #include <QColor>
@@ -60,6 +61,9 @@ namespace Gui {
     QString html_;
     NotePosition position_; 
   };
+
+  // html, position, plainText, fontSize, red, green, blue.
+  typedef boost::tuple<std::string, int, std::string, int/*, int, int, int*/> NoteInfo;
   
   class NoteDisplayStrategy
   {
@@ -80,6 +84,7 @@ namespace Gui {
     explicit NoteDisplayHelper(NoteDisplayStrategyPtr display);
     virtual void setNoteGraphicsContext() = 0;
     void updateNoteImpl(const Note& note);
+    NoteInfo info() const;
     void updateNotePosition();
     void setDefaultNotePositionImpl(NotePosition position);
     QGraphicsItem* item_;

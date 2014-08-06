@@ -48,6 +48,8 @@ namespace SCIRun
       ~ModuleProxyWidget();
       ModuleWidget* getModuleWidget();
 
+      NoteInfo noteInfo() const;
+
     public Q_SLOTS:
       void highlightIfSelected();
       void setAsWaiting();

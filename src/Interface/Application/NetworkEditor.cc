@@ -522,6 +522,7 @@ ConnectionLine* NetworkEditor::getSingleConnectionSelected()
 		return connectionSelected; 
 	return connectionSelected; 
 }
+
 void NetworkEditor::unselectConnectionGroup()
 {
 	QList<QGraphicsItem*> items = scene_->selectedItems(); 
@@ -569,16 +570,48 @@ ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 
 ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
 {
-  return ModuleNotesHandle();
-  //ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
-  //Q_FOREACH(QGraphicsItem* item, scene_->items())
-  //{
-  //  if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
-  //  {
-  //    positions->modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
-  //  }
-  //}
-  //return positions;
+  ModuleNotesHandle notes(boost::make_shared<ModuleNotes>());
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      auto noteInfo = w->noteInfo();
+      notes->notes[w->getModuleWidget()->getModuleId()] = ModuleNoteXML(noteInfo.get<0>(), noteInfo.get<1>(), noteInfo.get<2>(), noteInfo.get<3>());
+    }
+  }
+  return notes;
+}
+
+void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
+      if (posIter != modulePositions.modulePositions.end())
+        w->setPos(posIter->second.first, posIter->second.second);
+    }
+  }
+}
+
+void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      auto noteIter = moduleNotes.notes.find(w->getModuleWidget()->getModuleId());
+      if (noteIter != moduleNotes.notes.end())
+      {
+        auto noteXML = noteIter->second;
+        Note note;
+        note.html_ = QString::fromStdString(noteXML.noteHTML);
+        note.position_ = NotePosition(noteXML.position);
+        w->getModuleWidget()->updateNote(note);
+      }
+    }
+  }
 }
 
 void NetworkEditor::executeAll()
@@ -622,19 +655,6 @@ void NetworkEditor::clear()
   // we'll need a similar hook when programming the scripting interface (moduleWidgets<->modules).
   //controller_->clear();
   Q_EMIT modified();
-}
-
-void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions)
-{
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
-  {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
-      if (posIter != modulePositions.modulePositions.end())
-        w->setPos(posIter->second.first, posIter->second.second);
-    }
-  }
 }
 
 SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork() const
