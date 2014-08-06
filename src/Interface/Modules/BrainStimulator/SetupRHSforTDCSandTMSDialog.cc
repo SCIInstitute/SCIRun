@@ -59,15 +59,7 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
     electrode_tableWidget->setItem(i, 0, new QTableWidgetItem("elc"+QString::number(i)));
 
     // seting the inital values of the electrodes
-    /* extract a function called initialElectrodeValue(int row) and 
-       then call that instead of switching here. And better to push it down to the algorithm class 
-       as another static method. */
-    if (i == 0)
-      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(1.0)));
-    else if (i == 1)
-      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(-1.0)));
-    else if (i > 1)
-      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(0.0)));
+      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(SetupRHSforTDCSandTMSAlgorithm::initialElectrodeValue(i))));
   }
   
   // connecting all table cell positions (int = row, int = col)

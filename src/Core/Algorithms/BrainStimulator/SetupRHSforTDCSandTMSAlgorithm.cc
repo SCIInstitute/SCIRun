@@ -56,7 +56,16 @@ AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COIL_POSITIONS_AND_
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_COUNT("ELECTRODE_COUNT");
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
 
+// used to return algorithm parameter name
 AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName (int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
+
+// used to create initial electrode values in the dialog table
+int SetupRHSforTDCSandTMSAlgorithm::initialElectrodeValue (int i) 
+{
+  if (i == 0)      return 1;
+  else if (i == 1) return -1;
+  else             return 0;
+}
 
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
