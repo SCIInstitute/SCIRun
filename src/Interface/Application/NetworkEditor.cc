@@ -60,11 +60,11 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   scene_(new QGraphicsScene(parent)),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
+  dialogErrorControl_(dialogErrorControl),
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
-  zLevelManager_(new ZLevelManager(scene_)),
-	dialogErrorControl_(dialogErrorControl) 
+  zLevelManager_(new ZLevelManager(scene_))
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
@@ -525,25 +525,24 @@ ConnectionLine* NetworkEditor::getSingleConnectionSelected()
 void NetworkEditor::unselectConnectionGroup()
 {
 	QList<QGraphicsItem*> items = scene_->selectedItems(); 
-	if(items.count() == 3) 
+	if (items.count() == 3) 
 	{
 		int hasConnection = 0; 
 		int	hasWidgets = 0;
-		ConnectionLine* cL; ModuleProxyWidget* mPW;
 
 		Q_FOREACH(QGraphicsItem* item, items)
 		{
-			if(cL = qgraphicsitem_cast<ConnectionLine*>(item))
+			if (auto cL = qgraphicsitem_cast<ConnectionLine*>(item))
 			{
 				++hasConnection;
 				items.push_front(cL); 
 			}
-			if(mPW = qgraphicsitem_cast<ModuleProxyWidget*>(item))
+			if (qgraphicsitem_cast<ModuleProxyWidget*>(item))
 				++hasWidgets;
 		}
 		if(hasConnection == 1 && hasWidgets == 2)
 		{
-			if(cL = qgraphicsitem_cast<ConnectionLine*>(items.first()))
+			if (auto cL = qgraphicsitem_cast<ConnectionLine*>(items.first()))
 			{
 				auto selectedPair = cL->getConnectedToModuleId(); 
 

@@ -29,7 +29,7 @@
 
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/String.h>
 
 using namespace SCIRun::Modules::DataIO;
@@ -48,11 +48,15 @@ ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "Da
 void ReadMatrixModule::execute()
 {
   /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
+
   auto fileOption = getOptionalInput(Filename);
-  if (!fileOption)
-    filename_ = get_state()->getValue(Variables::Filename).getString();
-  else
-    filename_ = (*fileOption)->value();
+
+  if (fileOption && *fileOption)
+  {
+    get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
+  }
+  auto path = get_state()->getValue(Variables::Filename).getFilename();
+  filename_ = path.string();
 
   if (needToExecute())
   {
@@ -62,3 +66,4 @@ void ReadMatrixModule::execute()
     sendOutput(FileLoaded, boost::make_shared<String>(filename_));
   }
 }
+
