@@ -1,16 +1,27 @@
-language: cpp
+language:
+- cpp
+
+os:
+- osx
+- linux
+
 compiler:
 - clang
 # TODO: gcc chokes on a boost pthread usage, disabling for now.
 # - gcc 
+
+# check environment (copied from libgit2sharp)
 before_install:
-- sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-- sudo apt-get update -qq
-- sudo apt-get install libosmesa6-dev
-- sudo apt-get install libqt4-dev qt4-qmake
-- sudo add-apt-repository ppa:ubuntu-sdk-team/ppa -y
-- sudo apt-get update
-- sudo apt-get install cmake
-- if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+- date -u
+- uname -a
+- if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ./ci/linux_before_install.sh; fi
+- if [ "${TRAVIS_OS_NAME}" = "osx" ]; then ./ci/osx_before_install.sh; fi
+
+# make sure cmake is installed, set up latest GCC C++ compiler if necessary
+install:
+ - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ./ci/linux_install.sh; fi
+# - if [ "${TRAVIS_OS_NAME}" = "linux" -a "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+ - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then ./ci/osx_install.sh; fi
+
+# TODO: could move script to separate file
 script: cd bin && cmake ../src && make -j8
