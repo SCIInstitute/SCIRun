@@ -576,7 +576,8 @@ ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       auto noteInfo = w->noteInfo();
-      notes->notes[w->getModuleWidget()->getModuleId()] = ModuleNoteXML(noteInfo.get<0>(), noteInfo.get<1>(), noteInfo.get<2>(), noteInfo.get<3>());
+      if (!noteInfo.get<0>().empty())
+        notes->notes[w->getModuleWidget()->getModuleId()] = ModuleNoteXML(noteInfo.get<0>(), noteInfo.get<1>(), noteInfo.get<2>(), noteInfo.get<3>());
     }
   }
   return notes;
