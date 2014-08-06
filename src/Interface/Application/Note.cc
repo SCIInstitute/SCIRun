@@ -152,6 +152,6 @@ void NoteDisplayHelper::updateNotePosition()
 Note NoteDisplayHelper::currentNote() const
 {
   if (note_)
-    return Note(note_->toHtml(), note_->toPlainText(), note_->font().pointSize(), notePosition_);
+    return Note(note_->toHtml(), note_->toPlainText(), note_->font().pointSizeF(), notePosition_);
   return Note();
 }
