@@ -46,12 +46,13 @@ namespace Networks {
     Data modulePositions;
   };
 
-  class SCISHARE ModulePositionEditor
+  class SCISHARE NetworkEditorSerializationManager
   {
   public:
-    virtual ~ModulePositionEditor() {}
+    virtual ~NetworkEditorSerializationManager() {}
     virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions() const = 0;
-    virtual void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions) = 0;
+    virtual void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions) = 0;
+    virtual SCIRun::Dataflow::Networks::ModuleNotesHandle dumpModuleNotes() const = 0;
   };
 
 }}}

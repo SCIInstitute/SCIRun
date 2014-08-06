@@ -63,10 +63,11 @@ class ExecutableLookup;
 class ExecutableObject;
 class NetworkXML;
 struct ModulePositions;
+struct ModuleNotes;
 /// @todo: rename this
 struct NetworkFile;
 class NetworkGlobalSettings;
-class ModulePositionEditor;
+class NetworkEditorSerializationManager;
 class ConnectionMakerService;
 class NetworkEditorControllerInterface;
 
@@ -83,6 +84,7 @@ typedef boost::shared_ptr<DatatypeSinkInterface> DatatypeSinkInterfaceHandle;
 typedef boost::shared_ptr<DatatypeSourceInterface> DatatypeSourceInterfaceHandle;
 typedef boost::shared_ptr<NetworkXML> NetworkXMLHandle;
 typedef boost::shared_ptr<ModulePositions> ModulePositionsHandle;
+typedef boost::shared_ptr<ModuleNotes> ModuleNotesHandle;
 typedef boost::shared_ptr<NetworkFile> NetworkFileHandle;
 
 typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleDescriptionMap;

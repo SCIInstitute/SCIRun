@@ -103,7 +103,7 @@ Q_SIGNALS:
 
   class NetworkEditor : public QGraphicsView, 
     public SCIRun::Dataflow::Networks::ExecutableLookup, 
-    public SCIRun::Dataflow::Networks::ModulePositionEditor, 
+    public SCIRun::Dataflow::Networks::NetworkEditorSerializationManager, 
     public SCIRun::Dataflow::Engine::NetworkIOInterface<SCIRun::Dataflow::Networks::NetworkFileHandle>,
     public SCIRun::Dataflow::Networks::ConnectionMakerService
   {
@@ -122,7 +122,9 @@ Q_SIGNALS:
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
 
     virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions() const;
-    virtual void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+    virtual void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+
+    virtual SCIRun::Dataflow::Networks::ModuleNotesHandle dumpModuleNotes() const;
 
     size_t numModules() const;
 

@@ -37,6 +37,7 @@
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
+#include <boost/serialization/version.hpp>
 #include <Dataflow/Serialization/Network/share.h>
 
 namespace SCIRun {
@@ -45,7 +46,7 @@ namespace Networks {
 
   typedef std::vector<ConnectionDescriptionXML> ConnectionsXML;
 
-  struct ModuleWithState 
+  struct SCISHARE ModuleWithState 
   {
     ModuleLookupInfoXML module;
     State::SimpleMapModuleStateXML state;
@@ -60,7 +61,33 @@ namespace Networks {
     } 
   };
 
+  struct SCISHARE ModuleNoteXML
+  {
+    std::string noteText;
+    int position, fontSize, colorR, colorG, colorB;
+    ModuleNoteXML(const std::string& text = "", int p = 0, int f = 12, int r = 0, int g = 0, int b = 0) :
+      noteText(text), position(p), fontSize(f), colorR(r), colorG(g), colorB(b) {}
+  private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & BOOST_SERIALIZATION_NVP(noteText);
+      ar & BOOST_SERIALIZATION_NVP(position);
+      ar & BOOST_SERIALIZATION_NVP(fontSize);
+      ar & BOOST_SERIALIZATION_NVP(colorR);
+      ar & BOOST_SERIALIZATION_NVP(colorG);
+      ar & BOOST_SERIALIZATION_NVP(colorB);
+    } 
+  };
+
   typedef std::map<std::string, ModuleWithState> ModuleMapXML;
+  typedef std::map<std::string, ModuleNoteXML> ModuleNotesMapXML;
+
+  struct SCISHARE ModuleNotes
+  {
+    ModuleNotesMapXML notes;
+  };
 
   class SCISHARE NetworkXML
   {
@@ -81,6 +108,8 @@ namespace Networks {
   {
     NetworkXML network;
     ModulePositions modulePositions;
+    ModuleNotes moduleNotes;
+    //ConnectionNotesXML connectionNotes;
   private:
     friend class boost::serialization::access;
     template <class Archive>
@@ -88,9 +117,13 @@ namespace Networks {
     {
       ar & boost::serialization::make_nvp("networkInfo", network);
       ar & boost::serialization::make_nvp("modulePositions", modulePositions.modulePositions);
+      if (version > 0)
+        ar & boost::serialization::make_nvp("moduleNotes", moduleNotes.notes);
     }
   };
 
 }}}
+
+BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 1)
 
 #endif

@@ -300,7 +300,7 @@ void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorCont
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
   networkEditor_->setNetworkEditorController(controllerProxy);
   //TODO: need better way to wire this up
-  controller->setModulePositionEditor(networkEditor_);
+  controller->setSerializationManager(networkEditor_);
 }
 
 void SCIRunMainWindow::setupNetworkEditor()

@@ -59,8 +59,8 @@ private:
   NetworkEditorControllerInterface* nec_;
 };
 
-NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory, NetworkEditorControllerInterface* nec, ModulePositionEditor* mpg)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), controller_(nec), mpg_(mpg)
+NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory, NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm)
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), controller_(nec), nesm_(nesm)
 {
 }
 
@@ -94,13 +94,13 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
   return network;
 }
 
-NetworkToXML::NetworkToXML(ModulePositionEditor* mpg) 
-  : mpg_(mpg)
+NetworkToXML::NetworkToXML(NetworkEditorSerializationManager* nesm) 
+  : nesm_(nesm)
 {}
 
 NetworkFileHandle NetworkXMLConverter::to_xml_data(const NetworkHandle& network)
 {
-  return NetworkToXML(mpg_).to_xml_data(network);
+  return NetworkToXML(nesm_).to_xml_data(network);
 }
 
 NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
@@ -119,8 +119,8 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 
   NetworkFileHandle file(boost::make_shared<NetworkFile>());
   file->network = networkXML;
-  if (mpg_)
-    file->modulePositions = *mpg_->dumpModulePositions();
+  if (nesm_)
+    file->modulePositions = *nesm_->dumpModulePositions();
   return file;
 }
 

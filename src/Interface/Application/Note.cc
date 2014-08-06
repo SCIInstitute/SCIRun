@@ -135,7 +135,6 @@ void NoteDisplayHelper::updateNotePosition()
   if (note_ && item_)
   {
     auto position = positioner_->currentPosition() + relativeNotePosition();
-    //std::cout << "updating position to: " << position.x() << " , " << position.y() << std::endl;
     note_->setPos(position);
   }
 }

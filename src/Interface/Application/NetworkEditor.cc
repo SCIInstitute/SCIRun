@@ -554,7 +554,7 @@ void NetworkEditor::unselectConnectionGroup()
 	}
 }
 
-SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions() const
+ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 {
   ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -565,6 +565,20 @@ SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePosit
     }
   }
   return positions;
+}
+
+ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
+{
+  return ModuleNotesHandle();
+  //ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
+  //Q_FOREACH(QGraphicsItem* item, scene_->items())
+  //{
+  //  if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+  //  {
+  //    positions->modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
+  //  }
+  //}
+  //return positions;
 }
 
 void NetworkEditor::executeAll()
@@ -610,13 +624,13 @@ void NetworkEditor::clear()
   Q_EMIT modified();
 }
 
-void NetworkEditor::moveModules(const ModulePositions& modulePositions)
+void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      ModulePositions::Data::const_iterator posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
+      auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
       if (posIter != modulePositions.modulePositions.end())
         w->setPos(posIter->second.first, posIter->second.second);
     }
