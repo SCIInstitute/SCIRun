@@ -564,7 +564,13 @@ void ModuleWidget::launchDocumentation()
 
 void ModuleWidget::updateNote(const Note& note)
 {
-  setCurrentNote(note);
+  setCurrentNote(note, false);
+  Q_EMIT noteUpdated(note);
+}
+
+void ModuleWidget::updateNoteFromFile(const Note& note)
+{
+  setCurrentNote(note, true);
   Q_EMIT noteUpdated(note);
 }
 

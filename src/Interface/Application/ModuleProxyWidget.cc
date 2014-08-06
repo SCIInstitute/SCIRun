@@ -271,8 +271,3 @@ void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 {
   setDefaultNotePositionImpl(position);
 }
-
-NoteInfo ModuleProxyWidget::noteInfo() const
-{
-  return NoteDisplayHelper::info();
-}

@@ -97,6 +97,8 @@ public:
   virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber);
   virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber);
 
+  void updateNoteFromFile(const Note& note);
+
 public Q_SLOTS:
   virtual void execute();
   void toggleOptionsDialog();

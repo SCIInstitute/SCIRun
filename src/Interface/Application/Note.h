@@ -59,12 +59,13 @@ namespace Gui {
   struct Note
   {
     QString html_;
-    NotePosition position_; 
+    QString plainText_;
+    int fontSize_;
+    NotePosition position_;
+    Note() : fontSize_(0), position_(Default) {}
+    Note(const QString& html, const QString& plain, int font, int pos) : html_(html), plainText_(plain), fontSize_(font), position_(NotePosition(pos)) {}
   };
 
-  // html, position, plainText, fontSize, red, green, blue.
-  typedef boost::tuple<std::string, int, std::string, int/*, int, int, int*/> NoteInfo;
-  
   class NoteDisplayStrategy
   {
   public:
@@ -80,11 +81,11 @@ namespace Gui {
   {
   public:
     virtual ~NoteDisplayHelper();
+    Note currentNote() const;
   protected:
     explicit NoteDisplayHelper(NoteDisplayStrategyPtr display);
     virtual void setNoteGraphicsContext() = 0;
     void updateNoteImpl(const Note& note);
-    NoteInfo info() const;
     void updateNotePosition();
     void setDefaultNotePositionImpl(NotePosition position);
     QGraphicsItem* item_;

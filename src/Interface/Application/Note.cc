@@ -68,10 +68,14 @@ void HasNotes::connectUpdateNote(QObject* obj)
   QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
 }
 
-void HasNotes::setCurrentNote(const Note& note)
+void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
 {
   currentNote_ = note;
-  //noteEditor_.setNoteText(note.html_);
+  if (updateEditor)
+  {
+    noteEditor_.setNoteHtml(note.html_);
+    noteEditor_.setNoteFontSize(note.fontSize_);
+  }
 }
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : 
@@ -145,9 +149,9 @@ void NoteDisplayHelper::updateNotePosition()
   }
 }
 
-NoteInfo NoteDisplayHelper::info() const
+Note NoteDisplayHelper::currentNote() const
 {
   if (note_)
-    return NoteInfo(note_->toHtml().toStdString(), notePosition_, note_->toPlainText().toStdString(), note_->font().pointSize());
-  return NoteInfo();
+    return Note(note_->toHtml(), note_->toPlainText(), note_->font().pointSize(), notePosition_);
+  return Note();
 }

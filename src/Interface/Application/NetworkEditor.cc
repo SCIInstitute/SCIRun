@@ -575,9 +575,9 @@ ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      auto noteInfo = w->noteInfo();
-      if (!noteInfo.get<0>().empty())
-        notes->notes[w->getModuleWidget()->getModuleId()] = ModuleNoteXML(noteInfo.get<0>(), noteInfo.get<1>(), noteInfo.get<2>(), noteInfo.get<3>());
+      auto note = w->currentNote();
+      if (!note.plainText_.isEmpty())
+        notes->notes[w->getModuleWidget()->getModuleId()] = ModuleNoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
     }
   }
   return notes;
@@ -606,10 +606,8 @@ void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
       if (noteIter != moduleNotes.notes.end())
       {
         auto noteXML = noteIter->second;
-        Note note;
-        note.html_ = QString::fromStdString(noteXML.noteHTML);
-        note.position_ = NotePosition(noteXML.position);
-        w->getModuleWidget()->updateNote(note);
+        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
+        w->getModuleWidget()->updateNoteFromFile(note);
       }
     }
   }

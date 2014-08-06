@@ -68,7 +68,8 @@ void NoteEditor::changeNotePosition(int index)
 
 void NoteEditor::changeFontSize(const QString& text)
 {
-  setNoteFontSize(text.toDouble());
+  textEdit_->setFontPointSize(text.toDouble());
+  textEdit_->setPlainText(textEdit_->toPlainText());
 }
 
 void NoteEditor::changeTextAlignment(const QString& text)
@@ -93,16 +94,24 @@ void NoteEditor::changeTextColor()
   setNoteColor(newColor);
 }
 
-void NoteEditor::setNoteText(const QString& text)
+void NoteEditor::setNoteHtml(const QString& text)
 {
-  textEdit_->setPlainText(text);
-  updateNote();
+  textEdit_->blockSignals(true);
+  textEdit_->setHtml(text);
+  textEdit_->blockSignals(false);
 }
 
 void NoteEditor::setNoteFontSize(int size)
 {
+  textEdit_->blockSignals(true);
+  fontSizeComboBox_->blockSignals(true);
   textEdit_->setFontPointSize(size);
   textEdit_->setPlainText(textEdit_->toPlainText());
+  int index = fontSizeComboBox_->findText(QString::number(size));
+  if (index != -1)
+    fontSizeComboBox_->setCurrentIndex(index);
+  textEdit_->blockSignals(false);
+  fontSizeComboBox_->blockSignals(false);
 }
 
 void NoteEditor::setNoteColor(const QColor& color)
@@ -147,13 +156,6 @@ void NoteEditor::updateNote()
   currentNote_.position_ = position_;
   Q_EMIT noteChanged(currentNote_);
 }
-
-//void NoteEditor::updateNote(const Note& note)
-//{
-// currentNote_ = note;
-// textEdit_->setHtml(currentNote_.html_);
-//
-//}
 
 void NoteEditor::showEvent(QShowEvent* event)
 {
