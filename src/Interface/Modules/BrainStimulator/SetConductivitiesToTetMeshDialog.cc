@@ -44,7 +44,8 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   fixSize();
 
   addDoubleSpinBoxManager(Skin_,       SetConductivitiesToTetMeshAlgorithm::Skin());
-  addDoubleSpinBoxManager(Skull_,      SetConductivitiesToTetMeshAlgorithm::Skull());
+  addDoubleSpinBoxManager(SoftBone_,   SetConductivitiesToTetMeshAlgorithm::SoftBone());
+  addDoubleSpinBoxManager(HardBone_,   SetConductivitiesToTetMeshAlgorithm::HardBone());
   addDoubleSpinBoxManager(CSF_,        SetConductivitiesToTetMeshAlgorithm::CSF());
   addDoubleSpinBoxManager(GM_,         SetConductivitiesToTetMeshAlgorithm::GM());
   addDoubleSpinBoxManager(WM_,         SetConductivitiesToTetMeshAlgorithm::WM());

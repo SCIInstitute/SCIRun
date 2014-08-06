@@ -66,14 +66,15 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   
-  double conductivities[] = {9.25, 25.1988, 3.5, 5.1988, 5.22, 22.2013};
+  double conductivities[] = {9.25, 25.1988, 18.99999, 3.5, 5.1988, 5.22, 22.2013};
   
   algo.set(SetConductivitiesToTetMeshAlgorithm::Skin(),  conductivities[0]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::Skull(), conductivities[1]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),   conductivities[2]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::GM(),    conductivities[3]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::WM(),    conductivities[4]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::Electrode(), conductivities[5]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::SoftBone(), conductivities[1]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::HardBone(), conductivities[2]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),   conductivities[3]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::GM(),    conductivities[4]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::WM(),    conductivities[5]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::Electrode(), conductivities[6]);
   
   FieldHandle input  = CreateTetMeshScalarSevenElem();
   FieldHandle output = algo.run(CreateTetMeshScalarSevenElem());
@@ -95,11 +96,12 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
 TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarThreeElem)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
-  double conductivities[] = {9.25, 25.1988, 3.5};
+  double conductivities[] = {9.25, 18.999, 123,456, 25.1988};
   
   algo.set(SetConductivitiesToTetMeshAlgorithm::Skin(),  conductivities[0]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::Skull(), conductivities[1]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),   conductivities[2]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::SoftBone(), conductivities[1]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::HardBone(), conductivities[2]);
+  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),   conductivities[4]);
   
   FieldHandle input  = CreateTetMeshScalarOnElem();
   FieldHandle output = algo.run(CreateTetMeshScalarOnElem());
