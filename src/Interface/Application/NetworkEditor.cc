@@ -578,9 +578,24 @@ ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
     {
       auto note = w->currentNote();
       if (!note.plainText_.isEmpty())
-        notes->notes[w->getModuleWidget()->getModuleId()] = ModuleNoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
+        notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
     }
   }
+  return notes;
+}
+
+ConnectionNotesHandle NetworkEditor::dumpConnectionNotes() const
+{
+  ConnectionNotesHandle notes(boost::make_shared<ConnectionNotes>());
+  //Q_FOREACH(QGraphicsItem* item, scene_->items())
+  //{
+  //  if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+  //  {
+  //    auto note = w->currentNote();
+  //    if (!note.plainText_.isEmpty())
+  //      notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
+  //  }
+  //}
   return notes;
 }
 
@@ -612,6 +627,23 @@ void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
       }
     }
   }
+}
+
+void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
+{
+//   Q_FOREACH(QGraphicsItem* item, scene_->items())
+//   {
+//     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+//     {
+//       auto noteIter = moduleNotes.notes.find(w->getModuleWidget()->getModuleId());
+//       if (noteIter != moduleNotes.notes.end())
+//       {
+//         auto noteXML = noteIter->second;
+//         Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
+//         w->getModuleWidget()->updateNoteFromFile(note);
+//       }
+//     }
+//   }
 }
 
 void NetworkEditor::executeAll()

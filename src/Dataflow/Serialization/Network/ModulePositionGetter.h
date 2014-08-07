@@ -26,9 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Dataflow/Serialization/Network/ModulePositionGetter.h
-
-
 #ifndef CORE_SERIALIZATION_NETWORK_MODULE_POSITION_GETTER_H
 #define CORE_SERIALIZATION_NETWORK_MODULE_POSITION_GETTER_H 
 
@@ -52,8 +49,12 @@ namespace Networks {
     virtual ~NetworkEditorSerializationManager() {}
     virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions() const = 0;
     virtual void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions) = 0;
+
+    //TODO: refactor into dump/updateNotes, shouldn't need to distinguish parent. 
     virtual SCIRun::Dataflow::Networks::ModuleNotesHandle dumpModuleNotes() const = 0;
     virtual void updateModuleNotes(const SCIRun::Dataflow::Networks::ModuleNotes& notes) = 0;
+    virtual SCIRun::Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes() const = 0;
+    virtual void updateConnectionNotes(const SCIRun::Dataflow::Networks::ConnectionNotes& notes) = 0;
   };
 
 }}}

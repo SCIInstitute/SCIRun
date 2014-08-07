@@ -123,6 +123,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
   {
     file->modulePositions = *nesm_->dumpModulePositions();
     file->moduleNotes = *nesm_->dumpModuleNotes();
+    file->connectionNotes = *nesm_->dumpConnectionNotes();
   }
   return file;
 }

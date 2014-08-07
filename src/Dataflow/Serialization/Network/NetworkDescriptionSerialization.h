@@ -61,13 +61,12 @@ namespace Networks {
     } 
   };
 
-  struct SCISHARE ModuleNoteXML
+  struct SCISHARE NoteXML
   {
     std::string noteHTML, noteText;
     int position, fontSize;
-    //, colorR, colorG, colorB;
-    ModuleNoteXML(const std::string& html = "", int p = 0, const std::string& text = "", int f = 12) :
-      noteHTML(html), noteText(text), position(p), fontSize(f)/*, colorR(r), colorG(g), colorB(b)*/ {}
+    NoteXML(const std::string& html = "", int p = 0, const std::string& text = "", int f = 12) :
+      noteHTML(html), noteText(text), position(p), fontSize(f) {}
   private:
     friend class boost::serialization::access;
     template <class Archive>
@@ -77,18 +76,20 @@ namespace Networks {
       ar & BOOST_SERIALIZATION_NVP(noteText);
       ar & BOOST_SERIALIZATION_NVP(position);
       ar & BOOST_SERIALIZATION_NVP(fontSize);
-//       ar & BOOST_SERIALIZATION_NVP(colorR);
-//       ar & BOOST_SERIALIZATION_NVP(colorG);
-//       ar & BOOST_SERIALIZATION_NVP(colorB);
     } 
   };
 
   typedef std::map<std::string, ModuleWithState> ModuleMapXML;
-  typedef std::map<std::string, ModuleNoteXML> ModuleNotesMapXML;
+  typedef std::map<std::string, NoteXML> NotesMapXML;
 
   struct SCISHARE ModuleNotes
   {
-    ModuleNotesMapXML notes;
+    NotesMapXML notes;
+  };
+
+  struct SCISHARE ConnectionNotes
+  {
+    NotesMapXML notes;
   };
 
   class SCISHARE NetworkXML
@@ -111,7 +112,7 @@ namespace Networks {
     NetworkXML network;
     ModulePositions modulePositions;
     ModuleNotes moduleNotes;
-    //ConnectionNotesXML connectionNotes;
+    ConnectionNotes connectionNotes;
   private:
     friend class boost::serialization::access;
     template <class Archive>
@@ -121,11 +122,13 @@ namespace Networks {
       ar & boost::serialization::make_nvp("modulePositions", modulePositions.modulePositions);
       if (version > 0)
         ar & boost::serialization::make_nvp("moduleNotes", moduleNotes.notes);
+      if (version > 1)
+        ar & boost::serialization::make_nvp("connectionNotes", connectionNotes.notes);
     }
   };
 
 }}}
 
-BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 1)
+BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 2)
 
 #endif

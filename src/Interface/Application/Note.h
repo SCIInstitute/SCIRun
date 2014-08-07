@@ -56,7 +56,9 @@ namespace Gui {
     Bottom
   };
 
-  //TODO: refactor. Combine with ModuleNoteXML, and bring together various Note-related classes to support consistent read/write.
+  // TODO: refactor. Combine with ModuleNoteXML, and bring together various Note-related classes to support consistent read/write.
+  // IDEA: subclass QGraphicsTextItem properly and add a way to associate with a HasNotes object (either module or connection). 
+  // Then serialization will be uniform for all notes.
 
   struct Note
   {
