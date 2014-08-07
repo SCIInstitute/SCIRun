@@ -104,8 +104,6 @@ DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
  
    DenseMatrixHandle output;
     
-  /// Construct a class with all the type information of this field
-  //FieldInformation fi(input);
   VField* vfield1 = input_field->vfield();
 
   /// Check whether we have data
