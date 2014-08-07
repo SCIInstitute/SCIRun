@@ -41,7 +41,6 @@ namespace BrainStimulator {
   class SCISHARE SetConductivitiesToTetMeshAlgorithm : public AlgorithmBase
   {
     public:
-      //Outputs run(const Inputs& input, const Parameters& params = 0) const;
       SetConductivitiesToTetMeshAlgorithm();
       FieldHandle run(FieldHandle fh) const;
       static AlgorithmParameterName Skin();
@@ -55,6 +54,9 @@ namespace BrainStimulator {
       AlgorithmOutput run_generic(const AlgorithmInput& input) const;
       static AlgorithmInputName MESH;
       static AlgorithmOutputName OUTPUTMESH;
+      
+      const std::vector<int> tet_elem_label_lookup = { 1, 2, 3, 4, 5, 6, 7}; // this module checks for those label data stored on the elements
+      
   };
 
 }}}}

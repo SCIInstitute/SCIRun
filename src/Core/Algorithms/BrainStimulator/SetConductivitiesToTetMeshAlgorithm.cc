@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 
-   Author : Spencer Frisby
+   Author : Spencer Frisby, Moritz Dannhauer
    Date   : May 2014
 */
 
@@ -61,7 +61,7 @@ AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH"
 
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
-  addParameter(Skin(),      0.43);
+  addParameter(Skin(),      0.43);    // electrical conductivities (isotropic) default values based on the literature
   addParameter(SoftBone(),     0.02856);
   addParameter(HardBone(),     0.00640);
   addParameter(CSF(),       1.79);
@@ -102,53 +102,39 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   // making sure the field is not in vector format
   if (vfield->is_vector())
     THROW_ALGORITHM_INPUT_ERROR("Function is not setup to work with vectors at this time ");
+     
+  // array holding conductivities    
+  std::vector<double> conductivies = {get(Skin()).getDouble(), get(SoftBone()).getDouble(), get(HardBone()).getDouble(),
+  get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(Electrode()).getDouble()};
   
-  // making sure no field value (from the input) is outside the range 1-7
-  double ival = 0;
-  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++)
-  {
-    vfield->get_value(ival, i);
-    if (ival > 7 || ival < 1)
-      THROW_ALGORITHM_INPUT_ERROR("Field values were outside the range 1-7 ");
-  }
-   
-  // array holding conductivities
-  double conductivies[] = {get(Skin()).getDouble(),
-    get(SoftBone()).getDouble(), get(HardBone()).getDouble(),get(CSF()).getDouble(),
-    get(GM()).getDouble(), get(WM()).getDouble(),
-    get(Electrode()).getDouble()};
+  //check if defined conductivities and lookup table are consistent
+  if (sizeof(conductivies)!=sizeof(tet_elem_label_lookup))
+     THROW_ALGORITHM_INPUT_ERROR("Defined conductivities and lookup table are inconsistent! ");
   
   // replacing field value with conductivity value
   FieldHandle output = CreateField(fi, fh->mesh());
   VField* ofield = output->vfield();
   int val = 0;
   int cnt = 0;
-  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++)
+  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++) // loop over all tetrahedral elements
   {
-    vfield->get_value(val, i);
-    switch (val)
+    vfield->get_value(val, i);  //get the data value stored on the current element
+    
+    bool found=false; // boolean that indicates if element label was found in lookup
+    
+    for (size_t j = 0; j < sizeof(tet_elem_label_lookup); ++j) // loop over lookup table and check if the current element has one of the desired labels, if not error
+    {   
+      if (val==tet_elem_label_lookup[j]) 
+       { 
+	ofield->set_value(conductivies[j], i); // if so, set it to the isotropic conductivity value
+	found=true;
+        break;
+       }
+    }
+    
+    if (!found)
     {
-      case 1:
-        ofield->set_value(conductivies[0], i);
-        break;
-      case 2:
-        ofield->set_value(conductivies[1], i);
-        break;
-      case 3:
-        ofield->set_value(conductivies[2], i);
-        break;
-      case 4:
-        ofield->set_value(conductivies[3], i);
-        break;
-      case 5:
-        ofield->set_value(conductivies[4], i);
-        break;
-      case 6:
-        ofield->set_value(conductivies[5], i);
-        break;
-      case 7:
-        ofield->set_value(conductivies[6], i);
-        break;
+     THROW_ALGORITHM_INPUT_ERROR("Tetrahedral element label could not be found in lookup table. ");
     }
     
     cnt++;
