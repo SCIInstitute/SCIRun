@@ -76,6 +76,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
+  void noteChanged();
 protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override; 
   void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

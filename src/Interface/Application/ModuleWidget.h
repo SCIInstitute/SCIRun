@@ -129,6 +129,7 @@ Q_SIGNALS:
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged();
+  void noteChanged();
 private Q_SLOTS:
   void updateBackgroundColor(const QString& color);
 private:

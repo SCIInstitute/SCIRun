@@ -66,6 +66,7 @@ void HasNotes::connectNoteEditorToAction(QAction* action)
 void HasNotes::connectUpdateNote(QObject* obj)
 {
   QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
+  QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SIGNAL(noteChanged()));
 }
 
 void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
