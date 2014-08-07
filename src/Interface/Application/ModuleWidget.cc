@@ -77,7 +77,7 @@ namespace Gui {
         << separatorAction(parent)
         << disabled(new QAction("Execute", parent))
         << new QAction("Help", parent)
-        << new QAction("Notes", parent)
+        << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
         << disabled(new QAction("Replace With->(TODO)", parent))
         << new QAction("Show Log", parent)
@@ -284,6 +284,7 @@ void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));
   connect(port, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
+  connect(port, SIGNAL(connectionNoteChanged()), this, SIGNAL(noteChanged()));
 }
 
 void ModuleWidget::addOutputPortsToLayout()

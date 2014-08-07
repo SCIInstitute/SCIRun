@@ -304,6 +304,7 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     auto id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
     auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
+    connect(c, SIGNAL(noteChanged()), this, SIGNAL(connectionNoteChanged()));
     connect(this, SIGNAL(portMoved()), c, SLOT(trackNodes()));
     setConnected(true);
   }
