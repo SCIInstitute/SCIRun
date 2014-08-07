@@ -497,9 +497,9 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 	if (event->button() != Qt::LeftButton)
 		Q_EMIT networkEditorMouseButtonPressed();
 	
-	if(ConnectionLine* cL = getSingleConnectionSelected())
-		if(event->buttons() & Qt::LeftButton)
-			if(!(event->modifiers() & Qt::ControlModifier))
+	if (ConnectionLine* cL = getSingleConnectionSelected())
+		if (event->buttons() & Qt::LeftButton)
+			if (!(event->modifiers() & Qt::ControlModifier))
 		{
 			auto selectedPair = cL->getConnectedToModuleIds();
 

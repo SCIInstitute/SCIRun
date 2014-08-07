@@ -310,7 +310,7 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
   }
 }
 
-void PortWidget::moveEvent( QMoveEvent * event )
+void PortWidget::moveEvent(QMoveEvent * event)
 {
   QPushButton::moveEvent(event);
   Q_EMIT portMoved();

@@ -239,24 +239,27 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
     drawer_ = cds;
     trackNodes();
   }
-} 
+}
+
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	this-> setColor(placeHoldingColor_);
+	setColor(placeHoldingColor_);
 	menuOpen_ = false; 
   QGraphicsPathItem::mouseReleaseEvent(event);
 }
+
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {	 
 	this->setAcceptedMouseButtons(Qt::LeftButton);
 
-	if(!menuOpen_ )
+	if (!menuOpen_)
 	{
-		placeHoldingColor_ = this -> color();
-		this -> setColor(Qt::red);	
+		placeHoldingColor_ = color();
+		setColor(Qt::red);	
 	}
   QGraphicsPathItem::mousePressEvent(event);
 }
+
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   auto action = menu_->exec(event->screenPos());
@@ -272,6 +275,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   }
   QGraphicsPathItem::mouseDoubleClickEvent(event);
 }
+
 void ConnectionLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
   QGraphicsPathItem::mouseMoveEvent(event);
