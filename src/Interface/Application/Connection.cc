@@ -290,13 +290,11 @@ QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& v
 	return QGraphicsItem::itemChange(change, value);
 }
 
-std::list<SCIRun::Dataflow::Networks::ModuleId> ConnectionLine::getConnectedToModuleId()
+ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
 {
-	std::list<SCIRun::Dataflow::Networks::ModuleId> mp; 
-	mp.push_front(toPort_->getUnderlyingModuleId()); 
-	mp.push_front(fromPort_->getUnderlyingModuleId());
-	return mp; 
+	return std::make_pair(toPort_->getUnderlyingModuleId(), fromPort_->getUnderlyingModuleId());
 }
+
 void ConnectionLine::setNoteGraphicsContext() 
 {
   scene_ = scene();
@@ -307,6 +305,12 @@ void ConnectionLine::setNoteGraphicsContext()
 void ConnectionLine::updateNote(const Note& note)
 {
   updateNoteImpl(note);
+}
+
+void ConnectionLine::updateNoteFromFile(const Note& note)
+{
+  setCurrentNote(note, true);
+  updateNote(note);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)

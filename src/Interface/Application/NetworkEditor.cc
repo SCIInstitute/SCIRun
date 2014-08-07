@@ -501,10 +501,10 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 		if(event->buttons() & Qt::LeftButton)
 			if(!(event->modifiers() & Qt::ControlModifier))
 		{
-			auto selectedPair = cL->getConnectedToModuleId();
+			auto selectedPair = cL->getConnectedToModuleIds();
 
-			findById(scene_->items(),selectedPair.front())->setSelected(true);
-			findById(scene_->items(),selectedPair.back())->setSelected(true);
+			findById(scene_->items(),selectedPair.first)->setSelected(true);
+			findById(scene_->items(),selectedPair.second)->setSelected(true);
 		}
 	QGraphicsView::mouseMoveEvent(event); 
 }
@@ -546,11 +546,11 @@ void NetworkEditor::unselectConnectionGroup()
 		{
 			if (auto cL = qgraphicsitem_cast<ConnectionLine*>(items.first()))
 			{
-				auto selectedPair = cL->getConnectedToModuleId(); 
+				auto selectedPair = cL->getConnectedToModuleIds(); 
 
 				cL->setSelected(false);  
-				findById(scene_->items(),selectedPair.front())->setSelected(false);
-				findById(scene_->items(),selectedPair.back())->setSelected(false);
+				findById(scene_->items(),selectedPair.first)->setSelected(false);
+				findById(scene_->items(),selectedPair.second)->setSelected(false);
 			}
 		}	
 	}
@@ -584,18 +584,30 @@ ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
   return notes;
 }
 
+namespace
+{
+  std::string connectionNoteId(const ModuleIdPair& ms)
+  {
+    return ms.first.id_ + "--" + ms.second.id_;
+  }
+}
+
 ConnectionNotesHandle NetworkEditor::dumpConnectionNotes() const
 {
   ConnectionNotesHandle notes(boost::make_shared<ConnectionNotes>());
-  //Q_FOREACH(QGraphicsItem* item, scene_->items())
-  //{
-  //  if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
-  //  {
-  //    auto note = w->currentNote();
-  //    if (!note.plainText_.isEmpty())
-  //      notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
-  //  }
-  //}
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto conn = dynamic_cast<ConnectionLine*>(item))
+    {
+      auto note = conn->currentNote();
+      if (!note.plainText_.isEmpty())
+      {
+        //TODO hacky
+        auto id = connectionNoteId(conn->getConnectedToModuleIds());
+        notes->notes[id] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
+      }
+    }
+  }
   return notes;
 }
 
@@ -631,19 +643,20 @@ void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
 
 void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
 {
-//   Q_FOREACH(QGraphicsItem* item, scene_->items())
-//   {
-//     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
-//     {
-//       auto noteIter = moduleNotes.notes.find(w->getModuleWidget()->getModuleId());
-//       if (noteIter != moduleNotes.notes.end())
-//       {
-//         auto noteXML = noteIter->second;
-//         Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
-//         w->getModuleWidget()->updateNoteFromFile(note);
-//       }
-//     }
-//   }
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto conn = dynamic_cast<ConnectionLine*>(item))
+    {
+      auto id = connectionNoteId(conn->getConnectedToModuleIds());
+      auto noteIter = notes.notes.find(id);
+      if (noteIter != notes.notes.end())
+      {
+        auto noteXML = noteIter->second;
+        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
+        conn->updateNoteFromFile(note);
+      }
+    }
+  }
 }
 
 void NetworkEditor::executeAll()
