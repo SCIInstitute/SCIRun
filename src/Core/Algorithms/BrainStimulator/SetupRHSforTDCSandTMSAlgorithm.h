@@ -57,7 +57,7 @@ namespace BrainStimulator {
     static int initialElectrodeValue (int row);
 
   private:
-    static const int total_electrodes = 128;
+    static const int TOTAL_ELECTRODES = 128;
   };
 
 }}}}
