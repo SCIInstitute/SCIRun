@@ -47,14 +47,14 @@
         <widget class="QLabel" name="label_2">
          <property name="geometry">
           <rect>
-           <x>40</x>
+           <x>20</x>
            <y>100</y>
-           <width>71</width>
+           <width>91</width>
            <height>20</height>
           </rect>
          </property>
          <property name="text">
-          <string>Hard bone:</string>
+          <string>Hard bone (3):</string>
          </property>
         </widget>
         <widget class="QLabel" name="label_3">
@@ -67,7 +67,7 @@
           </rect>
          </property>
          <property name="text">
-          <string>CSF:</string>
+          <string>CSF (4):</string>
          </property>
         </widget>
         <widget class="QDoubleSpinBox" name="Skin_">
@@ -121,14 +121,14 @@
         <widget class="QLabel" name="label_4">
          <property name="geometry">
           <rect>
-           <x>20</x>
+           <x>10</x>
            <y>220</y>
-           <width>91</width>
+           <width>111</width>
            <height>31</height>
           </rect>
          </property>
          <property name="text">
-          <string>Elec. Sponge:</string>
+          <string>Elec. Sponge (7):</string>
          </property>
         </widget>
         <widget class="QDoubleSpinBox" name="Electrode_">
@@ -157,7 +157,7 @@
           </rect>
          </property>
          <property name="text">
-          <string>Skin:</string>
+          <string>Skin (1):</string>
          </property>
         </widget>
         <widget class="QLabel" name="label_5">
@@ -170,7 +170,7 @@
           </rect>
          </property>
          <property name="text">
-          <string>GM:</string>
+          <string>GM (5):</string>
          </property>
         </widget>
         <widget class="QDoubleSpinBox" name="GM_">
@@ -199,7 +199,7 @@
           </rect>
          </property>
          <property name="text">
-          <string>WM:</string>
+          <string>WM (6):</string>
          </property>
         </widget>
         <widget class="QDoubleSpinBox" name="WM_">
@@ -221,14 +221,14 @@
         <widget class="QLabel" name="label_7">
          <property name="geometry">
           <rect>
-           <x>40</x>
+           <x>20</x>
            <y>70</y>
-           <width>71</width>
+           <width>91</width>
            <height>20</height>
           </rect>
          </property>
          <property name="text">
-          <string>Soft bone:</string>
+          <string>Soft bone (2):</string>
          </property>
         </widget>
         <widget class="QDoubleSpinBox" name="SoftBone_">

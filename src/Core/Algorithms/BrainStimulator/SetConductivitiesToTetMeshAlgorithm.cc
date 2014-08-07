@@ -116,13 +116,14 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   VField* ofield = output->vfield();
   int val = 0;
   int cnt = 0;
+  
   for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++) // loop over all tetrahedral elements
   {
     vfield->get_value(val, i);  //get the data value stored on the current element
     
     bool found=false; // boolean that indicates if element label was found in lookup
     
-    for (size_t j = 0; j < sizeof(tet_elem_label_lookup); ++j) // loop over lookup table and check if the current element has one of the desired labels, if not error
+    for (size_t j = 0; j < tet_elem_label_lookup.size(); ++j) // loop over lookup table and check if the current element has one of the desired labels, if not error
     {   
       if (val==tet_elem_label_lookup[j]) 
        { 
@@ -135,7 +136,7 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
     if (!found)
     {
      THROW_ALGORITHM_INPUT_ERROR("Tetrahedral element label could not be found in lookup table. ");
-    }
+    } 
     
     cnt++;
     if (cnt == 500)
