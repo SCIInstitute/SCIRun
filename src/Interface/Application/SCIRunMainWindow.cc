@@ -970,6 +970,10 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
 
   connect(moduleSelectorTreeWidget_, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(handleCheckedModuleEntry(QTreeWidgetItem*, int)));
+
+  moduleSelectorTreeWidget_->setStyleSheet(
+    "QTreeWidget::indicator:unchecked {image: url(:/general/Resources/faveNo.png);}"
+    "QTreeWidget::indicator:checked {image: url(:/general/Resources/faveYes.png);}");
 }
 
 void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int column)
