@@ -56,6 +56,8 @@ namespace Gui {
     Bottom
   };
 
+  //TODO: refactor. Combine with ModuleNoteXML, and bring together various Note-related classes to support consistent read/write.
+
   struct Note
   {
     QString html_;
