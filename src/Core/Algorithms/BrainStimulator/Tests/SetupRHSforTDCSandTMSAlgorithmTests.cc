@@ -92,24 +92,6 @@ void makeRandomValues(int m, std::vector<Variable>& elc, std::vector<double>& co
   }
 }
 
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesSimple)
-{
-  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 10;
-  std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), i);
-    elc.push_back(elc_i);
-  }
-  // values of i are converted to amps, thus i/1000
-  double compare [17] = {0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009};
-  auto o = algo.run(CreateTetMeshScalarOnElem(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));
-}
-
 TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnElem)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
@@ -122,7 +104,6 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnElem)
     EXPECT_EQ(compare[i], o->coeff(i,0));
 }
 
-
 TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnNode)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
@@ -134,7 +115,6 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnNode)
   for (int i=0; i<o->nrows(); i++)
     EXPECT_EQ(compare[i], o->coeff(i,0));
 }
-
 
 TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfVectorOnElem)
 {
@@ -217,6 +197,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, NegativeNumberOfElectrodesGivenTetMeshScala
   elc.push_back(elc_i);
   EXPECT_THROW(algo.run(CreateTetMeshScalarOnElem(), elc, m), AlgorithmInputException);
 }
+
 TEST(SetupRHSforTDCSandTMSAlgorithm, ElectrodeNumberExceedsWhatIsPossible)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;
@@ -226,6 +207,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, ElectrodeNumberExceedsWhatIsPossible)
   elc.push_back(elc_i);
   EXPECT_THROW(algo.run(CreateTetMeshScalarOnElem(), elc, m), AlgorithmInputException);
 }
+
 TEST(SetupRHSforTDCSandTMSAlgorithm, NullFieldGivenAsInput)
 {
   SetupRHSforTDCSandTMSAlgorithm algo;

@@ -62,7 +62,7 @@ AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName (in
 // used to create initial electrode values in the dialog table
 int SetupRHSforTDCSandTMSAlgorithm::initialElectrodeValue (int i) 
 {
-  if (i == 0)      return 1;
+  if      (i == 0) return 1;
   else if (i == 1) return -1;
   else             return 0;
 }
