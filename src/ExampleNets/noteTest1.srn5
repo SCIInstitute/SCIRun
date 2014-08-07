@@ -160,7 +160,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>1</count>
+			<count>2</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>ElectrodeCoilSetup:1</moduleId1_>
@@ -174,6 +174,18 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>SetConductivitiesToTetMesh:3</moduleId1_>
+				<port1_>
+					<name>OUTPUTMESH</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetupRHSforTDCSandTMS:4</moduleId2_>
+				<port2_>
+					<name>COIL2</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
@@ -182,8 +194,8 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ElectrodeCoilSetup:1</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1149</first>
-				<second>-618</second>
+				<first>-1348</first>
+				<second>-603</second>
 			</second>
 		</item>
 		<item>
@@ -196,22 +208,22 @@
 		<item>
 			<first>InsertFieldsIntoBundle:0</first>
 			<second>
-				<first>-1168</first>
-				<second>-727</second>
+				<first>-1127</first>
+				<second>-698</second>
 			</second>
 		</item>
 		<item>
 			<first>SetConductivitiesToTetMesh:3</first>
 			<second>
-				<first>-791</first>
-				<second>-580</second>
+				<first>-711</first>
+				<second>-602</second>
 			</second>
 		</item>
 		<item>
 			<first>SetupRHSforTDCSandTMS:4</first>
 			<second>
-				<first>-1201</first>
-				<second>-398</second>
+				<first>-1081</first>
+				<second>-371</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -284,6 +296,36 @@ p, li { white-space: pre-wrap; }
 			</second>
 		</item>
 	</moduleNotes>
+	<connectionNotes>
+		<count>2</count>
+		<item_version>0</item_version>
+		<item>
+			<first>SetupRHSforTDCSandTMS:4--ElectrodeCoilSetup:1</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Connection&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Connection</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>SetupRHSforTDCSandTMS:4--SetConductivitiesToTetMesh:3</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Another Connection&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Another Connection</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+	</connectionNotes>
 </networkFile>
 </boost_serialization>
 
