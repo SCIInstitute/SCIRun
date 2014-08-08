@@ -43,7 +43,7 @@ namespace Gui {
     virtual ~HasNotes();
     void connectNoteEditorToAction(QAction* action);
     void connectUpdateNote(QObject* obj);
-    void setCurrentNote(const Note& note) { currentNote_ = note; }
+    void setCurrentNote(const Note& note, bool updateEditor);
   protected:
     void destroy();
   private:
