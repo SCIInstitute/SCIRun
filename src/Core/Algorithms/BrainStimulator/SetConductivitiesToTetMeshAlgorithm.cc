@@ -108,7 +108,7 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(Electrode()).getDouble()};
   
   //check if defined conductivities and lookup table are consistent
-  if (sizeof(conductivies)!=sizeof(tet_elem_label_lookup))
+  if (conductivies.size()!=tet_elem_label_lookup.size())
      THROW_ALGORITHM_INPUT_ERROR("Defined conductivities and lookup table are inconsistent! ");
   
   /// replacing field value with conductivity value

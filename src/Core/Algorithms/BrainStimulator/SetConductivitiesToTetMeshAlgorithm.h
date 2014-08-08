@@ -26,6 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///
+///@file SetConductivitiesToTetMesh.h
+///@brief This module assigns electrical conductivities (isotropic) to various mesh types and is part of BrainStimlator package.
+///
+///@author
+/// Spencer Frisby
+/// Moritz Dannhauer
+///@details
+/// It uses a single field input and assigns conductivities that can be provided in the GUI to work in the BrainStimulator environment (uses SI units).
+/// 
+///
+
+
 #ifndef ALGORITHMS_MATH_SETCONDUCTIVITIESTOTETMESHALGORITHM_H
 #define ALGORITHMS_MATH_SETCONDUCTIVITIESTOTETMESHALGORITHM_H
 
