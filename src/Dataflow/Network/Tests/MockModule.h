@@ -33,6 +33,8 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
+#include <boost/optional/optional_io.hpp>
+#include <boost/any.hpp>
 #include <gmock/gmock.h>
 
 namespace SCIRun {

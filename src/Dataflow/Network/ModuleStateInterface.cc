@@ -72,3 +72,9 @@ bool StateChangeObserver::newStatePresent() const
 {
   return stateChanged_;
 }
+
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& ostr, const ModuleStateInterface::TransientValue& tv)
+{
+  // dummy for testing linkage
+  return ostr;
+}
