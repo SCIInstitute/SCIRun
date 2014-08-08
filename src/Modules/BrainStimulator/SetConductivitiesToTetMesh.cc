@@ -73,10 +73,10 @@ void SetConductivitiesToTetMeshModule::execute()
   
   if (needToExecute())
   {
-    //algorithm input and run, 
+    /// algorithm input and run, 
     auto output = algo().run_generic(make_input((MESH, mesh)));
    
-    //algorithm output
+    /// algorithm output
     sendOutputFromAlgorithm(OUTPUTMESH, output);
   }
 }

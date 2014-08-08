@@ -61,7 +61,7 @@ AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH"
 
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
-  addParameter(Skin(),      0.43);    // electrical conductivities (isotropic) default values based on the literature
+  addParameter(Skin(),      0.43);    /// electrical conductivities (isotropic) default values based on the literature
   addParameter(SoftBone(),     0.02856);
   addParameter(HardBone(),     0.00640);
   addParameter(CSF(),       1.79);
@@ -85,25 +85,25 @@ AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const Algorithm
 
 FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
 {
-  // making sure the field is not null
+  /// making sure the field is not null
   if (!fh)
     THROW_ALGORITHM_INPUT_ERROR("Field supplied is empty ");
   
-  // making sure the data is on the elem and not the nodes
+  /// making sure the data is on the elem and not the nodes
   FieldInformation fi(fh);
   if (!fi.is_constantdata())
     THROW_ALGORITHM_INPUT_ERROR("This function requires the data to be on the elements ");
   
-  // making sure the field contains data
+  /// making sure the field contains data
   VField* vfield = fh->vfield();
   if (vfield->is_nodata())
     THROW_ALGORITHM_INPUT_ERROR("Field supplied contained no data ");
   
-  // making sure the field is not in vector format
+  /// making sure the field is not in vector format
   if (vfield->is_vector())
     THROW_ALGORITHM_INPUT_ERROR("Function is not setup to work with vectors at this time ");
      
-  // array holding conductivities    
+  /// array holding conductivities    
   std::vector<double> conductivies = {get(Skin()).getDouble(), get(SoftBone()).getDouble(), get(HardBone()).getDouble(),
   get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(Electrode()).getDouble()};
   
@@ -111,23 +111,23 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   if (sizeof(conductivies)!=sizeof(tet_elem_label_lookup))
      THROW_ALGORITHM_INPUT_ERROR("Defined conductivities and lookup table are inconsistent! ");
   
-  // replacing field value with conductivity value
+  /// replacing field value with conductivity value
   FieldHandle output = CreateField(fi, fh->mesh());
   VField* ofield = output->vfield();
   int val = 0;
   int cnt = 0;
   
-  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++) // loop over all tetrahedral elements
+  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++) /// loop over all tetrahedral elements
   {
     vfield->get_value(val, i);  //get the data value stored on the current element
     
-    bool found=false; // boolean that indicates if element label was found in lookup
+    bool found=false; /// boolean that indicates if element label was found in lookup
     
-    for (size_t j = 0; j < tet_elem_label_lookup.size(); ++j) // loop over lookup table and check if the current element has one of the desired labels, if not error
+    for (size_t j = 0; j < tet_elem_label_lookup.size(); ++j) /// loop over lookup table and check if the current element has one of the desired labels, if not error
     {   
       if (val==tet_elem_label_lookup[j]) 
        { 
-	ofield->set_value(conductivies[j], i); // if so, set it to the isotropic conductivity value
+	ofield->set_value(conductivies[j], i); /// if so, set it to the isotropic conductivity value
 	found=true;
         break;
        }

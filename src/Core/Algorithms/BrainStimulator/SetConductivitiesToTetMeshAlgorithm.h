@@ -55,7 +55,7 @@ namespace BrainStimulator {
       static AlgorithmInputName MESH;
       static AlgorithmOutputName OUTPUTMESH;
       
-      const std::vector<int> tet_elem_label_lookup = { 1, 2, 3, 4, 5, 6, 7}; // this module checks for those label data stored on the elements
+      const std::vector<int> tet_elem_label_lookup = { 1, 2, 3, 4, 5, 6, 7}; /// this module checks for those label data stored on the elements
       
   };
 
