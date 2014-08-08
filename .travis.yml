@@ -24,4 +24,6 @@ install:
  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then ./ci/osx_install.sh; fi
 
 # TODO: could move script to separate file
-script: cd bin && cmake ../src && make -j8
+# Not running unit tests at the moment, so turn off testing, which will
+# hopefully make OS X builds a bit faster
+script: cd bin && cmake -DBUILD_TESTING:BOOL=OFF ../src && make -j8
