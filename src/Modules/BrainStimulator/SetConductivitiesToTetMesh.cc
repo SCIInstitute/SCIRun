@@ -26,8 +26,10 @@
    DEALINGS IN THE SOFTWARE.
    
    Author: Spencer Frisby
-   Date:   May 2014
+   Date:   August 2014
 */
+
+
 #include <iostream>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
@@ -57,6 +59,7 @@ void SetConductivitiesToTetMeshModule::setStateDefaults()
   setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM());
   setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM());
   setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Electrode());
+  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::InternalAir());
 }
 
 void SetConductivitiesToTetMeshModule::execute()
@@ -70,6 +73,7 @@ void SetConductivitiesToTetMeshModule::execute()
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::GM());
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::WM());
   setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Electrode());
+  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::InternalAir());
   
   if (needToExecute())
   {

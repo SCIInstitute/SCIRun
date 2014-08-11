@@ -50,6 +50,7 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   addDoubleSpinBoxManager(GM_,         SetConductivitiesToTetMeshAlgorithm::GM());
   addDoubleSpinBoxManager(WM_,         SetConductivitiesToTetMeshAlgorithm::WM());
   addDoubleSpinBoxManager(Electrode_,  SetConductivitiesToTetMeshAlgorithm::Electrode());
+  addDoubleSpinBoxManager(InternalAir_,  SetConductivitiesToTetMeshAlgorithm::InternalAir());
 }
 
 void SetConductivitiesToTetMeshDialog::push()

@@ -42,6 +42,7 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 
+using namespace boost::assign;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
@@ -55,12 +56,14 @@ AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF() { return Algor
 AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM() { return AlgorithmParameterName("GM");}
 AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM() { return AlgorithmParameterName("WM");}
 AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Electrode() { return AlgorithmParameterName("Electrode");}
+AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::InternalAir() { return AlgorithmParameterName("InternalAir");}
 
 AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::MESH("MESH");
 AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH");
 
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
+  ElemLabelLookup += 1,2,3,4,5,6,7,8;
   addParameter(Skin(),      0.43);    /// electrical conductivities (isotropic) default values based on the literature
   addParameter(SoftBone(),     0.02856);
   addParameter(HardBone(),     0.00640);
@@ -68,6 +71,7 @@ SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
   addParameter(GM(),        0.33);
   addParameter(WM(),        0.142);
   addParameter(Electrode(), 1.4);
+  addParameter(InternalAir(), 1e-6);
 }
 
 AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
@@ -100,15 +104,15 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
     THROW_ALGORITHM_INPUT_ERROR("Field supplied contained no data ");
   
   /// making sure the field is not in vector format
-  if (vfield->is_vector())
-    THROW_ALGORITHM_INPUT_ERROR("Function is not setup to work with vectors at this time ");
+  if (!vfield->is_scalar())
+    THROW_ALGORITHM_INPUT_ERROR("Function only supports scalar labels. ");
      
   /// array holding conductivities    
   std::vector<double> conductivies = {get(Skin()).getDouble(), get(SoftBone()).getDouble(), get(HardBone()).getDouble(),
-  get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(Electrode()).getDouble()};
+  get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(InternalAir()).getDouble(), get(Electrode()).getDouble()};
   
   //check if defined conductivities and lookup table are consistent
-  if (conductivies.size()!=tet_elem_label_lookup.size())
+  if (conductivies.size()!=ElemLabelLookup.size())
      THROW_ALGORITHM_INPUT_ERROR("Defined conductivities and lookup table are inconsistent! ");
   
   /// replacing field value with conductivity value
@@ -123,9 +127,9 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
     
     bool found=false; /// boolean that indicates if element label was found in lookup
     
-    for (size_t j = 0; j < tet_elem_label_lookup.size(); ++j) /// loop over lookup table and check if the current element has one of the desired labels, if not error
+    for (size_t j = 0; j < ElemLabelLookup.size(); ++j) /// loop over lookup table and check if the current element has one of the desired labels, if not error
     {   
-      if (val==tet_elem_label_lookup[j]) 
+      if (val==ElemLabelLookup[j]) 
        { 
 	ofield->set_value(conductivies[j], i); /// if so, set it to the isotropic conductivity value
 	found=true;

@@ -34,8 +34,7 @@
 /// Spencer Frisby
 /// Moritz Dannhauer
 ///@details
-/// It uses a single field input and assigns conductivities that can be provided in the GUI to work in the BrainStimulator environment (uses SI units).
-/// 
+/// The module maps the numbers in round brackets found in the input field and converts them to the values provided in GUI elements right behind (doublespinboxes).
 ///
 
 
@@ -63,12 +62,13 @@ namespace BrainStimulator {
       static AlgorithmParameterName GM();
       static AlgorithmParameterName WM();
       static AlgorithmParameterName Electrode();
+      static AlgorithmParameterName InternalAir();
     
       AlgorithmOutput run_generic(const AlgorithmInput& input) const;
       static AlgorithmInputName MESH;
       static AlgorithmOutputName OUTPUTMESH;
       
-      const std::vector<int> tet_elem_label_lookup = { 1, 2, 3, 4, 5, 6, 7}; /// this module checks for those label data stored on the elements
+      std::vector<int> ElemLabelLookup; /// this module checks for those label data stored on the elements
       
   };
 
