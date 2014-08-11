@@ -78,7 +78,10 @@ SET(Core_IEPlugin_HEADERS
   #TetVolField_Plugin.h
 )
 
-ADD_LIBRARY(Core_IEPlugin ${Core_IEPlugin_SRCS} ${Core_IEPlugin_HEADERS})
+SCIRUN_ADD_LIBRARY(Core_IEPlugin
+  ${Core_IEPlugin_SRCS}
+  ${Core_IEPlugin_HEADERS}
+)
 
 TARGET_LINK_LIBRARIES(Core_IEPlugin
   Core_Persistent 

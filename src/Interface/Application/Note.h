@@ -31,6 +31,7 @@
 
 #include <Interface/Application/PositionProvider.h>
 #include <boost/shared_ptr.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <QString>
 #include <QFont>
 #include <QColor>
@@ -55,12 +56,20 @@ namespace Gui {
     Bottom
   };
 
+  // TODO: refactor. Combine with ModuleNoteXML, and bring together various Note-related classes to support consistent read/write.
+  // IDEA: subclass QGraphicsTextItem properly and add a way to associate with a HasNotes object (either module or connection). 
+  // Then serialization will be uniform for all notes.
+
   struct Note
   {
     QString html_;
-    NotePosition position_; 
+    QString plainText_;
+    int fontSize_;
+    NotePosition position_;
+    Note() : fontSize_(0), position_(Default) {}
+    Note(const QString& html, const QString& plain, int font, int pos) : html_(html), plainText_(plain), fontSize_(font), position_(NotePosition(pos)) {}
   };
-  
+
   class NoteDisplayStrategy
   {
   public:
@@ -76,6 +85,7 @@ namespace Gui {
   {
   public:
     virtual ~NoteDisplayHelper();
+    Note currentNote() const;
   protected:
     explicit NoteDisplayHelper(NoteDisplayStrategyPtr display);
     virtual void setNoteGraphicsContext() = 0;

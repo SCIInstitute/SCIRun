@@ -55,7 +55,7 @@ SET(Interface_Modules_DataIO_SOURCES
 QT4_WRAP_UI(Interface_Modules_DataIO_FORMS_HEADERS ${Interface_Modules_DataIO_FORMS})
 QT4_WRAP_CPP(Interface_Modules_DataIO_HEADERS_MOC ${Interface_Modules_DataIO_HEADERS})
 
-ADD_LIBRARY(Interface_Modules_DataIO
+SCIRUN_ADD_LIBRARY(Interface_Modules_DataIO
   ${Interface_Modules_DataIO_HEADERS}
   ${Interface_Modules_DataIO_FORMS_HEADERS}
   ${Interface_Modules_DataIO_HEADERS_MOC}

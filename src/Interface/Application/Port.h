@@ -114,6 +114,7 @@ Q_SIGNALS:
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void portMoved();
+  void connectionNoteChanged();
 protected:
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);

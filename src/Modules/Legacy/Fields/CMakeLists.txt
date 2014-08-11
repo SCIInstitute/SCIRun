@@ -194,7 +194,7 @@ IF(WITH_TETGEN)
     InterfaceWithTetGen.cc)
 ENDIF(WITH_TETGEN)
     
-ADD_LIBRARY(Modules_Legacy_Fields 
+SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields 
   ${Modules_Legacy_Fields_HEADERS}
   ${Modules_Legacy_Fields_SRCS}
 )

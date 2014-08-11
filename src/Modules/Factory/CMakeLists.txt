@@ -38,7 +38,7 @@ SET(Modules_Factory_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_Factory 
+SCIRUN_ADD_LIBRARY(Modules_Factory 
   ${Modules_Factory_HEADERS}
   ${Modules_Factory_SRCS}
 )

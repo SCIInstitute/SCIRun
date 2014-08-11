@@ -44,7 +44,7 @@ SET(Core_Utils_HEADERS
   TypeIDTable.h
 )
 
-ADD_LIBRARY(Core_Utils 
+SCIRUN_ADD_LIBRARY(Core_Utils 
   ${Core_Utils_SRCS}
   ${Core_Utils_HEADERS}
 )

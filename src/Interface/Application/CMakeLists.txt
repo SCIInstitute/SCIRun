@@ -108,12 +108,13 @@ QT4_WRAP_UI(Interface_Application_FORMS_HEADERS ${Interface_Application_FORMS})
 QT4_WRAP_CPP(Interface_Application_HEADERS_MOC ${Interface_Application_HEADERS})
 QT4_ADD_RESOURCES(Interface_Application_RESOURCES_RCC ${Interface_Application_RESOURCES})
 
-ADD_LIBRARY(Interface_Application
+SCIRUN_ADD_LIBRARY(Interface_Application
   ${Interface_Application_SOURCES}
   ${Interface_Application_HEADERS}
   ${Interface_Application_HEADERS_MOC}
   ${Interface_Application_FORMS_HEADERS}
-  ${Interface_Application_RESOURCES_RCC})
+  ${Interface_Application_RESOURCES_RCC}
+)
 
 SET(NonPythonInterface_ApplicationLinkLibraries
   Dataflow_Network

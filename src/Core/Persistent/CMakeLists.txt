@@ -44,7 +44,7 @@ SET(Core_Persistent_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Persistent 
+SCIRUN_ADD_LIBRARY(Core_Persistent 
   ${Core_Persistent_SRCS}
   ${Core_Persistent_HEADERS}
 )

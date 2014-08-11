@@ -41,7 +41,7 @@ SET(Core_Thread_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Thread 
+SCIRUN_ADD_LIBRARY(Core_Thread 
   ${Core_Thread_SRCS}
   ${Core_Thread_HEADERS}
 )

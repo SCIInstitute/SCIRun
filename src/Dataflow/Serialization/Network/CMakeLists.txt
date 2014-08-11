@@ -43,7 +43,7 @@ SET(Core_Serialization_Network_HEADERS
   StateSerialization.h
 )
 
-ADD_LIBRARY(Core_Serialization_Network 
+SCIRUN_ADD_LIBRARY(Core_Serialization_Network 
   ${Core_Serialization_Network_HEADERS}
   ${Core_Serialization_Network_SRCS}
 )

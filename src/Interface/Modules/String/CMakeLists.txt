@@ -46,7 +46,7 @@ SET(Interface_Modules_String_SOURCES
 QT4_WRAP_UI(Interface_Modules_String_FORMS_HEADERS ${Interface_Modules_String_FORMS})
 QT4_WRAP_CPP(Interface_Modules_String_HEADERS_MOC ${Interface_Modules_String_HEADERS})
 
-ADD_LIBRARY(Interface_Modules_String 
+SCIRUN_ADD_LIBRARY(Interface_Modules_String 
   ${Interface_Modules_String_HEADERS}
   ${Interface_Modules_String_FORMS_HEADERS}
   ${Interface_Modules_String_HEADERS_MOC}

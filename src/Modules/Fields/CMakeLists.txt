@@ -39,7 +39,7 @@ SET(Modules_Fields_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_Fields
+SCIRUN_ADD_LIBRARY(Modules_Fields
   ${Modules_Fields_HEADERS}
   ${Modules_Fields_SRCS}
 )

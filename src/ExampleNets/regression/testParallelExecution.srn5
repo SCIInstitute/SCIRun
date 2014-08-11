@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="0">
+<networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>6</count>
@@ -313,8 +313,8 @@
 		<item>
 			<first>CreateLatVol:2</first>
 			<second>
-				<first>-842</first>
-				<second>-318</second>
+				<first>-892</first>
+				<second>-372</second>
 			</second>
 		</item>
 		<item>
@@ -346,6 +346,14 @@
 			</second>
 		</item>
 	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
 </networkFile>
 </boost_serialization>
 

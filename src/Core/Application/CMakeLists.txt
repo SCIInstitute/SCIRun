@@ -37,7 +37,7 @@ SET(Core_Application_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Application 
+SCIRUN_ADD_LIBRARY(Core_Application 
   ${Core_Application_HEADERS}
   ${Core_Application_SRCS}
 )
