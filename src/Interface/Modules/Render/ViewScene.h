@@ -39,15 +39,7 @@
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
-#include <spire/Interface.h>
 #include <Interface/Modules/Render/namespaces.h>
-
-#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRCommonAttributes.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRCommonUniforms.h>
-
-#include <Interface/Modules/Render/GLWidget.h>
-
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
@@ -56,7 +48,12 @@ class QStandardItemModel;
 class QStandardItem;
 
 namespace SCIRun {
+
+namespace Render { class SRInterface; }
+
 namespace Gui {
+
+class GLWidget;
 
 class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, 
   public Ui::ViewScene
@@ -87,9 +84,9 @@ private:
   void addAutoViewButton();
   void addObjectToggleMenu();
 
-  GLWidget*                     mGLWidget;  ///< GL widget containing context.
-  std::weak_ptr<SRInterface>    mSpire;     ///< Instance of Spire.
-  QToolBar*                     mToolBar;   ///< Tool bar.
+  GLWidget*                           mGLWidget;  ///< GL widget containing context.
+  std::weak_ptr<Render::SRInterface>  mSpire;     ///< Instance of Spire.
+  QToolBar*                           mToolBar;   ///< Tool bar.
   bool shown_;
   std::shared_ptr<class ViewSceneItemManager> itemManager_;
 };

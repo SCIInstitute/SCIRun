@@ -35,24 +35,41 @@
 #include <vector>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/GeometryPrimitives/BBox.h>
-#include <spire/Interface.h>
-
-
-/// The following include contains AbstractUniformStateItem which allows
-/// us to store uniforms to be passed, at a later time, to spire.
-#include <spire/src/ShaderUniformStateManTemplates.h>
-
 #include <Core/Datatypes/share.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
+
+// CPM modules
+#include <glm/glm.hpp>
+#include <var-buffer/VarBuffer.hpp>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  namespace spire = CPM_SPIRE_NS;
-
   class SCISHARE GeometryObject : public Datatype
   {
   public:
+
+    // Schemes individually describing how the data is to be colored.
+    // This enumeration may belong in Core/Algorithms/Visualization.
+    enum ColorScheme
+    {
+      COLOR_UNIFORM = 0,
+      COLOR_MAP,
+      COLOR_IN_SITU
+    };
+
+    /// Different types of rendering support by the system. Strictly speaking,
+    /// all of the rendering types can be subsumed in VBO and IBO rendering.
+    /// This really just boils down to instanced rendering. Once tesselation
+    /// and geometry shaders are supported, we can speed up instanced rendering
+    /// in OpenGL.
+    enum RenderType
+    {
+      RENDER_VBO_IBO,
+      RENDER_RLIST_SPHERE,
+    };
+
     explicit GeometryObject(DatatypeConstHandle dh);
     GeometryObject(const GeometryObject& other);
     GeometryObject& operator=(const GeometryObject& other);
@@ -65,34 +82,59 @@ namespace Datatypes {
     // Could require rvalue references...
     struct SpireVBO
     {
-      SpireVBO(const std::string& vboName, const std::vector<std::string> attribs,
-               std::shared_ptr<std::vector<uint8_t>> vboData,
-               const Core::Geometry::BBox& bbox) :
+      struct AttributeData
+      {
+        AttributeData(const std::string& nameIn, size_t sizeIn, bool normalizeIn = false) :
+            name(nameIn),
+            sizeInBytes(sizeIn),
+            normalize(normalizeIn)
+        {}
+
+        std::string name;
+        size_t      sizeInBytes;
+        bool        normalize;
+      };
+
+      SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
+               std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboData,
+               int64_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
           name(vboName),
-          attributeNames(attribs),
+          attributes(attribs),
           data(vboData),
-          boundingBox(bbox)
+          numElements(numVBOElements),
+          boundingBox(bbox),
+          onGPU(placeOnGPU)
       {}
 
       std::string                           name;
-      std::vector<std::string>              attributeNames;
-      std::shared_ptr<std::vector<uint8_t>> data;
+      std::vector<AttributeData>            attributes;
+      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
+      int64_t                               numElements;
       Core::Geometry::BBox                  boundingBox;
+      bool                                  onGPU;
     };
 
-    // Could require rvalue references...
     struct SpireIBO
     {
-      SpireIBO(const std::string& iboName, size_t iboIndexSize,
-               std::shared_ptr<std::vector<uint8_t>> iboData) :
+      enum PRIMITIVE
+      {
+        POINTS,
+        LINES,
+        TRIANGLES,
+      };
+
+      SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
+               std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
           name(iboName),
           indexSize(iboIndexSize),
+          prim(primIn),
           data(iboData)
       {}
 
       std::string                           name;
       size_t                                indexSize;
-      std::shared_ptr<std::vector<uint8_t>> data;
+      PRIMITIVE                             prim;
+      std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
     };
 
     std::list<SpireVBO> mVBOs;  ///< Array of vertex buffer objects.
@@ -103,31 +145,66 @@ namespace Datatypes {
     {
       SpireSubPass(const std::string& name, const std::string& vbo, 
                    const std::string& ibo, const std::string& program,
-                   spire::Interface::PRIMITIVE_TYPES primType) :
+                   ColorScheme scheme, const RenderState& state,
+                   RenderType renType) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
           programName(program),
-          type(primType)
+          renderState(state),
+          renderType(renType),
+          mColorScheme(scheme)
       {}
 
       std::string   passName;
       std::string   vboName;
       std::string   iboName;
       std::string   programName;
-      spire::Interface::PRIMITIVE_TYPES type;
+      RenderState   renderState;
+      RenderType    renderType;
 
-      template <typename T>
-      void addUniform(const std::string& uniformName, T uniformData)
+      struct Uniform
       {
-        uniforms.push_back(
-            std::make_pair(uniformName, std::shared_ptr<spire::AbstractUniformStateItem>(
-                new spire::UniformStateItem<T>(uniformData))));
+        enum UniformType
+        {
+          UNIFORM_SCALAR,
+          UNIFORM_VEC4
+        };
+
+        Uniform(const std::string& nameIn, float d) :
+            name(nameIn),
+            type(UNIFORM_SCALAR),
+            data(d, 0.0f, 0.0f, 0.0f)
+        {}
+
+        Uniform(const std::string& nameIn, const glm::vec4& vec) :
+            name(nameIn),
+            type(UNIFORM_VEC4),
+            data(vec)
+        {}
+
+        std::string   name;
+        UniformType   type;
+        glm::vec4     data;
+      };
+
+      std::vector<Uniform>  mUniforms;
+      ColorScheme           mColorScheme;
+
+      void addUniform(const std::string& name, float scalar)
+      {
+        mUniforms.push_back(Uniform(name, scalar));
       }
 
-      // Tuple containing the name of the uniform and its contents.
-      std::list<std::tuple<
-          std::string, std::shared_ptr<spire::AbstractUniformStateItem>>> uniforms;
+      void addUniform(const std::string& name, const glm::vec4& vector)
+      {
+        mUniforms.push_back(Uniform(name, vector));
+      }
+
+      void addUniform(const Uniform& uniform)
+      {
+        mUniforms.push_back(uniform);
+      }
     };
 
     /// List of passes to setup.
@@ -138,9 +215,6 @@ namespace Datatypes {
 
     double mLowestValue;    ///< Lowest value a field takes on.
     double mHighestValue;   ///< Highest value a field takes on.
-
-    /// \xxx  Possibly implement a list of global uniforms. Only do this if
-    ///       there is a clear need for global uniforms.
 
   private:
     DatatypeConstHandle data_;

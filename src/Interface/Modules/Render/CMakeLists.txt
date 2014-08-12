@@ -36,12 +36,18 @@ SET(Interface_Modules_Render_HEADERS
   ViewScene.h
   GLWidget.h
   QtGLContext.h
-  SpireSCIRun/SRCamera.h
-  SpireSCIRun/SRCommonAttributes.h
-  SpireSCIRun/SRCommonUniforms.h
-  SpireSCIRun/SRInterface.h
-  SpireSCIRun/SRUtil.h
-  SpireSCIRun/SciBall.h
+  ES/SRCamera.h
+  ES/SRInterface.h
+  ES/SRUtil.h
+  ES/Core.h
+  ES/CoreBootstrap.h
+  ES/AssetBootstrap.h
+  ES/comp/RenderBasicGeom.h
+  ES/comp/StaticSRInterface.h
+  ES/comp/StaticWorldLight.h
+  ES/comp/LightingUniforms.h
+  ES/systems/RenderBasicSys.h
+  ES/systems/RenderColorMapSys.h
 )
 
 SET(Interface_Modules_Render_SOURCES 
@@ -49,10 +55,16 @@ SET(Interface_Modules_Render_SOURCES
   GLWidget.cc
   GLContext.cc
   QtGLContext.cc
-  SpireSCIRun/SRCamera.cc
-  SpireSCIRun/SRInterface.cc
-  SpireSCIRun/SRUtil.cc
-  SpireSCIRun/SciBall.cc
+  ES/SRCamera.cc
+  ES/SRInterface.cc
+  ES/SRUtil.cc
+  ES/Core.cc
+  ES/CoreBootstrap.cc
+  ES/Registration.cc
+  ES/AssetBootstrap.cc
+  ES/comp/LightingUniforms.cc
+  ES/systems/RenderBasicSys.cc
+  ES/systems/RenderColorMapSys.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})
