@@ -83,7 +83,7 @@ ScaleFieldMeshAndDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     output.reset(input->deep_clone());
     Transform tf;
     BBox box = input->vmesh()->get_bounding_box();
-    Vector center = 0.5*(box.min()+box.max());
+    Vector center = 0.5*(box.get_min()+box.get_max());
     
     tf.load_identity();
     if (scale_from_center) tf.pre_translate(-center);

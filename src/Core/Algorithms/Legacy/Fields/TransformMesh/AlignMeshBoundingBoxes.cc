@@ -80,8 +80,8 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
  
   Vector iscale = ibbox.diagonal();
   Vector oscale = obbox.diagonal();
-  Vector itrans(-ibbox.min());
-  Vector otrans(obbox.min());
+  Vector itrans(-ibbox.get_min());
+  Vector otrans(obbox.get_min());
   transform.pre_translate(itrans);
   transform.pre_scale(Vector(oscale.x()/iscale.x(),oscale.y()/iscale.y(),oscale.z()/iscale.z()));
   transform.pre_translate(otrans);

@@ -45,7 +45,7 @@ public:
     // have access to all of the rendering subsystems.
 
     // Will need to replace this with a static entity in the future.
-    SRInterface* iface = core.getStaticComponent<StaticSRInterface>()->interface;
+    SRInterface* iface = core.getStaticComponent<StaticSRInterface>()->interface_;
     ren::GeomMan* geomMan = core.getStaticComponent<ren::StaticGeomMan>()->instance.get();
     ren::ShaderMan* shaderMan = core.getStaticComponent<ren::StaticShaderMan>()->instance.get();
 

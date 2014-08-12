@@ -41,11 +41,11 @@ namespace Render {
 struct StaticSRInterface
 {
   // -- Data --
-  SRInterface* interface;
+  SRInterface* interface_;
 
   // -- Functions --
-  StaticSRInterface() : interface(nullptr) {}
-  StaticSRInterface(SRInterface* srInt) : interface(srInt) {}
+  StaticSRInterface() : interface_(nullptr) {}
+  StaticSRInterface(SRInterface* srInt) : interface_(srInt) {}
 
   static const char* getName() {return "scirun:StaticSRInterface";}
 

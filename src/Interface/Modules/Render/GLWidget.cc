@@ -31,6 +31,7 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
+#include <gl-platform/GLPlatform.hpp>
 #include <iostream>
 #include <QMouseEvent>
 #include <QWheelEvent>

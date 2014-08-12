@@ -35,12 +35,13 @@
 #include <vector>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/GeometryPrimitives/BBox.h>
-#include <Core/Datatypes/share.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 
 // CPM modules
 #include <glm/glm.hpp>
 #include <var-buffer/VarBuffer.hpp>
+
+#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
