@@ -78,7 +78,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 	setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
 
-	setStyleSheet("background-color: rgb(66,66,69); border: 0px");
+	setStyleSheet("background-color: rgb(66,66,69); color: white; selection-color: yellow; selection-background-color: blue; border: 5px;");
 
 	dialogErrorControl_.reset(new DialogErrorControl(this));
   setupNetworkEditor();
@@ -883,6 +883,7 @@ namespace {
   {
     auto faves = new QTreeWidgetItem();
     faves->setText(0, "Favorites");
+		faves->setForeground(0, Qt::yellow);
 
     tree->addTopLevelItem(faves);
   }
@@ -916,6 +917,7 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, co
     const std::string& packageName = package.first;
     auto packageItem = new QTreeWidgetItem();
     packageItem->setText(0, QString::fromStdString(packageName));
+		packageItem->setForeground(0, Qt::yellow);
     tree->addTopLevelItem(packageItem);
     size_t totalModules = 0;
     BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
@@ -923,6 +925,7 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, co
       const std::string& categoryName = category.first;
       auto categoryItem = new QTreeWidgetItem();
       categoryItem->setText(0, QString::fromStdString(categoryName));
+			categoryItem->setForeground(0, Qt::green);
       packageItem->addChild(categoryItem);
       BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
       {
@@ -940,13 +943,17 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, co
           moduleItem->setCheckState(0, Qt::Unchecked);
         }
         moduleItem->setText(1, QString::fromStdString(module.second.moduleStatus_));
+				moduleItem->setForeground(1, Qt::lightGray);
         moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
+				moduleItem->setForeground(2, Qt::lightGray);
         categoryItem->addChild(moduleItem);
         totalModules++;
       }
       categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
+			categoryItem->setForeground(1, Qt::magenta);
     }
     packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
+		packageItem->setForeground(1, Qt::magenta);
   }
 }
 
