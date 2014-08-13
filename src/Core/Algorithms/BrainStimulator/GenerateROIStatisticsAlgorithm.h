@@ -40,24 +40,25 @@ namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
   
+  ALGORITHM_PARAMETER_DECL(StatisticsValues);
+  ALGORITHM_PARAMETER_DECL(StatisticsTableValues);
+
   class SCISHARE GenerateROIStatisticsAlgorithm : public AlgorithmBase
   {
   public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
-
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
+    GenerateROIStatisticsAlgorithm();
+    static const AlgorithmInputName MeshDataOnElements;
+    static const AlgorithmInputName PhysicalUnit;
+    static const AlgorithmInputName AtlasMesh;
+    static const AlgorithmInputName AtlasMeshLabels;
+    static const AlgorithmInputName CoordinateSpace;
+    static const AlgorithmInputName CoordinateSpaceLabel;
+    static const AlgorithmOutputName StatisticalResults;
+    static Core::Algorithms::AlgorithmParameterName StatisticsRowName(int i);
   private:
-  
-    
+    boost::tuple<Datatypes::DenseMatrixHandle, Variable> run(FieldHandle mesh, FieldHandle AtlasMesh, std::string AtlasMeshLabels="") const;
+    std::vector<std::string> ConvertInputAtlasStringIntoVector(const  std::string atlasLabels) const;
   };
 
 }}}}

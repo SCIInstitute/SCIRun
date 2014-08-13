@@ -41,10 +41,50 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  
+  QStringList tableHeader1;
+  tableHeader1<<" ROI "<<" Avr. " << " Std. " << " Min. " << " Max. ";
+  StatisticsOutput_tableWidget->setHorizontalHeaderLabels(tableHeader1);
+  StatisticsOutput_tableWidget->setItem(0, 0, 0);
+  StatisticsOutput_tableWidget->setItem(0, 1, 0);
+  StatisticsOutput_tableWidget->setItem(0, 2, 0);
+  StatisticsOutput_tableWidget->setItem(0, 3, 0);
+  StatisticsOutput_tableWidget->setItem(0, 4, 0);
+  
+  QStringList tableHeader2;
+  tableHeader2<<" X "<<" Y " << " Z " << " Atlas Material # " << " Radius ";
+  SpecifyROI_tabWidget->setHorizontalHeaderLabels(tableHeader2);
+  SpecifyROI_tabWidget->setItem(0, 0, 0);
+  SpecifyROI_tabWidget->setItem(0, 1, 0);
+  SpecifyROI_tabWidget->setItem(0, 2, 0);
+  SpecifyROI_tabWidget->setItem(0, 3, 0);
+  
+  connect(StatisticsOutput_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
+  connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));  
 }
+
+void GenerateROIStatisticsDialog::push()
+{
+  if (!pulling_)
+  {
+   //state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table); 
+  }
+}
+
 
 void GenerateROIStatisticsDialog::pull()
 {
-  //TODO
+  Pulling p(this);
+  
+  auto all_elc_values = state_->getValue(Parameters::StatisticsTableValues).getList();
+    
+  for (int i=0; i<all_elc_values.size(); i++)
+  {
+   auto tmp = (all_elc_values[i]).getList();
+   StatisticsOutput_tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(tmp[0].getString())));
+   StatisticsOutput_tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(tmp[1].getString())));
+   StatisticsOutput_tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(tmp[2].getString())));
+  }
+  //state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
 }
 

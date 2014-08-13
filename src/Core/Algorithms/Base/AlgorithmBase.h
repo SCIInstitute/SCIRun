@@ -229,8 +229,15 @@ namespace Algorithms {
     AlgorithmInput(const Map& m) : AlgorithmData(m) {}
   };
 
-  class SCISHARE AlgorithmOutput : public AlgorithmData {};
-
+  class SCISHARE AlgorithmOutput : public AlgorithmData
+  {
+   public:
+   Variable additionalAlgoOutput() const { return additionalAlgoOutput_; }
+   void setAdditionalAlgoOutput(const Variable& var) { additionalAlgoOutput_ = var; }
+   private:
+    Variable additionalAlgoOutput_;
+  };
+ 
   typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
   typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
 

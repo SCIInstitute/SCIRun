@@ -31,58 +31,245 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/String.h>
+#include <boost/range/algorithm/count.hpp>
+#include <boost/lexical_cast.hpp>
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 #include <iostream>
-
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
-    
-const AlgorithmInputName GenerateROIStatisticsAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
-const AlgorithmInputName GenerateROIStatisticsAlgorithm::ELECTRODE_TRIANGULATION("ELECTRODE_TRIANGULATION");
-const AlgorithmInputName GenerateROIStatisticsAlgorithm::ELECTRODE_TRIANGULATION2("ELECTRODE_TRIANGULATION2");
-const AlgorithmInputName GenerateROIStatisticsAlgorithm::COIL("COIL");
-const AlgorithmInputName GenerateROIStatisticsAlgorithm::COIL2("COIL2");
-const AlgorithmOutputName GenerateROIStatisticsAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
-const AlgorithmOutputName GenerateROIStatisticsAlgorithm::COILS_FIELD("COILS_FIELD");
 
+const AlgorithmInputName GenerateROIStatisticsAlgorithm::MeshDataOnElements("MeshDataOnElements");
+const AlgorithmInputName GenerateROIStatisticsAlgorithm::PhysicalUnit("PhysicalUnit");
+const AlgorithmInputName GenerateROIStatisticsAlgorithm::AtlasMesh("AtlasMesh");
+const AlgorithmInputName GenerateROIStatisticsAlgorithm::AtlasMeshLabels("AtlasMeshLabels");
+const AlgorithmInputName GenerateROIStatisticsAlgorithm::CoordinateSpace("CoordinateSpace");
+const AlgorithmInputName GenerateROIStatisticsAlgorithm::CoordinateSpaceLabel("CoordinateSpaceLabel");
+const AlgorithmOutputName GenerateROIStatisticsAlgorithm::StatisticalResults("StatisticalResults");
+
+ALGORITHM_PARAMETER_DEF(BrainStimulator, StatisticsValues);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, StatisticsTableValues);
+
+GenerateROIStatisticsAlgorithm::GenerateROIStatisticsAlgorithm()
+{
+  using namespace Parameters;
+  addParameter(StatisticsValues, 0);
+  addParameter(StatisticsTableValues, 0);
+}
+
+AlgorithmParameterName GenerateROIStatisticsAlgorithm::StatisticsRowName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
+
+boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, std::string AtlasMeshLabels) const
+{
+ DenseMatrixHandle output;
+
+ VField* vfield1 = mesh->vfield();
+ VField* vfield2 = AtlasMesh->vfield();
+ 
+ std::vector<int>  Label_vector(vfield2->vmesh()->num_elems());
+ std::vector<double> value_vector(vfield1->vmesh()->num_elems());
+ 
+ for (VMesh::Elem::index_type i=0; i < vfield2->vmesh()->num_elems(); i++) // loop over all tetrahedral elements (mesh)
+ {
+   int Label = 0;
+   vfield2->get_value(Label, i);
+   Label_vector[i]=Label;
+   double val = 0;
+   vfield1->get_value(val, i);
+   value_vector[i]=val;
+ }
+ 
+
+
+ std::vector<int>::iterator it;
+ it = std::unique (Label_vector.begin(), Label_vector.end());
+ Label_vector.resize( std::distance(Label_vector.begin(),it) );
+ 
+ long number_of_atlas_materials = Label_vector.size();
+  
+ std::vector<double> value_avr(number_of_atlas_materials);
+ std::vector<int> value_count(number_of_atlas_materials);
+ std::vector<double> value_min(number_of_atlas_materials);
+ std::vector<double> value_max(number_of_atlas_materials);
+ std::vector<double> value_std(number_of_atlas_materials); 
+ std::vector<double> Sxsqr(number_of_atlas_materials);
+ std::vector<double> stddev(number_of_atlas_materials);
+ std::vector<double> var(number_of_atlas_materials);
+ 
+ for (VMesh::Elem::index_type i=0; i < vfield1->vmesh()->num_elems(); i++) // loop over all tetrahedral elements (AtlasMesh)
+ {
+   double value = 0;
+   vfield1->get_value(value, i); 
+   
+   int Label = 0;
+   vfield2->get_value(Label, i);
+   
+   for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; j++)
+   {
+     if (Label==Label_vector[j]) 
+        {
+	   value_avr[j] += value; 
+	   value_count[j]++;   
+	   if (value>value_max[j]) value_max[j]=value;
+	   if (value<value_min[j]) value_min[j]=value;
+	   Sxsqr[j]+=value*value;
+	}
+   }
+ }
+ 
+ output = DenseMatrixHandle(new DenseMatrix(number_of_atlas_materials, 4));
+ 
+ //efficient way to compute std dev. in just one loop over all mesh elements: sqrt ( 1/(n-1) (Sx^2 - avr Sx + n avr^2 )
+ for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; j++)
+ {
+   double Sx=value_avr[j];
+   value_avr[j]/=value_count[j]; 
+   var[j]=static_cast<double>(1./(value_count[j]-1)*(Sxsqr[j]-2*value_avr[j]*Sx+value_count[j]*value_avr[j]*value_avr[j]));
+   stddev[j]=static_cast<double>(std::sqrt(var[j]));
+   (*output)(j,0)=value_avr[j];
+   (*output)(j,1)=stddev[j];
+   (*output)(j,2)=value_min[j];
+   (*output)(j,3)=value_max[j];   
+ }  
+
+  std::vector<std::string> AtlasMeshLabels_vector;
+  if (!AtlasMeshLabels.empty())
+  {
+   AtlasMeshLabels_vector = ConvertInputAtlasStringIntoVector(AtlasMeshLabels); 
+  }
+   
+ if (AtlasMeshLabels_vector.size()==0 && number_of_atlas_materials>0)
+ {
+   AtlasMeshLabels_vector.reserve(number_of_atlas_materials);
+   for (int i=0; i<number_of_atlas_materials; i++)
+   {
+    AtlasMeshLabels_vector[i]=i+1;
+   }
+ }
+ else
+  if (AtlasMeshLabels_vector.size() != number_of_atlas_materials)
+   {
+    THROW_ALGORITHM_INPUT_ERROR("Number of material Labels in AtlasMesh and AtlasMeshLabels do not match"); 
+   } 
+  
+  std::vector<AlgorithmParameter> elc_vals_in_table;
+  for (int i=0; i<AtlasMeshLabels_vector.size(); i++)
+  {
+    std::vector<AlgorithmParameter> tmp;
+    tmp.emplace_back(Name("col0"), boost::lexical_cast<std::string>((*output)(i,0)));
+    tmp.emplace_back(Name("col1"), boost::lexical_cast<std::string>((*output)(i,1)));
+    tmp.emplace_back(Name("col2"), boost::lexical_cast<std::string>((*output)(i,2)));
+    tmp.emplace_back(Name("col3"), boost::lexical_cast<std::string>((*output)(i,3)));
+    AlgorithmParameter row_i(Name("row" + boost::lexical_cast<std::string>(i)), tmp);
+    elc_vals_in_table.push_back(row_i);
+  }
+  
+  AlgorithmParameter whole_table(Name("Table"), elc_vals_in_table); 
+  //set(Parameters::StatisticsTableValues, whole_table); 
+ 
+ return boost::make_tuple(output, whole_table);
+}
+
+std::vector<std::string> GenerateROIStatisticsAlgorithm::ConvertInputAtlasStringIntoVector(const std::string atlasLabels) const
+{
+  std::string s = atlasLabels;
+
+  int cnt = boost::count(atlasLabels, ';')+1;  /// Place a ";" after each region name, e.g. ROI1;ROI2; 
+
+  std::vector<std::string> result;
+  result.reserve(cnt);
+  std::string delimiter = ";";
+
+  size_t pos = 0;
+  std::string token;   
+
+  while ((pos = s.find(delimiter)) != std::string::npos) 
+  {
+    token = s.substr(0, pos);
+    result.push_back(token);
+    s.erase(0, pos + delimiter.length());
+  }  
+    
+  return result;
+}
 
 AlgorithmOutput GenerateROIStatisticsAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
-  auto tri2 = input.get<Field>(ELECTRODE_TRIANGULATION2);
-  auto coil = input.get<Field>(COIL);
-  auto coil2 = input.get<Field>(COIL2);
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");
-  //old-style run call, just put algorithm code here
-  //auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).getInt()));
-  // CODE HERE
-  FieldHandle out1,out2;
 
-  //Algorithm starts here:
-  //VField* vfield = elc_coil_pos_and_normal->vfield();
-   VMesh*  vmesh  = pos_orient->vmesh();
+  auto mesh_ = input.get<Field>(MeshDataOnElements);
+  auto physicalUnit_ = input.get<Datatypes::String>(PhysicalUnit);
+  auto atlasMesh_ = input.get<Field>(AtlasMesh);
+  auto atlasMeshLabels_ = input.get<Datatypes::String>(AtlasMeshLabels);
+  auto coordinatespace_ = input.get<Field>(CoordinateSpace);
+  auto coordinateLabel_ = input.get<Datatypes::String>(CoordinateSpaceLabel);
  
-   std::cout << "a: " << vmesh->num_nodes() << std::endl;
-   //for (int i=0;i<vmesh->num_nodes();;i++)
-   //{
-   
-   
-   //}
-  //
+  if (!mesh_)  
+     THROW_ALGORITHM_INPUT_ERROR("First input (mesh) is empty.");
+  
+  if (!atlasMesh_)  
+     THROW_ALGORITHM_INPUT_ERROR("Third input (atlas mesh) is empty.");
+  
+  FieldInformation fi(mesh_);
+  
+  if (!fi.is_constantdata())
+    THROW_ALGORITHM_INPUT_ERROR("First input (mesh) requires the data to be on the elements.");
+  
+  // making sure the field contains data
+  VField* vfield1 = mesh_->vfield();
+  if (vfield1->is_nodata())
+    THROW_ALGORITHM_INPUT_ERROR("First input field (mesh) contained no data.");
+  
+  // making sure the field is not in vector format
+  if (!vfield1->is_scalar())
+    THROW_ALGORITHM_INPUT_ERROR("First input field needs to have scalar data.");      
+  
+  FieldInformation fi2(atlasMesh_);
+  
+  if (!fi2.is_constantdata())
+    THROW_ALGORITHM_INPUT_ERROR("First input (mesh) requires the data to be on the elements.");
+  
+  // making sure the field contains data
+  VField* vfield2 = atlasMesh_->vfield();
+  if (vfield2->is_nodata())
+    THROW_ALGORITHM_INPUT_ERROR("First input field (mesh) contained no data.");
+  
+  // making sure the field is not in vector format
+  if (!vfield2->is_scalar())
+    THROW_ALGORITHM_INPUT_ERROR("First input field needs to have scalar data."); 
+    
+  if(vfield1->vmesh()->num_elems()<1 && vfield2->vmesh()->num_elems()<1)
+    THROW_ALGORITHM_INPUT_ERROR("First (mesh) or second (AtlasMesh) input field does not contain elements."); 
+  
+  if(vfield2->vmesh()->num_elems() !=  vfield1->vmesh()->num_elems())
+    THROW_ALGORITHM_INPUT_ERROR(" Number of mesh elements of first input and third input does not match.");  
 
+  DenseMatrixHandle statistics;
+  Variable table;
+  if (atlasMeshLabels_ == nullptr)
+  {
+    boost::tie(statistics, table) = run(mesh_, atlasMesh_, "");
+  } else
+  {
+    boost::tie(statistics, table) = run(mesh_, atlasMesh_, atlasMeshLabels_->value());
+  }
+
+  if (statistics == nullptr)
+  {
+    THROW_ALGORITHM_INPUT_ERROR(" Statistics output is null pointer! "); 
+  }
 
   AlgorithmOutput output;
-  output[ELECTRODES_FIELD] = out1;
-  output[COILS_FIELD] = out2;
+  output[StatisticalResults] = statistics;
+  output.setAdditionalAlgoOutput(table);
+  
   return output;
 }
