@@ -52,7 +52,7 @@ SET(Interface_Modules_Visualization_SOURCES
 QT4_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS ${Interface_Modules_Visualization_FORMS})
 QT4_WRAP_CPP(Interface_Modules_Visualization_HEADERS_MOC ${Interface_Modules_Visualization_HEADERS})
 
-ADD_LIBRARY(Interface_Modules_Visualization 
+SCIRUN_ADD_LIBRARY(Interface_Modules_Visualization 
   ${Interface_Modules_Visualization_HEADERS}
   ${Interface_Modules_Visualization_FORMS_HEADERS}
   ${Interface_Modules_Visualization_HEADERS_MOC}

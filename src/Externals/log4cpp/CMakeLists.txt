@@ -89,6 +89,10 @@ ENDIF(BUILD_SHARED_LIBS)
 IF (WIN32)
   TARGET_LINK_LIBRARIES (${SCI_LOG4CPP_LIBRARY} kernel32 user32 ws2_32 advapi32 )
   #SET_TARGET_PROPERTIES(${SCI_LOG4CPP_LIBRARY} PROPERTIES LINK_FLAGS /NODEFAULTLIB:msvcrt )
+
+  # Add to instaler package (Release build only)
+  INSTALL(TARGETS ${SCI_LOG4CPP_LIBRARY} RUNTIME DESTINATION bin CONFIGURATIONS Release)
+
 ENDIF (WIN32)
 
 # This works because log4cpp is part of the SCIRun git repository.

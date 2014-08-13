@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2014 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -39,7 +39,7 @@ SET(Algorithms_Base_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Algorithms_Base 
+SCIRUN_ADD_LIBRARY(Algorithms_Base 
   ${Algorithms_Base_HEADERS}
   ${Algorithms_Base_SRCS}
 )

@@ -35,7 +35,7 @@ SET(Core_Datatypes_Legacy_Bundle_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Datatypes_Legacy_Bundle
+SCIRUN_ADD_LIBRARY(Core_Datatypes_Legacy_Bundle
   ${Core_Datatypes_Legacy_Bundle_HEADERS}
   ${Core_Datatypes_Legacy_Bundle_SRCS}
 )

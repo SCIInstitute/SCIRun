@@ -41,7 +41,7 @@ SET(Algorithms_BrainStimulator_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Algorithms_BrainStimulator 
+SCIRUN_ADD_LIBRARY(Algorithms_BrainStimulator 
   ${Algorithms_BrainStimulator_HEADERS}
   ${Algorithms_BrainStimulator_SRCS}
 )

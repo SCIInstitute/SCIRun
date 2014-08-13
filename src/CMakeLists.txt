@@ -27,6 +27,7 @@
 
 IF(UNIX)
   # temporary - needed to make Travis CI build work
+  # TODO: revisit and delete when CMake 2.8.11 or greater is available
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
 ELSE()
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
@@ -58,6 +59,14 @@ MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 
 OPTION(BUILD_HEADLESS "Build headless version, without Qt" OFF)
 MARK_AS_ADVANCED(BUILD_HEADLESS)
+
+########################################################################
+# Configure Windows executable to run with or without the console
+
+IF(WIN32)
+  OPTION(SCIRUN_SHOW_CONSOLE "Show Windows console when running SCIRun (useful for debugging)." ON)
+  MARK_AS_ADVANCED(SCIRUN_SHOW_CONSOLE)
+ENDIF()
 
 
 ########################################################################
@@ -203,16 +212,6 @@ ENDIF()
 
 # should be installed by default, searching system paths only
 IF(APPLE)
-  FIND_PROGRAM(AWK
-    NAMES awk
-  )
-  MARK_AS_ADVANCED(AWK)
-
-  FIND_PROGRAM(SED
-    NAMES sed
-  )
-  MARK_AS_ADVANCED(SED)
-
   FIND_PROGRAM(MACDEPLOYQT
     NAMES macdeployqt
   )
@@ -398,7 +397,7 @@ function (CopyShaders src_shader_dir dest_shader_dir)
     file(COPY ${src_shader_dir}/ DESTINATION ${dest_shader_dir}
       FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                            GROUP_READ
+                            GROUP_READ GROUP_EXECUTE
                             WORLD_READ WORLD_EXECUTE)
   endif()
 endfunction()
@@ -408,7 +407,7 @@ function (CopyAssets src_asset_dir dest_asset_dir)
     file(COPY ${src_asset_dir}/ DESTINATION ${dest_asset_dir}
       FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                            GROUP_READ
+                            GROUP_READ GROUP_EXECUTE
                             WORLD_READ WORLD_EXECUTE)
   endif()
 endfunction()
@@ -440,9 +439,6 @@ IF(NOT BUILD_HEADLESS)
   SET(QT_USE_QTOPENGL TRUE)
 
   IF(QT_FOUND)
-    # TODO: may want to grab Seg3D's custom FindQt4 module and UseQt4 file if
-    # build issues haven't been corrected in CMake 2.8.7 and newer
-
     INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
     INCLUDE(${QT_USE_FILE})
     ADD_DEFINITIONS(${QT_DEFINITIONS})
@@ -502,6 +498,15 @@ ENDMACRO()
 MACRO(SCIRUN_ADD_TEST_DIR directory)
   IF(BUILD_TESTING)
     ADD_SUBDIRECTORY(${directory})
+  ENDIF()
+ENDMACRO()
+
+MACRO(SCIRUN_ADD_LIBRARY library)
+  ADD_LIBRARY(${library} ${ARGN})
+
+  # Set up installer package (Release build only)
+  IF(WIN32)
+    INSTALL(TARGETS ${library} RUNTIME DESTINATION bin CONFIGURATIONS Release)
   ENDIF()
 ENDMACRO()
 
@@ -761,7 +766,7 @@ SET(PACKAGING_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Welcome.txt" CACHE INTE
 # TODO: need release notes
 #SET(PACKAGING_RELEASENOTES "${CMAKE_CURRENT_SOURCE_DIR}/ReleaseNotes.txt" CACHE INTERNAL "Where to find the releasenotes file." FORCE )
 
-#SET(PACKAGING_ICON "${CMAKE_SOURCE_DIR}/Resources/Icons\\\\package_icon.bmp" CACHE INTERNAL "Packing icon." FORCE )
+SET(PACKAGING_ICON "${CMAKE_SOURCE_DIR}/Resources/Icons\\\\scirun_package_icon_32.bmp" CACHE INTERNAL "Packing icon." FORCE )
 
 MESSAGE(STATUS "Configuring SCIRun packaging")
 
@@ -785,22 +790,64 @@ SET(CPACK_PACKAGE_VERSION_MAJOR "${SCIRUN_VERSION_MAJOR}")
 SET(CPACK_PACKAGE_VERSION_MINOR "${SCIRUN_VERSION_MINOR}")
 SET(CPACK_PACKAGE_VERSION_PATCH "${SCIRUN_VERSION_PATCH}")
 
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY 
-    "${APPLICATION_NAME} ${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${APPLICATION_NAME} ${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
 
 
 # other platform settings will be built up from here
 IF(APPLE)
+
  SET(CPACK_PACKAGE_DEFAULT_LOCATION "/Applications/")
  SET(CPACK_TOPLEVEL_TAG "")
+
  IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    SET(CPACK_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
    SET(CMAKE_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
- ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+ ENDIF()
+
  SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
  SET(CPACK_STRIP_FILES TRUE)
  SET(CPACK_SOURCE_STRIP_FILES TRUE)
  SET(CPACK_PACKAGE_EXECUTABLES "${APPLICATION_NAME}.app" "${APPLICATION_NAME}")
+
+ELSEIF(WIN32 AND NOT UNIX)
+
+  # There is a bug in NSIS that does not handle full unix paths properly. Make
+  # sure there is at least one set of four (4) backslashes.
+  SET(CPACK_PACKAGE_ICON "${PACKAGING_ICON}")
+ 
+  IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    SET(CPACK_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
+    SET(CMAKE_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
+  ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  
+  IF(CMAKE_SIZEOF_VOID_P MATCHES 8)
+    SET(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
+  ELSE(CMAKE_SIZEOF_VOID_P MATCHES 8)
+    SET(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
+  ENDIF(CMAKE_SIZEOF_VOID_P MATCHES 8)  
+  
+  SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\${APPLICATION_NAME}")
+  SET(CPACK_NSIS_MUI_ICON "${APPLICATION_WINDOWS_ICON}")
+  SET(CPACK_NSIS_DISPLAY_NAME "${APPLICATION_NAME} ${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
+  SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\${APPLICATION_URL}")
+  SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\${APPLICATION_URL}")
+  SET(CPACK_NSIS_CONTACT ${APPLICATION_CONTACT} )
+  SET(CPACK_NSIS_MODIFY_PATH ON)
+  SET(CPACK_PACKAGE_EXECUTABLES "${APPLICATION_NAME}" "${APPLICATION_NAME}")
+  SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+        WriteRegStr HKCR '${APPLICATION_EXTENSION}' '' '${APPLICATION_NAME}'
+        WriteRegStr HKCR '${APPLICATION_NAME}' '' '${APPLICATION_NAME} Project File'
+        WriteRegStr HKCR '${APPLICATION_NAME}\\\\shell' '' 'open'
+        WriteRegStr HKCR '${APPLICATION_NAME}\\\\DefaultIcon' '' '$INSTDIR\\\\bin\\\\${APPLICATION_NAME}.exe,0'
+        WriteRegStr HKCR '${APPLICATION_NAME}\\\\shell\\\\open\\\\command' '' '$INSTDIR\\\\bin\\\\${APPLICATION_NAME}.exe \\\"%1\\\"'
+        WriteRegStr HKCR '${APPLICATION_NAME}\\\\shell\\\\edit\\\\command' '' '$INSTDIR\\\\bin\\\\${APPLICATION_NAME}.exe \\\"%1\\\"'
+        System::Call 'Shell32::SHChangeNotify( i 0x800000, i 0, i 0, i 0)'
+  ")
+  SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+        DeleteRegKey HKCR '${APPLICATION_EXTENSION}'
+        DeleteRegKey HKCR '${APPLICATION_NAME}'
+  ")
+
 ENDIF()
 
 INCLUDE(CPack)
@@ -812,6 +859,6 @@ OPTION(ENABLE_GCOV_DATA_FILES "Creates .gcda and .gcno files for coverage" OFF)
 MARK_AS_ADVANCED(ENABLE_GCOV_DATAFILES)
 
 IF(ENABLE_GCOV_DATA_FILES)
- SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
- SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-ENDIF(ENABLE_GCOV_DATA_FILES)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+ENDIF()

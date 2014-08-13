@@ -35,7 +35,7 @@ SET(Modules_FiniteElements_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_FiniteElements 
+SCIRUN_ADD_LIBRARY(Modules_FiniteElements 
   ${Modules_FiniteElements_HEADERS}
   ${Modules_FiniteElements_SRCS}
 )

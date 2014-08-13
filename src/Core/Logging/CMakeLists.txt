@@ -42,7 +42,7 @@ SET(Core_Logging_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Logging 
+SCIRUN_ADD_LIBRARY(Core_Logging 
   ${Core_Logging_HEADERS}
   ${Core_Logging_SRCS}
 )

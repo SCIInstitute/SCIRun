@@ -40,7 +40,7 @@ SET(Algorithms_DataIO_HEADERS
   TextToTriSurfField.h
 )
 
-ADD_LIBRARY(Algorithms_DataIO 
+SCIRUN_ADD_LIBRARY(Algorithms_DataIO 
   ${Algorithms_DataIO_HEADERS}
   ${Algorithms_DataIO_SRCS}
 )

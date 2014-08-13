@@ -39,7 +39,7 @@ SET(Core_ConsoleApplication_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_ConsoleApplication
+SCIRUN_ADD_LIBRARY(Core_ConsoleApplication
   ${Core_ConsoleApplication_HEADERS}
   ${Core_ConsoleApplication_SRCS}
 )
