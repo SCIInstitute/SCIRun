@@ -86,7 +86,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(255,255,255)</value>
+										<value>Color(160,160,164)</value>
 									</value>
 								</second>
 							</item>
@@ -210,7 +210,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(255,255,255)</value>
+										<value>Color(160,160,164)</value>
 									</value>
 								</second>
 							</item>
