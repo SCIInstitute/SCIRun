@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>344</width>
-    <height>363</height>
+    <width>334</width>
+    <height>377</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>321</width>
-     <height>341</height>
+     <width>301</width>
+     <height>351</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -34,8 +34,8 @@
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>291</width>
-       <height>301</height>
+       <width>2</width>
+       <height>2</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout"/>
@@ -43,7 +43,7 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>10</x>
        <y>0</y>
        <width>282</width>
        <height>311</height>
@@ -53,6 +53,9 @@
       <string>Isotropic Conductivities [S/m]</string>
      </property>
      <layout class="QFormLayout" name="formLayout">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
@@ -156,30 +159,13 @@
        </widget>
       </item>
       <item row="6" column="0">
-       <widget class="QLabel" name="label_8">
+       <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Internal Air (7):</string>
+         <string>Electrode Sponge (7):</string>
         </property>
        </widget>
       </item>
       <item row="6" column="1">
-       <widget class="QDoubleSpinBox" name="InternalAir_">
-        <property name="decimals">
-         <number>6</number>
-        </property>
-        <property name="value">
-         <double>0.000001000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Electrode Sponge (8):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="1">
        <widget class="QDoubleSpinBox" name="Electrode_">
         <property name="decimals">
          <number>6</number>
@@ -189,12 +175,27 @@
         </property>
        </widget>
       </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Internal Air (8):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QDoubleSpinBox" name="InternalAir_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="value">
+         <double>0.000001000000000</double>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </widget>
   </widget>
-  <zorder>tabWidget</zorder>
-  <zorder>groupBox</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
