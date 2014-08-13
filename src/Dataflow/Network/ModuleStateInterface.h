@@ -102,8 +102,6 @@ namespace Networks {
     return x ? any_cast_or_default_<T>(*x) : T();
   }
 
-  SCISHARE std::ostream& operator<<(std::ostream& ostr, const ModuleStateInterface::TransientValue& tv);
-  
   class SCISHARE StateChangeObserver
   {
   public:
