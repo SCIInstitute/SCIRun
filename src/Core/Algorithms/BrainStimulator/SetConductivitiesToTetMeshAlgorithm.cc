@@ -27,7 +27,9 @@
  
  Author : Spencer Frisby, Moritz Dannhauer
  Date   : May 2014
- */
+*/
+
+#include <iostream>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
@@ -36,18 +38,21 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <iostream>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Testing/Utils/MatrixTestUtilities.h>
+
+#include <Core/Logging/Log.h>
+
+#include <boost/assign.hpp>
 
 using namespace boost::assign;
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
 
 ALGORITHM_PARAMETER_DEF(BrainStimulator, Skin);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, SoftBone);
@@ -112,12 +117,20 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
 
   using namespace Parameters;
 
+  Log::get() << DEBUG_LOG << "SetConductivitiesToTetMeshAlgorithm parameters:"
+  << "\n\tSkin = " << get(Skin).getDouble()
+  << "\n\tSoftBone = " << get(SoftBone).getDouble()
+  << "\n\tHardBone = " << get(HardBone).getDouble()
+  << "\n\tCSF = " << get(CSF).getDouble()
+  << "\n\tGM = " << get(GM).getDouble()
+  << "\n\tWM = " << get(WM).getDouble()
+  << "\n\tElectrode = " << get(Electrode).getDouble()
+  << "\n\tInternalAir = " << get(InternalAir).getDouble() << std::endl;
+
   /// array holding conductivities
   /// @todo: enable when VS2013 is supported
 //  std::vector<double> conductivities = {get(Skin).getDouble(), get(SoftBone).getDouble(), get(HardBone).getDouble(),
 //  get(CSF).getDouble(), get(GM).getDouble(), get(WM).getDouble(), get(Electrode).getDouble(), get(InternalAir).getDouble()};
-
-std::cerr << "algo parameters = [ " << get(Skin).getDouble() << ", " << get(SoftBone).getDouble() << ", " << get(HardBone).getDouble() << ", " << get(CSF).getDouble() << ", " << get(GM).getDouble() << ", " << get(WM).getDouble() << ", " << get(Electrode).getDouble() << ", " <<  get(InternalAir).getDouble() << " ]" << std::endl;
 
   // stopgap measure until VS2013 is supported
   std::vector<double> conductivities;
@@ -125,20 +138,7 @@ std::cerr << "algo parameters = [ " << get(Skin).getDouble() << ", " << get(Soft
   get(CSF).getDouble(), get(GM).getDouble(), get(WM).getDouble(), get(Electrode).getDouble(), get(InternalAir).getDouble();
 
   
-  // test
-  std::ostringstream oss;
-  for (size_t i = 0; i < conductivities.size(); ++i)
-  {
-    oss << conductivities[i];
-    if (i < conductivities.size() - 1)
-    {
-      oss << ", ";
-    }
-  }
-  std::cerr << "conductivities = [ " << oss.str() << " ]" << std::endl;
-  // test
-  
-  //check if defined conductivities and lookup table are consistent
+  // check if defined conductivities and lookup table are consistent
   if (conductivities.size() != ElemLabelLookup.size())
     THROW_ALGORITHM_INPUT_ERROR("Defined conductivities and lookup table are inconsistent! ");
   
@@ -148,18 +148,19 @@ std::cerr << "algo parameters = [ " << get(Skin).getDouble() << ", " << get(Soft
   int val = 0;
   int cnt = 0;
   
-  for (VMesh::Elem::index_type i = 0; i < vfield->vmesh()->num_elems(); i++) /// loop over all tetrahedral elements
+  for (VMesh::Elem::index_type i = 0; i < vfield->vmesh()->num_elems(); i++) // loop over all tetrahedral elements
   {
     vfield->get_value(val, i);  //get the data value stored on the current element
     
-    bool found=false; // boolean that indicates if element label was found in lookup
-    
-    for (size_t j = 0; j < ElemLabelLookup.size(); ++j) // loop over lookup table and check if the current element has one of the desired labels, if not error
+    bool found = false; // boolean that indicates if element label was found in lookup
+
+     // loop over lookup table and check if the current element has one of the desired labels, if not error
+    for (size_t j = 0; j < ElemLabelLookup.size(); ++j)
     {
       if (val == ElemLabelLookup[j])
       {
         ofield->set_value(conductivities[j], i); // if so, set it to the isotropic conductivity value
-        found=true;
+        found = true;
         break;
       }
     }
