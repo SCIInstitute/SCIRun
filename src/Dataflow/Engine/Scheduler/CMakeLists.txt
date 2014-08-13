@@ -66,7 +66,7 @@ SET(Engine_Scheduler_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Engine_Scheduler 
+SCIRUN_ADD_LIBRARY(Engine_Scheduler 
   ${Engine_Scheduler_HEADERS}
   ${Engine_Scheduler_SRCS}
 )

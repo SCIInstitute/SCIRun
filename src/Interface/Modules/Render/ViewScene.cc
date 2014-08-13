@@ -48,6 +48,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
 
   addToolBar();
+  addViewBar();
   
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -177,6 +178,45 @@ void ViewSceneDialog::autoViewClicked()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::viewBarButtonClicked()
+{
+	hideViewBar_ = !hideViewBar_;
+	mViewBar->setHidden(hideViewBar_);
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::viewChangedPosX(int index)
+{
+	viewBarButtonClicked();
+}
+
+void ViewSceneDialog::viewChangedPosY(int index)
+{
+	viewBarButtonClicked();
+}
+
+void ViewSceneDialog::viewChangedPosZ(int index)
+{
+	viewBarButtonClicked();
+}
+
+void ViewSceneDialog::viewChangedNegX(int index)
+{
+	viewBarButtonClicked();
+}
+
+void ViewSceneDialog::viewChangedNegY(int index)
+{
+	viewBarButtonClicked();
+}
+
+void ViewSceneDialog::viewChangedNegZ(int index)
+{
+	viewBarButtonClicked();
+}
+
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar() 
 {
   mToolBar = new QToolBar(this);
@@ -184,6 +224,7 @@ void ViewSceneDialog::addToolBar()
   addMouseMenu();
   addAutoViewButton();
   addObjectToggleMenu();
+  addViewBarButton();
 
   glLayout->addWidget(mToolBar);
 }
@@ -229,6 +270,74 @@ void ViewSceneDialog::addObjectToggleMenu()
   combo->setModel(itemManager_->model());
   mToolBar->addWidget(combo);
   mToolBar->addSeparator();
+}
+
+void ViewSceneDialog::addViewBarButton()
+{
+	QPushButton* viewBarBtn = new QPushButton(this);
+	viewBarBtn->setText("Views");
+	viewBarBtn->setAutoDefault(false);
+	viewBarBtn->setDefault(false);
+	connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
+	mToolBar->addWidget(viewBarBtn);
+	mToolBar->addSeparator();
+}
+
+void ViewSceneDialog::addViewBar()
+{
+	mViewBar = new QToolBar(this);
+
+	addViewOptions();
+	hideViewBar_ = true;
+
+	mViewBar->setHidden(hideViewBar_);
+
+	glLayout->addWidget(mViewBar);
+}
+
+void ViewSceneDialog::addViewOptions()
+{
+	QComboBox* posXCombo = createViewBox("Look Down +X Axis", "Up Vector +Y", "Up Vector -Y", "Up Vector +Z", "Up Vector -Z");	
+	connect(posXCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedPosX(int)));
+	mViewBar->addWidget(posXCombo);
+	mViewBar->addSeparator();
+
+	QComboBox* posYCombo = createViewBox("Look Down +Y Axis", "Up Vector +X", "Up Vector -X", "Up Vector +Z", "Up Vector -Z");	
+	connect(posYCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedPosY(int)));
+	mViewBar->addWidget(posYCombo);
+	mViewBar->addSeparator();
+
+	QComboBox* posZCombo = createViewBox("Look Down +Z Axis", "Up Vector +X", "Up Vector -X", "Up Vector +Y", "Up Vector -Y");	
+	connect(posZCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedPosZ(int)));
+	mViewBar->addWidget(posZCombo);
+	mViewBar->addSeparator();
+
+	QComboBox* negXCombo = createViewBox("Look Down -X Axis", "Up Vector +Y", "Up Vector -Y", "Up Vector +Z", "Up Vector -Z");	
+	connect(negXCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedNegX(int)));
+	mViewBar->addWidget(negXCombo);
+	mViewBar->addSeparator();
+
+	QComboBox* negYCombo = createViewBox("Look Down -Y Axis", "Up Vector +X", "Up Vector -X", "Up Vector +Z", "Up Vector -Z");	
+	connect(negYCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedNegY(int)));
+	mViewBar->addWidget(negYCombo);
+	mViewBar->addSeparator();
+
+	QComboBox* negZCombo = createViewBox("Look Down -Z Axis",  "Up Vector +X", "Up Vector -X", "Up Vector +Y", "Up Vector -Y");	
+	connect(negZCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedNegZ(int)));
+	mViewBar->addWidget(negZCombo);
+	mViewBar->addSeparator();
+}
+
+QComboBox* ViewSceneDialog::createViewBox(QString title, QString element1, QString element2, QString element3, QString element4)
+{
+	QComboBox* combo = new QComboBox();
+	combo->addItem(title);
+	combo->addItem(element1);
+	combo->addItem(element2);
+	combo->addItem(element3);
+	combo->addItem(element4);
+
+	return combo;
 }
 
 void ViewSceneDialog::showEvent(QShowEvent *evt)

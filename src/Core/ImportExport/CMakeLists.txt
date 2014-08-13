@@ -41,7 +41,10 @@ SET(Core_ImportExport_HEADERS
   GenericIEPlugin.h
 )
 
-ADD_LIBRARY(Core_ImportExport ${Core_ImportExport_SRCS} ${Core_ImportExport_HEADERS})
+SCIRUN_ADD_LIBRARY(Core_ImportExport
+  ${Core_ImportExport_SRCS}
+  ${Core_ImportExport_HEADERS}
+)
 
 TARGET_LINK_LIBRARIES(Core_ImportExport 
   Core_Thread 

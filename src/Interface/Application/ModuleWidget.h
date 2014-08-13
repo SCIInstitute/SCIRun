@@ -97,6 +97,8 @@ public:
   virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber);
   virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber);
 
+  void updateNoteFromFile(const Note& note);
+
 public Q_SLOTS:
   virtual void execute();
   void toggleOptionsDialog();
@@ -127,6 +129,7 @@ Q_SIGNALS:
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged();
+  void noteChanged();
 private Q_SLOTS:
   void updateBackgroundColor(const QString& color);
 private:

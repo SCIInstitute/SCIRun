@@ -57,7 +57,7 @@ SET(Modules_Math_HEADERS
   SolveLinearSystem.h
 )
 
-ADD_LIBRARY(Modules_Math 
+SCIRUN_ADD_LIBRARY(Modules_Math 
   ${Modules_Math_HEADERS}
   ${Modules_Math_SRCS}
 )

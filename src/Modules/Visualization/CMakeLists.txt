@@ -41,7 +41,7 @@ SET(Modules_Visualization_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_Visualization 
+SCIRUN_ADD_LIBRARY(Modules_Visualization 
   ${Modules_Visualization_HEADERS}
   ${Modules_Visualization_SRCS}
 )

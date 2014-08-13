@@ -36,7 +36,7 @@ SET(Algorithms_Factory_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Algorithms_Factory 
+SCIRUN_ADD_LIBRARY(Algorithms_Factory 
   ${Algorithms_Factory_HEADERS}
   ${Algorithms_Factory_SRCS}
 )

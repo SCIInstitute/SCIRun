@@ -64,7 +64,7 @@ SET(Dataflow_Network_HEADERS
   SimpleSourceSink.h
 )
 
-ADD_LIBRARY(Dataflow_Network 
+SCIRUN_ADD_LIBRARY(Dataflow_Network 
   ${Dataflow_Network_HEADERS}
   ${Dataflow_Network_SRCS}
 )
