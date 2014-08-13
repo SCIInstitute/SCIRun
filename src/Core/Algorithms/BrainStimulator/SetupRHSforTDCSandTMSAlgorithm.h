@@ -32,32 +32,32 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
-  
+
+  ALGORITHM_PARAMETER_DECL(ElectrodeTableValues);
+  ALGORITHM_PARAMETER_DECL(ELECTRODE_VALUES);
+
   class SCISHARE SetupRHSforTDCSandTMSAlgorithm : public AlgorithmBase
   {
   public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
-
+    SetupRHSforTDCSandTMSAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
+    SCIRun::Core::Datatypes::DenseMatrixHandle run(FieldHandle fh, const std::vector<Variable>& elcs, int num_of_elc) const;
+    
+    static AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
+    static AlgorithmInputName ELECTRODE_COUNT;
+    static AlgorithmOutputName RHS;
+    
+    static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName (int i);
+    static int initialElectrodeValue (int row);
 
   private:
-  
-    
+    static const int TOTAL_ELECTRODES = 128;
   };
 
 }}}}

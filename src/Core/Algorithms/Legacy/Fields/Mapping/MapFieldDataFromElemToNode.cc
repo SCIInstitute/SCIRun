@@ -247,25 +247,27 @@ AlgorithmOutput MapFieldDataFromElemToNodeAlgo::run_generic(const AlgorithmInput
 /// Function call to convert data from Field into Matrix data
 FieldHandle MapFieldDataFromElemToNodeAlgo::run(FieldHandle input_field) const
 {   
-  FieldHandle output;
+   FieldHandle output;
 
-  if (!input_field)
-  {
-    THROW_ALGORITHM_INPUT_ERROR("Input field is not allocated");
-  } 
-
-  FieldInformation fi(input_field);
-  FieldInformation fo(input_field);
-
-  if (fi.is_lineardata())
-  {
-    THROW_ALGORITHM_INPUT_ERROR("Data is already located at nodes"); 
-  }
-
-  if (!(fi.is_constantdata()))
-  {
+   if (!input_field)
+   {
+     THROW_ALGORITHM_INPUT_ERROR("Input field is not allocated");
+   } 
+    
+   FieldInformation fi(input_field);
+   FieldInformation fo(input_field);
+   
+   if (fi.is_lineardata())
+   {
+      output = input_field;
+      remark("Data is already at the nodes"); 
+      return output;
+   }
+   
+   if (!(fi.is_constantdata()))
+   {
     THROW_ALGORITHM_INPUT_ERROR("The input data needs to be located at the elements");
-  }
+   }
 
   fo.make_lineardata();
 

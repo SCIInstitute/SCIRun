@@ -25,53 +25,44 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#include <iostream>
-#include <Core/Datatypes/String.h>
-#include <Core/Datatypes/Scalar.h>
+
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <vector>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
 SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookupInfo("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION2);
- INITIALIZE_PORT(COIL);
- INITIALIZE_PORT(COIL2);
- INITIALIZE_PORT(ELECTRODES_FIELD);
- INITIALIZE_PORT(COILS_FIELD);
+ INITIALIZE_PORT(ELECTRODE_COUNT);
+ INITIALIZE_PORT(RHS);
 }
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
-  /// @todo
+
 }
 
 void SetupRHSforTDCSandTMSModule::execute()
-{
+{ 
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
-   // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
+  auto elc_count = getRequiredInput(ELECTRODE_COUNT);
 
-  //algorithm parameter
-  //algo_->set(Variables::AppendMatrixOption, param);
+  // obtaining electrode values from state map
+  auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).getList();
+  algo().set(Parameters::ELECTRODE_VALUES, elc_vals_from_state);
  
-  
-  //algorithm input and run
-  auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_TRIANGULATION, elc_tri_mesh)));
-
-  //algorithm output
-  sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
-  sendOutputFromAlgorithm(COILS_FIELD, output);
+  if (needToExecute())
+  {
+    auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_COUNT, elc_count)));
+	  sendOutputFromAlgorithm(RHS, output);
+  }
 }
