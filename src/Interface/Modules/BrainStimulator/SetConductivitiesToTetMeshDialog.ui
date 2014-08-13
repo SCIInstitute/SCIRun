@@ -45,248 +45,156 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>289</width>
+       <width>282</width>
        <height>311</height>
       </rect>
      </property>
      <property name="title">
       <string>Isotropic Conductivities [S/m]</string>
      </property>
-     <widget class="QLabel" name="label_2">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>100</y>
-        <width>131</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Hard skull bone (3):</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_3">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>130</y>
-        <width>151</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Cerebrospinal fluid (4):</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="Skin_">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>40</y>
-        <width>91</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>6</number>
-      </property>
-      <property name="value">
-       <double>0.430000000000000</double>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="HardBone_">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>100</y>
-        <width>91</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>6</number>
-      </property>
-      <property name="value">
-       <double>0.006400000000000</double>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="CSF_">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>130</y>
-        <width>91</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>6</number>
-      </property>
-      <property name="value">
-       <double>1.790000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_4">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>250</y>
-        <width>111</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Elec. Sponge (8):</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="Electrode_">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>250</y>
-        <width>91</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>6</number>
-      </property>
-      <property name="value">
-       <double>1.400000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>60</x>
-        <y>40</y>
-        <width>62</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Skin (1):</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_5">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>160</y>
-        <width>141</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>brain gray matter (5):</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="GM_">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>160</y>
-        <width>91</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>6</number>
-      </property>
-      <property name="value">
-       <double>0.330000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_6">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>190</y>
-        <width>151</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>brain white matter (6):</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="WM_">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>190</y>
-        <width>91</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>6</number>
-      </property>
-      <property name="value">
-       <double>0.142000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_7">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>70</y>
-        <width>131</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Soft skull bone (2):</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="SoftBone_">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>70</y>
-        <width>91</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>6</number>
-      </property>
-      <property name="value">
-       <double>0.028560000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_8">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>220</y>
-        <width>101</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>internal air (7):</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="InternalAir_">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>220</y>
-        <width>91</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>6</number>
-      </property>
-      <property name="value">
-       <double>0.000001000000000</double>
-      </property>
-     </widget>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Skin (1):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="Skin_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="value">
+         <double>0.430000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Soft skull bone (2):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="SoftBone_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="value">
+         <double>0.028560000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Hard skull bone (3):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="HardBone_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="value">
+         <double>0.006400000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Cerebrospinal fluid (4):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="CSF_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="value">
+         <double>1.790000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Brain Gray Matter (5):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QDoubleSpinBox" name="GM_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="value">
+         <double>0.330000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Brain White Matter (6):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QDoubleSpinBox" name="WM_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="value">
+         <double>0.142000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Internal Air (7):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QDoubleSpinBox" name="InternalAir_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="value">
+         <double>0.000001000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Electrode Sponge (8):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QDoubleSpinBox" name="Electrode_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="value">
+         <double>1.400000000000000</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </widget>
   </widget>
+  <zorder>tabWidget</zorder>
+  <zorder>groupBox</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

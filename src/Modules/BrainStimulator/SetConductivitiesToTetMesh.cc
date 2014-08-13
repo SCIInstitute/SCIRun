@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2014 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -46,41 +46,42 @@ using namespace SCIRun::Dataflow::Networks;
 
 SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(ModuleLookupInfo("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun"))
 {
- INITIALIZE_PORT(MESH);
- INITIALIZE_PORT(OUTPUTMESH);
+ INITIALIZE_PORT(InputField);
+ INITIALIZE_PORT(OutputField);
 }
 
 void SetConductivitiesToTetMeshModule::setStateDefaults()
 {
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Skin());
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::SoftBone());
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::HardBone());
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::CSF());
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::GM());
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::WM());
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::Electrode());
-  setStateDoubleFromAlgo(SetConductivitiesToTetMeshAlgorithm::InternalAir());
+  setStateDoubleFromAlgo(Parameters::Skin);
+  setStateDoubleFromAlgo(Parameters::SoftBone);
+  setStateDoubleFromAlgo(Parameters::HardBone);
+  setStateDoubleFromAlgo(Parameters::CSF);
+  setStateDoubleFromAlgo(Parameters::GM);
+  setStateDoubleFromAlgo(Parameters::WM);
+  setStateDoubleFromAlgo(Parameters::Electrode);
+  setStateDoubleFromAlgo(Parameters::InternalAir);
 }
 
 void SetConductivitiesToTetMeshModule::execute()
 {
-  auto mesh = getRequiredInput(MESH);
- 
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Skin());
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::SoftBone());
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::HardBone());
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::CSF());
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::GM());
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::WM());
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::Electrode());
-  setAlgoDoubleFromState(SetConductivitiesToTetMeshAlgorithm::InternalAir());
+  auto mesh = getRequiredInput(InputField);
   
   if (needToExecute())
   {
-    /// algorithm input and run, 
-    auto output = algo().run_generic(make_input((MESH, mesh)));
+    setAlgoDoubleFromState(Parameters::Skin);
+    setAlgoDoubleFromState(Parameters::SoftBone);
+    setAlgoDoubleFromState(Parameters::HardBone);
+    setAlgoDoubleFromState(Parameters::CSF);
+    setAlgoDoubleFromState(Parameters::GM);
+    setAlgoDoubleFromState(Parameters::WM);
+    setAlgoDoubleFromState(Parameters::Electrode);
+    setAlgoDoubleFromState(Parameters::InternalAir);
+
+    /// algorithm input and run,
+    auto input = make_input((InputField, mesh));
+    auto output = algo().run_generic(input);
    
     /// algorithm output
-    sendOutputFromAlgorithm(OUTPUTMESH, output);
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }

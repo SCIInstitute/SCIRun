@@ -474,7 +474,7 @@
 				</port1_>
 				<moduleId2_>SetConductivitiesToTetMesh:138</moduleId2_>
 				<port2_>
-					<name>MESH</name>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -498,7 +498,7 @@
 				</port1_>
 				<moduleId2_>SetConductivitiesToTetMesh:137</moduleId2_>
 				<port2_>
-					<name>MESH</name>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -522,14 +522,14 @@
 				</port1_>
 				<moduleId2_>SetConductivitiesToTetMesh:134</moduleId2_>
 				<port2_>
-					<name>MESH</name>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
 				<moduleId1_>SetConductivitiesToTetMesh:134</moduleId1_>
 				<port1_>
-					<name>OUTPUTMESH</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportFieldInfo:135</moduleId2_>
@@ -541,7 +541,7 @@
 			<item>
 				<moduleId1_>SetConductivitiesToTetMesh:137</moduleId1_>
 				<port1_>
-					<name>OUTPUTMESH</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportFieldInfo:142</moduleId2_>
@@ -553,7 +553,7 @@
 			<item>
 				<moduleId1_>SetConductivitiesToTetMesh:138</moduleId1_>
 				<port1_>
-					<name>OUTPUTMESH</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportFieldInfo:141</moduleId2_>

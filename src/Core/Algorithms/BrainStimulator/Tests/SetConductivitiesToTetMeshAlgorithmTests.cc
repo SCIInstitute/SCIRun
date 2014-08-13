@@ -62,19 +62,50 @@ namespace
   }
 }
 
+TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalars)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  
+  double conductivities[] = {9.25, 25.1988, 18.99999, 3.5, 5.1988, 5.22, 22.2013};
+  
+  algo.set(Parameters::Skin,  conductivities[0]);
+  algo.set(Parameters::SoftBone, conductivities[1]);
+  algo.set(Parameters::HardBone, conductivities[2]);
+  algo.set(Parameters::CSF,   conductivities[3]);
+  algo.set(Parameters::GM,    conductivities[4]);
+  algo.set(Parameters::WM,    conductivities[5]);
+  algo.set(Parameters::Electrode, conductivities[6]);
+  
+  auto input  = CreateTetMeshScalarSevenElem();
+  auto output = algo.run(input);
+  
+  VField* ivfield = input->vfield();
+  VField* ovfield = output->vfield();
+  int ival = 0;
+  double oval = 0;
+std::cerr << "ivfield->vmesh()->num_elems()=" << ivfield->vmesh()->num_elems() << ", ovfield->vmesh()->num_elems()=" << ovfield->vmesh()->num_elems() << std::endl;
+  for (VMesh::Elem::index_type i=0; i < ivfield->vmesh()->num_elems(); i++)
+  {
+    ivfield->get_value(ival, i);
+    ovfield->get_value(oval, i);
+std::cerr << "i=" << i << ", ival=" << ival << ", oval=" << oval << ", conductivities[" << ival-1 << "]=" << conductivities[ival-1] << std::endl;
+    EXPECT_EQ(oval, conductivities[ival-1]);
+  }
+}
+
 TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   
   double conductivities[] = {9.25, 25.1988, 18.99999, 3.5, 5.1988, 5.22, 22.2013};
   
-  algo.set(SetConductivitiesToTetMeshAlgorithm::Skin(),  conductivities[0]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::SoftBone(), conductivities[1]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::HardBone(), conductivities[2]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),   conductivities[3]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::GM(),    conductivities[4]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::WM(),    conductivities[5]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::Electrode(), conductivities[6]);
+  algo.set(Parameters::Skin,  conductivities[0]);
+  algo.set(Parameters::SoftBone, conductivities[1]);
+  algo.set(Parameters::HardBone, conductivities[2]);
+  algo.set(Parameters::CSF,   conductivities[3]);
+  algo.set(Parameters::GM,    conductivities[4]);
+  algo.set(Parameters::WM,    conductivities[5]);
+  algo.set(Parameters::Electrode, conductivities[6]);
   
   FieldHandle input  = CreateTetMeshScalarSevenElem();
   FieldHandle output = algo.run(CreateTetMeshScalarSevenElem());
@@ -98,10 +129,10 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarThreeElem)
   SetConductivitiesToTetMeshAlgorithm algo;
   double conductivities[] = {9.25, 18.999, 123,456, 25.1988};
   
-  algo.set(SetConductivitiesToTetMeshAlgorithm::Skin(),  conductivities[0]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::SoftBone(), conductivities[1]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::HardBone(), conductivities[2]);
-  algo.set(SetConductivitiesToTetMeshAlgorithm::CSF(),   conductivities[4]);
+  algo.set(Parameters::Skin,  conductivities[0]);
+  algo.set(Parameters::SoftBone, conductivities[1]);
+  algo.set(Parameters::HardBone, conductivities[2]);
+  algo.set(Parameters::CSF,   conductivities[4]);
   
   FieldHandle input  = CreateTetMeshScalarOnElem();
   FieldHandle output = algo.run(CreateTetMeshScalarOnElem());

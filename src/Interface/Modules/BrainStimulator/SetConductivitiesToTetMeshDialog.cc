@@ -43,14 +43,15 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addDoubleSpinBoxManager(Skin_,       SetConductivitiesToTetMeshAlgorithm::Skin());
-  addDoubleSpinBoxManager(SoftBone_,   SetConductivitiesToTetMeshAlgorithm::SoftBone());
-  addDoubleSpinBoxManager(HardBone_,   SetConductivitiesToTetMeshAlgorithm::HardBone());
-  addDoubleSpinBoxManager(CSF_,        SetConductivitiesToTetMeshAlgorithm::CSF());
-  addDoubleSpinBoxManager(GM_,         SetConductivitiesToTetMeshAlgorithm::GM());
-  addDoubleSpinBoxManager(WM_,         SetConductivitiesToTetMeshAlgorithm::WM());
-  addDoubleSpinBoxManager(Electrode_,  SetConductivitiesToTetMeshAlgorithm::Electrode());
-  addDoubleSpinBoxManager(InternalAir_,  SetConductivitiesToTetMeshAlgorithm::InternalAir());
+  using namespace Parameters;
+  addDoubleSpinBoxManager(Skin_,        Skin);
+  addDoubleSpinBoxManager(SoftBone_,    SoftBone);
+  addDoubleSpinBoxManager(HardBone_,    HardBone);
+  addDoubleSpinBoxManager(CSF_,         CSF);
+  addDoubleSpinBoxManager(GM_,          GM);
+  addDoubleSpinBoxManager(WM_,          WM);
+  addDoubleSpinBoxManager(Electrode_,   Electrode);
+  addDoubleSpinBoxManager(InternalAir_, InternalAir);
 }
 
 void SetConductivitiesToTetMeshDialog::push()
