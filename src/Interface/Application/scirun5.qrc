@@ -12,5 +12,6 @@
         <file>Resources/hideAll.png</file>
         <file>Resources/rightAll.png</file>
         <file>Resources/showAll.png</file>
+        <file>Resources/inflicted2X.png</file>
     </qresource>
 </RCC>
