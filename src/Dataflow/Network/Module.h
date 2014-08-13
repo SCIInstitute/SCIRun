@@ -28,7 +28,7 @@
 /// @todo Documentation Dataflow/Network/Module.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_H
-#define DATAFLOW_NETWORK_MODULE_H 
+#define DATAFLOW_NETWORK_MODULE_H
 
 #include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
@@ -49,12 +49,12 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
-  
+
   class SCISHARE Module : public ModuleInterface, public Core::Logging::LegacyLoggerInterface, public StateChangeObserver, boost::noncopyable
   {
   public:
-    Module(const ModuleLookupInfo& info, 
-      bool hasUi = true, 
+    Module(const ModuleLookupInfo& info,
+      bool hasUi = true,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory = defaultAlgoFactory_,
       ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       const std::string& version = "1.0");
@@ -68,12 +68,12 @@ namespace Networks {
     //for serialization
     virtual const ModuleLookupInfo& get_info() const { return info_; }
     virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
-  
+
     //for unit testing. Need to restrict access somehow.
     static void resetInstanceCount();
 
     bool has_ui() const { return has_ui_; }
-    void setUiVisible(bool visible); 
+    void setUiVisible(bool visible);
     virtual size_t num_input_ports() const;
     virtual size_t num_output_ports() const;
 
@@ -115,7 +115,7 @@ namespace Networks {
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber);
-  
+
     virtual void addPortConnection(const boost::signals2::connection& con) override;
 
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const { return algo_; }
@@ -125,7 +125,7 @@ namespace Networks {
     virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const override;
     virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override;
 
-    virtual bool hasDynamicPorts() const 
+    virtual bool hasDynamicPorts() const
     {
       return false; /// @todo: need to examine HasPorts base classes
     }
@@ -139,16 +139,16 @@ namespace Networks {
       explicit PortNameBase(const PortId& id) : id_(id) {}
       //operator size_t() const { return N; }
 
-      operator PortId() const 
+      operator PortId() const
       {
         return toId();
       }
 
       PortId toId() const
-      { 
+      {
         if (id_.name.empty())
           BOOST_THROW_EXCEPTION(DataPortException() << SCIRun::Core::ErrorMessage("Port name not initialized!"));
-        return id_; 
+        return id_;
       }
       operator std::string() const
       {
@@ -157,7 +157,7 @@ namespace Networks {
 
       PortId id_;
     };
-    
+
     template <class Type, size_t N>
     struct StaticPortName : PortNameBase<Type,N>
     {
@@ -256,14 +256,14 @@ namespace Networks {
     boost::shared_ptr<T> checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 
     boost::atomic<bool> inputsChanged_;
-    
+
 
     friend class Builder;
 
     bool has_ui_;
 
     Core::Algorithms::AlgorithmHandle algo_;
-   
+
     ModuleStateHandle state_;
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
@@ -292,7 +292,7 @@ namespace Networks {
 
     return checkInput<T>(inputOpt, id);
   }
-  
+
   template <class T, size_t N>
   boost::shared_ptr<T> Module::getRequiredInput(const StaticPortName<T,N>& port)
   {
@@ -346,7 +346,7 @@ namespace Networks {
     BOOST_STATIC_ASSERT(datatypeForThisPortMustBeCompatible);
     send_output_handle(port.id_, data);
   }
-  
+
   template <class T, size_t N>
   void Module::sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
   {
@@ -356,10 +356,14 @@ namespace Networks {
   template <class T>
   boost::shared_ptr<T> Module::checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id)
   {
+    if (!inputOpt)
+      MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port " + id.name);
+
     if (!*inputOpt)
       MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port " + id.name);
 
     boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
+
     if (!data)
     {
       std::ostringstream ostr;
@@ -477,32 +481,32 @@ namespace Modules
   struct SCISHARE DatatypePortTag {};
 
   template <typename Base>
-  struct DynamicPortTag : Base 
+  struct DynamicPortTag : Base
   {
     typedef Base type;
   };
 
   template <typename Base>
-  struct AsyncDynamicPortTag : DynamicPortTag<Base> 
+  struct AsyncDynamicPortTag : DynamicPortTag<Base>
   {
     typedef Base type;
   };
-  
+
   template <size_t N>
   struct NumInputPorts
   {
     enum { NumIPorts = N };
   };
-  
+
   template <size_t N>
   struct NumOutputPorts
   {
     enum { NumOPorts = N };
   };
-  
+
   struct HasNoInputPorts : NumInputPorts<0> {};
   struct HasNoOutputPorts : NumOutputPorts<0> {};
-  
+
   //MEGA TODO: these will become variadic templates in VS2013
   template <class PortTypeTag>
   class Has1InputPort : public NumInputPorts<1>
@@ -547,7 +551,7 @@ namespace Modules
       return ports;
     }
   };
-  
+
   template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3, class PortTypeTag4>
   class Has5InputPorts : public NumInputPorts<5>
   {
@@ -559,7 +563,7 @@ namespace Modules
       return ports;
     }
   };
-  
+
   template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3, class PortTypeTag4, class PortTypeTag5>
   class Has6InputPorts : public NumInputPorts<6>
   {
@@ -802,7 +806,7 @@ namespace Modules
       return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name());
     }
   };
-  
+
   template <class ModuleType>
   struct IPortDescriber<5, ModuleType>
   {
@@ -811,7 +815,7 @@ namespace Modules
       return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name(), ModuleType::inputPort4Name());
     }
   };
-  
+
   template <class ModuleType>
   struct IPortDescriber<6, ModuleType>
   {

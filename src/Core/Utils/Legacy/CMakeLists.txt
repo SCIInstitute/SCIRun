@@ -68,10 +68,10 @@ SET(Core_Util_Legacy_HEADERS
   TypeDescription.h
 )
 
-ADD_LIBRARY(Core_Util_Legacy 
+SCIRUN_ADD_LIBRARY(Core_Util_Legacy 
   ${Core_Util_Legacy_SRCS}
   ${Core_Util_Legacy_HEADERS}
-  )
+)
 
 TARGET_LINK_LIBRARIES(Core_Util_Legacy 
   Core_Exceptions_Legacy 

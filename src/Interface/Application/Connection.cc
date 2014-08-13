@@ -45,9 +45,23 @@ public:
   void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
   {
     QPainterPath path;
-    path.moveTo(from);
-    path.lineTo(to);
-    item->setPath(path);
+
+		if (from.y() > to.y() - 15)
+		{
+				path.moveTo(from);
+				path.lineTo(from.x(),from.y()+6);
+				path.lineTo(to.x(), to.y()-8); 
+				path.lineTo(to);
+				item->setPath(path);
+		}
+		else
+		{
+				path.moveTo(from);
+				path.lineTo(from.x(),from.y());
+				path.lineTo(to.x(), to.y()); 
+				path.lineTo(to);
+				item->setPath(path);
+		}
   }
 };
 
@@ -74,7 +88,6 @@ public:
   }
 };
 
-
 class ManhattanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
@@ -93,6 +106,53 @@ public:
       path.lineTo(to.x(), to.y() - case1Threshold);
       path.lineTo(to);
     }
+    else // output above input
+    {
+      auto midY = (from.y() + to.y()) / 2;
+      path.lineTo(from.x(), midY);
+      path.lineTo(to.x(), midY);
+      path.lineTo(to);
+    }
+    item->setPath(path);
+  }
+};
+/*//This is my attempt at improving the wrapping of connectionLines around the modules
+class ManhattanDrawStrategy : public ConnectionDrawStrategy
+{
+public:
+  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
+  {
+    QPainterPath path;
+    path.moveTo(from);
+    const int case1Threshold = 15;
+		if (from.y() > to.y() - case1Threshold) // input above output
+		{
+				//option 1 uses detection collision, not perfect 
+				int collisions = item->collidingItems().count();
+				if (collisions < 1) collisions = 1; 
+				path.lineTo(from.x(), from.y() + case1Threshold);
+				int leftSideBuffer = collisions * 15;
+				
+				//Option 2 -> noticeably slower 
+				//QList<QGraphicsItem*> collidesWithConnectionLine = item->collidingItems(); 
+				//if(!collidesWithConnectionLine.isEmpty())
+				//{
+				//		Q_FOREACH(QGraphicsItem* item_, collidesWithConnectionLine)
+				//				if(auto w = dynamic_cast<ConnectionLine*>(item_))
+				//				{
+				//						leftSideBuffer = leftSideBuffer + 15; 
+				//				}
+				//}
+				if (to.x() > from.x())
+						{
+								leftSideBuffer = 15;
+						}
+				auto nextX = std::min(from.x() - leftSideBuffer, to.x() - leftSideBuffer); // TODO will be a function of port position
+				path.lineTo(nextX, from.y() + case1Threshold); // TODO will be a function of port position
+				path.lineTo(nextX, to.y() - case1Threshold);
+				path.lineTo(to.x(), to.y() - case1Threshold);
+				path.lineTo(to);
+		}
     else  // output above input
     {
       auto midY = (from.y() + to.y()) / 2;
@@ -103,7 +163,7 @@ public:
     item->setPath(path);
   }
 };
-
+*/
 namespace SCIRun
 {
   namespace Gui
@@ -239,24 +299,29 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
     drawer_ = cds;
     trackNodes();
   }
-} 
+}
+
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	this-> setColor(placeHoldingColor_);
+	setColor(placeHoldingColor_);
 	menuOpen_ = false; 
+	this->setZValue(0); 
   QGraphicsPathItem::mouseReleaseEvent(event);
 }
+
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {	 
 	this->setAcceptedMouseButtons(Qt::LeftButton);
 
-	if(!menuOpen_ )
+	if (!menuOpen_)
 	{
-		placeHoldingColor_ = this -> color();
-		this -> setColor(Qt::red);	
+		placeHoldingColor_ = color();
+		setColor(Qt::red);	
+		this->setZValue(100); 
 	}
   QGraphicsPathItem::mousePressEvent(event);
 }
+
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   auto action = menu_->exec(event->screenPos());
@@ -272,6 +337,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   }
   QGraphicsPathItem::mouseDoubleClickEvent(event);
 }
+
 void ConnectionLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
   QGraphicsPathItem::mouseMoveEvent(event);
@@ -290,13 +356,11 @@ QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& v
 	return QGraphicsItem::itemChange(change, value);
 }
 
-std::list<SCIRun::Dataflow::Networks::ModuleId> ConnectionLine::getConnectedToModuleId()
+ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
 {
-	std::list<SCIRun::Dataflow::Networks::ModuleId> mp; 
-	mp.push_front(toPort_->getUnderlyingModuleId()); 
-	mp.push_front(fromPort_->getUnderlyingModuleId());
-	return mp; 
+	return std::make_pair(toPort_->getUnderlyingModuleId(), fromPort_->getUnderlyingModuleId());
 }
+
 void ConnectionLine::setNoteGraphicsContext() 
 {
   scene_ = scene();
@@ -307,6 +371,12 @@ void ConnectionLine::setNoteGraphicsContext()
 void ConnectionLine::updateNote(const Note& note)
 {
   updateNoteImpl(note);
+}
+
+void ConnectionLine::updateNoteFromFile(const Note& note)
+{
+  setCurrentNote(note, true);
+  updateNote(note);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)

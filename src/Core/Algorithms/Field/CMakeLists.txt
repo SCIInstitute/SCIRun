@@ -37,7 +37,7 @@ SET(Algorithms_Field_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Algorithms_Field 
+SCIRUN_ADD_LIBRARY(Algorithms_Field 
   ${Algorithms_Field_HEADERS}
   ${Algorithms_Field_SRCS}
 )

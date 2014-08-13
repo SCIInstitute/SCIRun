@@ -42,7 +42,7 @@ SET(Modules_DataIO_HEADERS
   WriteMatrix.h
 )
 
-ADD_LIBRARY(Modules_DataIO 
+SCIRUN_ADD_LIBRARY(Modules_DataIO 
   ${Modules_DataIO_HEADERS}
   ${Modules_DataIO_SRCS}
 )

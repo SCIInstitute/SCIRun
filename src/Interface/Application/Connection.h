@@ -58,6 +58,8 @@ enum ConnectionDrawType
   MANHATTAN, EUCLIDEAN, CUBIC
 };
 
+typedef std::pair<SCIRun::Dataflow::Networks::ModuleId, SCIRun::Dataflow::Networks::ModuleId> ModuleIdPair;
+
 class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes, public NoteDisplayHelper, public NeedsScenePositionProvider
 {
   Q_OBJECT
@@ -67,8 +69,8 @@ public:
   ~ConnectionLine();
   void setColor(const QColor& color);
   QColor color() const; 
-  std::list<SCIRun::Dataflow::Networks::ModuleId> getConnectedToModuleId(); 
-  
+  ModuleIdPair getConnectedToModuleIds() const; 
+  void updateNoteFromFile(const Note& note);
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
@@ -76,6 +78,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
+  void noteChanged();
 protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override; 
   void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

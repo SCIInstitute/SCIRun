@@ -91,11 +91,37 @@ void NoteEditor::changeTextAlignment(const QString& text)
 void NoteEditor::changeTextColor()
 {
   auto newColor = QColorDialog::getColor(previousColor_, this, "Choose text color");
-  if (newColor.isValid())
+  setNoteColor(newColor);
+}
+
+void NoteEditor::setNoteHtml(const QString& text)
+{
+  textEdit_->blockSignals(true);
+  textEdit_->setHtml(text);
+  textEdit_->blockSignals(false);
+}
+
+void NoteEditor::setNoteFontSize(int size)
+{
+  textEdit_->blockSignals(true);
+  fontSizeComboBox_->blockSignals(true);
+  textEdit_->setFontPointSize(size);
+  textEdit_->setPlainText(textEdit_->toPlainText());
+  int index = fontSizeComboBox_->findText(QString::number(size));
+  if (index != -1)
+    fontSizeComboBox_->setCurrentIndex(index);
+  textEdit_->blockSignals(false);
+  fontSizeComboBox_->blockSignals(false);
+}
+
+void NoteEditor::setNoteColor(const QColor& color)
+{
+  if (color.isValid())
   {
     previousColor_ = textEdit_->textColor();
-    textEdit_->setTextColor(newColor);
+    textEdit_->setTextColor(color);
     textEdit_->setPlainText(textEdit_->toPlainText());
+    updateNote();
   }
 }
 

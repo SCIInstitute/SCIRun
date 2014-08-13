@@ -267,7 +267,7 @@ namespace Algorithms {
     std::string get_option(const AlgorithmParameterName& key) const;
     bool check_option(const AlgorithmParameterName& key, const std::string& value) const;
 
-    virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key);
+    virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key) const;
 
   protected:
     void dumpAlgoState() const;

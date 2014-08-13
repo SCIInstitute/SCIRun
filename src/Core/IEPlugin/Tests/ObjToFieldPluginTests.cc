@@ -31,12 +31,12 @@
 
 /// TODO: intern
 
-TEST(ObjToFieldPluginTests, CanRead)
+TEST(ObjToFieldPluginTests, DISABLED_CanRead)
 {
   FAIL() << "todo";
 }
 
-TEST(ObjToFieldPluginTests, CanWrite)
+TEST(ObjToFieldPluginTests, DISABLED_CanWrite)
 {
   FAIL() << "todo";
 }

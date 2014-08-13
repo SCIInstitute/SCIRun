@@ -174,7 +174,7 @@ IF(WITH_TETGEN)
     TetGen/InterfaceWithTetGen.cc)
 ENDIF(WITH_TETGEN)
 
-ADD_LIBRARY(Core_Algorithms_Legacy_Fields 
+SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields 
   ${Core_Algorithms_Legacy_Fields_HEADERS}
   ${Core_Algorithms_Legacy_Fields_SRCS}
 )

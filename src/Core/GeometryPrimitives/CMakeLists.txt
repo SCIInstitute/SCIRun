@@ -51,7 +51,7 @@ SET(Core_GeometryPrimitives_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Geometry_Primitives 
+SCIRUN_ADD_LIBRARY(Core_Geometry_Primitives 
   ${Core_GeometryPrimitives_HEADERS}
   ${Core_GeometryPrimitives_SRCS}
 )

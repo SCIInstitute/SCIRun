@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="10">
-<networkFile class_id="0" tracking_level="0" version="0">
+<networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>4</count>
@@ -42,7 +42,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>E:/tdcs_small_example_4dan/mesh_scirun5.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tdcs/mesh_scirun5.fld</value>
 									</value>
 								</second>
 							</item>
@@ -70,7 +70,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/tdcs_small_example_4dan/mesh_scirun5.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tdcs/mesh_scirun5.fld</value>
 									</value>
 								</second>
 							</item>
@@ -98,7 +98,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests/CGDarrell/RHS.mat</value>
+										<value>%SCIRUNDATADIR%/Matrices/CGDarrell/RHS.mat</value>
 									</value>
 								</second>
 							</item>
@@ -216,6 +216,13 @@
 			</second>
 		</item>
 	</modulePositions>
+	<moduleNotes class_id="18" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleNotes>
+	<connectionNotes>
+		<count>0</count>
+		<item_version>0</item_version>
+	</connectionNotes>
 </networkFile>
 </boost_serialization>
-

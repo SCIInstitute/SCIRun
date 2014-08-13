@@ -35,7 +35,7 @@ SET(Dataflow_State_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Dataflow_State 
+SCIRUN_ADD_LIBRARY(Dataflow_State 
   ${Dataflow_State_HEADERS}
   ${Dataflow_State_SRCS}
 )
