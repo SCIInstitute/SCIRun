@@ -344,7 +344,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -379,6 +379,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -444,7 +468,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -479,6 +503,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -544,7 +592,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -579,6 +627,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
