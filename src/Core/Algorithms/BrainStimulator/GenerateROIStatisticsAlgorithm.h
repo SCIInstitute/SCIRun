@@ -57,8 +57,8 @@ namespace BrainStimulator {
     static const AlgorithmOutputName StatisticalResults;
     static Core::Algorithms::AlgorithmParameterName StatisticsRowName(int i);
   private:
-    boost::tuple<Datatypes::DenseMatrixHandle, Variable> run(FieldHandle mesh, FieldHandle AtlasMesh, std::string AtlasMeshLabels="") const;
-    std::vector<std::string> ConvertInputAtlasStringIntoVector(const  std::string atlasLabels) const;
+    boost::tuple<Datatypes::DenseMatrixHandle, Variable> run(FieldHandle mesh, FieldHandle AtlasMesh, const std::string& AtlasMeshLabels="") const;
+    std::vector<std::string> ConvertInputAtlasStringIntoVector(const  std::string& atlasLabels) const;
   };
 
 }}}}

@@ -68,7 +68,7 @@ GenerateROIStatisticsAlgorithm::GenerateROIStatisticsAlgorithm()
 
 AlgorithmParameterName GenerateROIStatisticsAlgorithm::StatisticsRowName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
 
-boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, std::string AtlasMeshLabels) const
+boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const std::string& AtlasMeshLabels) const
 {
  DenseMatrixHandle output;
 
@@ -149,10 +149,10 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
    
  if (AtlasMeshLabels_vector.size()==0 && number_of_atlas_materials>0)
  {
-   AtlasMeshLabels_vector.reserve(number_of_atlas_materials);
+   AtlasMeshLabels_vector.resize(number_of_atlas_materials);
    for (int i=0; i<number_of_atlas_materials; i++)
    {
-    AtlasMeshLabels_vector[i]=i+1;
+    AtlasMeshLabels_vector[i]=boost::lexical_cast<std::string>(i+1);
    }
  }
  else
@@ -179,26 +179,12 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
  return boost::make_tuple(output, whole_table);
 }
 
-std::vector<std::string> GenerateROIStatisticsAlgorithm::ConvertInputAtlasStringIntoVector(const std::string atlasLabels) const
+std::vector<std::string> GenerateROIStatisticsAlgorithm::ConvertInputAtlasStringIntoVector(const std::string& atlasLabels) const
 {
-  std::string s = atlasLabels;
-
-  int cnt = boost::count(atlasLabels, ';')+1;  /// Place a ";" after each region name, e.g. ROI1;ROI2; 
-
   std::vector<std::string> result;
-  result.reserve(cnt);
-  std::string delimiter = ";";
-
-  size_t pos = 0;
-  std::string token;   
-
-  while ((pos = s.find(delimiter)) != std::string::npos) 
-  {
-    token = s.substr(0, pos);
-    result.push_back(token);
-    s.erase(0, pos + delimiter.length());
-  }  
-    
+  
+  boost::split(result,atlasLabels,boost::is_any_of(";"))
+  
   return result;
 }
 
@@ -256,7 +242,7 @@ AlgorithmOutput GenerateROIStatisticsAlgorithm::run_generic(const AlgorithmInput
   Variable table;
   if (atlasMeshLabels_ == nullptr)
   {
-    boost::tie(statistics, table) = run(mesh_, atlasMesh_, "");
+    boost::tie(statistics, table) = run(mesh_, atlasMesh_);
   } else
   {
     boost::tie(statistics, table) = run(mesh_, atlasMesh_, atlasMeshLabels_->value());

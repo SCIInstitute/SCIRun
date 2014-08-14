@@ -75,16 +75,16 @@ void GenerateROIStatisticsDialog::push()
 void GenerateROIStatisticsDialog::pull()
 {
   Pulling p(this);
-  
+  std::cout <<  "ok!" << std::endl;
   auto all_elc_values = state_->getValue(Parameters::StatisticsTableValues).getList();
-    
+  std::cout <<   all_elc_values.size() << std::endl;
   for (int i=0; i<all_elc_values.size(); i++)
   {
    auto tmp = (all_elc_values[i]).getList();
-   StatisticsOutput_tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(tmp[0].getString())));
-   StatisticsOutput_tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(tmp[1].getString())));
-   StatisticsOutput_tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(tmp[2].getString())));
+   auto tmpstr = tmp[0].getString();
+   std::cout << tmpstr  << std::endl;
+   StatisticsOutput_tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(tmpstr)));
   }
-  //state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
+
 }
 
