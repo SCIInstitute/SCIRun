@@ -44,6 +44,32 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
+  // see http://stackoverflow.com/questions/7477978/nan-ascii-i-o-with-visual-c
+  struct FloatNaNHelper 
+  {
+    double& value;
+    explicit FloatNaNHelper(double& f) : value(f) { }
+    operator const double&() const { return value; }
+  };
+
+  inline std::istream& operator>>(std::istream& in, FloatNaNHelper& f) 
+  {
+    if (in >> f.value)
+      return in;
+
+    in.clear();
+    std::string str;
+    if (!(in >> str))
+      return in;
+
+    if (str == "NaN")
+      f.value = std::numeric_limits<double>::quiet_NaN();
+    else
+      in.setstate(std::ios::badbit);
+
+    return in;
+  }
+
   template <typename T>
   std::istream& operator>>(std::istream& istr, DenseMatrixGeneric<T>& m)
   {
@@ -64,8 +90,14 @@ namespace Datatypes {
 
         if (reader.fail())
         {
-          //THROW_INVALID_ARGUMENT("Matrix reading failed: stream failed");
-          break;
+          //TODO: non-double matrices will not compile here. Need specialization.
+          reader >> FloatNaNHelper(val);
+
+          if (reader.fail())
+          {
+            //THROW_INVALID_ARGUMENT("Matrix reading failed: stream failed");
+            break;
+          }
         }
 
         lineData.push_back(val);
