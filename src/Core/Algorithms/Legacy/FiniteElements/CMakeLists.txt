@@ -43,8 +43,8 @@ SET(Core_Algorithms_Legacy_FiniteElements_SRCS
   #BuildRHS/BuildFESurfRHS.cc
 )
 
-ADD_LIBRARY(Core_Algorithms_Legacy_FiniteElements       
-${Core_Algorithms_Legacy_FiniteElements_HEADERS}
+SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_FiniteElements       
+  ${Core_Algorithms_Legacy_FiniteElements_HEADERS}
   ${Core_Algorithms_Legacy_FiniteElements_SRCS}
 )
 

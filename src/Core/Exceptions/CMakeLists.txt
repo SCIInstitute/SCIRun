@@ -64,7 +64,7 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Exceptions_Legacy)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_LIBRARY(Core_Exceptions_Legacy 
+SCIRUN_ADD_LIBRARY(Core_Exceptions_Legacy 
   ${Core_Exceptions_Legacy_SRCS} 
   ${Core_Exceptions_Legacy_HEADERS}
 )

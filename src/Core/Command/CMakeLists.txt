@@ -41,7 +41,7 @@ SET(Core_Command_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Command 
+SCIRUN_ADD_LIBRARY(Core_Command 
   ${Core_Command_HEADERS}
   ${Core_Command_SRCS}
 )

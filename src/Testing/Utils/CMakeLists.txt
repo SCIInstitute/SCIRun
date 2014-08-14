@@ -38,7 +38,7 @@ SET(Testing_Utils_SRCS
   SCIRunUnitTests.cc
 )
 
-ADD_LIBRARY(Testing_Utils 
+SCIRUN_ADD_LIBRARY(Testing_Utils 
   ${Testing_Utils_HEADERS}
   ${Testing_Utils_SRCS}
 )

@@ -35,7 +35,7 @@ SET(Modules_String_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_String 
+SCIRUN_ADD_LIBRARY(Modules_String 
   ${Modules_String_HEADERS}
   ${Modules_String_SRCS}
 )

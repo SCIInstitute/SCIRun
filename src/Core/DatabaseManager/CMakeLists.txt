@@ -36,7 +36,7 @@ SET(Core_DatabaseManager_HEADERS
   share.h
 )
   
-ADD_LIBRARY(Core_DatabaseManager 
+SCIRUN_ADD_LIBRARY(Core_DatabaseManager 
   ${Core_DatabaseManager_HEADERS} 
   ${Core_DatabaseManager_SRCS}
 )

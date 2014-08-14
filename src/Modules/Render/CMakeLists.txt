@@ -35,7 +35,7 @@ SET(Modules_Render_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_Render 
+SCIRUN_ADD_LIBRARY(Modules_Render 
   ${Modules_Render_HEADERS}
   ${Modules_Render_SRCS}
 )

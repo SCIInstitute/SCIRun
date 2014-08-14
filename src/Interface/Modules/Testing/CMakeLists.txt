@@ -46,7 +46,7 @@ SET(Interface_Modules_Testing_SOURCES
 QT4_WRAP_UI(Interface_Modules_Testing_FORMS_HEADERS ${Interface_Modules_Testing_FORMS})
 QT4_WRAP_CPP(Interface_Modules_Testing_HEADERS_MOC ${Interface_Modules_Testing_HEADERS})
 
-ADD_LIBRARY(Interface_Modules_Testing 
+SCIRUN_ADD_LIBRARY(Interface_Modules_Testing 
   ${Interface_Modules_Testing_HEADERS}
   ${Interface_Modules_Testing_FORMS_HEADERS}
   ${Interface_Modules_Testing_HEADERS_MOC}

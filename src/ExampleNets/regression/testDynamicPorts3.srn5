@@ -42,7 +42,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>E:/tdcs_small_example_4dan/mesh_scirun5.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tdcs/mesh_scirun5.fld</value>
 									</value>
 								</second>
 							</item>
@@ -70,7 +70,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/tdcs_small_example_4dan/mesh_scirun5.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/tdcs/mesh_scirun5.fld</value>
 									</value>
 								</second>
 							</item>
@@ -98,7 +98,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests/CGDarrell/RHS.mat</value>
+										<value>%SCIRUNDATADIR%/Matrices/CGDarrell/RHS.mat</value>
 									</value>
 								</second>
 							</item>
@@ -226,4 +226,3 @@
 	</connectionNotes>
 </networkFile>
 </boost_serialization>
-

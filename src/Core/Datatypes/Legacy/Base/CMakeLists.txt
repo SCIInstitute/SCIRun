@@ -40,7 +40,7 @@ SET(Core_Datatypes_Legacy_Base_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Datatypes_Legacy_Base
+SCIRUN_ADD_LIBRARY(Core_Datatypes_Legacy_Base
   ${Core_Datatypes_Legacy_Base_HEADERS}
   ${Core_Datatypes_Legacy_Base_SRCS}
 )
