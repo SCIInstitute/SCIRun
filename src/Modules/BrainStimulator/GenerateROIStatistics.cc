@@ -75,7 +75,7 @@ void GenerateROIStatisticsModule::execute()
   auto output = algo().run_generic(make_input((MeshDataOnElements, meshData_)(PhysicalUnit, optionalAlgoInput(physicalUnit_))(AtlasMesh, atlasMesh_)(AtlasMeshLabels, optionalAlgoInput(atlasMeshLabels_))(CoordinateSpace, optionalAlgoInput(coordinateSpace_))(CoordinateSpaceLabel, optionalAlgoInput(coordinateSpaceLabel_))));
 
   auto table = output.additionalAlgoOutput();
-  get_state()->setValue(Parameters::StatisticsTableValues, table.value_);
+  get_state()->setTransientValue(Parameters::StatisticsTableValues.name(), table, true);
 
   //algorithm output
   sendOutputFromAlgorithm(StatisticalResults, output);

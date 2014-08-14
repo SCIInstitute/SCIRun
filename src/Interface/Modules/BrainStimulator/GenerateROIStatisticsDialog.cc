@@ -28,11 +28,12 @@
 
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
-
+using namespace SCIRun::Core::Algorithms;
 
 GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -75,15 +76,27 @@ void GenerateROIStatisticsDialog::push()
 void GenerateROIStatisticsDialog::pull()
 {
   Pulling p(this);
-  std::cout <<  "ok!" << std::endl;
-  auto all_elc_values = state_->getValue(Parameters::StatisticsTableValues).getList();
-  std::cout <<   all_elc_values.size() << std::endl;
+  //std::cout <<  "ok! ROI dialog" << std::endl;
+  auto all_elc_values = optional_any_cast_or_default<Variable>(state_->getTransientValue(Parameters::StatisticsTableValues.name())).getList();
+  //std::cout << "# rows: " << all_elc_values.size() << std::endl;
+  StatisticsOutput_tableWidget->setRowCount(all_elc_values.size());
+
   for (int i=0; i<all_elc_values.size(); i++)
   {
-   auto tmp = (all_elc_values[i]).getList();
-   auto tmpstr = tmp[0].getString();
-   std::cout << tmpstr  << std::endl;
-   StatisticsOutput_tableWidget->setItem(i, 0, new QTableWidgetItem(QString::fromStdString(tmpstr)));
+   auto col = (all_elc_values[i]).getList();
+
+   //std::cout << "\t# cols: " << col.size() << std::endl;
+   int j = 0;
+   BOOST_FOREACH(const AlgorithmParameter& ap, col)
+   {
+    auto tmpstr = ap.getString();
+    //std::cout << "\t\t cell value: " << tmpstr  << std::endl;
+  
+    auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
+    item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+    StatisticsOutput_tableWidget->setItem(i, j, item);
+    ++j;
+   }
   }
 
 }
