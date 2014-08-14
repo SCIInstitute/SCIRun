@@ -31,6 +31,7 @@
 #define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAONTOELEMS_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -38,12 +39,8 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-        ALGORITHM_PARAMETER_DECL(Quantity);
-        ALGORITHM_PARAMETER_DECL(InterpolationModel);
         ALGORITHM_PARAMETER_DECL(SamplePoints);
         ALGORITHM_PARAMETER_DECL(SampleMethod);
-        ALGORITHM_PARAMETER_DECL(OutsideValue);
-        ALGORITHM_PARAMETER_DECL(MaxDistance);
 
 class SCISHARE MapFieldDataOntoElemsAlgo : public AlgorithmBase
 {
