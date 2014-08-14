@@ -76,21 +76,17 @@ void GenerateROIStatisticsDialog::push()
 void GenerateROIStatisticsDialog::pull()
 {
   Pulling p(this);
-  //std::cout <<  "ok! ROI dialog" << std::endl;
   auto all_elc_values = optional_any_cast_or_default<Variable>(state_->getTransientValue(Parameters::StatisticsTableValues.name())).getList();
-  //std::cout << "# rows: " << all_elc_values.size() << std::endl;
   StatisticsOutput_tableWidget->setRowCount(all_elc_values.size());
 
   for (int i=0; i<all_elc_values.size(); i++)
   {
    auto col = (all_elc_values[i]).getList();
 
-   //std::cout << "\t# cols: " << col.size() << std::endl;
    int j = 0;
    BOOST_FOREACH(const AlgorithmParameter& ap, col)
    {
     auto tmpstr = ap.getString();
-    //std::cout << "\t\t cell value: " << tmpstr  << std::endl;
   
     auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);

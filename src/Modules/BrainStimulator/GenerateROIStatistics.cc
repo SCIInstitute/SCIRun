@@ -68,8 +68,6 @@ void GenerateROIStatisticsModule::execute()
   auto coordinateSpaceLabel_ = getOptionalInput(CoordinateSpace);
   
   setAlgoListFromState(Parameters::StatisticsTableValues);
-  //auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).getList();
-  //algo().set(Parameters::ELECTRODE_VALUES, elc_vals_from_state);
   
   //algorithm input and run
   auto output = algo().run_generic(make_input((MeshDataOnElements, meshData_)(PhysicalUnit, optionalAlgoInput(physicalUnit_))(AtlasMesh, atlasMesh_)(AtlasMeshLabels, optionalAlgoInput(atlasMeshLabels_))(CoordinateSpace, optionalAlgoInput(coordinateSpace_))(CoordinateSpaceLabel, optionalAlgoInput(coordinateSpaceLabel_))));

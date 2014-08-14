@@ -41,7 +41,9 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+#include <boost/format.hpp>
 #include <Core/Logging/Log.h>
+#include <string>
 
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
@@ -167,10 +169,11 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
   {
     std::vector<AlgorithmParameter> tmp;
     tmp.push_back(AlgorithmParameter(Name("name"), AtlasMeshLabels_vector[i])); //label name
-    tmp.push_back(AlgorithmParameter(Name("col0"), boost::lexical_cast<std::string>((*output)(i,0)))); //average
-    tmp.push_back(AlgorithmParameter(Name("col1"), boost::lexical_cast<std::string>((*output)(i,1)))); //stddev
-    tmp.push_back(AlgorithmParameter(Name("col2"), boost::lexical_cast<std::string>((*output)(i,2)))); //min
-    tmp.push_back(AlgorithmParameter(Name("col3"), boost::lexical_cast<std::string>((*output)(i,3)))); //max
+    
+    tmp.push_back(AlgorithmParameter(Name("col0"), boost::str(boost::format("%.3f") % (*output)(i,0)))); //average
+    tmp.push_back(AlgorithmParameter(Name("col1"), boost::str(boost::format("%.3f") % (*output)(i,1)))); //stddev
+    tmp.push_back(AlgorithmParameter(Name("col2"), boost::str(boost::format("%.3f") % (*output)(i,2)))); //min
+    tmp.push_back(AlgorithmParameter(Name("col3"), boost::str(boost::format("%.3f") % (*output)(i,3)))); //max
     AlgorithmParameter row_i(Name("row" + boost::lexical_cast<std::string>(i)), tmp);
     elc_vals_in_table.push_back(row_i);
   }
