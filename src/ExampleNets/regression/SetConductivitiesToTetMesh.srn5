@@ -187,7 +187,7 @@
 				</second>
 			</item>
 			<item>
-				<first>SetConductivitiesToTetMesh:134</first>
+				<first>SetConductivitiesToTetMesh:12</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -196,7 +196,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>8</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -236,25 +236,49 @@
 							</item>
 							<item>
 								<first>
-									<name>Skin</name>
+									<name>HardBone</name>
 								</first>
 								<second>
-									<name>Skin</name>
+									<name>HardBone</name>
 									<value>
 										<which>1</which>
-										<value>0.33000000000000007</value>
+										<value>0.0064000000000000003</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>Skull</name>
+									<name>InternalAir</name>
 								</first>
 								<second>
-									<name>Skull</name>
+									<name>InternalAir</name>
 									<value>
 										<which>1</which>
-										<value>0.01</value>
+										<value>9.9999999999999995e-07</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Skin</name>
+								</first>
+								<second>
+									<name>Skin</name>
+									<value>
+										<which>1</which>
+										<value>0.42999999999999999</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SoftBone</name>
+								</first>
+								<second>
+									<name>SoftBone</name>
+									<value>
+										<which>1</which>
+										<value>0.028559999999999999</value>
 									</value>
 								</second>
 							</item>
@@ -266,7 +290,7 @@
 									<name>WM</name>
 									<value>
 										<which>1</which>
-										<value>0.14000000000000001</value>
+										<value>0.14199999999999999</value>
 									</value>
 								</second>
 							</item>
@@ -275,7 +299,7 @@
 				</second>
 			</item>
 			<item>
-				<first>SetConductivitiesToTetMesh:137</first>
+				<first>SetConductivitiesToTetMesh:13</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -284,7 +308,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>8</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -324,25 +348,49 @@
 							</item>
 							<item>
 								<first>
-									<name>Skin</name>
+									<name>HardBone</name>
 								</first>
 								<second>
-									<name>Skin</name>
+									<name>HardBone</name>
 									<value>
 										<which>1</which>
-										<value>0.33000000000000002</value>
+										<value>0.0064000000000000003</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>Skull</name>
+									<name>InternalAir</name>
 								</first>
 								<second>
-									<name>Skull</name>
+									<name>InternalAir</name>
 									<value>
 										<which>1</which>
-										<value>0.010000000000000009</value>
+										<value>9.9999999999999995e-07</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Skin</name>
+								</first>
+								<second>
+									<name>Skin</name>
+									<value>
+										<which>1</which>
+										<value>0.42999999999999999</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SoftBone</name>
+								</first>
+								<second>
+									<name>SoftBone</name>
+									<value>
+										<which>1</which>
+										<value>0.028559999999999999</value>
 									</value>
 								</second>
 							</item>
@@ -354,7 +402,7 @@
 									<name>WM</name>
 									<value>
 										<which>1</which>
-										<value>0.14000000000000001</value>
+										<value>0.14199999999999999</value>
 									</value>
 								</second>
 							</item>
@@ -363,7 +411,7 @@
 				</second>
 			</item>
 			<item>
-				<first>SetConductivitiesToTetMesh:138</first>
+				<first>SetConductivitiesToTetMesh:14</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -372,7 +420,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>8</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -412,25 +460,49 @@
 							</item>
 							<item>
 								<first>
-									<name>Skin</name>
+									<name>HardBone</name>
 								</first>
 								<second>
-									<name>Skin</name>
+									<name>HardBone</name>
 									<value>
 										<which>1</which>
-										<value>0.33000000000000007</value>
+										<value>0.0064000000000000003</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>Skull</name>
+									<name>InternalAir</name>
 								</first>
 								<second>
-									<name>Skull</name>
+									<name>InternalAir</name>
 									<value>
 										<which>1</which>
-										<value>0.01</value>
+										<value>9.9999999999999995e-07</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Skin</name>
+								</first>
+								<second>
+									<name>Skin</name>
+									<value>
+										<which>1</which>
+										<value>0.42999999999999999</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SoftBone</name>
+								</first>
+								<second>
+									<name>SoftBone</name>
+									<value>
+										<which>1</which>
+										<value>0.028559999999999999</value>
 									</value>
 								</second>
 							</item>
@@ -442,7 +514,7 @@
 									<name>WM</name>
 									<value>
 										<which>1</which>
-										<value>0.14000000000000001</value>
+										<value>0.14199999999999999</value>
 									</value>
 								</second>
 							</item>
@@ -472,7 +544,7 @@
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetConductivitiesToTetMesh:138</moduleId2_>
+				<moduleId2_>SetConductivitiesToTetMesh:12</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -496,7 +568,7 @@
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetConductivitiesToTetMesh:137</moduleId2_>
+				<moduleId2_>SetConductivitiesToTetMesh:14</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -520,14 +592,26 @@
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetConductivitiesToTetMesh:134</moduleId2_>
+				<moduleId2_>SetConductivitiesToTetMesh:13</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetConductivitiesToTetMesh:134</moduleId1_>
+				<moduleId1_>SetConductivitiesToTetMesh:12</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:141</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetConductivitiesToTetMesh:13</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
@@ -539,24 +623,12 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetConductivitiesToTetMesh:137</moduleId1_>
+				<moduleId1_>SetConductivitiesToTetMesh:14</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportFieldInfo:142</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>SetConductivitiesToTetMesh:138</moduleId1_>
-				<port1_>
-					<name>OutputField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportFieldInfo:141</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -570,8 +642,8 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ReadField:62</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1619</first>
-				<second>-1343</second>
+				<first>-1594</first>
+				<second>-1367</second>
 			</second>
 		</item>
 		<item>
@@ -591,8 +663,8 @@
 		<item>
 			<first>ReportFieldInfo:135</first>
 			<second>
-				<first>-2246</first>
-				<second>-1092</second>
+				<first>-2297</first>
+				<second>-1067</second>
 			</second>
 		</item>
 		<item>
@@ -619,8 +691,8 @@
 		<item>
 			<first>ReportFieldInfo:141</first>
 			<second>
-				<first>-1619</first>
-				<second>-1113</second>
+				<first>-1625</first>
+				<second>-1097</second>
 			</second>
 		</item>
 		<item>
@@ -631,24 +703,24 @@
 			</second>
 		</item>
 		<item>
-			<first>SetConductivitiesToTetMesh:134</first>
-			<second>
-				<first>-2246</first>
-				<second>-1207</second>
-			</second>
-		</item>
-		<item>
-			<first>SetConductivitiesToTetMesh:137</first>
-			<second>
-				<first>-1622</first>
-				<second>-883</second>
-			</second>
-		</item>
-		<item>
-			<first>SetConductivitiesToTetMesh:138</first>
+			<first>SetConductivitiesToTetMesh:12</first>
 			<second>
 				<first>-1619</first>
-				<second>-1221</second>
+				<second>-1213</second>
+			</second>
+		</item>
+		<item>
+			<first>SetConductivitiesToTetMesh:13</first>
+			<second>
+				<first>-2305</first>
+				<second>-1201</second>
+			</second>
+		</item>
+		<item>
+			<first>SetConductivitiesToTetMesh:14</first>
+			<second>
+				<first>-1647</first>
+				<second>-888</second>
 			</second>
 		</item>
 	</modulePositions>
