@@ -38,6 +38,11 @@
 #include <Core/Datatypes/String.h>
 #include <boost/range/algorithm/count.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <Core/Logging/Log.h>
+
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
@@ -47,6 +52,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
 
 const AlgorithmInputName GenerateROIStatisticsAlgorithm::MeshDataOnElements("MeshDataOnElements");
 const AlgorithmInputName GenerateROIStatisticsAlgorithm::PhysicalUnit("PhysicalUnit");
@@ -75,27 +81,22 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
  VField* vfield1 = mesh->vfield();
  VField* vfield2 = AtlasMesh->vfield();
  
- std::vector<int>  Label_vector(vfield2->vmesh()->num_elems());
- std::vector<double> value_vector(vfield1->vmesh()->num_elems());
+ std::set<int> labelSet;
  
  for (VMesh::Elem::index_type i=0; i < vfield2->vmesh()->num_elems(); i++) // loop over all tetrahedral elements (mesh)
  {
-   int Label = 0;
+   int Label;
    vfield2->get_value(Label, i);
-   Label_vector[i]=Label;
-   double val = 0;
-   vfield1->get_value(val, i);
-   value_vector[i]=val;
+   labelSet.insert(Label);
  }
- 
 
+ const size_t number_of_atlas_materials = labelSet.size();
+ std::vector<int> labelVector(labelSet.begin(), labelSet.end());
 
- std::vector<int>::iterator it;
- it = std::unique (Label_vector.begin(), Label_vector.end());
- Label_vector.resize( std::distance(Label_vector.begin(),it) );
+ std::ostringstream ostr;
+ std::copy(labelSet.begin(), labelSet.end(), std::ostream_iterator<int>(ostr, ", "));
+ LOG_DEBUG("Sorted set of label numbers: " << ostr.str() << std::endl);
  
- long number_of_atlas_materials = Label_vector.size();
-  
  std::vector<double> value_avr(number_of_atlas_materials);
  std::vector<int> value_count(number_of_atlas_materials);
  std::vector<double> value_min(number_of_atlas_materials);
@@ -115,17 +116,17 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
    
    for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; j++)
    {
-     if (Label==Label_vector[j]) 
-        {
-	   value_avr[j] += value; 
-	   value_count[j]++;   
-	   if (value>value_max[j]) value_max[j]=value;
-	   if (value<value_min[j]) value_min[j]=value;
-	   Sxsqr[j]+=value*value;
-	}
+     if (Label==labelVector[j]) 
+     {
+       value_avr[j] += value; 
+       value_count[j]++;   
+       if (value>value_max[j]) value_max[j]=value;
+       if (value<value_min[j]) value_min[j]=value;
+       Sxsqr[j]+=value*value;
+     }
    }
  }
- 
+
  output = DenseMatrixHandle(new DenseMatrix(number_of_atlas_materials, 4));
  
  //efficient way to compute std dev. in just one loop over all mesh elements: sqrt ( 1/(n-1) (Sx^2 - avr Sx + n avr^2 )
@@ -165,16 +166,15 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
   for (int i=0; i<AtlasMeshLabels_vector.size(); i++)
   {
     std::vector<AlgorithmParameter> tmp;
-    tmp.emplace_back(Name("col0"), boost::lexical_cast<std::string>((*output)(i,0)));
-    tmp.emplace_back(Name("col1"), boost::lexical_cast<std::string>((*output)(i,1)));
-    tmp.emplace_back(Name("col2"), boost::lexical_cast<std::string>((*output)(i,2)));
-    tmp.emplace_back(Name("col3"), boost::lexical_cast<std::string>((*output)(i,3)));
+    tmp.push_back(AlgorithmParameter(Name("col0"), boost::lexical_cast<std::string>((*output)(i,0))));
+    tmp.push_back(AlgorithmParameter(Name("col1"), boost::lexical_cast<std::string>((*output)(i,1))));
+    tmp.push_back(AlgorithmParameter(Name("col2"), boost::lexical_cast<std::string>((*output)(i,2))));
+    tmp.push_back(AlgorithmParameter(Name("col3"), boost::lexical_cast<std::string>((*output)(i,3))));
     AlgorithmParameter row_i(Name("row" + boost::lexical_cast<std::string>(i)), tmp);
     elc_vals_in_table.push_back(row_i);
   }
   
   AlgorithmParameter whole_table(Name("Table"), elc_vals_in_table); 
-  //set(Parameters::StatisticsTableValues, whole_table); 
  
  return boost::make_tuple(output, whole_table);
 }
@@ -182,8 +182,9 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
 std::vector<std::string> GenerateROIStatisticsAlgorithm::ConvertInputAtlasStringIntoVector(const std::string& atlasLabels) const
 {
   std::vector<std::string> result;
-  
-  boost::split(result,atlasLabels,boost::is_any_of(";"))
+  auto atlasLabelsTrimmed = atlasLabels;
+  boost::trim_if(atlasLabelsTrimmed, boost::is_any_of(";"));
+  boost::split(result,atlasLabelsTrimmed,boost::is_any_of(";"));
   
   return result;
 }

@@ -41,6 +41,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
+#include <boost/assign/std/vector.hpp>
 
 using namespace boost::assign;
 using namespace SCIRun::Core::Algorithms;
@@ -107,9 +108,10 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   if (!vfield->is_scalar())
     THROW_ALGORITHM_INPUT_ERROR("Function only supports scalar labels. ");
      
-  /// array holding conductivities    
-  std::vector<double> conductivies = {get(Skin()).getDouble(), get(SoftBone()).getDouble(), get(HardBone()).getDouble(),
-  get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(InternalAir()).getDouble(), get(Electrode()).getDouble()};
+  /// array holding conductivities   
+  std::vector<double> conductivies;
+  conductivies += get(Skin()).getDouble(), get(SoftBone()).getDouble(), get(HardBone()).getDouble(),
+    get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(InternalAir()).getDouble(), get(Electrode()).getDouble();
   
   //check if defined conductivities and lookup table are consistent
   if (conductivies.size()!=ElemLabelLookup.size())
