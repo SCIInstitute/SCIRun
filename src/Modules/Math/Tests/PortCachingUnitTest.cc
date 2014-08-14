@@ -210,7 +210,7 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
     }
   }
 
-  std::cout << "Rest of test" << std::endl;
+  //std::cout << "Rest of test" << std::endl;
   EXPECT_CALL(*mockNeedToExecute, needToExecute()).WillRepeatedly(Return(true));
 
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
@@ -431,7 +431,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
     }
   }
 
-  std::cout << "Rest of test" << std::endl;
+  //std::cout << "Rest of test" << std::endl;
 
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
   ASSERT_TRUE(receiveModule != nullptr);
@@ -526,7 +526,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
     }
   }
 
-  std::cout << "Rest of test" << std::endl;
+  //std::cout << "Rest of test" << std::endl;
 
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
   ASSERT_TRUE(receiveModule != nullptr);
@@ -615,7 +615,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
 
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
-    std::cout << "EXECUTION 1 1 1 1 1 1 1" << std::endl;
+    //std::cout << "EXECUTION 1 1 1 1 1 1 1" << std::endl;
     send->do_execute();
     process->do_execute();
     receive->do_execute();
@@ -628,7 +628,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
     {
       //inputs haven't changed.
       evalModule->resetFlags();
-      std::cout << "EXECUTION 2 2 2 2 2 2 2" << std::endl;
+      //std::cout << "EXECUTION 2 2 2 2 2 2 2" << std::endl;
       send->do_execute();
       process->do_execute();
       receive->do_execute();
@@ -640,7 +640,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
       DenseMatrixHandle input = matrix2();
       sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
 
-      std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
+      //std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
       //inputs have changed
       evalModule->resetFlags();
       send->do_execute();
@@ -700,7 +700,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
 
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
-    std::cout << "EXECUTION 1 1 1 1 1 1 1" << std::endl;
+    //std::cout << "EXECUTION 1 1 1 1 1 1 1" << std::endl;
     send->do_execute();
     process->do_execute();
     receive->do_execute();
@@ -713,7 +713,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
     {
       //state hasn't changed.
       evalModule->resetFlags();
-      std::cout << "EXECUTION 2 2 2 2 2 2 2" << std::endl;
+      //std::cout << "EXECUTION 2 2 2 2 2 2 2" << std::endl;
       send->do_execute();
       process->do_execute();
       receive->do_execute();
@@ -724,7 +724,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
 
       process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
 
-      std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
+      //std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
       //state has changed
       evalModule->resetFlags();
       send->do_execute();
@@ -766,7 +766,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
   DenseMatrixHandle input = matrix1();
   sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
 
-  std::cout << "RealOportsCached, inputsChanged = " << inputsChanged_ << " stateChanged = " << stateChanged_ << std::endl;
+  //std::cout << "RealOportsCached, inputsChanged = " << inputsChanged_ << " stateChanged = " << stateChanged_ << std::endl;
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
   ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(stateChanged_));
   Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
@@ -785,7 +785,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
 
     bool initialNeedToExecute = realNeedToExecuteWithPartialMocks->needToExecute();
     ASSERT_TRUE(initialNeedToExecute);
-    std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1 1" << std::endl;
+    //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1 1" << std::endl;
     send->do_execute();
     process->do_execute();
     receive->do_execute();
@@ -795,46 +795,43 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
     ASSERT_TRUE(realOportsCached->outputPortsCached());
 
     ASSERT_TRUE(evalModule->expensiveComputationDone_);
-    if (evalModule->expensiveComputationDone_)
-    {
-      evalModule->resetFlags();
-      std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2 2 2" << std::endl;
-      send->do_execute();
-      process->do_execute();
-      receive->do_execute();
-      EXPECT_FALSE(realNeedToExecuteWithPartialMocks->needToExecute());
+    evalModule->resetFlags();
+    //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2 2 2" << std::endl;
+    send->do_execute();
+    process->do_execute();
+    receive->do_execute();
+    EXPECT_FALSE(realNeedToExecuteWithPartialMocks->needToExecute());
 
-      EXPECT_TRUE(evalModule->executeCalled_);
-      EXPECT_FALSE(evalModule->expensiveComputationDone_);
+    EXPECT_TRUE(evalModule->executeCalled_);
+    EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
-      //Invalidate iport by disconnecting/reconnecting
-      network->disconnect(oportId);
-      EXPECT_EQ(1, network->nconnections());
-      network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
-      EXPECT_EQ(2, network->nconnections());
+    //Invalidate iport by disconnecting/reconnecting
+    network->disconnect(oportId);
+    EXPECT_EQ(1, network->nconnections());
+    network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
+    EXPECT_EQ(2, network->nconnections());
 
-      std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
+    //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
       
-      evalModule->resetFlags();
-      EXPECT_TRUE(send->do_execute());
-      EXPECT_TRUE(process->do_execute());
-      EXPECT_FALSE(receive->do_execute());
+    evalModule->resetFlags();
+    EXPECT_TRUE(send->do_execute());
+    EXPECT_TRUE(process->do_execute());
+    EXPECT_TRUE(receive->do_execute());
 
-      EXPECT_TRUE(evalModule->executeCalled_);
-      EXPECT_FALSE(evalModule->expensiveComputationDone_);
+    EXPECT_TRUE(evalModule->executeCalled_);
+    EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
-      //Invalidate oport by changing flag
-      SimpleSink::setGlobalPortCachingFlag(false);
+    //Invalidate oport by changing flag
+    SimpleSink::setGlobalPortCachingFlag(false);
 
-      std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 4 4 4 4 4 4" << std::endl;
+    //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 4 4 4 4 4 4" << std::endl;
 
-      evalModule->resetFlags();
-      send->do_execute();
-      process->do_execute();
-      receive->do_execute();
+    evalModule->resetFlags();
+    send->do_execute();
+    process->do_execute();
+    receive->do_execute();
 
-      EXPECT_TRUE(evalModule->executeCalled_);
-      EXPECT_TRUE(evalModule->expensiveComputationDone_);
-    }
+    EXPECT_TRUE(evalModule->executeCalled_);
+    EXPECT_TRUE(evalModule->expensiveComputationDone_);
   }
 }
