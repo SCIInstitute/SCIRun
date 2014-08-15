@@ -79,13 +79,18 @@ void SolveLinearSystemModule::execute()
     auto tolerance = get_state()->getValue(Variables::TargetError).getDouble();
     auto maxIterations = get_state()->getValue(Variables::MaxIterations).getInt();
 
-    algo().set(Variables::TargetError, tolerance);
-    algo().set(Variables::MaxIterations, maxIterations);
+    //TODO: these checks should be at algo level too.
+    if (tolerance > 0)
+      algo().set(Variables::TargetError, tolerance);
+    if (maxIterations > 0)
+      algo().set(Variables::MaxIterations, maxIterations);
 
     auto method = get_state()->getValue(Variables::Method).getString();
     auto precond = get_state()->getValue(Variables::Preconditioner).getString();
-    algo().set_option(Variables::Method, method);
-    algo().set_option(Variables::Preconditioner, precond);
+    if (!method.empty())
+      algo().set_option(Variables::Method, method);
+    if (!precond.empty())
+      algo().set_option(Variables::Preconditioner, precond);
 
     std::ostringstream ostr;
     ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;

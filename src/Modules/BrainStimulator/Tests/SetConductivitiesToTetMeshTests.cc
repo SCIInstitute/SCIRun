@@ -29,6 +29,7 @@
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 
@@ -39,6 +40,7 @@ using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
@@ -65,17 +67,34 @@ namespace
 
 TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarSevenElem)
 {
+  UseRealAlgorithmFactory f;
+  
   auto test = makeModule("SetConductivitiesToTetMesh");
   stubPortNWithThisData(test, 0, CreateTetMeshSevenElem());
+
   EXPECT_NO_THROW(test->execute());
 }
 
-TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarOnElem)
+TEST_F(SetConductivitiesToTetMeshTests, TetMeshVectorOnElem)
 {
+  UseRealAlgorithmFactory f;
+
   auto test = makeModule("SetConductivitiesToTetMesh");
   stubPortNWithThisData(test, 0, CreateTetMeshVectorOnElem());
-  EXPECT_NO_THROW(test->execute());
+
+  EXPECT_THROW(test->execute(), AlgorithmInputException);
 }
+
+TEST_F(SetConductivitiesToTetMeshTests, CheckInputParameters)
+{
+  UseRealAlgorithmFactory f;
+  
+  auto test = makeModule("SetConductivitiesToTetMesh");
+  stubPortNWithThisData(test, 0, CreateTetMeshVectorOnElem());
+  
+  EXPECT_THROW(test->execute(), AlgorithmInputException);
+}
+
 TEST_F(SetConductivitiesToTetMeshTests, SparseRowMatrixInput)
 {
   auto test = makeModule("SetConductivitiesToTetMesh");
@@ -93,6 +112,7 @@ TEST_F(SetConductivitiesToTetMeshTests, SparseRowMatrixInput)
   stubPortNWithThisData(test, 0, m);
   EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
 }
+
 TEST_F(SetConductivitiesToTetMeshTests, ThrowsForNullInput)
 {
   auto test = makeModule("SetConductivitiesToTetMesh");
