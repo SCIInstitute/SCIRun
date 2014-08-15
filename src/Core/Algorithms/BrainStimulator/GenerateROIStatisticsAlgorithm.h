@@ -40,8 +40,10 @@ namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
   
-  ALGORITHM_PARAMETER_DECL(StatisticsValues);
+  ALGORITHM_PARAMETER_DECL(ROITableValues);
   ALGORITHM_PARAMETER_DECL(StatisticsTableValues);
+  ALGORITHM_PARAMETER_DECL(PhysicalUnitStr);
+  ALGORITHM_PARAMETER_DECL(CoordinateSpaceLabelStr);
 
   class SCISHARE GenerateROIStatisticsAlgorithm : public AlgorithmBase
   {
@@ -54,11 +56,13 @@ namespace BrainStimulator {
     static const AlgorithmInputName AtlasMeshLabels;
     static const AlgorithmInputName CoordinateSpace;
     static const AlgorithmInputName CoordinateSpaceLabel;
+    static const AlgorithmInputName SpecifyROI;
     static const AlgorithmOutputName StatisticalResults;
     static Core::Algorithms::AlgorithmParameterName StatisticsRowName(int i);
   private:
-    boost::tuple<Datatypes::DenseMatrixHandle, Variable> run(FieldHandle mesh, FieldHandle AtlasMesh, const std::string& AtlasMeshLabels="") const;
+    boost::tuple<Datatypes::DenseMatrixHandle, Variable> run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace=FieldHandle(), const std::string& AtlasMeshLabels="") const;
     std::vector<std::string> ConvertInputAtlasStringIntoVector(const  std::string& atlasLabels) const;
+    std::set<bool> statistics_based_on_xyz_coodinates(const FieldHandle mesh, const FieldHandle CoordinateSpace, std::set<int>& labelSet, double x, double y, double z, double radius, int material) const;
   };
 
 }}}}

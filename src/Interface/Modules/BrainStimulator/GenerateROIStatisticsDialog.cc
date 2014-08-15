@@ -28,12 +28,16 @@
 
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <boost/foreach.hpp>
+#include <boost/assign/std/vector.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace boost::assign;
 
 GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -55,10 +59,11 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
   QStringList tableHeader2;
   tableHeader2<<" X "<<" Y " << " Z " << " Atlas Material # " << " Radius ";
   SpecifyROI_tabWidget->setHorizontalHeaderLabels(tableHeader2);
-  SpecifyROI_tabWidget->setItem(0, 0, 0);
-  SpecifyROI_tabWidget->setItem(0, 1, 0);
-  SpecifyROI_tabWidget->setItem(0, 2, 0);
-  SpecifyROI_tabWidget->setItem(0, 3, 0);
+  SpecifyROI_tabWidget->setItem(0, 0, new QTableWidgetItem("0"));
+  SpecifyROI_tabWidget->setItem(0, 1, new QTableWidgetItem("0"));
+  SpecifyROI_tabWidget->setItem(0, 2, new QTableWidgetItem("0"));
+  SpecifyROI_tabWidget->setItem(0, 3, new QTableWidgetItem(" "));
+  SpecifyROI_tabWidget->setItem(0, 4, new QTableWidgetItem(" 0 "));
   
   connect(StatisticsOutput_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
   connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));  
@@ -68,7 +73,29 @@ void GenerateROIStatisticsDialog::push()
 {
   if (!pulling_)
   {
-   //state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table); 
+   /* int rows = SpecifyROI_tabWidget->rowCount();
+    std::vector<AlgorithmParameter> roi_vals_in_secondtable;
+    for (int i=0; i<rows; i++)
+    {
+      AlgorithmParameter elc_i(Name("roi" + boost::lexical_cast<std::string>(i)), SpecifyROI_tabWidget->item(i,1)->text().toDouble());
+      SpecifyROI_tabWidget.push_back(elc_i);
+    }
+    state_->setValue(Parameters::, roi_vals_in_secondtable);*/
+    
+    
+    QPalette* palette = new QPalette();
+    palette->setColor(QPalette::Text,Qt::red);
+    StatisticsTableGroupBox->setPalette(*palette);
+        
+    auto X = SpecifyROI_tabWidget->item(0,0)->text().toDouble();
+    auto Y = SpecifyROI_tabWidget->item(0,1)->text().toDouble();
+    auto Z = SpecifyROI_tabWidget->item(0,2)->text().toDouble();
+    auto material = SpecifyROI_tabWidget->item(0,3)->text().toDouble();
+    auto radius = SpecifyROI_tabWidget->item(0,4)->text().toDouble();
+    DenseMatrixHandle specROI(new DenseMatrix(5,1));
+    (*specROI) << X, Y, Z, material, radius;
+    
+    state_->setTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI.name(), specROI, true);
   }
 }
 
@@ -94,6 +121,17 @@ void GenerateROIStatisticsDialog::pull()
     ++j;
    }
   }
-
+    
+    std::string PhysicalUnitString = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr.name()));  /// change GUI Labels due to physical unit and used coordinate space
+    if(!PhysicalUnitString.empty())
+    {
+      StatisticsTableGroupBox->setTitle("Statistics for ROIs: " + QString::fromStdString(PhysicalUnitString));
+    }
+    
+    std::string CoordinateSpaceLabelStr = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr.name()));  /// change GUI Labels due to physical unit and used coordinate space
+    if(!CoordinateSpaceLabelStr.empty())
+    {
+      ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));
+    }
 }
 

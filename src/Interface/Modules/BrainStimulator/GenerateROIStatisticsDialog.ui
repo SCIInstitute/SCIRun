@@ -35,7 +35,7 @@
     <attribute name="title">
      <string>Analysis</string>
     </attribute>
-    <widget class="QGroupBox" name="groupBox_4">
+    <widget class="QGroupBox" name="StatisticsTableGroupBox">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -99,9 +99,9 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
-       <widget class="QGroupBox" name="groupBox_5">
+       <widget class="QGroupBox" name="ROITableGroupBox">
         <property name="title">
-         <string>Specify ROI(s)</string>
+         <string>Specify ROI</string>
         </property>
         <widget class="QTableWidget" name="SpecifyROI_tabWidget">
          <property name="geometry">

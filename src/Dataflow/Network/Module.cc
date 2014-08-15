@@ -472,6 +472,11 @@ void Module::setStateListFromAlgo(AlgorithmParameterName name)
   get_state()->setValue(name, algo().get(name).getList());
 }
 
+void Module::setStateStringFromAlgo(AlgorithmParameterName name)
+{
+  get_state()->setValue(name, algo().get(name).getString());
+}
+
 void Module::setAlgoDoubleFromState(AlgorithmParameterName name)
 {
   algo().set(name, get_state()->getValue(name).getDouble());

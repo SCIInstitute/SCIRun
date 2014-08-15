@@ -239,6 +239,7 @@ namespace Networks {
     void setStateDoubleFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setStateStringFromAlgoOption(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setStateListFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setStateStringFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoBoolFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoIntFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoDoubleFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);

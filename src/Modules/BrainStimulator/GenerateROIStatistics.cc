@@ -55,7 +55,7 @@ GenerateROIStatisticsModule::GenerateROIStatisticsModule() : Module(ModuleLookup
 
 void GenerateROIStatisticsModule::setStateDefaults()
 {
-  //setStateListFromAlgo(Parameters::StatisticsTableValues);  
+  setStateStringFromAlgo(Parameters::PhysicalUnitStr);  
 }
 
 void GenerateROIStatisticsModule::execute()
@@ -65,16 +65,31 @@ void GenerateROIStatisticsModule::execute()
   auto atlasMesh_ = getRequiredInput(AtlasMesh);
   auto atlasMeshLabels_ = getOptionalInput(AtlasMeshLabels);
   auto coordinateSpace_ = getOptionalInput(CoordinateSpace);
-  auto coordinateSpaceLabel_ = getOptionalInput(CoordinateSpace);
+  auto coordinateSpaceLabel_ = getOptionalInput(CoordinateSpaceLabel);
   
   setAlgoListFromState(Parameters::StatisticsTableValues);
   
+  auto roiSpec = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI.name()));
+  
   //algorithm input and run
-  auto output = algo().run_generic(make_input((MeshDataOnElements, meshData_)(PhysicalUnit, optionalAlgoInput(physicalUnit_))(AtlasMesh, atlasMesh_)(AtlasMeshLabels, optionalAlgoInput(atlasMeshLabels_))(CoordinateSpace, optionalAlgoInput(coordinateSpace_))(CoordinateSpaceLabel, optionalAlgoInput(coordinateSpaceLabel_))));
+  auto input = make_input((MeshDataOnElements, meshData_)(PhysicalUnit, optionalAlgoInput(physicalUnit_))(AtlasMesh, atlasMesh_)(AtlasMeshLabels,
+  optionalAlgoInput(atlasMeshLabels_))(CoordinateSpace, optionalAlgoInput(coordinateSpace_))(CoordinateSpaceLabel,
+  optionalAlgoInput(coordinateSpaceLabel_)));
+  
+  if (roiSpec)
+    input[GenerateROIStatisticsAlgorithm::SpecifyROI] = roiSpec;
+  
+  auto output = algo().run_generic(input);
 
   auto table = output.additionalAlgoOutput();
   get_state()->setTransientValue(Parameters::StatisticsTableValues.name(), table, true);
-
+  
+  if (physicalUnit_ && *physicalUnit_)
+     get_state()->setTransientValue(Parameters::PhysicalUnitStr.name(),(*physicalUnit_)->value() , true);
+  
+  if (coordinateSpaceLabel_ && *coordinateSpaceLabel_)
+     get_state()->setTransientValue(Parameters::CoordinateSpaceLabelStr.name(),(*coordinateSpaceLabel_)->value() , true); 
+  
   //algorithm output
   sendOutputFromAlgorithm(StatisticalResults, output);
 }

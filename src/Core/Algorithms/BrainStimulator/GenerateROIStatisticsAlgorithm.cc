@@ -62,21 +62,26 @@ const AlgorithmInputName GenerateROIStatisticsAlgorithm::AtlasMesh("AtlasMesh");
 const AlgorithmInputName GenerateROIStatisticsAlgorithm::AtlasMeshLabels("AtlasMeshLabels");
 const AlgorithmInputName GenerateROIStatisticsAlgorithm::CoordinateSpace("CoordinateSpace");
 const AlgorithmInputName GenerateROIStatisticsAlgorithm::CoordinateSpaceLabel("CoordinateSpaceLabel");
+const AlgorithmInputName GenerateROIStatisticsAlgorithm::SpecifyROI("SpecifyROI");
 const AlgorithmOutputName GenerateROIStatisticsAlgorithm::StatisticalResults("StatisticalResults");
 
-ALGORITHM_PARAMETER_DEF(BrainStimulator, StatisticsValues);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, ROITableValues);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, StatisticsTableValues);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, PhysicalUnitStr);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, CoordinateSpaceLabelStr);
 
 GenerateROIStatisticsAlgorithm::GenerateROIStatisticsAlgorithm()
 {
   using namespace Parameters;
-  addParameter(StatisticsValues, 0);
+  addParameter(ROITableValues, 0);
   addParameter(StatisticsTableValues, 0);
+  addParameter(PhysicalUnitStr, "");
+  addParameter(CoordinateSpaceLabelStr, "");
 }
 
 AlgorithmParameterName GenerateROIStatisticsAlgorithm::StatisticsRowName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
 
-boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const std::string& AtlasMeshLabels) const
+boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace,const std::string& AtlasMeshLabels) const
 {
  DenseMatrixHandle output;
 
@@ -91,6 +96,16 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
    vfield2->get_value(Label, i);
    labelSet.insert(Label);
  }
+  
+ std::set<bool> element_selection;
+ 
+ // CoordinateSpace is provided and coodinates? if not dont go in here
+ if (CoordinateSpace != nullptr) //input provided in SpecifyROI_tabWidget-GUI? (x,y,z,radius)
+ {
+  double x=0.5,y=0.5,z=0.5,radius=2.0,material=-1.0;
+
+  element_selection = statistics_based_on_xyz_coodinates(mesh, CoordinateSpace, labelSet, x, y, z, radius, material);
+ }
 
  const size_t number_of_atlas_materials = labelSet.size();
  std::vector<int> labelVector(labelSet.begin(), labelSet.end());
@@ -98,7 +113,7 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
  std::ostringstream ostr;
  std::copy(labelSet.begin(), labelSet.end(), std::ostream_iterator<int>(ostr, ", "));
  LOG_DEBUG("Sorted set of label numbers: " << ostr.str() << std::endl);
- 
+  
  std::vector<double> value_avr(number_of_atlas_materials);
  std::vector<int> value_count(number_of_atlas_materials);
  std::vector<double> value_min(number_of_atlas_materials);
@@ -163,7 +178,7 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
    {
     THROW_ALGORITHM_INPUT_ERROR("Number of material Labels in AtlasMesh and AtlasMeshLabels do not match"); 
    } 
-  
+     
   std::vector<AlgorithmParameter> elc_vals_in_table;
   for (int i=0; i<AtlasMeshLabels_vector.size(); i++)
   {
@@ -178,10 +193,31 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
     elc_vals_in_table.push_back(row_i);
   }
   
-  AlgorithmParameter whole_table(Name("Table"), elc_vals_in_table); 
+  AlgorithmParameter statistics_table(Name("Table"), elc_vals_in_table); 
  
- return boost::make_tuple(output, whole_table);
+ return boost::make_tuple(output, statistics_table);
 }
+
+std::set<bool> GenerateROIStatisticsAlgorithm::statistics_based_on_xyz_coodinates(const FieldHandle mesh, const FieldHandle CoordinateSpace, std::set<int>& labelSet, double x, double y, double z, double radius, int material) const
+{
+  std::set<bool> element_selection;
+  VField* vfield1 = mesh->vfield();
+  VMesh* vmesh = vfield1->vmesh();
+  
+  if (material != -1)
+  {
+   Point p;
+   for (VMesh::Elem::index_type i=0; i < vmesh->num_elems(); i++) // loop over all tetrahedral elements (AtlasMesh)
+   {
+     vmesh->get_center(p,i);
+     
+   }
+  }
+  //if material is provided reduce label vector that only this material remains
+
+  return element_selection;
+}
+
 
 std::vector<std::string> GenerateROIStatisticsAlgorithm::ConvertInputAtlasStringIntoVector(const std::string& atlasLabels) const
 {
@@ -200,8 +236,9 @@ AlgorithmOutput GenerateROIStatisticsAlgorithm::run_generic(const AlgorithmInput
   auto physicalUnit_ = input.get<Datatypes::String>(PhysicalUnit);
   auto atlasMesh_ = input.get<Field>(AtlasMesh);
   auto atlasMeshLabels_ = input.get<Datatypes::String>(AtlasMeshLabels);
-  auto coordinatespace_ = input.get<Field>(CoordinateSpace);
-  auto coordinateLabel_ = input.get<Datatypes::String>(CoordinateSpaceLabel);
+  auto coordinateSpace_ = input.get<Field>(CoordinateSpace);
+  auto coordinateLabel_ = input.get<Datatypes::String>(CoordinateSpaceLabel);  
+  auto roiSpec = input.get<DenseMatrix>(SpecifyROI);
  
   if (!mesh_)  
      THROW_ALGORITHM_INPUT_ERROR("First input (mesh) is empty.");
@@ -244,15 +281,29 @@ AlgorithmOutput GenerateROIStatisticsAlgorithm::run_generic(const AlgorithmInput
     THROW_ALGORITHM_INPUT_ERROR(" Number of mesh elements of first input and third input does not match.");  
 
   DenseMatrixHandle statistics;
-  Variable table;
+  Variable Statisticstable;
   if (atlasMeshLabels_ == nullptr)
   {
-    boost::tie(statistics, table) = run(mesh_, atlasMesh_);
+   //if (roiSpec)
+    if(coordinateSpace_ == nullptr)
+    {
+      boost::tie(statistics, Statisticstable) = run(mesh_, atlasMesh_);
+    } else
+    {
+      boost::tie(statistics, Statisticstable) = run(mesh_, atlasMesh_, coordinateSpace_);
+    }
+      
   } else
   {
-    boost::tie(statistics, table) = run(mesh_, atlasMesh_, atlasMeshLabels_->value());
+    if(coordinateSpace_ == nullptr)
+    {
+     boost::tie(statistics, Statisticstable) = run(mesh_, atlasMesh_, FieldHandle(), atlasMeshLabels_->value());
+    } else
+    {
+     boost::tie(statistics, Statisticstable) = run(mesh_, atlasMesh_, coordinateSpace_, atlasMeshLabels_->value()); 
+    }   
   }
-
+  
   if (statistics == nullptr)
   {
     THROW_ALGORITHM_INPUT_ERROR(" Statistics output is null pointer! "); 
@@ -260,7 +311,7 @@ AlgorithmOutput GenerateROIStatisticsAlgorithm::run_generic(const AlgorithmInput
 
   AlgorithmOutput output;
   output[StatisticalResults] = statistics;
-  output.setAdditionalAlgoOutput(table);
+  output.setAdditionalAlgoOutput(Statisticstable);
   
   return output;
 }
