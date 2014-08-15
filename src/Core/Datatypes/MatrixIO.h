@@ -45,14 +45,24 @@ namespace Core {
 namespace Datatypes {
 
   // see http://stackoverflow.com/questions/7477978/nan-ascii-i-o-with-visual-c
+  template <typename T>
   struct FloatNaNHelper 
   {
-    double& value;
-    explicit FloatNaNHelper(double& f) : value(f) { }
-    operator const double&() const { return value; }
+    T& value;
+    explicit FloatNaNHelper(T& f) : value(f) { }
+    operator const T&() const { return value; }
   };
 
-  inline std::istream& operator>>(std::istream& in, FloatNaNHelper& f) 
+  
+  //TODO: template partial spec for double/float/etc.
+  template <typename T>
+  std::istream& operator>>(std::istream& in, FloatNaNHelper<T>& f)
+  {
+    return in;
+  }
+  
+  template <>
+  inline std::istream& operator>>(std::istream& in, FloatNaNHelper<double>& f)
   {
     if (in >> f.value)
       return in;
@@ -90,8 +100,8 @@ namespace Datatypes {
 
         if (reader.fail())
         {
-          //TODO: non-double matrices will not compile here. Need specialization.
-          reader >> FloatNaNHelper(val);
+          FloatNaNHelper<T> helper(val);
+          reader >> helper;
 
           if (reader.fail())
           {
