@@ -72,6 +72,7 @@ namespace Engine {
       Networks::ModuleStateFactoryHandle sf, 
       ExecutionStrategyFactoryHandle executorFactory, 
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
+      Networks::ReexecuteStrategyFactoryHandle reexFactory,
       Networks::NetworkEditorSerializationManager* nesm = 0);
     explicit NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = 0);
 
@@ -130,6 +131,7 @@ namespace Engine {
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
     Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
+    Networks::ReexecuteStrategyFactoryHandle reexFactory_;
     ExecutionStrategyHandle currentExecutor_;
     ExecutionStrategyFactoryHandle executorFactory_;
     Networks::NetworkEditorSerializationManager* serializationManager_;
