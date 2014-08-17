@@ -217,57 +217,52 @@ std::set<bool> GenerateROIStatisticsAlgorithm::statistics_based_on_xyz_coodinate
   std::set<bool> element_selection;
   VField* vfield1 = mesh->vfield();
   VMesh* vmesh = vfield1->vmesh();
-  
-  long count_the_spec_materials=0;
-  
-  if (material != 0)
+   
+  if (labelSet.size()!=vmesh->num_elems())
   {
-   for (std::set<int>::iterator it=labelSet.begin(); it!=labelSet.end(); ++it)
+     THROW_ALGORITHM_INPUT_ERROR("Internal error: Mesh labels and mesh does not match.");
+  } 
+   
+  long count_loop=0;
+  for (std::set<int>::iterator it=labelSet.begin(); it!=labelSet.end(); ++it)
+  {
+    Point p;
+    double distance = 0;
+    if (material!=0)
     {
-     if (*it==material)
-      {
-       count_the_spec_materials++;
-      }
-    }
-  }
-    
-  if (count_the_spec_materials==0)
-  {
-    THROW_ALGORITHM_INPUT_ERROR("Specified material could not be found");
-  }
-  
-  DenseMatrixHandle element_centers(material != 0 ? new DenseMatrix(count_the_spec_materials,3) : new DenseMatrix(vmesh->num_elems(),3));  
-  
-  if (material == 0)
-  { 
-   Point p;
-   for (VMesh::Elem::index_type i=0; i < vmesh->num_elems(); i++) // loop over all tetrahedral elements of the mesh to be analyzed
-   {
-    vmesh->get_center(p,i);
-    (*element_centers)(i,0) = p.x();
-    (*element_centers)(i,1) = p.y();
-    (*element_centers)(i,2) = p.z();
-   }
-  } else
-  {
-   Point p;
-   long count_loop=0, count_found_labels=0;
-   for (std::set<int>::iterator it=labelSet.begin(); it!=labelSet.end(); ++it)
-   {
-    if (*it==material)
-    {
+     if (material==*it)
+     {
       VMesh::Elem::index_type tmp = count_loop;
       vmesh->get_center(p,tmp);
-      (*element_centers)(count_found_labels,0) = p.x();
-      (*element_centers)(count_found_labels,1) = p.y();
-      (*element_centers)(count_found_labels,2) = p.z();
-      count_found_labels++;
-    }
-    count_loop++;
-   }
+      distance = sqrt((x-p.x())*(x-p.x())+(y-p.y())*(y-p.y())+(z-p.z())*(z-p.z()));
+      if (distance > radius)
+      {
+       element_selection.insert(false);  
+      } else
+      {
+       element_selection.insert(true); 
+      }
+     } else
+     {
+      element_selection.insert(false); 
+     }
+     
+    } else
+    {    
+     VMesh::Elem::index_type tmp = count_loop;
+     vmesh->get_center(p,tmp);
+     distance = sqrt((x-p.x())*(x-p.x())+(y-p.y())*(y-p.y())+(z-p.z())*(z-p.z()));
+     if ( distance > radius)
+     {
+       element_selection.insert(false);  
+     } else
+     {
+       element_selection.insert(true);  
+     }
+    }  
+   count_loop++;
   }
-  //if material is provided reduce label vector that only this material remains
-
+ 
   return element_selection;
 }
 
