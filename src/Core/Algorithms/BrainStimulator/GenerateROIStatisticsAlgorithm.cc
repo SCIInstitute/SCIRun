@@ -81,7 +81,7 @@ GenerateROIStatisticsAlgorithm::GenerateROIStatisticsAlgorithm()
 
 AlgorithmParameterName GenerateROIStatisticsAlgorithm::StatisticsRowName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
 
-boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace,const std::string& AtlasMeshLabels) const
+boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace, const std::string& AtlasMeshLabels, const Datatypes::DenseMatrixHandle specROI) const
 {
  DenseMatrixHandle output;
 
@@ -100,11 +100,25 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
  std::set<bool> element_selection;
  
  // CoordinateSpace is provided and coodinates? if not dont go in here
- if (CoordinateSpace != nullptr) //input provided in SpecifyROI_tabWidget-GUI? (x,y,z,radius)
+ if (CoordinateSpace != nullptr && specROI != nullptr) //input provided in SpecifyROI_tabWidget-GUI? (x,y,z,radius)
  {
-  double x=0.5,y=0.5,z=0.5,radius=2.0,material=-1.0;
-
-  element_selection = statistics_based_on_xyz_coodinates(mesh, CoordinateSpace, labelSet, x, y, z, radius, material);
+  double x=0,y=0,z=0,radius=-1,material=-1;
+  if ( (*specROI).ncols()==1 && (*specROI).nrows()==5 )
+  {  
+   x=(*specROI)(0,0);
+   y=(*specROI)(1,0);
+   z=(*specROI)(2,0);
+   material=(*specROI)(3,0);
+   radius=(*specROI)(4,0);
+   
+   if (radius>0)
+   {
+     element_selection = statistics_based_on_xyz_coodinates(mesh, CoordinateSpace, labelSet, x, y, z, radius, material);
+   } else
+   {
+     THROW_ALGORITHM_INPUT_ERROR("Radius needs to be > 0 ");  
+   }
+  }
  }
 
  const size_t number_of_atlas_materials = labelSet.size();
@@ -204,13 +218,52 @@ std::set<bool> GenerateROIStatisticsAlgorithm::statistics_based_on_xyz_coodinate
   VField* vfield1 = mesh->vfield();
   VMesh* vmesh = vfield1->vmesh();
   
-  if (material != -1)
+  long count_the_spec_materials=0;
+  
+  if (material != 0)
+  {
+   for (std::set<int>::iterator it=labelSet.begin(); it!=labelSet.end(); ++it)
+    {
+     if (*it==material)
+      {
+       count_the_spec_materials++;
+      }
+    }
+  }
+    
+  if (count_the_spec_materials==0)
+  {
+    THROW_ALGORITHM_INPUT_ERROR("Specified material could not be found");
+  }
+  
+  DenseMatrixHandle element_centers(material != 0 ? new DenseMatrix(count_the_spec_materials,3) : new DenseMatrix(vmesh->num_elems(),3));  
+  
+  if (material == 0)
+  { 
+   Point p;
+   for (VMesh::Elem::index_type i=0; i < vmesh->num_elems(); i++) // loop over all tetrahedral elements of the mesh to be analyzed
+   {
+    vmesh->get_center(p,i);
+    (*element_centers)(i,0) = p.x();
+    (*element_centers)(i,1) = p.y();
+    (*element_centers)(i,2) = p.z();
+   }
+  } else
   {
    Point p;
-   for (VMesh::Elem::index_type i=0; i < vmesh->num_elems(); i++) // loop over all tetrahedral elements (AtlasMesh)
+   long count_loop=0, count_found_labels=0;
+   for (std::set<int>::iterator it=labelSet.begin(); it!=labelSet.end(); ++it)
    {
-     vmesh->get_center(p,i);
-     
+    if (*it==material)
+    {
+      VMesh::Elem::index_type tmp = count_loop;
+      vmesh->get_center(p,tmp);
+      (*element_centers)(count_found_labels,0) = p.x();
+      (*element_centers)(count_found_labels,1) = p.y();
+      (*element_centers)(count_found_labels,2) = p.z();
+      count_found_labels++;
+    }
+    count_loop++;
    }
   }
   //if material is provided reduce label vector that only this material remains
@@ -282,27 +335,11 @@ AlgorithmOutput GenerateROIStatisticsAlgorithm::run_generic(const AlgorithmInput
 
   DenseMatrixHandle statistics;
   Variable Statisticstable;
-  if (atlasMeshLabels_ == nullptr)
-  {
-   //if (roiSpec)
-    if(coordinateSpace_ == nullptr)
-    {
-      boost::tie(statistics, Statisticstable) = run(mesh_, atlasMesh_);
-    } else
-    {
-      boost::tie(statistics, Statisticstable) = run(mesh_, atlasMesh_, coordinateSpace_);
-    }
-      
-  } else
-  {
-    if(coordinateSpace_ == nullptr)
-    {
-     boost::tie(statistics, Statisticstable) = run(mesh_, atlasMesh_, FieldHandle(), atlasMeshLabels_->value());
-    } else
-    {
-     boost::tie(statistics, Statisticstable) = run(mesh_, atlasMesh_, coordinateSpace_, atlasMeshLabels_->value()); 
-    }   
-  }
+  
+  const std::string& atlasMeshLabelsStr = atlasMeshLabels_ == nullptr ? std::string("") : atlasMeshLabels_->value();
+  const FieldHandle coorspace_ = coordinateSpace_ == nullptr ? FieldHandle() : coordinateSpace_;
+  const DenseMatrixHandle roiSpec_ = roiSpec == nullptr ? DenseMatrixHandle() : roiSpec;
+  boost::tie(statistics, Statisticstable) = run(mesh_, atlasMesh_, coorspace_, atlasMeshLabelsStr, roiSpec_);
   
   if (statistics == nullptr)
   {
