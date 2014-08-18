@@ -109,6 +109,11 @@ void HardCodedModuleFactory::setAlgorithmFactory(SCIRun::Core::Algorithms::Algor
   Module::defaultAlgoFactory_ = algoFactory;
 }
 
+void HardCodedModuleFactory::setReexecutionFactory(SCIRun::Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory)
+{
+  Module::defaultReexFactory_ = reexFactory;
+}
+
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 {
   Module::Builder builder;

@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
+//#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 
 #include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -35,7 +35,6 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
 
 /// @class MapFieldDataFromSourceToDestination
 /// @brief MapFieldDataFromSourceToDestination takes a field and finds data

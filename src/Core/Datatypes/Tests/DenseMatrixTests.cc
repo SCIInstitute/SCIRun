@@ -235,3 +235,21 @@ TEST(DenseMatrixTests, CopyBlock)
   expected << 2,0,  0,3;
   EXPECT_EQ(expected, *block);
 }
+
+TEST(DenseMatrixTests, CanReadNaNs)
+{
+  std::string nanMatrix = "1 2\nNaN 3\n";
+  DenseMatrix m;
+  std::stringstream istr(nanMatrix);
+  istr >> m;
+  //std::cout << m << std::endl;
+
+  DenseMatrix expected(2,2);
+  expected << 1,2, std::numeric_limits<double>::quiet_NaN(), 3;
+  EXPECT_TRUE(m.hasNaN());
+  //std::cout << "diff: \n" << expected - m << std::endl;
+  EXPECT_TRUE(m.hasNaN());
+  EXPECT_TRUE((expected - m).hasNaN());
+  //comparison won't work with NaNs.
+  //EXPECT_EQ(expected, m);
+}

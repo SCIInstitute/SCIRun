@@ -48,7 +48,7 @@ namespace Networks {
     typedef std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId> Connections;
     typedef std::vector<ModuleHandle> Modules;
 
-    Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, Core::Algorithms::AlgorithmFactoryHandle algoFactory);
+    Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, Core::Algorithms::AlgorithmFactoryHandle algoFactory, ReexecuteStrategyFactoryHandle reexFactory);
     ~Network();
 
     virtual ModuleHandle add_module(const ModuleLookupInfo& info);

@@ -51,20 +51,20 @@ void StateChangeObserver::initStateObserver(ModuleStateInterface* state)
 {
   if (state)
   {
-    LOG_DEBUG("StateChangeObserver::initStateObserver(), connecting to state" << std::endl);
+    //LOG_DEBUG("StateChangeObserver::initStateObserver(), connecting to state" << std::endl);
     conn_ = state->connect_state_changed(boost::bind(&StateChangeObserver::stateChanged, this));
   }
 }
 
 void StateChangeObserver::stateChanged()
 {
-  LOG_DEBUG("StateChangeObserver::stateChanged()" << std::endl);
+  //LOG_DEBUG("StateChangeObserver::stateChanged()" << std::endl);
   stateChanged_ = true;
 }
 
 void StateChangeObserver::resetStateChanged()
 {
-  LOG_DEBUG("StateChangeObserver::resetStateChanged()" << std::endl);
+  //LOG_DEBUG("StateChangeObserver::resetStateChanged()" << std::endl);
   stateChanged_ = false;
 }
 

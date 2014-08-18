@@ -57,6 +57,7 @@ namespace Networks {
       bool hasUi = true,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory = defaultAlgoFactory_,
       ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
+      ReexecuteStrategyFactoryHandle reexFactory = defaultReexFactory_,
       const std::string& version = "1.0");
     virtual ~Module();
 
@@ -218,6 +219,7 @@ namespace Networks {
     /// @todo: yuck
     static ModuleStateFactoryHandle defaultStateFactory_;
     static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
+    static ReexecuteStrategyFactoryHandle defaultReexFactory_;
 
   protected:
     ModuleLookupInfo info_;
@@ -439,31 +441,38 @@ namespace Networks {
   class SCISHARE InputsChangedCheckerImpl : public InputsChangedChecker
   {
   public:
-    explicit InputsChangedCheckerImpl(Module& module);
+    explicit InputsChangedCheckerImpl(const Module& module);
     virtual bool inputsChanged() const override;
   private:
-    Module& module_;
+    const Module& module_;
   };
 
   class SCISHARE StateChangedCheckerImpl : public StateChangedChecker
   {
   public:
-    explicit StateChangedCheckerImpl(Module& module);
+    explicit StateChangedCheckerImpl(const Module& module);
     virtual bool newStatePresent() const override;
   private:
-    Module& module_;
+    const Module& module_;
   };
 
   class SCISHARE OutputPortsCachedCheckerImpl : public OutputPortsCachedChecker
   {
   public:
-    explicit OutputPortsCachedCheckerImpl(Module& module);
+    explicit OutputPortsCachedCheckerImpl(const Module& module);
     virtual bool outputPortsCached() const override;
   private:
-    Module& module_;
+    const Module& module_;
   };
 
-  SCISHARE ModuleReexecutionStrategyHandle makeDynamicReexecutionStrategy(Module& module);
+  class SCISHARE DynamicReexecutionStrategyFactory : public ReexecuteStrategyFactory
+  {
+  public:
+    explicit DynamicReexecutionStrategyFactory(const boost::optional<std::string>& reexMode);
+    virtual ModuleReexecutionStrategyHandle create(const Module& module) const;
+  private:
+    boost::optional<std::string> reexecuteMode_;
+  };
 
 }}
 

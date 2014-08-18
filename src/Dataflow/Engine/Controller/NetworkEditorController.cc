@@ -54,11 +54,13 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, AlgorithmFactoryHandle af, NetworkEditorSerializationManager* nesm) : 
-  theNetwork_(new Network(mf, sf, af)),
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, 
+  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, NetworkEditorSerializationManager* nesm) : 
+  theNetwork_(new Network(mf, sf, af, reex)),
   moduleFactory_(mf), 
   stateFactory_(sf), 
   algoFactory_(af),
+  reexFactory_(reex),
   executorFactory_(executorFactory),
   serializationManager_(nesm),
   signalSwitch_(true)
@@ -279,7 +281,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
   {
     try
     {
-      NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, this);
+      NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
       theNetwork_ = conv.from_xml_data(xml->network);
       for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {

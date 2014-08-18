@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2014 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,35 +26,51 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///
+///@file SetConductivitiesToTetMesh.h
+///@brief This module assigns electrical conductivities (isotropic) to various mesh types and is part of BrainStimlator package.
+///
+///@author
+/// Spencer Frisby
+/// Moritz Dannhauer
+///@details
+/// The module maps the numbers in round brackets found in the input field and converts them to the values provided in GUI elements right behind (doublespinboxes).
+///
+
+
 #ifndef ALGORITHMS_MATH_SETCONDUCTIVITIESTOTETMESHALGORITHM_H
 #define ALGORITHMS_MATH_SETCONDUCTIVITIESTOTETMESHALGORITHM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
+
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
-  
+
+  ALGORITHM_PARAMETER_DECL(Skin);
+  ALGORITHM_PARAMETER_DECL(SoftBone);
+  ALGORITHM_PARAMETER_DECL(HardBone);
+  ALGORITHM_PARAMETER_DECL(CSF);
+  ALGORITHM_PARAMETER_DECL(GM);
+  ALGORITHM_PARAMETER_DECL(WM);
+  ALGORITHM_PARAMETER_DECL(Electrode);
+  ALGORITHM_PARAMETER_DECL(InternalAir);
+
   class SCISHARE SetConductivitiesToTetMeshAlgorithm : public AlgorithmBase
   {
     public:
-      //Outputs run(const Inputs& input, const Parameters& params = 0) const;
-    SetConductivitiesToTetMeshAlgorithm();
-    FieldHandle run(FieldHandle fh) const;
-    static AlgorithmParameterName Skin();
-    static AlgorithmParameterName Skull();
-    static AlgorithmParameterName CSF();
-    static AlgorithmParameterName GM();
-    static AlgorithmParameterName WM();
-    static AlgorithmParameterName Electrode();
+      SetConductivitiesToTetMeshAlgorithm();
+      FieldHandle run(FieldHandle fh) const;
     
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-    static AlgorithmInputName MESH;
-    static AlgorithmInputName INHOMOGENEOUS_SKULL;
-    static AlgorithmInputName ANISOTROPIC_WM;
-    static AlgorithmOutputName OUTPUTMESH;
+      AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+      static AlgorithmInputName InputField;
+      static AlgorithmOutputName OutputField;
+      
+      std::vector<int> ElemLabelLookup; /// this module checks for those label data stored on the elements
+      
   };
 
 }}}}
