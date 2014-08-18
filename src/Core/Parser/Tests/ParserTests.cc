@@ -531,13 +531,9 @@ TEST_F(BasicParserTests, CreateFieldData_asin)
 #ifdef WIN32
   //check for NaN, if should be true
   //this TEST should checks NaN or specifically: -1.#IND
-  if(min != min && max != max)
-	    EXPECT_EQ(1 , 1);
-  else
-	  EXPECT_EQ(0, 1); 
+  EXPECT_TRUE(min != min && max != max);
 #else
-  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), min);
-  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), max); 
+    EXPECT_TRUE(min != min && max != max);
 #endif
 }
 
@@ -654,16 +650,9 @@ TEST_F(BasicParserTests, CreateFieldData_acos)
 
 #ifdef WIN32
   //another check for nan/imaginary
-  if (min != min && max != max)
-  {
-	EXPECT_EQ(1, 1);
-	EXPECT_EQ(1, 1); 
-  }
-  else
-	  EXPECT_EQ(1,0); 
+ EXPECT_TRUE(min != min && max != max);
 #else
-  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), min);
-  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), max); 
+EXPECT_TRUE(min != min && max != max);
 #endif
   //EXPECT_NEAR(0, min, 1e-8);
   //EXPECT_NEAR(0, max, 1e-8);
