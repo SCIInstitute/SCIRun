@@ -151,7 +151,7 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, ReexecuteStrategyFactoryHandle());
 
   auto network = controller.getNetwork();
 
@@ -573,7 +573,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, ReexecuteStrategyFactoryHandle());
 
   auto network = controller.getNetwork();
 
@@ -658,7 +658,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, ReexecuteStrategyFactoryHandle());
 
   auto network = controller.getNetwork();
 
@@ -742,7 +742,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, ReexecuteStrategyFactoryHandle());
 
   auto network = controller.getNetwork();
 

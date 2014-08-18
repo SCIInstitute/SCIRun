@@ -96,7 +96,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  Network matrixUnaryNetwork(mf, sf, af);
+  Network matrixUnaryNetwork(mf, sf, af, ReexecuteStrategyFactoryHandle());
 
   ModuleHandle send = addModuleToNetwork(matrixUnaryNetwork, "SendTestMatrix");
   ModuleHandle process = addModuleToNetwork(matrixUnaryNetwork, "EvaluateLinearAlgebraUnary");
@@ -164,7 +164,7 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  Network matrixMathNetwork(mf, sf, af);
+  Network matrixMathNetwork(mf, sf, af, ReexecuteStrategyFactoryHandle());
   ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
   ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
   

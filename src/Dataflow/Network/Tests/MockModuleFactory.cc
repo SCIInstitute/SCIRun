@@ -111,6 +111,10 @@ void MockModuleFactory::setAlgorithmFactory(AlgorithmFactoryHandle algoFactory)
 {
 }
 
+void MockModuleFactory::setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory)
+{
+}
+
 const ModuleDescriptionMap& MockModuleFactory::getAllAvailableModuleDescriptions() const
 {
   static ModuleDescriptionMap empty;

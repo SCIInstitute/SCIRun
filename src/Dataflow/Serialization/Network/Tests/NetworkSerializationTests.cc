@@ -165,8 +165,8 @@ TEST(SerializeNetworkTest, RoundTripObject)
   serializer.save_xml(networkXML, ostr1);
 
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, ModuleStateFactoryHandle(), ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle());
-  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle(), AlgorithmFactoryHandle(), &controller);
+  NetworkEditorController controller(mf, ModuleStateFactoryHandle(), ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
+  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle(), &controller);
   NetworkHandle network = converter.from_xml_data(networkXML);
   ASSERT_TRUE(network.get() != nullptr);
   auto xml2 = converter.to_xml_data(network);
@@ -185,7 +185,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
-  NetworkEditorController controller(mf, sf, exe, AlgorithmFactoryHandle());
+  NetworkEditorController controller(mf, sf, exe, AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
   
   ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");
   ModuleHandle matrix2Send = controller.addModule("SendTestMatrix");
@@ -231,7 +231,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   XMLSerializer::save_xml(*xml, ostr, "network");
   std::cout << ostr.str() << std::endl;
 
-  NetworkEditorController controller2(mf, sf, exe, AlgorithmFactoryHandle());
+  NetworkEditorController controller2(mf, sf, exe, AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
   controller2.loadNetwork(xml);
 
   NetworkHandle deserialized = controller2.getNetwork();
@@ -251,7 +251,7 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle());
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
 
   std::vector<ModuleHandle> showFields;
   showFields.push_back(controller.addModule("ShowField"));
@@ -282,7 +282,7 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
   XMLSerializer::save_xml(*xml, ostr, "network");
   //std::cout << ostr.str() << std::endl;
 
-  NetworkEditorController controller2(mf, sf, ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle());
+  NetworkEditorController controller2(mf, sf, ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
   controller2.loadNetwork(xml);
 
   NetworkHandle deserialized = controller2.getNetwork();

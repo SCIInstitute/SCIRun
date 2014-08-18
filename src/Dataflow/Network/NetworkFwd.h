@@ -71,11 +71,13 @@ class NetworkGlobalSettings;
 class NetworkEditorSerializationManager;
 class ConnectionMakerService;
 class NetworkEditorControllerInterface;
+class ReexecuteStrategyFactory;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
 typedef boost::shared_ptr<ModuleStateInterface> ModuleStateHandle;
 typedef boost::shared_ptr<ModuleStateInterfaceFactory> ModuleStateFactoryHandle;
+typedef boost::shared_ptr<ReexecuteStrategyFactory> ReexecuteStrategyFactoryHandle;
 typedef boost::shared_ptr<PortInterface> PortHandle;
 typedef boost::shared_ptr<Connection> ConnectionHandle;
 typedef boost::shared_ptr<InputPortInterface> InputPortHandle;

@@ -34,6 +34,7 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
+#include <Dataflow/Network/Module.h>  //TODO move Reex
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Logging/Log.h>
@@ -100,7 +101,8 @@ NetworkEditorControllerHandle Application::controller()
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
-    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory));
+    ReexecuteStrategyFactoryHandle reexFactory(new DynamicReexecutionStrategyFactory(parameters()->reexecuteMode()));
+    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory));
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();

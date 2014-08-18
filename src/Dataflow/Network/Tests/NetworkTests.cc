@@ -67,14 +67,16 @@ protected:
   ModuleFactoryHandle moduleFactory_;
   static ModuleStateFactoryHandle sf_;
   static AlgorithmFactoryHandle af_;
+  static ReexecuteStrategyFactoryHandle reex_;
 };
 
 ModuleStateFactoryHandle NetworkTests::sf_;
 AlgorithmFactoryHandle NetworkTests::af_;
+ReexecuteStrategyFactoryHandle NetworkTests::reex_;
 
 TEST_F(NetworkTests, CanAddAndRemoveModules)
 {
-  Network network(moduleFactory_, sf_, af_);
+  Network network(moduleFactory_, sf_, af_, reex_);
  
   EXPECT_EQ(0, network.nmodules());
 
@@ -91,7 +93,7 @@ TEST_F(NetworkTests, CanAddAndRemoveModules)
 
 TEST_F(NetworkTests, CanAddAndRemoveConnections)
 {
-  Network network(moduleFactory_, sf_, af_);
+  Network network(moduleFactory_, sf_, af_, reex_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -115,7 +117,7 @@ TEST_F(NetworkTests, CanAddAndRemoveConnections)
 
 TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 {
-  Network network(moduleFactory_, sf_, af_);
+  Network network(moduleFactory_, sf_, af_, reex_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -144,7 +146,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 /// @todo: this verification pushed up to higher layer.
 TEST_F(NetworkTests, DISABLED_ConnectionsMustHaveMatchingPortTypes)
 {
-  Network network(moduleFactory_, sf_, af_);
+  Network network(moduleFactory_, sf_, af_, reex_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -158,7 +160,7 @@ TEST_F(NetworkTests, DISABLED_ConnectionsMustHaveMatchingPortTypes)
 
 TEST_F(NetworkTests, CannotConnectNonExistentPorts)
 {
-  Network network(moduleFactory_, sf_, af_);
+  Network network(moduleFactory_, sf_, af_, reex_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";

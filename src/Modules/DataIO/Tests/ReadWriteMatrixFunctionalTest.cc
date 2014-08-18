@@ -94,7 +94,7 @@ TEST(ReadWriteMatrixFunctionalTest, DISABLED_ManualExecution)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  Network writeReadMatrixNetwork(mf, sf, af);
+  Network writeReadMatrixNetwork(mf, sf, af, ReexecuteStrategyFactoryHandle());
 
   ModuleHandle send = addModuleToNetwork(writeReadMatrixNetwork, "SendTestMatrix");
   ModuleHandle write = addModuleToNetwork(writeReadMatrixNetwork, "WriteMatrix");

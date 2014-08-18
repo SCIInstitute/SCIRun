@@ -59,6 +59,7 @@ Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
   AlgorithmFactoryHandle algoFactory,
   ModuleStateFactoryHandle stateFactory,
+  ReexecuteStrategyFactoryHandle reexFactory,
   const std::string& version)
   : info_(info),
   id_(info_.module_name_, instanceCount_++),
@@ -85,9 +86,8 @@ Module::Module(const ModuleLookupInfo& info,
 
   initStateObserver(state_.get());
 
-  //TODO: configure via command line flag as advanced option.
-  setReexecutionStrategy(boost::make_shared<AlwaysReexecuteStrategy>());
-  //setReexecutionStrategy(makeDynamicReexecutionStrategy(*this));
+  if (reexFactory)
+    setReexecutionStrategy(reexFactory->create(*this));
 }
 
 Module::~Module()
@@ -96,6 +96,7 @@ Module::~Module()
 
 ModuleStateFactoryHandle Module::defaultStateFactory_;
 AlgorithmFactoryHandle Module::defaultAlgoFactory_;
+ReexecuteStrategyFactoryHandle Module::defaultReexFactory_;
 
 LoggerHandle Module::getLogger() const { return log_ ? log_ : defaultLogger_; }
 
@@ -562,7 +563,7 @@ bool DynamicReexecutionStrategy::needToExecute() const
   return inputsChanged_->inputsChanged() || stateChanged_->newStatePresent() || !outputsCached_->outputPortsCached();
 }
 
-InputsChangedCheckerImpl::InputsChangedCheckerImpl(Module& module) : module_(module)
+InputsChangedCheckerImpl::InputsChangedCheckerImpl(const Module& module) : module_(module)
 {
 }
 
@@ -572,7 +573,7 @@ bool InputsChangedCheckerImpl::inputsChanged() const
   return module_.inputsChanged();
 }
 
-StateChangedCheckerImpl::StateChangedCheckerImpl(Module& module) : module_(module)
+StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_(module)
 {
 }
 
@@ -582,7 +583,7 @@ bool StateChangedCheckerImpl::newStatePresent() const
   return module_.newStatePresent();
 }
 
-OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(Module& module) : module_(module)
+OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module) : module_(module)
 {
 }
 
@@ -594,8 +595,19 @@ bool OutputPortsCachedCheckerImpl::outputPortsCached() const
   return ret;
 }
 
-ModuleReexecutionStrategyHandle SCIRun::Dataflow::Networks::makeDynamicReexecutionStrategy(Module& module)
+DynamicReexecutionStrategyFactory::DynamicReexecutionStrategyFactory(const boost::optional<std::string>& reexMode)
+  : reexecuteMode_(reexMode)
 {
+}
+
+ModuleReexecutionStrategyHandle DynamicReexecutionStrategyFactory::create(const Module& module) const
+{
+  if (reexecuteMode_ && ((*reexecuteMode_) == "always"))
+  {
+    LOG_DEBUG("Using Always reexecute mode for module execution.");
+    return boost::make_shared<AlwaysReexecuteStrategy>();
+  }
+
   return boost::make_shared<DynamicReexecutionStrategy>(
     boost::make_shared<InputsChangedCheckerImpl>(module),
     boost::make_shared<StateChangedCheckerImpl>(module),

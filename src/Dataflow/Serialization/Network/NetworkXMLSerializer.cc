@@ -59,15 +59,19 @@ private:
   NetworkEditorControllerInterface* nec_;
 };
 
-NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory, NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), controller_(nec), nesm_(nesm)
+NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory, 
+  ReexecuteStrategyFactoryHandle reexFactory,
+  NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm)
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), 
+  reexFactory_(reexFactory),
+  controller_(nec), nesm_(nesm)
 {
 }
 
 NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
   /// @todo: need to use NEC here to manage signal/slots for dynamic ports.
-  NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_, algoFactory_));
+  NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_, algoFactory_, reexFactory_));
   controller_->setNetwork(network);
 
   {
