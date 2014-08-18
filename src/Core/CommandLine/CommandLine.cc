@@ -61,6 +61,7 @@ public:
       ("no_splash", "Turn off splash screen")
       ("verbose", "Turn on debug log information")
       ("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
+      ("reexecuteMode", po::value<std::string>(), "network reexecution mode--DEVELOPER USE ONLY")
       ;
       
       positional_.add("input-file", -1);
@@ -123,8 +124,11 @@ public:
     const boost::optional<boost::filesystem::path>& pythonScriptFile,
     const boost::optional<boost::filesystem::path>& dataDirectory,
     const boost::optional<std::string>& threadMode,
+    const boost::optional<std::string>& reexecuteMode,
     const Flags& flags
-   ) : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory), threadMode_(threadMode), flags_(flags)
+   ) : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory), 
+   threadMode_(threadMode), reexecuteMode_(reexecuteMode),
+   flags_(flags)
   {}
 
   virtual boost::optional<std::string> inputFile() const
@@ -187,11 +191,16 @@ public:
     return threadMode_;
   }
 
+  virtual boost::optional<std::string> reexecuteMode() const
+  {
+    return reexecuteMode_;
+  }
+
 private:
   boost::optional<std::string> inputFile_;
   boost::optional<boost::filesystem::path> pythonScriptFile_;
   boost::optional<boost::filesystem::path> dataDirectory_;
-  boost::optional<std::string> threadMode_;
+  boost::optional<std::string> threadMode_, reexecuteMode_;
   Flags flags_;
 };
 
@@ -223,12 +232,14 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       dataDirectory = boost::filesystem::path(parsed["datadir"].as<std::string>());
     }
     auto threadMode = parsed.count("threadMode") != 0 ? parsed["threadMode"].as<std::string>() : boost::optional<std::string>();
+    auto reexecuteMode = parsed.count("reexecuteMode") != 0 ? parsed["reexecuteMode"].as<std::string>() : boost::optional<std::string>();
     return boost::make_shared<ApplicationParametersImpl>
       (
       inputFile,
       pythonScriptFile,
       dataDirectory,
       threadMode,
+      reexecuteMode,
       ApplicationParametersImpl::Flags(
         parsed.count("help") != 0,
         parsed.count("version") != 0,

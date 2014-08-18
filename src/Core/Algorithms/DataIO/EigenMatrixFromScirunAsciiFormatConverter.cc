@@ -191,7 +191,7 @@ EigenMatrixFromScirunAsciiFormatConverter::DenseData EigenMatrixFromScirunAsciiF
 
 boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawSparseData> EigenMatrixFromScirunAsciiFormatConverter::parseSparseMatrixString(const std::string& matString)
 {
-  boost::regex r("(\\d+) (\\d+) (\\d+) \\{8 (.*)\\}\\{8 (.*)\\}\\{(.*)\\}\\}");
+  boost::regex r("(\\d+) (\\d+) (\\d+) \\{8 (.*)\\}\\{8 (.*)\\}\\{(.*)\\}\\}\h*");
   boost::smatch what;
   regex_match(matString, what, r);
   if (what.size() == 7)

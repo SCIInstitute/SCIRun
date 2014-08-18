@@ -114,7 +114,9 @@ void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
   std::cout << "max diff is: " << maxDiff << std::endl;
 }
 
-TEST(SolveLinearSystemTests, CanSolveDarrell_CG)
+/// todo: switch these disabled tests to nightly mode. They are overly long for normal continuous builds.
+
+TEST(SolveLinearSystemTests, DISABLED_CanSolveDarrell_CG)
 {
   double solutionError;
   /// @todo: investigate this significant difference
@@ -126,20 +128,20 @@ TEST(SolveLinearSystemTests, CanSolveDarrell_CG)
   CanSolveDarrellWithMethod("cg", solutionError);
 }
 
-TEST(SolveLinearSystemTests, CanSolveDarrell_BICG)
+TEST(SolveLinearSystemTests, DISABLED_CanSolveDarrell_BICG)
 {
   double solutionError = 0.001;
   CanSolveDarrellWithMethod("bicg", solutionError);
 }
 
-TEST(SolveLinearSystemTests, CanSolveDarrell_Jacobi)
+TEST(SolveLinearSystemTests, DISABLED_CanSolveDarrell_Jacobi)
 {
   /// @todo: doesn't converge for this system. Problem?
   double solutionError = 105;
   CanSolveDarrellWithMethod("jacobi", solutionError);
 }
 
-TEST(SolveLinearSystemTests, CanSolveDarrell_MINRES)
+TEST(SolveLinearSystemTests, DISABLED_CanSolveDarrell_MINRES)
 {
   /// @todo: converges but not as accurate.
   double solutionError = 2.4;

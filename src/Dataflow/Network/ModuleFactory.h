@@ -46,6 +46,7 @@ namespace Networks {
     virtual ModuleHandle create(const ModuleDescription& desc) = 0;
     virtual void setStateFactory(ModuleStateFactoryHandle stateFactory) = 0;
     virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) = 0;
+    virtual void setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory) = 0;
     virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const = 0;
   };
 

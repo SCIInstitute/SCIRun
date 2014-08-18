@@ -77,7 +77,7 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
     # git checkout -q will silence message about detached head (harmless).
     ExternalProject_Add(Boost_external
       PREFIX ${boost_BINARY_DIR}
-      GIT_REPOSITORY "https://github.com/SCIInstitute/boost.git"
+      GIT_REPOSITORY "https://github.com/CIBC-Internal/boost.git"
       GIT_TAG ${boost_GIT_TAG}
       SOURCE_DIR ${boost_SOURCE_DIR}
       BINARY_DIR ${boost_BINARY_DIR}

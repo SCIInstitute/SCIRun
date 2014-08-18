@@ -105,7 +105,7 @@ public:
     mf(new HardCodedModuleFactory),
     sf(new SimpleMapModuleStateFactory),
     af(new HardCodedAlgorithmFactory),
-    matrixMathNetwork(mf, sf, af)
+    matrixMathNetwork(mf, sf, af, ReexecuteStrategyFactoryHandle())
   {
   }
 protected:
