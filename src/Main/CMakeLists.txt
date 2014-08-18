@@ -66,15 +66,15 @@ ELSEIF(WIN32)
                          POST_BUILD
                            COMMAND ${CMAKE_COMMAND}
                            ARGS -E copy_directory
-                           ${SCIRUN_CORE_BINARY_DIR}/Shaders
-                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}/Shaders
+                           ${SCIRun_BINARY_DIR}/Shaders
+                           ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/Shaders
       )
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
                          POST_BUILD
                            COMMAND ${CMAKE_COMMAND}
                            ARGS -E copy_directory
-                           ${SCIRUN_CORE_BINARY_DIR}/Assets
-                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}/Assets
+                           ${SCIRun_BINARY_DIR}/Assets
+                           ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/Assets
       )
     ENDFOREACH()
   ENDIF()
@@ -109,27 +109,16 @@ IF(APPLE AND BUILD_BUNDLE)
        # configure Qt libs
        # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
        COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
-       COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_SOURCE_DIR}/CMake/qt.conf ${APPLICATION_NAME}.app/Contents/Resources
+       COMMAND ${CMAKE_COMMAND} ARGS -E copy ${SCIRun_SOURCE_DIR}/CMake/qt.conf ${APPLICATION_NAME}.app/Contents/Resources
        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-         ${SCIRUN_CORE_BINARY_DIR}/Shaders ${APPLICATION_NAME}.app/Contents/MacOS/Shaders
+         ${SCIRun_BINARY_DIR}/Shaders ${APPLICATION_NAME}.app/Contents/MacOS/Shaders
        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-         ${SCIRUN_CORE_BINARY_DIR}/Assets ${APPLICATION_NAME}.app/Contents/MacOS/Assets
+         ${SCIRun_BINARY_DIR}/Assets ${APPLICATION_NAME}.app/Contents/MacOS/Assets
        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
     )
   ENDIF()
 
   INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
-
-  #INSTALL(DIRECTORY "${SCIRUN_CORE_BINARY_DIR}/Shaders"
-  #  DESTINATION "${APPLICATION_NAME}.app/Contents/MacOS"
-  #  DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-  #  FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-  #)
-  #INSTALL(DIRECTORY "${SCIRUN_CORE_BINARY_DIR}/Assets"
-  #  DESTINATION "${APPLICATION_NAME}.app/Contents/MacOS"
-  #  DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-  #  FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-  #)
 
 ELSEIF(WIN32)
 
@@ -146,9 +135,9 @@ ELSEIF(WIN32)
     ${QT_BINARY_DIR}/${QTOPENGLNAME}.dll
       DESTINATION bin)
 
-  INSTALL(DIRECTORY "${SCIRUN_CORE_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
+  INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
   
-  INSTALL(DIRECTORY "${SCIRUN_CORE_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
+  INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
 
 ENDIF()
 
