@@ -39,10 +39,20 @@ using namespace SCIRun::Core::Algorithms::Fields;
 ModuleLookupInfo AsyncPortTestModule::staticInfo_("AsyncPortTestModule", "Testing", "SCIRun");
 
 AsyncPortTestModule::AsyncPortTestModule()
-  : ModuleWithAsyncDynamicPorts(staticInfo_)
+  : ModuleWithAsyncDynamicPorts(staticInfo_),
+  counter_(0)
 {
   INITIALIZE_PORT(AsyncField);
-  LOG_DEBUG("AsyncPortTestModule()");
+}
+
+void AsyncPortTestModule::execute() 
+{
+  // point of module is to receive some async data before it's executed (which should do nothing). 
+  // this error condition will catch bugs with the port framework.
+  if (0 == counter_)
+  {
+    THROW_INVALID_ARGUMENT("AsyncPortTestModule has not received any data!");
+  }
 }
 
 void AsyncPortTestModule::asyncExecute(const PortId& pid, DatatypeHandle data)
@@ -51,7 +61,7 @@ void AsyncPortTestModule::asyncExecute(const PortId& pid, DatatypeHandle data)
   //TODO
   // auto field = getLatestInput(AsyncField);
   // handle(field);
-
+  counter_.fetch_add(1);
   std::cout << "Async port test. Latest data on port " << pid.toString() << " is a ";
   auto field = boost::dynamic_pointer_cast<Field>(data);
   if (field)
