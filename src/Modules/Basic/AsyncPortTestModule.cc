@@ -47,11 +47,12 @@ AsyncPortTestModule::AsyncPortTestModule()
 
 void AsyncPortTestModule::execute() 
 {
-  // point of module is to receive some async data before it's executed (which should do nothing). 
+  // point of module is to receive some async data before it's executed (which should do nothing).
   // this error condition will catch bugs with the port framework.
   if (0 == counter_)
   {
-    THROW_INVALID_ARGUMENT("AsyncPortTestModule has not received any data!");
+    error("async module did not receive any input");
+    return;
   }
 }
 
