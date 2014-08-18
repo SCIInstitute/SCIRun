@@ -51,7 +51,8 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -s [ --script ] arg   SCIRun Python Script\n"
     "  --no_splash           Turn off splash screen\n"
     "  --verbose             Turn on debug log information\n"
-    "  --threadMode arg      network execution threading mode--DEVELOPER USE ONLY\n";
+    "  --threadMode arg      network execution threading mode--DEVELOPER USE ONLY\n"
+    "  --reexecuteMode arg   network reexecution mode--DEVELOPER USE ONLY\n";
   
   EXPECT_EQ(expectedHelp, parser.describe());
   

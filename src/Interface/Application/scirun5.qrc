@@ -12,5 +12,7 @@
         <file>Resources/hideAll.png</file>
         <file>Resources/rightAll.png</file>
         <file>Resources/showAll.png</file>
+        <file>Resources/faveNo.png</file>
+        <file>Resources/faveYes.png</file>
     </qresource>
 </RCC>

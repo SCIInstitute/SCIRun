@@ -30,6 +30,7 @@
 #define CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEDISTANCEFIELD_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -39,7 +40,6 @@ namespace SCIRun {
 
         ALGORITHM_PARAMETER_DECL(Truncate);
         ALGORITHM_PARAMETER_DECL(TruncateDistance);
-        ALGORITHM_PARAMETER_DECL(BasisType);
         ALGORITHM_PARAMETER_DECL(OutputFieldDatatype);
         ALGORITHM_PARAMETER_DECL(OutputValueField);
 

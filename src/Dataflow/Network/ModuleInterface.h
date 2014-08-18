@@ -152,6 +152,13 @@ namespace Networks {
   struct SCISHARE InvalidInputPortRequestException : virtual DataPortException {};
 
   #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
+
+  class SCISHARE ReexecuteStrategyFactory
+  {
+  public:
+    virtual ~ReexecuteStrategyFactory() {}
+    virtual ModuleReexecutionStrategyHandle create(const class Module& module) const = 0;
+  };
 }}}
 
 #endif

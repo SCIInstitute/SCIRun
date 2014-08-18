@@ -57,7 +57,7 @@ MACRO(EXTERNAL_TEEM_LIBRARY compress_type)
     # git checkout -q will silence message about detached head (harmless).
     ExternalProject_Add(Teem_external
       PREFIX ${teem_BINARY_DIR}
-      GIT_REPOSITORY "https://github.com/SCIInstitute/teem.git"
+      GIT_REPOSITORY "https://github.com/CIBC-Internal/teem.git"
       GIT_TAG ${teem_GIT_TAG}
       SOURCE_DIR ${teem_SOURCE_DIR}
       BINARY_DIR ${teem_BINARY_DIR}
