@@ -56,6 +56,9 @@ USE AT YOUR OWN RISK!</string>
      </item>
      <item>
       <widget class="QCheckBox" name="globalPortCacheButton_">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Port caching (turning off will clear all cached ports)</string>
        </property>

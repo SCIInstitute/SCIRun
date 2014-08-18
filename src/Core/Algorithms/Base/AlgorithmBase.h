@@ -340,7 +340,7 @@ namespace Algorithms {
 #define withInputData(list) make_input(list)
 #define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
 #define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
-#define ALGORITHM_PARAMETER_DECL(name) namespace Parameters { SCISHARE extern const SCIRun::Core::Algorithms::AlgorithmParameterName name; }
-#define ALGORITHM_PARAMETER_DEF(ns, name) const SCIRun::Core::Algorithms::AlgorithmParameterName SCIRun::Core::Algorithms::ns::Parameters::name(#name);
+#define ALGORITHM_PARAMETER_DECL(name) namespace Parameters { SCISHARE extern SCIRun::Core::Algorithms::AlgorithmParameterName _init_##name(); static const SCIRun::Core::Algorithms::AlgorithmParameterName& name(_init_##name()); }
+#define ALGORITHM_PARAMETER_DEF(ns, name) SCIRun::Core::Algorithms::AlgorithmParameterName SCIRun::Core::Algorithms::ns::Parameters::_init_##name() { return SCIRun::Core::Algorithms::AlgorithmParameterName(#name); }
 
 #endif

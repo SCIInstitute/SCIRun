@@ -88,6 +88,9 @@ public:
   }
 };
 
+//#define USE_IMPROVED_MANHATTAN
+
+#ifndef USE_IMPROVED_MANHATTAN
 class ManhattanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
@@ -116,7 +119,9 @@ public:
     item->setPath(path);
   }
 };
-/*//This is my attempt at improving the wrapping of connectionLines around the modules
+
+#else
+
 class ManhattanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
@@ -163,7 +168,8 @@ public:
     item->setPath(path);
   }
 };
-*/
+#endif
+
 namespace SCIRun
 {
   namespace Gui
