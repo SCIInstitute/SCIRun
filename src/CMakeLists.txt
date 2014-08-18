@@ -28,7 +28,7 @@
 IF(UNIX)
   # temporary - needed to make Travis CI build work
   # TODO: revisit and delete when CMake 2.8.11 or greater is available
-  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
+  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7 FATAL_ERROR)
 ELSE()
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
 ENDIF(UNIX)
