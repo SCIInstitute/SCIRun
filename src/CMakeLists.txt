@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2013 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2014 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -429,7 +429,6 @@ INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
-SET(SCIRUN_CORE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 SET(QT_USE_QTOPENGL TRUE)
 
 ########################################################################
