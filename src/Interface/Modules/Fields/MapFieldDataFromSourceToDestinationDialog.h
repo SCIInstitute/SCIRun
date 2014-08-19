@@ -46,6 +46,8 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
+private Q_SLOTS:
+  void setNoMaximumValue(int state);
 private:
   boost::shared_ptr<class MapFieldDataFromSourceToDestinationDialogImpl> impl_;
 };
