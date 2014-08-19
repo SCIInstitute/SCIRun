@@ -181,7 +181,7 @@ void NetworkEditorController::connectNewModule(const SCIRun::Dataflow::Networks:
 void NetworkEditorController::printNetwork() const
 {
   /// @todo: and make this switchable
-  if (Log::get().verbose())
+  if (false)
   {
     if (theNetwork_)
       LOG_DEBUG(theNetwork_->toString() << std::endl);
