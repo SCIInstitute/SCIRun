@@ -97,7 +97,7 @@ SET(APPLICATION_NAME "SCIRun" CACHE INTERNAL "Application name" FORCE)
 # TODO: temporary hack to allow testing
 SET(TEST_APPLICATION_NAME "SCIRun_test" CACHE INTERNAL "Application name" FORCE)
 # add others?
-SET(APPLICATION_EXTENSION ".net" CACHE INTERNAL "Network file extension" FORCE)
+SET(APPLICATION_EXTENSION ".srn5" CACHE INTERNAL "Network file extension" FORCE)
 SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
 SET(APPLICATION_VENDOR "SCI" CACHE INTERNAL "Vendor information" FORCE)
 SET(APPLICATION_CONTACT "scirun-users@sci.utah.edu" CACHE INTERNAL "Contact information" FORCE)
@@ -781,7 +781,7 @@ ELSEIF(WIN32 AND NOT UNIX)
   SET(CPACK_PACKAGE_EXECUTABLES "${APPLICATION_NAME}" "${APPLICATION_NAME}")
   SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
         WriteRegStr HKCR '${APPLICATION_EXTENSION}' '' '${APPLICATION_NAME}'
-        WriteRegStr HKCR '${APPLICATION_NAME}' '' '${APPLICATION_NAME} Project File'
+        WriteRegStr HKCR '${APPLICATION_NAME}' '' '${APPLICATION_NAME} Network File'
         WriteRegStr HKCR '${APPLICATION_NAME}\\\\shell' '' 'open'
         WriteRegStr HKCR '${APPLICATION_NAME}\\\\DefaultIcon' '' '$INSTDIR\\\\bin\\\\${APPLICATION_NAME}.exe,0'
         WriteRegStr HKCR '${APPLICATION_NAME}\\\\shell\\\\open\\\\command' '' '$INSTDIR\\\\bin\\\\${APPLICATION_NAME}.exe \\\"%1\\\"'
