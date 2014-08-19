@@ -62,6 +62,8 @@ public:
   static const AlgorithmInputName InputField;
   static const AlgorithmInputName ObjectField;
   static const AlgorithmInputName ListOfInputFields;
+  static const AlgorithmInputName Source;
+  static const AlgorithmInputName Destination;
 
   static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmOutputName Result;
