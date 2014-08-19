@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>442</width>
+    <width>460</width>
     <height>255</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>442</width>
+    <width>460</width>
     <height>255</height>
    </size>
   </property>
@@ -52,19 +52,19 @@
     <rect>
      <x>11</x>
      <y>11</y>
-     <width>413</width>
+     <width>431</width>
      <height>201</height>
     </rect>
    </property>
    <property name="title">
-    <string>Type matrix, one row per line, space-delimited. Click OK when done.</string>
+    <string>Type matrix, one row per line, space-delimited. New line at end. Click OK when done.</string>
    </property>
    <widget class="QPlainTextEdit" name="matrixTextEdit_">
     <property name="geometry">
      <rect>
       <x>18</x>
       <y>30</y>
-      <width>381</width>
+      <width>401</width>
       <height>151</height>
      </rect>
     </property>
