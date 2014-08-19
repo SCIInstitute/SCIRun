@@ -661,6 +661,7 @@ public:
   inline bool is_unsigned_integer()   { return (is_unsigned_char()||is_unsigned_short()||is_unsigned_int()); }
   inline bool is_integer()            { return (is_signed_integer()||is_unsigned_integer()); }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Shortcuts to property manager
   inline void copy_properties(VField* ifield)
   { 
@@ -689,6 +690,7 @@ public:
       return(pm_->is_property(name)); 
     return false;
   }
+#endif
 protected:
   
   // Pointers to structures to access the data virtually

@@ -71,6 +71,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
+#include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -145,7 +146,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
   addModuleDesc<ClipFieldByFunction>("In progress", "...");
-  
+  addModuleDesc<MapFieldDataFromSourceToDestination>("In progress", "...");
+
   // insert module desc here
 }
 

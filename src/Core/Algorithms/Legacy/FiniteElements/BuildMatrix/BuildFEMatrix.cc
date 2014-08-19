@@ -172,12 +172,13 @@ FEMBuilder::build_matrix(FieldHandle input,
   {
     numprocessors_ = numproc;
   }
-#endif
+
   
   // If we have the Conductivity property use it, if not we assume the values on
   // the data to be the actual tensors.
   field_->get_property("conductivity_table",tensors_);
-  
+#endif
+
   // We added a second system of adding a conductivity table, using a matrix
   // Convert that matrix into the conductivity table
   if (ctable)

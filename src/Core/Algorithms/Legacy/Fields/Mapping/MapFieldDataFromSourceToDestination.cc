@@ -557,7 +557,10 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
   auto task_i = [&algoP,this](int i) { algoP->parallel(i); };
   Parallel::RunTasks(task_i, np);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  CopyProperties(*input, *output);
   dfield->copy_properties(destination->vfield());
+#endif
 
   return (true);
 }
