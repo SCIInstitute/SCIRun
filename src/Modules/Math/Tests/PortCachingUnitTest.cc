@@ -595,6 +595,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
+  std::cout << "### first input has id: " << input->id() << std::endl;
   sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
 
   std::cout << "RealInputsChanged, stateChanged = " << stateChanged_ << " oportsCached = " << oportsCached_ << std::endl;
@@ -638,6 +639,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
       EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
       DenseMatrixHandle input = matrix2();
+      std::cout << "### second input has id: " << input->id() << std::endl;
       sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
 
       //std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
