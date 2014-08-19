@@ -86,44 +86,62 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
  DenseMatrixHandle output;
 
  VField* vfield1 = mesh->vfield();
- VField* vfield2 = AtlasMesh->vfield();
- 
- std::set<int> labelSet;
- 
- for (VMesh::Elem::index_type i=0; i < vfield2->vmesh()->num_elems(); i++) // loop over all tetrahedral elements (mesh)
- {
-   int Label;
-   vfield2->get_value(Label, i);
-   labelSet.insert(Label);
- }
+ VField* vfield2 = AtlasMesh->vfield();  
   
- std::set<bool> element_selection;
+ std::vector<bool> element_selection(vfield2->vmesh()->num_elems(), true);
  
+ double x=0,y=0,z=0,radius=-1,target_material=-1;
  // CoordinateSpace is provided and coodinates? if not dont go in here
  if (CoordinateSpace != nullptr && specROI != nullptr) //input provided in SpecifyROI_tabWidget-GUI? (x,y,z,radius)
  {
-  double x=0,y=0,z=0,radius=-1,material=-1;
   if ( (*specROI).ncols()==1 && (*specROI).nrows()==5 )
   {  
    x=(*specROI)(0,0);
    y=(*specROI)(1,0);
    z=(*specROI)(2,0);
-   material=(*specROI)(3,0);
+   target_material=(*specROI)(3,0);
    radius=(*specROI)(4,0);
-   
-   if (radius>0)
+ 
+   if (radius<0)
    {
-     element_selection = statistics_based_on_xyz_coodinates(mesh, CoordinateSpace, labelSet, x, y, z, radius, material);
+     remark("Radius needs to be > 0 and Atlas Material # needs to exist ");  
    } else
    {
-     THROW_ALGORITHM_INPUT_ERROR("Radius needs to be > 0 ");  
+     if (radius>0)
+     {
+      element_selection = statistics_based_on_xyz_coodinates(AtlasMesh, CoordinateSpace, x, y, z, radius, target_material);
+     }
    }
   }
+  
  }
-
- const size_t number_of_atlas_materials = labelSet.size();
- std::vector<int> labelVector(labelSet.begin(), labelSet.end());
-
+ 
+ if(element_selection.size()!=vfield1->vmesh()->num_elems())
+ {
+  THROW_ALGORITHM_INPUT_ERROR("Internal Error: Element selection vector does not match number of mesh elements "); 
+ }
+ 
+ size_t number_of_atlas_materials;
+ 
+ std::set<int> labelSet;
+ 
+ if (target_material==-1 || radius==0)
+ {
+  for (VMesh::Elem::index_type i=0; i < vfield2->vmesh()->num_elems(); i++) // loop over all tetrahedral elements (mesh)
+  {
+   int Label;
+   vfield2->get_value(Label, i);
+   labelSet.insert(Label);  
+  }
+ } else
+ {
+   labelSet.insert(target_material);
+ }
+  
+ number_of_atlas_materials = labelSet.size();
+ 
+ std::vector<int> labelVector(labelSet.begin(), labelSet.end()); 
+  
  std::ostringstream ostr;
  std::copy(labelSet.begin(), labelSet.end(), std::ostream_iterator<int>(ostr, ", "));
  LOG_DEBUG("Sorted set of label numbers: " << ostr.str() << std::endl);
@@ -139,40 +157,57 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
  
  for (VMesh::Elem::index_type i=0; i < vfield1->vmesh()->num_elems(); i++) // loop over all tetrahedral elements (AtlasMesh)
  {
-   double value = 0;
-   vfield1->get_value(value, i); 
-   
-   int Label = 0;
-   vfield2->get_value(Label, i);
-   
-   for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; j++)
+ 
+   if(element_selection[i])
    {
-     if (Label==labelVector[j]) 
-     {
+    double value = 0;
+    vfield1->get_value(value, i); 
+   
+    int Label = 0;
+    vfield2->get_value(Label, i);   
+   
+    for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; j++)
+    {
+      if (Label==labelVector[j] || (target_material==0 && number_of_atlas_materials==1) ) 
+      {
        value_avr[j] += value; 
        value_count[j]++;   
        if (value>value_max[j]) value_max[j]=value;
-       if (value<value_min[j]) value_min[j]=value;
+       if (value<value_min[j] || value_min[j]==0) value_min[j]=value;
        Sxsqr[j]+=value*value;
-     }
+      }
+    }
    }
  }
 
- output = DenseMatrixHandle(new DenseMatrix(number_of_atlas_materials, 4));
- 
+ output = DenseMatrixHandle(new DenseMatrix(number_of_atlas_materials, 5));
+  
  //efficient way to compute std dev. in just one loop over all mesh elements: sqrt ( 1/(n-1) (Sx^2 - avr Sx + n avr^2 )
  for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; j++)
  {
    double Sx=value_avr[j];
-   value_avr[j]/=value_count[j]; 
-   var[j]=static_cast<double>(1./(value_count[j]-1)*(Sxsqr[j]-2*value_avr[j]*Sx+value_count[j]*value_avr[j]*value_avr[j]));
-   stddev[j]=static_cast<double>(std::sqrt(var[j]));
-   (*output)(j,0)=value_avr[j];
-   (*output)(j,1)=stddev[j];
-   (*output)(j,2)=value_min[j];
-   (*output)(j,3)=value_max[j];   
+   
+   if (value_count[j]!=0)
+   {
+    value_avr[j]/=value_count[j]; 
+    var[j]=static_cast<double>(1./(value_count[j]-1)*(Sxsqr[j]-2*value_avr[j]*Sx+value_count[j]*value_avr[j]*value_avr[j]));
+    stddev[j]=static_cast<double>(std::sqrt(var[j]));
+   
+    (*output)(j,0)=value_avr[j];
+    (*output)(j,1)=stddev[j];
+    (*output)(j,2)=value_min[j];
+    (*output)(j,3)=value_max[j];  
+    (*output)(j,4)=value_count[j];  
+   } else
+   {
+    (*output)(j,0)=std::numeric_limits<double>::quiet_NaN();
+    (*output)(j,1)=std::numeric_limits<double>::quiet_NaN();
+    (*output)(j,2)=std::numeric_limits<double>::quiet_NaN();
+    (*output)(j,3)=std::numeric_limits<double>::quiet_NaN();
+    (*output)(j,4)=std::numeric_limits<double>::quiet_NaN();
+   }
  }  
-
+   
   std::vector<std::string> AtlasMeshLabels_vector;
   if (!AtlasMeshLabels.empty())
   {
@@ -190,7 +225,15 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
  else
   if (AtlasMeshLabels_vector.size() != number_of_atlas_materials)
    {
-    THROW_ALGORITHM_INPUT_ERROR("Number of material Labels in AtlasMesh and AtlasMeshLabels do not match"); 
+    if (target_material!=-1 && number_of_atlas_materials==1)
+    {
+      AtlasMeshLabels_vector.resize(1);
+      AtlasMeshLabels_vector[0]="specROI";
+    }
+    else
+    {
+       THROW_ALGORITHM_INPUT_ERROR("Number of material Labels in AtlasMesh and AtlasMeshLabels do not match"); 
+    }
    } 
      
   std::vector<AlgorithmParameter> elc_vals_in_table;
@@ -203,6 +246,7 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
     tmp.push_back(AlgorithmParameter(Name("col1"), boost::str(boost::format("%.3f") % (*output)(i,1)))); //stddev
     tmp.push_back(AlgorithmParameter(Name("col2"), boost::str(boost::format("%.3f") % (*output)(i,2)))); //min
     tmp.push_back(AlgorithmParameter(Name("col3"), boost::str(boost::format("%.3f") % (*output)(i,3)))); //max
+    tmp.push_back(AlgorithmParameter(Name("col4"), boost::str(boost::format("%d") % (*output)(i,4)))); //element count
     AlgorithmParameter row_i(Name("row" + boost::lexical_cast<std::string>(i)), tmp);
     elc_vals_in_table.push_back(row_i);
   }
@@ -212,57 +256,53 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
  return boost::make_tuple(output, statistics_table);
 }
 
-std::set<bool> GenerateROIStatisticsAlgorithm::statistics_based_on_xyz_coodinates(const FieldHandle mesh, const FieldHandle CoordinateSpace, std::set<int>& labelSet, double x, double y, double z, double radius, int material) const
+std::vector<bool> GenerateROIStatisticsAlgorithm::statistics_based_on_xyz_coodinates(const FieldHandle mesh, const FieldHandle CoordinateSpace, double x, double y, double z, double radius, int target_material) const
 {
-  std::set<bool> element_selection;
   VField* vfield1 = mesh->vfield();
   VMesh* vmesh = vfield1->vmesh();
-   
-  if (labelSet.size()!=vmesh->num_elems())
-  {
-     THROW_ALGORITHM_INPUT_ERROR("Internal error: Mesh labels and mesh does not match.");
-  } 
-   
   long count_loop=0;
-  for (std::set<int>::iterator it=labelSet.begin(); it!=labelSet.end(); ++it)
+  std::vector<bool> element_selection;
+
+  for (VMesh::Elem::index_type i=0; i < vmesh->num_elems(); i++) // loop over all tetrahedral elements (mesh)
   {
     Point p;
     double distance = 0;
-    if (material!=0)
+    if (target_material!=0)
     {
-     if (material==*it)
+     int current_material=-1;
+     vfield1->get_value(current_material, i);
+     if (target_material==current_material)
      {
       VMesh::Elem::index_type tmp = count_loop;
       vmesh->get_center(p,tmp);
       distance = sqrt((x-p.x())*(x-p.x())+(y-p.y())*(y-p.y())+(z-p.z())*(z-p.z()));
       if (distance > radius)
       {
-       element_selection.insert(false);  
+       element_selection.push_back(false);  
       } else
       {
-       element_selection.insert(true); 
+       element_selection.push_back(true); 
       }
      } else
      {
-      element_selection.insert(false); 
+      element_selection.push_back(false); 
      }
-     
     } else
-    {    
+    {        
      VMesh::Elem::index_type tmp = count_loop;
      vmesh->get_center(p,tmp);
      distance = sqrt((x-p.x())*(x-p.x())+(y-p.y())*(y-p.y())+(z-p.z())*(z-p.z()));
      if ( distance > radius)
      {
-       element_selection.insert(false);  
+       element_selection.push_back(false); 
      } else
      {
-       element_selection.insert(true);  
+       element_selection.push_back(true);  
      }
     }  
    count_loop++;
   }
- 
+
   return element_selection;
 }
 

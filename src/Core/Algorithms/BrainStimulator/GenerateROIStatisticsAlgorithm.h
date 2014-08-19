@@ -62,7 +62,7 @@ namespace BrainStimulator {
   private:
     boost::tuple<Datatypes::DenseMatrixHandle, Variable> run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace=FieldHandle(), const std::string& AtlasMeshLabels="", const Datatypes::DenseMatrixHandle specROI=Datatypes::DenseMatrixHandle()) const;
     std::vector<std::string> ConvertInputAtlasStringIntoVector(const  std::string& atlasLabels) const;
-    std::set<bool> statistics_based_on_xyz_coodinates(const FieldHandle mesh, const FieldHandle CoordinateSpace, std::set<int>& labelSet, double x, double y, double z, double radius, int material) const;
+    std::vector<bool> statistics_based_on_xyz_coodinates(const FieldHandle mesh, const FieldHandle CoordinateSpace, double x, double y, double z, double radius, int target_material) const;
   };
 
 }}}}

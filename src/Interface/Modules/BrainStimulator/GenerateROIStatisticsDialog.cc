@@ -48,13 +48,14 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
   fixSize();
   
   QStringList tableHeader1;
-  tableHeader1<<" ROI "<<" Avr. " << " Std. " << " Min. " << " Max. ";
+  tableHeader1<<" ROI "<<" Avr. " << " Std. " << " Min. " << " Max. " << " # ";
   StatisticsOutput_tableWidget->setHorizontalHeaderLabels(tableHeader1);
   StatisticsOutput_tableWidget->setItem(0, 0, 0);
   StatisticsOutput_tableWidget->setItem(0, 1, 0);
   StatisticsOutput_tableWidget->setItem(0, 2, 0);
   StatisticsOutput_tableWidget->setItem(0, 3, 0);
   StatisticsOutput_tableWidget->setItem(0, 4, 0);
+  StatisticsOutput_tableWidget->setItem(0, 5, 0);
   
   QStringList tableHeader2;
   tableHeader2<<" X "<<" Y " << " Z " << " Atlas Material # " << " Radius ";
