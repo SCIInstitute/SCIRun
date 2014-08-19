@@ -53,8 +53,11 @@ public:
   virtual void pull();
 
 private Q_SLOTS:
-  void pushMatrixToState();
-  void updatePushButton();
+  void pushMatrixToState(int state);
+  void editBoxUnsaved();
+  void editBoxSaved();
+private:
+  bool firstPull_;
 };
 
 }
