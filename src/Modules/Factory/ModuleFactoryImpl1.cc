@@ -146,7 +146,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
   addModuleDesc<ClipFieldByFunction>("In progress", "...");
-  addModuleDesc<MapFieldDataFromSourceToDestination>("In progress", "...");
+  addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
 
   // insert module desc here
 }
