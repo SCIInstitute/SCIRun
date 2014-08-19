@@ -119,7 +119,7 @@ PortManager<T>::operator[](const PortId& id) const
     //if (id.dynamic)
     //  std::cout << "DYNAMIC PORT NEEDS TO INSERT ITSELF HERE SOMEHOW" << std::endl;
     //else
-    //  std::cout << "HELLO NOT SETTING PORT FLAGS CORRECT" << std::endl;
+    //  std::cout << "NOT SETTING PORT FLAGS CORRECT" << std::endl;
     std::ostringstream ostr;
     ostr << "PortManager tried to access a port that does not exist: " << id;
     BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
