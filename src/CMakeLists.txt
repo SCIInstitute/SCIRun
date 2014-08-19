@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2013 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2014 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -97,7 +97,7 @@ SET(APPLICATION_NAME "SCIRun" CACHE INTERNAL "Application name" FORCE)
 # TODO: temporary hack to allow testing
 SET(TEST_APPLICATION_NAME "SCIRun_test" CACHE INTERNAL "Application name" FORCE)
 # add others?
-SET(APPLICATION_EXTENSION ".net" CACHE INTERNAL "Network file extension" FORCE)
+SET(APPLICATION_EXTENSION ".srn5" CACHE INTERNAL "Network file extension" FORCE)
 SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
 SET(APPLICATION_VENDOR "SCI" CACHE INTERNAL "Vendor information" FORCE)
 SET(APPLICATION_CONTACT "scirun-users@sci.utah.edu" CACHE INTERNAL "Contact information" FORCE)
@@ -429,7 +429,6 @@ INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
-SET(SCIRUN_CORE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 SET(QT_USE_QTOPENGL TRUE)
 
 ########################################################################
@@ -459,10 +458,10 @@ ENDMACRO()
 ########################################################################
 # Output directories.
 
-SET(SCIRUN_CORE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+SET(SCIRun_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
-SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SCIRUN_CORE_BINARY_DIR}/lib CACHE INTERNAL "Single output directory for building all libraries.")
-SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SCIRUN_CORE_BINARY_DIR} CACHE INTERNAL "Single output directory for building all executables.")
+SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SCIRun_BINARY_DIR}/lib CACHE INTERNAL "Single output directory for building all libraries.")
+SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SCIRun_BINARY_DIR} CACHE INTERNAL "Single output directory for building all executables.")
 MARK_AS_ADVANCED(CMAKE_LIBRARY_OUTPUT_DIRECTORY CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
 SET(BUILD_FROM_TOP_LEVEL 1)
@@ -782,7 +781,7 @@ ELSEIF(WIN32 AND NOT UNIX)
   SET(CPACK_PACKAGE_EXECUTABLES "${APPLICATION_NAME}" "${APPLICATION_NAME}")
   SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
         WriteRegStr HKCR '${APPLICATION_EXTENSION}' '' '${APPLICATION_NAME}'
-        WriteRegStr HKCR '${APPLICATION_NAME}' '' '${APPLICATION_NAME} Project File'
+        WriteRegStr HKCR '${APPLICATION_NAME}' '' '${APPLICATION_NAME} Network File'
         WriteRegStr HKCR '${APPLICATION_NAME}\\\\shell' '' 'open'
         WriteRegStr HKCR '${APPLICATION_NAME}\\\\DefaultIcon' '' '$INSTDIR\\\\bin\\\\${APPLICATION_NAME}.exe,0'
         WriteRegStr HKCR '${APPLICATION_NAME}\\\\shell\\\\open\\\\command' '' '$INSTDIR\\\\bin\\\\${APPLICATION_NAME}.exe \\\"%1\\\"'
