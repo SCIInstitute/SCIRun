@@ -60,9 +60,7 @@ MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDi
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //addComboBoxManager(methodComboBox_, MapFieldDataFromNodeToElemAlgo::Method);
 
-  //addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
   addComboBoxManager(methodComboBox_, Parameters::MappingMethod, impl_->mappingNameLookup_);
   addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
   addDoubleSpinBoxManager(defaultValueDoubleSpinBox_, Parameters::DefaultValue);

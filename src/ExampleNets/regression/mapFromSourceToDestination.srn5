@@ -294,7 +294,7 @@
 									<name>MappingMethod</name>
 									<value>
 										<which>2</which>
-										<value>interpolateddata</value>
+										<value>closestdata</value>
 									</value>
 								</second>
 							</item>

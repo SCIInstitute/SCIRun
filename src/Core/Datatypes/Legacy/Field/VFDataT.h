@@ -319,8 +319,8 @@ public:
   
   
   virtual void copy_weighted_evalue(VFData* fdata, 
-                                    VMesh::index_type* vidx, 
-                                    VMesh::weight_type* vw,
+                                    const VMesh::index_type* vidx, 
+                                    const VMesh::weight_type* vw,
                                     VMesh::size_type sz, 
                                     VMesh::index_type idx)
   {
