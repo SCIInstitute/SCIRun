@@ -34,7 +34,7 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-BoostGraphParallelScheduler::BoostGraphParallelScheduler(const ModuleFilter& filter /* = boost::lambda::constant */) : filter_(filter) {}
+BoostGraphParallelScheduler::BoostGraphParallelScheduler(const ModuleFilter& filter) : filter_(filter) {}
 
 ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkInterface& network) const
 {

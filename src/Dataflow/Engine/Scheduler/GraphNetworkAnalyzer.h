@@ -49,8 +49,7 @@ namespace Engine {
     typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
     typedef std::list<Vertex> ExecutionOrder;
 
-    explicit NetworkGraphAnalyzer(const SCIRun::Dataflow::Networks::NetworkInterface& network, 
-      const SCIRun::Dataflow::Networks::ModuleFilter& moduleFilter = boost::lambda::constant(true));
+    NetworkGraphAnalyzer(const SCIRun::Dataflow::Networks::NetworkInterface& network, const ModuleFilter& moduleFilter);
 
     const Networks::ModuleId& moduleAt(int vertex) const;
     ExecutionOrder::iterator topologicalBegin();

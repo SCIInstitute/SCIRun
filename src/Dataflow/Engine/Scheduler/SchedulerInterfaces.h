@@ -99,6 +99,19 @@ namespace Engine {
     executor.executeAll(lookup, order, bounds);
   }
 
+  typedef boost::function<bool(SCIRun::Dataflow::Networks::ModuleHandle)> ModuleFilter;
+
+  struct SCISHARE ExecuteAllModules
+  {
+    bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const { return true; }
+    static const ExecuteAllModules& Instance();
+  };
+
+  //TODO
+  struct SCISHARE ExecuteSingleModule
+  {
+    bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const;
+  };
 
 }}}
 

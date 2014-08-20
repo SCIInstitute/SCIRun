@@ -37,7 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 void DynamicParallelExecutionStrategy::executeAll(const NetworkInterface& network, const ExecutableLookup& lookup)
 {
-  BoostGraphParallelScheduler scheduler;
+  BoostGraphParallelScheduler scheduler(ExecuteAllModules::Instance());
   DynamicMultithreadedNetworkExecutor executor(network);
   executeWithCycleCheck(scheduler, executor, network, lookup, executionBounds_);
 }

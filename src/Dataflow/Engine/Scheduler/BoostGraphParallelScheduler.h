@@ -42,10 +42,10 @@ namespace Engine {
   class SCISHARE BoostGraphParallelScheduler : public Scheduler<ParallelModuleExecutionOrder>
   {
   public:
-    explicit BoostGraphParallelScheduler(const Networks::ModuleFilter& filter = boost::lambda::constant(true));
+    explicit BoostGraphParallelScheduler(const ModuleFilter& filter);
     virtual ParallelModuleExecutionOrder schedule(const Networks::NetworkInterface& network) const;
   private:
-    Networks::ModuleFilter filter_;
+    ModuleFilter filter_;
   };
 
 }}}

@@ -314,7 +314,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
 {
   setupBasicNetwork();
 
-  BoostGraphParallelScheduler scheduler;
+  BoostGraphParallelScheduler scheduler(ExecuteAllModules::Instance());
   auto order = scheduler.schedule(matrixMathNetwork);
   std::ostringstream ostr;
   ostr << order;

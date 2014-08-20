@@ -37,7 +37,7 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const SCIRun::Dataflow::Networks::ModuleFilter& moduleFilter) : moduleCount_(0)
+NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const ModuleFilter& moduleFilter) : moduleCount_(0)
 {
   for (int i = 0; i < network.nmodules(); ++i)
   {

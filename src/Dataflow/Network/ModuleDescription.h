@@ -106,7 +106,6 @@ namespace Networks {
   };
 
   typedef boost::function<class Module*()> ModuleMaker;
-  typedef boost::function<bool(ModuleHandle)> ModuleFilter;
 
   struct SCISHARE ModuleDescription
   {

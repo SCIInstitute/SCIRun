@@ -39,3 +39,9 @@ ScopedExecutionBoundsSignaller::~ScopedExecutionBoundsSignaller()
 {
   bounds_.executeFinishes_(errorCodeRetriever_());
 }
+
+const ExecuteAllModules& ExecuteAllModules::Instance()
+{
+  static ExecuteAllModules instance_;
+  return instance_;
+}
