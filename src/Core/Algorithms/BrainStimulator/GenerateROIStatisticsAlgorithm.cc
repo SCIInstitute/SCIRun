@@ -255,24 +255,54 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
 /// this function takes the (x,y,z) location of the user specifed ROI and results in a std:vector<bool> that contains true's for ROI mesh elements and false for non-ROI mesh elements
 std::vector<bool> GenerateROIStatisticsAlgorithm::statistics_based_on_xyz_coodinates(const FieldHandle mesh, const FieldHandle CoordinateSpace, double x, double y, double z, double radius, int target_material) const
 {
-  VField* vfield1 = mesh->vfield();
-  VMesh* vmesh = vfield1->vmesh();
-  long count_loop=0;
+  VField* vfield_coordspace = CoordinateSpace->vfield();
+  VMesh* vmesh_coordspace = vfield_coordspace->vmesh();
+  VField* vfield_atlas = mesh->vfield();
+  VMesh* vmesh_atlas = vfield_atlas->vmesh();
   std::vector<bool> element_selection;
-
-  for (VMesh::Elem::index_type i=0; i < vmesh->num_elems(); i++) /// loop over all tetrahedral elements (mesh)
+  long closest_atlas_element=-1;
+  double distance=-1, mindis=std::numeric_limits<double>::max();
+  Vector val;
+  
+  for (VMesh::Elem::index_type i=0; i < vmesh_coordspace->num_elems(); i++) /// loop over all tetrahedral elements (mesh)
   {
-    Point p;
-    double distance = 0;
+    vfield_coordspace->get_value(val,i);
+    distance = sqrt((x-val[0])*(x-val[0])+(y-val[1])*(y-val[1])+(z-val[2])*(z-val[2]));
+    if (distance < mindis)
+    {
+     closest_atlas_element=(long)i;
+     mindis=distance;
+    }
+  }
+ 
+  if (mindis>1)
+  {
+   std::ostringstream ostr1;
+   ostr1 << "Distance from provided point (lower table in GUI: x,y,z) is more then 1 (=" << mindis << ") distance units away from provided coordinate space (coordinates defined as element data)." <<  std::endl;
+   THROW_ALGORITHM_INPUT_ERROR(ostr1.str()); 
+
+  }
+  
+  Point p;
+  VMesh::Elem::index_type atlas_index = closest_atlas_element;
+  vmesh_coordspace->get_center(p,atlas_index); 
+  
+  double x1=p.x(), y1=p.y(), z1=p.z();
+  
+  long count_loop=0;
+
+  for (VMesh::Elem::index_type i=0; i < vmesh_atlas->num_elems(); i++) /// loop over all tetrahedral elements (mesh)
+  {
     if (target_material!=0)  /// was the target material (Atlas Material #) provided not the default, so "-1"
     {
      int current_material=-1;
-     vfield1->get_value(current_material, i);
+     vfield_atlas->get_value(current_material, i);
      if (target_material==current_material) /// if the current material is in the defined spherical ROI and of the material we are looking for?
      {
       VMesh::Elem::index_type tmp = count_loop;
-      vmesh->get_center(p,tmp);
-      distance = sqrt((x-p.x())*(x-p.x())+(y-p.y())*(y-p.y())+(z-p.z())*(z-p.z()));
+      vmesh_atlas->get_center(p,tmp);
+      
+      distance = sqrt((x1-p.x())*(x1-p.x())+(y1-p.y())*(y1-p.y())+(z1-p.z())*(z1-p.z()));
       if (distance > radius)
       {
        element_selection.push_back(false);  
@@ -287,8 +317,8 @@ std::vector<bool> GenerateROIStatisticsAlgorithm::statistics_based_on_xyz_coodin
     } else
     {     /// in the else close look for materials in the ROI    
      VMesh::Elem::index_type tmp = count_loop;
-     vmesh->get_center(p,tmp);
-     distance = sqrt((x-p.x())*(x-p.x())+(y-p.y())*(y-p.y())+(z-p.z())*(z-p.z()));
+     vmesh_atlas->get_center(p,tmp);
+     distance = sqrt((x1-p.x())*(x1-p.x())+(y1-p.y())*(y1-p.y())+(z1-p.z())*(z1-p.z()));
      if ( distance > radius)
      {
        element_selection.push_back(false); 

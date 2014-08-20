@@ -37,8 +37,8 @@
 /// provided in the lower GUI table the user can specify an own ROI. The algorithm uses this (x,y,z) location to determine the closest mesh element based on the element centers.
 /// A spherical ROI can be wrapped around that point (closest mesh element center) and an statistical analysis of all material in that sphere can be performed.
 /// If additionally, a material (lower GUI table, in Atlas Material #) was specified only the analysis is only performed for the specified material.
-/// In any case, if an material was specified but not found the algorithm outputs NaN. If one material was present only as a single element the standard deviation (stddev.)
-/// will be NaN as well for this material.
+/// In any case, if an material was specified but not found the algorithm outputs NaN. "0" or " "  as Atlas Material # is interpreted as any material label number. 
+/// If one material was present only as a single element the standard deviation (stddev.)
 
 #ifndef ALGORITHMS_MATH_GenerateROIStatisticsAlgorithm_H
 #define ALGORITHMS_MATH_GenerateROIStatisticsAlgorithm_H
