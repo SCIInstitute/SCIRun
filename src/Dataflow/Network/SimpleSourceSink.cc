@@ -30,11 +30,12 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <boost/foreach.hpp>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-SimpleSink::SimpleSink() : checkForNewDataOnSetting_(false)
+SimpleSink::SimpleSink() : previousId_(-1), checkForNewDataOnSetting_(false)
 {
   instances_.insert(this);
 }
@@ -91,13 +92,21 @@ void SimpleSink::setData(DataProvider dataProvider)
   if (dataProvider_)
   {
     if (currentId_)
+    {
       previousId_ = *currentId_;
+      LOG_DEBUG("SS::setData: previousId set to " << previousId_);
+    }
   }
 
   dataProvider_ = dataProvider;
 
   if (dataProvider_)
+  {
     currentId_ = dataProvider_()->id();
+    if (-1 == previousId_)
+      previousId_ = *currentId_;
+    LOG_DEBUG("SS::setData: currentId set to " << *currentId_);
+  }
 
   if (checkForNewDataOnSetting_ && dataProvider_)
   {
@@ -117,14 +126,17 @@ bool SimpleSink::hasChanged() const
 {
   if (!dataProvider_)
   {
+    LOG_DEBUG("SS::hasChanged returns false, dataProvider is null");
     return false;
   }
 
-  if (!previousId_)
+  if (previousId_ == -1)
   {
+    LOG_DEBUG("SS::hasChanged returns true, previousId is None");
     return true;
   }
-  return *previousId_ != *currentId_;
+  LOG_DEBUG("SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_);
+  return previousId_ != *currentId_;
 }
 
 void SimpleSink::invalidateProvider()

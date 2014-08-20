@@ -240,11 +240,11 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   }
 
   auto data = port->getData();
-  if (!inputsChanged_)
+  //if (!inputsChanged_)
   {
-    //LOG_DEBUG(id_ << " :: inputsChanged is false, querying port for value.");
+    LOG_DEBUG(id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value.");
     inputsChanged_ = port->hasChanged();
-    //LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
+    LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
   }
   return data;
 }
@@ -570,8 +570,9 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(const Module& module) : modul
 
 bool InputsChangedCheckerImpl::inputsChanged() const 
 {
-  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << module_.inputsChanged());
-  return module_.inputsChanged();
+  auto ret = module_.inputsChanged();
+  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << ret);
+  return ret;
 }
 
 StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_(module)
@@ -580,8 +581,9 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_
 
 bool StateChangedCheckerImpl::newStatePresent() const 
 {
-  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << module_.newStatePresent());
-  return module_.newStatePresent();
+  auto ret = module_.newStatePresent();
+  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << ret);
+  return ret;
 }
 
 OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module) : module_(module)
