@@ -48,7 +48,7 @@ class TDCSSimulatorModuleTests : public ModuleTest
 
 };
 
-TEST_F(TDCSSimulatorModuleTests, ThrowsForNullInput)
+TEST_F(TDCSSimulatorModuleTests, DISABLED_ThrowsForNullInput)
 {
   auto tdcs = makeModule("tDCSSimulator");
   ASSERT_TRUE(tdcs.get() != nullptr);
