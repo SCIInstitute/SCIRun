@@ -40,7 +40,7 @@ class InsertDataIntoBundleModuleTest : public ModuleTest
 {
 };
 
-TEST_F(InsertDataIntoBundleModuleTest, ThrowsForNullBundles)
+TEST_F(InsertDataIntoBundleModuleTest, DISABLED_ThrowsForNullBundles)
 {
   auto sls = makeModule("InsertFieldsIntoBundle");
   BundleHandle nullBundle;
