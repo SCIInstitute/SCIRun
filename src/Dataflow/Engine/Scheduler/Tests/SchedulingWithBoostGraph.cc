@@ -354,6 +354,101 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderWithSomeModulesDone)
   EXPECT_EQ(expected, ostr.str());
 }
 
+TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleOnADisjointSubnetwork)
+{
+  setupBasicNetwork();
+
+  ModuleHandle create2 = addModuleToNetwork(matrixMathNetwork, "CreateMatrix");
+  ModuleHandle report2 = addModuleToNetwork(matrixMathNetwork, "ReportMatrixInfo");
+
+  EXPECT_EQ(11, matrixMathNetwork.nmodules());
+  matrixMathNetwork.connect(ConnectionOutputPort(create2, 0), ConnectionInputPort(report2, 0));
+  EXPECT_EQ(10, matrixMathNetwork.nconnections());
+
+  {
+    BoostGraphSerialScheduler scheduler;
+    ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
+    std::cout << "Serial order: " << order << std::endl;
+  }
+
+  {
+    BoostGraphParallelScheduler scheduler(ExecuteAllModules::Instance());
+    auto order = scheduler.schedule(matrixMathNetwork);
+    std::ostringstream ostr;
+    ostr << order;
+
+    std::string expected = 
+      "0 SendTestMatrix:0\n"
+      "0 CreateMatrix:9\n"
+      "0 SendTestMatrix:1\n"
+      "1 EvaluateLinearAlgebraUnary:3\n"
+      "1 EvaluateLinearAlgebraUnary:4\n"
+      "1 ReportMatrixInfo:10\n"
+      "1 EvaluateLinearAlgebraUnary:2\n"
+      "2 EvaluateLinearAlgebraBinary:5\n"
+      "3 EvaluateLinearAlgebraBinary:6\n"
+      "4 ReportMatrixInfo:7\n"
+      "4 ReceiveTestMatrix:8\n";
+
+    EXPECT_EQ(expected, ostr.str());
+  }
+
+
+
+  //{
+  //  std::vector<Edge> edgesBothWays(edges);
+  //  //std::transform(edges.begin(), edges.end(), std::back_inserter(edgesBothWays), [](const Edge& e) { return std::make_pair(e.second, e.first); });
+  //  UndirectedGraph undirected(edgesBothWays.begin(), edgesBothWays.end(), moduleCount_);
+
+  //  std::vector<int> component(boost::num_vertices(undirected));
+  //  int num = boost::connected_components(undirected, &component[0]);
+
+  //  std::cout << "Total number of components: " << num << std::endl;
+  //  for (size_t i = 0; i < component.size(); ++i)
+  //    std::cout << "Module " << moduleAt(i) <<" is in component " << component[i] << std::endl;
+  //  std::cout << std::endl;
+  //}
+
+  {
+    ExecuteSingleModule filterByCreate(create2);
+    BoostGraphParallelScheduler scheduler(filterByCreate);
+    auto order = scheduler.schedule(matrixMathNetwork);
+    std::ostringstream ostr;
+    ostr << order;
+
+    std::string expected = 
+      "0 CreateMatrix:9\n"
+      "1 ReportMatrixInfo:10\n";
+
+    EXPECT_EQ(expected, ostr.str());
+  }
+
+  {
+    ExecuteSingleModule filterByReceive(receive);
+    BoostGraphParallelScheduler scheduler(filterByReceive);
+    auto order = scheduler.schedule(matrixMathNetwork);
+    std::ostringstream ostr;
+    ostr << order;
+
+    std::string expected = 
+      "0 SendTestMatrix:0\n"
+      "0 CreateMatrix:9\n"
+      "0 SendTestMatrix:1\n"
+      "1 EvaluateLinearAlgebraUnary:3\n"
+      "1 EvaluateLinearAlgebraUnary:4\n"
+      "1 ReportMatrixInfo:10\n"
+      "1 EvaluateLinearAlgebraUnary:2\n"
+      "2 EvaluateLinearAlgebraBinary:5\n"
+      "3 EvaluateLinearAlgebraBinary:6\n"
+      "4 ReportMatrixInfo:7\n"
+      "4 ReceiveTestMatrix:8\n";
+
+    EXPECT_EQ(expected, ostr.str());
+  }
+
+  FAIL() << "todo";
+}
+
 namespace ThreadingPrototype
 {
   struct Unit

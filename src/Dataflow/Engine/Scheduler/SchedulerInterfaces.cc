@@ -45,3 +45,10 @@ const ExecuteAllModules& ExecuteAllModules::Instance()
   static ExecuteAllModules instance_;
   return instance_;
 }
+
+ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod) : module_(mod) {}
+
+bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mod) const
+{
+  return true;
+}

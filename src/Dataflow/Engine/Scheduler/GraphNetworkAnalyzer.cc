@@ -26,23 +26,60 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/utility.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/foreach.hpp>
-
+#include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
-#include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
+
+#include <boost/utility.hpp>
+#include <boost/graph/topological_sort.hpp>
+#include <boost/graph/copy.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Engine::NetworkGraph;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const ModuleFilter& moduleFilter) : moduleCount_(0)
+NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const ModuleFilter& moduleFilter, bool precompute) 
+  : network_(network), moduleFilter_(moduleFilter), moduleCount_(0)
 {
-  for (int i = 0; i < network.nmodules(); ++i)
+  if (precompute)
   {
-    auto module = network.module(i);
-    if (moduleFilter(module))
+    computeExecutionOrder();
+  }
+}
+
+const ModuleId& NetworkGraphAnalyzer::moduleAt(int vertex) const
+{
+  return moduleIdLookup_.right.at(vertex);
+}
+
+ExecutionOrderIterator NetworkGraphAnalyzer::topologicalBegin()
+{
+  return order_.begin();
+}
+
+ExecutionOrderIterator NetworkGraphAnalyzer::topologicalEnd()
+{
+  return order_.end();
+}
+
+const DirectedGraph& NetworkGraphAnalyzer::graph()
+{
+  return graph_;
+}
+
+int NetworkGraphAnalyzer::moduleCount() const 
+{
+  return moduleCount_;
+}
+
+EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork()
+{
+  for (int i = 0; i < network_.nmodules(); ++i)
+  {
+    auto module = network_.module(i);
+    if (moduleFilter_(module))
     {
       moduleIdLookup_.left.insert(std::make_pair(module->get_id(), moduleCount_));
       moduleCount_++;
@@ -51,7 +88,7 @@ NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, cons
 
   std::vector<Edge> edges;
 
-  BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
+  BOOST_FOREACH(const ConnectionDescription& cd, network_.connections())
   {
     if (moduleIdLookup_.left.find(cd.out_.moduleId_) != moduleIdLookup_.left.end()
       && moduleIdLookup_.left.find(cd.in_.moduleId_) != moduleIdLookup_.left.end())
@@ -60,7 +97,14 @@ NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, cons
     }
   }
 
-  graph_ = Graph(edges.begin(), edges.end(), moduleCount_);
+  return edges;
+}
+
+void NetworkGraphAnalyzer::computeExecutionOrder()
+{
+  auto edges = constructEdgeListFromNetwork();
+
+  graph_ = DirectedGraph(edges.begin(), edges.end(), moduleCount_);
 
   try
   {
@@ -70,29 +114,4 @@ NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, cons
   {
     BOOST_THROW_EXCEPTION(NetworkHasCyclesException() << SCIRun::Core::ErrorMessage(e.what()));
   }
-}
-
-const ModuleId& NetworkGraphAnalyzer::moduleAt(int vertex) const
-{
-  return moduleIdLookup_.right.at(vertex);
-}
-
-NetworkGraphAnalyzer::ExecutionOrder::iterator NetworkGraphAnalyzer::topologicalBegin()
-{
-  return order_.begin();
-}
-
-NetworkGraphAnalyzer::ExecutionOrder::iterator NetworkGraphAnalyzer::topologicalEnd()
-{
-  return order_.end();
-}
-
-NetworkGraphAnalyzer::Graph& NetworkGraphAnalyzer::graph()
-{
-  return graph_;
-}
-
-int NetworkGraphAnalyzer::moduleCount() const 
-{
-  return moduleCount_;
 }

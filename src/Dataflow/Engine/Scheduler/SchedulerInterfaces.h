@@ -107,10 +107,12 @@ namespace Engine {
     static const ExecuteAllModules& Instance();
   };
 
-  //TODO
   struct SCISHARE ExecuteSingleModule
   {
+    explicit ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod);
     bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const;
+  private:
+    SCIRun::Dataflow::Networks::ModuleHandle module_;
   };
 
 }}}
