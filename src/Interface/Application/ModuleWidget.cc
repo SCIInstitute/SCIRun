@@ -150,6 +150,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   optionsButton_->setVisible(theModule_->has_ui());
 
   executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  connect(executePushButton_, SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
 
   int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
   int extraWidth = pixelWidth - moduleWidthThreshold;
@@ -603,4 +604,10 @@ void ModuleWidget::hideUI()
 void ModuleWidget::showUI()
 {
   dockable_->show();
+}
+
+void ModuleWidget::executeButtonPushed()
+{
+  std::cout << "Execute button pushed on module " << moduleId_ << std::endl;
+  Q_EMIT executedManually(theModule_);
 }

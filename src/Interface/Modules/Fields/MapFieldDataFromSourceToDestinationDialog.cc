@@ -26,48 +26,54 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Math/SolveLinearSystemDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 namespace SCIRun {
   namespace Gui {
-    class SolveLinearSystemDialogImpl
+    class MapFieldDataFromSourceToDestinationDialogImpl
     {
     public:
-      SolveLinearSystemDialogImpl()
+      MapFieldDataFromSourceToDestinationDialogImpl()
       {
         typedef boost::bimap<std::string, std::string>::value_type strPair;
-        solverNameLookup_.insert(strPair("Conjugate Gradient (SCI)", "cg"));
-        solverNameLookup_.insert(strPair("BiConjugate Gradient (SCI)", "bicg"));
-        solverNameLookup_.insert(strPair("Jacobi (SCI)", "jacobi"));
-        solverNameLookup_.insert(strPair("MINRES (SCI)", "minres"));
+        mappingNameLookup_.insert(strPair("Linear (\"weighted\")", "interpolateddata"));
+        mappingNameLookup_.insert(strPair("Constant mapping: each destination gets nearest source value", "closestdata"));
+        mappingNameLookup_.insert(strPair("Constant mapping: each source projects to just one destination", "singledestination"));
       }
-      boost::bimap<std::string, std::string> solverNameLookup_;
+      boost::bimap<std::string, std::string> mappingNameLookup_;
     };
   }}
 
-SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, ModuleStateHandle state,
+MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), impl_(new SolveLinearSystemDialogImpl)
+  : ModuleDialogGeneric(state, parent),
+  impl_(new MapFieldDataFromSourceToDestinationDialogImpl)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addSpinBoxManager(maxIterationsSpinBox_, Variables::MaxIterations);
-  addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
-
-  addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
-  addComboBoxManager(methodComboBox_, Variables::Method, impl_->solverNameLookup_);
+  addComboBoxManager(methodComboBox_, Parameters::MappingMethod, impl_->mappingNameLookup_);
+  addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
+  addDoubleSpinBoxManager(defaultValueDoubleSpinBox_, Parameters::DefaultValue);
+  connect(noMaxCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setNoMaximumValue(int)));
 }
 
-void SolveLinearSystemDialog::pull()
+void MapFieldDataFromSourceToDestinationDialog::pull()
 {
   pull_newVersionToReplaceOld();
+}
+
+void MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue(int state)
+{
+  if (0 != state)
+    state_->setValue(Parameters::MaxDistance, -1.0);
 }

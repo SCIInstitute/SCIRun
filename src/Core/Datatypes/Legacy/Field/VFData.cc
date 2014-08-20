@@ -182,13 +182,13 @@ VFData::copy_evalues(VFData*, VMesh::index_type, VMesh::index_type, VMesh::size_
 }
 
 void
-VFData::copy_weighted_value(VFData*, VMesh::index_type*, VMesh::weight_type*, VMesh::size_type, VMesh::index_type)
+VFData::copy_weighted_value(VFData*, const VMesh::index_type*, const VMesh::weight_type*, VMesh::size_type, VMesh::index_type)
 {
   ASSERTFAIL("VFData interface has no virtual function implementation for copy_weighted_value");
 }
 
 void
-VFData::copy_weighted_evalue(VFData*, VMesh::index_type*, VMesh::weight_type*, VMesh::size_type, VMesh::index_type)
+VFData::copy_weighted_evalue(VFData*, const VMesh::index_type*, const VMesh::weight_type*, VMesh::size_type, VMesh::index_type)
 {
   ASSERTFAIL("VFData interface has no virtual function implementation for copy_weighted_evalue");
 }

@@ -284,11 +284,11 @@ public:
   { vfdata_->set_all_values(val); }
 
   /// Functions for getting a weighted value
-  template<class INDEX> inline void copy_weighted_value(VField* field, index_type* idx, weight_type* w, size_type sz, INDEX i) const
+  template<class INDEX> inline void copy_weighted_value(VField* field, const index_type* idx, const weight_type* w, size_type sz, INDEX i) const
   { vfdata_->copy_weighted_value(field->vfdata_,idx,w,sz,index_type(i)); }
   template<class INDEX, class ARRAY> inline void copy_weighted_value(VField* field, ARRAY idx, weight_array_type w, INDEX i) const
   { vfdata_->copy_weighted_value(field->vfdata_,&(idx[0]),&(w[0]),idx.size(),index_type(i)); }
-  template<class INDEX> inline void copy_weighted_evalue(VField* field, index_type* idx, weight_type* w, size_type sz, INDEX i) const
+  template<class INDEX> inline void copy_weighted_evalue(VField* field, const index_type* idx, const weight_type* w, size_type sz, INDEX i) const
   { vfdata_->copy_weighted_evalue(field->vfdata_,idx,w,sz,index_type(i)); }
   template<class INDEX, class ARRAY> inline void copy_weighted_evalue(VField* field, ARRAY idx, weight_array_type w, INDEX i) const
   { vfdata_->copy_weighted_value(field->vfdata_,&(idx[0]),&(w[0]),idx.size(),index_type(i)); }
@@ -661,6 +661,7 @@ public:
   inline bool is_unsigned_integer()   { return (is_unsigned_char()||is_unsigned_short()||is_unsigned_int()); }
   inline bool is_integer()            { return (is_signed_integer()||is_unsigned_integer()); }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Shortcuts to property manager
   inline void copy_properties(VField* ifield)
   { 
@@ -689,6 +690,7 @@ public:
       return(pm_->is_property(name)); 
     return false;
   }
+#endif
 protected:
   
   // Pointers to structures to access the data virtually

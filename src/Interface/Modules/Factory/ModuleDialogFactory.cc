@@ -63,6 +63,7 @@
 #include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataOntoElemsDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
+#include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
@@ -133,6 +134,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoElems, MapFieldDataOntoElemsDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
+    ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
   ;
 }
 

@@ -26,34 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
-#include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
-#include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
+#ifndef INTERFACE_MODULES_MapFieldDataFromSourceToDestinationDialog_H
+#define INTERFACE_MODULES_MapFieldDataFromSourceToDestinationDialog_H
 
-using namespace SCIRun::Testing;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include "Interface/Modules/Fields/ui_MapFieldDataFromSourceToDestinationDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-class GetDataFromBundleModuleTest : public ModuleTest
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE MapFieldDataFromSourceToDestinationDialog : public ModuleDialogGeneric, 
+  public Ui::MapFieldDataFromSourceToDestination
 {
+	Q_OBJECT
+	
+public:
+  MapFieldDataFromSourceToDestinationDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+private Q_SLOTS:
+  void setNoMaximumValue(int state);
+private:
+  boost::shared_ptr<class MapFieldDataFromSourceToDestinationDialogImpl> impl_;
 };
 
-TEST_F(GetDataFromBundleModuleTest, DISABLED_ThrowsForNullBundlesMatrix)
-{
-  auto sls = makeModule("GetMatricesFromBundle");
-  BundleHandle nullBundle;
-  stubPortNWithThisData(sls, 0, nullBundle);
-
-  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
+}
 }
 
-TEST_F(GetDataFromBundleModuleTest, DISABLED_ThrowsForNullBundlesField)
-{
-  auto sls = makeModule("GetFieldsFromBundle");
-  BundleHandle nullBundle;
-  stubPortNWithThisData(sls, 0, nullBundle);
-
-  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
-}
+#endif

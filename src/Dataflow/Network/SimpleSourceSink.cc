@@ -34,7 +34,7 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-SimpleSink::SimpleSink()
+SimpleSink::SimpleSink() : checkForNewDataOnSetting_(false)
 {
   instances_.insert(this);
 }
@@ -76,46 +76,34 @@ DatatypeHandleOption SimpleSink::receive()
   if (dataProvider_)
   {
     auto data = dataProvider_();
-    previousId_ = data->id();
-    //setHasData(false);
-
+    
     if (!globalPortCachingFlag())
       invalidateProvider();
 
-    if (hasChanged())
-      /*emit*/ dataHasChanged_(data);
+    currentId_ = data->id();
     return data;
   }
   return DatatypeHandleOption();
 }
 
-//void SimpleSink::setHasData(bool dataPresent)
-//{
-//  hasData_ = dataPresent;
-//
-////  if (hasData_ && hasChanged())
-//
-//
-//  //if (!hasData_)
-//  //  previousId_.reset();
-//}
-
 void SimpleSink::setData(DataProvider dataProvider)
 {
+  if (dataProvider_)
+  {
+    if (currentId_)
+      previousId_ = *currentId_;
+  }
+
   dataProvider_ = dataProvider;
 
   if (dataProvider_)
-  {
-    auto data = dataProvider_();
-    if (data)
-    {
-      if (!previousId_)
-      {
+    currentId_ = dataProvider_()->id();
 
-        previousId_ = data->id();
-        //std::cout << "Sink prevId set to = " << *previousId_ << std::endl;
-      }
-      //setHasData(true);
+  if (checkForNewDataOnSetting_ && dataProvider_)
+  {
+    if (hasChanged())
+    {
+      /*emit*/ dataHasChanged_(dataProvider_());
     }
   }
 }
@@ -127,9 +115,16 @@ DatatypeSinkInterface* SimpleSink::clone() const
 
 bool SimpleSink::hasChanged() const
 {
-  if (!dataProvider_ || !previousId_)
+  if (!dataProvider_)
+  {
     return false;
-  return *previousId_ != dataProvider_()->id();
+  }
+
+  if (!previousId_)
+  {
+    return true;
+  }
+  return *previousId_ != *currentId_;
 }
 
 void SimpleSink::invalidateProvider()
@@ -139,6 +134,7 @@ void SimpleSink::invalidateProvider()
 
 boost::signals2::connection SimpleSink::connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber)
 {
+  checkForNewDataOnSetting_ = true;
   return dataHasChanged_.connect(subscriber);
 }
 

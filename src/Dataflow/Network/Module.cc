@@ -239,13 +239,14 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is dynamic, get_dynamic_input_handles must be called."));
   }
 
+  auto data = port->getData();
   if (!inputsChanged_)
   {
     //LOG_DEBUG(id_ << " :: inputsChanged is false, querying port for value.");
     inputsChanged_ = port->hasChanged();
     //LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
   }
-  return port->getData();
+  return data;
 }
 
 std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)

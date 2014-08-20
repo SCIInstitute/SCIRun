@@ -54,7 +54,7 @@ void ResampleRegularMesh::setStateDefaults()
 {
   auto state = get_state();
   
-  state->setValue(Parameters::ResampleMethod, std::string("box"));
+  setStateStringFromAlgoOption(Parameters::ResampleMethod);
   setStateDoubleFromAlgo(Parameters::ResampleGaussianSigma);
   setStateDoubleFromAlgo(Parameters::ResampleGaussianExtend);
   setStateDoubleFromAlgo(Parameters::ResampleXDim);
