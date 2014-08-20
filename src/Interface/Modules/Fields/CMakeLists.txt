@@ -40,6 +40,7 @@ SET(Interface_Modules_Fields_FORMS
   SetFieldDataDialog.ui
   MapFieldDataFromElemToNodeDialog.ui
   MapFieldDataFromNodeToElemDialog.ui
+  MapFieldDataFromSourceToDestinationDialog.ui
   resampleregularmesh.ui #TODO: fix case
   ProjectPointsOntoMesh.ui
   calculatedistancetofield.ui #TODO: fix case
@@ -61,6 +62,7 @@ SET(Interface_Modules_Fields_HEADERS
   SetFieldDataDialog.h
   MapFieldDataFromElemToNodeDialog.h
   MapFieldDataFromNodeToElemDialog.h
+  MapFieldDataFromSourceToDestinationDialog.h
   ResampleRegularMeshDialog.h
   ProjectPointsOntoMeshDialog.h
   CalculateDistanceToFieldDialog.h
@@ -83,6 +85,7 @@ SET(Interface_Modules_Fields_SOURCES
   SetFieldDataDialog.cc
   MapFieldDataFromElemToNodeDialog.cc
   MapFieldDataFromNodeToElemDialog.cc
+  MapFieldDataFromSourceToDestinationDialog.cc
   ResampleRegularMeshDialog.cc
   ProjectPointsOntoMeshDialog.cc
   CalculateDistanceToFieldDialog.cc

@@ -336,8 +336,10 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
       return (false);
     }
   }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
+#endif
 
   return (true);
 }
@@ -461,8 +463,10 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
       return (false);
     }
   }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
+#endif
 
   return (true);
 }

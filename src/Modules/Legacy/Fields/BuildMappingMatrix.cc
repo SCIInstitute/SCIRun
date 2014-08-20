@@ -62,6 +62,10 @@ BuildMappingMatrix::execute()
   auto source = getRequiredInput(Source);
   auto destination = getRequiredInput(Destination);
   
+  //TODO: copy impl from rewritten MapFieldDataFromSourceToDestination
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   //if (inputs_changed_ || interpolation_basis_.changed() ||
   //    map_source_to_single_dest_.changed() ||
   //    exhaustive_search_max_dist_.changed() || !oport_cached("Mapping"))
@@ -89,4 +93,6 @@ BuildMappingMatrix::execute()
    
     sendOutputFromAlgorithm(Mapping, output);
   }
+
+#endif
 }

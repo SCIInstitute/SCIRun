@@ -262,9 +262,6 @@ TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
   EXPECT_THROW(scheduler.schedule(matrixMathNetwork), NetworkHasCyclesException);
 }
 
-
-
-
 TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
 {
   setupBasicNetwork();

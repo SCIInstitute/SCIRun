@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>442</width>
-    <height>255</height>
+    <width>371</width>
+    <height>272</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,90 +18,64 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>442</width>
+    <width>371</width>
     <height>255</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QDialogButtonBox" name="buttonBox">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>220</y>
-     <width>413</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Ok</set>
-   </property>
-   <property name="centerButtons">
-    <bool>false</bool>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
      <x>11</x>
      <y>11</y>
-     <width>413</width>
-     <height>201</height>
+     <width>341</width>
+     <height>248</height>
     </rect>
    </property>
-   <property name="title">
-    <string>Type matrix, one row per line, space-delimited. Click OK when done.</string>
+   <property name="minimumSize">
+    <size>
+     <width>341</width>
+     <height>248</height>
+    </size>
    </property>
-   <widget class="QPlainTextEdit" name="matrixTextEdit_">
-    <property name="geometry">
-     <rect>
-      <x>18</x>
-      <y>30</y>
-      <width>381</width>
-      <height>151</height>
-     </rect>
-    </property>
-   </widget>
+   <property name="title">
+    <string>Format: one row per line, space-delimited, new line at end.</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QCheckBox" name="editCheckBox_">
+      <property name="text">
+       <string>Edit matrix</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPlainTextEdit" name="matrixTextEdit_">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>CreateMatrix</receiver>
-   <slot>accept()</slot>
+   <sender>editCheckBox_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>matrixTextEdit_</receiver>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>181</x>
+     <y>42</y>
     </hint>
     <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>CreateMatrix</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
+     <x>181</x>
+     <y>152</y>
     </hint>
    </hints>
   </connection>

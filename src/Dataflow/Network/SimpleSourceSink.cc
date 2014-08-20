@@ -28,7 +28,6 @@ DEALINGS IN THE SOFTWARE.
 
 /// @todo Documentation Dataflow/Network/SimpleSourceSink.cc
 
-//#include <iostream>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <boost/foreach.hpp>
 
@@ -74,21 +73,16 @@ void SimpleSink::invalidateAll()
 
 DatatypeHandleOption SimpleSink::receive()
 {
-  //std::cout << "SS::receive" << std::endl;
   if (dataProvider_)
   {
-    //std::cout << "\tSS::receive dataProvider_ true" << std::endl;
     auto data = dataProvider_();
     
-    //std::cout << "\tSS::receive dataProvider_ true" << std::endl;
-
     if (!globalPortCachingFlag())
       invalidateProvider();
 
     currentId_ = data->id();
     return data;
   }
-  //std::cout << "\tSS::receive dataProvider_ false" << std::endl;
   return DatatypeHandleOption();
 }
 
@@ -98,8 +92,6 @@ void SimpleSink::setData(DataProvider dataProvider)
   {
     if (currentId_)
       previousId_ = *currentId_;
-
-    //std::cout << "SS::setData, previousId_ set to " << *previousId_ << std::endl;
   }
 
   dataProvider_ = dataProvider;
@@ -111,12 +103,8 @@ void SimpleSink::setData(DataProvider dataProvider)
   {
     if (hasChanged())
     {
-      //std::cout << "\tSS::receive hasChanged true" << std::endl;
       /*emit*/ dataHasChanged_(dataProvider_());
-      //std::cout << "\tSS::receive" << std::endl;
     }
-    //else
-    //  std::cout << "\tSS::receive hasChanged false" << std::endl;
   }
 }
 
@@ -127,27 +115,16 @@ DatatypeSinkInterface* SimpleSink::clone() const
 
 bool SimpleSink::hasChanged() const
 {
-  //std::cout << "\tSS::hasChanged" << std::endl;
   if (!dataProvider_)
   {
-    //std::cout << "\tSS::hasChanged false zeroth block" << std::endl;
     return false;
   }
 
   if (!previousId_)
   {
-    //std::cout << "\tSS::hasChanged true first block" << std::endl;
     return true;
   }
-//   std::cout << "\t\tSS::hasChanged previousId_ : " << *previousId_ << std::endl;
-//   std::cout << "\t\tSS::hasChanged currentId : " << dataProvider_()->id() << std::endl;
-//   std::cout << "\t\tSS::hasChanged currentId : " << *currentId_ << std::endl;
-  auto ret = *previousId_ != *currentId_;
-//   if (ret)
-//     std::cout << "\tSS::hasChanged true second block" << std::endl;
-//   else
-//     std::cout << "\tSS::hasChanged false second block" << std::endl;
-  return ret;
+  return *previousId_ != *currentId_;
 }
 
 void SimpleSink::invalidateProvider()

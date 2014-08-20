@@ -37,28 +37,44 @@ using namespace SCIRun::Modules::Math;
 
 CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogGeneric(state, parent), firstPull_(true)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
-  connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(updatePushButton()));
+ 
+  connect(editCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(pushMatrixToState(int)));
+  connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(editBoxUnsaved()));
 }
 
-void CreateMatrixDialog::pushMatrixToState()
+void CreateMatrixDialog::pushMatrixToState(int state)
 {
-  state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
-  buttonBox->button(QDialogButtonBox::Ok)->setText("OK");
+  if (!pulling_)
+  {
+    if (0 == state) // matrix is done editing
+    {
+      state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+      editBoxSaved();
+    }
+  }
 }
 
 void CreateMatrixDialog::pull()
 {
+  Pulling p(this);
   matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
+  if (firstPull_)
+    editBoxSaved();
+  
+  firstPull_ = false;
 }
 
-void CreateMatrixDialog::updatePushButton()
+void CreateMatrixDialog::editBoxUnsaved()
 {
-  buttonBox->button(QDialogButtonBox::Ok)->setText("Matrix Edited, click here to save");
+  editCheckBox_->setText("Matrix changed--click here to save");
+}
+
+void CreateMatrixDialog::editBoxSaved()
+{
+  editCheckBox_->setText("Edit matrix");
 }
