@@ -31,6 +31,7 @@
 #define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAFROMSOURCETODESTINATION_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -39,7 +40,6 @@ namespace SCIRun {
       namespace Fields {
         
         ALGORITHM_PARAMETER_DECL(DefaultValue);
-        ALGORITHM_PARAMETER_DECL(MaxDistance);
         ALGORITHM_PARAMETER_DECL(MappingMethod);
         
 class SCISHARE MapFieldDataFromSourceToDestinationAlgo : public AlgorithmBase

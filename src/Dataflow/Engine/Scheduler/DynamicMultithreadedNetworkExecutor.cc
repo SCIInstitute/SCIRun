@@ -79,6 +79,9 @@ void DynamicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& loo
 {
   static Mutex lock("live-scheduler");
   
+  if (Log::get().verbose())
+    LOG_DEBUG("DMTNE::executeAll order received: " << order << std::endl);
+
   DynamicMultithreadedNetworkExecutorImpl runner(&lookup, bounds, &network_, &lock);
   boost::thread execution(runner);
 }

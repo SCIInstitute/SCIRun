@@ -25,35 +25,29 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+ 
+#include <gtest/gtest.h>
 
-#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
-#include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
-#include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun::Testing;
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::TestUtils;
 
-class GetDataFromBundleModuleTest : public ModuleTest
+TEST(MapFieldDataFromSourceToDestinationAlgoTests, ThrowsOnNullInput)
 {
-};
-
-TEST_F(GetDataFromBundleModuleTest, DISABLED_ThrowsForNullBundlesMatrix)
-{
-  auto sls = makeModule("GetMatricesFromBundle");
-  BundleHandle nullBundle;
-  stubPortNWithThisData(sls, 0, nullBundle);
-
-  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
-}
-
-TEST_F(GetDataFromBundleModuleTest, DISABLED_ThrowsForNullBundlesField)
-{
-  auto sls = makeModule("GetFieldsFromBundle");
-  BundleHandle nullBundle;
-  stubPortNWithThisData(sls, 0, nullBundle);
-
-  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
+  MapFieldDataFromSourceToDestinationAlgo algo;
+  AlgorithmInput empty;
+  EXPECT_THROW(algo.run_generic(empty), AlgorithmProcessingException);
 }

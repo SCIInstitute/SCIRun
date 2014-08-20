@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>334</width>
-    <height>377</height>
+    <width>283</width>
+    <height>304</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>283</width>
+    <height>300</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>SetConductivitiesToTetMeshDialog</string>
@@ -18,8 +24,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>301</width>
-     <height>351</height>
+     <width>261</width>
+     <height>281</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -45,8 +51,8 @@
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>282</width>
-       <height>311</height>
+       <width>241</width>
+       <height>251</height>
       </rect>
      </property>
      <property name="title">

@@ -46,8 +46,6 @@ class SCISHARE BuildMappingMatrixAlgo : public AlgorithmBase
     bool runImpl(FieldHandle source, FieldHandle destination, Datatypes::MatrixHandle& output) const;
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 
-    static const AlgorithmInputName Source;
-    static const AlgorithmInputName Destination;
     static const AlgorithmOutputName Mapping;
     static const AlgorithmParameterName MaxDistance;
     static const AlgorithmParameterName Method;

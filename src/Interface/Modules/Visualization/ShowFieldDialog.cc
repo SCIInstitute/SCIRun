@@ -53,14 +53,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
   addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
   addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
-
-  buttonBox->setVisible(false);
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
-  connect(nodesAsPointsButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
-  connect(nodesAsSpheresButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
-
-  pushNodeType();
-  pushColor();
 }
 
 void ShowFieldDialog::push()
@@ -76,10 +69,7 @@ void ShowFieldDialog::pull()
   pull_newVersionToReplaceOld();
   Pulling p(this);
   ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).getString());
-  defaultMeshColor_ = QColor(
-      static_cast<int>(color.r() * 255.0),
-      static_cast<int>(color.g() * 255.0),
-      static_cast<int>(color.b() * 255.0));
+  defaultMeshColor_ = QColor(color.r(), color.g(), color.b());
 }
 
 void ShowFieldDialog::assignDefaultMeshColor()
@@ -98,10 +88,3 @@ void ShowFieldDialog::pushColor()
 {
   state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
 }
-
-void ShowFieldDialog::pushNodeType()
-{
-  state_->setValue(ShowFieldModule::NodeAsPoints, nodesAsPointsButton_->isChecked());
-  state_->setValue(ShowFieldModule::NodeAsSpheres, nodesAsSpheresButton_->isChecked());
-}
-

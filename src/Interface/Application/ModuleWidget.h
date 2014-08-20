@@ -122,6 +122,7 @@ Q_SIGNALS:
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();
+  void executedManually(const SCIRun::Dataflow::Networks::ModuleHandle& module);
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
@@ -132,6 +133,7 @@ Q_SIGNALS:
   void noteChanged();
 private Q_SLOTS:
   void updateBackgroundColor(const QString& color);
+  void executeButtonPushed();
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
