@@ -333,6 +333,18 @@ void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
   theNetwork_->setModuleExecutionState(ModuleInterface::Waiting);
 }
 
+void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup)
+{
+  if (!currentExecutor_)
+  {
+    currentExecutor_ = executorFactory_->createDefault();
+  }
+
+  currentExecutor_->executeAll(*theNetwork_, lookup ? *lookup : *theNetwork_);
+
+  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting);
+}
+
 NetworkHandle NetworkEditorController::getNetwork() const 
 {
   return theNetwork_;

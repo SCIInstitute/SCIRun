@@ -30,6 +30,7 @@
 #include <QtGui>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
+#include <Core/Logging/Log.h>
 
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Connection.h>
@@ -608,6 +609,6 @@ void ModuleWidget::showUI()
 
 void ModuleWidget::executeButtonPushed()
 {
-  std::cout << "Execute button pushed on module " << moduleId_ << std::endl;
+  LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   Q_EMIT executedManually(theModule_);
 }

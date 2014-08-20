@@ -163,6 +163,7 @@ Q_SIGNALS:
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
     void executeAll();
+    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId& id);
     virtual void clear();
     void setConnectionPipelineType(int type);

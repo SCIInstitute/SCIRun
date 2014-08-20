@@ -190,6 +190,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkEditorMouseButtonPressed()), module, SIGNAL(cancelConnectionsInProgress()));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
     module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+  connect(module, SIGNAL(executedManually(const SCIRun::Dataflow::Networks::ModuleHandle&)), 
+    this, SLOT(executeModule(const SCIRun::Dataflow::Networks::ModuleHandle&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
@@ -670,6 +672,23 @@ void NetworkEditor::executeAll()
   }
 
   controller_->executeAll(*this);
+  //TODO: not sure about this right now.
+  //Q_EMIT modified();
+  Q_EMIT networkExecuted();
+}
+
+void NetworkEditor::executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
+{ 
+  //TODO!!! related to graph analysis. Should go elsewhere anyway.
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      w->setAsWaiting();
+    }
+  }
+
+  controller_->executeModule(module, *this);
   //TODO: not sure about this right now.
   //Q_EMIT modified();
   Q_EMIT networkExecuted();
