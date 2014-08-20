@@ -29,6 +29,7 @@
 #include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
+#include <Core/Logging/Log.h>
 
 #include <boost/utility.hpp>
 #include <boost/graph/topological_sort.hpp>
@@ -76,6 +77,9 @@ int NetworkGraphAnalyzer::moduleCount() const
 
 EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork()
 {
+  moduleCount_ = 0;
+  moduleIdLookup_.clear();
+
   for (int i = 0; i < network_.nmodules(); ++i)
   {
     auto module = network_.module(i);
@@ -114,4 +118,45 @@ void NetworkGraphAnalyzer::computeExecutionOrder()
   {
     BOOST_THROW_EXCEPTION(NetworkHasCyclesException() << SCIRun::Core::ErrorMessage(e.what()));
   }
+}
+
+ComponentMap NetworkGraphAnalyzer::connectedComponents()
+{
+  auto edges = constructEdgeListFromNetwork();
+  UndirectedGraph undirected(edges.begin(), edges.end(), moduleCount_);
+
+  std::vector<int> component(boost::num_vertices(undirected));
+  int num = boost::connected_components(undirected, &component[0]);
+
+  ComponentMap componentMap;
+  std::ostringstream ostr;
+  ostr << "Total number of components: " << num << std::endl;
+  for (size_t i = 0; i < component.size(); ++i)
+  {
+    componentMap[moduleAt(i)] = component[i];
+    ostr << "Module " << moduleAt(i) <<" is in component " << component[i] << std::endl;
+  }
+  ostr << std::endl;
+  LOG_DEBUG("NetworkGraphAnalyzer produced connected components as follow: " << ostr.str() << std::endl);
+  return componentMap;
+}
+
+ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod, const SCIRun::Dataflow::Networks::NetworkInterface& network) : module_(mod) 
+{
+  //TODO: composite with which filter?
+  NetworkGraphAnalyzer analyze(network, ExecuteAllModules::Instance(), false);
+  components_ = analyze.connectedComponents();
+}
+
+bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mod) const
+{
+  auto modIdIter = components_.find(mod->get_id());
+  if (modIdIter == components_.end())
+    THROW_INVALID_ARGUMENT("Module not found in component map");
+  auto thisIdIter = components_.find(module_->get_id());
+  if (thisIdIter == components_.end())
+    THROW_INVALID_ARGUMENT("Current module not found in component map");
+
+  // should execute if in same connected component
+  return modIdIter->second == thisIdIter->second;
 }

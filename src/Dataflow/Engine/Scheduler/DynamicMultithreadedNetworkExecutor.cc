@@ -46,7 +46,7 @@ namespace SCIRun {
         Log& ModuleConsumer::log_ = Log::get("consumer");
         Log& ModuleProducer::log_ = Log::get("producer");
 
-        BoostGraphParallelScheduler ModuleProducer::scheduler_(filter());
+        
       }
 
       /// @todo: templatize along with producer/consumer
@@ -55,7 +55,8 @@ namespace SCIRun {
       public:
         DynamicMultithreadedNetworkExecutorImpl(const ExecutableLookup* lookup, const ExecutionBounds& bounds, const NetworkInterface* network, Mutex* lock) : 
           work_(new DynamicExecutor::ModuleWorkQueue(network->nmodules())),
-          producer_(new DynamicExecutor::ModuleProducer(lookup, bounds, network, lock, work_)),
+            //TODO: need a way to compose filters here.
+          producer_(new DynamicExecutor::ModuleProducer(ModuleWaitingFilter::Instance(), lookup, bounds, network, lock, work_)),
           consumer_(new DynamicExecutor::ModuleConsumer(work_, lookup, producer_))
         {
         }
@@ -85,3 +86,15 @@ void DynamicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& loo
   DynamicMultithreadedNetworkExecutorImpl runner(&lookup, bounds, &network_, &lock);
   boost::thread execution(runner);
 }
+
+bool ModuleWaitingFilter::operator()(SCIRun::Dataflow::Networks::ModuleHandle mh) const
+{
+  return mh->executionState() != Networks::ModuleInterface::Completed;
+}
+
+const ModuleWaitingFilter& ModuleWaitingFilter::Instance()
+{
+  static ModuleWaitingFilter instance_;
+  return instance_;
+}
+

@@ -107,12 +107,19 @@ namespace Engine {
     static const ExecuteAllModules& Instance();
   };
 
+  struct SCISHARE ModuleWaitingFilter
+  {
+    bool operator()(SCIRun::Dataflow::Networks::ModuleHandle mh) const;
+    static const ModuleWaitingFilter& Instance();
+  };
+
   struct SCISHARE ExecuteSingleModule
   {
-    explicit ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod);
+    explicit ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod, const SCIRun::Dataflow::Networks::NetworkInterface& network);
     bool operator()(SCIRun::Dataflow::Networks::ModuleHandle) const;
   private:
     SCIRun::Dataflow::Networks::ModuleHandle module_;
+    std::map<std::string, int> components_;
   };
 
 }}}

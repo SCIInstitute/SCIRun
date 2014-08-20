@@ -50,6 +50,7 @@ namespace Engine {
     typedef boost::graph_traits<DirectedGraph>::vertex_descriptor Vertex;
     typedef std::list<Vertex> ExecutionOrder;
     typedef ExecutionOrder::const_iterator ExecutionOrderIterator;
+    typedef std::map<std::string, int> ComponentMap;
   }
 
   class SCISHARE NetworkGraphAnalyzer : boost::noncopyable
@@ -65,6 +66,7 @@ namespace Engine {
     NetworkGraph::ExecutionOrderIterator topologicalEnd();
     const NetworkGraph::DirectedGraph& graph();
     int moduleCount() const;
+    NetworkGraph::ComponentMap connectedComponents();
 
   private:
     const SCIRun::Dataflow::Networks::NetworkInterface& network_;

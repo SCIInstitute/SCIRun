@@ -47,8 +47,10 @@ namespace SCIRun {
         class SCISHARE ModuleProducer : public ProducerInterface, boost::noncopyable
         {
         public:
-          ModuleProducer(const Networks::ExecutableLookup* lookup, const ExecutionBounds& bounds, 
+          ModuleProducer(const ModuleFilter& filter,
+            const Networks::ExecutableLookup* lookup, const ExecutionBounds& bounds, 
             const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work) :
+          scheduler_(filter),
           lookup_(lookup), bounds_(bounds), network_(network), lock_(lock),
             work_(work), doneCount_(0), shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
           {
@@ -118,17 +120,7 @@ namespace SCIRun {
             return doneCount_ >= network_->nmodules();
           }
         private:
-
-          struct ModuleWaiting
-          {
-            bool operator()(Networks::ModuleHandle mh) const
-            {
-              return mh->executionState() != Networks::ModuleInterface::Completed;
-            }
-          };
-
-          static ModuleWaiting filter() { return ModuleWaiting(); }
-          static BoostGraphParallelScheduler scheduler_;
+          BoostGraphParallelScheduler scheduler_;
           const Networks::ExecutableLookup* lookup_;
           const ExecutionBounds& bounds_;
           const Networks::NetworkInterface* network_;
