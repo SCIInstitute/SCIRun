@@ -33,9 +33,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -60,17 +57,16 @@ void GenerateROIStatisticsModule::setStateDefaults()
 
 void GenerateROIStatisticsModule::execute()
 {
-  auto meshData_ = getRequiredInput(MeshDataOnElements);
+  auto meshData_ = getRequiredInput(MeshDataOnElements); /// get all the inputs
   auto physicalUnit_ = getOptionalInput(PhysicalUnit);
   auto atlasMesh_ = getRequiredInput(AtlasMesh);
   auto atlasMeshLabels_ = getOptionalInput(AtlasMeshLabels);
   auto coordinateSpace_ = getOptionalInput(CoordinateSpace);
   auto coordinateSpaceLabel_ = getOptionalInput(CoordinateSpaceLabel);
   
-  setAlgoListFromState(Parameters::StatisticsTableValues);
+  setAlgoListFromState(Parameters::StatisticsTableValues); /// to transfer data between algo and dialog use the state variable 
   
-  auto roiSpec = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI.name()));
-  
+  auto roiSpec = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI.name())); /// transfer the ROI specification from GUI dialog as additional input
   //algorithm input and run
   auto input = make_input((MeshDataOnElements, meshData_)(PhysicalUnit, optionalAlgoInput(physicalUnit_))(AtlasMesh, atlasMesh_)(AtlasMeshLabels,
   optionalAlgoInput(atlasMeshLabels_))(CoordinateSpace, optionalAlgoInput(coordinateSpace_))(CoordinateSpaceLabel,
@@ -79,17 +75,17 @@ void GenerateROIStatisticsModule::execute()
   if (roiSpec)
     input[GenerateROIStatisticsAlgorithm::SpecifyROI] = roiSpec;
   
-  auto output = algo().run_generic(input);
+  auto output = algo().run_generic(input); /// call run generic 
 
-  auto table = output.additionalAlgoOutput();
+  auto table = output.additionalAlgoOutput(); /// get the two outputs, the upper table (as DenseMatrix) and the container that establishes data transfer between GUI/Algo via state  
   get_state()->setTransientValue(Parameters::StatisticsTableValues.name(), table, true);
   
-  if (physicalUnit_ && *physicalUnit_)
+  if (physicalUnit_ && *physicalUnit_) /// set physicalUnit string immediately to state, and then to dialog
      get_state()->setTransientValue(Parameters::PhysicalUnitStr.name(),(*physicalUnit_)->value() , true);
   
-  if (coordinateSpaceLabel_ && *coordinateSpaceLabel_)
+  if (coordinateSpaceLabel_ && *coordinateSpaceLabel_)/// set coordinateSpaceLabel string immediately to state, and then to dialog
      get_state()->setTransientValue(Parameters::CoordinateSpaceLabelStr.name(),(*coordinateSpaceLabel_)->value() , true); 
   
   //algorithm output
-  sendOutputFromAlgorithm(StatisticalResults, output);
+  sendOutputFromAlgorithm(StatisticalResults, output); /// set the upper table (DenseMatrix) as only output of the module
 }

@@ -26,6 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@file GenerateROIStatisticsAlgorithm
+///@brief The algorithm implements a statistical ROI analysis.
+///
+///@author
+/// Moritz Dannhauer
+///
+///@details
+/// The algorithm provides results for all ROIs (if radius in lower table is 0) specified as label numbers in the atlas mesh (second module input). Based on a location (x,y,z)
+/// provided in the lower GUI table the user can specify an own ROI. The algorithm uses this (x,y,z) location to determine the closest mesh element based on the element centers.
+/// A spherical ROI can be wrapped around that point (closest mesh element center) and an statistical analysis of all material in that sphere can be performed.
+/// If additionally, a material (lower GUI table, in Atlas Material #) was specified only the analysis is only performed for the specified material.
+/// In any case, if an material was specified but not found the algorithm outputs NaN. If one material was present only as a single element the standard deviation (stddev.)
+/// will be NaN as well for this material.
+
 #ifndef ALGORITHMS_MATH_GenerateROIStatisticsAlgorithm_H
 #define ALGORITHMS_MATH_GenerateROIStatisticsAlgorithm_H
 
@@ -58,7 +72,6 @@ namespace BrainStimulator {
     static const AlgorithmInputName CoordinateSpaceLabel;
     static const AlgorithmInputName SpecifyROI;
     static const AlgorithmOutputName StatisticalResults;
-    static Core::Algorithms::AlgorithmParameterName StatisticsRowName(int i);
   private:
     boost::tuple<Datatypes::DenseMatrixHandle, Variable> run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace=FieldHandle(), const std::string& AtlasMeshLabels="", const Datatypes::DenseMatrixHandle specROI=Datatypes::DenseMatrixHandle()) const;
     std::vector<std::string> ConvertInputAtlasStringIntoVector(const  std::string& atlasLabels) const;

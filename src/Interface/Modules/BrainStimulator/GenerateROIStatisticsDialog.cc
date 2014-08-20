@@ -47,7 +47,7 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  QStringList tableHeader1;
+  QStringList tableHeader1;  /// set default GUI parameter for upper table
   tableHeader1<<" ROI "<<" Avr. " << " Std. " << " Min. " << " Max. " << " # ";
   StatisticsOutput_tableWidget->setHorizontalHeaderLabels(tableHeader1);
   StatisticsOutput_tableWidget->setItem(0, 0, 0);
@@ -57,7 +57,7 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
   StatisticsOutput_tableWidget->setItem(0, 4, 0);
   StatisticsOutput_tableWidget->setItem(0, 5, 0);
   
-  QStringList tableHeader2;
+  QStringList tableHeader2; /// set default GUI parameter for lower table
   tableHeader2<<" X "<<" Y " << " Z " << " Atlas Material # " << " Radius ";
   SpecifyROI_tabWidget->setHorizontalHeaderLabels(tableHeader2);
   SpecifyROI_tabWidget->setItem(0, 0, new QTableWidgetItem("0"));
@@ -73,21 +73,12 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
 void GenerateROIStatisticsDialog::push()
 {
   if (!pulling_)
-  {
-   /* int rows = SpecifyROI_tabWidget->rowCount();
-    std::vector<AlgorithmParameter> roi_vals_in_secondtable;
-    for (int i=0; i<rows; i++)
-    {
-      AlgorithmParameter elc_i(Name("roi" + boost::lexical_cast<std::string>(i)), SpecifyROI_tabWidget->item(i,1)->text().toDouble());
-      SpecifyROI_tabWidget.push_back(elc_i);
-    }
-    state_->setValue(Parameters::, roi_vals_in_secondtable);*/
-    
-    
+  {    
     QPalette* palette = new QPalette();
     palette->setColor(QPalette::Text,Qt::red);
     StatisticsTableGroupBox->setPalette(*palette);
-        
+    
+    /// get user specified ROI data, put it in a DenseMatrix and ship it to state  
     auto X = SpecifyROI_tabWidget->item(0,0)->text().toDouble();
     auto Y = SpecifyROI_tabWidget->item(0,1)->text().toDouble();
     auto Z = SpecifyROI_tabWidget->item(0,2)->text().toDouble();
@@ -106,7 +97,8 @@ void GenerateROIStatisticsDialog::pull()
   Pulling p(this);
   auto all_elc_values = optional_any_cast_or_default<Variable>(state_->getTransientValue(Parameters::StatisticsTableValues.name())).getList();
   StatisticsOutput_tableWidget->setRowCount(all_elc_values.size());
-
+   
+   /// get the result data from the algorithm and put it in the GUI table
   for (int i=0; i<all_elc_values.size(); i++)
   {
    auto col = (all_elc_values[i]).getList();
@@ -122,17 +114,18 @@ void GenerateROIStatisticsDialog::pull()
     ++j;
    }
   }
+  
+  /// get the strings PhysicalUnit / CoordinateSpaceLabel from state (directly from module level) and show it above GUI tables
+  std::string PhysicalUnitString = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr.name()));  /// change GUI Labels due to physical unit and used coordinate space
+  if(!PhysicalUnitString.empty())
+  {
+   StatisticsTableGroupBox->setTitle("Statistics for ROIs: " + QString::fromStdString(PhysicalUnitString));
+  }
     
-    std::string PhysicalUnitString = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr.name()));  /// change GUI Labels due to physical unit and used coordinate space
-    if(!PhysicalUnitString.empty())
-    {
-      StatisticsTableGroupBox->setTitle("Statistics for ROIs: " + QString::fromStdString(PhysicalUnitString));
-    }
-    
-    std::string CoordinateSpaceLabelStr = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr.name()));  /// change GUI Labels due to physical unit and used coordinate space
-    if(!CoordinateSpaceLabelStr.empty())
-    {
-      ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));
-    }
+  std::string CoordinateSpaceLabelStr = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr.name()));  /// change GUI Labels due to physical unit and used coordinate space
+  if(!CoordinateSpaceLabelStr.empty())
+  {
+   ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));
+  }
 }
 
