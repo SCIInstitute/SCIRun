@@ -271,7 +271,8 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   //BasicMultithreadedNetworkExecutor executor;
   //executor.executeAll(matrixMathNetwork, order, ExecutionBounds());
   BasicParallelExecutionStrategy strategy;
-  strategy.executeAll(matrixMathNetwork, matrixMathNetwork);
+  ExecutionContext context(matrixMathNetwork, matrixMathNetwork);
+  strategy.execute(context);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));

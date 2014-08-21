@@ -57,7 +57,7 @@ SerialExecutionStrategy::SerialExecutionStrategy() : impl_(new SerialExecutionSt
 {
 }
 
-void SerialExecutionStrategy::executeAll(const NetworkInterface& network, const ExecutableLookup& lookup)
+void SerialExecutionStrategy::execute(const ExecutionContext& context)
 {
-  impl_->executeAll(network, lookup, executionBounds_);
+  impl_->executeAll(context.network, context.lookup, executionBounds_);
 }

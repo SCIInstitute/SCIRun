@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
-  struct SCISHARE ExecutionContext
+  struct SCISHARE ExecutionContext : boost::noncopyable
   {
     ExecutionContext(const Networks::NetworkInterface& net,
                      const Networks::ExecutableLookup& lkp) : network(net), lookup(lkp) {}
