@@ -42,9 +42,9 @@ namespace Engine {
   class SerialExecutionStrategyPrivate
   {
   public:
-    void executeAll(const NetworkInterface& network, const ExecutableLookup& lookup, const ExecutionBounds& bounds)
+    void execute(const ExecutionContext& context)
     {
-      executeWithCycleCheck(scheduler_, executor_, network, lookup, bounds);
+      executeWithCycleCheck(scheduler_, executor_, context);
     }
   private:
     BoostGraphSerialScheduler scheduler_;
@@ -59,5 +59,5 @@ SerialExecutionStrategy::SerialExecutionStrategy() : impl_(new SerialExecutionSt
 
 void SerialExecutionStrategy::execute(const ExecutionContext& context)
 {
-  impl_->executeAll(context.network, context.lookup, executionBounds_);
+  impl_->execute(context);
 }

@@ -38,13 +38,13 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-namespace 
+namespace
 {
   struct ParallelExecution
   {
     ParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
     {}
-    
+
     void operator()() const
     {
       /// @todo ESSENTIAL: scoped start/finish signaling
@@ -55,7 +55,7 @@ namespace
 
         std::vector<boost::function<void()>> tasks;
 
-        std::transform(groupIter.first, groupIter.second, std::back_inserter(tasks), 
+        std::transform(groupIter.first, groupIter.second, std::back_inserter(tasks),
           [&](const ParallelModuleExecutionOrder::ModulesByGroup::value_type& mod) -> boost::function<void()>
         {
           return [=]() { lookup_->lookupExecutable(mod.second)->execute(); };
@@ -73,8 +73,8 @@ namespace
 
 }
 
-void BasicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds)
+void BasicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order)
 {
-  ParallelExecution runner(&lookup, order, bounds);
+  ParallelExecution runner(&context.lookup, order, context.bounds());
   boost::thread execution(runner);
 }

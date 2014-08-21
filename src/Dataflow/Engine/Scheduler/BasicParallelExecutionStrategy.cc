@@ -37,7 +37,8 @@ using namespace SCIRun::Dataflow::Networks;
 
 void BasicParallelExecutionStrategy::execute(const ExecutionContext& context)
 {
-  BoostGraphParallelScheduler scheduler(ExecuteAllModules::Instance());
+  auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
+  BoostGraphParallelScheduler scheduler(filter);
   BasicMultithreadedNetworkExecutor executor;
-  executeWithCycleCheck(scheduler, executor, context.network, context.lookup, executionBounds_);
+  executeWithCycleCheck(scheduler, executor, context);
 }

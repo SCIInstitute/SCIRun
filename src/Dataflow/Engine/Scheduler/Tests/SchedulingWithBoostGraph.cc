@@ -118,7 +118,7 @@ protected:
 
   virtual void SetUp()
   {
-    
+
   }
 
   ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
@@ -149,7 +149,7 @@ protected:
   {
     Module::resetInstanceCount();
     //Test network:
-    /* 
+    /*
     send m1(0)          send m2(0)
     |            |             |
     transpose(1) negate(1)    scalar mult *4(1)
@@ -162,10 +162,10 @@ protected:
     */
 
     expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
-  
+
     ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
     ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
-  
+
     ModuleHandle transpose = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
     ModuleHandle negate = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
     ModuleHandle scalar = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
@@ -175,7 +175,7 @@ protected:
 
     report = addModuleToNetwork(matrixMathNetwork, "ReportMatrixInfo");
     receive = addModuleToNetwork(matrixMathNetwork, "ReceiveTestMatrix");
-  
+
     EXPECT_EQ(9, matrixMathNetwork.nmodules());
 
     /// @todo: turn this into a convenience network printing function
@@ -219,8 +219,8 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   BoostGraphSerialScheduler scheduler;
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
   LinearSerialNetworkExecutor executor;
-  ExecutionBounds bounds;
-  executor.executeAll(matrixMathNetwork, order, bounds);
+  ExecutionContext context(matrixMathNetwork);
+  executor.execute(context, order);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));
@@ -258,7 +258,7 @@ TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
   scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
 
   BoostGraphSerialScheduler scheduler;
-  
+
   EXPECT_THROW(scheduler.schedule(matrixMathNetwork), NetworkHasCyclesException);
 }
 
@@ -320,7 +320,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
   std::ostringstream ostr;
   ostr << order;
 
-  std::string expected = 
+  std::string expected =
     "0 SendTestMatrix:1\n"
     "0 SendTestMatrix:0\n"
     "1 EvaluateLinearAlgebraUnary:3\n"
@@ -344,7 +344,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderWithSomeModulesDone)
   std::ostringstream ostr;
   ostr << order;
 
-  std::string expected = 
+  std::string expected =
     "0 EvaluateLinearAlgebraBinary:5\n"
     "0 SendTestMatrix:1\n"
     "0 SendTestMatrix:0\n"
@@ -383,7 +383,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
     "0 SendTestMatrix:1\n"
     "0 SendTestMatrix:0\n";
 #endif
-  
+
     std::string expected = expectedFirstPart +
       "1 EvaluateLinearAlgebraUnary:3\n"
       "1 EvaluateLinearAlgebraUnary:4\n"
@@ -404,7 +404,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
     std::ostringstream ostr;
     ostr << order;
 
-    std::string expected = 
+    std::string expected =
       "0 CreateMatrix:9\n"
       "1 ReportMatrixInfo:10\n";
 
@@ -418,7 +418,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
     std::ostringstream ostr;
     ostr << order;
 
-    std::string expected = 
+    std::string expected =
       "0 SendTestMatrix:1\n"
       "0 SendTestMatrix:0\n"
       "1 EvaluateLinearAlgebraUnary:3\n"
@@ -531,13 +531,13 @@ namespace ThreadingPrototype
           if ((*i)->ready)
           {
             log_ << INFO << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
-            
+
             mutex_.lock();
             work_.push(*i);
             mutex_.unlock();
 
             log_ << INFO << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
-            
+
             i = waiting_.erase(i);
           }
           else
@@ -663,7 +663,7 @@ namespace ThreadingPrototype
     }
   }
 
-  typedef boost::lockfree::spsc_queue<UnitPtr> WorkQueue2; 
+  typedef boost::lockfree::spsc_queue<UnitPtr> WorkQueue2;
 
   class WorkUnitProducer2
   {

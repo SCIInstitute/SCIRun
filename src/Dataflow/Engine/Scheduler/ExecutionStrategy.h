@@ -35,15 +35,6 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-
-  struct SCISHARE ExecutionContext : boost::noncopyable
-  {
-    ExecutionContext(const Networks::NetworkInterface& net,
-                     const Networks::ExecutableLookup& lkp) : network(net), lookup(lkp) {}
-
-    const Networks::NetworkInterface& network;
-    const Networks::ExecutableLookup& lookup;
-  };
   
   class SCISHARE ExecutionStrategy
   {
@@ -59,10 +50,6 @@ namespace Engine {
       // next: pausable, then with loops
     };
 
-    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-  protected:
-    static ExecutionBounds executionBounds_;
   };
 
   typedef boost::shared_ptr<ExecutionStrategy> ExecutionStrategyHandle;

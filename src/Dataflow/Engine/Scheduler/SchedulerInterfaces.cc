@@ -27,6 +27,7 @@
 */
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Network/NetworkInterface.h>
 
 using namespace SCIRun::Dataflow::Engine;
 
@@ -45,3 +46,5 @@ const ExecuteAllModules& ExecuteAllModules::Instance()
   static ExecuteAllModules instance_;
   return instance_;
 }
+
+ExecutionContext::ExecutionContext(const Networks::NetworkInterface& net) : network(net), lookup(net) {}

@@ -46,14 +46,14 @@ namespace SCIRun {
         Log& ModuleConsumer::log_ = Log::get("consumer");
         Log& ModuleProducer::log_ = Log::get("producer");
 
-        
+
       }
 
       /// @todo: templatize along with producer/consumer
       class DynamicMultithreadedNetworkExecutorImpl
       {
       public:
-        DynamicMultithreadedNetworkExecutorImpl(const ExecutableLookup* lookup, const ExecutionBounds& bounds, const NetworkInterface* network, Mutex* lock) : 
+        DynamicMultithreadedNetworkExecutorImpl(const ExecutableLookup* lookup, const ExecutionBounds& bounds, const NetworkInterface* network, Mutex* lock) :
           work_(new DynamicExecutor::ModuleWorkQueue(network->nmodules())),
             //TODO: need a way to compose filters here.
           producer_(new DynamicExecutor::ModuleProducer(ModuleWaitingFilter::Instance(), lookup, bounds, network, lock, work_)),
@@ -76,14 +76,14 @@ namespace SCIRun {
 
 DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) : network_(network) {}
 
-void DynamicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds)
+void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order)
 {
   static Mutex lock("live-scheduler");
-  
+
   if (Log::get().verbose())
     LOG_DEBUG("DMTNE::executeAll order received: " << order << std::endl);
 
-  DynamicMultithreadedNetworkExecutorImpl runner(&lookup, bounds, &network_, &lock);
+  DynamicMultithreadedNetworkExecutorImpl runner(&context.lookup, context.bounds(), &network_, &lock);
   boost::thread execution(runner);
 }
 
@@ -97,4 +97,3 @@ const ModuleWaitingFilter& ModuleWaitingFilter::Instance()
   static ModuleWaitingFilter instance_;
   return instance_;
 }
-

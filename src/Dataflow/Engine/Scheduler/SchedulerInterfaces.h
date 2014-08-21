@@ -69,37 +69,58 @@ namespace Engine {
     boost::function<int()> errorCodeRetriever_;
   };
 
+  typedef boost::function<bool(SCIRun::Dataflow::Networks::ModuleHandle)> ModuleFilter;
+
+  struct SCISHARE ExecutionContext : boost::noncopyable
+  {
+    explicit ExecutionContext(const Networks::NetworkInterface& net);
+    ExecutionContext(const Networks::NetworkInterface& net,
+                     const Networks::ExecutableLookup& lkp) : network(net), lookup(lkp) {}
+
+    ExecutionContext(const Networks::NetworkInterface& net,
+                     const Networks::ExecutableLookup& lkp, ModuleFilter filter) : network(net), lookup(lkp), additionalFilter(filter) {}
+
+    const Networks::NetworkInterface& network;
+    const Networks::ExecutableLookup& lookup;
+    ModuleFilter additionalFilter;
+
+    ModuleFilter addAdditionalFilter(ModuleFilter filter) const;
+    const ExecutionBounds& bounds() const { return executionBounds_; }
+
+    //todo: seems like a better place for this
+    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
+    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
+    static ExecutionBounds executionBounds_;
+  };
+
   template <class OrderType>
   class NetworkExecutor
   {
   public:
     virtual ~NetworkExecutor() {}
     //NOTE: OrderType passed by value so it can be copied across threads--it's more temporary than the network and the bounds objects
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, OrderType order, const ExecutionBounds& bounds) = 0;
+    virtual void execute(const ExecutionContext& context, OrderType order) = 0;
   };
 
   class ModuleExecutionOrder;
   typedef boost::shared_ptr<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
 
   template <class OrderType>
-  void executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor,
-    const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup, const ExecutionBounds& bounds)
+  void executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor, const ExecutionContext& context)
   {
     OrderType order;
     try
     {
-      order = scheduler.schedule(network);
+      order = scheduler.schedule(context.network);
     }
     catch (NetworkHasCyclesException&)
     {
-      /// @todo: use real logger here--or just let this exception bubble up--needs testing. 
+      /// @todo: use real logger here--or just let this exception bubble up--needs testing.
       SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::ERROR_LOG << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
       return;
     }
-    executor.executeAll(lookup, order, bounds);
+    executor.execute(context, order);
   }
-
-  typedef boost::function<bool(SCIRun::Dataflow::Networks::ModuleHandle)> ModuleFilter;
 
   struct SCISHARE ExecuteAllModules
   {
