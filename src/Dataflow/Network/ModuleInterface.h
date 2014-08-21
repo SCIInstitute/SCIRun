@@ -99,7 +99,7 @@ namespace Networks {
 
     enum ExecutionState 
     {
-      None,
+      NotExecuted,
       Waiting,
       Executing,
       Completed
