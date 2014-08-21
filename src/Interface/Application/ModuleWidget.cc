@@ -76,7 +76,7 @@ namespace Gui {
       menu_->addActions(QList<QAction*>()
         << disabled(new QAction("ID: " + QString::fromStdString(moduleId), parent))
         << separatorAction(parent)
-        << disabled(new QAction("Execute", parent))
+        << new QAction("Execute", parent)
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
@@ -178,6 +178,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(raise()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
+  connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
