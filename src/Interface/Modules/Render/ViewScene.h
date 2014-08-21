@@ -78,12 +78,9 @@ protected Q_SLOTS:
   void autoViewClicked();
   void newGeometryValue();
   void viewBarButtonClicked();
-  void viewChangedPosX(int index);
-  void viewChangedPosY(int index);
-  void viewChangedPosZ(int index);
-  void viewChangedNegX(int index);
-  void viewChangedNegY(int index);
-  void viewChangedNegZ(int index);
+  void viewAxisSelected(int index);
+  void viewVectorSelected(int index);
+  
 
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;
@@ -96,12 +93,14 @@ private:
   void addViewBarButton();
   void addViewBar();
   void addViewOptions();
-  QComboBox* createViewBox(QString title, QString element1, QString element2, QString element3, QString element4);
 
-  GLWidget*                     mGLWidget;  ///< GL widget containing context.
-  std::weak_ptr<SRInterface>    mSpire;     ///< Instance of Spire.
-  QToolBar*                     mToolBar;   ///< Tool bar.
-  QToolBar*						mViewBar;	///< Tool bar for view options.
+  GLWidget*                     mGLWidget;		///< GL widget containing context.
+  std::weak_ptr<SRInterface>    mSpire;			///< Instance of Spire.
+  QToolBar*                     mToolBar;		///< Tool bar.
+  QToolBar*						mViewBar;		///< Tool bar for view options.
+  QComboBox*					mDownViewBox;	///< Combo box for Down axis options.
+  QComboBox*					mUpVectorBox;	///< Combo box for Up Vector options.
+
   bool shown_;
   bool hideViewBar_;
   std::shared_ptr<class ViewSceneItemManager> itemManager_;
