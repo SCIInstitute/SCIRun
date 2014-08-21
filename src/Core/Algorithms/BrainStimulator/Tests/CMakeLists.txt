@@ -26,18 +26,18 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Algorithms_ElectrodeCoilSetup_Tests_SRCS
+SET(Algorithms_BrainStimulator_Tests_SRCS
   ElectrodeCoilSetupAlgorithmTests.cc
   SetConductivitiesToTetMeshAlgorithmTests.cc
   GenerateROIStatisticsAlgorithmTests.cc
   SetupRHSforTDCSandTMSAlgorithmTests.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Algorithms_ElectrodeCoilSetup_Tests
-  ${Algorithms_ElectrodeCoilSetup_Tests_SRCS}
+SCIRUN_ADD_UNIT_TEST(Algorithms_BrainStimulator_Tests
+  ${Algorithms_BrainStimulator_Tests_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Algorithms_ElectrodeCoilSetup_Tests
+TARGET_LINK_LIBRARIES(Algorithms_BrainStimulator_Tests
 #  Algorithms_SetConductivitiesToTetMesh
   Algorithms_BrainStimulator
   Core_Datatypes_Legacy_Field
