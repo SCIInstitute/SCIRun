@@ -53,10 +53,10 @@ namespace SCIRun {
       class DynamicMultithreadedNetworkExecutorImpl
       {
       public:
-        DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network, Mutex* lock) :
-          work_(new DynamicExecutor::ModuleWorkQueue(network->nmodules())),
+        DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network, Mutex* lock, size_t numModules) :
+          work_(new DynamicExecutor::ModuleWorkQueue(numModules)),
           producer_(new DynamicExecutor::ModuleProducer(context.addAdditionalFilter(ModuleWaitingFilter::Instance()),
-            &context.lookup, context.bounds(), network, lock, work_)),
+            &context.lookup, context.bounds(), network, lock, work_, numModules)),
           consumer_(new DynamicExecutor::ModuleConsumer(work_, &context.lookup, producer_))
         {
         }
@@ -83,7 +83,7 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
   if (Log::get().verbose())
     LOG_DEBUG("DMTNE::executeAll order received: " << order << std::endl);
 
-  DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock);
+  DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size());
   boost::thread execution(runner);
 }
 
