@@ -45,8 +45,6 @@ namespace SCIRun {
       {
         Log& ModuleConsumer::log_ = Log::get("consumer");
         Log& ModuleProducer::log_ = Log::get("producer");
-
-
       }
 
       /// @todo: templatize along with producer/consumer

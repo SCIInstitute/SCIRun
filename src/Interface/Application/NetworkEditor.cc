@@ -663,13 +663,13 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
 
 void NetworkEditor::executeAll()
 { 
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
-  {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      w->setAsWaiting();
-    }
-  }
+  //Q_FOREACH(QGraphicsItem* item, scene_->items())
+  //{
+  //  if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+  //  {
+  //    w->setAsWaiting();
+  //  }
+  //}
 
   controller_->executeAll(*this);
   //TODO: not sure about this right now.
@@ -680,13 +680,13 @@ void NetworkEditor::executeAll()
 void NetworkEditor::executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
 { 
   //TODO!!! related to graph analysis. Should go elsewhere anyway.
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
-  {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      w->setAsWaiting();
-    }
-  }
+  //Q_FOREACH(QGraphicsItem* item, scene_->items())
+  //{
+  //  if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+  //  {
+  //    w->setAsWaiting();
+  //  }
+  //}
 
   controller_->executeModule(module, *this);
   //TODO: not sure about this right now.

@@ -127,7 +127,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   inputPortLayout_(0),
   outputPortLayout_(0),
   editor_(ed),
-  deleting_(false)
+  deleting_(false),
+  defaultBackgroundColor_("lightgray;")
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -165,6 +166,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 
   connect(helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
+  theModule_->connectExecutionStateChanged(boost::bind(&ModuleWidget::moduleStateUpdated, this, _1));
+  connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
 
   setupModuleActions();
 
@@ -422,8 +425,6 @@ ModuleWidget::~ModuleWidget()
 
     if (dockable_)
     {
-      //dockable_->hide();
-      //dockable_->deleteLater();
       SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
       delete dockable_;
     }
@@ -444,12 +445,13 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
-    Q_EMIT backgroundColorUpdated("#AACCAA;");
+    std::cout << "ModuleWidget::execute" << std::endl;
+    //Q_EMIT backgroundColorUpdated("#AACCAA;");
     //colorLocked_ = true; //TODO
     timer_.restart();
     theModule_->do_execute();
     Q_EMIT updateProgressBarSignal(1);
-    Q_EMIT backgroundColorUpdated("lightgray;");
+    //Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
@@ -470,18 +472,37 @@ boost::signals2::connection ModuleWidget::connectErrorListener(const ErrorSignal
   return theModule_->connectErrorListener(subscriber);
 }
 
+void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
+{
+  std::cout << "ModuleWidget::updateColor" << std::endl;
+  switch (moduleState)
+  {
+  case (int)ModuleInterface::Waiting:
+    Q_EMIT backgroundColorUpdated("#CDBE70;");
+    break;
+  case (int)ModuleInterface::Executing:
+    Q_EMIT backgroundColorUpdated("#AACCAA;");
+    break;
+  case (int)ModuleInterface::Completed:
+    Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    break;
+  }
+}
+
 void ModuleWidget::updateBackgroundColor(const QString& color)
 {
+  std::cout << "ModuleWidget::updateBackgroundColor " << color.toStdString() << std::endl;
   if (!colorLocked_)
   {
     setStyleSheet("background-color: " + color);
   }
 }
 
-void ModuleWidget::setColorAsWaiting()
-{
-  updateBackgroundColor("#CDBE70;");
-}
+//void ModuleWidget::setColorAsWaiting()
+//{
+//  updateBackgroundColor("#CDBE70;");
+//  colorLocked_ = true;
+//}
 
 void ModuleWidget::setColorSelected()
 {
@@ -490,7 +511,7 @@ void ModuleWidget::setColorSelected()
 
 void ModuleWidget::setColorUnselected()
 {
-  updateBackgroundColor("lightgray;");
+  updateBackgroundColor(defaultBackgroundColor_);
 }
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;

@@ -122,6 +122,7 @@ size_t Module::num_output_ports() const
 
 bool Module::do_execute() throw()
 {
+  std::cout << "Module::do_execute" << std::endl;
   executeBegins_(id_);
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
@@ -410,6 +411,11 @@ boost::signals2::connection Module::connectErrorListener(const ErrorSignalType::
   return errorSignal_.connect(subscriber);
 }
 
+boost::signals2::connection Module::connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber)
+{
+  return executionStateChanged_.connect(subscriber);
+}
+
 void Module::setUiVisible(bool visible)
 {
   if (uiToggleFunc_)
@@ -444,42 +450,42 @@ void Module::removeInputPort(const PortId& id)
   iports_.remove(id);
 }
 
-void Module::setStateBoolFromAlgo(AlgorithmParameterName name)
+void Module::setStateBoolFromAlgo(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get(name).getBool());
 }
 
-void Module::setAlgoIntFromState(AlgorithmParameterName name)
+void Module::setAlgoIntFromState(const AlgorithmParameterName& name)
 {
   algo().set(name, get_state()->getValue(name).getInt());
 }
 
-void Module::setAlgoBoolFromState(AlgorithmParameterName name)
+void Module::setAlgoBoolFromState(const AlgorithmParameterName& name)
 {
   algo().set(name, get_state()->getValue(name).getBool());
 }
 
-void Module::setStateIntFromAlgo(AlgorithmParameterName name)
+void Module::setStateIntFromAlgo(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get(name).getInt());
 }
 
-void Module::setStateDoubleFromAlgo(AlgorithmParameterName name)
+void Module::setStateDoubleFromAlgo(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get(name).getDouble());
 }
 
-void Module::setAlgoDoubleFromState(AlgorithmParameterName name)
+void Module::setAlgoDoubleFromState(const AlgorithmParameterName& name)
 {
   algo().set(name, get_state()->getValue(name).getDouble());
 }
 
-void Module::setAlgoOptionFromState(AlgorithmParameterName name)
+void Module::setAlgoOptionFromState(const AlgorithmParameterName& name)
 {
   algo().set_option(name, get_state()->getValue(name).getString());
 }
 
-void Module::setStateStringFromAlgoOption(AlgorithmParameterName name)
+void Module::setStateStringFromAlgoOption(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get_option(name));
 }
@@ -491,6 +497,9 @@ ModuleInterface::ExecutionState Module::executionState() const
 
 void Module::setExecutionState(ModuleInterface::ExecutionState state)
 {
+  std::cout << get_id() << " setExecutionState old " << executionState_ << " new " << state << std::endl;
+  if (state != executionState_)
+    executionStateChanged_(state);
   executionState_ = state;
 }
 

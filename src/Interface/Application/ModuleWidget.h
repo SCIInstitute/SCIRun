@@ -83,7 +83,7 @@ public:
   static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
   
-  void setColorAsWaiting();
+  //void setColorAsWaiting();
   void setColorSelected();
   void setColorUnselected();
 
@@ -131,7 +131,9 @@ Q_SIGNALS:
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged();
   void noteChanged();
+  void moduleStateUpdated(int state);
 private Q_SLOTS:
+  void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
 private:
@@ -165,6 +167,7 @@ private:
   QHBoxLayout* outputPortLayout_;
   NetworkEditor* editor_;
   bool deleting_;
+  const QString defaultBackgroundColor_;
 };
 
 }
