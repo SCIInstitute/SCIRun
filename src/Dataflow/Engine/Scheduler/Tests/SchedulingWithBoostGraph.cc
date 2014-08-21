@@ -371,10 +371,19 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
     std::ostringstream ostr;
     ostr << order;
 
-    std::string expected = 
-      "0 SendTestMatrix:0\n"
-      "0 CreateMatrix:9\n"
-      "0 SendTestMatrix:1\n"
+#ifdef WIN32
+  std::string expectedFirstPart =
+    "0 SendTestMatrix:0\n"
+    "0 CreateMatrix:9\n"
+    "0 SendTestMatrix:1\n";
+#else
+  std::string expectedFirstPart =
+    "0 CreateMatrix:9\n"
+    "0 SendTestMatrix:1\n"
+    "0 SendTestMatrix:0\n";
+#endif
+  
+    std::string expected = expectedFirstPart +
       "1 EvaluateLinearAlgebraUnary:3\n"
       "1 EvaluateLinearAlgebraUnary:4\n"
       "1 ReportMatrixInfo:10\n"

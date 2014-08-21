@@ -35,7 +35,16 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-SimpleSink::SimpleSink() : previousId_(-1), checkForNewDataOnSetting_(false)
+namespace
+{
+  enum IdSentinelValues
+  {
+    UNSET = -2,
+    SET_ONCE = -1
+  };
+}
+
+SimpleSink::SimpleSink() : previousId_(UNSET), checkForNewDataOnSetting_(false)
 {
   instances_.insert(this);
 }
@@ -103,17 +112,16 @@ void SimpleSink::setData(DataProvider dataProvider)
   if (dataProvider_)
   {
     currentId_ = dataProvider_()->id();
-    if (-1 == previousId_)
-      previousId_ = *currentId_;
-    LOG_DEBUG("SS::setData: currentId set to " << *currentId_);
-  }
-
-  if (checkForNewDataOnSetting_ && dataProvider_)
-  {
-    if (hasChanged())
+    if (UNSET == previousId_)
     {
-      /*emit*/ dataHasChanged_(dataProvider_());
+      previousId_ = SET_ONCE;
+      if (checkForNewDataOnSetting_)
+        dataHasChanged_(dataProvider_());
     }
+    else
+      if (checkForNewDataOnSetting_ && hasChanged())
+        dataHasChanged_(dataProvider_());
+    LOG_DEBUG("SS::setData: currentId set to " << *currentId_);
   }
 }
 
@@ -130,9 +138,15 @@ bool SimpleSink::hasChanged() const
     return false;
   }
 
-  if (previousId_ == -1)
+  if (previousId_ == UNSET)
   {
-    LOG_DEBUG("SS::hasChanged returns true, previousId is None");
+    LOG_DEBUG("SS::hasChanged returns false, previousId is UNSET");
+    return false;
+  }
+  if (previousId_ == SET_ONCE)
+  {
+    LOG_DEBUG("SS::hasChanged returns true, previousId is SET_ONCE, but changed to current");
+    previousId_ = *currentId_;
     return true;
   }
   LOG_DEBUG("SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_);
