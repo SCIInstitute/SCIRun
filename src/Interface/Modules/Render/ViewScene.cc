@@ -185,36 +185,61 @@ void ViewSceneDialog::viewBarButtonClicked()
 }
 
 //------------------------------------------------------------------------------
-void ViewSceneDialog::viewChangedPosX(int index)
+void ViewSceneDialog::viewAxisSelected(int index)
 {
-	viewBarButtonClicked();
+	
+	mUpVectorBox->clear();
+	mUpVectorBox->addItem("------");
+	switch(index)
+	{
+	case 0:
+		break;
+	case 1:
+		mUpVectorBox->addItem("+Y");
+		mUpVectorBox->addItem("-Y");
+		mUpVectorBox->addItem("+Z");
+		mUpVectorBox->addItem("-Z");
+		break;
+	case 2:
+		mUpVectorBox->addItem("+X");
+		mUpVectorBox->addItem("-X");
+		mUpVectorBox->addItem("+Z");
+		mUpVectorBox->addItem("-Z");
+		break;
+	case 3:
+		mUpVectorBox->addItem("+X");
+		mUpVectorBox->addItem("-X");
+		mUpVectorBox->addItem("+Y");
+		mUpVectorBox->addItem("-Y");
+		break;
+	case 4:
+		mUpVectorBox->addItem("+Y");
+		mUpVectorBox->addItem("-Y");
+		mUpVectorBox->addItem("+Z");
+		mUpVectorBox->addItem("-Z");
+		break;
+	case 5:
+		mUpVectorBox->addItem("+X");
+		mUpVectorBox->addItem("-X");
+		mUpVectorBox->addItem("+Z");
+		mUpVectorBox->addItem("-Z");
+		break;
+	case 6:
+		mUpVectorBox->addItem("+X");
+		mUpVectorBox->addItem("-X");
+		mUpVectorBox->addItem("+Y");
+		mUpVectorBox->addItem("-Y");
+		break;
+	}
+	
 }
 
-void ViewSceneDialog::viewChangedPosY(int index)
+//------------------------------------------------------------------------------
+void ViewSceneDialog::viewVectorSelected(int index)
 {
 	viewBarButtonClicked();
+	//mDownViewBox->setCurrentIndex(0);
 }
-
-void ViewSceneDialog::viewChangedPosZ(int index)
-{
-	viewBarButtonClicked();
-}
-
-void ViewSceneDialog::viewChangedNegX(int index)
-{
-	viewBarButtonClicked();
-}
-
-void ViewSceneDialog::viewChangedNegY(int index)
-{
-	viewBarButtonClicked();
-}
-
-void ViewSceneDialog::viewChangedNegZ(int index)
-{
-	viewBarButtonClicked();
-}
-
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar() 
@@ -297,47 +322,31 @@ void ViewSceneDialog::addViewBar()
 
 void ViewSceneDialog::addViewOptions()
 {
-	QComboBox* posXCombo = createViewBox("Look Down +X Axis", "Up Vector +Y", "Up Vector -Y", "Up Vector +Z", "Up Vector -Z");	
-	connect(posXCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedPosX(int)));
-	mViewBar->addWidget(posXCombo);
+	QLabel* axisLabel = new QLabel();
+	axisLabel->setText("Look Down Axis: ");
+	mViewBar->addWidget(axisLabel);
+
+	mDownViewBox = new QComboBox();
+	mDownViewBox->addItem("------");
+	mDownViewBox->addItem("+X");
+	mDownViewBox->addItem("+Y");
+	mDownViewBox->addItem("+Z");
+	mDownViewBox->addItem("-X");
+	mDownViewBox->addItem("-Y");
+	mDownViewBox->addItem("-Z");
+	connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
+	mViewBar->addWidget(mDownViewBox);	
 	mViewBar->addSeparator();
 
-	QComboBox* posYCombo = createViewBox("Look Down +Y Axis", "Up Vector +X", "Up Vector -X", "Up Vector +Z", "Up Vector -Z");	
-	connect(posYCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedPosY(int)));
-	mViewBar->addWidget(posYCombo);
-	mViewBar->addSeparator();
+	QLabel* vectorLabel = new QLabel();
+	vectorLabel->setText("Up Vector: ");
+	mViewBar->addWidget(vectorLabel);
 
-	QComboBox* posZCombo = createViewBox("Look Down +Z Axis", "Up Vector +X", "Up Vector -X", "Up Vector +Y", "Up Vector -Y");	
-	connect(posZCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedPosZ(int)));
-	mViewBar->addWidget(posZCombo);
-	mViewBar->addSeparator();
-
-	QComboBox* negXCombo = createViewBox("Look Down -X Axis", "Up Vector +Y", "Up Vector -Y", "Up Vector +Z", "Up Vector -Z");	
-	connect(negXCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedNegX(int)));
-	mViewBar->addWidget(negXCombo);
-	mViewBar->addSeparator();
-
-	QComboBox* negYCombo = createViewBox("Look Down -Y Axis", "Up Vector +X", "Up Vector -X", "Up Vector +Z", "Up Vector -Z");	
-	connect(negYCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedNegY(int)));
-	mViewBar->addWidget(negYCombo);
-	mViewBar->addSeparator();
-
-	QComboBox* negZCombo = createViewBox("Look Down -Z Axis",  "Up Vector +X", "Up Vector -X", "Up Vector +Y", "Up Vector -Y");	
-	connect(negZCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(viewChangedNegZ(int)));
-	mViewBar->addWidget(negZCombo);
-	mViewBar->addSeparator();
-}
-
-QComboBox* ViewSceneDialog::createViewBox(QString title, QString element1, QString element2, QString element3, QString element4)
-{
-	QComboBox* combo = new QComboBox();
-	combo->addItem(title);
-	combo->addItem(element1);
-	combo->addItem(element2);
-	combo->addItem(element3);
-	combo->addItem(element4);
-
-	return combo;
+	mUpVectorBox = new QComboBox();
+	mUpVectorBox->addItem("------");
+	connect(mUpVectorBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewVectorSelected(int)));
+	mViewBar->addWidget(mUpVectorBox);	
+	mViewBar->addSeparator();	
 }
 
 void ViewSceneDialog::showEvent(QShowEvent *evt)
