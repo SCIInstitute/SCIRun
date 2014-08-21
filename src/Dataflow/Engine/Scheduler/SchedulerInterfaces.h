@@ -69,8 +69,6 @@ namespace Engine {
     boost::function<int()> errorCodeRetriever_;
   };
 
-  typedef boost::function<bool(SCIRun::Dataflow::Networks::ModuleHandle)> ModuleFilter;
-
   struct SCISHARE ExecutionContext : boost::noncopyable
   {
     explicit ExecutionContext(const Networks::NetworkInterface& net);
@@ -78,13 +76,13 @@ namespace Engine {
                      const Networks::ExecutableLookup& lkp) : network(net), lookup(lkp) {}
 
     ExecutionContext(const Networks::NetworkInterface& net,
-                     const Networks::ExecutableLookup& lkp, ModuleFilter filter) : network(net), lookup(lkp), additionalFilter(filter) {}
+                     const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter) : network(net), lookup(lkp), additionalFilter(filter) {}
 
     const Networks::NetworkInterface& network;
     const Networks::ExecutableLookup& lookup;
-    ModuleFilter additionalFilter;
+    Networks::ModuleFilter additionalFilter;
 
-    ModuleFilter addAdditionalFilter(ModuleFilter filter) const;
+    Networks::ModuleFilter addAdditionalFilter(Networks::ModuleFilter filter) const;
     const ExecutionBounds& bounds() const;
 
     //todo: seems like a better place for this

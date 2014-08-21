@@ -328,10 +328,11 @@ void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
     currentExecutor_ = executorFactory_->createDefault();
   }
 
-  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_);
+  ExecuteAllModules filter;
+  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
   currentExecutor_->execute(context);
 
-  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting);
+  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
 }
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup)
@@ -345,7 +346,7 @@ void NetworkEditorController::executeModule(const ModuleHandle& module, const Ex
   ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
   currentExecutor_->execute(context);
 
-  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting);
+  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const

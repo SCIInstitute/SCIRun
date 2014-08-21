@@ -56,7 +56,7 @@ namespace Engine {
   class SCISHARE NetworkGraphAnalyzer : boost::noncopyable
   {
   public:
-    NetworkGraphAnalyzer(const SCIRun::Dataflow::Networks::NetworkInterface& network, const ModuleFilter& moduleFilter, bool precompute);
+    NetworkGraphAnalyzer(const Networks::NetworkInterface& network, const Networks::ModuleFilter& moduleFilter, bool precompute);
 
     NetworkGraph::EdgeVector constructEdgeListFromNetwork();
     void computeExecutionOrder();
@@ -69,8 +69,8 @@ namespace Engine {
     NetworkGraph::ComponentMap connectedComponents();
 
   private:
-    const SCIRun::Dataflow::Networks::NetworkInterface& network_;
-    ModuleFilter moduleFilter_;
+    const Networks::NetworkInterface& network_;
+    Networks::ModuleFilter moduleFilter_;
 
     boost::bimap<Networks::ModuleId, int> moduleIdLookup_;
     NetworkGraph::ExecutionOrder order_;

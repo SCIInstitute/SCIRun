@@ -29,6 +29,7 @@
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
 
 using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
 
 ExecutionBounds ExecutionContext::executionBounds_;
 

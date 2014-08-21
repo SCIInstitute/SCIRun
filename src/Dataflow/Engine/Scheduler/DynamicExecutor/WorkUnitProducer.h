@@ -47,7 +47,7 @@ namespace SCIRun {
         class SCISHARE ModuleProducer : public ProducerInterface, boost::noncopyable
         {
         public:
-          ModuleProducer(const ModuleFilter& filter,
+          ModuleProducer(const Networks::ModuleFilter& filter,
             const Networks::ExecutableLookup* lookup, const ExecutionBounds& bounds, 
             const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
           scheduler_(filter),
