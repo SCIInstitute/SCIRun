@@ -85,7 +85,7 @@ namespace Engine {
     ModuleFilter additionalFilter;
 
     ModuleFilter addAdditionalFilter(ModuleFilter filter) const;
-    const ExecutionBounds& bounds() const { return executionBounds_; }
+    const ExecutionBounds& bounds() const;
 
     //todo: seems like a better place for this
     static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
