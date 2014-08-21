@@ -215,6 +215,12 @@ void SRInterface::doAutoView()
 }
 
 //------------------------------------------------------------------------------
+void SRInterface::setView(const glm::ivec2 &pos)
+{
+    mCamera->setView(pos);
+}
+
+//------------------------------------------------------------------------------
 void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
 {
 }

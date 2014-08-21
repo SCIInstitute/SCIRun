@@ -128,6 +128,9 @@ public:
   /// Performs an autoview.
   void doAutoView();
 
+  /// Sets the selected View of the window
+  void setView(const glm::ivec2& pos);
+
 private:
 
   class SRObject

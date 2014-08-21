@@ -77,6 +77,9 @@ public:
   /// Perform autoview.
   void doAutoView(const Core::Geometry::BBox& bbox);
 
+  /// Sets the selected View of the window
+  void setView(const glm::ivec2& pos);
+
   /// Default camera settings
   /// @{
   static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
