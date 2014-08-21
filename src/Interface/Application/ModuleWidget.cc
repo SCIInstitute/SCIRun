@@ -77,7 +77,7 @@ namespace Gui {
         << separatorAction(parent)
         << disabled(new QAction("Execute", parent))
         << new QAction("Help", parent)
-        << new QAction("Notes", parent)
+        << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
         << disabled(new QAction("Replace With->(TODO)", parent))
         << new QAction("Show Log", parent)
@@ -150,6 +150,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   optionsButton_->setVisible(theModule_->has_ui());
 
   executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  connect(executePushButton_, SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
 
   int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
   int extraWidth = pixelWidth - moduleWidthThreshold;
@@ -284,6 +285,7 @@ void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));
   connect(port, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
+  connect(port, SIGNAL(connectionNoteChanged()), this, SIGNAL(noteChanged()));
 }
 
 void ModuleWidget::addOutputPortsToLayout()
@@ -564,7 +566,13 @@ void ModuleWidget::launchDocumentation()
 
 void ModuleWidget::updateNote(const Note& note)
 {
-  setCurrentNote(note);
+  setCurrentNote(note, false);
+  Q_EMIT noteUpdated(note);
+}
+
+void ModuleWidget::updateNoteFromFile(const Note& note)
+{
+  setCurrentNote(note, true);
   Q_EMIT noteUpdated(note);
 }
 
@@ -596,4 +604,10 @@ void ModuleWidget::hideUI()
 void ModuleWidget::showUI()
 {
   dockable_->show();
+}
+
+void ModuleWidget::executeButtonPushed()
+{
+  std::cout << "Execute button pushed on module " << moduleId_ << std::endl;
+  Q_EMIT executedManually(theModule_);
 }

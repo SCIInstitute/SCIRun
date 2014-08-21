@@ -101,7 +101,7 @@ SET(Modules_Legacy_Math_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_Legacy_Math ${Modules_Legacy_Math_HEADERS} ${Modules_Legacy_Math_SRCS})
+SCIRUN_ADD_LIBRARY(Modules_Legacy_Math ${Modules_Legacy_Math_HEADERS} ${Modules_Legacy_Math_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Math
   Core_Datatypes

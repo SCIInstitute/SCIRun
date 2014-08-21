@@ -97,6 +97,8 @@ public:
   virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber);
   virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber);
 
+  void updateNoteFromFile(const Note& note);
+
 public Q_SLOTS:
   virtual void execute();
   void toggleOptionsDialog();
@@ -120,6 +122,7 @@ Q_SIGNALS:
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();
+  void executedManually(const SCIRun::Dataflow::Networks::ModuleHandle& module);
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
@@ -127,8 +130,10 @@ Q_SIGNALS:
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged();
+  void noteChanged();
 private Q_SLOTS:
   void updateBackgroundColor(const QString& color);
+  void executeButtonPushed();
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;

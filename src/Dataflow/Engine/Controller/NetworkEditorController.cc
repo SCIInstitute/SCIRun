@@ -54,13 +54,15 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, AlgorithmFactoryHandle af, ModulePositionEditor* mpg) : 
-  theNetwork_(new Network(mf, sf, af)),
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, 
+  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, NetworkEditorSerializationManager* nesm) : 
+  theNetwork_(new Network(mf, sf, af, reex)),
   moduleFactory_(mf), 
   stateFactory_(sf), 
   algoFactory_(af),
+  reexFactory_(reex),
   executorFactory_(executorFactory),
-  modulePositionEditor_(mpg),
+  serializationManager_(nesm),
   signalSwitch_(true)
 {
   dynamicPortManager_.reset(new DynamicPortManager(connectionAdded_, connectionRemoved_, this));
@@ -72,8 +74,8 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 #endif
 }
 
-NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg)
-  : theNetwork_(network), executorFactory_(executorFactory), modulePositionEditor_(mpg)
+NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
+  : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm)
 {
 }
 
@@ -269,7 +271,7 @@ boost::signals2::connection NetworkEditorController::connectPortRemoved(const Po
 
 NetworkFileHandle NetworkEditorController::saveNetwork() const
 {
-  NetworkToXML conv(modulePositionEditor_);
+  NetworkToXML conv(serializationManager_);
   return conv.to_xml_data(theNetwork_);
 }
 
@@ -279,7 +281,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
   {
     try
     {
-      NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, this);
+      NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
       theNetwork_ = conv.from_xml_data(xml->network);
       for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
@@ -296,10 +298,14 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
           connectionAdded_(cd);
         }
       }
-      if (modulePositionEditor_)
-        modulePositionEditor_->moveModules(xml->modulePositions);
+      if (serializationManager_)
+      {
+        serializationManager_->updateModulePositions(xml->modulePositions);
+        serializationManager_->updateModuleNotes(xml->moduleNotes);
+        serializationManager_->updateConnectionNotes(xml->connectionNotes);
+      }
       else
-        Log::get() << INFO <<  "module position editor is null, module positions at default" << std::endl;
+        Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;
     }
     catch (ExceptionBase& e)
     {

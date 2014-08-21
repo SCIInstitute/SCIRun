@@ -66,6 +66,17 @@ void HasNotes::connectNoteEditorToAction(QAction* action)
 void HasNotes::connectUpdateNote(QObject* obj)
 {
   QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
+  QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SIGNAL(noteChanged()));
+}
+
+void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
+{
+  currentNote_ = note;
+  if (updateEditor)
+  {
+    noteEditor_.setNoteHtml(note.html_);
+    noteEditor_.setNoteFontSize(note.fontSize_);
+  }
 }
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) : 
@@ -135,7 +146,13 @@ void NoteDisplayHelper::updateNotePosition()
   if (note_ && item_)
   {
     auto position = positioner_->currentPosition() + relativeNotePosition();
-    //std::cout << "updating position to: " << position.x() << " , " << position.y() << std::endl;
     note_->setPos(position);
   }
+}
+
+Note NoteDisplayHelper::currentNote() const
+{
+  if (note_)
+    return Note(note_->toHtml(), note_->toPlainText(), note_->font().pointSizeF(), notePosition_);
+  return Note();
 }

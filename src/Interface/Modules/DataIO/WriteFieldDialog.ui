@@ -69,7 +69,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>Choose file to save</string>
+    <string>Choose file to write</string>
    </property>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">

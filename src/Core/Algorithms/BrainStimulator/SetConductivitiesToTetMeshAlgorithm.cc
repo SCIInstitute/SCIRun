@@ -1,33 +1,35 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
-
-   The MIT License
-
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
-   University of Utah.
-
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
-
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
-
-   Author : Spencer Frisby, Moritz Dannhauer
-   Date   : May 2014
+ For more information, please see: http://software.sci.utah.edu
+ 
+ The MIT License
+ 
+ Copyright (c) 2014 Scientific Computing and Imaging Institute,
+ University of Utah.
+ 
+ License for the specific language governing rights and limitations under
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the "Software"),
+ to deal in the Software without restriction, including without limitation
+ the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to whom the
+ Software is furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+ 
+ Author : Spencer Frisby, Moritz Dannhauer
+ Date   : May 2014
 */
+
+#include <iostream>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
@@ -36,61 +38,66 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <iostream>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Testing/Utils/MatrixTestUtilities.h>
-#include <boost/assign/std/vector.hpp>
+
+#include <Core/Logging/Log.h>
+
+#include <boost/assign.hpp>
 
 using namespace boost::assign;
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
 
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Skin() {return AlgorithmParameterName("Skin");}
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::SoftBone() {return AlgorithmParameterName("Soft Bone");}
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::HardBone() {return AlgorithmParameterName("Hard Bone");}
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::CSF() { return AlgorithmParameterName("CSF");}
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::GM() { return AlgorithmParameterName("GM");}
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::WM() { return AlgorithmParameterName("WM");}
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::Electrode() { return AlgorithmParameterName("Electrode");}
-AlgorithmParameterName SetConductivitiesToTetMeshAlgorithm::InternalAir() { return AlgorithmParameterName("InternalAir");}
+ALGORITHM_PARAMETER_DEF(BrainStimulator, Skin);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, SoftBone);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, HardBone);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, CSF);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, GM);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, WM);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, Electrode);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, InternalAir);
 
-AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::MESH("MESH");
-AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OUTPUTMESH("OUTPUTMESH");
+AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::InputField("InputField");
+AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OutputField("OutputField");
 
 SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
 {
   ElemLabelLookup += 1,2,3,4,5,6,7,8;
-  addParameter(Skin(),      0.43);    /// electrical conductivities (isotropic) default values based on the literature
-  addParameter(SoftBone(),     0.02856);
-  addParameter(HardBone(),     0.00640);
-  addParameter(CSF(),       1.79);
-  addParameter(GM(),        0.33);
-  addParameter(WM(),        0.142);
-  addParameter(Electrode(), 1.4);
-  addParameter(InternalAir(), 1e-6);
+
+  using namespace Parameters;
+  /// electrical conductivities (isotropic) default values based on the literature
+  addParameter(Skin,         0.43);
+  addParameter(SoftBone,     0.02856);
+  addParameter(HardBone,     0.00640);
+  addParameter(CSF,          1.79);
+  addParameter(GM,           0.33);
+  addParameter(WM,           0.142);
+  addParameter(Electrode,    1.4);
+  addParameter(InternalAir,  1e-6);
 }
 
 AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto mesh  = input.get<Field>(MESH);
- 
+  auto mesh  = input.get<Field>(InputField);
+  
   AlgorithmOutput output;
   
   FieldHandle output_field = run(mesh);
   
-  output[OUTPUTMESH] = output_field;;
-
+  output[OutputField] = output_field;
+  
   return output;
 }
 
 FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
 {
-  /// making sure the field is not null
+  // making sure the field is not null
   if (!fh)
     THROW_ALGORITHM_INPUT_ERROR("Field supplied is empty ");
   
@@ -104,18 +111,36 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   if (vfield->is_nodata())
     THROW_ALGORITHM_INPUT_ERROR("Field supplied contained no data ");
   
-  /// making sure the field is not in vector format
+  /// making sure the field is not in vector or tensor format
   if (!vfield->is_scalar())
     THROW_ALGORITHM_INPUT_ERROR("Function only supports scalar labels. ");
-     
-  /// array holding conductivities   
-  std::vector<double> conductivies;
-  conductivies += get(Skin()).getDouble(), get(SoftBone()).getDouble(), get(HardBone()).getDouble(),
-    get(CSF()).getDouble(), get(GM()).getDouble(), get(WM()).getDouble(), get(InternalAir()).getDouble(), get(Electrode()).getDouble();
+
+  using namespace Parameters;
+
+  Log::get() << DEBUG_LOG << "SetConductivitiesToTetMeshAlgorithm parameters:"
+  << "\n\tSkin = " << get(Skin).getDouble()
+  << "\n\tSoftBone = " << get(SoftBone).getDouble()
+  << "\n\tHardBone = " << get(HardBone).getDouble()
+  << "\n\tCSF = " << get(CSF).getDouble()
+  << "\n\tGM = " << get(GM).getDouble()
+  << "\n\tWM = " << get(WM).getDouble()
+  << "\n\tElectrode = " << get(Electrode).getDouble()
+  << "\n\tInternalAir = " << get(InternalAir).getDouble() << std::endl;
+
+  /// array holding conductivities
+  /// @todo: enable when VS2013 is supported
+//  std::vector<double> conductivities = {get(Skin).getDouble(), get(SoftBone).getDouble(), get(HardBone).getDouble(),
+//  get(CSF).getDouble(), get(GM).getDouble(), get(WM).getDouble(), get(Electrode).getDouble(), get(InternalAir).getDouble()};
+
+  // stopgap measure until VS2013 is supported
+  std::vector<double> conductivities;
+  conductivities += get(Skin).getDouble(), get(SoftBone).getDouble(), get(HardBone).getDouble(),
+  get(CSF).getDouble(), get(GM).getDouble(), get(WM).getDouble(), get(Electrode).getDouble(), get(InternalAir).getDouble();
+
   
-  //check if defined conductivities and lookup table are consistent
-  if (conductivies.size()!=ElemLabelLookup.size())
-     THROW_ALGORITHM_INPUT_ERROR("Defined conductivities and lookup table are inconsistent! ");
+  // check if defined conductivities and lookup table are consistent
+  if (conductivities.size() != ElemLabelLookup.size())
+    THROW_ALGORITHM_INPUT_ERROR("Defined conductivities and lookup table are inconsistent! ");
   
   /// replacing field value with conductivity value
   FieldHandle output = CreateField(fi, fh->mesh());
@@ -123,27 +148,28 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   int val = 0;
   int cnt = 0;
   
-  for (VMesh::Elem::index_type i=0; i < vfield->vmesh()->num_elems(); i++) /// loop over all tetrahedral elements
+  for (VMesh::Elem::index_type i = 0; i < vfield->vmesh()->num_elems(); i++) // loop over all tetrahedral elements
   {
     vfield->get_value(val, i);  //get the data value stored on the current element
     
-    bool found=false; /// boolean that indicates if element label was found in lookup
-    
-    for (size_t j = 0; j < ElemLabelLookup.size(); ++j) /// loop over lookup table and check if the current element has one of the desired labels, if not error
-    {   
-      if (val==ElemLabelLookup[j]) 
-       { 
-	ofield->set_value(conductivies[j], i); /// if so, set it to the isotropic conductivity value
-	found=true;
+    bool found = false; // boolean that indicates if element label was found in lookup
+
+     // loop over lookup table and check if the current element has one of the desired labels, if not error
+    for (size_t j = 0; j < ElemLabelLookup.size(); ++j)
+    {
+      if (val == ElemLabelLookup[j])
+      {
+        ofield->set_value(conductivities[j], i); // if so, set it to the isotropic conductivity value
+        found = true;
         break;
-       }
+      }
     }
     
     if (!found)
     {
-     THROW_ALGORITHM_INPUT_ERROR("Tetrahedral element label could not be found in lookup table. ");
-    } 
-    
+      THROW_ALGORITHM_INPUT_ERROR("Tetrahedral element label could not be found in lookup table. ");
+    }
+
     cnt++;
     if (cnt == 500)
     {
@@ -151,6 +177,6 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
       update_progress_max(i,vfield->vmesh()->num_elems());
     }
   }
-
+  
   return output;
 }

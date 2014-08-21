@@ -40,7 +40,7 @@ SET(Core_Datatypes_Mesh_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Datatypes_Mesh
+SCIRUN_ADD_LIBRARY(Core_Datatypes_Mesh
   ${Core_Datatypes_Mesh_HEADERS}
   ${Core_Datatypes_Mesh_SRCS}
 )

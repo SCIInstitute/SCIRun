@@ -72,8 +72,9 @@ namespace Engine {
       Networks::ModuleStateFactoryHandle sf, 
       ExecutionStrategyFactoryHandle executorFactory, 
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
-      Networks::ModulePositionEditor* mpg = 0);
-    explicit NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::ModulePositionEditor* mpg = 0);
+      Networks::ReexecuteStrategyFactoryHandle reexFactory,
+      Networks::NetworkEditorSerializationManager* nesm = 0);
+    explicit NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = 0);
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////Start: To be Pythonized/////////////////////////////
@@ -119,7 +120,7 @@ namespace Engine {
     void setExecutorType(int type);
 
     /// @todo: eek, getting bloated here. Figure out a better way to wire this one in.
-    void setModulePositionEditor(Networks::ModulePositionEditor* editor) { modulePositionEditor_ = editor; }
+    void setSerializationManager(Networks::NetworkEditorSerializationManager* nesm) { serializationManager_ = nesm; }
 
     const Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
 
@@ -130,9 +131,10 @@ namespace Engine {
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
     Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
+    Networks::ReexecuteStrategyFactoryHandle reexFactory_;
     ExecutionStrategyHandle currentExecutor_;
     ExecutionStrategyFactoryHandle executorFactory_;
-    Networks::ModulePositionEditor* modulePositionEditor_;
+    Networks::NetworkEditorSerializationManager* serializationManager_;
 
     ModuleAddedSignalType moduleAdded_;
     ModuleRemovedSignalType moduleRemoved_; //not used yet

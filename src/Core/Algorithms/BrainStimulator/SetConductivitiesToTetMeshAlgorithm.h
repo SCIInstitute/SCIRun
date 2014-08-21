@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2014 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -49,24 +49,25 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
-  
+
+  ALGORITHM_PARAMETER_DECL(Skin);
+  ALGORITHM_PARAMETER_DECL(SoftBone);
+  ALGORITHM_PARAMETER_DECL(HardBone);
+  ALGORITHM_PARAMETER_DECL(CSF);
+  ALGORITHM_PARAMETER_DECL(GM);
+  ALGORITHM_PARAMETER_DECL(WM);
+  ALGORITHM_PARAMETER_DECL(Electrode);
+  ALGORITHM_PARAMETER_DECL(InternalAir);
+
   class SCISHARE SetConductivitiesToTetMeshAlgorithm : public AlgorithmBase
   {
     public:
       SetConductivitiesToTetMeshAlgorithm();
       FieldHandle run(FieldHandle fh) const;
-      static AlgorithmParameterName Skin();
-      static AlgorithmParameterName SoftBone();
-      static AlgorithmParameterName HardBone();
-      static AlgorithmParameterName CSF();
-      static AlgorithmParameterName GM();
-      static AlgorithmParameterName WM();
-      static AlgorithmParameterName Electrode();
-      static AlgorithmParameterName InternalAir();
     
       AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-      static AlgorithmInputName MESH;
-      static AlgorithmOutputName OUTPUTMESH;
+      static AlgorithmInputName InputField;
+      static AlgorithmOutputName OutputField;
       
       std::vector<int> ElemLabelLookup; /// this module checks for those label data stored on the elements
       

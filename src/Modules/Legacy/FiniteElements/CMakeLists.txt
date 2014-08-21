@@ -43,7 +43,10 @@ SET(Modules_Legacy_FiniteElements_SRCS
   #BuildFEVolRHS.cc
 )
     
-ADD_LIBRARY(Modules_Legacy_FiniteElements  ${Modules_Legacy_FiniteElements_HEADERS} ${Modules_Legacy_FiniteElements_SRCS})
+SCIRUN_ADD_LIBRARY(Modules_Legacy_FiniteElements
+  ${Modules_Legacy_FiniteElements_HEADERS}
+  ${Modules_Legacy_FiniteElements_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_FiniteElements
  Dataflow_Network

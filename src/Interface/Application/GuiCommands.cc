@@ -128,6 +128,10 @@ bool FileOpenCommand::execute()
   {
     GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(e.what()));
   }
+  catch (std::exception& ex)
+  {
+    GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(ex.what()));
+  }
   catch (...)
   {
     GuiLogger::Instance().log("File load failed: Unknown exception in load_xml.");

@@ -29,8 +29,10 @@
 #include <iostream>
 #include <QtGui>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Logging;
 
 void TextEditAppender::log(const QString& message) const 
 {
@@ -40,21 +42,25 @@ void TextEditAppender::log(const QString& message) const
 void TextEditAppender::error(const std::string& msg) const
 {
   log("Error: " + QString::fromStdString(msg));
+  Log::get() << ERROR_LOG << msg << std::endl;
 }
 
 void TextEditAppender::warning(const std::string& msg) const
 {
   log("Warning: " + QString::fromStdString(msg));
+  Log::get() << WARN << msg << std::endl;
 }
 
 void TextEditAppender::remark(const std::string& msg) const
 {
   log("Remark: " + QString::fromStdString(msg));
+  Log::get() << NOTICE << msg << std::endl;
 }
 
 void TextEditAppender::status(const std::string& msg) const
 {
   log(QString::fromStdString(msg));
+  Log::get() << DEBUG_LOG << msg << std::endl;
 }
 
 QString TreeViewModuleGetter::text() const

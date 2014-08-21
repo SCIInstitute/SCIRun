@@ -51,12 +51,12 @@ IF(APPLE)
 
   ADD_EXECUTABLE(${APPLICATION_NAME} MACOSX_BUNDLE ${SCIRunMain_SOURCES})
 
-ELSE()
-# TODO: ELSE IF WIN32 with NSIS settings, generic Unix build
-
-  ADD_EXECUTABLE(${APPLICATION_NAME}
-    ${SCIRunMain_SOURCES}
-  )
+ELSEIF(WIN32)
+  IF(SCIRUN_SHOW_CONSOLE)
+    ADD_EXECUTABLE(${APPLICATION_NAME} ${SCIRunMain_SOURCES})
+  ELSE()
+    ADD_EXECUTABLE(${APPLICATION_NAME} WIN32 ${SCIRunMain_SOURCES})
+  ENDIF()
 
   # TODO: probably need this for Xcode
   IF(WIN32 AND MSVC)
@@ -66,19 +66,21 @@ ELSE()
                          POST_BUILD
                            COMMAND ${CMAKE_COMMAND}
                            ARGS -E copy_directory
-                           ${SCIRUN_CORE_BINARY_DIR}/Shaders
-                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}/Shaders
+                           ${SCIRun_BINARY_DIR}/Shaders
+                           ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/Shaders
       )
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
                          POST_BUILD
                            COMMAND ${CMAKE_COMMAND}
                            ARGS -E copy_directory
-                           ${SCIRUN_CORE_BINARY_DIR}/Assets
-                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}/Assets
+                           ${SCIRun_BINARY_DIR}/Assets
+                           ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/Assets
       )
     ENDFOREACH()
   ENDIF()
 
+ELSE()
+  ADD_EXECUTABLE(${APPLICATION_NAME} ${SCIRunMain_SOURCES})
 ENDIF()
 
 # TODO: Spire library linked against executable (shouldn't be necessary)?
@@ -89,13 +91,14 @@ TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
 IF(APPLE)
   SET(BUILD_BUNDLE TRUE)
 
-  IF(${AWK} MATCHES "NOTFOUND" OR ${SED} MATCHES "NOTFOUND" OR ${MACDEPLOYQT} MATCHES "NOTFOUND")
+  IF(${MACDEPLOYQT} MATCHES "NOTFOUND")
     SET(BUILD_BUNDLE FALSE)
-    MESSAGE(WARNING "Awk, sed and macdeployqt are required to build the SCIRun app bundle. Please ensure that both are installed and in your path.")
+    MESSAGE(WARNING "macdeployqt is required to build the SCIRun app bundle. Please ensure that both are installed and in your path.")
   ENDIF()
 ENDIF()
 
 IF(APPLE AND BUILD_BUNDLE)
+
 # TODO: Xcode settings go here, once Xcode build is working
 # IF(${CMAKE_GENERATOR} MATCHES "Xcode")
 
@@ -103,24 +106,45 @@ IF(APPLE AND BUILD_BUNDLE)
     # otool can be used to check list of dependent dylibs
     ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME} 
       POST_BUILD
-        # configure Qt libs
-        # TODO: starting with debug level output, reduce later...
-        COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
-
-        COMMAND cp -Rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
-
-        # configure shaders (copied from build directory)
-        COMMAND cp -Rf "${SCIRUN_CORE_BINARY_DIR}/Shaders" "${APPLICATION_NAME}.app/Contents/MacOS"
-        COMMAND chmod +x "${APPLICATION_NAME}.app/Contents/MacOS/Shaders"
-        COMMAND cp -Rf "${SCIRUN_CORE_BINARY_DIR}/Assets" "${APPLICATION_NAME}.app/Contents/MacOS"
-        COMMAND chmod +x "${APPLICATION_NAME}.app/Contents/MacOS/Assets"
-
-        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+       # configure Qt libs
+       # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
+       COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
+       COMMAND ${CMAKE_COMMAND} ARGS -E copy ${SCIRun_SOURCE_DIR}/CMake/qt.conf ${APPLICATION_NAME}.app/Contents/Resources
+       COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
+         ${SCIRun_BINARY_DIR}/Shaders ${APPLICATION_NAME}.app/Contents/MacOS/Shaders
+       COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
+         ${SCIRun_BINARY_DIR}/Assets ${APPLICATION_NAME}.app/Contents/MacOS/Assets
+       WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
     )
   ENDIF()
 
   INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
 
+ELSEIF(WIN32)
+
+  # Note: installer is created from Release build only!
+
+  GET_FILENAME_COMPONENT(QTCORENAME ${QT_QTCORE_LIBRARY_RELEASE} NAME_WE)
+  GET_FILENAME_COMPONENT(QTGUINAME ${QT_QTGUI_LIBRARY_RELEASE} NAME_WE)
+  GET_FILENAME_COMPONENT(QTOPENGLNAME ${QT_QTOPENGL_LIBRARY_RELEASE} NAME_WE)
+
+  INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION bin)
+  INSTALL(PROGRAMS
+    ${QT_BINARY_DIR}/${QTCORENAME}.dll
+    ${QT_BINARY_DIR}/${QTGUINAME}.dll
+    ${QT_BINARY_DIR}/${QTOPENGLNAME}.dll
+      DESTINATION bin)
+
+  INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Shaders" DESTINATION bin USE_SOURCE_PERMISSIONS)
+  INSTALL(DIRECTORY "${SCIRun_BINARY_DIR}/Assets" DESTINATION bin USE_SOURCE_PERMISSIONS)
+
 ENDIF()
+
+SET(NETWORKS_DESTINATION_DIR  "./SCIRunNetworks")
+
+# TODO: be careful of SCIRun network file extension
+# TODO: refactor when networks are reorganized
+INSTALL(DIRECTORY "${SCIRun_SOURCE_DIR}/ExampleNets/regression" DESTINATION ${NETWORKS_DESTINATION_DIR}
+  USE_SOURCE_PERMISSIONS FILES_MATCHING PATTERN "*.srn5")
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

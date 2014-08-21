@@ -130,8 +130,8 @@ public:
 
   /// Copy a weighted value without needing to know the type
   virtual void copy_weighted_value(VFData* fdata,
-                                   VMesh::index_type* vidx,
-                                   VMesh::weight_type* vw,
+                                   const VMesh::index_type* vidx,
+                                   const VMesh::weight_type* vw,
                                    VMesh::size_type sz,
                                    VMesh::index_type idx);
 
@@ -147,8 +147,8 @@ public:
 
   /// Copy a weighted edge value without needing to know the type
   virtual void copy_weighted_evalue(VFData* fdata,
-                                    VMesh::index_type* vidx,
-                                    VMesh::weight_type* vw,
+                                    const VMesh::index_type* vidx,
+                                    const VMesh::weight_type* vw,
                                     VMesh::size_type sz,
                                     VMesh::index_type idx);
 

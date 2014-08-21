@@ -63,17 +63,21 @@ class ExecutableLookup;
 class ExecutableObject;
 class NetworkXML;
 struct ModulePositions;
+struct ModuleNotes;
+struct ConnectionNotes;
 /// @todo: rename this
 struct NetworkFile;
 class NetworkGlobalSettings;
-class ModulePositionEditor;
+class NetworkEditorSerializationManager;
 class ConnectionMakerService;
 class NetworkEditorControllerInterface;
+class ReexecuteStrategyFactory;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
 typedef boost::shared_ptr<ModuleStateInterface> ModuleStateHandle;
 typedef boost::shared_ptr<ModuleStateInterfaceFactory> ModuleStateFactoryHandle;
+typedef boost::shared_ptr<ReexecuteStrategyFactory> ReexecuteStrategyFactoryHandle;
 typedef boost::shared_ptr<PortInterface> PortHandle;
 typedef boost::shared_ptr<Connection> ConnectionHandle;
 typedef boost::shared_ptr<InputPortInterface> InputPortHandle;
@@ -83,6 +87,8 @@ typedef boost::shared_ptr<DatatypeSinkInterface> DatatypeSinkInterfaceHandle;
 typedef boost::shared_ptr<DatatypeSourceInterface> DatatypeSourceInterfaceHandle;
 typedef boost::shared_ptr<NetworkXML> NetworkXMLHandle;
 typedef boost::shared_ptr<ModulePositions> ModulePositionsHandle;
+typedef boost::shared_ptr<ModuleNotes> ModuleNotesHandle;
+typedef boost::shared_ptr<ConnectionNotes> ConnectionNotesHandle;
 typedef boost::shared_ptr<NetworkFile> NetworkFileHandle;
 
 typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleDescriptionMap;

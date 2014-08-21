@@ -528,17 +528,9 @@ TEST_F(BasicParserTests, CreateFieldData_asin)
   auto ovfield = ofield->vfield();
   ovfield->minmax(min,max);
 
-#ifdef WIN32
   //check for NaN, if should be true
   //this TEST should checks NaN or specifically: -1.#IND
-  if(min != min && max != max)
-	    EXPECT_EQ(1 , 1);
-  else
-	  EXPECT_EQ(0, 1); 
-#else
-  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), min);
-  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), max); 
-#endif
+  EXPECT_TRUE(min != min && max != max);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_sinh)
@@ -652,21 +644,8 @@ TEST_F(BasicParserTests, CreateFieldData_acos)
   auto ovfield = ofield->vfield();
   ovfield->minmax(min,max);
 
-#ifdef WIN32
   //another check for nan/imaginary
-  if (min != min && max != max)
-  {
-	EXPECT_EQ(1, 1);
-	EXPECT_EQ(1, 1); 
-  }
-  else
-	  EXPECT_EQ(1,0); 
-#else
-  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), min);
-  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), max); 
-#endif
-  //EXPECT_NEAR(0, min, 1e-8);
-  //EXPECT_NEAR(0, max, 1e-8);
+  EXPECT_TRUE(min != min && max != max);
 }
 
 TEST_F(BasicParserTests, CreateFieldData_acosh)

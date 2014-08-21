@@ -58,7 +58,7 @@ MACRO(EXTERNAL_PYTHON_LIBRARY compress_type)
     # git checkout -q will silence message about detached head (harmless).
     ExternalProject_Add(Python_external
       PREFIX ${python_BINARY_DIR}
-      GIT_REPOSITORY "https://github.com/SCIInstitute/python.git"
+      GIT_REPOSITORY "https://github.com/CIBC-Internal/python.git"
       GIT_TAG ${boost_GIT_TAG}
       SOURCE_DIR ${python_SOURCE_DIR}
       BINARY_DIR ${python_BINARY_DIR}

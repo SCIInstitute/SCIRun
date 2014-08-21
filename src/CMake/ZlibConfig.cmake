@@ -52,7 +52,7 @@ MACRO(EXTERNAL_ZLIB_LIBRARY compress_type)
     # git checkout -q will silence message about detached head (harmless).
     ExternalProject_Add(Zlib_external
       PREFIX ${zlib_BINARY_DIR}
-      GIT_REPOSITORY "https://github.com/SCIInstitute/zlib.git"
+      GIT_REPOSITORY "https://github.com/CIBC-Internal/zlib.git"
       GIT_TAG ${zlib_GIT_TAG}
       SOURCE_DIR ${zlib_SOURCE_DIR}
       BINARY_DIR ${zlib_BINARY_DIR}

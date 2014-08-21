@@ -90,7 +90,7 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Thread_Legacy)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_LIBRARY(Core_Thread_Legacy 
+SCIRUN_ADD_LIBRARY(Core_Thread_Legacy 
   ${Core_Thread_Legacy_SRCS}
   ${Core_Thread_Legacy_HEADERS}
 )

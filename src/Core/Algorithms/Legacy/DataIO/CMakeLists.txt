@@ -47,7 +47,7 @@ SET(Core_Algorithms_Legacy_DataIO_HEADERS
 #      AnalyzeSliceImageIO.cc)
 #ENDIF(ITK_FOUND)
 
-ADD_LIBRARY(Core_Algorithms_Legacy_DataIO 
+SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_DataIO 
   ${Core_Algorithms_Legacy_DataIO_SRCS}
   ${Core_Algorithms_Legacy_DataIO_HEADERS}
 )

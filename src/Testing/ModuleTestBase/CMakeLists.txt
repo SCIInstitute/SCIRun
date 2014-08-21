@@ -36,7 +36,7 @@ SET(Testing_ModuleTestBase_SRCS
   ModuleTestBase.cc
 )
 
-ADD_LIBRARY(Testing_ModuleTestBase 
+SCIRUN_ADD_LIBRARY(Testing_ModuleTestBase 
   ${Testing_ModuleTestBase_HEADERS}
   ${Testing_ModuleTestBase_SRCS}
 )

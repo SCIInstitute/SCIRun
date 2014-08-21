@@ -60,7 +60,7 @@ TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
-  Network firstBasicNetwork(mf, sf, af);
+  Network firstBasicNetwork(mf, sf, af, ReexecuteStrategyFactoryHandle());
 
   ModuleLookupInfo sendInfo;
   sendInfo.module_name_ = "SendScalar";

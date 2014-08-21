@@ -10,6 +10,12 @@
     <height>35</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>171</width>
+    <height>35</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>SetFieldDataDialog</string>
   </property>

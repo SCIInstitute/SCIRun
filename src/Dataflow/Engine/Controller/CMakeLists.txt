@@ -50,7 +50,7 @@ SET(Engine_Network_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Engine_Network 
+SCIRUN_ADD_LIBRARY(Engine_Network 
   ${Engine_Network_HEADERS}
   ${Engine_Network_SRCS}
 )

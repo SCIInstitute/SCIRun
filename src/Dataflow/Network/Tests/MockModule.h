@@ -95,6 +95,7 @@ namespace SCIRun {
           virtual ModuleHandle create(const ModuleDescription& info);
           virtual void setStateFactory(ModuleStateFactoryHandle stateFactory);
           virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory);
+          virtual void setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory);
           virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
         private:
           size_t moduleCounter_;
