@@ -66,7 +66,7 @@ Module::Module(const ModuleLookupInfo& info,
   inputsChanged_(true),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
-  executionState_(ModuleInterface::Waiting)
+  executionState_(ModuleInterface::None)
 {
   iports_.set_module(this);
   oports_.set_module(this);
