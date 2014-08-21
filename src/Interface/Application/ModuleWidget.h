@@ -83,7 +83,6 @@ public:
   static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
   
-  //void setColorAsWaiting();
   void setColorSelected();
   void setColorUnselected();
 

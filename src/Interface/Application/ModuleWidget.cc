@@ -445,13 +445,10 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
-    std::cout << "ModuleWidget::execute" << std::endl;
-    //Q_EMIT backgroundColorUpdated("#AACCAA;");
     //colorLocked_ = true; //TODO
     timer_.restart();
     theModule_->do_execute();
     Q_EMIT updateProgressBarSignal(1);
-    //Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
@@ -474,7 +471,6 @@ boost::signals2::connection ModuleWidget::connectErrorListener(const ErrorSignal
 
 void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
-  std::cout << "ModuleWidget::updateColor" << std::endl;
   switch (moduleState)
   {
   case (int)ModuleInterface::Waiting:
@@ -491,18 +487,11 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 
 void ModuleWidget::updateBackgroundColor(const QString& color)
 {
-  std::cout << "ModuleWidget::updateBackgroundColor " << color.toStdString() << std::endl;
   if (!colorLocked_)
   {
     setStyleSheet("background-color: " + color);
   }
 }
-
-//void ModuleWidget::setColorAsWaiting()
-//{
-//  updateBackgroundColor("#CDBE70;");
-//  colorLocked_ = true;
-//}
 
 void ModuleWidget::setColorSelected()
 {

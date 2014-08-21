@@ -122,7 +122,6 @@ size_t Module::num_output_ports() const
 
 bool Module::do_execute() throw()
 {
-  std::cout << "Module::do_execute" << std::endl;
   executeBegins_(id_);
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
@@ -497,7 +496,7 @@ ModuleInterface::ExecutionState Module::executionState() const
 
 void Module::setExecutionState(ModuleInterface::ExecutionState state)
 {
-  std::cout << get_id() << " setExecutionState old " << executionState_ << " new " << state << std::endl;
+  //std::cout << get_id() << " setExecutionState old " << executionState_ << " new " << state << std::endl;
   if (state != executionState_)
     executionStateChanged_(state);
   executionState_ = state;
