@@ -372,6 +372,10 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
     std::ostringstream ostr;
     ostr << order;
 
+  
+  //TODO!!! today.
+  std::cout << "fix order within execution groups to be same across platform" << std::endl;
+  
 #ifdef WIN32
   std::string expectedFirstPart =
     "0 SendTestMatrix:0\n"
