@@ -341,7 +341,8 @@ void NetworkEditorController::executeModule(const ModuleHandle& module, const Ex
     currentExecutor_ = executorFactory_->createDefault();
   }
 
-  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_);
+  ExecuteSingleModule filter(module, *theNetwork_);
+  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
   currentExecutor_->execute(context);
 
   theNetwork_->setModuleExecutionState(ModuleInterface::Waiting);

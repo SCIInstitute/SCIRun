@@ -53,11 +53,11 @@ namespace SCIRun {
       class DynamicMultithreadedNetworkExecutorImpl
       {
       public:
-        DynamicMultithreadedNetworkExecutorImpl(const ExecutableLookup* lookup, const ExecutionBounds& bounds, const NetworkInterface* network, Mutex* lock) :
+        DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network, Mutex* lock) :
           work_(new DynamicExecutor::ModuleWorkQueue(network->nmodules())),
-            //TODO: need a way to compose filters here.
-          producer_(new DynamicExecutor::ModuleProducer(ModuleWaitingFilter::Instance(), lookup, bounds, network, lock, work_)),
-          consumer_(new DynamicExecutor::ModuleConsumer(work_, lookup, producer_))
+          producer_(new DynamicExecutor::ModuleProducer(context.addAdditionalFilter(ModuleWaitingFilter::Instance()),
+            &context.lookup, context.bounds(), network, lock, work_)),
+          consumer_(new DynamicExecutor::ModuleConsumer(work_, &context.lookup, producer_))
         {
         }
         void operator()() const
@@ -83,7 +83,7 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
   if (Log::get().verbose())
     LOG_DEBUG("DMTNE::executeAll order received: " << order << std::endl);
 
-  DynamicMultithreadedNetworkExecutorImpl runner(&context.lookup, context.bounds(), &network_, &lock);
+  DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock);
   boost::thread execution(runner);
 }
 
