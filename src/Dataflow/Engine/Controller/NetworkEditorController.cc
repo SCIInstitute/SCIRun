@@ -54,11 +54,11 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, 
-  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, NetworkEditorSerializationManager* nesm) : 
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory,
+  AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, NetworkEditorSerializationManager* nesm) :
   theNetwork_(new Network(mf, sf, af, reex)),
-  moduleFactory_(mf), 
-  stateFactory_(sf), 
+  moduleFactory_(mf),
+  stateFactory_(sf),
   algoFactory_(af),
   reexFactory_(reex),
   executorFactory_(executorFactory),
@@ -116,7 +116,7 @@ void NetworkEditorController::removeModule(const ModuleId& id)
   //before or after?
   // deciding on after: ProvenanceWindow/Manager wants the state *after* removal.
   /*emit*/ moduleRemoved_(id);
-  
+
   printNetwork();
 }
 
@@ -131,7 +131,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
 
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
-  
+
   BOOST_FOREACH(InputPortHandle input, module->inputPorts())
   {
     if (input->nconnections() == 1)
@@ -142,7 +142,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
       requestConnection(source.get(), newModule->getInputPort(input->id()).get());
     }
   }
-  
+
   return newModule;
 }
 
@@ -193,11 +193,11 @@ void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks
   ENSURE_NOT_NULL(from, "from port");
   ENSURE_NOT_NULL(to, "to port");
 
-  auto out = from->isInput() ? to : from;     
-  auto in = from->isInput() ? from : to;     
+  auto out = from->isInput() ? to : from;
+  auto in = from->isInput() ? from : to;
 
   ConnectionDescription desc(
-    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()), 
+    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()),
     IncomingConnectionDescription(in->getUnderlyingModuleId(), in->id()));
 
   PortConnectionDeterminer q;
@@ -207,7 +207,7 @@ void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks
       ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.portId_));
     if (!id.id_.empty())
       connectionAdded_(desc);
-    
+
     printNetwork();
   }
   else
@@ -251,12 +251,12 @@ boost::signals2::connection NetworkEditorController::connectInvalidConnection(co
 
 boost::signals2::connection NetworkEditorController::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
-  return ExecutionStrategy::connectNetworkExecutionStarts(subscriber);
+  return ExecutionContext::connectNetworkExecutionStarts(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
-  return ExecutionStrategy::connectNetworkExecutionFinished(subscriber);
+  return ExecutionContext::connectNetworkExecutionFinished(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectPortAdded(const PortAddedSignalType::slot_type& subscriber)
@@ -290,7 +290,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       }
       {
         auto disable(createDynamicPortSwitch());
-        //this is handled by NetworkXMLConverter now--but now the logic is convoluted. 
+        //this is handled by NetworkXMLConverter now--but now the logic is convoluted.
         //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
         BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
         {
@@ -327,13 +327,27 @@ void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
   {
     currentExecutor_ = executorFactory_->createDefault();
   }
-
-  currentExecutor_->executeAll(*theNetwork_, lookup ? *lookup : *theNetwork_);
-
-  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting);
+  
+  ExecuteAllModules filter;
+  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
+  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
+  currentExecutor_->execute(context);
 }
 
-NetworkHandle NetworkEditorController::getNetwork() const 
+void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup)
+{
+  if (!currentExecutor_)
+  {
+    currentExecutor_ = executorFactory_->createDefault();
+  }
+
+  ExecuteSingleModule filter(module, *theNetwork_);
+  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
+  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
+  currentExecutor_->execute(context);
+}
+
+NetworkHandle NetworkEditorController::getNetwork() const
 {
   return theNetwork_;
 }
@@ -344,7 +358,7 @@ void NetworkEditorController::setNetwork(NetworkHandle nh)
   theNetwork_ = nh;
 }
 
-NetworkGlobalSettings& NetworkEditorController::getSettings() 
+NetworkGlobalSettings& NetworkEditorController::getSettings()
 {
   return theNetwork_->settings();
 }

@@ -99,13 +99,17 @@ namespace Networks {
 
     enum ExecutionState 
     {
+      NotExecuted,
       Waiting,
       Executing,
       Completed
     };
 
+    typedef boost::signals2::signal<void(int)> ExecutionStateChangedSignalType;
+
     virtual ExecutionState executionState() const = 0;
     virtual void setExecutionState(ExecutionState state) = 0;
+    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
 
     /// @todo for deserialization
     virtual void set_id(const std::string& id) = 0;

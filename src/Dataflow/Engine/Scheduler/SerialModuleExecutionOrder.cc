@@ -58,3 +58,9 @@ bool SCIRun::Dataflow::Engine::operator!=(const ModuleExecutionOrder& lhs, const
 {
   return !(lhs == rhs);
 }
+
+std::ostream& SCIRun::Dataflow::Engine::operator<<(std::ostream& out, const ModuleExecutionOrder& order)
+{
+  std::copy(order.begin(), order.end(), std::ostream_iterator<ModuleExecutionOrder::value_type>(out, "\n"));
+  return out;
+}

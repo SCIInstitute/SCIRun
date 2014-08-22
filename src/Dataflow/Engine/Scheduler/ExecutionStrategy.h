@@ -35,25 +35,21 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-
+  
   class SCISHARE ExecutionStrategy
   {
   public:
     virtual ~ExecutionStrategy() {}
-    virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup) = 0;
+    virtual void execute(const ExecutionContext& context) = 0;
 
     enum Type
     {
       SERIAL,
       BASIC_PARALLEL,
       DYNAMIC_PARALLEL
-      // better parallel, etc
+      // next: pausable, then with loops
     };
 
-    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-  protected:
-    static ExecutionBounds executionBounds_;
   };
 
   typedef boost::shared_ptr<ExecutionStrategy> ExecutionStrategyHandle;

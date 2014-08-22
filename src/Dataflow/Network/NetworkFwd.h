@@ -33,6 +33,7 @@
 #define DATAFLOW_NETWORK_NETWORK_FWD_H 
 
 #include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 #include <map>
 
 namespace SCIRun {
@@ -92,6 +93,7 @@ typedef boost::shared_ptr<ConnectionNotes> ConnectionNotesHandle;
 typedef boost::shared_ptr<NetworkFile> NetworkFileHandle;
 
 typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleDescriptionMap;
+typedef boost::function<bool(SCIRun::Dataflow::Networks::ModuleHandle)> ModuleFilter;
 
 }}}
 

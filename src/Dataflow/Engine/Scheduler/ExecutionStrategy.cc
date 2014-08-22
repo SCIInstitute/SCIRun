@@ -29,14 +29,25 @@
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
 
 using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
 
-ExecutionBounds ExecutionStrategy::executionBounds_;
+ExecutionBounds ExecutionContext::executionBounds_;
 
-boost::signals2::connection ExecutionStrategy::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+boost::signals2::connection ExecutionContext::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
   return executionBounds_.executeStarts_.connect(subscriber);
 }
-boost::signals2::connection ExecutionStrategy::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+boost::signals2::connection ExecutionContext::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
   return executionBounds_.executeFinishes_.connect(subscriber);
+}
+
+ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
+{
+  if (!filter)
+    return additionalFilter;
+  if (!additionalFilter)
+    return filter;
+
+  return boost::bind(filter, _1) && boost::bind(additionalFilter, _1);
 }

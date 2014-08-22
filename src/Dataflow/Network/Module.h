@@ -95,6 +95,7 @@ namespace Networks {
 
     virtual ExecutionState executionState() const;
     virtual void setExecutionState(ExecutionState state);
+    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber);
 
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
@@ -236,14 +237,14 @@ namespace Networks {
     };
     void update_state(LegacyState) { /*TODO*/ }
 
-    void setStateBoolFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
-    void setStateIntFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
-    void setStateDoubleFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
-    void setStateStringFromAlgoOption(SCIRun::Core::Algorithms::AlgorithmParameterName name);
-    void setAlgoBoolFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
-    void setAlgoIntFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
-    void setAlgoDoubleFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
-    void setAlgoOptionFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setStateBoolFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setStateIntFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setStateDoubleFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setStateStringFromAlgoOption(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setAlgoBoolFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setAlgoIntFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setAlgoDoubleFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setAlgoOptionFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
 
     virtual size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
@@ -274,6 +275,7 @@ namespace Networks {
     ExecuteEndsSignalType executeEnds_;
     ErrorSignalType errorSignal_;
     boost::atomic<ExecutionState> executionState_;
+    ExecutionStateChangedSignalType executionStateChanged_;
     std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
 
     ModuleReexecutionStrategyHandle reexecute_;
