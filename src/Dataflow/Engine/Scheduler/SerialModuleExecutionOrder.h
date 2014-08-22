@@ -45,6 +45,7 @@ namespace Engine {
     typedef std::list<Networks::ModuleId> ModuleIdList;
     typedef ModuleIdList::iterator iterator;
     typedef ModuleIdList::const_iterator const_iterator;
+    typedef ModuleIdList::value_type value_type;
 
     ModuleExecutionOrder();
     explicit ModuleExecutionOrder(const ModuleIdList& list);
@@ -56,6 +57,7 @@ namespace Engine {
 
   SCISHARE bool operator==(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs);
   SCISHARE bool operator!=(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const ModuleExecutionOrder& order);
 
 }
 }}

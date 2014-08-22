@@ -27,8 +27,10 @@
 */
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Network/NetworkInterface.h>
 
 using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
 
 ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds& bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
 {
@@ -38,4 +40,17 @@ ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBo
 ScopedExecutionBoundsSignaller::~ScopedExecutionBoundsSignaller()
 {
   bounds_.executeFinishes_(errorCodeRetriever_());
+}
+
+const ExecuteAllModules& ExecuteAllModules::Instance()
+{
+  static ExecuteAllModules instance_;
+  return instance_;
+}
+
+ExecutionContext::ExecutionContext(const NetworkInterface& net) : network(net), lookup(net) {}
+
+const ExecutionBounds& ExecutionContext::bounds() const
+{
+  return executionBounds_;
 }

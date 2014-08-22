@@ -49,6 +49,7 @@ namespace Engine {
     ParallelModuleExecutionOrder();
     ParallelModuleExecutionOrder(const ParallelModuleExecutionOrder& other);
     explicit ParallelModuleExecutionOrder(const ModulesByGroup& map);
+    size_t size() const;
     const_iterator begin() const;
     const_iterator end() const;
     int minGroup() const;

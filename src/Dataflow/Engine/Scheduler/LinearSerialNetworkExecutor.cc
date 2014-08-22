@@ -62,8 +62,8 @@ namespace
   };
 }
 
-void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, ModuleExecutionOrder order, const ExecutionBounds& bounds)
+void LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order)
 {
-  LinearExecution runner(lookup, order, bounds);
+  LinearExecution runner(context.lookup, order, context.bounds());
   boost::thread execution(runner);
 }

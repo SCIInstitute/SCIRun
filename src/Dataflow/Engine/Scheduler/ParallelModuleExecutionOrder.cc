@@ -44,6 +44,11 @@ ParallelModuleExecutionOrder::ParallelModuleExecutionOrder(const ParallelModuleE
 {
 }
 
+size_t ParallelModuleExecutionOrder::size() const
+{
+  return map_.size();
+}
+
 ParallelModuleExecutionOrder::const_iterator ParallelModuleExecutionOrder::begin() const
 {
   return map_.begin();

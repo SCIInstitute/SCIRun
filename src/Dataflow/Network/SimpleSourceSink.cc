@@ -30,11 +30,21 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <boost/foreach.hpp>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-SimpleSink::SimpleSink() : checkForNewDataOnSetting_(false)
+namespace
+{
+  enum IdSentinelValues
+  {
+    UNSET = -2,
+    SET_ONCE = -1
+  };
+}
+
+SimpleSink::SimpleSink() : previousId_(UNSET), checkForNewDataOnSetting_(false)
 {
   instances_.insert(this);
 }
@@ -91,20 +101,27 @@ void SimpleSink::setData(DataProvider dataProvider)
   if (dataProvider_)
   {
     if (currentId_)
+    {
       previousId_ = *currentId_;
+      LOG_DEBUG("SS::setData: previousId set to " << previousId_);
+    }
   }
 
   dataProvider_ = dataProvider;
 
   if (dataProvider_)
-    currentId_ = dataProvider_()->id();
-
-  if (checkForNewDataOnSetting_ && dataProvider_)
   {
-    if (hasChanged())
+    currentId_ = dataProvider_()->id();
+    if (UNSET == previousId_)
     {
-      /*emit*/ dataHasChanged_(dataProvider_());
+      previousId_ = SET_ONCE;
+      if (checkForNewDataOnSetting_)
+        dataHasChanged_(dataProvider_());
     }
+    else
+      if (checkForNewDataOnSetting_ && hasChanged())
+        dataHasChanged_(dataProvider_());
+    LOG_DEBUG("SS::setData: currentId set to " << *currentId_);
   }
 }
 
@@ -117,14 +134,23 @@ bool SimpleSink::hasChanged() const
 {
   if (!dataProvider_)
   {
+    LOG_DEBUG("SS::hasChanged returns false, dataProvider is null");
     return false;
   }
 
-  if (!previousId_)
+  if (previousId_ == UNSET)
   {
+    LOG_DEBUG("SS::hasChanged returns false, previousId is UNSET");
+    return false;
+  }
+  if (previousId_ == SET_ONCE)
+  {
+    LOG_DEBUG("SS::hasChanged returns true, previousId is SET_ONCE, but changed to current");
+    previousId_ = *currentId_;
     return true;
   }
-  return *previousId_ != *currentId_;
+  LOG_DEBUG("SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_);
+  return previousId_ != *currentId_;
 }
 
 void SimpleSink::invalidateProvider()
