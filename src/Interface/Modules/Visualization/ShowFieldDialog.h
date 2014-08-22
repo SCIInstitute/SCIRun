@@ -53,7 +53,7 @@ public:
 private Q_SLOTS:
   void push();
   void pushColor();
-  void pushNodeType();
+  //void pushNodeType();
   void assignDefaultMeshColor();
 private:
   QColor defaultMeshColor_;
