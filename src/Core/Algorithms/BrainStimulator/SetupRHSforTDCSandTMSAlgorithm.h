@@ -32,32 +32,37 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
-  
+
+  ALGORITHM_PARAMETER_DECL(ElectrodeTableValues);
+  ALGORITHM_PARAMETER_DECL(ELECTRODE_VALUES);
+
   class SCISHARE SetupRHSforTDCSandTMSAlgorithm : public AlgorithmBase
   {
   public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
-
+    SetupRHSforTDCSandTMSAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
+    SCIRun::Core::Datatypes::DenseMatrixHandle run(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
 
-  private:
-  
+    static AlgorithmInputName MESH;
+    static AlgorithmInputName ELECTRODE_COUNT;   
+    static AlgorithmInputName SCALP_TRI_SURF_MESH;
+    static AlgorithmInputName ELECTRODE_TRI_SURF_MESH;
+    static AlgorithmInputName ELECTRODE_SPONGE_LOCATION_AVR;    
+    static AlgorithmOutputName ELECTRODE_ELEMENT;
+    static AlgorithmOutputName ELECTRODE_ELEMENT_TYPE;
+    static AlgorithmOutputName ELECTRODE_ELEMENT_DEFINITION;
+    static AlgorithmOutputName ELECTRODE_CONTACT_IMPEDANCE;
+    static AlgorithmOutputName RHS;
     
+    static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
+    SCIRun::Core::Datatypes::DenseMatrixHandle create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const;
+    boost::tuple<Datatypes::DenseMatrixHandle> create_lhs(FieldHandle mesh, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
   };
 
 }}}}

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
-    <height>302</height>
+    <width>529</width>
+    <height>340</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>650</width>
-     <height>281</height>
+     <width>511</width>
+     <height>321</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -33,236 +33,41 @@
      <string/>
     </property>
     <attribute name="title">
-     <string>Simulation</string>
+     <string>TDCS Electrode Setup</string>
     </attribute>
-    <widget class="QPushButton" name="pushButton_3">
-     <property name="geometry">
-      <rect>
-       <x>270</x>
-       <y>220</y>
-       <width>131</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>NEXT STEP &gt;&gt;</string>
-     </property>
-    </widget>
-    <widget class="QWidget" name="verticalLayoutWidget_5">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>0</y>
-       <width>201</width>
-       <height>111</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
-      <item>
-       <widget class="QGroupBox" name="groupBox_6">
-        <property name="title">
-         <string>Solve simulation for ...</string>
-        </property>
-        <widget class="QRadioButton" name="radioButton_6">
-         <property name="geometry">
-          <rect>
-           <x>30</x>
-           <y>50</y>
-           <width>102</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string> tDCS alone</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="radioButton_7">
-         <property name="geometry">
-          <rect>
-           <x>30</x>
-           <y>70</y>
-           <width>102</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>TMS alone</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="radioButton_8">
-         <property name="geometry">
-          <rect>
-           <x>30</x>
-           <y>30</y>
-           <width>121</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>tDCS and TMS</string>
-         </property>
-        </widget>
-       </widget>
-      </item>
-     </layout>
-    </widget>
     <widget class="QWidget" name="verticalLayoutWidget_6">
      <property name="geometry">
       <rect>
-       <x>220</x>
-       <y>0</y>
-       <width>421</width>
-       <height>211</height>
+       <x>10</x>
+       <y>10</y>
+       <width>481</width>
+       <height>271</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
-       <widget class="QGroupBox" name="groupBox_7">
-        <property name="title">
-         <string>Injected Current Pattern (right hand side)</string>
+       <widget class="QTableWidget" name="electrode_tableWidget">
+        <property name="minimumSize">
+         <size>
+          <width>411</width>
+          <height>91</height>
+         </size>
         </property>
-        <widget class="QTableWidget" name="tableWidget_5">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>20</y>
-           <width>411</width>
-           <height>91</height>
-          </rect>
-         </property>
-         <row>
-          <property name="text">
-           <string>1</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>2</string>
-          </property>
-         </row>
-         <column>
-          <property name="text">
-           <string>Electrode</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Injecting?</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Current intensity [mA]</string>
-          </property>
-         </column>
-         <item row="0" column="0">
-          <property name="text">
-           <string>Fpz</string>
-          </property>
-         </item>
-         <item row="0" column="1">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="checkState">
-           <enum>Checked</enum>
-          </property>
-         </item>
-         <item row="0" column="2">
-          <property name="text">
-           <string>2</string>
-          </property>
-         </item>
-         <item row="1" column="0">
-          <property name="text">
-           <string>PointElc1</string>
-          </property>
-         </item>
-         <item row="1" column="1">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="checkState">
-           <enum>Checked</enum>
-          </property>
-         </item>
-         <item row="1" column="2">
-          <property name="text">
-           <string>-2</string>
-          </property>
-         </item>
-        </widget>
-        <widget class="QTableWidget" name="tableWidget_6">
-         <property name="geometry">
-          <rect>
-           <x>0</x>
-           <y>110</y>
-           <width>411</width>
-           <height>91</height>
-          </rect>
-         </property>
-         <row>
-          <property name="text">
-           <string>1</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>2</string>
-          </property>
-         </row>
-         <column>
-          <property name="text">
-           <string>Coil</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Injecting?</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Current [A/mus]</string>
-          </property>
-         </column>
-         <item row="0" column="0">
-          <property name="text">
-           <string>Coil1</string>
-          </property>
-         </item>
-         <item row="0" column="1">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="checkState">
-           <enum>Checked</enum>
-          </property>
-         </item>
-         <item row="0" column="2">
-          <property name="text">
-           <string>2</string>
-          </property>
-         </item>
-         <item row="1" column="0">
-          <property name="text">
-           <string>Coil2</string>
-          </property>
-         </item>
-         <item row="1" column="1">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="checkState">
-           <enum>Checked</enum>
-          </property>
-         </item>
-         <item row="1" column="2">
-          <property name="text">
-           <string>-2</string>
-          </property>
-         </item>
-        </widget>
+        <attribute name="horizontalHeaderVisible">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="horizontalHeaderCascadingSectionResizes">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>150</number>
+        </attribute>
+        <attribute name="horizontalHeaderMinimumSectionSize">
+         <number>27</number>
+        </attribute>
+        <attribute name="verticalHeaderCascadingSectionResizes">
+         <bool>false</bool>
+        </attribute>
        </widget>
       </item>
      </layout>
