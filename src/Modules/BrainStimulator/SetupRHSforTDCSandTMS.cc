@@ -42,7 +42,6 @@ using namespace SCIRun::Dataflow::Networks;
 SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookupInfo("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(MESH);
- INITIALIZE_PORT(ELECTRODE_COUNT);
  INITIALIZE_PORT(SCALP_TRI_SURF_MESH);
  INITIALIZE_PORT(ELECTRODE_TRI_SURF_MESH);
  INITIALIZE_PORT(ELECTRODE_SPONGE_LOCATION_AVR);
@@ -60,8 +59,7 @@ void SetupRHSforTDCSandTMSModule::setStateDefaults()
 
 void SetupRHSforTDCSandTMSModule::execute()
 { 
-  auto elc_coil_pos_and_normal = getRequiredInput(MESH);
-  auto elc_count = getRequiredInput(ELECTRODE_COUNT);
+  auto mesh = getRequiredInput(MESH);
   auto scalp_tri_surf = getRequiredInput(SCALP_TRI_SURF_MESH);
   auto elc_tri_surf = getRequiredInput(ELECTRODE_TRI_SURF_MESH);
   auto elc_sponge_location = getRequiredInput(ELECTRODE_SPONGE_LOCATION_AVR);
@@ -72,7 +70,11 @@ void SetupRHSforTDCSandTMSModule::execute()
  
   if (needToExecute())
   {
-    auto output = algo().run_generic(make_input((MESH, elc_coil_pos_and_normal)(ELECTRODE_COUNT, elc_count)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
+    auto output = algo().run_generic(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
+    sendOutputFromAlgorithm(ELECTRODE_ELEMENT, output);
+    sendOutputFromAlgorithm(ELECTRODE_ELEMENT_TYPE, output);
+    sendOutputFromAlgorithm(ELECTRODE_ELEMENT_DEFINITION, output);
+    sendOutputFromAlgorithm(ELECTRODE_CONTACT_IMPEDANCE, output);
     sendOutputFromAlgorithm(RHS, output);
   }
 }
