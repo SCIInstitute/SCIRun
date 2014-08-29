@@ -25,7 +25,102 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/SplitFieldByConnectingRegion.cc
+#include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
+
+ModuleLookupInfo SplitFieldByConnectedRegion::staticInfo_("SplitFieldByConnectedRegion", "NewField", "SCIRun");
+
+SplitFieldByConnectedRegion::SplitFieldByConnectedRegion() 
+  : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField1);
+}
+
+void SplitFieldByConnectedRegion::setStateDefaults()
+{
+/*
+  setStateBoolFromAlgo(Parameters::NoInnerBoundary);
+  setStateBoolFromAlgo(Parameters::DisconnectBoundaries); */
+}
+
+
+
+void SplitFieldByConnectedRegion::execute()
+{
+  // Define local handles of data objects:
+/*  auto ifield = getRequiredInput(InputField);
+  auto elemLink = getOptionalInput(ElemLink);
+  auto minValue = getOptionalInput(MinValue);
+  auto maxValue = getOptionalInput(MaxValue);
+
+ if (needToExecute())
+  {
+    update_state(Executing);
+
+    if (minValue && *minValue)
+    {
+      double minrange = (*minValue)->value();
+      get_state()->setValue(Parameters::MinRange, minrange);
+      get_state()->setValue(Parameters::Domain, minrange);  //??
+    }
+    if (maxValue && *maxValue)
+    {
+      double maxrange = (*maxValue)->value();
+      get_state()->setValue(Parameters::MaxRange, maxrange);
+    }
+
+    auto state = get_state();
+
+    setAlgoIntFromState(Parameters::MinRange);
+    setAlgoIntFromState(Parameters::MaxRange);
+    setAlgoIntFromState(Parameters::Domain);
+    setAlgoBoolFromState(Parameters::UseRange);
+    setAlgoBoolFromState(Parameters::AddOuterBoundary);
+    setAlgoBoolFromState(Parameters::InnerBoundaryOnly);
+    setAlgoBoolFromState(Parameters::NoInnerBoundary);
+    setAlgoBoolFromState(Parameters::DisconnectBoundaries);
+
+    if (!state->getValue(Parameters::UseRange).getBool())
+    {
+      int guiValue = state->getValue(Parameters::Domain).getInt();
+      algo().set(Parameters::UseRange, true);
+      algo().set(Parameters::MinRange, guiValue);
+      algo().set(Parameters::MaxRange, guiValue);
+    }
+      
+    auto output = algo().run_generic(make_input((InputField, ifield)(ElemLink, optionalAlgoInput(elemLink))));
+    */
+  if (needToExecute())
+  {
+   update_state(Executing);
+   AlgorithmOutput output;
+   sendOutputFromAlgorithm(OutputField1, output);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Core/Algorithms/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Core/Datatypes/Bundle.h>
@@ -119,5 +214,5 @@ void SplitFieldByConnectedRegion::execute()
 }
 
 } // End namespace ModelCreation
-
+ #endif
 

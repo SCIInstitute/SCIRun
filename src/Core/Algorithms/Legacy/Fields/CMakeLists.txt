@@ -150,7 +150,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MeshDerivatives/GetCentroids.cc
   MeshDerivatives/GetFieldBoundaryAlgo.cc
   #MeshDerivatives/GetBoundingBox.cc
-  #MeshDerivatives/SplitByConnectedRegion.cc
+  MeshDerivatives/SplitByConnectedRegion.cc
   #RefineMesh/RefineMesh.cc
   ResampleMesh/ResampleRegularMesh.cc
   #ResampleMesh/PadRegularMesh.cc

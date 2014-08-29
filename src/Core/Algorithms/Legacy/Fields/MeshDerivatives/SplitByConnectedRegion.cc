@@ -26,13 +26,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
-#include <Core/Datatypes/FieldInformation.h>
+AlgorithmInputName SplitFieldByConnectedRegionAlgo::InputField("InputField");
+AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField1("OutputField1");
 
+SplitFieldByConnectedRegionAlgo::SplitFieldByConnectedRegionAlgo() 
+{
+
+}
+
+bool SplitFieldByConnectedRegionAlgo::run(FieldHandle input, FieldHandle& output) const
+{
+
+ return true;
+}
+
+
+AlgorithmOutput SplitFieldByConnectedRegionAlgo::run_generic(const AlgorithmInput& input) const
+{
+ AlgorithmOutput output;
+ 
+ FieldHandle f1;
+ output[OutputField1]=f1;
+ 
+ return output; 
+}
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 namespace SCIRunAlgo {
 
 using namespace SCIRun;
@@ -66,7 +98,7 @@ class AscSortSizes : public std::binary_function<index_type,index_type,bool>
 };
 
 bool 
-SplitByConnectedRegionAlgo::
+SplitFieldByConnectedRegionAlgo::
 run(FieldHandle input, std::vector<FieldHandle>& output)
 {
   algo_start("SplitByConnectedRegion");
@@ -297,3 +329,4 @@ run(FieldHandle input, std::vector<FieldHandle>& output)
 }
 
 } // End namespace SCIRunAlgo
+#endif 

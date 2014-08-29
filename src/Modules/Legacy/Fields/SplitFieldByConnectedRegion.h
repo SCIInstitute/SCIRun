@@ -26,33 +26,41 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_LEGACY_FIELDS_SPLITFIELDBYCONNECTEDREGION_H__
+#define MODULES_LEGACY_FIELDS_SPLITFIELDBYCONNECTEDREGION_H__
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_SPLITBYCONNECTEDREGION_H
-#define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_SPLITBYCONNECTEDREGION_H 1
-
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Fields {
+  namespace Modules {
+    namespace Fields {
 
-class SCISHARE SplitFieldByConnectedRegionAlgo : public AlgorithmBase
-{
-public:
-  SplitFieldByConnectedRegionAlgo();
-  
-  static AlgorithmInputName InputField;
-  static AlgorithmOutputName OutputField1;
+      class SCISHARE SplitFieldByConnectedRegion : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        SplitFieldByConnectedRegion();
 
-  bool run(FieldHandle input, FieldHandle& output) const;
+        virtual void execute();
+        virtual void setStateDefaults();
 
-  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-};
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, OutputField1, LegacyField);
+/*	OUTPUT_PORT(1, OutputField2, LegacyField);
+        OUTPUT_PORT(2, OutputField3, LegacyField);
+        OUTPUT_PORT(3, OutputField4, LegacyField);
+        OUTPUT_PORT(4, OutputField5, LegacyField);
+        OUTPUT_PORT(5, OutputField6, LegacyField);
+        OUTPUT_PORT(6, OutputField7, LegacyField);
+        OUTPUT_PORT(7, OutputField8, LegacyField);*/
+ 
+         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
 
-}}}}
+    }
+  }
+}
 
-#endif 
+#endif
