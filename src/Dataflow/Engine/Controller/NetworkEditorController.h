@@ -89,6 +89,7 @@ namespace Engine {
     void removeConnection(const Networks::ConnectionId& id);
 
     void executeAll(const Networks::ExecutableLookup* lookup);
+    void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup);
 
     virtual Networks::NetworkFileHandle saveNetwork() const;
     virtual void loadNetwork(const Networks::NetworkFileHandle& xml);

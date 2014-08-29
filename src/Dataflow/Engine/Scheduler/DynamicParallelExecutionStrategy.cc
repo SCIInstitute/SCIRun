@@ -35,9 +35,10 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-void DynamicParallelExecutionStrategy::executeAll(const NetworkInterface& network, const ExecutableLookup& lookup)
+void DynamicParallelExecutionStrategy::execute(const ExecutionContext& context)
 {
-  BoostGraphParallelScheduler scheduler;
-  DynamicMultithreadedNetworkExecutor executor(network);
-  executeWithCycleCheck(scheduler, executor, network, lookup, executionBounds_);
+  auto filter = context.addAdditionalFilter(ExecuteAllModules::Instance());
+  BoostGraphParallelScheduler scheduler(filter);
+  DynamicMultithreadedNetworkExecutor executor(context.network);
+  executeWithCycleCheck(scheduler, executor, context);
 }

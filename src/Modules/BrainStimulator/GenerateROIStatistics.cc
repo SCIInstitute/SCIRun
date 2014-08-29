@@ -52,7 +52,7 @@ GenerateROIStatisticsModule::GenerateROIStatisticsModule() : Module(ModuleLookup
 
 void GenerateROIStatisticsModule::setStateDefaults()
 {
-  setStateStringFromAlgo(Parameters::PhysicalUnitStr);  
+  setStateStringFromAlgoOption(Parameters::PhysicalUnitStr);  
 }
 
 void GenerateROIStatisticsModule::execute()

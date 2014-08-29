@@ -39,7 +39,7 @@ namespace SCIRun {
       class SCISHARE DynamicParallelExecutionStrategy : public ExecutionStrategy
       {
       public:
-        virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup);
+        virtual void execute(const ExecutionContext& context) override;
       };
 
     }

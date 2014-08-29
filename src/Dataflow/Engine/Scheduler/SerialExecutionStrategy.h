@@ -42,7 +42,7 @@ namespace Engine {
   {
   public:
     SerialExecutionStrategy();
-    virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup);
+    virtual void execute(const ExecutionContext& context) override;
   private:
     boost::shared_ptr<SerialExecutionStrategyPrivate> impl_;
   };
