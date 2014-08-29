@@ -76,7 +76,7 @@ GenerateROIStatisticsAlgorithm::GenerateROIStatisticsAlgorithm()
 }
 
 /// the run function can deal with multiple inputs and performs the analysis for all ROIs in the atlas mesh and for the user specified ROI
-boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace, const std::string& AtlasMeshLabels, const Datatypes::DenseMatrixHandle specROI) const
+boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace, const std::string& AtlasMeshLabels, const DenseMatrixHandle specROI) const
 {
  DenseMatrixHandle output;
 

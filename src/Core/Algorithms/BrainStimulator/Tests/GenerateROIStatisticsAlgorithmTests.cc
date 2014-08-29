@@ -27,7 +27,7 @@
 */
  
 #include <gtest/gtest.h>
-
+#include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -117,9 +117,9 @@ TEST(GenerateROIStatisticsAlgorithm, ValidInput_TestAllROI)
    for (int j = 0; j < outputMatrix->cols(); j++)
        if (i==1 && j==1)
        {
-          if (!isnan((*outputMatrix)(i, j)))
+          if (!IsNan((*outputMatrix)(i, j)))
 	  {
-	    std::cout << "ERROR: Test on NaN failed !!!!!!!!!!!!!!!!!!!!" << std::endl;
+	    FAIL() << "ERROR: Test on NaN failed!" << std::endl;
 	  }
        } 
        else
