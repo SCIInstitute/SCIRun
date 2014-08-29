@@ -186,8 +186,15 @@ boost::tuple<DenseMatrixHandle, Variable> GenerateROIStatisticsAlgorithm::run(Fi
    if (value_count[j]!=0)
    {
     value_avr[j]/=value_count[j]; 
-    var[j]=static_cast<double>(1./(value_count[j]-1)*(Sxsqr[j]-2*value_avr[j]*Sx+value_count[j]*value_avr[j]*value_avr[j]));
-    stddev[j]=static_cast<double>(std::sqrt(var[j])); /// compute standard deviation, average, variance
+    if (value_count[j]>1)
+    {
+     var[j]=static_cast<double>(1./(value_count[j]-1)*(Sxsqr[j]-2*value_avr[j]*Sx+value_count[j]*value_avr[j]*value_avr[j]));
+     stddev[j]=static_cast<double>(std::sqrt(var[j])); /// compute standard deviation, average, variance
+    } else
+    {
+     var[j]=std::numeric_limits<double>::quiet_NaN();
+     stddev[j]=std::numeric_limits<double>::quiet_NaN();
+    }
    
     (*output)(j,0)=value_avr[j]; /// save statistical measures in output (DenseMatrix)
     (*output)(j,1)=stddev[j];
