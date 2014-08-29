@@ -59,7 +59,7 @@ void SplitFieldByConnectedRegion::setStateDefaults()
 
 void SplitFieldByConnectedRegion::execute()
 {
-  // Define local handles of data objects:
+ 
 /*  auto ifield = getRequiredInput(InputField);
   auto elemLink = getOptionalInput(ElemLink);
   auto minValue = getOptionalInput(MinValue);
