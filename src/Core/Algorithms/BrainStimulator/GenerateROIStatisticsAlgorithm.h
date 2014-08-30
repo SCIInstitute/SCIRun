@@ -26,6 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@file GenerateROIStatisticsAlgorithm
+///@brief The algorithm implements a statistical ROI analysis.
+///
+///@author
+/// Moritz Dannhauer
+///
+///@details
+/// The algorithm provides results for all ROIs (if radius in lower table is 0) specified as label numbers in the atlas mesh (second module input). Based on a location (x,y,z)
+/// provided in the lower GUI table the user can specify an own ROI. The algorithm uses this (x,y,z) location to determine the closest mesh element based on the element centers.
+/// A spherical ROI can be wrapped around that point (closest mesh element center) and an statistical analysis of all material in that sphere can be performed.
+/// If additionally, a material (lower GUI table, in Atlas Material #) was specified only the analysis is only performed for the specified material.
+/// In any case, if an material was specified but not found the algorithm outputs NaN. "0" or " "  as Atlas Material # is interpreted as any material label number. 
+/// If one material was present only as a single element the standard deviation (stddev.)
+
 #ifndef ALGORITHMS_MATH_GenerateROIStatisticsAlgorithm_H
 #define ALGORITHMS_MATH_GenerateROIStatisticsAlgorithm_H
 
@@ -40,24 +54,29 @@ namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
   
+  ALGORITHM_PARAMETER_DECL(ROITableValues);
+  ALGORITHM_PARAMETER_DECL(StatisticsTableValues);
+  ALGORITHM_PARAMETER_DECL(PhysicalUnitStr);
+  ALGORITHM_PARAMETER_DECL(CoordinateSpaceLabelStr);
+
   class SCISHARE GenerateROIStatisticsAlgorithm : public AlgorithmBase
   {
   public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
-
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
+    GenerateROIStatisticsAlgorithm();
+    static const AlgorithmInputName MeshDataOnElements;
+    static const AlgorithmInputName PhysicalUnit;
+    static const AlgorithmInputName AtlasMesh;
+    static const AlgorithmInputName AtlasMeshLabels;
+    static const AlgorithmInputName CoordinateSpace;
+    static const AlgorithmInputName CoordinateSpaceLabel;
+    static const AlgorithmInputName SpecifyROI;
+    static const AlgorithmOutputName StatisticalResults;
+    boost::tuple<Datatypes::DenseMatrixHandle, Variable> run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace=FieldHandle(), const std::string& AtlasMeshLabels="", const Datatypes::DenseMatrixHandle specROI=Datatypes::DenseMatrixHandle()) const;
+ 
   private:
-  
-    
+    std::vector<std::string> ConvertInputAtlasStringIntoVector(const  std::string& atlasLabels) const;
+    std::vector<bool> statistics_based_on_xyz_coodinates(const FieldHandle mesh, const FieldHandle CoordinateSpace, double x, double y, double z, double radius, int target_material) const;
   };
 
 }}}}

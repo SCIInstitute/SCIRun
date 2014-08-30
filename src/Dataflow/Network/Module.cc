@@ -474,6 +474,11 @@ void Module::setStateDoubleFromAlgo(const AlgorithmParameterName& name)
   get_state()->setValue(name, algo().get(name).getDouble());
 }
 
+void Module::setStateListFromAlgo(const AlgorithmParameterName& name)
+{
+  get_state()->setValue(name, algo().get(name).getList());
+}
+
 void Module::setAlgoDoubleFromState(const AlgorithmParameterName& name)
 {
   algo().set(name, get_state()->getValue(name).getDouble());
@@ -487,6 +492,11 @@ void Module::setAlgoOptionFromState(const AlgorithmParameterName& name)
 void Module::setStateStringFromAlgoOption(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get_option(name));
+}
+
+void Module::setAlgoListFromState(const AlgorithmParameterName& name)
+{
+  algo().set(name, get_state()->getValue(name).getList());
 }
 
 ModuleInterface::ExecutionState Module::executionState() const
