@@ -50,6 +50,7 @@
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
 #include <Interface/Modules/Fields/SplitFieldByDomainDialog.h>
+#include <Interface/Modules/Fields/SplitFieldByConnectedRegionDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
@@ -135,6 +136,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MapFieldDataOntoElems, MapFieldDataOntoElemsDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
+    ADD_MODULE_DIALOG(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionDialog)
   ;
 }
 

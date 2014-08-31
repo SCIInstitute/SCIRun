@@ -133,6 +133,8 @@ protected:
     "('InterfaceWithCleaver',           1,        0,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
     "('JoinFields',                     1,        0,                  0,              0,          1,              0,                    1,                  1,                              1,             0),"
     "('SplitFieldByDomain',             1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
+    "('SplitFieldByConnectedRegion,     1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
+  
     // Render                                                                                                                                                                                                
     "('ViewScene',                      1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
     // String                                                                                                                                                                                                
