@@ -43,7 +43,6 @@
 
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -70,7 +69,7 @@ public:
   static AlgorithmParameterName SortAscending();
   std::vector<FieldHandle> run(FieldHandle input) const;
 
-  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+  AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 };
 
 }}}}

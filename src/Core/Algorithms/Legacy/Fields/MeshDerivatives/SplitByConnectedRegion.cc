@@ -96,7 +96,7 @@ std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input)
  {
       THROW_ALGORITHM_INPUT_ERROR("Input mesh is empty.");
  }
-     
+  
  std::vector<FieldHandle> output;
  
    /// Figure out what the input type and output type have to be
@@ -315,10 +315,17 @@ std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input)
 AlgorithmOutput SplitFieldByConnectedRegionAlgo::run_generic(const AlgorithmInput& input) const
 {
  AlgorithmOutput output;
- auto mesh_ = input.get<Field>(InputField);
  
- if (!mesh_)  
+ std::cout << "0a" << std::endl;
+ 
+ auto mesh_ = input.get<Field>(Variables::InputField);
+ 
+ std::cout << "1a" << std::endl;
+ 
+ if (mesh_ == nullptr)  
      THROW_ALGORITHM_INPUT_ERROR("Input mesh is empty.");
+ 
+  std::cout << "2a" << std::endl;
  
  std::vector<FieldHandle> output_fields=run(mesh_);
   

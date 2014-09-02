@@ -233,4 +233,13 @@
    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/pts.fld");
   } 
   
+  FieldHandle SplitFieldByConnectedRegionModuleTetTests()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "splitfieldbyconnectedregion/splitfieldbyconnectedregion_tet.fld");
+  }
+  
+  FieldHandle SplitFieldByConnectedRegionModuleTriTests()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "splitfieldbyconnectedregion/splitfieldbyconnectedregion_tri.fld");
+  }
   
