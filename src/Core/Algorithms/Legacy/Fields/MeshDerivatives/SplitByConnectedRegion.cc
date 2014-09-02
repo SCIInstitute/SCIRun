@@ -316,16 +316,10 @@ AlgorithmOutput SplitFieldByConnectedRegionAlgo::run_generic(const AlgorithmInpu
 {
  AlgorithmOutput output;
  
- std::cout << "0a" << std::endl;
- 
  auto mesh_ = input.get<Field>(Variables::InputField);
  
- std::cout << "1a" << std::endl;
- 
- if (mesh_ == nullptr)  
+ if (!mesh_)  
      THROW_ALGORITHM_INPUT_ERROR("Input mesh is empty.");
- 
-  std::cout << "2a" << std::endl;
  
  std::vector<FieldHandle> output_fields=run(mesh_);
   
@@ -343,12 +337,19 @@ AlgorithmOutput SplitFieldByConnectedRegionAlgo::run_generic(const AlgorithmInpu
     output[OutputField1]=output_fields[0];
  if (output_fields.size() > 1) 
     output[OutputField2]=output_fields[1];
-/* if (output_fields.size() > 2) 
+ if (output_fields.size() > 2) 
     output[OutputField3]=output_fields[2];
  if (output_fields.size() > 3) 
-    output[OutputField4]=output_fields[3];*/
-
-
+    output[OutputField4]=output_fields[3];
+ if (output_fields.size() > 4) 
+    output[OutputField5]=output_fields[4];
+ if (output_fields.size() > 5) 
+    output[OutputField6]=output_fields[5];
+ if (output_fields.size() > 6) 
+    output[OutputField7]=output_fields[6];
+ if (output_fields.size() > 7) 
+    output[OutputField8]=output_fields[7];
+    
  return output; 
 }
 
