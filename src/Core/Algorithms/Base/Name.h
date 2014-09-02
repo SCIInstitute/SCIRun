@@ -25,30 +25,40 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraUnary.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#ifndef ALGORITHMS_BASE_NAME_H
+#define ALGORITHMS_BASE_NAME_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <string>
+#include <iosfwd>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
-  
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+namespace Core {
+namespace Algorithms {
+
+  struct SCISHARE Name
   {
-  public:
-    EvaluateLinearAlgebraUnaryModule();
-    virtual void execute();
-    virtual void setStateDefaults();
-    INPUT_PORT(0, InputMatrix, DenseMatrix);
-    OUTPUT_PORT(0, Result, DenseMatrix);
+    Name() : name_("_unspecified_") {}
+    explicit Name(const std::string& name);
+
+    std::string name() const { return name_; }
+    
+    bool operator<(const Name& rhs) const
+    {
+      return name_ < rhs.name_;
+    }
+
+    std::string name_;
   };
 
+  SCISHARE bool operator==(const Name& lhs, const Name& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const Name& name);
+    
+  typedef Name AlgorithmParameterName;
+  typedef Name AlgorithmInputName;
+  typedef Name AlgorithmOutputName;
+  
 }}}
 
 #endif

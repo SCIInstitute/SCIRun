@@ -25,28 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraUnary.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#ifndef ALGORITHMS_BASE_ALGORITHMPARAMETERHELPER_H
+#define ALGORITHMS_BASE_ALGORITHMPARAMETERHELPER_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <string>
+#include <boost/noncopyable.hpp>
+#include <boost/filesystem/path.hpp>
+#include <Core/Thread/Mutex.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
+namespace Core {
+namespace Algorithms {
   
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+  class SCISHARE AlgorithmParameterHelper : boost::noncopyable
   {
   public:
-    EvaluateLinearAlgebraUnaryModule();
-    virtual void execute();
-    virtual void setStateDefaults();
-    INPUT_PORT(0, InputMatrix, DenseMatrix);
-    OUTPUT_PORT(0, Result, DenseMatrix);
+    static void setDataDir(const boost::filesystem::path& path);
+    static boost::filesystem::path dataDir();
+    static void setDataDirPlaceholder(const std::string& str);
+    static std::string dataDirPlaceholder();
+    static Thread::Mutex lock_;
+  private:
+    static boost::filesystem::path dataDir_;
+    static std::string dataDirPlaceholder_;
   };
 
 }}}

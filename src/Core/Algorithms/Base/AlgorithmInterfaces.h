@@ -25,28 +25,42 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraUnary.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#ifndef ALGORITHMS_BASE_ALGORITHMINTERFACES_H
+#define ALGORITHMS_BASE_ALGORITHMINTERFACES_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <Core/Datatypes/HasId.h>
+#include <Core/Algorithms/Base/AlgorithmData.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
+namespace Core {
+namespace Algorithms {
   
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+  class SCISHARE AlgorithmInterface : public HasIntegerId
   {
   public:
-    EvaluateLinearAlgebraUnaryModule();
-    virtual void execute();
-    virtual void setStateDefaults();
-    INPUT_PORT(0, InputMatrix, DenseMatrix);
-    OUTPUT_PORT(0, Result, DenseMatrix);
+    virtual ~AlgorithmInterface() {}
+    
+    /*
+ @todo idea: make it mockable
+  
+    virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
+
+      ModuleParameterState: essentially a map of GuiVars. but need hooks for undo/redo and serialization
+      Input: tuple/heterogeneous vector of Datatypes
+      Output: tuple of Datatypes, possibly delay-executed
+    */
+
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
+  };
+
+  class SCISHARE AlgorithmParameterInterface
+  {
+  public:
+    virtual ~AlgorithmParameterInterface() {}
+    virtual bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) = 0;
+    virtual const AlgorithmParameter& get(const AlgorithmParameterName& key) const = 0;
   };
 
 }}}

@@ -25,29 +25,45 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraUnary.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#ifndef ALGORITHMS_BASE_ALGORITHMINPUTBUILDER_H
+#define ALGORITHMS_BASE_ALGORITHMINPUTBUILDER_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <Core/Algorithms/Base/AlgorithmData.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
+namespace Core {
+namespace Algorithms {
   
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+  class SCISHARE AlgoInputBuilder
   {
   public:
-    EvaluateLinearAlgebraUnaryModule();
-    virtual void execute();
-    virtual void setStateDefaults();
-    INPUT_PORT(0, InputMatrix, DenseMatrix);
-    OUTPUT_PORT(0, Result, DenseMatrix);
+    AlgoInputBuilder();
+    AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
+    AlgoInputBuilder& operator()(const AlgorithmParameterName& name, Datatypes::DatatypeHandle d)
+    {
+      return operator()(name.name(), d);
+    }
+    template <typename T>
+    AlgoInputBuilder& operator()(const std::string& name, const std::vector<T>& vec)
+    {
+      //BOOST_STATIC_ASSERT(boost::is_base_of<Datatypes::Datatype,T>::value);
+      map_[Name(name)] = upcast_range<Datatypes::Datatype>(vec);
+      return *this;
+    }
+    template <typename T>
+    AlgoInputBuilder& operator()(const AlgorithmParameterName& name, const std::vector<T>& vec)
+    {
+      return operator()(name.name(), vec);
+    }
+    AlgorithmInput build() const;
+  private:
+    AlgorithmData::Map map_;
   };
+
+  SCISHARE AlgorithmInput makeNullInput();
+
 
 }}}
 

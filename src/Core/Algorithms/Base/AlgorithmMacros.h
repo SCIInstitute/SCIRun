@@ -25,30 +25,31 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraUnary.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#ifndef ALGORITHMS_BASE_ALGORITHMMACROS_H
+#define ALGORITHMS_BASE_ALGORITHMMACROS_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <Core/Algorithms/Base/AlgorithmInputBuilder.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
-  
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
-  {
-  public:
-    EvaluateLinearAlgebraUnaryModule();
-    virtual void execute();
-    virtual void setStateDefaults();
-    INPUT_PORT(0, InputMatrix, DenseMatrix);
-    OUTPUT_PORT(0, Result, DenseMatrix);
-  };
+  namespace Core {
+    namespace Algorithms {
 
-}}}
+      template <typename T>
+      boost::shared_ptr<T> optionalAlgoInput(boost::optional<boost::shared_ptr<T>> opt)
+      {
+        return opt.get_value_or(boost::shared_ptr<T>());
+      }
+
+    }}}
+
+
+#define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() list .build()
+#define withInputData(list) make_input(list)
+#define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
+#define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
+#define ALGORITHM_PARAMETER_DECL(name) namespace Parameters { SCISHARE extern SCIRun::Core::Algorithms::AlgorithmParameterName _init_##name(); static const SCIRun::Core::Algorithms::AlgorithmParameterName& name(_init_##name()); }
+#define ALGORITHM_PARAMETER_DEF(ns, name) SCIRun::Core::Algorithms::AlgorithmParameterName SCIRun::Core::Algorithms::ns::Parameters::_init_##name() { return SCIRun::Core::Algorithms::AlgorithmParameterName(#name); }
 
 #endif

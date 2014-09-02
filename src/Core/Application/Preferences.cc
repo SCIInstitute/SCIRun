@@ -28,7 +28,7 @@
 
 #include <Core/Application/Preferences.h>
 #include <Core/Logging/Log.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmParameterHelper.h>
 #include <boost/filesystem.hpp>
 
 using namespace SCIRun::Core;

@@ -34,10 +34,15 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <Core/Utils/StringUtil.h>
 #include <boost/foreach.hpp>
+
+#include <Core/Utils/StringUtil.h>
+#include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmParameterHelper.h>
+#include <Core/Algorithms/Base/AlgorithmInputBuilder.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmFactory.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
 
@@ -343,3 +348,5 @@ std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Vari
 {
   return out << "[" << var.name_ << ", " << var.value_ << "]";
 }
+
+AlgorithmCollaborator::~AlgorithmCollaborator() {}

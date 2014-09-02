@@ -33,6 +33,7 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmFactory.h>
 #include <Dataflow/Network/ExecutableObject.h>
 #include <Core/Logging/LoggerFwd.h>
 #include <Dataflow/Network/share.h>

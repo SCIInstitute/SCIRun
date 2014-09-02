@@ -25,28 +25,32 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraUnary.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#ifndef ALGORITHMS_BASE_ALGORITHMLOGGER_H
+#define ALGORITHMS_BASE_ALGORITHMLOGGER_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <Core/Logging/LoggerInterface.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
-  
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+namespace Core {
+namespace Algorithms {
+
+  class SCISHARE AlgorithmLogger : public Core::Logging::LegacyLoggerInterface
   {
   public:
-    EvaluateLinearAlgebraUnaryModule();
-    virtual void execute();
-    virtual void setStateDefaults();
-    INPUT_PORT(0, InputMatrix, DenseMatrix);
-    OUTPUT_PORT(0, Result, DenseMatrix);
+    AlgorithmLogger();
+    ~AlgorithmLogger();
+    void setLogger(Core::Logging::LoggerHandle logger);
+
+    /// functions for the algorithm, so it can forward errors if needed
+    virtual void error(const std::string& error) const;
+    virtual void warning(const std::string& warning) const;
+    virtual void remark(const std::string& remark) const;
+    virtual void status(const std::string& status) const;
+  private:
+    Core::Logging::LoggerHandle logger_;
+    Core::Logging::LoggerHandle defaultLogger_;
   };
 
 }}}

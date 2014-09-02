@@ -25,30 +25,49 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraUnary.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#ifndef ALGORITHMS_BASE_ALGORITHMSTATUSREPORTER_H
+#define ALGORITHMS_BASE_ALGORITHMSTATUSREPORTER_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <string>
+#include <boost/function.hpp>
+#include <boost/noncopyable.hpp>
+#include <Core/Utils/ProgressReporter.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
+namespace Core {
+namespace Algorithms {
   
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+  /// @todo: integrate with logger type
+  class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
-    EvaluateLinearAlgebraUnaryModule();
-    virtual void execute();
-    virtual void setStateDefaults();
-    INPUT_PORT(0, InputMatrix, DenseMatrix);
-    OUTPUT_PORT(0, Result, DenseMatrix);
+    AlgorithmStatusReporter();
+    ~AlgorithmStatusReporter() {}
+        
+    virtual void report_start(const std::string& tag) const {}
+    virtual void report_end() const {}
+
+    virtual void update_progress(double percent) const { updaterFunc_(percent); }
+
+    typedef boost::function<void(double)> UpdaterFunc;
+    void setUpdaterFunc(UpdaterFunc func) { updaterFunc_ = func; }
+    UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
+  private:
+    UpdaterFunc updaterFunc_;
+    static UpdaterFunc defaultUpdaterFunc_;
   };
 
+  class SCISHARE ScopedAlgorithmStatusReporter : boost::noncopyable
+  {
+  public:
+    ScopedAlgorithmStatusReporter(const AlgorithmStatusReporter* asr, const std::string& tag);
+    ~ScopedAlgorithmStatusReporter();
+  private:
+    const AlgorithmStatusReporter* asr_;
+  };
+  
 }}}
 
 #endif

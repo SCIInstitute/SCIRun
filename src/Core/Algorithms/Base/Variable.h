@@ -25,30 +25,59 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraUnary.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#ifndef ALGORITHMS_BASE_ALGORITHMVARIABLE_H
+#define ALGORITHMS_BASE_ALGORITHMVARIABLE_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <string>
+#include <vector>
+#include <iosfwd>
+#include <boost/variant.hpp>
+#include <boost/filesystem/path.hpp>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/Option.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
+namespace Core {
+namespace Algorithms {
   
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+  class SCISHARE Variable
   {
   public:
-    EvaluateLinearAlgebraUnaryModule();
-    virtual void execute();
-    virtual void setStateDefaults();
-    INPUT_PORT(0, InputMatrix, DenseMatrix);
-    OUTPUT_PORT(0, Result, DenseMatrix);
+    /// @todo: expand this 
+    typedef boost::variant<
+      int,
+      double,
+      std::string,
+      bool,
+      AlgoOption,
+      std::vector<Variable>
+    > Value;
+
+    Variable() {}
+    Variable(const Name& name, const Value& value) : name_(name), value_(value) {}
+    Variable(const Name& name, const Datatypes::DatatypeHandle& value) : name_(name), data_(value) {}
+
+    Name name_;
+    Value value_;
+    Datatypes::DatatypeHandle data_;
+
+    int getInt() const;
+    double getDouble() const;
+    std::string getString() const;
+    boost::filesystem::path getFilename() const;
+    bool getBool() const;
+    Datatypes::DatatypeHandle getDatatype() const;
+    std::vector<Variable> getList() const;
+    AlgoOption getOption() const;
   };
 
+  SCISHARE bool operator==(const Variable& lhs, const Variable& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
+  
+  typedef Variable AlgorithmParameter;
+  
 }}}
 
 #endif
