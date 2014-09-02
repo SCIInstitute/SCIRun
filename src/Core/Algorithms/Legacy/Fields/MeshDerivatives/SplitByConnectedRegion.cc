@@ -92,7 +92,7 @@ std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input)
  bool sortDomainBySize = get(SortDomainBySize()).getBool();
  bool sortAscending = get(SortAscending()).getBool();
  
- if (input != nullptr)
+ if (!input)
  {
       THROW_ALGORITHM_INPUT_ERROR("Input mesh is empty.");
  }
@@ -200,7 +200,7 @@ std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input)
     for (VField::index_type q=0;q<num_elems;q++) if (elemmap[q] == p+1) ne++;
     
     mesh = CreateMesh(fi);
-    if (mesh == nullptr)
+    if (!mesh)
     {
       THROW_ALGORITHM_INPUT_ERROR("Could not create output field.");
     }
