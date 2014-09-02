@@ -279,12 +279,13 @@ bool AlgorithmParameterList::check_option(const AlgorithmParameterName& key, con
   return boost::iequals(value, currentValue);
 }
 
-void AlgorithmParameterList::dumpAlgoState() const
+void AlgorithmBase::dumpAlgoState() const
 {
   std::ostringstream ostr;
   ostr << "Algorithm state for " << typeid(*this).name() << " id#" << id() << std::endl;
   
-  BOOST_FOREACH(const ParameterMap::value_type& pair, parameters_)
+  auto range = std::make_pair(paramsBegin(), paramsEnd());
+  BOOST_FOREACH(const ParameterMap::value_type& pair, range)
   {
     ostr << "\t" << pair.first.name() << ": " << pair.second.value_ << std::endl;
   }

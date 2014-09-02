@@ -257,12 +257,18 @@ namespace Algorithms {
     */
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
+  };
+
+  class SCISHARE AlgorithmParameterInterface
+  {
+  public:
+    virtual ~AlgorithmParameterInterface() {}
     virtual bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) = 0;
     virtual const AlgorithmParameter& get(const AlgorithmParameterName& key) const = 0;
   };
 
   /// @todo: link this to ModuleState via meeting discussion
-  class SCISHARE AlgorithmParameterList : public AlgorithmInterface
+  class SCISHARE AlgorithmParameterList : public AlgorithmParameterInterface
   {
   public:
     AlgorithmParameterList();
@@ -277,11 +283,12 @@ namespace Algorithms {
     virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key) const;
 
   protected:
-    void dumpAlgoState() const;
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
     void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
-  private:
     typedef std::map<AlgorithmParameterName, AlgorithmParameter> ParameterMap;
+    ParameterMap::const_iterator paramsBegin() const { return parameters_.begin(); }
+    ParameterMap::const_iterator paramsEnd() const { return parameters_.end(); }
+  private:
     ParameterMap parameters_;
   };
 
@@ -313,11 +320,13 @@ namespace Algorithms {
 
   SCISHARE AlgorithmInput makeNullInput();
 
-  class SCISHARE AlgorithmBase : public AlgorithmParameterList, public AlgorithmLogger, public AlgorithmStatusReporter
+  class SCISHARE AlgorithmBase : public AlgorithmInterface, public AlgorithmParameterList, public AlgorithmLogger, public AlgorithmStatusReporter
   {
   public:
     virtual ~AlgorithmBase();
     AlgorithmOutput run(const AlgorithmInput& input) const { return run_generic(input); }
+  protected:
+    void dumpAlgoState() const;
   };
   
   class SCISHARE AlgorithmCollaborator
