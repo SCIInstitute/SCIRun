@@ -62,13 +62,13 @@ void PreferencesWindow::setRegressionTestDataDir()
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
 {
-  SCIRun::Core::Preferences::Instance().showModuleErrorDialogs = (state == 0);
+  SCIRun::Core::Preferences::Instance().showModuleErrorDialogs.setValue(state == 0);
   LOG_DEBUG("showModuleErrorDialogs is " << (state == 0));
 }
 
 void PreferencesWindow::updateSaveBeforeExecuteOption(int state)
 {
-  SCIRun::Core::Preferences::Instance().saveBeforeExecute = (state != 0);
+  SCIRun::Core::Preferences::Instance().saveBeforeExecute.setValue(state != 0);
   LOG_DEBUG("saveBeforeExecute is " << (state != 0));
 }
 

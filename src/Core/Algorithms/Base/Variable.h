@@ -35,6 +35,7 @@
 #include <boost/variant.hpp>
 #include <boost/filesystem/path.hpp>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/Option.h>
 #include <Core/Algorithms/Base/share.h>
 
@@ -88,6 +89,27 @@ namespace Algorithms {
   
   typedef boost::shared_ptr<Variable> VariableHandle;
 
-}}}
+}
+
+//type-converting bolt-on class template
+template <typename T>
+class TypedVariable : public Algorithms::Variable
+{
+public:
+  TypedVariable(const std::string& name, const T& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
+  operator T() const { throw "unspecialized type"; }
+};
+
+template <>
+class TypedVariable<bool> : public Algorithms::Variable
+{
+public:
+  TypedVariable(const std::string& name, const bool& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
+  operator bool() const { return getBool(); }
+};
+
+typedef TypedVariable<bool> BooleanVariable;
+
+}}
 
 #endif

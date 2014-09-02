@@ -654,7 +654,7 @@ void SCIRunMainWindow::readSettings()
   {
     bool mode = settings.value(newViewSceneMouseControls).toBool();
     GuiLogger::Instance().log("Setting read: newViewSceneMouseControls = " + QString::number(mode));
-    Core::Preferences::Instance().useNewViewSceneMouseControls = mode;
+    Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
   }
 
   const QString favoriteModules = "favoriteModules";
@@ -678,7 +678,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
-  settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls);
+  settings.setValue("newViewSceneMouseControls", (bool)Core::Preferences::Instance().useNewViewSceneMouseControls);
   settings.setValue("favoriteModules", favoriteModuleNames_);
 }
 

@@ -38,7 +38,7 @@ using namespace SCIRun::Core::Algorithms;
 CORE_SINGLETON_IMPLEMENTATION( Preferences );
 
 Preferences::Preferences() :
-  showModuleErrorDialogs(true), saveBeforeExecute(false), useNewViewSceneMouseControls(false)
+  showModuleErrorDialogs("showModuleErrorDialogs", true), saveBeforeExecute("saveBeforeExecute", false), useNewViewSceneMouseControls("useNewViewSceneMouseControls", false)
 {	
 }
 
@@ -56,8 +56,6 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path)
     Log::get() << WARN << "Data directory " << path << " does not exist." << std::endl;
   if (!boost::filesystem::is_directory(path))
     Log::get() << WARN << "Data directory " << path << " is not a directory." << std::endl;
-  //else
-  //  dataDir_ = boost::filesystem::canonical(dataDir_);
 
   if (dataDir_.string().back() == boost::filesystem::path::preferred_separator)
   {

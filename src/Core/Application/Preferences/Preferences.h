@@ -33,6 +33,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <Core/Utils/Singleton.h>
+#include <Core/Algorithms/Base/Variable.h>
 #include <Core/Application/Preferences/share.h>
 
 namespace SCIRun
@@ -49,9 +50,9 @@ namespace SCIRun
     public:
       /// @todo: reuse Seg3D state vars
 
-      bool showModuleErrorDialogs;
-      bool saveBeforeExecute;
-      bool useNewViewSceneMouseControls;
+      BooleanVariable showModuleErrorDialogs;
+      BooleanVariable saveBeforeExecute;
+      BooleanVariable useNewViewSceneMouseControls;
     
       std::string dataDirectoryPlaceholder() const;
 
