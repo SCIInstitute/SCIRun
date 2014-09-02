@@ -26,6 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///
+///@file SplitByConnectedRegion
+///@brief 
+/// Splits a domain into separate fields as defined by the input field's connectivity.
+///
+///@author
+/// Moritz Dannhauer (ported from SCIRun4) 
+///
+///@details
+/// The module separates mesh elements that are not connected and outputs the first 8 fields (chosen based on element size or ordering) or 
+/// all sub fields stored as a bundle.
 
 #ifndef CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_SPLITBYCONNECTEDREGION_H
 #define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_SPLITBYCONNECTEDREGION_H 1
@@ -47,8 +58,17 @@ public:
   
   static AlgorithmInputName InputField;
   static AlgorithmOutputName OutputField1;
-
-  bool run(FieldHandle input, FieldHandle& output) const;
+  static AlgorithmOutputName OutputField2;
+  static AlgorithmOutputName OutputField3;
+  static AlgorithmOutputName OutputField4; 
+  static AlgorithmOutputName OutputField5;
+  static AlgorithmOutputName OutputField6;
+  static AlgorithmOutputName OutputField7;
+  static AlgorithmOutputName OutputField8; 
+  
+  static AlgorithmParameterName SortDomainBySize();
+  static AlgorithmParameterName SortAscending();
+  std::vector<FieldHandle> run(FieldHandle input) const;
 
   virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 };

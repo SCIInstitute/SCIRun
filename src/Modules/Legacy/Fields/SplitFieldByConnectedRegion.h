@@ -26,6 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@file SplitFieldByConnectedRegion.h
+///@brief 
+/// Splits a domain into separate fields as defined by the input field's connectivity.
+///
+///@author
+/// Moritz Dannhauer (ported from SCIRun4) 
+///
+///@details
+/// This is simply the module that grabs the input field and passes it to the algorithm along with the GUI settings from the state object.
+/// After execution, it also receives the 8 output fields and the bundle which contains all sub fields that could be separated.
+
 #ifndef MODULES_LEGACY_FIELDS_SPLITFIELDBYCONNECTEDREGION_H__
 #define MODULES_LEGACY_FIELDS_SPLITFIELDBYCONNECTEDREGION_H__
 
@@ -38,7 +49,7 @@ namespace SCIRun {
 
       class SCISHARE SplitFieldByConnectedRegion : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
+        public Has8OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag>
       {
       public:
         SplitFieldByConnectedRegion();
@@ -48,15 +59,15 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputField1, LegacyField);
-/*	OUTPUT_PORT(1, OutputField2, LegacyField);
+	OUTPUT_PORT(1, OutputField2, LegacyField);
         OUTPUT_PORT(2, OutputField3, LegacyField);
         OUTPUT_PORT(3, OutputField4, LegacyField);
         OUTPUT_PORT(4, OutputField5, LegacyField);
         OUTPUT_PORT(5, OutputField6, LegacyField);
         OUTPUT_PORT(6, OutputField7, LegacyField);
-        OUTPUT_PORT(7, OutputField8, LegacyField);*/
+        OUTPUT_PORT(7, OutputField8, LegacyField);
  
-         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }

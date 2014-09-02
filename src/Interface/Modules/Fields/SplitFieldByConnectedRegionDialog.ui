@@ -21,7 +21,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">
-    <widget class="QCheckBox" name="rowCheckBox_">
+    <widget class="QCheckBox" name="SortDomainBySize">
      <property name="text">
       <string>Sort Domains by size</string>
      </property>
@@ -31,7 +31,7 @@
     </widget>
    </item>
    <item row="2" column="0" colspan="2">
-    <widget class="QCheckBox" name="columnCheckBox_">
+    <widget class="QCheckBox" name="SortAscending">
      <property name="text">
       <string>Sort Ascending</string>
      </property>

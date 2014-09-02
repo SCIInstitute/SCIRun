@@ -42,17 +42,9 @@ SplitFieldByConnectedRegionDialog::SplitFieldByConnectedRegionDialog(const std::
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-/*
-  addDoubleSpinBoxManager(VolumeScalingSpinBox_X_, InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X);
-  addDoubleSpinBoxManager(VolumeScalingSpinBox_Y_, InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y);
-  addDoubleSpinBoxManager(VolumeScalingSpinBox_Z_, InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z);
-  addCheckBoxManager(VerboseCheckBox_, InterfaceWithCleaverAlgorithm::VerboseCheckBox);
-  addCheckBoxManager(PaddingCheckBox_, InterfaceWithCleaverAlgorithm::PaddingCheckBox);
-
-  //TODO: change the algorithm layer to a single boolean for these two radio buttons. Right now the logic allows all 4 combinations. 
-  addCheckableButtonManager(AbsoluteVolumeScalingRadioButton_, InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton);
-  addCheckableButtonManager(RelativeVolumeScalingRadioButton_, InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton);
-  */
+  
+  addCheckBoxManager(SortDomainBySize, SplitFieldByConnectedRegionAlgo::SortDomainBySize());
+  addCheckBoxManager(SortAscending, SplitFieldByConnectedRegionAlgo::SortAscending());
 }                         
                           
 void SplitFieldByConnectedRegionDialog::pull()
