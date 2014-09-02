@@ -33,7 +33,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <Core/Utils/Singleton.h>
-#include <Core/Application/share.h>
+#include <Core/Application/Preferences/share.h>
 
 namespace SCIRun
 {

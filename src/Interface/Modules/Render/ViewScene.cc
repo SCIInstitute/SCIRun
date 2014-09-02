@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 

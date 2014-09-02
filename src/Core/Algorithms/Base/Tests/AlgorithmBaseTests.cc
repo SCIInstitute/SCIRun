@@ -28,7 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;

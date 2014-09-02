@@ -26,35 +26,26 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Application_SRCS
-  Application.cc
+SET(Core_Application_Preferences_SRCS
+  Preferences.cc
 )
 
-SET(Core_Application_HEADERS
-  Application.h
+SET(Core_Application_Preferences_HEADERS
+  Preferences.h
   share.h
 )
 
-SCIRUN_ADD_LIBRARY(Core_Application 
-  ${Core_Application_HEADERS}
-  ${Core_Application_SRCS}
+SCIRUN_ADD_LIBRARY(Core_Application_Preferences
+  ${Core_Application_Preferences_HEADERS}
+  ${Core_Application_Preferences_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Core_Application
-  Core_CommandLine
-  Engine_Network
-  Modules_Factory
-  Algorithms_Factory
-  Dataflow_State
+TARGET_LINK_LIBRARIES(Core_Application_Preferences
   Core_Logging
-  Core_IEPlugin
+  Algorithms_Base
   ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Application)
+  ADD_DEFINITIONS(-DBUILD_Core_Application_Preferences)
 ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
-
-ADD_SUBDIRECTORY(Preferences)

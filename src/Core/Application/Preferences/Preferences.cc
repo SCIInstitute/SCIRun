@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Core/Algorithms/Base/AlgorithmParameterHelper.h>
 #include <boost/filesystem.hpp>
