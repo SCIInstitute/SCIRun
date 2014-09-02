@@ -89,13 +89,13 @@ namespace Algorithms {
 
   class SCISHARE AlgorithmOutput : public AlgorithmData
   {
-   public:
-   Variable additionalAlgoOutput() const { return additionalAlgoOutput_; }
-   void setAdditionalAlgoOutput(const Variable& var) { additionalAlgoOutput_ = var; }
-   private:
-    Variable additionalAlgoOutput_;
+  public:
+    VariableHandle additionalAlgoOutput() const { return additionalAlgoOutput_; }
+    void setAdditionalAlgoOutput(VariableHandle var) { additionalAlgoOutput_ = var; }
+  private:
+    VariableHandle additionalAlgoOutput_;
   };
- 
+
   typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
   typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
   

@@ -120,7 +120,7 @@ std::vector<Variable> AlgorithmParameter::getList() const
 
 DatatypeHandle AlgorithmParameter::getDatatype() const
 {
-  return data_;
+  return data_.get_value_or(nullptr);
 }
 
 void AlgorithmParameterHelper::setDataDir(const boost::filesystem::path& path)
@@ -186,7 +186,7 @@ bool AlgorithmParameterList::set(const AlgorithmParameterName& key, const Algori
   auto iter = parameters_.find(key);
   if (iter == parameters_.end())
     return keyNotFoundPolicy(key);
-  iter->second.value_ = value;
+  iter->second.setValue(value);
   return true;
 }
 
@@ -250,7 +250,7 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
     BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("parameter \"" + key.name_ + "\" has no option \"" + value + "\""));
 
   param.option_ = value;
-  parameters_[key].value_ = param;
+  parameters_[key].setValue(param);
   return true;
 }
 
@@ -292,7 +292,7 @@ void AlgorithmBase::dumpAlgoState() const
   auto range = std::make_pair(paramsBegin(), paramsEnd());
   BOOST_FOREACH(const ParameterMap::value_type& pair, range)
   {
-    ostr << "\t" << pair.first.name() << ": " << pair.second.value_ << std::endl;
+    ostr << "\t" << pair.first.name() << ": " << pair.second.value() << std::endl;
   }
   LOG_DEBUG(ostr.str());
 }
@@ -341,12 +341,12 @@ AlgorithmInput SCIRun::Core::Algorithms::makeNullInput()
 
 bool SCIRun::Core::Algorithms::operator==(const Variable& lhs, const Variable& rhs)
 {
-  return lhs.name_ == rhs.name_ && lhs.value_ == rhs.value_ && lhs.data_ == rhs.data_;
+  return lhs.name() == rhs.name() && lhs.value() == rhs.value() && lhs.getDatatype() == rhs.getDatatype();
 }
 
 std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Variable& var)
 {
-  return out << "[" << var.name_ << ", " << var.value_ << "]";
+  return out << "[" << var.name() << ", " << var.value() << "]";
 }
 
 AlgorithmCollaborator::~AlgorithmCollaborator() {}

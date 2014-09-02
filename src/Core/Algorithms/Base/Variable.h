@@ -59,9 +59,9 @@ namespace Algorithms {
     Variable(const Name& name, const Value& value) : name_(name), value_(value) {}
     Variable(const Name& name, const Datatypes::DatatypeHandle& value) : name_(name), data_(value) {}
 
-    Name name_;
-    Value value_;
-    Datatypes::DatatypeHandle data_;
+    const Name& name() const { return name_; }
+    const Value& value() const { return value_; }
+    void setValue(const Value& val) { value_ = val; }
 
     int getInt() const;
     double getDouble() const;
@@ -71,6 +71,14 @@ namespace Algorithms {
     Datatypes::DatatypeHandle getDatatype() const;
     std::vector<Variable> getList() const;
     AlgoOption getOption() const;
+
+    Name& nameForXml() { return name_; }
+    Value& valueForXml() { return value_; }
+
+  private:
+    /*const*/ Name name_;
+    Value value_;
+    Datatypes::DatatypeHandleOption data_;
   };
 
   SCISHARE bool operator==(const Variable& lhs, const Variable& rhs);
@@ -78,6 +86,8 @@ namespace Algorithms {
   
   typedef Variable AlgorithmParameter;
   
+  typedef boost::shared_ptr<Variable> VariableHandle;
+
 }}}
 
 #endif

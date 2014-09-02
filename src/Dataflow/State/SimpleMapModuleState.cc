@@ -85,7 +85,7 @@ bool SimpleMapModuleState::containsKey(const Name& name) const
 void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value)
 {
   auto oldLocation = stateMap_.find(parameterName);
-  bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value_ == value);
+  bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value() == value);
 
   stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
   

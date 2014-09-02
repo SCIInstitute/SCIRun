@@ -41,6 +41,7 @@ SET(Algorithms_Base_HEADERS
   AlgorithmLogger.h
   AlgorithmMacros.h
   AlgorithmParameterHelper.h
+  AlgorithmParameterList.h
   AlgorithmPreconditions.h
   AlgorithmStatusReporter.h
   AlgorithmVariableNames.h
