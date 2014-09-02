@@ -167,7 +167,7 @@ void SelectSubMatrixModule::execute()
    algo().set(SelectSubMatrixAlgorithm::columnStartSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnStartSpinBox()).getInt());
    algo().set(SelectSubMatrixAlgorithm::columnEndSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnEndSpinBox()).getInt());  
   
-   auto output = algo().run_generic(make_input((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
+   auto output = algo().run_generic(withInputData((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
 
    sendOutputFromAlgorithm(ResultMatrix, output);
   }

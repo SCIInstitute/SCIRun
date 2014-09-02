@@ -59,7 +59,7 @@ void EvaluateLinearAlgebraBinaryModule::execute()
   auto oper = state->getValue(Variables::Operator).getInt();
 
   algo().set(Variables::Operator, oper);
-  auto output = algo().run_generic(make_input((LHS, lhs)(RHS, rhs))); 
+  auto output = algo().run_generic(withInputData((LHS, lhs)(RHS, rhs))); 
 
   sendOutputFromAlgorithm(Result, output);
 }

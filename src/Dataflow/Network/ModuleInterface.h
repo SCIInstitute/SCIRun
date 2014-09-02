@@ -42,6 +42,19 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+  //TODO: refactor with this type
+  template <class PortType>
+  class SCISHARE PortView
+  {
+  public:
+    virtual ~PortView() {}
+    virtual bool hasPort(const PortId& id) const = 0;
+    virtual boost::shared_ptr<PortType> getPort(const PortId& id) const = 0;
+    virtual std::vector<boost::shared_ptr<PortType>> findPortsWithName(const std::string& name) const = 0;
+    virtual size_t numPorts() const = 0;
+    virtual std::vector<boost::shared_ptr<PortType>> ports() const = 0;
+  };
+
   class SCISHARE ModuleInfoProvider
   {
   public:

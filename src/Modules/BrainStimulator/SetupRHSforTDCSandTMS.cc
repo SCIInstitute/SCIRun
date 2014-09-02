@@ -69,7 +69,7 @@ void SetupRHSforTDCSandTMSModule::execute()
  
   
   //algorithm input and run
-  auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_TRIANGULATION, elc_tri_mesh)));
+  auto output = algo().run_generic(withInputData((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_TRIANGULATION, elc_tri_mesh)));
 
   //algorithm output
   sendOutputFromAlgorithm(ELECTRODES_FIELD, output);

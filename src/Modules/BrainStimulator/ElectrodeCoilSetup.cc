@@ -65,7 +65,7 @@ void ElectrodeCoilSetupModule::execute()
  
   
   //algorithm input and run
-  auto output = algo().run_generic(make_input((INPUTFIELDS, fields)));
+  auto output = algo().run_generic(withInputData((INPUTFIELDS, fields)));
 
   //algorithm output
   sendOutputFromAlgorithm(ELECTRODES_FIELD, output);

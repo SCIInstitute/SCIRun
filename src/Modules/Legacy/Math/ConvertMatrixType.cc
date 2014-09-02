@@ -64,7 +64,7 @@ void ConvertMatrixTypeModule::execute()
    algo().set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix()).getBool());  
    algo().set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix()).getBool());  
    algo().set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix()).getBool());  
-   auto output = algo().run_generic(make_input((InputMatrix, input_matrix)));
+   auto output = algo().run_generic(withInputData((InputMatrix, input_matrix)));
  
    sendOutputFromAlgorithm(ResultMatrix, output);
   }

@@ -61,6 +61,6 @@ void WriteMatrixModule::execute()
   if (needToExecute())
   {
     algo().set(Variables::Filename, filename_);
-    algo().run_generic(make_input((MatrixToWrite, matrix)));
+    algo().run_generic(withInputData((MatrixToWrite, matrix)));
   }
 }
