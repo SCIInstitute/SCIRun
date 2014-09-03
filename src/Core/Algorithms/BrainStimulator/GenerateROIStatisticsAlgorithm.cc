@@ -42,15 +42,18 @@ DEALINGS IN THE SOFTWARE.
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/format.hpp>
+#include <boost/assign.hpp>
 #include <Core/Logging/Log.h>
 #include <string> 
 #include <iostream>
+
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
+using namespace boost::assign;
 
 const AlgorithmInputName GenerateROIStatisticsAlgorithm::MeshDataOnElements("MeshDataOnElements");
 const AlgorithmInputName GenerateROIStatisticsAlgorithm::PhysicalUnit("PhysicalUnit");
@@ -130,7 +133,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
     }
   } else
   {
-    labelSet.insert(target_material);
+    labelSet.insert(static_cast<int>(target_material));
   }
 
   number_of_atlas_materials = labelSet.size();
@@ -177,6 +180,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
   }
 
   output = DenseMatrixHandle(new DenseMatrix(number_of_atlas_materials, 5)); /// instantiate output
+  const double invalidDouble = std::numeric_limits<double>::quiet_NaN();
 
   /// efficient way to compute std dev. in just one loop over all mesh elements: sqrt ( 1/(n-1) (Sx^2 - avr Sx + n avr^2 )
   for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; j++)
@@ -192,8 +196,8 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
         stddev[j]=static_cast<double>(std::sqrt(var[j])); /// compute standard deviation, average, variance
       } else
       {
-        var[j]=std::numeric_limits<double>::quiet_NaN();
-        stddev[j]=std::numeric_limits<double>::quiet_NaN();
+        var[j]=invalidDouble;
+        stddev[j]=invalidDouble;
       }
 
       (*output)(j,0)=value_avr[j]; /// save statistical measures in output (DenseMatrix)
@@ -203,11 +207,11 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
       (*output)(j,4)=value_count[j];  
     } else
     {
-      (*output)(j,0)=std::numeric_limits<double>::quiet_NaN();  /// if the number of elements is 0, provide NaN as output
-      (*output)(j,1)=std::numeric_limits<double>::quiet_NaN();
-      (*output)(j,2)=std::numeric_limits<double>::quiet_NaN();
-      (*output)(j,3)=std::numeric_limits<double>::quiet_NaN();
-      (*output)(j,4)=std::numeric_limits<double>::quiet_NaN();
+      (*output)(j,0)=invalidDouble;  /// if the number of elements is 0, provide NaN as output
+      (*output)(j,1)=invalidDouble;
+      (*output)(j,2)=invalidDouble;
+      (*output)(j,3)=invalidDouble;
+      (*output)(j,4)=invalidDouble;
     }
   }  
 
@@ -239,19 +243,19 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
       }
     } 
 
-    std::vector<AlgorithmParameter> elc_vals_in_table;
+    //TODO: use this example to improve Variable::List syntactical sugar
+    Variable::List elc_vals_in_table;
     for (int i=0; i<AtlasMeshLabels_vector.size(); i++) /// loop over all materials, format numbers and put it in a Variable structure to be accessible in the GUI
     {
-      std::vector<AlgorithmParameter> tmp;
-      tmp.push_back(AlgorithmParameter(Name("name"), AtlasMeshLabels_vector[i])); //label name
+      Variable::List tmp;
+      tmp += makeVariable("name", AtlasMeshLabels_vector[i]), //label name
+        makeVariable("col0", boost::str(boost::format("%.3f") % (*output)(i,0))), //average
+        makeVariable("col1", boost::str(boost::format("%.3f") % (*output)(i,1))), //stddev
+        makeVariable("col2", boost::str(boost::format("%.3f") % (*output)(i,2))), //min
+        makeVariable("col3", boost::str(boost::format("%.3f") % (*output)(i,3))), //max
+        makeVariable("col4", boost::str(boost::format("%d") % (*output)(i,4))); //element count
 
-      tmp.push_back(AlgorithmParameter(Name("col0"), boost::str(boost::format("%.3f") % (*output)(i,0)))); //average
-      tmp.push_back(AlgorithmParameter(Name("col1"), boost::str(boost::format("%.3f") % (*output)(i,1)))); //stddev
-      tmp.push_back(AlgorithmParameter(Name("col2"), boost::str(boost::format("%.3f") % (*output)(i,2)))); //min
-      tmp.push_back(AlgorithmParameter(Name("col3"), boost::str(boost::format("%.3f") % (*output)(i,3)))); //max
-      tmp.push_back(AlgorithmParameter(Name("col4"), boost::str(boost::format("%d") % (*output)(i,4)))); //element count
-      AlgorithmParameter row_i(Name("row" + boost::lexical_cast<std::string>(i)), tmp);
-      elc_vals_in_table.push_back(row_i);
+      elc_vals_in_table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp));
     }
 
     VariableHandle statistics_table(new Variable(Name("Table"), elc_vals_in_table));

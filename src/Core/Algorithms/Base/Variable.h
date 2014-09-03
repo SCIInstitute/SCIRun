@@ -47,13 +47,16 @@ namespace Algorithms {
   {
   public:
     /// @todo: expand this 
+
+    typedef std::vector<Variable> List;
+
     typedef boost::variant<
       int,
       double,
       std::string,
       bool,
       AlgoOption,
-      std::vector<Variable>
+      List
     > Value;
 
     Variable() {}
@@ -69,7 +72,7 @@ namespace Algorithms {
     std::string toString() const;
     boost::filesystem::path toFilename() const;
     bool toBool() const;
-    std::vector<Variable> toVector() const;
+    List toVector() const;
     AlgoOption toOption() const;
 
     Datatypes::DatatypeHandle getDatatype() const;
@@ -85,6 +88,7 @@ namespace Algorithms {
 
   SCISHARE bool operator==(const Variable& lhs, const Variable& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
+  SCISHARE Variable makeVariable(const std::string& name, const Variable::Value& value);
   
   typedef Variable AlgorithmParameter;
   

@@ -123,6 +123,11 @@ DatatypeHandle AlgorithmParameter::getDatatype() const
   return data_.get_value_or(nullptr);
 }
 
+Variable SCIRun::Core::Algorithms::makeVariable(const std::string& name, const Variable::Value& value)
+{
+  return Variable(Name(name), value);
+}
+
 void AlgorithmParameterHelper::setDataDir(const boost::filesystem::path& path)
 {
   dataDir_ = path;
