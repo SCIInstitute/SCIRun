@@ -25,99 +25,60 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/Fields/SplitFieldByConnectingRegion.cc
-
-#include <Core/Algorithms/Fields/MeshDerivatives/SplitByConnectedRegion.h>
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/Field.h>
-
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
-#include <Dataflow/Network/Module.h>
-
-#include <sstream>
-
-namespace ModelCreation {
+#include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-class SplitFieldByConnectedRegion : public Module {
-  public:
-    SplitFieldByConnectedRegion(GuiContext*);
-    ~SplitFieldByConnectedRegion() {}
-    virtual void execute();
+ModuleLookupInfo SplitFieldByConnectedRegion::staticInfo_("SplitFieldByConnectedRegion", "NewField", "SCIRun");
 
-  private:
-    GuiInt    gui_sort_by_size_;
-    GuiDouble gui_sort_ascending_;
-    SCIRunAlgo::SplitByConnectedRegionAlgo algo_;
-};
-
-
-DECLARE_MAKER(SplitFieldByConnectedRegion)
-SplitFieldByConnectedRegion::SplitFieldByConnectedRegion(GuiContext* ctx)
-  : Module("SplitFieldByConnectedRegion", ctx, Source, "NewField", "SCIRun"),
-    gui_sort_by_size_(get_ctx()->subVar("sort-by-size"),0),
-    gui_sort_ascending_(get_ctx()->subVar("sort-ascending"),0)
+SplitFieldByConnectedRegion::SplitFieldByConnectedRegion() 
+  : Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField1);
+  INITIALIZE_PORT(OutputField2);
+  INITIALIZE_PORT(OutputField3);
+  INITIALIZE_PORT(OutputField4);
+  INITIALIZE_PORT(OutputField5);
+  INITIALIZE_PORT(OutputField6);
+  INITIALIZE_PORT(OutputField7);
+  INITIALIZE_PORT(OutputField8);
 }
 
+void SplitFieldByConnectedRegion::setStateDefaults()
+{
+ setStateBoolFromAlgo(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
+ setStateBoolFromAlgo(SplitFieldByConnectedRegionAlgo::SortAscending());
+}
 
 void SplitFieldByConnectedRegion::execute()
 {
-  // Define local handles of data objects:  
-  FieldHandle input;
-  BundleHandle boutput;
-  std::vector<FieldHandle> output;
-  FieldHandle nofield = 0;
-
-  // Get the new input data:    
-  get_input_handle("Field",input,true);
+ auto input_field = getRequiredInput(InputField);
  
-  // Only reexecute if the input changed. SCIRun uses simple scheduling
-  // that executes every module downstream even if no data has changed:         
-  if (inputs_changed_  || !oport_cached("All Fields") || !oport_cached("Field1")
-    || !oport_cached("Field2") || !oport_cached("Field3") || !oport_cached("Field4")
-    || !oport_cached("Field5") || !oport_cached("Field6") || !oport_cached("Field7") 
-    || !oport_cached("Field8") || gui_sort_by_size_.changed() 
-    || gui_sort_ascending_.changed())
+ if (needToExecute())
   {
     update_state(Executing);
+    algo().set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), get_state()->getValue(SplitFieldByConnectedRegionAlgo::SortDomainBySize()).getBool());
+    algo().set(SplitFieldByConnectedRegionAlgo::SortAscending(), get_state()->getValue(SplitFieldByConnectedRegionAlgo::SortAscending()).getBool());
+ 
+    auto output = algo().run_generic(make_input((InputField, input_field)));
 
-    algo_.set_bool("sort_by_size",gui_sort_by_size_.get());
-    algo_.set_bool("sort_ascending",gui_sort_ascending_.get());
-    
-    if(!(algo_.run(input,output))) return;
-  
-    boutput = new Bundle;
-    for (size_t j=0; j< output.size(); j++)
-    {
-      std::ostringstream oss;
-      oss << "Field" << j;
-      boutput->setField(oss.str(),output[j]);
-    }
-    
-    send_output_handle("All Fields",boutput);
-    if (output.size() > 0) send_output_handle("Field1",output[0]); 
-    else send_output_handle("Field1",nofield); 
-    if (output.size() > 1) send_output_handle("Field2",output[1]);
-    else send_output_handle("Field2",nofield); 
-    if (output.size() > 2) send_output_handle("Field3",output[2]);
-    else send_output_handle("Field3",nofield); 
-    if (output.size() > 3) send_output_handle("Field4",output[3]);
-    else send_output_handle("Field4",nofield); 
-    if (output.size() > 4) send_output_handle("Field5",output[4]);
-    else send_output_handle("Field5",nofield); 
-    if (output.size() > 5) send_output_handle("Field6",output[5]);
-    else send_output_handle("Field6",nofield); 
-    if (output.size() > 6) send_output_handle("Field7",output[6]);
-    else send_output_handle("Field7",nofield); 
-    if (output.size() > 7) send_output_handle("Field8",output[7]);
-    else send_output_handle("Field8",nofield); 
+    sendOutputFromAlgorithm(OutputField1, output);
+    sendOutputFromAlgorithm(OutputField2, output);
+    sendOutputFromAlgorithm(OutputField3, output);
+    sendOutputFromAlgorithm(OutputField4, output);
+    sendOutputFromAlgorithm(OutputField5, output);
+    sendOutputFromAlgorithm(OutputField6, output);
+    sendOutputFromAlgorithm(OutputField7, output);
+    sendOutputFromAlgorithm(OutputField8, output);
   }
 }
-
-} // End namespace ModelCreation
-
-
