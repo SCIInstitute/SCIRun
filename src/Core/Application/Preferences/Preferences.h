@@ -53,6 +53,7 @@ namespace SCIRun
       BooleanVariable showModuleErrorDialogs;
       BooleanVariable saveBeforeExecute;
       BooleanVariable useNewViewSceneMouseControls;
+      StringVariable networkBackgroundColor;
     
       std::string dataDirectoryPlaceholder() const;
 

@@ -42,7 +42,7 @@ namespace Algorithms {
     Name() : name_("_unspecified_") {}
     explicit Name(const std::string& name);
 
-    std::string name() const { return name_; }
+    const std::string& name() const { return name_; }
     
     bool operator<(const Name& rhs) const
     {

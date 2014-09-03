@@ -72,6 +72,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
 
 SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 {
@@ -582,8 +584,17 @@ void SCIRunMainWindow::makePipesManhattan()
   networkEditor_->setConnectionPipelineType(MANHATTAN);
 }
 
+namespace
+{
+  QString qname(const AlgorithmParameter& ap)
+  {
+    return QString::fromStdString(ap.name().name());
+  }
+}
+
 void SCIRunMainWindow::readSettings()
 {
+  Preferences& prefs = Preferences::Instance();
   QSettings settings("SCI:CIBC Software", "SCIRun5");
 
   latestNetworkDirectory_ = settings.value("networkDirectory").toString();
@@ -598,10 +609,12 @@ void SCIRunMainWindow::readSettings()
   prefs_->setRegressionTestDataDir(regressionTestDataDir);
 
   //TODO: make a separate class for these keys, bad duplication.
-  const QString colorKey = "backgroundColor";
+  const QString colorKey = qname(prefs.networkBackgroundColor);
   if (settings.contains(colorKey))
   {
-    networkEditor_->setBackground(QColor(settings.value(colorKey).toString()));
+    auto value = settings.value(colorKey).toString();
+    prefs.networkBackgroundColor.setValue(value.toStdString());
+    networkEditor_->setBackground(QColor(value));
     GuiLogger::Instance().log("Setting read: background color = " + networkEditor_->background().color().name());
   }
 
@@ -669,11 +682,12 @@ void SCIRunMainWindow::readSettings()
 void SCIRunMainWindow::writeSettings()
 {
   QSettings settings("SCI:CIBC Software", "SCIRun5");
+  Preferences& prefs = Preferences::Instance();
 
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
   settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
-  settings.setValue("backgroundColor", networkEditor_->background().color().name());
+  settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
@@ -684,35 +698,34 @@ void SCIRunMainWindow::writeSettings()
 
 namespace
 {
-  template <bool Flag>
   class SetDisableFlag : public boost::static_visitor<>
   {
   public:
+    explicit SetDisableFlag(bool flag) : flag_(flag) {}
     template <typename T>
     void operator()( T* widget ) const
     {
-      widget->setDisabled(Flag);
+      widget->setDisabled(flag_);
     }
+    bool flag_;
   };
 
-  //TODO: VS2010 compiler can't handle this function; check 2012 and clang
-  template <bool Flag>
-  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets)
+  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets, bool flag)
   {
-    std::for_each(widgets.begin(), widgets.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<Flag>(), v); });
+    std::for_each(widgets.begin(), widgets.end(), [=](InputWidget& v) { boost::apply_visitor(SetDisableFlag(flag), v); });
   }
 }
 
 void SCIRunMainWindow::disableInputWidgets()
 {
   networkEditor_->disableInputWidgets();
-  std::for_each(inputWidgets_.begin(), inputWidgets_.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<true>(), v); });
+  setWidgetsDisableFlag(inputWidgets_, true);
 }
 
 void SCIRunMainWindow::enableInputWidgets()
 {
   networkEditor_->enableInputWidgets();
-  std::for_each(inputWidgets_.begin(), inputWidgets_.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<false>(), v); });
+  setWidgetsDisableFlag(inputWidgets_, false);
 }
 
 void SCIRunMainWindow::chooseBackgroundColor()
@@ -725,6 +738,7 @@ void SCIRunMainWindow::chooseBackgroundColor()
   {
     networkEditor_->setBackground(newColor);
     GuiLogger::Instance().log("Background color set to " + newColor.name());
+    Preferences::Instance().networkBackgroundColor.setValue(newColor.name().toStdString());
   }
 }
 
@@ -734,6 +748,7 @@ void SCIRunMainWindow::resetBackgroundColor()
   QColor defaultColor(Qt::darkGray);
   networkEditor_->setBackground(defaultColor);
   GuiLogger::Instance().log("Background color set to " + defaultColor.name());
+  Preferences::Instance().networkBackgroundColor.setValue(defaultColor.name().toStdString());
 }
 
 void SCIRunMainWindow::setupProvenanceWindow()

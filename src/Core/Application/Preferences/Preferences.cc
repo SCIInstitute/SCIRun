@@ -38,7 +38,10 @@ using namespace SCIRun::Core::Algorithms;
 CORE_SINGLETON_IMPLEMENTATION( Preferences );
 
 Preferences::Preferences() :
-  showModuleErrorDialogs("showModuleErrorDialogs", true), saveBeforeExecute("saveBeforeExecute", false), useNewViewSceneMouseControls("useNewViewSceneMouseControls", false)
+  showModuleErrorDialogs("showModuleErrorDialogs", true), 
+  saveBeforeExecute("saveBeforeExecute", false), 
+  useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
+  networkBackgroundColor("backgroundColor", "#808080")
 {	
 }
 

@@ -97,7 +97,7 @@ class TypedVariable : public Algorithms::Variable
 {
 public:
   TypedVariable(const std::string& name, const T& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
-  operator T() const { throw "unspecialized type"; }
+  operator T() const { throw "unknown type"; }
 };
 
 template <>
@@ -109,6 +109,16 @@ public:
 };
 
 typedef TypedVariable<bool> BooleanVariable;
+
+template <>
+class TypedVariable<std::string> : public Algorithms::Variable
+{
+public:
+  TypedVariable(const std::string& name, const std::string& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
+  operator std::string() const { return getString(); }
+};
+
+typedef TypedVariable<std::string> StringVariable;
 
 }}
 
