@@ -50,7 +50,7 @@ namespace SCIRun
 
     public Q_SLOTS:
       void highlightIfSelected();
-      void setAsWaiting();
+      //void setAsWaiting();
       void setDefaultNotePosition(NotePosition position);
       void createPortPositionProviders();
 	 

@@ -129,12 +129,12 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   //addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress", "...");
+  addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress: two color maps available", "...");
   addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
-  addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates stiffness matrix ");
+  addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", "In progress: main path through code works", "Generates stiffness matrix ");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<FairMesh>("Real ported module", "...");
   //TODO: incomplete impl
@@ -145,7 +145,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
-  addModuleDesc<ClipFieldByFunction>("In progress", "...");
+  //TODO: incomplete impl
+  //addModuleDesc<ClipFieldByFunction>("In progress", "...");
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
 
   // insert module desc here

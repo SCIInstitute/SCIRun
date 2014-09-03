@@ -224,9 +224,9 @@ NetworkGlobalSettings& Network::settings()
   return settings_;
 }
 
-void Network::setModuleExecutionState(ModuleInterface::ExecutionState state)
+void Network::setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter)
 {
-  BOOST_FOREACH(ModuleHandle module, modules_)
+  BOOST_FOREACH(ModuleHandle module, modules_ | boost::adaptors::filtered(filter))
     module->setExecutionState(state);
 }
 
