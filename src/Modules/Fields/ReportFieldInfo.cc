@@ -55,7 +55,7 @@ void ReportFieldInfoModule::execute()
 
   auto output = algo().run_generic(withInputData((InputField, field)));
 
-  get_state()->setTransientValue("ReportedInfo", output.getTransient(), true);
+  get_state()->setTransientValue("ReportedInfo", output.getTransient());
 
   auto info = optional_any_cast_or_default<SCIRun::Core::Algorithms::Fields::ReportFieldInfoAlgorithm::Outputs>(output.getTransient());
   /// @todo: requires knowledge of algorithm type

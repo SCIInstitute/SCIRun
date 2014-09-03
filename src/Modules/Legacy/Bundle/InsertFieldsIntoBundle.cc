@@ -60,7 +60,7 @@ void InsertFieldsIntoBundle::portAddedSlot(const ModuleId& mid, const PortId& pi
   if (mid == id_)
   {
     int fields = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
-    get_state()->setTransientValue(NumFields.name(), fields, true);
+    get_state()->setTransientValue(NumFields, fields);
   }
 }
 
@@ -70,7 +70,7 @@ void InsertFieldsIntoBundle::portRemovedSlot(const ModuleId& mid, const PortId& 
   if (mid == id_)
   {
     int fields = num_input_ports() - 2; // -1 for empty end, -1 for bundle port 0
-    get_state()->setTransientValue(NumFields.name(), fields, true);
+    get_state()->setTransientValue(NumFields, fields);
   }
 }
 

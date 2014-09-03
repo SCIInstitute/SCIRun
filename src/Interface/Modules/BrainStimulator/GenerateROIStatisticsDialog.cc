@@ -87,7 +87,7 @@ void GenerateROIStatisticsDialog::push()
     DenseMatrixHandle specROI(new DenseMatrix(5,1));
     (*specROI) << X, Y, Z, material, radius;
 
-    state_->setTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI.name(), specROI, true);
+    state_->setTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI, specROI);
   }
 }
 
@@ -95,7 +95,7 @@ void GenerateROIStatisticsDialog::push()
 void GenerateROIStatisticsDialog::pull()
 {
   Pulling p(this);
-  auto all_elc_values = optional_any_cast_or_default<Variable>(state_->getTransientValue(Parameters::StatisticsTableValues.name())).toVector();
+  auto all_elc_values = optional_any_cast_or_default<Variable>(state_->getTransientValue(Parameters::StatisticsTableValues)).toVector();
   StatisticsOutput_tableWidget->setRowCount(all_elc_values.size());
 
   /// get the result data from the algorithm and put it in the GUI table

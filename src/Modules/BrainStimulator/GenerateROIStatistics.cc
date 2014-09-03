@@ -66,7 +66,7 @@ void GenerateROIStatisticsModule::execute()
   
   setAlgoListFromState(Parameters::StatisticsTableValues); /// to transfer data between algo and dialog use the state variable 
   
-  auto roiSpec = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI.name())); /// transfer the ROI specification from GUI dialog as additional input
+  auto roiSpec = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI)); /// transfer the ROI specification from GUI dialog as additional input
   //algorithm input and run
   auto input = make_input((MeshDataOnElements, meshData_)(PhysicalUnit, optionalAlgoInput(physicalUnit_))(AtlasMesh, atlasMesh_)(AtlasMeshLabels,
   optionalAlgoInput(atlasMeshLabels_))(CoordinateSpace, optionalAlgoInput(coordinateSpace_))(CoordinateSpaceLabel,
@@ -78,13 +78,13 @@ void GenerateROIStatisticsModule::execute()
   auto output = algo().run_generic(input); /// call run generic 
 
   auto table = output.additionalAlgoOutput(); /// get the two outputs, the upper table (as DenseMatrix) and the container that establishes data transfer between GUI/Algo via state  
-  get_state()->setTransientValue(Parameters::StatisticsTableValues.name(), table, true);
+  get_state()->setTransientValue(Parameters::StatisticsTableValues, table);
   
   if (physicalUnit_ && *physicalUnit_) /// set physicalUnit string immediately to state, and then to dialog
-     get_state()->setTransientValue(Parameters::PhysicalUnitStr.name(),(*physicalUnit_)->value() , true);
+     get_state()->setTransientValue(Parameters::PhysicalUnitStr,(*physicalUnit_)->value());
   
   if (coordinateSpaceLabel_ && *coordinateSpaceLabel_)/// set coordinateSpaceLabel string immediately to state, and then to dialog
-     get_state()->setTransientValue(Parameters::CoordinateSpaceLabelStr.name(),(*coordinateSpaceLabel_)->value() , true); 
+     get_state()->setTransientValue(Parameters::CoordinateSpaceLabelStr,(*coordinateSpaceLabel_)->value()); 
   
   //algorithm output
   sendOutputFromAlgorithm(StatisticalResults, output); /// set the upper table (DenseMatrix) as only output of the module
