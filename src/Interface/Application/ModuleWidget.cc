@@ -112,6 +112,59 @@ namespace
 #endif
 }
 
+QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
+{
+  QColor result;
+  if (str == "red")
+    result = Qt::red;
+  else if (str == "blue")
+    result = Qt::blue;
+  else if (str == "darkBlue")
+    result = Qt::darkBlue;
+  else if (str == "cyan")
+    result = Qt::cyan;
+  else if (str == "darkCyan")
+    result = Qt::darkCyan;
+  else if (str == "darkGreen")
+    result = Qt::darkGreen;
+  else if (str == "cyan")
+    result = Qt::cyan;
+  else if (str == "magenta")
+    result = Qt::magenta;
+  else if (str == "white")
+    result = Qt::white;
+  else if (str == "yellow")
+    result = Qt::yellow;
+  else if (str == "darkYellow")
+    result = Qt::darkYellow;
+  else if (str == "lightGray")
+    result = Qt::lightGray;
+  else if (str == "darkGray")
+    result = Qt::darkGray;
+  else if (str == "black")
+    result = Qt::black;
+  else if (str == "purple")
+    result = Qt::darkMagenta;
+  else if (str == "orange")
+    result = QColor(255, 165, 0);
+  else
+    result = Qt::black;
+
+  result.setAlpha(alpha);
+  return result;
+}
+
+namespace
+{
+  int moduleAlpha() { return 100; }
+  int portAlpha() { return 175; }
+  QString moduleRGBA(int r, int g, int b)
+  {
+    return QString("rgba(%1,%2,%3,%4)")
+      .arg(r).arg(g).arg(b)
+      .arg(moduleAlpha());
+  }
+}
 
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
@@ -128,7 +181,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   outputPortLayout_(0),
   editor_(ed),
   deleting_(false),
-  defaultBackgroundColor_("rgba(128,128,128,100);")
+  defaultBackgroundColor_(moduleRGBA(128,128,128))
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -201,10 +254,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 void ModuleWidget::setLogButtonColor(const QColor& color)
 {
   logButton2_->setStyleSheet(
-    QString("* { background-color: rgba(%1,%2,%3,100) }")
-    .arg(color.red())
-    .arg(color.green())
-    .arg(color.blue()));
+    QString("* { background-color: %1 }")
+    .arg(moduleRGBA(color.red(), color.green(), color.blue())));
 }
 
 void ModuleWidget::resetLogButtonColor()
@@ -220,7 +271,7 @@ void ModuleWidget::resetProgressBar()
 
 void ModuleWidget::setupModuleActions()
 {
-  actionsMenu_.reset(new ModuleActionsMenu(moduleActionButton_, moduleId_));
+  actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
 
   moduleActionButton_->setMenu(actionsMenu_->getMenu());
 }
@@ -244,7 +295,7 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
@@ -273,7 +324,7 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
   BOOST_FOREACH(OutputPortHandle port, moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     ports_->addPort(w);
     ++i;
@@ -475,10 +526,10 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
   switch (moduleState)
   {
   case (int)ModuleInterface::Waiting:
-    Q_EMIT backgroundColorUpdated("rgba(205,190,112,100);");
+    Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
     break;
   case (int)ModuleInterface::Executing:
-    Q_EMIT backgroundColorUpdated("rgba(170,204,170,100);");
+    Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
     break;
   case (int)ModuleInterface::Completed:
     Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
@@ -490,13 +541,13 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)
   {
-    setStyleSheet("background-color: " + color);
+    setStyleSheet("color: white; border-radius: 7px; background-color: " + color);
   }
 }
 
 void ModuleWidget::setColorSelected()
 {
-  updateBackgroundColor("rgba(0,255,255,100);");
+  updateBackgroundColor(moduleRGBA(0,255,255));
 }
 
 void ModuleWidget::setColorUnselected()

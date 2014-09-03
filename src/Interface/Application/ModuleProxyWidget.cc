@@ -109,7 +109,7 @@ namespace SCIRun
 }
 
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
-  : QGraphicsProxyWidget(parent), 
+  : QGraphicsProxyWidget(parent),
   NoteDisplayHelper(boost::make_shared<ModuleWidgetNoteDisplayStrategy>()),
   module_(module),
   grabbedByWidget_(false),
@@ -121,6 +121,8 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
+  //setStyleSheet(module->styleSheet());
+  //setAttribute(Qt::WA_TranslucentBackground, true);
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
@@ -201,8 +203,8 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
 {
-  return qobject_cast<QPushButton*>(alienWidget) || 
-    qobject_cast<QToolButton*>(alienWidget) || 
+  return qobject_cast<QPushButton*>(alienWidget) ||
+    qobject_cast<QToolButton*>(alienWidget) ||
     qobject_cast<QProgressBar*>(alienWidget);
 }
 
@@ -242,7 +244,7 @@ void ModuleProxyWidget::createPortPositionProviders()
   {
     //std::cout << "Setting position provider for port " << p->id() << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)) << "," << p->pos().y() << std::endl;
     QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)), p->pos().y());
-    
+
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
     p->setPositionObject(pp);
   }
@@ -255,7 +257,7 @@ void ModuleProxyWidget::updateNote(const Note& note)
 
 PassThroughPositioner::PassThroughPositioner(const QGraphicsProxyWidget* widget) : widget_(widget) {}
 
-QPointF PassThroughPositioner::currentPosition() const 
+QPointF PassThroughPositioner::currentPosition() const
 {
   return widget_->pos();
 }
