@@ -97,27 +97,23 @@ class TypedVariable : public Algorithms::Variable
 {
 public:
   TypedVariable(const std::string& name, const T& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
-  operator T() const { throw "unknown type"; }
+  operator T() const { return val(); }
+  T val() const { throw "unknown type"; }
 };
 
-template <>
-class TypedVariable<bool> : public Algorithms::Variable
-{
-public:
-  TypedVariable(const std::string& name, const bool& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
-  operator bool() const { return getBool(); }
-};
+#define TYPED_VARIABLE_CLASS(type, func) template <> \
+class TypedVariable<type> : public Algorithms::Variable \
+{\
+public:\
+  TypedVariable(const std::string& name, const type& value) : Algorithms::Variable(Algorithms::Name(name), value) {}\
+  operator type() const { return val(); }\
+  type val() const { return func(); }\
+};\
+
+TYPED_VARIABLE_CLASS(bool, getBool)
+TYPED_VARIABLE_CLASS(std::string, getString)
 
 typedef TypedVariable<bool> BooleanVariable;
-
-template <>
-class TypedVariable<std::string> : public Algorithms::Variable
-{
-public:
-  TypedVariable(const std::string& name, const std::string& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
-  operator std::string() const { return getString(); }
-};
-
 typedef TypedVariable<std::string> StringVariable;
 
 }}

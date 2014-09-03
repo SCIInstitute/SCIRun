@@ -597,6 +597,10 @@ void SCIRunMainWindow::readSettings()
   Preferences& prefs = Preferences::Instance();
   QSettings settings("SCI:CIBC Software", "SCIRun5");
 
+  //TODO: centralize all these values in Preferences singleton, together with keys as names.
+  //TODO: extract QSettings logic into "PreferencesIO" class
+  //TODO: set up signal/slot for each prefs variable to make it easy to track changes from arbitrary widgets
+
   latestNetworkDirectory_ = settings.value("networkDirectory").toString();
   GuiLogger::Instance().log("Setting read: default network directory = " + latestNetworkDirectory_.path());
 
@@ -684,6 +688,8 @@ void SCIRunMainWindow::writeSettings()
   QSettings settings("SCI:CIBC Software", "SCIRun5");
   Preferences& prefs = Preferences::Instance();
 
+  //TODO: centralize all these values in Preferences singleton, together with keys as names
+
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
   settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
@@ -692,7 +698,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
-  settings.setValue("newViewSceneMouseControls", (bool)Core::Preferences::Instance().useNewViewSceneMouseControls);
+  settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
 }
 
