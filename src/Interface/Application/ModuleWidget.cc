@@ -128,7 +128,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   outputPortLayout_(0),
   editor_(ed),
   deleting_(false),
-  defaultBackgroundColor_("lightgray;")
+  defaultBackgroundColor_("rgba(128,128,128,100);")
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -475,10 +475,10 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
   switch (moduleState)
   {
   case (int)ModuleInterface::Waiting:
-    Q_EMIT backgroundColorUpdated("#CDBE70;");
+    Q_EMIT backgroundColorUpdated("rgba(205,190,112,100);");
     break;
   case (int)ModuleInterface::Executing:
-    Q_EMIT backgroundColorUpdated("#AACCAA;");
+    Q_EMIT backgroundColorUpdated("rgba(170,204,170,100);");
     break;
   case (int)ModuleInterface::Completed:
     Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
@@ -496,7 +496,7 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 
 void ModuleWidget::setColorSelected()
 {
-  updateBackgroundColor("lightblue;");
+  updateBackgroundColor("rgba(0,255,255,100);");
 }
 
 void ModuleWidget::setColorUnselected()
