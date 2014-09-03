@@ -98,6 +98,8 @@ void GenerateROIStatisticsDialog::pull()
   auto all_elc_values = optional_any_cast_or_default<Variable>(state_->getTransientValue(Parameters::StatisticsTableValues)).toVector();
   StatisticsOutput_tableWidget->setRowCount(all_elc_values.size());
 
+  //TODO: use this example to improve Variable::List syntactical sugar
+
   /// get the result data from the algorithm and put it in the GUI table
   for (int i=0; i<all_elc_values.size(); i++)
   {
