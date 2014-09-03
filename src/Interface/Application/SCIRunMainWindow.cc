@@ -744,7 +744,6 @@ void SCIRunMainWindow::chooseBackgroundColor()
   {
     networkEditor_->setBackground(newColor);
     GuiLogger::Instance().log("Background color set to " + newColor.name());
-    Preferences::Instance().networkBackgroundColor.setValue(newColor.name().toStdString());
   }
 }
 
@@ -754,7 +753,6 @@ void SCIRunMainWindow::resetBackgroundColor()
   QColor defaultColor(Qt::darkGray);
   networkEditor_->setBackground(defaultColor);
   GuiLogger::Instance().log("Background color set to " + defaultColor.name());
-  Preferences::Instance().networkBackgroundColor.setValue(defaultColor.name().toStdString());
 }
 
 void SCIRunMainWindow::setupProvenanceWindow()

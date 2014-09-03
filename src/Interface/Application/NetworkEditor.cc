@@ -43,6 +43,7 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //TODO: remove
 #include <Dataflow/Network/NetworkSettings.h> //TODO: push
+#include <Core/Application/Preferences/Preferences.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
@@ -50,6 +51,7 @@
 #include <boost/bind.hpp>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
@@ -763,6 +765,7 @@ void NetworkEditor::setRegressionTestDataDir(const QString& dir)
 void NetworkEditor::setBackground(const QBrush& brush)
 {
   scene_->setBackgroundBrush(brush);
+  Preferences::Instance().networkBackgroundColor.setValue(brush.color().name().toStdString());
 }
 
 QBrush NetworkEditor::background() const

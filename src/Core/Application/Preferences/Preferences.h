@@ -34,12 +34,34 @@
 #include <boost/filesystem/path.hpp>
 #include <Core/Utils/Singleton.h>
 #include <Core/Algorithms/Base/Variable.h>
+#include <boost/signals2.hpp>
 #include <Core/Application/Preferences/share.h>
 
 namespace SCIRun
 {
   namespace Core
   {
+    template <class Var>
+    class TrackedVariable : public Var
+    {
+    public:
+      typedef boost::signals2::signal<void(typename Var::value_type)> ValueChangedSignal;
+      boost::signals2::connection connectValueChanged(typename ValueChangedSignal::slot_type subscriber);
+
+      TrackedVariable(const std::string& name, const typename Var::value_type& value) : Var(name, value) {}
+
+      virtual void setValue(const typename Var::Value& val) override
+      { 
+        Var::setValue(val);
+        valueChanged_(this->val());
+      }
+    private:
+      ValueChangedSignal valueChanged_;
+    };
+
+
+
+
     class SCISHARE Preferences : boost::noncopyable
     {
 	    CORE_SINGLETON( Preferences );
@@ -50,7 +72,7 @@ namespace SCIRun
     public:
       /// @todo: reuse Seg3D state vars
 
-      BooleanVariable showModuleErrorDialogs;
+      TrackedVariable<BooleanVariable> showModuleErrorDialogs;
       BooleanVariable saveBeforeExecute;
       BooleanVariable useNewViewSceneMouseControls;
       StringVariable networkBackgroundColor;
