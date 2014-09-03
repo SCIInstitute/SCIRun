@@ -201,7 +201,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 void ModuleWidget::setLogButtonColor(const QColor& color)
 {
   logButton2_->setStyleSheet(
-    QString("* { background-color: rgb(%1,%2,%3) }")
+    QString("* { background-color: rgba(%1,%2,%3,100) }")
     .arg(color.red())
     .arg(color.green())
     .arg(color.blue()));
