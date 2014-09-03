@@ -95,18 +95,18 @@ void GenerateROIStatisticsDialog::push()
 void GenerateROIStatisticsDialog::pull()
 {
   Pulling p(this);
-  auto all_elc_values = optional_any_cast_or_default<Variable>(state_->getTransientValue(Parameters::StatisticsTableValues.name())).getList();
+  auto all_elc_values = optional_any_cast_or_default<Variable>(state_->getTransientValue(Parameters::StatisticsTableValues.name())).toVector();
   StatisticsOutput_tableWidget->setRowCount(all_elc_values.size());
    
    /// get the result data from the algorithm and put it in the GUI table
   for (int i=0; i<all_elc_values.size(); i++)
   {
-   auto col = (all_elc_values[i]).getList();
+   auto col = (all_elc_values[i]).toVector();
 
    int j = 0;
    BOOST_FOREACH(const AlgorithmParameter& ap, col)
    {
-    auto tmpstr = ap.getString();
+    auto tmpstr = ap.toString();
   
     auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
     item->setFlags(item->flags() & ~Qt::ItemIsEditable);

@@ -60,8 +60,8 @@ void EvaluateLinearAlgebraUnaryModule::execute()
   /// @todo: standardize on camel case!
   auto state = get_state();
   
-  auto oper = state->getValue(Variables::Operator).getInt();
-  double scalar = state->getValue(Variables::ScalarValue).getDouble();
+  auto oper = state->getValue(Variables::Operator).toInt();
+  double scalar = state->getValue(Variables::ScalarValue).toDouble();
 
   algo().set(Variables::Operator, oper);
   algo().set(Variables::ScalarValue, scalar);

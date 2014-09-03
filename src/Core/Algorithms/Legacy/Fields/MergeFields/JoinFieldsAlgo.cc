@@ -81,12 +81,12 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     return (false);
   }
 
-  bool match_node_values = get(MatchNodeValues).getBool();
-  bool make_no_data = get(MakeNoData).getBool();
-  bool merge_nodes = get(MergeNodes).getBool();
-  bool merge_elems = get(MergeElems).getBool();
+  bool match_node_values = get(MatchNodeValues).toBool();
+  bool make_no_data = get(MakeNoData).toBool();
+  bool merge_nodes = get(MergeNodes).toBool();
+  bool merge_elems = get(MergeElems).toBool();
   
-  double tol = get(Tolerance).getDouble();
+  double tol = get(Tolerance).toDouble();
   const double tol2 = tol*tol;
   
   // Check whether mesh types are the same

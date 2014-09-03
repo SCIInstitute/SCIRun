@@ -62,7 +62,7 @@ void SetupRHSforTDCSandTMSModule::execute()
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
    // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
+  //auto param = get_state()->getValue(Variables::AppendMatrixOption).toInt();
 
   //algorithm parameter
   //algo_->set(Variables::AppendMatrixOption, param);

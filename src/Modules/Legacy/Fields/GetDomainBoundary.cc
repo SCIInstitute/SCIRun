@@ -115,9 +115,9 @@ void GetDomainBoundary::execute()
     setAlgoBoolFromState(Parameters::NoInnerBoundary);
     setAlgoBoolFromState(Parameters::DisconnectBoundaries);
 
-    if (!state->getValue(Parameters::UseRange).getBool())
+    if (!state->getValue(Parameters::UseRange).toBool())
     {
-      int guiValue = state->getValue(Parameters::Domain).getInt();
+      int guiValue = state->getValue(Parameters::Domain).toInt();
       algo().set(Parameters::UseRange, true);
       algo().set(Parameters::MinRange, guiValue);
       algo().set(Parameters::MaxRange, guiValue);

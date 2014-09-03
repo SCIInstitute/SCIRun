@@ -64,14 +64,15 @@ namespace Algorithms {
     const Value& value() const { return value_; }
     virtual void setValue(const Value& val) { value_ = val; }
 
-    int getInt() const;
-    double getDouble() const;
-    std::string getString() const;
-    boost::filesystem::path getFilename() const;
-    bool getBool() const;
+    int toInt() const;
+    double toDouble() const;
+    std::string toString() const;
+    boost::filesystem::path toFilename() const;
+    bool toBool() const;
+    std::vector<Variable> toVector() const;
+    AlgoOption toOption() const;
+
     Datatypes::DatatypeHandle getDatatype() const;
-    std::vector<Variable> getList() const;
-    AlgoOption getOption() const;
 
     Name& nameForXml() { return name_; }
     Value& valueForXml() { return value_; }
@@ -113,8 +114,8 @@ public:\
   value_type val() const { return func(); }\
 };\
 
-TYPED_VARIABLE_CLASS(bool, getBool)
-TYPED_VARIABLE_CLASS(std::string, getString)
+TYPED_VARIABLE_CLASS(bool, toBool)
+TYPED_VARIABLE_CLASS(std::string, toString)
 
 typedef TypedVariable<bool> BooleanVariable;
 typedef TypedVariable<std::string> StringVariable;

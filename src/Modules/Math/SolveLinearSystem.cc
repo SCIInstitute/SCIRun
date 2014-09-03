@@ -76,8 +76,8 @@ void SolveLinearSystemModule::execute()
     if (!rhsCol)
       rhsCol = matrix_convert::to_column(rhs);
 
-    auto tolerance = get_state()->getValue(Variables::TargetError).getDouble();
-    auto maxIterations = get_state()->getValue(Variables::MaxIterations).getInt();
+    auto tolerance = get_state()->getValue(Variables::TargetError).toDouble();
+    auto maxIterations = get_state()->getValue(Variables::MaxIterations).toInt();
 
     //TODO: these checks should be at algo level too.
     if (tolerance > 0)
@@ -85,8 +85,8 @@ void SolveLinearSystemModule::execute()
     if (maxIterations > 0)
       algo().set(Variables::MaxIterations, maxIterations);
 
-    auto method = get_state()->getValue(Variables::Method).getString();
-    auto precond = get_state()->getValue(Variables::Preconditioner).getString();
+    auto method = get_state()->getValue(Variables::Method).toString();
+    auto precond = get_state()->getValue(Variables::Preconditioner).toString();
     if (!method.empty())
       algo().set_option(Variables::Method, method);
     if (!precond.empty())

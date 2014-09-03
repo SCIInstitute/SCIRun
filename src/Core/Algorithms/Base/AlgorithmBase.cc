@@ -61,25 +61,25 @@ Name::Name(const std::string& name) : name_(name)
 
 AlgorithmBase::~AlgorithmBase() {}
 
-int AlgorithmParameter::getInt() const
+int AlgorithmParameter::toInt() const
 {
   const int* v = boost::get<int>(&value_);
   return v ? *v : 0;
 }
 
-double AlgorithmParameter::getDouble() const
+double AlgorithmParameter::toDouble() const
 {
   const double* v = boost::get<double>(&value_);
-  return v ? *v : getInt();
+  return v ? *v : toInt();
 }
 
-std::string AlgorithmParameter::getString() const
+std::string AlgorithmParameter::toString() const
 {
   const std::string* v = boost::get<std::string>(&value_);
   return v ? *v : "";
 }
 
-boost::filesystem::path AlgorithmParameter::getFilename() const
+boost::filesystem::path AlgorithmParameter::toFilename() const
 {
   {
 #ifdef _MSC_VER
@@ -93,26 +93,26 @@ boost::filesystem::path AlgorithmParameter::getFilename() const
 #endif
   }
 
-  auto stringPath = getString();
+  auto stringPath = toString();
   if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), ""))
     return AlgorithmParameterHelper::dataDir() / stringPath;
   boost::filesystem::path p(stringPath);
   return p;
 }
 
-bool AlgorithmParameter::getBool() const
+bool AlgorithmParameter::toBool() const
 {
   const bool* v = boost::get<bool>(&value_);
-  return v ? *v : (getInt() != 0);
+  return v ? *v : (toInt() != 0);
 }
 
-AlgoOption AlgorithmParameter::getOption() const
+AlgoOption AlgorithmParameter::toOption() const
 {
   const AlgoOption* opt = boost::get<AlgoOption>(&value_);
   return opt ? *opt : AlgoOption();
 }
 
-std::vector<Variable> AlgorithmParameter::getList() const
+std::vector<Variable> AlgorithmParameter::toVector() const
 {
   const std::vector<Variable>* v = boost::get<std::vector<Variable>>(&value_);
   return v ? *v : std::vector<Variable>();
@@ -244,7 +244,7 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
   if (paramIt == parameters_.end())
     return keyNotFoundPolicy(key);
   
-  AlgoOption param = paramIt->second.getOption();
+  AlgoOption param = paramIt->second.toOption();
 
   if (param.options_.find(value) == param.options_.end())
     BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("parameter \"" + key.name_ + "\" has no option \"" + value + "\""));
@@ -266,7 +266,7 @@ bool AlgorithmParameterList::get_option(const AlgorithmParameterName& key, std::
   if (paramIt == parameters_.end())
     return keyNotFoundPolicy(key);
 
-  value = paramIt->second.getOption().option_;
+  value = paramIt->second.toOption().option_;
   return true;
 }
 

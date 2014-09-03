@@ -109,7 +109,7 @@ void ClipFieldByFunction::execute()
     }
   
     auto field = fields[0];
-    std::string method = state->getValue(Parameters::ClipMethod).getString();
+    std::string method = state->getValue(Parameters::ClipMethod).toString();
     if (field->vmesh()->is_pointcloudmesh()) method = "element";
 
     const int basis_order = method == "element" ? 0 : 1;
@@ -188,7 +188,7 @@ void ClipFieldByFunction::execute()
     if(!(engine.add_size("SIZE"))) return;
 
     // Define the function we are using for clipping:
-    std::string function = state->getValue(FunctionString).getString();
+    std::string function = state->getValue(FunctionString).toString();
     if (function.find("RESULT") == std::string::npos)
       function = "RESULT = " + function;
 

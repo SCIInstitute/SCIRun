@@ -108,16 +108,16 @@ void InsertFieldsIntoBundle::execute()
     }
 
     //TODO: instead grab a vector of tuple<string,bool>. need to modify Variable::Value again
-    auto fieldNames = get_state()->getValue(FieldNames).getList();
-    auto replace = get_state()->getValue(FieldReplace).getList();
+    auto fieldNames = get_state()->getValue(FieldNames).toVector();
+    auto replace = get_state()->getValue(FieldReplace).toVector();
 
     for (int i = 0; i < fields.size(); ++i)
     {
       auto field = fields[i];
       if (field)
       {
-        auto name = i < fieldNames.size() ? fieldNames[i].getString() : ("field" + boost::lexical_cast<std::string>(i));
-        auto replaceField = i < replace.size() ? replace[i].getBool() : true;
+        auto name = i < fieldNames.size() ? fieldNames[i].toString() : ("field" + boost::lexical_cast<std::string>(i));
+        auto replaceField = i < replace.size() ? replace[i].toBool() : true;
         if (replaceField || !bundle->isField(name))
         {
           bundle->set(name, field);

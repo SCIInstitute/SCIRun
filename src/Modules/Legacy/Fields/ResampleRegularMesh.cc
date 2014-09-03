@@ -68,8 +68,8 @@ void ResampleRegularMesh::setStateDefaults()
 void ResampleRegularMesh::setDimensionParameter(const std::string& name, const AlgorithmParameterName& dim, const AlgorithmParameterName& useScaling)
 {
   auto state = get_state();
-  auto dimValue = state->getValue(dim).getDouble();
-  if (state->getValue(useScaling).getBool())
+  auto dimValue = state->getValue(dim).toDouble();
+  if (state->getValue(useScaling).toBool())
   {
     if (dimValue <= 0) 
     {

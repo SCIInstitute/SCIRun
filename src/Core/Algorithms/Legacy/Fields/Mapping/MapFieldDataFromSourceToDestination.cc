@@ -484,7 +484,7 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
   // Make sure output field is all empty and of right size
   dfield->resize_values();
   dfield->clear_all_values();
-  dfield->set_all_values(get(DefaultValue).getDouble());
+  dfield->set_all_values(get(DefaultValue).toDouble());
 
   std::string method = get_option(MappingMethod);
   int sbasis_order = sfield->basis_order();
@@ -526,7 +526,7 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
     }
   }
 
-  double maxdist = get(MaxDistance).getDouble();
+  double maxdist = get(MaxDistance).toDouble();
 
   boost::scoped_ptr<detail::MapFieldDataFromSourceToDestinationPAlgoBase> algoP;
   int np = Parallel::NumCores();

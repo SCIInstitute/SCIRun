@@ -60,10 +60,10 @@ void ConvertMatrixTypeModule::execute()
   if (needToExecute())
   {
    update_state(Executing);
-   algo().set(ConvertMatrixTypeAlgorithm::PassThrough(),get_state()->getValue(ConvertMatrixTypeAlgorithm::PassThrough()).getBool());
-   algo().set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix()).getBool());  
-   algo().set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix()).getBool());  
-   algo().set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix()).getBool());  
+   algo().set(ConvertMatrixTypeAlgorithm::PassThrough(),get_state()->getValue(ConvertMatrixTypeAlgorithm::PassThrough()).toBool());
+   algo().set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix()).toBool());  
+   algo().set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix()).toBool());  
+   algo().set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(),get_state()->getValue(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix()).toBool());  
    auto output = algo().run_generic(withInputData((InputMatrix, input_matrix)));
  
    sendOutputFromAlgorithm(ResultMatrix, output);

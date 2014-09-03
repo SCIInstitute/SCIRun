@@ -54,7 +54,7 @@ ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle stat
 
 void ReadFieldDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
 void ReadFieldDialog::pushFileNameToState() 
@@ -65,7 +65,7 @@ void ReadFieldDialog::pushFileNameToState()
 
 void ReadFieldDialog::openFile()
 {
-  auto types = state_->getValue(Variables::FileTypeList).getString();
+  auto types = state_->getValue(Variables::FileTypeList).toString();
   QString selectedFilter;
   auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter);
   if (file.length() > 0)

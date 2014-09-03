@@ -55,7 +55,7 @@ void WriteMatrixModule::execute()
   {
     get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
   }
-  auto path = get_state()->getValue(Variables::Filename).getFilename();
+  auto path = get_state()->getValue(Variables::Filename).toFilename();
   filename_ = path.string();
 
   if (needToExecute())

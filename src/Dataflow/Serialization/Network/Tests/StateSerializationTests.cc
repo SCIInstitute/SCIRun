@@ -69,7 +69,7 @@ TEST(SerializeStateTest, RoundTrip)
 
   EXPECT_EQ(xml1, xml2);
 
-  EXPECT_EQ(4, readIn->getValue(intName).getInt());
-  EXPECT_EQ(3.14, readIn->getValue(doubleName).getDouble());
-  EXPECT_EQ(s, readIn->getValue(stringName).getString());
+  EXPECT_EQ(4, readIn->getValue(intName).toInt());
+  EXPECT_EQ(3.14, readIn->getValue(doubleName).toDouble());
+  EXPECT_EQ(s, readIn->getValue(stringName).toString());
 }
