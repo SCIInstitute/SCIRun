@@ -68,6 +68,7 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   
   // connecting all table cell positions (int = row, int = col)
   connect(electrode_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
+  addSpinBoxManager(refnode, SetupRHSforTDCSandTMSAlgorithm::refnode());
 }
 
 void SetupRHSforTDCSandTMSDialog::push()

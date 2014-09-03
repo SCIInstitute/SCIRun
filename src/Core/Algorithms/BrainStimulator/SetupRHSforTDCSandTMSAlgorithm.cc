@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 
-   Author: Spencer Frisby
-   Date:   July 2014
+   Author: Moritz Dannhauer, Spencer Frisby
+   Date:   September 2014
 */
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -42,15 +42,19 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <boost/lexical_cast.hpp>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodeTableValues);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ELECTRODE_VALUES);
+
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::refnode() { return AlgorithmParameterName("refnode"); }
 
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::MESH("MESH");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::SCALP_TRI_SURF_MESH("SCALP_TRI_SURF_MESH");
@@ -61,12 +65,14 @@ AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_ELEMENT_TYPE("ELEC
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_ELEMENT_DEFINITION("ELECTRODE_ELEMENT_DEFINITION");
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_CONTACT_IMPEDANCE("ELECTRODE_CONTACT_IMPEDANCE");
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
+AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::LHS_KNOWNS("LHS_KNOWNS");
 
 AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
 
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
   addParameter(Parameters::ELECTRODE_VALUES, 0); // just a default value, will be replaced with vector
+  addParameter(refnode(), 0);
 }
 
 AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput& input) const
@@ -104,9 +110,10 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   
   AlgorithmOutput output; 
   
-  DenseMatrixHandle elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs;
-  boost::tie(elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs) = run(mesh, all_elc_values, num_of_elc, scalp_tri_surf, elc_tri_surf, elc_sponge_location);
+  DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs;
+  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs) = run(mesh, all_elc_values, num_of_elc, scalp_tri_surf, elc_tri_surf, elc_sponge_location);
 
+  output[LHS_KNOWNS] = lhs_knowns;
   output[ELECTRODE_ELEMENT] = elc_element;
   output[ELECTRODE_ELEMENT_TYPE] = elc_element_typ;
   output[ELECTRODE_ELEMENT_DEFINITION] = elc_element_def;
@@ -116,12 +123,29 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
 }
 
 /// replace this code with calls to splitfieldbyconnectedregion, clipfieldby* if available for SCIRun5 
-boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle> SetupRHSforTDCSandTMSAlgorithm::create_lhs(FieldHandle mesh, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
+boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle> SetupRHSforTDCSandTMSAlgorithm::create_lhs(FieldHandle mesh, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
- DenseMatrixHandle elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
- VMesh*   elc_mesh = elc_tri_surf->vmesh();
- VMesh::size_type num_nodes = elc_mesh->num_nodes();
+ VMesh::size_type num_nodes = mesh->vmesh()->num_nodes();
+ DenseMatrixHandle lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
  
+ index_type refnode_number = get(refnode()).getInt();
+ if ( refnode_number > num_nodes)
+ {
+    THROW_ALGORITHM_PROCESSING_ERROR(" Reference node exceeds number of FEM nodes. ");
+ }
+ 
+ /// prepare LHS_KNOWNS which is the an input to addknownstolinearsystem (called x) besides the stiffness matrix
+ lhs_knows=boost::make_shared<DenseMatrix>(num_nodes,1);
+ for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
+ {
+   (*lhs_knows)(idx,1)=std::numeric_limits<double>::quiet_NaN();
+ }
+ (*lhs_knows)(refnode_number,1)=0;
+ 
+ //SplitFieldByConnectedRegionAlgo algo;
+ 
+/*
+ VMesh*   elc_mesh = elc_tri_surf->vmesh();
  Point p,r;
  double distance;
  VMesh::Node::index_type didx;
@@ -193,7 +217,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     }
    }
  } 
- 
+ */
  /*
  scalp_mesh->synchronize(Mesh::NODE_LOCATE_E); 
  std::vector<double> distances;
@@ -255,7 +279,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     }*/
 
 
- return boost::make_tuple(elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp);
+ return boost::make_tuple(lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp);
 }
 
 DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const
@@ -300,7 +324,7 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, c
   return output;
 }
 
-boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle> SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
+boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle> SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
   if (num_of_elc > 128) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes given exceeds what is possible ");}
   else if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
@@ -312,8 +336,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   
   DenseMatrixHandle rhs=create_rhs(mesh, elcs, num_of_elc);
   
-  DenseMatrixHandle elc_element, elc_element_typ, elc_element_def, elc_contact_imp;
-  boost::tie(elc_element, elc_element_typ, elc_element_def, elc_contact_imp) = create_lhs(mesh, scalp_tri_surf, elc_tri_surf, elc_sponge_location); 
+  DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp;
+  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp) = create_lhs(mesh, scalp_tri_surf, elc_tri_surf, elc_sponge_location); 
   
-  return boost::make_tuple(elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs);
+  return boost::make_tuple(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs);
 }

@@ -26,6 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@file SetupRHSforTDCSandTMSAlgorithm
+///@brief 
+/// This module sets up tDCS by providing the right hand side vector (parameterized by module GUI) and inputs for the modules: AddKnownsToLinearSystem, BuildTDCSMatrix.
+///
+///@author
+/// Moritz Dannhauer, Spencer Frisby
+///
+///@details
+/// .
+/// 
+
 #ifndef ALGORITHMS_MATH_SETUPRHSFORTDCSANDTMSALGORITHM_H
 #define ALGORITHMS_MATH_SETUPRHSFORTDCSANDTMSALGORITHM_H
 
@@ -47,8 +58,9 @@ namespace BrainStimulator {
     SetupRHSforTDCSandTMSAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle> run(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
-
+    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle> run(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
+    
+    static AlgorithmParameterName refnode();
     static AlgorithmInputName MESH;
     static AlgorithmInputName SCALP_TRI_SURF_MESH;
     static AlgorithmInputName ELECTRODE_TRI_SURF_MESH;
@@ -57,13 +69,14 @@ namespace BrainStimulator {
     static AlgorithmOutputName ELECTRODE_ELEMENT_TYPE;
     static AlgorithmOutputName ELECTRODE_ELEMENT_DEFINITION;
     static AlgorithmOutputName ELECTRODE_CONTACT_IMPEDANCE;
+    static AlgorithmOutputName LHS_KNOWNS;
     static AlgorithmOutputName RHS;
     
     const double identical_node_location_differce = 1e-8; /// should be a bit bigger than machine precision 
     
     static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
     SCIRun::Core::Datatypes::DenseMatrixHandle create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const;
-    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle> create_lhs(FieldHandle mesh, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
+    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle> create_lhs(FieldHandle mesh, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
   };
 
 }}}}

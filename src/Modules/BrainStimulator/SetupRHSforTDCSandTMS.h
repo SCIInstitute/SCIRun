@@ -26,6 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@file SetupRHSforTDCSandTMS
+///@brief 
+/// This module sets up TDCS by providing the right hand side vector (controlled by GUI) and inputs for the modules: AddKnownsToLinearSystem, BuildTDCSMatrix. 
+///
+///@author
+/// Moritz Dannhauer, Spencer Frisby
+///
+///@details
+/// .
+/// 
+
 #ifndef MODULES_BRAINSTIMULATOR_SetupRHSforTDCSandTMS_H
 #define MODULES_BRAINSTIMULATOR_SetupRHSforTDCSandTMS_H
 
@@ -40,7 +51,7 @@ namespace SCIRun {
 
 class SCISHARE SetupRHSforTDCSandTMSModule : public SCIRun::Dataflow::Networks::Module,
   public Has4InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, MatrixPortTag>,
-  public Has5OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>
+  public Has6OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>
 {
   public:
     SetupRHSforTDCSandTMSModule();
@@ -53,11 +64,12 @@ class SCISHARE SetupRHSforTDCSandTMSModule : public SCIRun::Dataflow::Networks::
     INPUT_PORT(2, ELECTRODE_TRI_SURF_MESH, LegacyField);
     INPUT_PORT(3, ELECTRODE_SPONGE_LOCATION_AVR, Matrix);
     
-    OUTPUT_PORT(0, ELECTRODE_ELEMENT, Matrix);
-    OUTPUT_PORT(1, ELECTRODE_ELEMENT_TYPE, Matrix);
-    OUTPUT_PORT(2, ELECTRODE_ELEMENT_DEFINITION, Matrix);
-    OUTPUT_PORT(3, ELECTRODE_CONTACT_IMPEDANCE, Matrix);
-    OUTPUT_PORT(4, RHS, Matrix);
+    OUTPUT_PORT(0, LHS_KNOWNS, Matrix);
+    OUTPUT_PORT(1, ELECTRODE_ELEMENT, Matrix);
+    OUTPUT_PORT(2, ELECTRODE_ELEMENT_TYPE, Matrix);
+    OUTPUT_PORT(3, ELECTRODE_ELEMENT_DEFINITION, Matrix);
+    OUTPUT_PORT(4, ELECTRODE_CONTACT_IMPEDANCE, Matrix);
+    OUTPUT_PORT(5, RHS, Matrix);
 };
 
 }}}

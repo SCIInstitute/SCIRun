@@ -51,6 +51,7 @@ TARGET_LINK_LIBRARIES(Algorithms_BrainStimulator
   Core_Datatypes_Legacy_Field 
   Core_Geometry_Primitives  #vectors
   Core_Basis #field basis
+  Algorithms_Field
 #  Core_Datatypes_Legacy_BrainStimulator
   Algorithms_Base
   ${SCI_BOOST_LIBRARY}

@@ -45,6 +45,7 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
  INITIALIZE_PORT(SCALP_TRI_SURF_MESH);
  INITIALIZE_PORT(ELECTRODE_TRI_SURF_MESH);
  INITIALIZE_PORT(ELECTRODE_SPONGE_LOCATION_AVR);
+ INITIALIZE_PORT(LHS_KNOWNS);
  INITIALIZE_PORT(ELECTRODE_ELEMENT);
  INITIALIZE_PORT(ELECTRODE_ELEMENT_TYPE);
  INITIALIZE_PORT(ELECTRODE_ELEMENT_DEFINITION);
@@ -54,7 +55,7 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
-
+  setStateIntFromAlgo(SetupRHSforTDCSandTMSAlgorithm::refnode());
 }
 
 void SetupRHSforTDCSandTMSModule::execute()
@@ -70,6 +71,7 @@ void SetupRHSforTDCSandTMSModule::execute()
  
   if (needToExecute())
   {
+    algo().set(SetupRHSforTDCSandTMSAlgorithm::refnode(), get_state()->getValue(SetupRHSforTDCSandTMSAlgorithm::refnode()).getInt());
     auto output = algo().run_generic(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT_TYPE, output);
