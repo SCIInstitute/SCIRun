@@ -95,12 +95,12 @@ RenderState ShowFieldModule::getNodeRenderState(
 {
   RenderState renState;
 
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).getBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).getBool());
+  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).toBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).toBool());
 
-  renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).getBool());
+  renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).toBool());
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
+  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
 
   if (colorMap)
   {
@@ -123,10 +123,10 @@ RenderState ShowFieldModule::getEdgeRenderState(
 {
   RenderState renState;
 
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).getBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).getBool());
+  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
+  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
 
   if (colorMap)
   {
@@ -146,10 +146,10 @@ RenderState ShowFieldModule::getFaceRenderState(
 {
   RenderState renState;
 
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowFaces).getBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).getBool());
+  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowFaces).toBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool());
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
+  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
 
   if (colorMap)
   {
@@ -183,9 +183,6 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   float meshRed   = static_cast<float>(meshColor.r() / 255.0f);
   float meshGreen = static_cast<float>(meshColor.g() / 255.0f);
   float meshBlue  = static_cast<float>(meshColor.b() / 255.0f);
-  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
-  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
-  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
 
   // Resultant geometry type (representing a spire object and a number of passes).
   GeometryHandle geom(new GeometryObject(field));
@@ -763,12 +760,6 @@ void ShowFieldModule::addFaceGeom(
     vboBuffer->write(COLOR_FTOB(vcol.transparency));
   };
 
-    bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).toBool();
-    // Add appropriate uniforms to the pass (in this case, uColor).
-    if (edgeTransparency)
-      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
-    else
-      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 1.0f));
   auto writeVBOScalarValue = [&vboBuffer](double value)
   {
     vboBuffer->write(static_cast<float>(value));
@@ -863,9 +854,6 @@ void ShowFieldModule::addFaceGeom(
         if (!doubleSided) {writeVBOScalarValue(scols[0]);}
         else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
-      bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).toBool();
-      float transparency    = 1.0f;
-      if (faceTransparency) transparency = 0.1f;
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
         writeVBOScalarValue(scols[1]);
@@ -926,9 +914,6 @@ void ShowFieldModule::addFaceGeom(
           writeIBOIndex(iboIndex);
 
       // Apply misc user settings.
-      bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).toBool();
-      float transparency    = 1.0f;
-      if (faceTransparency) transparency = 0.2f;
           writeVBOPoint(points[i-1]);
           writeVBONormal(normals[i-1]);
           if (!doubleSided) {writeVBOScalarValue(scols[i-1]);}
@@ -996,9 +981,6 @@ void ShowFieldModule::addFaceGeom(
         else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
 
     // Add appropriate uniforms to the pass (in this case, uColor).
-    bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).toBool();
-    if (nodeTransparency)
-      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
         writeVBOPoint(points[1]);
         if (!doubleSided) {writeVBO4ByteColor(vcols[1]);}
         else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}

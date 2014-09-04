@@ -54,7 +54,6 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
   addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
 
-  buttonBox->setVisible(false);
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
   connect(nodesAsPointsButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
   connect(nodesAsSpheresButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
