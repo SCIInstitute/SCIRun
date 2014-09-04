@@ -26,6 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef None
+#  undef None
+#endif
+#ifdef CursorShape 
+#  undef CursorShape 
+#endif
+#ifdef Status  
+#  undef Status  
+#endif
+#ifdef Bool
+#  undef Bool
+#endif
+#ifdef Ok
+#  undef Ok
+#endif
+
 #ifndef INTERFACE_MODULES_RENDER_VIEWSCENEPLATFORMCOMPATIBILITY_H
 #define INTERFACE_MODULES_RENDER_VIEWSCENEPLATFORMCOMPATIBILITY_H
 
