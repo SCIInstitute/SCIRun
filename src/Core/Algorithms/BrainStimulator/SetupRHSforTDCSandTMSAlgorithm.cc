@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -125,24 +126,144 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
 /// replace this code with calls to splitfieldbyconnectedregion, clipfieldby* if available for SCIRun5 
 boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle> SetupRHSforTDCSandTMSAlgorithm::create_lhs(FieldHandle mesh, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
- VMesh::size_type num_nodes = mesh->vmesh()->num_nodes();
+ VMesh::size_type mesh_num_nodes = mesh->vmesh()->num_nodes();
  DenseMatrixHandle lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
  
  index_type refnode_number = get(refnode()).getInt();
- if ( refnode_number > num_nodes)
+ if ( refnode_number > mesh_num_nodes)
  {
     THROW_ALGORITHM_PROCESSING_ERROR(" Reference node exceeds number of FEM nodes. ");
  }
  
  /// prepare LHS_KNOWNS which is the an input to addknownstolinearsystem (called x) besides the stiffness matrix
- lhs_knows=boost::make_shared<DenseMatrix>(num_nodes,1);
- for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
+ lhs_knows=boost::make_shared<DenseMatrix>(mesh_num_nodes,1);
+ for(VMesh::Node::index_type idx=0; idx<mesh_num_nodes; idx++)
  {
    (*lhs_knows)(idx,1)=std::numeric_limits<double>::quiet_NaN();
  }
  (*lhs_knows)(refnode_number,1)=0;
  
- //SplitFieldByConnectedRegionAlgo algo;
+ SplitFieldByConnectedRegionAlgo algo;
+ algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), false);
+ algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+ std::vector<FieldHandle> result = algo.run(mesh);
+ 
+ if (result.size()<=0)
+ {
+    THROW_ALGORITHM_PROCESSING_ERROR(" Splitting input mesh into connected regions failed. ");
+ }
+ 
+ if (elc_sponge_location->ncols()!=4)
+ {
+   THROW_ALGORITHM_PROCESSING_ERROR(" ELECTRODE_SPONGE_LOCATION_AVR (4th module input) needs to have 4 columns (x,y,z,elc. sponge height).");
+ }
+ 
+ if( result.size() != elc_sponge_location->nrows())
+ {
+   THROW_ALGORITHM_PROCESSING_ERROR(" The number of electrode sponges (4th module input) does not match number of a splitted electrode surfaces (3rd module input).");
+ }
+ 
+  /// map the electrode sponge center (CreateElectrodeCoil) to generated tDCS electrode geometry (Cleaver), 
+  /// this mapping is meant to map the GUI inputs to actual electrode geometry by having a lookup table
+ DenseMatrixHandle lookup(new DenseMatrix(elc_sponge_location->nrows(), 1));
+ DenseMatrixHandle distances(new DenseMatrix(elc_sponge_location->nrows(), 1));
+ VMesh::Node::index_type didx;
+ double distance=0; 
+ for (long i=0;i<elc_sponge_location->nrows();i++)
+ {
+  Point elc((*elc_sponge_location)(i,0),(*elc_sponge_location)(i,1),(*elc_sponge_location)(i,2)),r;
+  double min_dis=std::numeric_limits<double>::infinity();
+  long found_index=std::numeric_limits<double>::quiet_NaN();
+  for(long j=0;j<result.size();j++)
+  {
+   VMesh*  tmp_mesh = result[j]->vmesh();
+   tmp_mesh->synchronize(Mesh::NODE_LOCATE_E); 
+   
+   tmp_mesh->find_closest_node(distance,r,didx,elc);
+   if (distance<min_dis)
+   {
+     min_dis=distance;
+     found_index=j;
+   }   
+  }
+  (*lookup)(i,0)=found_index;
+  (*distances)(i,0)=min_dis;
+ }
+ 
+ /// throw error if the geometry is too far away from predicted location (based on input)
+ for (long i=0;i<elc_sponge_location->nrows();i++)
+ {
+   if ((*distances)(i,0)>(*elc_sponge_location)(i,3))
+   {
+    std::ostringstream ostr1;
+    ostr1 << " distance to electrode " << i << " sponge  = " <<  (*distances)(i,0) << " exceeds defined limit of " << (*elc_sponge_location)(i,3) << std::endl;
+    THROW_ALGORITHM_PROCESSING_ERROR(ostr1.str());
+   }
+ }
+ 
+ /// determine intersection of electrode sponge and scalp (replace with a mesh intersection function later); as well as center of electrode sponge/scalp surface
+ FieldInformation fi("PointCloudMesh",0,"double");
+ FieldHandle intersection_points=CreateField(fi);
+ VMesh* mesh_intersection_points = intersection_points->vmesh();
+ VField* field_intersection_points = intersection_points->vfield();
+ VMesh* mesh_scalp_tri_surf  = scalp_tri_surf->vmesh(); 
+ Point p; Vector norm; 
+ std::vector<VMesh::Node::index_type> node_ind;
+ std::vector<double> dist; 
+ distance=std::numeric_limits<double>::infinity(); 
+ DenseMatrixHandle elctrode_sponge_geometry_location_avr(new DenseMatrix(result.size(), 3));
+ DenseMatrixHandle sponge_center_pojected_onto_scalp(new DenseMatrix(result.size(), 3));
+ for(long i=0;i<result.size();i++)
+ {
+  VMesh*  tmp_mesh = result[i]->vmesh();
+  tmp_mesh->synchronize(Mesh::NODE_LOCATE_E);
+  double x=0,y=0,z=0,count=0;
+  long number_electrode_nodes=tmp_mesh->num_nodes();
+  for (VMesh::Node::index_type idx=0; idx<number_electrode_nodes; idx++)
+  {
+    tmp_mesh->get_center(p,idx);
+    if (mesh_scalp_tri_surf->find_closest_nodes(dist, node_ind, p, identical_node_location_differce))
+    {
+     if(node_ind.size()==1)
+      {
+       mesh_intersection_points->add_point(p);
+       tmp_mesh->get_normal(norm,idx);
+       field_intersection_points->set_value(norm,idx);
+       x+=p.x(); 
+       y+=p.y(); 
+       z+=p.z();
+       count++;
+      } else
+      {
+       THROW_ALGORITHM_PROCESSING_ERROR(" Found multiple points. Decrease minimum distance bound. ");
+      }
+    }
+  }
+  Point r(x/count,y/count,z/count);
+  (*elctrode_sponge_geometry_location_avr)(i,0)=r.x();
+  (*elctrode_sponge_geometry_location_avr)(i,1)=r.y();
+  (*elctrode_sponge_geometry_location_avr)(i,2)=r.z();
+   mesh_intersection_points->find_closest_node(distance,p,didx,r);
+  (*sponge_center_pojected_onto_scalp)(i,0)=p.x();
+  (*sponge_center_pojected_onto_scalp)(i,1)=p.y();
+  (*sponge_center_pojected_onto_scalp)(i,2)=p.z();
+  
+  ///move from the center of the electrode sponge to the top by going in the opposite direction of sponge_center_pojected_onto_scalp using the normal
+  /// first decide what the opposite direction is
+  
+  
+ }
+ 
+ /// find center of scalp-elc intersection
+
+ 
+  //FieldInformation fi(result[i]);
+  //FieldHandle tmp_field=CreateField(fi); /// create intersection surface to be plugged into "intersection_elcsponge_scalp"   
+  //VField* ofield = tmp_field->vfield();
+  //ofield->resize_values(); 
+  //VMesh::Node::index_type nodeindex = clipped->add_point(np);
+  //clipped->add_elem(nnodes);
+ 
  
 /*
  VMesh*   elc_mesh = elc_tri_surf->vmesh();

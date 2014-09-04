@@ -72,9 +72,10 @@ namespace BrainStimulator {
     static AlgorithmOutputName LHS_KNOWNS;
     static AlgorithmOutputName RHS;
     
-    const double identical_node_location_differce = 1e-8; /// should be a bit bigger than machine precision 
-    
     static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
+  
+  private:  
+    const double identical_node_location_differce = 1e-10; /// should be a bit bigger than machine precision 
     SCIRun::Core::Datatypes::DenseMatrixHandle create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const;
     boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle> create_lhs(FieldHandle mesh, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
   };
