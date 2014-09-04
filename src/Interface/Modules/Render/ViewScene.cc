@@ -27,6 +27,19 @@
 */
 
 #include <gl-platform/GLPlatform.hpp>
+#ifdef None
+#  undef None
+#endif
+#ifdef CursorShape 
+#  undef CursorShape 
+#endif
+#ifdef Status  
+#  undef Status  
+#endif
+#ifdef Bool
+#  undef Bool
+#endif
+
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/GLWidget.h>

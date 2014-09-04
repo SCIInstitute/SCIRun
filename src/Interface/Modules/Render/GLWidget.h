@@ -49,6 +49,9 @@
 #ifdef Status  
 #  undef Status  
 #endif
+#ifdef Bool
+#  undef Bool
+#endif
 
 #include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/QtGLContext.h>
