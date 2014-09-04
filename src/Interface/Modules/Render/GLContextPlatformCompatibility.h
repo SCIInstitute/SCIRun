@@ -34,7 +34,7 @@
 //
 // Note: If GLEW is ever replaced, review the usefulness of this header.
 
-#  include <QtOpenGL/QGLWidget>
+#include <QtOpenGL/QGLWidget>
 
 #include <Interface/Modules/Render/namespaces.h>
 
