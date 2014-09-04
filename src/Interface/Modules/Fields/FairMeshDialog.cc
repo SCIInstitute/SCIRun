@@ -65,7 +65,7 @@ void FairMeshDialog::pull()
   Pulling p(this);
   
   using namespace Parameters;
-  auto method = state_->getValue(FairMeshMethod).getString();
+  auto method = state_->getValue(FairMeshMethod).toString();
   fastWeightingButton_->setChecked("fast" == method);
   desbrunWeightingButton_->setChecked("desbrun" == method);
 

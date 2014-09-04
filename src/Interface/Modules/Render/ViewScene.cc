@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
 
@@ -35,6 +35,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Algorithms::Render;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -103,7 +104,7 @@ void ViewSceneDialog::newGeometryValue()
 
   itemManager_->removeAll();
   // Grab the geomData transient value.
-  auto geomDataTransient = state_->getTransientValue("geomData");
+  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
     auto geomData = optional_any_cast_or_default<SCIRun::Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
@@ -137,7 +138,7 @@ void ViewSceneDialog::newGeometryValue()
     spire->removeAllGeomObjects();
   }
   //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
-  //state_->setTransientValue("geomData", boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
+  //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
 
 //------------------------------------------------------------------------------
@@ -150,12 +151,12 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
   if (index == 0)
   {
     spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
-    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls = false;
+    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
   }
   else
   {
     spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
-    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls = true;
+    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
   }
 }
 

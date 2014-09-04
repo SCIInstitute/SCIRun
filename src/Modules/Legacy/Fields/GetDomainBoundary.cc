@@ -115,15 +115,15 @@ void GetDomainBoundary::execute()
     setAlgoBoolFromState(Parameters::NoInnerBoundary);
     setAlgoBoolFromState(Parameters::DisconnectBoundaries);
 
-    if (!state->getValue(Parameters::UseRange).getBool())
+    if (!state->getValue(Parameters::UseRange).toBool())
     {
-      int guiValue = state->getValue(Parameters::Domain).getInt();
+      int guiValue = state->getValue(Parameters::Domain).toInt();
       algo().set(Parameters::UseRange, true);
       algo().set(Parameters::MinRange, guiValue);
       algo().set(Parameters::MaxRange, guiValue);
     }
       
-    auto output = algo().run_generic(make_input((InputField, ifield)(ElemLink, optionalAlgoInput(elemLink))));
+    auto output = algo().run_generic(withInputData((InputField, ifield)(ElemLink, optionalAlgoInput(elemLink))));
     
     sendOutputFromAlgorithm(BoundaryField, output);
   }

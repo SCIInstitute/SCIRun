@@ -28,7 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QtGui>
 #include <Core/Application/Application.h>
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/GuiLogger.h>

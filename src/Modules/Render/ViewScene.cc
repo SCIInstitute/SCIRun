@@ -40,12 +40,15 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Render;
+using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
 ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
 Mutex ViewScene::mutex_("ViewScene");
+
+ALGORITHM_PARAMETER_DEF(Render, GeomData);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
 {
@@ -73,7 +76,7 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
 
 void ViewScene::updateTransientList()
 {
-  auto transient = get_state()->getTransientValue("geomData");
+  auto transient = get_state()->getTransientValue(Parameters::GeomData);
 
   auto geoms = optional_any_cast_or_default<GeomListPtr>(transient);
   if (!geoms)
@@ -97,7 +100,7 @@ void ViewScene::updateTransientList()
   // I thought about dynamic casting geometry object to a weak_ptr, but I don't
   // know where it will be destroyed. For now, it will have have stale pointer
   // data lying around in it... yuck.
-  get_state()->setTransientValue("geomData", geoms, false);
+  get_state()->setTransientValue(Parameters::GeomData, geoms, false);
 }
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)

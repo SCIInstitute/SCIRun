@@ -68,7 +68,7 @@ void ShowFieldDialog::pull()
 {
   pull_newVersionToReplaceOld();
   Pulling p(this);
-  ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).getString());
+  ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).toString());
   defaultMeshColor_ = QColor(color.r(), color.g(), color.b());
 }
 

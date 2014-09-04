@@ -42,7 +42,6 @@
 #define ALGORITHMS_MATH_SETCONDUCTIVITIESTOTETMESHALGORITHM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
 
 namespace SCIRun {

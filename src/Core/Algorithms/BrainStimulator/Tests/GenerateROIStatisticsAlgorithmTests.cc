@@ -106,7 +106,7 @@ TEST(GenerateROIStatisticsAlgorithm, ValidInput_TestAllROI)
   (*specROI)(2, 0) = 0;
   (*specROI)(3, 0) = 0; 
   (*specROI)(4, 0) = 0; 
-  boost::tuple<DenseMatrixHandle, Variable> output = algo.run(createmeshsolution,atlas,createcoordcubes,atlasMeshLabelsStr, specROI);
+  auto output = algo.run(createmeshsolution,atlas,createcoordcubes,atlasMeshLabelsStr, specROI);
   DenseMatrixHandle outputMatrix = output.get<0>();
   
   DenseMatrixHandle expected_result = expected_result_no_roi_spec();
@@ -142,7 +142,7 @@ TEST(GenerateROIStatisticsAlgorithm, ValidInput_TestSpecROI)
   (*specROI)(2, 0) = 0.5;
   (*specROI)(3, 0) = 0; 
   (*specROI)(4, 0) = 1; 
-  boost::tuple<DenseMatrixHandle, Variable> output = algo.run(createmeshsolution,atlas,createcoordcubes,atlasMeshLabelsStr, specROI);
+  auto output = algo.run(createmeshsolution,atlas,createcoordcubes,atlasMeshLabelsStr, specROI);
   DenseMatrixHandle outputMatrix = output.get<0>();
   
   DenseMatrixHandle expected_result = expected_result_roi_spec();
@@ -168,7 +168,7 @@ TEST(GenerateROIStatisticsAlgorithm, ValidInput_TestCoordinateSpace)
   (*specROI)(2, 0) = 10.5;
   (*specROI)(3, 0) = 0; 
   (*specROI)(4, 0) = 1.0; 
-  boost::tuple<DenseMatrixHandle, Variable> output = algo.run(createmeshsolution,atlas,createcoordcubesshiftby10,atlasMeshLabelsStr, specROI);
+  auto output = algo.run(createmeshsolution,atlas,createcoordcubesshiftby10,atlasMeshLabelsStr, specROI);
   DenseMatrixHandle outputMatrix = output.get<0>();
   
   DenseMatrixHandle expected_result = expected_result_roi_spec();

@@ -56,7 +56,7 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
 {
   ScopedAlgorithmStatusReporter asr(this, "AlignMeshBoundingBoxes");
   
-  bool rotate_data = get(RotateData).getBool();
+  bool rotate_data = get(RotateData).toBool();
   // Step 0:
   // Safety test:
   // Test whether we received actually a field. A handle can point to no object.

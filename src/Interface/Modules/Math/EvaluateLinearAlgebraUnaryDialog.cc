@@ -86,12 +86,12 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str)
 {
   EvaluateLinearAlgebraUnaryAlgorithm::Operator op = (EvaluateLinearAlgebraUnaryAlgorithm::Operator) getSelectedOperator();
 
-  if (state_->getValue(Variables::Operator).getInt() != op)
+  if (state_->getValue(Variables::Operator).toInt() != op)
     state_->setValue(Variables::Operator, op);
   
   bool ok;
   double value = str.toDouble(&ok);
-  if (ok && state_->getValue(Variables::ScalarValue).getDouble() != value)
+  if (ok && state_->getValue(Variables::ScalarValue).toDouble() != value)
   {
     state_->setValue(Variables::ScalarValue, value);
   }
@@ -105,6 +105,6 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState()
 void EvaluateLinearAlgebraUnaryDialog::pull()
 {
   //TODO convert to new widget managers
-  setSelectedOperator(state_->getValue(Variables::Operator).getInt());
-  scalarLineEdit_->setText(QString::number(state_->getValue(Variables::ScalarValue).getDouble()));
+  setSelectedOperator(state_->getValue(Variables::Operator).toInt());
+  scalarLineEdit_->setText(QString::number(state_->getValue(Variables::ScalarValue).toDouble()));
 }

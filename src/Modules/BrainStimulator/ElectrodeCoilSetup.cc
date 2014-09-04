@@ -58,14 +58,14 @@ void ElectrodeCoilSetupModule::execute()
   auto fields = getRequiredDynamicInputs(INPUTFIELDS);
   //auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
    // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
+  //auto param = get_state()->getValue(Variables::AppendMatrixOption).toInt();
 
   //algorithm parameter
   //algo_->set(Variables::AppendMatrixOption, param);
  
   
   //algorithm input and run
-  auto output = algo().run_generic(make_input((INPUTFIELDS, fields)));
+  auto output = algo().run_generic(withInputData((INPUTFIELDS, fields)));
 
   //algorithm output
   sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
