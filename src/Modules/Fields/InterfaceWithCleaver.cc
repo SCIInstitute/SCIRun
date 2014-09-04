@@ -70,7 +70,7 @@ void InterfaceWithCleaverModule::execute()
   setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y);
   setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z);
 
-  auto output = algo().run_generic(make_input((InputFields, fields)));
+  auto output = algo().run_generic(withInputData((InputFields, fields)));
   
   sendOutputFromAlgorithm(OutputField,output);
 }

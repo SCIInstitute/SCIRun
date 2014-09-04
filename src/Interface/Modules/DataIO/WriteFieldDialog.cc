@@ -55,7 +55,7 @@ WriteFieldDialog::WriteFieldDialog(const std::string& name, ModuleStateHandle st
 
 void WriteFieldDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
 void WriteFieldDialog::pushFileNameToState() 
@@ -65,7 +65,7 @@ void WriteFieldDialog::pushFileNameToState()
 
 void WriteFieldDialog::saveFile()
 {
-  auto types = state_->getValue(Variables::FileTypeList).getString();
+  auto types = state_->getValue(Variables::FileTypeList).toString();
   QString selectedFilter;
   auto file = QFileDialog::getSaveFileName(this, "Save Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter);
   if (file.length() > 0)

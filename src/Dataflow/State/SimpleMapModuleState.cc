@@ -28,6 +28,7 @@
 /// @todo Documentation Dataflow/State/SimpleMapModuleState.cc
 
 #include <Dataflow/State/SimpleMapModuleState.h>
+#include <Core/Utils/StringUtil.h>
 #include <Core/Logging/Log.h>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
@@ -85,13 +86,13 @@ bool SimpleMapModuleState::containsKey(const Name& name) const
 void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value)
 {
   auto oldLocation = stateMap_.find(parameterName);
-  bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value_ == value);
+  bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value() == value);
 
   stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
   
   if (newValue)
   {
-    LOG_DEBUG("----signaling from state map: (" << parameterName.name_ << ", " << to_string(value) << "), num_slots = " << stateChangedSignal_.num_slots() << std::endl);
+    LOG_DEBUG("----signaling from state map: (" << parameterName.name_ << ", " << SCIRun::Core::to_string(value) << "), num_slots = " << stateChangedSignal_.num_slots() << std::endl);
     stateChangedSignal_();
   }
 }
@@ -111,15 +112,15 @@ ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
   return keys;
 }
 
-SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientValue(const std::string& name) const
+SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientValue(const Name& name) const
 {
-  TransientStateMap::const_iterator i = transientStateMap_.find(name);
+  TransientStateMap::const_iterator i = transientStateMap_.find(name.name());
   return i != transientStateMap_.end() ? boost::make_optional(i->second) : TransientValueOption();
 }
 
-void SimpleMapModuleState::setTransientValue(const std::string& name, const TransientValue& value, bool fireSignal)
+void SimpleMapModuleState::setTransientValue(const Name& name, const TransientValue& value, bool fireSignal)
 {
-  transientStateMap_[name] = value;
+  transientStateMap_[name.name()] = value;
 
   if (fireSignal)
     fireTransientStateChangeSignal();

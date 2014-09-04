@@ -53,10 +53,10 @@ void AppendMatrixModule::execute()
 {
   auto matrixLHS = getRequiredInput(FirstMatrix);
   auto matrixRHS = getRequiredInput(SecondMatrix);
-  auto param = get_state()->getValue(Variables::RowsOrColumns).getInt();
+  auto param = get_state()->getValue(Variables::RowsOrColumns).toInt();
 
   algo().set(Variables::RowsOrColumns, param);
-  auto output = algo().run_generic(make_input((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
+  auto output = algo().run_generic(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
 
   sendOutputFromAlgorithm(ResultMatrix, output);
 }

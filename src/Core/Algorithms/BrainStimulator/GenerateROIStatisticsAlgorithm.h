@@ -44,7 +44,6 @@
 #define ALGORITHMS_MATH_GenerateROIStatisticsAlgorithm_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
@@ -72,7 +71,7 @@ namespace BrainStimulator {
     static const AlgorithmInputName CoordinateSpaceLabel;
     static const AlgorithmInputName SpecifyROI;
     static const AlgorithmOutputName StatisticalResults;
-    boost::tuple<Datatypes::DenseMatrixHandle, Variable> run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace=FieldHandle(), const std::string& AtlasMeshLabels="", const Datatypes::DenseMatrixHandle specROI=Datatypes::DenseMatrixHandle()) const;
+    boost::tuple<Datatypes::DenseMatrixHandle, VariableHandle> run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace=FieldHandle(), const std::string& AtlasMeshLabels="", const Datatypes::DenseMatrixHandle specROI=Datatypes::DenseMatrixHandle()) const;
  
   private:
     std::vector<std::string> ConvertInputAtlasStringIntoVector(const  std::string& atlasLabels) const;

@@ -95,7 +95,7 @@ public:
   }
   virtual void pull() override
   {
-    auto value = state_->getValue(stateKey_).getString();
+    auto value = state_->getValue(stateKey_).toString();
     auto qstring = toLabelConverter_(value);
     if (qstring != comboBox_->currentText())
     {
@@ -106,7 +106,7 @@ public:
   virtual void pushImpl() override
   {
     auto label = fromLabelConverter_(comboBox_->currentText());
-    if (label != state_->getValue(stateKey_).getString())
+    if (label != state_->getValue(stateKey_).toString())
     {
       LOG_DEBUG("In new version of push code for combobox: " << label);
       state_->setValue(stateKey_, label);
@@ -141,7 +141,7 @@ public:
   }
   virtual void pull() override
   {
-    auto value = state_->getValue(stateKey_).getBool();
+    auto value = state_->getValue(stateKey_).toBool();
     auto index = value ? 1 : 0;
     if (index != comboBox_->currentIndex())
     {
@@ -152,7 +152,7 @@ public:
   virtual void pushImpl() override
   {
     auto index = comboBox_->currentIndex();
-    if (index != (state_->getValue(stateKey_).getBool() ? 1 : 0))
+    if (index != (state_->getValue(stateKey_).toBool() ? 1 : 0))
     {
       LOG_DEBUG("In new version of push code for combobox, boolean mode: " << index);
       state_->setValue(stateKey_, index == 1);
@@ -178,7 +178,7 @@ public:
   }
   virtual void pull() override
   {
-    auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
     if (newValue != textEdit_->toPlainText())
     {
       textEdit_->setPlainText(newValue);
@@ -210,7 +210,7 @@ public:
   }
   virtual void pull() override
   {
-    auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
     if (newValue != lineEdit_->text())
     {
       lineEdit_->setText(newValue);
@@ -242,7 +242,7 @@ public:
       }
       virtual void pull() override
       {
-        auto newValue = QString::number(state_->getValue(stateKey_).getDouble());
+        auto newValue = QString::number(state_->getValue(stateKey_).toDouble());
         if (newValue != lineEdit_->text())
         {
           lineEdit_->setText(newValue);
@@ -274,7 +274,7 @@ public:
   }
   virtual void pull() override
   {
-    auto newValue = state_->getValue(stateKey_).getInt();
+    auto newValue = state_->getValue(stateKey_).toInt();
     if (newValue != spinBox_->value())
     {
       spinBox_->setValue(newValue);
@@ -306,7 +306,7 @@ public:
   }
   virtual void pull() override
   {
-    auto newValue = state_->getValue(stateKey_).getDouble();
+    auto newValue = state_->getValue(stateKey_).toDouble();
     if (newValue != spinBox_->value())
     {
       spinBox_->setValue(newValue);
@@ -338,7 +338,7 @@ public:
   }
   virtual void pull() override
   {
-    bool newValue = state_->getValue(stateKey_).getBool();
+    bool newValue = state_->getValue(stateKey_).toBool();
     if (newValue != checkBox_->isChecked())
     {
       LOG_DEBUG("In new version of pull code for CheckBox: " << newValue);
@@ -370,7 +370,7 @@ public:
       }
       virtual void pull() override
       {
-        bool newValue = state_->getValue(stateKey_).getBool();
+        bool newValue = state_->getValue(stateKey_).toBool();
         if (newValue != checkable_->isChecked())
         {
           LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);

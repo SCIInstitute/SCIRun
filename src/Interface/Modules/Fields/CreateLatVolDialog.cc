@@ -78,10 +78,10 @@ void CreateLatVolDialog::pull()
 {
   //TODO convert to new widget managers
   Pulling p(this);
-  elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolModule::ElementSizeNormalized).getBool());
+  elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolModule::ElementSizeNormalized).toBool());
   elementSizeOneButton_->setChecked(!elementSizeNormalizedButton_->isChecked());
 
-  std::string loc = state_->getValue(CreateLatVolModule::DataAtLocation).getString();
+  std::string loc = state_->getValue(CreateLatVolModule::DataAtLocation).toString();
   dataAtNodesButton_->setChecked(loc == "Nodes");
   dataAtCellsButton_->setChecked(loc == "Cells");
   dataAtNoneButton_->setChecked(loc == "None");

@@ -31,9 +31,24 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
 
-namespace SCIRun {
+
+
+namespace SCIRun 
+{
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Render
+      {
+        ALGORITHM_PARAMETER_DECL(GeomData);
+      }
+    }
+  }
+
 namespace Modules {
 namespace Render {
 

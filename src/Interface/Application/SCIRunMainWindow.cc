@@ -56,7 +56,7 @@
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
 #include <Core/Application/Application.h>
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -72,6 +72,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
 
 SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 {
@@ -582,9 +584,22 @@ void SCIRunMainWindow::makePipesManhattan()
   networkEditor_->setConnectionPipelineType(MANHATTAN);
 }
 
+namespace
+{
+  QString qname(const AlgorithmParameter& ap)
+  {
+    return QString::fromStdString(ap.name().name());
+  }
+}
+
 void SCIRunMainWindow::readSettings()
 {
+  Preferences& prefs = Preferences::Instance();
   QSettings settings("SCI:CIBC Software", "SCIRun5");
+
+  //TODO: centralize all these values in Preferences singleton, together with keys as names.
+  //TODO: extract QSettings logic into "PreferencesIO" class
+  //TODO: set up signal/slot for each prefs variable to make it easy to track changes from arbitrary widgets
 
   latestNetworkDirectory_ = settings.value("networkDirectory").toString();
   GuiLogger::Instance().log("Setting read: default network directory = " + latestNetworkDirectory_.path());
@@ -598,10 +613,12 @@ void SCIRunMainWindow::readSettings()
   prefs_->setRegressionTestDataDir(regressionTestDataDir);
 
   //TODO: make a separate class for these keys, bad duplication.
-  const QString colorKey = "backgroundColor";
+  const QString colorKey = qname(prefs.networkBackgroundColor);
   if (settings.contains(colorKey))
   {
-    networkEditor_->setBackground(QColor(settings.value(colorKey).toString()));
+    auto value = settings.value(colorKey).toString();
+    prefs.networkBackgroundColor.setValue(value.toStdString());
+    networkEditor_->setBackground(QColor(value));
     GuiLogger::Instance().log("Setting read: background color = " + networkEditor_->background().color().name());
   }
 
@@ -654,7 +671,7 @@ void SCIRunMainWindow::readSettings()
   {
     bool mode = settings.value(newViewSceneMouseControls).toBool();
     GuiLogger::Instance().log("Setting read: newViewSceneMouseControls = " + QString::number(mode));
-    Core::Preferences::Instance().useNewViewSceneMouseControls = mode;
+    Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
   }
 
   const QString favoriteModules = "favoriteModules";
@@ -669,50 +686,52 @@ void SCIRunMainWindow::readSettings()
 void SCIRunMainWindow::writeSettings()
 {
   QSettings settings("SCI:CIBC Software", "SCIRun5");
+  Preferences& prefs = Preferences::Instance();
+
+  //TODO: centralize all these values in Preferences singleton, together with keys as names
 
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
   settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
-  settings.setValue("backgroundColor", networkEditor_->background().color().name());
+  settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
-  settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls);
+  settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
 }
 
 namespace
 {
-  template <bool Flag>
   class SetDisableFlag : public boost::static_visitor<>
   {
   public:
+    explicit SetDisableFlag(bool flag) : flag_(flag) {}
     template <typename T>
     void operator()( T* widget ) const
     {
-      widget->setDisabled(Flag);
+      widget->setDisabled(flag_);
     }
+    bool flag_;
   };
 
-  //TODO: VS2010 compiler can't handle this function; check 2012 and clang
-  template <bool Flag>
-  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets)
+  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets, bool flag)
   {
-    std::for_each(widgets.begin(), widgets.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<Flag>(), v); });
+    std::for_each(widgets.begin(), widgets.end(), [=](InputWidget& v) { boost::apply_visitor(SetDisableFlag(flag), v); });
   }
 }
 
 void SCIRunMainWindow::disableInputWidgets()
 {
   networkEditor_->disableInputWidgets();
-  std::for_each(inputWidgets_.begin(), inputWidgets_.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<true>(), v); });
+  setWidgetsDisableFlag(inputWidgets_, true);
 }
 
 void SCIRunMainWindow::enableInputWidgets()
 {
   networkEditor_->enableInputWidgets();
-  std::for_each(inputWidgets_.begin(), inputWidgets_.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<false>(), v); });
+  setWidgetsDisableFlag(inputWidgets_, false);
 }
 
 void SCIRunMainWindow::chooseBackgroundColor()

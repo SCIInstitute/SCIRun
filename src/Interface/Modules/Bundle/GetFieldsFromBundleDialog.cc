@@ -50,12 +50,12 @@ void GetFieldsFromBundleDialog::pull()
   auto names = optional_any_cast_or_default<std::string>(state_->getTransientValue(GetFieldsFromBundle::FieldNameList.name()));
   fieldNameListTextEdit_->setText(QString::fromStdString(names));
 
-  field1NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[0]).getString()));
-  field2NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[1]).getString()));
-  field3NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[2]).getString()));
-  field4NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[3]).getString()));
-  field5NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[4]).getString()));
-  field6NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[5]).getString()));
+  field1NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[0]).toString()));
+  field2NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[1]).toString()));
+  field3NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[2]).toString()));
+  field4NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[3]).toString()));
+  field5NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[4]).toString()));
+  field6NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[5]).toString()));
   /*
   for (int i = 0; i < GetFieldsFromBundle::NUM_BUNDLE_OUT; ++i)
   {
@@ -63,7 +63,7 @@ void GetFieldsFromBundleDialog::pull()
   }
   */
 
-  //auto numFields = state_->getValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields).getInt();
+  //auto numFields = state_->getValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields).toInt();
   //tableWidget->setRowCount(numFields);
   //for (int i = 0; i < numFields; ++i)
   //{

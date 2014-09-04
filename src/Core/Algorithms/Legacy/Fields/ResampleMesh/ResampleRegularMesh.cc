@@ -252,8 +252,8 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   else if (check_option(Parameters::ResampleMethod,"Gaussian"))
   { 
     kern = nrrdKernelGaussian; 
-    param[0] = get(Parameters::ResampleGaussianSigma).getDouble(); 
-    param[1] = get(Parameters::ResampleGaussianExtend).getDouble(); 
+    param[0] = get(Parameters::ResampleGaussianSigma).toDouble(); 
+    param[1] = get(Parameters::ResampleGaussianExtend).toDouble(); 
   } 
   else  
   { // default is quartic
@@ -298,42 +298,42 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   }    
   
   // Set the resampling options
-  if (!get(Parameters::ResampleXDimUseScalingFactor).getBool())
+  if (!get(Parameters::ResampleXDimUseScalingFactor).toBool())
   {
     info->kernel[nrrdoffset] = kern;
-    info->samples[nrrdoffset] = static_cast<size_t>(get(Parameters::ResampleXDim).getDouble());
+    info->samples[nrrdoffset] = static_cast<size_t>(get(Parameters::ResampleXDim).toDouble());
   }
   else
   {
     info->kernel[nrrdoffset] = kern;
-    info->samples[nrrdoffset] = static_cast<size_t>(get(Parameters::ResampleXDim).getDouble() * nrrddims[nrrdoffset]);
+    info->samples[nrrdoffset] = static_cast<size_t>(get(Parameters::ResampleXDim).toDouble() * nrrddims[nrrdoffset]);
   }
 
   if (nrrddim-nrrdoffset > 1)
   {
-    if (!get(Parameters::ResampleYDimUseScalingFactor).getBool())
+    if (!get(Parameters::ResampleYDimUseScalingFactor).toBool())
     {
       info->kernel[nrrdoffset+1] = kern;
-      info->samples[nrrdoffset+1] = static_cast<size_t>(get(Parameters::ResampleYDim).getDouble());
+      info->samples[nrrdoffset+1] = static_cast<size_t>(get(Parameters::ResampleYDim).toDouble());
     }
     else
     {
       info->kernel[nrrdoffset+1] = kern;
-      info->samples[nrrdoffset+1] = static_cast<size_t>(get(Parameters::ResampleYDim).getDouble()*nrrddims[nrrdoffset+1]);
+      info->samples[nrrdoffset+1] = static_cast<size_t>(get(Parameters::ResampleYDim).toDouble()*nrrddims[nrrdoffset+1]);
     }
   }
 
   if (nrrddim-nrrdoffset > 2)
   {
-    if (!get(Parameters::ResampleZDimUseScalingFactor).getBool())
+    if (!get(Parameters::ResampleZDimUseScalingFactor).toBool())
     {
       info->kernel[nrrdoffset+2] = kern;
-      info->samples[nrrdoffset+2] = static_cast<size_t>(get(Parameters::ResampleZDim).getDouble());
+      info->samples[nrrdoffset+2] = static_cast<size_t>(get(Parameters::ResampleZDim).toDouble());
     }
     else
     {
       info->kernel[nrrdoffset+2] = kern;
-      info->samples[nrrdoffset+2] = static_cast<size_t>(get(Parameters::ResampleZDim).getDouble()*nrrddims[nrrdoffset+2]);
+      info->samples[nrrdoffset+2] = static_cast<size_t>(get(Parameters::ResampleZDim).toDouble()*nrrddims[nrrdoffset+2]);
     }
   }
 

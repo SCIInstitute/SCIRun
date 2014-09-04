@@ -815,7 +815,7 @@ AlgorithmOutput CalculateSignedDistanceFieldAlgo::run_generic(const AlgorithmInp
   auto objectField = input.get<Field>(ObjectField);
 
   FieldHandle distance, value;
-  if (get(OutputValueField).getBool())
+  if (get(OutputValueField).toBool())
   {
     if (!run(inputField, objectField, distance, value))
       THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");

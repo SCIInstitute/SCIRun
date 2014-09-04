@@ -81,8 +81,8 @@ AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const Algorithm
 {
   auto matrix = input.get<DenseMatrix>(Variables::InputMatrix);
 
-  auto scalar = boost::make_optional(get(Variables::ScalarValue).getDouble());
-  auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).getInt()), scalar));
+  auto scalar = boost::make_optional(get(Variables::ScalarValue).toDouble());
+  auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).toInt()), scalar));
 
   AlgorithmOutput output;
   output[Variables::Result] = result;
