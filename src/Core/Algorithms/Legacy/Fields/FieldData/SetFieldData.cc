@@ -82,7 +82,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle& input_field, DenseMatrixHa
     if (ncols == 1) 
     {
      found = true;    
-     if (get(keepTypeCheckBox).getBool()) 
+     if (get(keepTypeCheckBox).toBool()) 
        fi.set_data_type(input_field->vfield()->get_data_type()); 
      else
        fi.set_data_type("double");    
@@ -124,7 +124,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle& input_field, DenseMatrixHa
     /// do we have a scalar, vector, or tensor  ?
     if (data->nrows() == 1) 
     {     
-     if (get(keepTypeCheckBox).getBool()) 
+     if (get(keepTypeCheckBox).toBool()) 
        fi.set_data_type(input_field->vfield()->get_data_type()); 
      else
        fi.set_data_type("double");   

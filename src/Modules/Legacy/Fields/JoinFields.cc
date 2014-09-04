@@ -70,7 +70,7 @@ void JoinFields::execute()
   {
     update_state(Executing);
 
-    bool forcepointcloud = get_state()->getValue(ForcePointCloud).getBool();
+    bool forcepointcloud = get_state()->getValue(ForcePointCloud).toBool();
   
     setAlgoBoolFromState(JoinFieldsAlgo::MergeElems);
     setAlgoBoolFromState(JoinFieldsAlgo::MatchNodeValues);
@@ -78,7 +78,7 @@ void JoinFields::execute()
     setAlgoBoolFromState(JoinFieldsAlgo::MakeNoData);
     setAlgoDoubleFromState(JoinFieldsAlgo::Tolerance);
         
-    auto output = algo().run_generic(make_input((InputFields, fields)));
+    auto output = algo().run_generic(withInputData((InputFields, fields)));
     auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));
 
     if (forcepointcloud)

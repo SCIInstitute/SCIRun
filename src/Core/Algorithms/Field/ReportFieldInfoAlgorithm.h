@@ -30,19 +30,15 @@
 #define ALGORITHMS_MATH_REPORTFIELDINFO_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
+#include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Field/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Fields {
-  
-  ALGORITHM_PARAMETER_DECL(Knob1);
-  ALGORITHM_PARAMETER_DECL(Knob2);
   
   class SCISHARE ReportFieldInfoAlgorithm : public AlgorithmBase
   {

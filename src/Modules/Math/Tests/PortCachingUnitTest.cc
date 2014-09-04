@@ -173,7 +173,7 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+  sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
   Testing::MockModuleReexecutionStrategyPtr mockNeedToExecute(new NiceMock<Testing::MockModuleReexecutionStrategy>);
   process->setReexecutionStrategy(mockNeedToExecute);
@@ -307,7 +307,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+  sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
   std::cout << "RealInputsChanged, stateChanged = " << stateChanged_ << " oportsCached = " << oportsCached_ << std::endl;
   InputsChangedCheckerHandle realInputsChanged(new InputsChangedCheckerImpl(*evalModule));
@@ -348,7 +348,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
       EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
       DenseMatrixHandle input = matrix2();
-      sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+      sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
       //inputs have changed
       evalModule->resetFlags();
@@ -391,7 +391,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+  sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
   Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
   ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
@@ -486,7 +486,7 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+  sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
   Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
   ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
@@ -596,7 +596,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
 
   DenseMatrixHandle input = matrix1();
   std::cout << "### first input has id: " << input->id() << std::endl;
-  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+  sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
   std::cout << "RealInputsChanged, stateChanged = " << stateChanged_ << " oportsCached = " << oportsCached_ << std::endl;
   InputsChangedCheckerHandle realInputsChanged(new InputsChangedCheckerImpl(*evalModule));
@@ -640,7 +640,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
 
       DenseMatrixHandle input = matrix2();
       std::cout << "### second input has id: " << input->id() << std::endl;
-      sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+      sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
       //std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
       //inputs have changed
@@ -682,7 +682,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+  sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
   std::cout << "RealStateChanged, inputsChanged = " << inputsChanged_ << " oportsCached = " << oportsCached_ << std::endl;
   StateChangedCheckerHandle realStateChanged(new StateChangedCheckerImpl(*evalModule));
@@ -766,7 +766,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input, true);
+  sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
   //std::cout << "RealOportsCached, inputsChanged = " << inputsChanged_ << " stateChanged = " << stateChanged_ << std::endl;
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);

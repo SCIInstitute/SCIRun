@@ -76,7 +76,7 @@ void BuildFEMatrix::execute()
     algo_.set_int("num_processors", num_proc);
 #endif
 
-    auto output = algo().run_generic(make_input((InputField, field)));
+    auto output = algo().run_generic(withInputData((InputField, field)));
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     (Conductivity_Table, conductivity)
 #endif

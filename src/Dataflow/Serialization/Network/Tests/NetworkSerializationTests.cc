@@ -216,8 +216,8 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   EXPECT_EQ(9, matrixMathNetwork->nconnections());
 
   //Set module parameters.
-  matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1(), true);
-  matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2(), true);
+  matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
+  matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
   transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
@@ -244,7 +244,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   ModuleHandle trans2 = deserialized->lookupModule(ModuleId("EvaluateLinearAlgebraUnary", 2));
   ASSERT_TRUE(trans2.get() != nullptr);
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->get_module_name());
-  EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(Variables::Operator).getInt());
+  EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(Variables::Operator).toInt());
 }
 
 TEST(SerializeNetworkTest, FullTestWithDynamicPorts)

@@ -52,7 +52,7 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
 
 void WriteMatrixDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
 void WriteMatrixDialog::pushFileNameToState() 

@@ -76,8 +76,8 @@ namespace boost {
     template<class Archive>
     void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameter& ap, const unsigned int version)
     {
-      ar & boost::serialization::make_nvp("name", ap.name_.name_);
-      ar & boost::serialization::make_nvp("value", ap.value_);
+      ar & boost::serialization::make_nvp("name", ap.nameForXml().name_);
+      ar & boost::serialization::make_nvp("value", ap.valueForXml());
     }
 
     template<class Archive>

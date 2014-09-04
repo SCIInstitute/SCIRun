@@ -36,7 +36,7 @@ SCIRUN_ADD_UNIT_TEST(Algorithms_Base_Tests
 
 TARGET_LINK_LIBRARIES(Algorithms_Base_Tests
   Algorithms_Base
-  Core_Application
+  Core_Application_Preferences
   gtest_main
   gtest
   gmock
