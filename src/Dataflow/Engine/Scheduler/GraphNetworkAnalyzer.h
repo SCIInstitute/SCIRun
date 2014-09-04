@@ -40,27 +40,40 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
+  namespace NetworkGraph
+  {
+    typedef std::pair<int,int> Edge;
+    typedef std::vector<Edge> EdgeVector;
+    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> DirectedGraph;
+    typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS> UndirectedGraph;
+    typedef boost::graph_traits<DirectedGraph>::vertex_descriptor Vertex;
+    typedef std::list<Vertex> ExecutionOrder;
+    typedef ExecutionOrder::const_iterator ExecutionOrderIterator;
+    typedef std::map<std::string, int> ComponentMap;
+  }
+
   class SCISHARE NetworkGraphAnalyzer : boost::noncopyable
   {
   public:
-    typedef std::pair<int,int> Edge;
-    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> Graph;
-    typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
-    typedef std::list<Vertex> ExecutionOrder;
+    NetworkGraphAnalyzer(const Networks::NetworkInterface& network, const Networks::ModuleFilter& moduleFilter, bool precompute);
 
-    explicit NetworkGraphAnalyzer(const SCIRun::Dataflow::Networks::NetworkInterface& network, 
-		const SCIRun::Dataflow::Networks::ModuleFilter& moduleFilter = [](SCIRun::Dataflow::Networks::ModuleHandle) {return true; });
+    NetworkGraph::EdgeVector constructEdgeListFromNetwork();
+    void computeExecutionOrder();
 
     const Networks::ModuleId& moduleAt(int vertex) const;
-    ExecutionOrder::iterator topologicalBegin();
-    ExecutionOrder::iterator topologicalEnd();
-    Graph& graph();
+    NetworkGraph::ExecutionOrderIterator topologicalBegin();
+    NetworkGraph::ExecutionOrderIterator topologicalEnd();
+    const NetworkGraph::DirectedGraph& graph();
     int moduleCount() const;
+    NetworkGraph::ComponentMap connectedComponents();
 
   private:
+    const Networks::NetworkInterface& network_;
+    Networks::ModuleFilter moduleFilter_;
+
     boost::bimap<Networks::ModuleId, int> moduleIdLookup_;
-    ExecutionOrder order_;
-    Graph graph_;
+    NetworkGraph::ExecutionOrder order_;
+    NetworkGraph::DirectedGraph graph_;
     int moduleCount_;
   };
 

@@ -41,7 +41,7 @@ namespace Engine {
   class SCISHARE BoostGraphParallelScheduler : public Scheduler<ParallelModuleExecutionOrder>
   {
   public:
-	explicit BoostGraphParallelScheduler(const Networks::ModuleFilter& filter = [](SCIRun::Dataflow::Networks::ModuleHandle) {return true; });
+    explicit BoostGraphParallelScheduler(const Networks::ModuleFilter& filter);
     virtual ParallelModuleExecutionOrder schedule(const Networks::NetworkInterface& network) const;
   private:
     Networks::ModuleFilter filter_;

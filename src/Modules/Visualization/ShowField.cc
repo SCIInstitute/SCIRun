@@ -174,6 +174,15 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       getUpdaterFunc();
 
   /// \todo Determine a better way of handling all of the various object state.
+  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).toBool();
+  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
+  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
+  bool invertNormals = state->getValue(ShowFieldModule::FaceInvertNormals).toBool();
+  //bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
+  const ColorRGB meshColor(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  float meshRed   = static_cast<float>(meshColor.r() / 255.0f);
+  float meshGreen = static_cast<float>(meshColor.g() / 255.0f);
+  float meshBlue  = static_cast<float>(meshColor.b() / 255.0f);
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
@@ -754,6 +763,12 @@ void ShowFieldModule::addFaceGeom(
     vboBuffer->write(COLOR_FTOB(vcol.transparency));
   };
 
+    bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).toBool();
+    // Add appropriate uniforms to the pass (in this case, uColor).
+    if (edgeTransparency)
+      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
+    else
+      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 1.0f));
   auto writeVBOScalarValue = [&vboBuffer](double value)
   {
     vboBuffer->write(static_cast<float>(value));
@@ -848,6 +863,9 @@ void ShowFieldModule::addFaceGeom(
         if (!doubleSided) {writeVBOScalarValue(scols[0]);}
         else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
+      bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).toBool();
+      float transparency    = 1.0f;
+      if (faceTransparency) transparency = 0.1f;
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
         writeVBOScalarValue(scols[1]);
@@ -907,6 +925,10 @@ void ShowFieldModule::addFaceGeom(
           else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
           writeIBOIndex(iboIndex);
 
+      // Apply misc user settings.
+      bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).toBool();
+      float transparency    = 1.0f;
+      if (faceTransparency) transparency = 0.2f;
           writeVBOPoint(points[i-1]);
           writeVBONormal(normals[i-1]);
           if (!doubleSided) {writeVBOScalarValue(scols[i-1]);}
@@ -973,6 +995,10 @@ void ShowFieldModule::addFaceGeom(
         if (!doubleSided) {writeVBO4ByteColor(vcols[0]);}
         else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
 
+    // Add appropriate uniforms to the pass (in this case, uColor).
+    bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).toBool();
+    if (nodeTransparency)
+      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
         writeVBOPoint(points[1]);
         if (!doubleSided) {writeVBO4ByteColor(vcols[1]);}
         else              {writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]);}
@@ -1629,5 +1655,6 @@ AlgorithmParameterName ShowFieldModule::FaceInvertNormals("FaceInvertNormals");
 AlgorithmParameterName ShowFieldModule::NodeAsPoints("NodeAsPoints");
 AlgorithmParameterName ShowFieldModule::NodeAsSpheres("NodeAsSpheres");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
+
 
 
