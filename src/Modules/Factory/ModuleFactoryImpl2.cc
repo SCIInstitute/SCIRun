@@ -43,6 +43,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Modules/BrainStimulator/GenerateROIStatistics.h>
+#include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
 #include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 
@@ -61,6 +62,7 @@ void ModuleDescriptionLookup::addBrainSpecificModules()
   addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", "New module", " Sets conveniently conductivity profile for tetrahedral mesh ");
   addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
   addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
+  addModuleDesc<SimulateForwardMagneticFieldModule>("SimulateForwardMagneticField", "BrainStimulator", "SCIRun", "Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addMoreModules()

@@ -31,6 +31,7 @@ SET(Algorithms_BrainStimulator_SRCS
   SetConductivitiesToTetMeshAlgorithm.cc
   GenerateROIStatisticsAlgorithm.cc
   SetupRHSforTDCSandTMSAlgorithm.cc
+  SimulateForwardMagneticFieldAlgorithm.cc
 )
 
 SET(Algorithms_BrainStimulator_HEADERS
@@ -38,6 +39,7 @@ SET(Algorithms_BrainStimulator_HEADERS
   SetConductivitiesToTetMeshAlgorithm.h
   GenerateROIStatisticsAlgorithm.h
   SetupRHSforTDCSandTMSAlgorithm.h
+  SimulateForwardMagneticFieldAlgorithm.h
   share.h
 )
 
