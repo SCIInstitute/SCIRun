@@ -34,6 +34,22 @@
 //
 // Note: If GLEW is ever replaced, review the usefulness of this header.
 
+#ifdef None
+#  undef None
+#endif
+#ifdef CursorShape 
+#  undef CursorShape 
+#endif
+#ifdef Status  
+#  undef Status  
+#endif
+#ifdef Bool
+#  undef Bool
+#endif
+#ifdef Ok
+#  undef Ok
+#endif
+
 #include <QtOpenGL/QGLWidget>
 
 #include <Interface/Modules/Render/namespaces.h>
