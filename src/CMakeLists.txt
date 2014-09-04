@@ -615,6 +615,7 @@ SET_PROPERTY(TARGET Algorithms_Field         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_BrainStimulator         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Factory   PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Visualization         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_FiniteElements         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_DataIO         PROPERTY FOLDER "Core/Algorithms")
 

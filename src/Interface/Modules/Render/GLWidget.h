@@ -38,9 +38,9 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 
-#include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/QtGLContext.h>
+#include <gl-platform/GLPlatform.hpp>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/namespaces.h>
