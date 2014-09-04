@@ -26,14 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/ES/SRInterface.h>
-#include <Modules/Render/ViewScene.h>
 #include <Interface/Modules/Render/GLWidget.h>
-
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
+#include <Modules/Render/ViewScene.h>
+#include <gl-platform/GLPlatform.hpp>
 
 
 using namespace SCIRun::Gui;
