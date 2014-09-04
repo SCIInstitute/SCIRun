@@ -49,6 +49,15 @@
 #ifdef Ok
 #  undef Ok
 #endif
+#ifdef Unsorted
+#  undef Unsorted
+#endif
+#ifdef NoSort
+#  undef NoSort
+#endif
+#ifdef GrayScale
+#  undef GrayScale
+#endif
 
 #include <QtOpenGL/QGLWidget>
 
