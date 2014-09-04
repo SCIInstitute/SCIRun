@@ -143,7 +143,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
 
   barrier_.wait();
 
-  def_value_ = algo_->get(Parameters::OutsideValue).getDouble();
+  def_value_ = algo_->get(Parameters::OutsideValue).toDouble();
 
   VMesh* omesh = ofield_->vmesh();
   VField* ofield = ofield_->vfield();
@@ -1122,8 +1122,10 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle weights, Fiel
       return (false);
     }
   }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
+#endif
 
   return (true);
 }
@@ -1251,8 +1253,11 @@ MapFieldDataOntoElemsAlgo::runImpl(FieldHandle source, FieldHandle destination, 
       return (false);
     }
   }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Copy properties
   output->vfield()->copy_properties(destination->vfield());
+#endif
 
   return (true);
 }

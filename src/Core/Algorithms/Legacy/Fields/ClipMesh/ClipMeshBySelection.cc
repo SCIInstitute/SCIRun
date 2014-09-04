@@ -68,7 +68,7 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
                              FieldHandle& output) const
 {
   // Store old setting
-  bool temp = get(Parameters::BuildMapping).getBool();
+  bool temp = get(Parameters::BuildMapping).toBool();
   //TODO: yuck
   const_cast<ClipMeshBySelectionAlgo&>(*this).set(Parameters::BuildMapping, false);
   MatrixHandle dummy;
@@ -357,7 +357,7 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
   
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
-    bool build_mapping = get(Parameters::BuildMapping).getBool();
+    bool build_mapping = get(Parameters::BuildMapping).toBool();
     if (build_mapping)
     {
       size_type m,n,nnz;

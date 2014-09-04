@@ -47,10 +47,12 @@ namespace SCIRun {
         class SCISHARE ModuleProducer : public ProducerInterface, boost::noncopyable
         {
         public:
-          ModuleProducer(const Networks::ExecutableLookup* lookup, const ExecutionBounds& bounds, 
-            const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work) :
+          ModuleProducer(const Networks::ModuleFilter& filter,
+            const Networks::ExecutableLookup* lookup, const ExecutionBounds& bounds, 
+            const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
+          scheduler_(filter),
           lookup_(lookup), bounds_(bounds), network_(network), lock_(lock),
-            work_(work), doneCount_(0), shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
+            work_(work), doneCount_(0), shouldLog_(SCIRun::Core::Logging::Log::get().verbose()), numModules_(numModules)
           {
             log_.setVerbose(shouldLog_);
           }
@@ -90,7 +92,7 @@ namespace SCIRun {
                     doneCount_.fetch_add(1);
 
                     if (shouldLog_)
-                      log_ << Core::Logging::DEBUG_LOG << "Producer status: " << doneCount_ << " out of " << network_->nmodules() << std::endl;
+                      log_ << Core::Logging::DEBUG_LOG << "Producer status: " << doneCount_ << " out of " << numModules_ << std::endl;
                   }
                 }
               }
@@ -115,20 +117,10 @@ namespace SCIRun {
 
           bool isDone() const 
           {
-            return doneCount_ >= network_->nmodules();
+            return doneCount_ >= numModules_;
           }
         private:
-
-          struct ModuleWaiting
-          {
-            bool operator()(Networks::ModuleHandle mh) const
-            {
-              return mh->executionState() != Networks::ModuleInterface::Completed;
-            }
-          };
-
-          static ModuleWaiting filter() { return ModuleWaiting(); }
-          static BoostGraphParallelScheduler scheduler_;
+          BoostGraphParallelScheduler scheduler_;
           const Networks::ExecutableLookup* lookup_;
           const ExecutionBounds& bounds_;
           const Networks::NetworkInterface* network_;
@@ -138,6 +130,7 @@ namespace SCIRun {
           mutable std::set<Networks::ModuleId> doneIds_;
           static Core::Logging::Log& log_;
           bool shouldLog_;
+          size_t numModules_;
         };
 
         typedef boost::shared_ptr<ModuleProducer> ModuleProducerPtr;

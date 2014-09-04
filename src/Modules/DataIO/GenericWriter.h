@@ -115,7 +115,7 @@ GenericWriter<HType, PortTag>::execute()
   /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
   if (!fileOption)
-    filename_ = get_state()->getValue(stateFilename_).getString();
+    filename_ = get_state()->getValue(stateFilename_).toString();
   else
   {
     filename_ = (*fileOption)->value();

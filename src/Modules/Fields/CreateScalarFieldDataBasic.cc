@@ -87,7 +87,7 @@ void CreateScalarFieldDataBasic::execute()
           vfield->set_value(value, nodeID);
 
           // by node id
-          auto valueFuncName = get_state()->getValue(ValueFunc).getString();
+          auto valueFuncName = get_state()->getValue(ValueFunc).toString();
           if (valueFuncName == "byPlane")
           {
             if ((nodeID + 1) % nodesPerPlane == 0)

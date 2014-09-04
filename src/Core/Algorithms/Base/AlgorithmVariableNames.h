@@ -29,7 +29,7 @@
 #ifndef ALGORITHMS_BASE_ALGORITHMVARIABLENAMES_H
 #define ALGORITHMS_BASE_ALGORITHMVARIABLENAMES_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -62,6 +62,8 @@ public:
   static const AlgorithmInputName InputField;
   static const AlgorithmInputName ObjectField;
   static const AlgorithmInputName ListOfInputFields;
+  static const AlgorithmInputName Source;
+  static const AlgorithmInputName Destination;
 
   static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmOutputName Result;

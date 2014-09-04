@@ -30,6 +30,7 @@
 #include <QtGui>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
+#include <Core/Logging/Log.h>
 
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Connection.h>
@@ -75,7 +76,7 @@ namespace Gui {
       menu_->addActions(QList<QAction*>()
         << disabled(new QAction("ID: " + QString::fromStdString(moduleId), parent))
         << separatorAction(parent)
-        << disabled(new QAction("Execute", parent))
+        << new QAction("Execute", parent)
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
@@ -126,7 +127,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   inputPortLayout_(0),
   outputPortLayout_(0),
   editor_(ed),
-  deleting_(false)
+  deleting_(false),
+  defaultBackgroundColor_("lightgray;")
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -150,6 +152,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   optionsButton_->setVisible(theModule_->has_ui());
 
   executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  connect(executePushButton_, SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
 
   int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
   int extraWidth = pixelWidth - moduleWidthThreshold;
@@ -163,6 +166,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 
   connect(helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
+  theModule_->connectExecutionStateChanged(boost::bind(&ModuleWidget::moduleStateUpdated, this, _1));
+  connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
 
   setupModuleActions();
 
@@ -173,6 +178,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(raise()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
+  connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
@@ -420,8 +426,6 @@ ModuleWidget::~ModuleWidget()
 
     if (dockable_)
     {
-      //dockable_->hide();
-      //dockable_->deleteLater();
       SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
       delete dockable_;
     }
@@ -442,12 +446,10 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
-    Q_EMIT backgroundColorUpdated("#AACCAA;");
     //colorLocked_ = true; //TODO
     timer_.restart();
     theModule_->do_execute();
     Q_EMIT updateProgressBarSignal(1);
-    Q_EMIT backgroundColorUpdated("lightgray;");
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
@@ -468,17 +470,28 @@ boost::signals2::connection ModuleWidget::connectErrorListener(const ErrorSignal
   return theModule_->connectErrorListener(subscriber);
 }
 
+void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
+{
+  switch (moduleState)
+  {
+  case (int)ModuleInterface::Waiting:
+    Q_EMIT backgroundColorUpdated("#CDBE70;");
+    break;
+  case (int)ModuleInterface::Executing:
+    Q_EMIT backgroundColorUpdated("#AACCAA;");
+    break;
+  case (int)ModuleInterface::Completed:
+    Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    break;
+  }
+}
+
 void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)
   {
     setStyleSheet("background-color: " + color);
   }
-}
-
-void ModuleWidget::setColorAsWaiting()
-{
-  updateBackgroundColor("#CDBE70;");
 }
 
 void ModuleWidget::setColorSelected()
@@ -488,7 +501,7 @@ void ModuleWidget::setColorSelected()
 
 void ModuleWidget::setColorUnselected()
 {
-  updateBackgroundColor("lightgray;");
+  updateBackgroundColor(defaultBackgroundColor_);
 }
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
@@ -603,4 +616,10 @@ void ModuleWidget::hideUI()
 void ModuleWidget::showUI()
 {
   dockable_->show();
+}
+
+void ModuleWidget::executeButtonPushed()
+{
+  LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
+  Q_EMIT executedManually(theModule_);
 }

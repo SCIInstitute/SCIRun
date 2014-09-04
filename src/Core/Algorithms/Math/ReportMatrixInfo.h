@@ -30,7 +30,6 @@
 #define ALGORITHMS_MATH_REPORTMATRIXINFO_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {

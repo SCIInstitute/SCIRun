@@ -62,6 +62,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Mapping/MapFieldDataOntoNodes.h
   Mapping/MapFieldDataOntoElems.h
   Mapping/MappingDataSource.h
+  Mapping/MapFieldDataFromSourceToDestination.h
   ResampleMesh/ResampleRegularMesh.h
   SmoothMesh/FairMesh.h
   FieldData/ConvertFieldBasisType.h
@@ -116,7 +117,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   Mapping/BuildMappingMatrixAlgo.cc
   Mapping/MapFieldDataFromElemToNode.cc
   Mapping/MapFieldDataFromNodeToElem.cc
-  #Mapping/MapFieldDataFromSourceToDestination.cc
+  Mapping/MapFieldDataFromSourceToDestination.cc
   Mapping/MappingDataSource.cc
   Mapping/MapFieldDataOntoNodes.cc
   Mapping/MapFieldDataOntoElems.cc

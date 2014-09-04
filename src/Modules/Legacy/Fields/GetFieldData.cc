@@ -98,7 +98,7 @@ void GetFieldDataModule::execute()
   { 
    update_state(Executing);  
    
-   auto output = algo().run_generic(make_input((InputField, input)));
+   auto output = algo().run_generic(withInputData((InputField, input)));
 
    sendOutputFromAlgorithm(OutputMatrix, output);
   }

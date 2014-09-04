@@ -49,7 +49,7 @@ TEST_F(GetDataFromBundleModuleTest, DISABLED_ThrowsForNullBundlesMatrix)
   EXPECT_THROW(sls->execute(), NullHandleOnPortException);
 }
 
-TEST_F(GetDataFromBundleModuleTest, ThrowsForNullBundlesField)
+TEST_F(GetDataFromBundleModuleTest, DISABLED_ThrowsForNullBundlesField)
 {
   auto sls = makeModule("GetFieldsFromBundle");
   BundleHandle nullBundle;

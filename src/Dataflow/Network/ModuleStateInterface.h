@@ -37,7 +37,8 @@
 #include <boost/optional.hpp>
 #include <boost/any.hpp>
 #include <boost/atomic.hpp>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/Name.h>
+#include <Core/Algorithms/Base/Variable.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/share.h>
 
@@ -64,8 +65,11 @@ namespace Networks {
     //non-serialized state: algorithm output needing to be pushed, for instance--TODO: make classes instead of raw string/any
     typedef boost::any TransientValue;
     typedef boost::optional<TransientValue> TransientValueOption;
-    virtual TransientValueOption getTransientValue(const std::string& name) const = 0;
-    virtual void setTransientValue(const std::string& name, const TransientValue& value, bool fireSignal) = 0;
+    virtual TransientValueOption getTransientValue(const Name& name) const = 0;
+    TransientValueOption getTransientValue(const std::string& name) const { return getTransientValue(Name(name)); }
+    virtual void setTransientValue(const Name& name, const TransientValue& value, bool fireSignal) = 0;
+    void setTransientValue(const Name& name, const TransientValue& value) { setTransientValue(name, value, true); }
+    void setTransientValue(const std::string& name, const TransientValue& value) { setTransientValue(Name(name), value); }
     virtual void fireTransientStateChangeSignal() = 0;
 
     typedef boost::signals2::signal<void()> state_changed_sig_t;

@@ -125,14 +125,14 @@ CreateLatVol::execute()
     DataTypeEnum datatype;
 		
     // Create blank mesh.
-    VField::size_type sizex = std::max(2, get_state()->getValue(XSize).getInt());
-    VField::size_type sizey = std::max(2, get_state()->getValue(YSize).getInt());
-    VField::size_type sizez = std::max(2, get_state()->getValue(ZSize).getInt());		
+    VField::size_type sizex = std::max(2, get_state()->getValue(XSize).toInt());
+    VField::size_type sizey = std::max(2, get_state()->getValue(YSize).toInt());
+    VField::size_type sizez = std::max(2, get_state()->getValue(ZSize).toInt());		
 		
     if (!ifieldhandleOption)
     {
       datatype = SCALAR;
-      if (get_state()->getValue(ElementSizeNormalized).getBool())
+      if (get_state()->getValue(ElementSizeNormalized).toBool())
       {
         minb = Point(-1.0, -1.0, -1.0);
         maxb = Point(1.0, 1.0, 1.0);
@@ -162,13 +162,13 @@ CreateLatVol::execute()
       maxb = bbox.get_max();
     }
 
-    double padPercent = get_state()->getValue(PadPercent).getDouble();
+    double padPercent = get_state()->getValue(PadPercent).toDouble();
     Vector diag((maxb - minb) * (padPercent/100.0));
     minb -= diag;
     maxb += diag;
 
     int basis_order;
-    auto dataAtLocation = get_state()->getValue(DataAtLocation).getString();
+    auto dataAtLocation = get_state()->getValue(DataAtLocation).toString();
     if (dataAtLocation == "Nodes") basis_order = 1;
     else if (dataAtLocation == "Cells") basis_order = 0;
     else if (dataAtLocation == "None") basis_order = -1;

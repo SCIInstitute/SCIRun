@@ -66,7 +66,7 @@ namespace Networks {
     virtual void incrementErrorCode(const ModuleId& moduleId);
     virtual NetworkGlobalSettings& settings();
     virtual std::string toString() const;
-    virtual void setModuleExecutionState(ModuleInterface::ExecutionState state);
+    virtual void setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter);
     virtual void clear();
   private:
     ModuleFactoryHandle moduleFactory_;

@@ -95,7 +95,7 @@ void GetFieldsFromBundle::execute()
     FieldHandle outputs[NUM_BUNDLE_OUT];
     for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
     {
-      auto fieldName = state->getValue(FieldNames[i]).getString();
+      auto fieldName = state->getValue(FieldNames[i]).toString();
       if (bundle->isField(fieldName))
       {
         auto field = bundle->getField(fieldName);

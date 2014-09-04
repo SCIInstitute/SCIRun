@@ -220,10 +220,10 @@ void ModuleProxyWidget::highlightIfSelected()
   }
 }
 
-void ModuleProxyWidget::setAsWaiting()
-{
-  module_->setColorAsWaiting();
-}
+//void ModuleProxyWidget::setAsWaiting()
+//{
+//  module_->setColorAsWaiting();
+//}
 
 QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
 {

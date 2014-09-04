@@ -64,8 +64,10 @@ namespace SCIRun
 
       private:
         DataProvider dataProvider_;
-        boost::optional<SCIRun::Core::Datatypes::Datatype::id_type> previousId_;
+        mutable SCIRun::Core::Datatypes::Datatype::id_type previousId_;
+        boost::optional<SCIRun::Core::Datatypes::Datatype::id_type> currentId_;
         DataHasChangedSignalType dataHasChanged_;
+        bool checkForNewDataOnSetting_;
         static bool globalPortCaching_;
         static void invalidateAll();
         static std::set<SimpleSink*> instances_;

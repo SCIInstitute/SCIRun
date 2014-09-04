@@ -30,11 +30,21 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <boost/foreach.hpp>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-SimpleSink::SimpleSink()
+namespace
+{
+  enum IdSentinelValues
+  {
+    UNSET = -2,
+    SET_ONCE = -1
+  };
+}
+
+SimpleSink::SimpleSink() : previousId_(UNSET), checkForNewDataOnSetting_(false)
 {
   instances_.insert(this);
 }
@@ -76,47 +86,42 @@ DatatypeHandleOption SimpleSink::receive()
   if (dataProvider_)
   {
     auto data = dataProvider_();
-    previousId_ = data->id();
-    //setHasData(false);
-
+    
     if (!globalPortCachingFlag())
       invalidateProvider();
 
-    if (hasChanged())
-      /*emit*/ dataHasChanged_(data);
+    currentId_ = data->id();
     return data;
   }
   return DatatypeHandleOption();
 }
 
-//void SimpleSink::setHasData(bool dataPresent)
-//{
-//  hasData_ = dataPresent;
-//
-////  if (hasData_ && hasChanged())
-//
-//
-//  //if (!hasData_)
-//  //  previousId_.reset();
-//}
-
 void SimpleSink::setData(DataProvider dataProvider)
 {
+  if (dataProvider_)
+  {
+    if (currentId_)
+    {
+      previousId_ = *currentId_;
+      LOG_DEBUG("SS::setData: previousId set to " << previousId_);
+    }
+  }
+
   dataProvider_ = dataProvider;
 
   if (dataProvider_)
   {
-    auto data = dataProvider_();
-    if (data)
+    currentId_ = dataProvider_()->id();
+    if (UNSET == previousId_)
     {
-      if (!previousId_)
-      {
-
-        previousId_ = data->id();
-        //std::cout << "Sink prevId set to = " << *previousId_ << std::endl;
-      }
-      //setHasData(true);
+      previousId_ = SET_ONCE;
+      if (checkForNewDataOnSetting_)
+        dataHasChanged_(dataProvider_());
     }
+    else
+      if (checkForNewDataOnSetting_ && hasChanged())
+        dataHasChanged_(dataProvider_());
+    LOG_DEBUG("SS::setData: currentId set to " << *currentId_);
   }
 }
 
@@ -127,9 +132,25 @@ DatatypeSinkInterface* SimpleSink::clone() const
 
 bool SimpleSink::hasChanged() const
 {
-  if (!dataProvider_ || !previousId_)
+  if (!dataProvider_)
+  {
+    LOG_DEBUG("SS::hasChanged returns false, dataProvider is null");
     return false;
-  return *previousId_ != dataProvider_()->id();
+  }
+
+  if (previousId_ == UNSET)
+  {
+    LOG_DEBUG("SS::hasChanged returns false, previousId is UNSET");
+    return false;
+  }
+  if (previousId_ == SET_ONCE)
+  {
+    LOG_DEBUG("SS::hasChanged returns true, previousId is SET_ONCE, but changed to current");
+    previousId_ = *currentId_;
+    return true;
+  }
+  LOG_DEBUG("SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_);
+  return previousId_ != *currentId_;
 }
 
 void SimpleSink::invalidateProvider()
@@ -139,6 +160,7 @@ void SimpleSink::invalidateProvider()
 
 boost::signals2::connection SimpleSink::connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber)
 {
+  checkForNewDataOnSetting_ = true;
   return dataHasChanged_.connect(subscriber);
 }
 

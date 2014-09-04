@@ -156,13 +156,13 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   
   boost::shared_ptr<Cleaver::Volume> volume(new Cleaver::Volume(toVectorOfRawPointers(fields)));
 
-  if ( get(VolumeScalingSpinBox_X).getDouble()>0 && get(VolumeScalingSpinBox_Y).getDouble()>0 && get(VolumeScalingSpinBox_Z).getDouble()>0 )
+  if ( get(VolumeScalingSpinBox_X).toDouble()>0 && get(VolumeScalingSpinBox_Y).toDouble()>0 && get(VolumeScalingSpinBox_Z).toDouble()>0 )
   {
-    if (get(AbsoluteVolumeScalingRadioButton).getBool()) 
-        volume->setSize(get(VolumeScalingSpinBox_X).getDouble(),get(VolumeScalingSpinBox_Y).getDouble(),get(VolumeScalingSpinBox_Z).getDouble());
+    if (get(AbsoluteVolumeScalingRadioButton).toBool()) 
+        volume->setSize(get(VolumeScalingSpinBox_X).toDouble(),get(VolumeScalingSpinBox_Y).toDouble(),get(VolumeScalingSpinBox_Z).toDouble());
       else
-	if (get(RelativeVolumeScalingRadioButton).getBool())
-	  volume->setSize(get(VolumeScalingSpinBox_X).getDouble()*volume->size().x, get(VolumeScalingSpinBox_Y).getDouble()*volume->size().y, get(VolumeScalingSpinBox_Z).getDouble()*volume->size().z);
+	if (get(RelativeVolumeScalingRadioButton).toBool())
+	  volume->setSize(get(VolumeScalingSpinBox_X).toDouble()*volume->size().x, get(VolumeScalingSpinBox_Y).toDouble()*volume->size().y, get(VolumeScalingSpinBox_Z).toDouble()*volume->size().z);
         else
 	 volume->setSize(dims[0],dims[1],dims[2]);
    }
@@ -173,7 +173,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
     }
    
     /// Padding is now optional! 
-    boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(get(PaddingCheckBox).getBool() ?  ((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get() : volume.get(), get(VerboseCheckBox).getBool()));        
+    boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(get(PaddingCheckBox).toBool() ?  ((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get() : volume.get(), get(VerboseCheckBox).toBool()));        
     
     FieldInformation fi("TetVolMesh",0,"double");   ///create output field
 

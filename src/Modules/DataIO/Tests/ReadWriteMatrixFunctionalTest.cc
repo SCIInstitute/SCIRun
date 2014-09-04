@@ -109,7 +109,7 @@ TEST(ReadWriteMatrixFunctionalTest, DISABLED_ManualExecution)
   EXPECT_EQ(2, writeReadMatrixNetwork.nconnections());
 
   DenseMatrixHandle input = matrix1();
-  send->get_state()->setTransientValue("MatrixToSend", input, true);
+  send->get_state()->setTransientValue("MatrixToSend", input);
 
   auto filename = TestResources::rootDir() / "moduleTestMatrix.txt";
   boost::filesystem::remove(filename);

@@ -30,7 +30,6 @@
 #define ALGORITHMS_MATH_SOLVELINEARSYSTEMWITHEIGEN_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
 /// @todo: move
 #include <Eigen/src/Core/util/Constants.h>
 #include <Core/Algorithms/Math/share.h>

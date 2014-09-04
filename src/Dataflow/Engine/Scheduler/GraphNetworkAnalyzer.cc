@@ -26,23 +26,64 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/utility.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/foreach.hpp>
-
+#include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
-#include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
+#include <Core/Logging/Log.h>
+
+#include <boost/utility.hpp>
+#include <boost/graph/topological_sort.hpp>
+#include <boost/graph/copy.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Engine::NetworkGraph;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const SCIRun::Dataflow::Networks::ModuleFilter& moduleFilter) : moduleCount_(0)
+NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const ModuleFilter& moduleFilter, bool precompute) 
+  : network_(network), moduleFilter_(moduleFilter), moduleCount_(0)
 {
-  for (int i = 0; i < network.nmodules(); ++i)
+  if (precompute)
   {
-    auto module = network.module(i);
-    if (moduleFilter(module))
+    computeExecutionOrder();
+  }
+}
+
+const ModuleId& NetworkGraphAnalyzer::moduleAt(int vertex) const
+{
+  return moduleIdLookup_.right.at(vertex);
+}
+
+ExecutionOrderIterator NetworkGraphAnalyzer::topologicalBegin()
+{
+  return order_.begin();
+}
+
+ExecutionOrderIterator NetworkGraphAnalyzer::topologicalEnd()
+{
+  return order_.end();
+}
+
+const DirectedGraph& NetworkGraphAnalyzer::graph()
+{
+  return graph_;
+}
+
+int NetworkGraphAnalyzer::moduleCount() const 
+{
+  return moduleCount_;
+}
+
+EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork()
+{
+  moduleCount_ = 0;
+  moduleIdLookup_.clear();
+
+  for (int i = 0; i < network_.nmodules(); ++i)
+  {
+    auto module = network_.module(i);
+    if (moduleFilter_(module))
     {
       moduleIdLookup_.left.insert(std::make_pair(module->get_id(), moduleCount_));
       moduleCount_++;
@@ -51,7 +92,7 @@ NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, cons
 
   std::vector<Edge> edges;
 
-  BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
+  BOOST_FOREACH(const ConnectionDescription& cd, network_.connections())
   {
     if (moduleIdLookup_.left.find(cd.out_.moduleId_) != moduleIdLookup_.left.end()
       && moduleIdLookup_.left.find(cd.in_.moduleId_) != moduleIdLookup_.left.end())
@@ -60,7 +101,14 @@ NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, cons
     }
   }
 
-  graph_ = Graph(edges.begin(), edges.end(), moduleCount_);
+  return edges;
+}
+
+void NetworkGraphAnalyzer::computeExecutionOrder()
+{
+  auto edges = constructEdgeListFromNetwork();
+
+  graph_ = DirectedGraph(edges.begin(), edges.end(), moduleCount_);
 
   try
   {
@@ -72,27 +120,43 @@ NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, cons
   }
 }
 
-const ModuleId& NetworkGraphAnalyzer::moduleAt(int vertex) const
+ComponentMap NetworkGraphAnalyzer::connectedComponents()
 {
-  return moduleIdLookup_.right.at(vertex);
+  auto edges = constructEdgeListFromNetwork();
+  UndirectedGraph undirected(edges.begin(), edges.end(), moduleCount_);
+
+  std::vector<int> component(boost::num_vertices(undirected));
+  int num = boost::connected_components(undirected, &component[0]);
+
+  ComponentMap componentMap;
+  //std::ostringstream ostr;
+  //ostr << "Total number of components: " << num << std::endl;
+  for (size_t i = 0; i < component.size(); ++i)
+  {
+    componentMap[moduleAt(i)] = component[i];
+    //ostr << "Module " << moduleAt(i) <<" is in component " << component[i] << std::endl;
+  }
+  //ostr << std::endl;
+  //LOG_DEBUG("NetworkGraphAnalyzer produced connected components as follow: " << ostr.str() << std::endl);
+  return componentMap;
 }
 
-NetworkGraphAnalyzer::ExecutionOrder::iterator NetworkGraphAnalyzer::topologicalBegin()
+ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod, const SCIRun::Dataflow::Networks::NetworkInterface& network) : module_(mod) 
 {
-  return order_.begin();
+  //TODO: composite with which filter?
+  NetworkGraphAnalyzer analyze(network, ExecuteAllModules::Instance(), false);
+  components_ = analyze.connectedComponents();
 }
 
-NetworkGraphAnalyzer::ExecutionOrder::iterator NetworkGraphAnalyzer::topologicalEnd()
+bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mod) const
 {
-  return order_.end();
-}
+  auto modIdIter = components_.find(mod->get_id());
+  if (modIdIter == components_.end())
+    THROW_INVALID_ARGUMENT("Module not found in component map");
+  auto thisIdIter = components_.find(module_->get_id());
+  if (thisIdIter == components_.end())
+    THROW_INVALID_ARGUMENT("Current module not found in component map");
 
-NetworkGraphAnalyzer::Graph& NetworkGraphAnalyzer::graph()
-{
-  return graph_;
-}
-
-int NetworkGraphAnalyzer::moduleCount() const 
-{
-  return moduleCount_;
+  // should execute if in same connected component
+  return modIdIter->second == thisIdIter->second;
 }

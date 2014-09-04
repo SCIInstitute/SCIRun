@@ -42,6 +42,7 @@ namespace Basic {
   {
   public:
     AsyncPortTestModule();
+    virtual void execute() override;
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     virtual void setStateDefaults() override {}
 
@@ -50,6 +51,8 @@ namespace Basic {
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override {}
+  private:
+    boost::atomic<int> counter_;
   };
 
 }}}

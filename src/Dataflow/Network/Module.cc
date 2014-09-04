@@ -66,7 +66,7 @@ Module::Module(const ModuleLookupInfo& info,
   inputsChanged_(true),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
-  executionState_(ModuleInterface::Waiting)
+  executionState_(ModuleInterface::NotExecuted)
 {
   iports_.set_module(this);
   oports_.set_module(this);
@@ -239,13 +239,14 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is dynamic, get_dynamic_input_handles must be called."));
   }
 
-  if (!inputsChanged_)
+  auto data = port->getData();
+  //if (!inputsChanged_)
   {
-    //LOG_DEBUG(id_ << " :: inputsChanged is false, querying port for value.");
+    LOG_DEBUG(id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value.");
     inputsChanged_ = port->hasChanged();
-    //LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
+    LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
   }
-  return port->getData();
+  return data;
 }
 
 std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
@@ -409,6 +410,11 @@ boost::signals2::connection Module::connectErrorListener(const ErrorSignalType::
   return errorSignal_.connect(subscriber);
 }
 
+boost::signals2::connection Module::connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber)
+{
+  return executionStateChanged_.connect(subscriber);
+}
+
 void Module::setUiVisible(bool visible)
 {
   if (uiToggleFunc_)
@@ -443,44 +449,54 @@ void Module::removeInputPort(const PortId& id)
   iports_.remove(id);
 }
 
-void Module::setStateBoolFromAlgo(AlgorithmParameterName name)
+void Module::setStateBoolFromAlgo(const AlgorithmParameterName& name)
 {
-  get_state()->setValue(name, algo().get(name).getBool());
+  get_state()->setValue(name, algo().get(name).toBool());
 }
 
-void Module::setAlgoIntFromState(AlgorithmParameterName name)
+void Module::setAlgoIntFromState(const AlgorithmParameterName& name)
 {
-  algo().set(name, get_state()->getValue(name).getInt());
+  algo().set(name, get_state()->getValue(name).toInt());
 }
 
-void Module::setAlgoBoolFromState(AlgorithmParameterName name)
+void Module::setAlgoBoolFromState(const AlgorithmParameterName& name)
 {
-  algo().set(name, get_state()->getValue(name).getBool());
+  algo().set(name, get_state()->getValue(name).toBool());
 }
 
-void Module::setStateIntFromAlgo(AlgorithmParameterName name)
+void Module::setStateIntFromAlgo(const AlgorithmParameterName& name)
 {
-  get_state()->setValue(name, algo().get(name).getInt());
+  get_state()->setValue(name, algo().get(name).toInt());
 }
 
-void Module::setStateDoubleFromAlgo(AlgorithmParameterName name)
+void Module::setStateDoubleFromAlgo(const AlgorithmParameterName& name)
 {
-  get_state()->setValue(name, algo().get(name).getDouble());
+  get_state()->setValue(name, algo().get(name).toDouble());
 }
 
-void Module::setAlgoDoubleFromState(AlgorithmParameterName name)
+void Module::setStateListFromAlgo(const AlgorithmParameterName& name)
 {
-  algo().set(name, get_state()->getValue(name).getDouble());
+  get_state()->setValue(name, algo().get(name).toVector());
 }
 
-void Module::setAlgoOptionFromState(AlgorithmParameterName name)
+void Module::setAlgoDoubleFromState(const AlgorithmParameterName& name)
 {
-  algo().set_option(name, get_state()->getValue(name).getString());
+  algo().set(name, get_state()->getValue(name).toDouble());
 }
 
-void Module::setStateStringFromAlgoOption(AlgorithmParameterName name)
+void Module::setAlgoOptionFromState(const AlgorithmParameterName& name)
+{
+  algo().set_option(name, get_state()->getValue(name).toString());
+}
+
+void Module::setStateStringFromAlgoOption(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get_option(name));
+}
+
+void Module::setAlgoListFromState(const AlgorithmParameterName& name)
+{
+  algo().set(name, get_state()->getValue(name).toVector());
 }
 
 ModuleInterface::ExecutionState Module::executionState() const
@@ -490,6 +506,9 @@ ModuleInterface::ExecutionState Module::executionState() const
 
 void Module::setExecutionState(ModuleInterface::ExecutionState state)
 {
+  //std::cout << get_id() << " setExecutionState old " << executionState_ << " new " << state << std::endl;
+  if (state != executionState_)
+    executionStateChanged_(state);
   executionState_ = state;
 }
 
@@ -569,8 +588,9 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(const Module& module) : modul
 
 bool InputsChangedCheckerImpl::inputsChanged() const 
 {
-  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << module_.inputsChanged());
-  return module_.inputsChanged();
+  auto ret = module_.inputsChanged();
+  LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << ret);
+  return ret;
 }
 
 StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_(module)
@@ -579,8 +599,9 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_
 
 bool StateChangedCheckerImpl::newStatePresent() const 
 {
-  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << module_.newStatePresent());
-  return module_.newStatePresent();
+  auto ret = module_.newStatePresent();
+  LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << ret);
+  return ret;
 }
 
 OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module) : module_(module)

@@ -43,6 +43,7 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //TODO: remove
 #include <Dataflow/Network/NetworkSettings.h> //TODO: push
+#include <Core/Application/Preferences/Preferences.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
@@ -50,6 +51,7 @@
 #include <boost/bind.hpp>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
@@ -190,6 +192,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkEditorMouseButtonPressed()), module, SIGNAL(cancelConnectionsInProgress()));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
     module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+  connect(module, SIGNAL(executedManually(const SCIRun::Dataflow::Networks::ModuleHandle&)), 
+    this, SLOT(executeModule(const SCIRun::Dataflow::Networks::ModuleHandle&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
@@ -661,15 +665,15 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
 
 void NetworkEditor::executeAll()
 { 
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
-  {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      w->setAsWaiting();
-    }
-  }
-
   controller_->executeAll(*this);
+  //TODO: not sure about this right now.
+  //Q_EMIT modified();
+  Q_EMIT networkExecuted();
+}
+
+void NetworkEditor::executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
+{ 
+  controller_->executeModule(module, *this);
   //TODO: not sure about this right now.
   //Q_EMIT modified();
   Q_EMIT networkExecuted();
@@ -761,6 +765,7 @@ void NetworkEditor::setRegressionTestDataDir(const QString& dir)
 void NetworkEditor::setBackground(const QBrush& brush)
 {
   scene_->setBackgroundBrush(brush);
+  Preferences::Instance().networkBackgroundColor.setValue(brush.color().name().toStdString());
 }
 
 QBrush NetworkEditor::background() const

@@ -71,6 +71,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/MapFieldDataOntoElems.h>
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
+#include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -126,25 +127,28 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<AlignMeshBoundingBoxes>("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
-  addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
+  //addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress", "...");
+  addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress: two color maps available", "...");
   addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
-  addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates stiffness matrix ");
+  addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", "In progress: main path through code works", "Generates stiffness matrix ");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<FairMesh>("Real ported module", "...");
-  addModuleDesc<ConvertFieldBasis>("NOT WORKING YET--Real ported module", "...");
-  addModuleDesc<ScaleFieldMeshAndData>("NOT WORKING YET--Real ported module", "...");
+  //TODO: incomplete impl
+  //addModuleDesc<ConvertFieldBasis>("NOT WORKING YET--Real ported module", "...");
+  //addModuleDesc<ScaleFieldMeshAndData>("NOT WORKING YET--Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToField>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
-  addModuleDesc<ClipFieldByFunction>("Real ported module", "...");
-  
+  //TODO: incomplete impl
+  //addModuleDesc<ClipFieldByFunction>("In progress", "...");
+  addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
+
   // insert module desc here
 }
 
@@ -152,8 +156,9 @@ void ModuleDescriptionLookup::addBundleModules()
 {
   //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
   //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
-  addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
-  addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
+  //TODO: incomplete impl
+  //addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+  //addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
   addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
 }
 

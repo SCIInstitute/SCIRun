@@ -76,9 +76,9 @@ bool FairMeshAlgo::runImpl(FieldHandle input,FieldHandle& output) const
   }
 
   std::string method = get_option(Parameters::FairMeshMethod);
-  int num_iter = 2*get(Parameters::NumIterations).getInt();
-  double lambda = get(Parameters::Lambda).getDouble();
-  double filter_cutoff = get(Parameters::FilterCutoff).getDouble();
+  int num_iter = 2*get(Parameters::NumIterations).toInt();
+  double lambda = get(Parameters::Lambda).toDouble();
+  double filter_cutoff = get(Parameters::FilterCutoff).toDouble();
   
   double mu = 1.0/(filter_cutoff - 1.0/lambda);
   

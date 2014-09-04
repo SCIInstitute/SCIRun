@@ -83,7 +83,6 @@ public:
   static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
   
-  void setColorAsWaiting();
   void setColorSelected();
   void setColorUnselected();
 
@@ -122,6 +121,7 @@ Q_SIGNALS:
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();
+  void executedManually(const SCIRun::Dataflow::Networks::ModuleHandle& module);
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
@@ -130,8 +130,11 @@ Q_SIGNALS:
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged();
   void noteChanged();
+  void moduleStateUpdated(int state);
 private Q_SLOTS:
+  void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
+  void executeButtonPushed();
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
@@ -163,6 +166,7 @@ private:
   QHBoxLayout* outputPortLayout_;
   NetworkEditor* editor_;
   bool deleting_;
+  const QString defaultBackgroundColor_;
 };
 
 }

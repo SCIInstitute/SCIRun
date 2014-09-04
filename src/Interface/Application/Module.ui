@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>240</width>
+    <width>245</width>
     <height>74</height>
    </rect>
   </property>
@@ -288,7 +288,7 @@
        <item row="0" column="1">
         <widget class="QPushButton" name="executePushButton_">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="minimumSize">
           <size>

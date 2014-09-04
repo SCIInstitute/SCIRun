@@ -172,12 +172,13 @@ FEMBuilder::build_matrix(FieldHandle input,
   {
     numprocessors_ = numproc;
   }
-#endif
+
   
   // If we have the Conductivity property use it, if not we assume the values on
   // the data to be the actual tensors.
   field_->get_property("conductivity_table",tensors_);
-  
+#endif
+
   // We added a second system of adding a conductivity table, using a matrix
   // Convert that matrix into the conductivity table
   if (ctable)
@@ -266,7 +267,7 @@ FEMBuilder::build_matrix(FieldHandle input,
   }
   
   // Make sure it is symmetric
-  if (algo_->get(BuildFEMatrixAlgo::ForceSymmetry).getBool())
+  if (algo_->get(BuildFEMatrixAlgo::ForceSymmetry).toBool())
   {
     ScopedTimeLogger s3("FEMBuilder::build_matrix make symmetric");
     // Make sure the matrix is fully symmetric, this compensates for round off
@@ -1121,7 +1122,7 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
   
   FEMBuilder builder(this);
   
-  if (get(GenerateBasis).getBool())
+  if (get(GenerateBasis).toBool())
   {
     ScopedTimeLogger s2("BuildFEMatrixAlgo::run GenerateBasis");
     if (!ctable)

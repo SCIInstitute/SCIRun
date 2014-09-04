@@ -62,6 +62,10 @@ BuildMappingMatrix::execute()
   auto source = getRequiredInput(Source);
   auto destination = getRequiredInput(Destination);
   
+  //TODO: copy impl from rewritten MapFieldDataFromSourceToDestination
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   //if (inputs_changed_ || interpolation_basis_.changed() ||
   //    map_source_to_single_dest_.changed() ||
   //    exhaustive_search_max_dist_.changed() || !oport_cached("Mapping"))
@@ -85,8 +89,10 @@ BuildMappingMatrix::execute()
     
     setAlgoDoubleFromState(BuildMappingMatrixAlgo::MaxDistance);
 
-    auto output = algo().run_generic(make_input((Source, source)(Destination, destination)));
+    auto output = algo().run_generic(withInputData((Source, source)(Destination, destination)));
    
     sendOutputFromAlgorithm(Mapping, output);
   }
+
+#endif
 }

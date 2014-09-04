@@ -52,7 +52,7 @@ void CreateStringModule::setStateDefaults()
 
 void CreateStringModule::execute()
 {
-  stringValue_ = get_state()->getValue(InputString).getString();
+  stringValue_ = get_state()->getValue(InputString).toString();
 
   sendOutput(NewString, boost::make_shared<String>(stringValue_));
 }

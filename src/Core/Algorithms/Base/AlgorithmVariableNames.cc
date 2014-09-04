@@ -57,6 +57,8 @@ INPUT(MatrixToWrite)
 INPUT(InputField)
 INPUT(ObjectField)
 INPUT(ListOfInputFields)
+INPUT(Source)
+INPUT(Destination)
 
 OUTPUT(MatrixInfo)
 OUTPUT(Result)
