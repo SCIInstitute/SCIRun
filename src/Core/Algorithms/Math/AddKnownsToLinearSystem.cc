@@ -60,12 +60,20 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 									  SparseRowMatrixHandle& output_stiff,
 									  DenseColumnMatrixHandle& output_rhs) const
 {
+  std::cout << "o--: "  << std::endl;
+  
   SparseRowMatrixFromMap::Values additionalData;
 	
 	// Making sure the stiff matrix (left hand side) is symmetric
-  if (!(*stiff).isSymmetric())
-    THROW_ALGORITHM_INPUT_ERROR("matrix A is not symmetrical");
-    
+  if (!isSymmetricMatrix(*stiff,1e-8))
+  {
+    std::ostringstream ostr1;
+    ostr1 << "matrix A is not symmetrical due to a difference of " << 1e-8<< std::endl;
+    THROW_ALGORITHM_INPUT_ERROR(ostr1.str());    
+  }
+  
+   std::cout << "a--: "  << std::endl; 
+   
 	// Storing the number of columns in m and rows in n from the stiff matrix, m == n
   unsigned int m = static_cast<unsigned int>(stiff->ncols()), 
                n = static_cast<unsigned int>(stiff->nrows());
@@ -78,11 +86,15 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 		THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector b do not match the dimensions of matrix A"); 
          }
         }
+	
+    std::cout << "b--: "  << std::endl;
     
 	// casting rhs to be a column
 	auto rhsCol = matrix_cast::as_column(rhs);
   if (!rhsCol) rhsCol = matrix_convert::to_column(rhs);
-	
+  
+  std::cout << "1: "  << std::endl;
+
 	// Checking if x matrix was given and that the dimenions agree with the stiff matrix
   if (!x)
 	{
@@ -101,7 +113,9 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 	index_type cnt = 0;
  
 	bool just_copying_inputs = true;
-
+ 
+  std::cout << "2: "  << std::endl;
+ 
   // performs calculation adjustments for setting row and col values to zero
   // NOTE: right hand side vector values are reset multiple times during this
   //   proccess, thus it was necessary to have a second for loop to set the
@@ -135,7 +149,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 			update_progress((double)p/m);
 		}
 	}
-  
+   std::cout << "3: "  << std::endl;
   // assigns value for right hand side vector
   for (index_type p=0; p<m; p++)
 	{
@@ -157,13 +171,18 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 			update_progress((double)p/m);
 		}
 	}
-  
+   std::cout << "4: "  << std::endl;
 	if (just_copying_inputs)
     remark("X vector does not contain any knowns! Copying inputs to outputs.");
 	
 	output_stiff = SparseRowMatrixFromMap::appendToSparseMatrix(m, n, *stiff, additionalData);
+	std::cout << "5: "  << std::endl;
 	output_rhs = rhsCol;
+	std::cout << "6: "  << std::endl;
 	output_stiff->makeCompressed();
+	
+	std::cout << "l: "  << output_stiff->nrows() << " " << output_stiff->ncols() << std::endl;
+	
 	return true;
 }
 
@@ -178,13 +197,13 @@ AlgorithmOutput AddKnownsToLinearSystemAlgo::run_generic(const AlgorithmInput & 
 	auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
 	auto input_rhs = input.get<DenseColumnMatrix>(RHS_Vector);
 	auto input_x = input.get<DenseMatrix>(X_Vector);
-
+	
 	if (input_lhs->nrows() != input_lhs->ncols()) 
 		THROW_ALGORITHM_INPUT_ERROR("Stiffness matrix input needs to be a sparse square matrix!");
 	
 	SparseRowMatrixHandle output_lhs;
 	DenseColumnMatrixHandle output_rhs;
-  
+	
 	if (!run(input_lhs,input_rhs,input_x,output_lhs,output_rhs))
 		THROW_ALGORITHM_INPUT_ERROR("False returned on legacy run call.");
 

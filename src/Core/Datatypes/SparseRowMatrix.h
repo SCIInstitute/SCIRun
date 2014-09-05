@@ -120,7 +120,7 @@ namespace Datatypes {
 
       return this->isApprox(this->transpose(),1e-16);
     }
-  
+    
     virtual T get(int i, int j) const override
     {
       return this->coeff(i,j);
@@ -306,6 +306,23 @@ bool isSymmetricMatrix(const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>&
     for (typename SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>::InnerIterator it(m,k); it; ++it)
     {
       if (m.coeff(it.col(), it.row()) != it.value())  
+        return false;
+    }
+  }
+  return true;
+}
+
+template <typename T> 
+bool isSymmetricMatrix(const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>& m, double bound)
+{
+  if (m.rows() != m.cols()) 
+    return false;
+
+  for (int k = 0; k < m.outerSize(); ++k)
+  {
+    for (typename SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>::InnerIterator it(m,k); it; ++it)
+    {
+      if (std::fabs(m.coeff(it.col(), it.row()-it.value())) > bound)  
         return false;
     }
   }
