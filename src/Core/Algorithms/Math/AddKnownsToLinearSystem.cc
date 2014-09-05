@@ -71,14 +71,13 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
                n = static_cast<unsigned int>(stiff->nrows());
 	
 	// Checking if the rhs matrix is allocated and that the dimenions agree with the stiff matrix
-	if (!rhs)
+	if (rhs)
 	{
-    THROW_ALGORITHM_INPUT_ERROR("Could not allocate new b matrix");
-	}
-	else if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))) )
-	{
+          if( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))) )
+	  {
 		THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector b do not match the dimensions of matrix A"); 
-  }
+          }
+        } 
     
 	// casting rhs to be a column
 	auto rhsCol = matrix_cast::as_column(rhs);
