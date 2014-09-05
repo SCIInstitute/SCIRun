@@ -207,6 +207,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
   connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
+  
+  connect(scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
 
   setupInputWidgets();
 
@@ -1026,4 +1028,10 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
 QString SCIRunMainWindow::dataDirectory() const
 {
   return scirunDataLineEdit_->text();
+}
+
+void SCIRunMainWindow::setDataDirectoryFromGUI()
+{
+  //auto file = QFileDialog::getOpenFileName(this, "Open Field File", dial
+  std::cout << "setDataDirectoryFromGUI" << std::endl;
 }
