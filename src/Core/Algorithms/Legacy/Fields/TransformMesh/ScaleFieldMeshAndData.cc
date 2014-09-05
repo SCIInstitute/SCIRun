@@ -73,9 +73,9 @@ ScaleFieldMeshAndDataAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     return (false);
   }
 
-  bool scale_from_center = get(Parameters::scale_from_center).getBool();
-  double datascale = get(Parameters::data_scale).getDouble();
-  double meshscale = get(Parameters::mesh_scale).getDouble();
+  bool scale_from_center = get(Parameters::scale_from_center).toBool();
+  double datascale = get(Parameters::data_scale).toDouble();
+  double meshscale = get(Parameters::mesh_scale).toDouble();
 
   // scale mesh, only when needed
   if (scale_from_center || (meshscale != 1.0))

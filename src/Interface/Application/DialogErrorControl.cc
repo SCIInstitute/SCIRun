@@ -28,7 +28,7 @@
 
 #include <iostream> 
 #include <Interface/Application/DialogErrorControl.h>
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 DialogErrorControl::DialogErrorControl(QWidget*parent) : counter_(0)

@@ -50,5 +50,5 @@ void CreateBasicColorMap::setStateDefaults()
 
 void CreateBasicColorMap::execute()
 {
-  sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).getString()));
+  sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
 }

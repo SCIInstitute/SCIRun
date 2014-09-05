@@ -57,7 +57,7 @@ ReadMeshDialog::ReadMeshDialog(const std::string& name, ModuleStateHandle state,
 
 void ReadMeshDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
 void ReadMeshDialog::pushFileNameToState() 

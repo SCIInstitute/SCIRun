@@ -72,7 +72,7 @@ bool WriteFieldModule::call_exporter(const std::string& filename)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
-  FieldIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).getString());
+  FieldIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).toString());
   if (pl)
   {
     return pl->writeFile(handle_, filename, getLogger());
@@ -118,7 +118,7 @@ void WriteFieldModule::execute()
 
 bool WriteFieldModule::useCustomExporter(const std::string& filename) const 
 {
-  auto ft = get_state()->getValue(Variables::FileTypeName).getString();
+  auto ft = get_state()->getValue(Variables::FileTypeName).toString();
   LOG_DEBUG("WriteField with filetype " << ft);
   
   filetype_ = (ft == "SCIRun Field ASCII") ? "ASCII" : "Binary";

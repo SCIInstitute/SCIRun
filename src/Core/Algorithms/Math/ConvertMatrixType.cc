@@ -79,11 +79,11 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
   
   remark(ostr2.str());
   
-  if (get(PassThrough()).getBool()) 
+  if (get(PassThrough()).toBool()) 
   {
      return input_matrix;
   } else
-  if (get(ConvertToColumnMatrix()).getBool() && !matrix_is::column(input_matrix))
+  if (get(ConvertToColumnMatrix()).toBool() && !matrix_is::column(input_matrix))
   {
      if (input_matrix->ncols()!=1)
      {
@@ -96,7 +96,7 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
       }
       return output;
    } else
-   if (get(ConvertToDenseMatrix()).getBool() && !matrix_is::dense(input_matrix))
+   if (get(ConvertToDenseMatrix()).toBool() && !matrix_is::dense(input_matrix))
    {
      auto output = matrix_convert::to_dense(input_matrix);
      if (!output) 
@@ -105,7 +105,7 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
       }
      return output;
     } else
-    if (get(ConvertToSparseRowMatrix()).getBool() && !matrix_is::sparse(input_matrix))
+    if (get(ConvertToSparseRowMatrix()).toBool() && !matrix_is::sparse(input_matrix))
     {
      auto output = matrix_convert::to_sparse(input_matrix);
      if (!output) 

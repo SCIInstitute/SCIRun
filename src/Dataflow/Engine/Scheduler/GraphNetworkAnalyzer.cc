@@ -129,15 +129,15 @@ ComponentMap NetworkGraphAnalyzer::connectedComponents()
   int num = boost::connected_components(undirected, &component[0]);
 
   ComponentMap componentMap;
-  std::ostringstream ostr;
-  ostr << "Total number of components: " << num << std::endl;
+  //std::ostringstream ostr;
+  //ostr << "Total number of components: " << num << std::endl;
   for (size_t i = 0; i < component.size(); ++i)
   {
     componentMap[moduleAt(i)] = component[i];
-    ostr << "Module " << moduleAt(i) <<" is in component " << component[i] << std::endl;
+    //ostr << "Module " << moduleAt(i) <<" is in component " << component[i] << std::endl;
   }
-  ostr << std::endl;
-  LOG_DEBUG("NetworkGraphAnalyzer produced connected components as follow: " << ostr.str() << std::endl);
+  //ostr << std::endl;
+  //LOG_DEBUG("NetworkGraphAnalyzer produced connected components as follow: " << ostr.str() << std::endl);
   return componentMap;
 }
 

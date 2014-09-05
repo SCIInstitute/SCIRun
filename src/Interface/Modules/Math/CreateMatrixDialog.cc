@@ -62,7 +62,7 @@ void CreateMatrixDialog::pushMatrixToState(int state)
 void CreateMatrixDialog::pull()
 {
   Pulling p(this);
-  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
+  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).toString()));
   if (firstPull_)
     editBoxSaved();
   

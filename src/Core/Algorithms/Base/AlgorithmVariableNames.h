@@ -29,7 +29,7 @@
 #ifndef ALGORITHMS_BASE_ALGORITHMVARIABLENAMES_H
 #define ALGORITHMS_BASE_ALGORITHMVARIABLENAMES_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {

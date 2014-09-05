@@ -29,7 +29,9 @@
 #ifndef HARD_CODED_ALGORITHM_FACTORY_H
 #define HARD_CODED_ALGORITHM_FACTORY_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <map>
+#include <boost/function.hpp>
+#include <Core/Algorithms/Base/AlgorithmFactory.h>
 #include <Core/Algorithms/Factory/share.h>
 
 namespace SCIRun {

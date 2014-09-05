@@ -45,5 +45,5 @@ void ReceiveTestMatrixModule::execute()
 {
   auto data = getRequiredInput(Input);
   latestValue_ = data;
-  get_state()->setTransientValue("ReceivedMatrix", latestValue_, true);
+  get_state()->setTransientValue("ReceivedMatrix", latestValue_);
 }

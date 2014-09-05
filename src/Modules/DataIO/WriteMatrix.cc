@@ -55,12 +55,12 @@ void WriteMatrixModule::execute()
   {
     get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
   }
-  auto path = get_state()->getValue(Variables::Filename).getFilename();
+  auto path = get_state()->getValue(Variables::Filename).toFilename();
   filename_ = path.string();
 
   if (needToExecute())
   {
     algo().set(Variables::Filename, filename_);
-    algo().run_generic(make_input((MatrixToWrite, matrix)));
+    algo().run_generic(withInputData((MatrixToWrite, matrix)));
   }
 }

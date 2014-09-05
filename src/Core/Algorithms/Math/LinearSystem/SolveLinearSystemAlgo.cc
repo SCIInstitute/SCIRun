@@ -86,7 +86,7 @@ protected:
 
 SolveLinearSystemParallelAlgo::SolveLinearSystemParallelAlgo(const AlgorithmBase* base) : algo_(base),
   pre_conditioner_(base->get_option(Variables::Preconditioner)),
-  convergence_(new DenseColumnMatrix(base->get(Variables::MaxIterations).getInt()))
+  convergence_(new DenseColumnMatrix(base->get(Variables::MaxIterations).toInt()))
 {
 }
 
@@ -140,8 +140,8 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
   ParallelLinearAlgebra::ParallelMatrix A;
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN, DIAG, R, Z, P;
 
-  double tolerance =     algo_->get(Variables::TargetError).getDouble();
-  int    max_iter =      algo_->get(Variables::MaxIterations).getInt();
+  double tolerance =     algo_->get(Variables::TargetError).toDouble();
+  int    max_iter =      algo_->get(Variables::MaxIterations).toInt();
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   int    callback_step = algo_->get("callback_step");
@@ -359,8 +359,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN;
   ParallelLinearAlgebra::ParallelVector DIAG, R, R1, Z, Z1, P, P1;
 
-  double tolerance =     algo_->get(Variables::TargetError).getDouble();
-  int    max_iter =      algo_->get(Variables::MaxIterations).getInt();
+  double tolerance =     algo_->get(Variables::TargetError).toDouble();
+  int    max_iter =      algo_->get(Variables::MaxIterations).toInt();
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   int    callback_step = algo_->get_int("callback_step");
 #endif
@@ -575,8 +575,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
   ParallelLinearAlgebra::ParallelVector DIAG, R, V, VOLD, VV;
   ParallelLinearAlgebra::ParallelVector VOLDER, M, MOLD, MOLDER, XCG;
 
-  double tolerance =     algo_->get(Variables::TargetError).getDouble();
-  int    max_iter =      algo_->get(Variables::MaxIterations).getInt();
+  double tolerance =     algo_->get(Variables::TargetError).toDouble();
+  int    max_iter =      algo_->get(Variables::MaxIterations).toInt();
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   int    callback_step = algo_->get_int("callback_step");
 #endif
@@ -925,8 +925,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN;
   ParallelLinearAlgebra::ParallelVector DIAG,Z;
 
-  double tolerance =     algo_->get(Variables::TargetError).getDouble();
-  int    max_iter =      algo_->get(Variables::MaxIterations).getInt();
+  double tolerance =     algo_->get(Variables::TargetError).toDouble();
+  int    max_iter =      algo_->get(Variables::MaxIterations).toInt();
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   int    callback_step = algo_->get_int("callback_step");
 #endif
@@ -1086,8 +1086,8 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "No matrix A is given");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(b, "No matrix b is given");
 
-  double tolerance = get(Variables::TargetError).getDouble();
-  int maxIterations = get(Variables::MaxIterations).getInt();
+  double tolerance = get(Variables::TargetError).toDouble();
+  int maxIterations = get(Variables::MaxIterations).toInt();
   ENSURE_POSITIVE_DOUBLE(tolerance, "Tolerance out of range!");
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 

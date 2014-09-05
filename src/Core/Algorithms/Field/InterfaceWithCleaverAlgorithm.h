@@ -30,7 +30,6 @@
 #define ALGORITHMS_MATH_INTERFACEWITHCLEAVER_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/DatatypeFwd.h>

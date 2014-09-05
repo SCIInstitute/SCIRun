@@ -30,7 +30,6 @@
 #define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
 
 //////////////////////////////////////////////////////////////////////////
