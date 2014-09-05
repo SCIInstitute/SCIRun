@@ -315,6 +315,7 @@ bool isSymmetricMatrix(const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>&
 template <typename T> 
 bool isSymmetricMatrix(const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>& m, double bound)
 {
+
   if (m.rows() != m.cols()) 
     return false;
 
@@ -322,8 +323,10 @@ bool isSymmetricMatrix(const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>&
   {
     for (typename SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>::InnerIterator it(m,k); it; ++it)
     {
-      if (std::fabs(m.coeff(it.col(), it.row()-it.value())) > bound)  
-        return false;
+      if (std::fabs(m.coeff(it.col(), it.row())-it.value()) > bound)  
+      {
+         return false;
+      }
     }
   }
   return true;

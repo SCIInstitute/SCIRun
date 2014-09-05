@@ -52,9 +52,10 @@ class SCISHARE AddKnownsToLinearSystemAlgo : public AlgorithmBase
     static AlgorithmOutputName OutPutLHSMatrix;
     static AlgorithmOutputName OutPutRHSVector;
 
-  bool run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseColumnMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseColumnMatrixHandle& output_rhs) const;
+  bool run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseColumnMatrixHandle& output_rhs) const;
   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
   
+    const double bound_for_equality = 1e-7;
 }; // end namespace SCIRun
 
 			}}}}
