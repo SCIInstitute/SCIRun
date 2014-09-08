@@ -77,3 +77,6 @@
 #ifdef DragMove 
 #undef DragMove 
 #endif
+#ifdef FontChange 
+#undef FontChange 
+#endif
