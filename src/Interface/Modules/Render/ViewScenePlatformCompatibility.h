@@ -26,31 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef None
-#  undef None
-#endif
-#ifdef CursorShape 
-#  undef CursorShape 
-#endif
-#ifdef Status  
-#  undef Status  
-#endif
-#ifdef Bool
-#  undef Bool
-#endif
-#ifdef Ok
-#  undef Ok
-#endif
-#ifdef Unsorted
-#  undef Unsorted
-#endif
-#ifdef NoSort
-#  undef NoSort
-#endif
-#ifdef GrayScale
-#  undef GrayScale
-#endif
-
+#include <Interface/Modules/Render/UndefiningX11Cruft.h>
 
 #ifndef INTERFACE_MODULES_RENDER_VIEWSCENEPLATFORMCOMPATIBILITY_H
 #define INTERFACE_MODULES_RENDER_VIEWSCENEPLATFORMCOMPATIBILITY_H

@@ -26,18 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_RENDER_GLCONTEXTPLATFORMCOMPATIBILITY_H
-#define INTERFACE_MODULES_RENDER_GLCONTEXTPLATFORMCOMPATIBILITY_H
-
-// Needed because Windows uses GLEW and GLEW headers need to be included
-// before GL headers, but Qt with X11 needs to be included before GL.
-//
-// Note: If GLEW is ever replaced, review the usefulness of this header.
-
-#include <Interface/Modules/Render/UndefiningX11Cruft.h>
-
-#include <QtOpenGL/QGLWidget>
-
-#include <Interface/Modules/Render/namespaces.h>
-
+#ifdef None
+#  undef None
+#endif
+#ifdef CursorShape 
+#  undef CursorShape 
+#endif
+#ifdef Status  
+#  undef Status  
+#endif
+#ifdef Bool
+#  undef Bool
+#endif
+#ifdef Ok
+#  undef Ok
+#endif
+#ifdef Unsorted
+#  undef Unsorted
+#endif
+#ifdef NoSort
+#  undef NoSort
+#endif
+#ifdef GrayScale
+#  undef GrayScale
+#endif
+#ifdef KeyPress 
+#undef KeyPress 
+#endif
+#ifdef ChildAdded 
+#undef ChildAdded 
+#endif
+#ifdef ChildPolished 
+#undef ChildPolished 
+#endif
+#ifdef ChildRemoved 
+#undef ChildRemoved 
 #endif
