@@ -48,7 +48,7 @@ namespace SCIRun {
       }
 
       /// @todo: templatize along with producer/consumer
-      class DynamicMultithreadedNetworkExecutorImpl
+      class DynamicMultithreadedNetworkExecutorImpl : public WaitsForStartupInitialization
       {
       public:
         DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network, Mutex* lock, size_t numModules) :
@@ -60,6 +60,7 @@ namespace SCIRun {
         }
         void operator()() const
         {
+          waitForStartupInit();
           boost::thread consume(boost::ref(*consumer_));
           boost::thread produce(boost::ref(*producer_));
           consume.join();
