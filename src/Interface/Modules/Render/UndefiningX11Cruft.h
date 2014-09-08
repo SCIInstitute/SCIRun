@@ -53,6 +53,9 @@
 #ifdef KeyPress 
 #undef KeyPress 
 #endif
+#ifdef KeyRelease               
+#undef KeyRelease               
+#endif
 #ifdef ChildAdded 
 #undef ChildAdded 
 #endif
@@ -61,4 +64,16 @@
 #endif
 #ifdef ChildRemoved 
 #undef ChildRemoved 
+#endif
+#ifdef FocusIn 
+#undef FocusIn 
+#endif
+#ifdef FocusOut 
+#undef FocusOut 
+#endif
+#ifdef Drop 
+#undef Drop 
+#endif
+#ifdef DragMove 
+#undef DragMove 
 #endif
