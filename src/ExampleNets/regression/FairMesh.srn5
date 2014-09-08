@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -90,7 +90,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -166,7 +166,7 @@
 									<name>FilterCutoff</name>
 									<value>
 										<which>1</which>
-										<value>0.10000000000000001</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -178,7 +178,7 @@
 									<name>Lambda</name>
 									<value>
 										<which>1</which>
-										<value>0.63070000000000004</value>
+										<value>6.30700000000000040e-001</value>
 									</value>
 								</second>
 							</item>
@@ -330,7 +330,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(68,255,48)</value>
+										<value>Color(160,160,164)</value>
 									</value>
 								</second>
 							</item>
@@ -522,43 +522,43 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateFieldData:5</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-800</first>
-				<second>-664</second>
+				<first>-8.00000000000000000e+002</first>
+				<second>-6.64000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-850</first>
-				<second>-776</second>
+				<first>-8.50000000000000000e+002</first>
+				<second>-7.76000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>FairMesh:6</first>
 			<second>
-				<first>-687</first>
-				<second>-459</second>
+				<first>-6.87000000000000000e+002</first>
+				<second>-4.59000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetDomainBoundary:2</first>
 			<second>
-				<first>-830</first>
-				<second>-568</second>
+				<first>-8.30000000000000000e+002</first>
+				<second>-5.68000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:3</first>
 			<second>
-				<first>-865</first>
-				<second>-324</second>
+				<first>-8.65000000000000000e+002</first>
+				<second>-3.24000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:4</first>
 			<second>
-				<first>-777</first>
-				<second>-222</second>
+				<first>-7.77000000000000000e+002</first>
+				<second>-2.22000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>

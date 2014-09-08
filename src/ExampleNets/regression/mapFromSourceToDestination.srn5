@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -102,7 +102,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -190,7 +190,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -282,7 +282,7 @@
 									<name>DefaultValue</name>
 									<value>
 										<which>1</which>
-										<value>5</value>
+										<value>5.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -306,7 +306,7 @@
 									<name>MaxDistance</name>
 									<value>
 										<which>1</which>
-										<value>-1</value>
+										<value>-1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -324,7 +324,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -359,6 +359,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -424,7 +448,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -459,6 +483,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -524,7 +572,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -559,6 +607,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -786,64 +858,64 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateFieldData:3</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-714</first>
-				<second>-515</second>
+				<first>-7.14000000000000000e+002</first>
+				<second>-5.15000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:1</first>
 			<second>
-				<first>-840</first>
-				<second>-636</second>
+				<first>-8.40000000000000000e+002</first>
+				<second>-6.36000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:2</first>
 			<second>
-				<first>-324</first>
-				<second>-560</second>
+				<first>-3.24000000000000000e+002</first>
+				<second>-5.60000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:4</first>
 			<second>
-				<first>-94</first>
-				<second>-380</second>
+				<first>-9.40000000000000000e+001</first>
+				<second>-3.80000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataFromSourceToDestination:0</first>
 			<second>
-				<first>-578</first>
-				<second>-374</second>
+				<first>-5.78000000000000000e+002</first>
+				<second>-3.74000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:5</first>
 			<second>
-				<first>-891</first>
-				<second>-183</second>
+				<first>-8.91000000000000000e+002</first>
+				<second>-1.83000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:7</first>
 			<second>
-				<first>-247</first>
-				<second>-202</second>
+				<first>-2.47000000000000000e+002</first>
+				<second>-2.02000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:8</first>
 			<second>
-				<first>-578</first>
-				<second>-190</second>
+				<first>-5.78000000000000000e+002</first>
+				<second>-1.90000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:6</first>
 			<second>
-				<first>-537</first>
-				<second>-41</second>
+				<first>-5.37000000000000000e+002</first>
+				<second>-4.10000000000000000e+001</second>
 			</second>
 		</item>
 	</modulePositions>

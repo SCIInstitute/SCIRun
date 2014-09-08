@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -346,50 +346,50 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateString:14</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-995</first>
-				<second>-804</second>
+				<first>-9.95000000000000000e+002</first>
+				<second>-8.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateString:4</first>
 			<second>
-				<first>-1285</first>
-				<second>-819</second>
+				<first>-1.28500000000000000e+003</first>
+				<second>-8.19000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateString:5</first>
 			<second>
-				<first>-967</first>
-				<second>-694</second>
+				<first>-9.67000000000000000e+002</first>
+				<second>-6.94000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GenerateROIStatistics:15</first>
 			<second>
-				<first>-1099</first>
-				<second>-413</second>
+				<first>-1.09900000000000000e+003</first>
+				<second>-4.13000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:12</first>
 			<second>
-				<first>-806</first>
-				<second>-614</second>
+				<first>-8.06000000000000000e+002</first>
+				<second>-6.14000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:13</first>
 			<second>
-				<first>-1407</first>
-				<second>-638</second>
+				<first>-1.40700000000000000e+003</first>
+				<second>-6.38000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:6</first>
 			<second>
-				<first>-806</first>
-				<second>-955</second>
+				<first>-8.06000000000000000e+002</first>
+				<second>-9.55000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
