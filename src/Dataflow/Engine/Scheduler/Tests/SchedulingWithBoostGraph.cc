@@ -321,15 +321,15 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
   ostr << order;
 
   std::string expected =
-    "0 SendTestMatrix:1\n"
     "0 SendTestMatrix:0\n"
+    "0 SendTestMatrix:1\n"
+    "1 EvaluateLinearAlgebraUnary:2\n"
     "1 EvaluateLinearAlgebraUnary:3\n"
     "1 EvaluateLinearAlgebraUnary:4\n"
-    "1 EvaluateLinearAlgebraUnary:2\n"
     "2 EvaluateLinearAlgebraBinary:5\n"
     "3 EvaluateLinearAlgebraBinary:6\n"
-    "4 ReportMatrixInfo:7\n"
-    "4 ReceiveTestMatrix:8\n";
+    "4 ReceiveTestMatrix:8\n"
+    "4 ReportMatrixInfo:7\n";
 
   EXPECT_EQ(expected, ostr.str());
 }
@@ -346,11 +346,11 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderWithSomeModulesDone)
 
   std::string expected =
     "0 EvaluateLinearAlgebraBinary:5\n"
-    "0 SendTestMatrix:1\n"
     "0 SendTestMatrix:0\n"
+    "0 SendTestMatrix:1\n"
     "1 EvaluateLinearAlgebraBinary:6\n"
-    "2 ReportMatrixInfo:7\n"
-    "2 ReceiveTestMatrix:8\n";
+    "2 ReceiveTestMatrix:8\n"
+    "2 ReportMatrixInfo:7\n";
 
   EXPECT_EQ(expected, ostr.str());
 }
@@ -378,8 +378,8 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
   
 #ifdef WIN32
   std::string expectedFirstPart =
-    "0 SendTestMatrix:0\n"
     "0 CreateMatrix:9\n"
+    "0 SendTestMatrix:0\n"
     "0 SendTestMatrix:1\n";
 #else
   std::string expectedFirstPart =
@@ -389,14 +389,14 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
 #endif
 
     std::string expected = expectedFirstPart +
+      "1 EvaluateLinearAlgebraUnary:2\n"
       "1 EvaluateLinearAlgebraUnary:3\n"
       "1 EvaluateLinearAlgebraUnary:4\n"
       "1 ReportMatrixInfo:10\n"
-      "1 EvaluateLinearAlgebraUnary:2\n"
       "2 EvaluateLinearAlgebraBinary:5\n"
       "3 EvaluateLinearAlgebraBinary:6\n"
-      "4 ReportMatrixInfo:7\n"
-      "4 ReceiveTestMatrix:8\n";
+      "4 ReceiveTestMatrix:8\n"
+      "4 ReportMatrixInfo:7\n";
 
     EXPECT_EQ(expected, ostr.str());
   }
@@ -423,20 +423,18 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
     ostr << order;
 
     std::string expected =
-      "0 SendTestMatrix:1\n"
       "0 SendTestMatrix:0\n"
+      "0 SendTestMatrix:1\n"
+      "1 EvaluateLinearAlgebraUnary:2\n"
       "1 EvaluateLinearAlgebraUnary:3\n"
       "1 EvaluateLinearAlgebraUnary:4\n"
-      "1 EvaluateLinearAlgebraUnary:2\n"
       "2 EvaluateLinearAlgebraBinary:5\n"
       "3 EvaluateLinearAlgebraBinary:6\n"
-      "4 ReportMatrixInfo:7\n"
-      "4 ReceiveTestMatrix:8\n";
+      "4 ReceiveTestMatrix:8\n"
+      "4 ReportMatrixInfo:7\n";
 
     EXPECT_EQ(expected, ostr.str());
   }
-
-  //FAIL() << "todo";
 }
 
 namespace ThreadingPrototype
