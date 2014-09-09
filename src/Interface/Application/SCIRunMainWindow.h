@@ -71,6 +71,7 @@ public:
   QString dataDirectory() const;
 
   bool newInterface() const;
+  const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
 public Q_SLOTS:
   void executeAll();
@@ -107,12 +108,16 @@ private:
   void setupPythonConsole();
   void fillModuleSelector();
   void setupInputWidgets();
+  void parseStyleXML();
+  void printStyleSheet() const;
+
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
+  QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   boost::shared_ptr<class DialogErrorControl> dialogErrorControl_; 
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;

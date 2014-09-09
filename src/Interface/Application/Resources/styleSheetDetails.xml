@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<styles>
+    <style widgetType="MainWindow">
+        <template>background-color: rgb(bgRed,bgGreen,bgBlue); color: fgColorStr; selection-color: selectColorStr; selection-background-color: selectBgColorStr; border: borderPixels;</template>
+        <item key="bgRed" value="66"/>
+        <item key="bgGreen" value="66"/>
+        <item key="bgBlue" value="69"/>
+		<item key="fgColorStr" value="white"/>
+		<item key="selectColorStr" value="yellow"/>
+		<item key="selectBgColorStr" value="blue"/>
+		<item key="borderPixels" value="5px"/>
+    </style>
+    <style widgetType="ModuleWidget">
+        <item key="moduleAlpha" value="100"/>
+		<item key="portAlpha" value="175"/>
+    </style>
+</styles>

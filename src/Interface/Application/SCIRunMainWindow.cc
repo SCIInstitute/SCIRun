@@ -1,29 +1,29 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
+  For more information, please see: http://software.sci.utah.edu
 
-   The MIT License
+  The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
-   University of Utah.
+  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+  University of Utah.
 
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
+  License for the specific language governing rights and limitations under
+  Permission is hereby granted, free of charge, to any person obtaining a
+  copy of this software and associated documentation files (the "Software"),
+  to deal in the Software without restriction, including without limitation
+  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  and/or sell copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be included
+  in all copies or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+  DEALINGS IN THE SOFTWARE.
 */
 
 #include <QtGui>
@@ -77,12 +77,12 @@ using namespace SCIRun::Core::Algorithms;
 
 SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 {
-	setupUi(this);
+  setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
   if (newInterface())
     setStyleSheet("background-color: rgb(66,66,69); color: white; selection-color: yellow; selection-background-color: blue; border: 5px;");
 
-	dialogErrorControl_.reset(new DialogErrorControl(this));
+  dialogErrorControl_.reset(new DialogErrorControl(this));
   setupNetworkEditor();
 
   setTipsAndWhatsThis();
@@ -96,8 +96,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
-	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
-	moduleSearchAction->setDefaultWidget(new QLineEdit(this));
+  QWidgetAction* moduleSearchAction = new QWidgetAction(this);
+  moduleSearchAction->setDefaultWidget(new QLineEdit(this));
 
 #if 0
   {
@@ -126,38 +126,37 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   standardBar->addAction(actionPinAllModuleUIs_);
   standardBar->addAction(actionRestoreAllModuleUIs_);
   standardBar->addAction(actionHideAllModuleUIs_);
-	standardBar->setStyleSheet(styleSheet());
+  standardBar->setStyleSheet(styleSheet());
   //setUnifiedTitleAndToolBarOnMac(true);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
-	executeBar->addAction(actionExecute_All_);
+  executeBar->addAction(actionExecute_All_);
 
-	networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
-	//networkProgressBar_->setStyleSheet(styleSheet());
+  networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
   executeBar->addActions(networkProgressBar_->actions());
-	executeBar->setStyleSheet(styleSheet());
-	executeBar->setAutoFillBackground(true);
+  executeBar->setStyleSheet(styleSheet());
+  executeBar->setAutoFillBackground(true);
   connect(actionExecute_All_, SIGNAL(triggered()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
 
   connect(actionExecute_All_, SIGNAL(triggered()), dialogErrorControl_.get(), SLOT(resetCounter()));
 
-	scrollAreaWidgetContents_->addAction(actionExecute_All_);
+  scrollAreaWidgetContents_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
   sep->setSeparator(true);
   scrollAreaWidgetContents_->addAction(sep);
-	scrollAreaWidgetContents_->addActions(networkEditor_->getModuleSpecificActions());
-	scrollAreaWidgetContents_->setStyleSheet(styleSheet());
+  scrollAreaWidgetContents_->addActions(networkEditor_->getModuleSpecificActions());
+  scrollAreaWidgetContents_->setStyleSheet(styleSheet());
 
   //TODO???????
   setContextMenuPolicy(Qt::NoContextMenu);
   //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-	scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
-	scrollArea_->viewport()->setAutoFillBackground(true);
-	scrollArea_->setStyleSheet(styleSheet());
+  scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
+  scrollArea_->viewport()->setAutoFillBackground(true);
+  scrollArea_->setStyleSheet(styleSheet());
 
-	logTextBrowser_->setText("Hello! Welcome to SCIRun 5.");
+  logTextBrowser_->setText("Hello! Welcome to SCIRun 5.");
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
@@ -215,13 +214,15 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
   connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
-	if (newInterface())
-	  networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/inflicted2X.png"));
+  if (newInterface())
+    networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/inflicted2X.png"));
 
   setupInputWidgets();
 
   configurationDockWidget_->hide();
   actionConfiguration_->setChecked(false);
+
+  parseStyleXML();
 }
 
 void SCIRunMainWindow::initialize()
@@ -873,8 +874,8 @@ void SCIRunMainWindow::updateMiniView()
   //networkEditorMiniViewLabel_->setText("+" + networkEditorMiniViewLabel_->text());
   QPixmap network = networkEditor_->sceneGrab();
   networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
-                                                   Qt::KeepAspectRatio,
-                                                   Qt::SmoothTransformation));
+    Qt::KeepAspectRatio,
+    Qt::SmoothTransformation));
 }
 
 void SCIRunMainWindow::showPythonWarning(bool visible)
@@ -916,7 +917,7 @@ namespace {
   {
     auto faves = new QTreeWidgetItem();
     faves->setText(0, "Favorites");
-		faves->setForeground(0, favesColor());
+    faves->setForeground(0, favesColor());
 
     tree->addTopLevelItem(faves);
   }
@@ -942,53 +943,53 @@ namespace {
     faves->addChild(copy);
   }
 
-void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
-{
-  QTreeWidgetItem* faves = getFavoriteMenu(tree);
-  BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
+  void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
   {
-    const std::string& packageName = package.first;
-    auto packageItem = new QTreeWidgetItem();
-    packageItem->setText(0, QString::fromStdString(packageName));
-		packageItem->setForeground(0, packageColor());
-    tree->addTopLevelItem(packageItem);
-    size_t totalModules = 0;
-    BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
+    QTreeWidgetItem* faves = getFavoriteMenu(tree);
+    BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
     {
-      const std::string& categoryName = category.first;
-      auto categoryItem = new QTreeWidgetItem();
-      categoryItem->setText(0, QString::fromStdString(categoryName));
-			categoryItem->setForeground(0, categoryColor());
-      packageItem->addChild(categoryItem);
-      BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
+      const std::string& packageName = package.first;
+      auto packageItem = new QTreeWidgetItem();
+      packageItem->setText(0, QString::fromStdString(packageName));
+      packageItem->setForeground(0, packageColor());
+      tree->addTopLevelItem(packageItem);
+      size_t totalModules = 0;
+      BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
       {
-        const std::string& moduleName = module.first;
-        auto moduleItem = new QTreeWidgetItem();
-        auto name = QString::fromStdString(moduleName);
-        moduleItem->setText(0, name);
-        if (favoriteModuleNames.contains(name))
+        const std::string& categoryName = category.first;
+        auto categoryItem = new QTreeWidgetItem();
+        categoryItem->setText(0, QString::fromStdString(categoryName));
+        categoryItem->setForeground(0, categoryColor());
+        packageItem->addChild(categoryItem);
+        BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
         {
-          moduleItem->setCheckState(0, Qt::Checked);
-          addFavoriteItem(faves, moduleItem);
+          const std::string& moduleName = module.first;
+          auto moduleItem = new QTreeWidgetItem();
+          auto name = QString::fromStdString(moduleName);
+          moduleItem->setText(0, name);
+          if (favoriteModuleNames.contains(name))
+          {
+            moduleItem->setCheckState(0, Qt::Checked);
+            addFavoriteItem(faves, moduleItem);
+          }
+          else
+          {
+            moduleItem->setCheckState(0, Qt::Unchecked);
+          }
+          moduleItem->setText(1, QString::fromStdString(module.second.moduleStatus_));
+          moduleItem->setForeground(1, Qt::lightGray);
+          moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
+          moduleItem->setForeground(2, Qt::lightGray);
+          categoryItem->addChild(moduleItem);
+          totalModules++;
         }
-        else
-        {
-          moduleItem->setCheckState(0, Qt::Unchecked);
-        }
-        moduleItem->setText(1, QString::fromStdString(module.second.moduleStatus_));
-				moduleItem->setForeground(1, Qt::lightGray);
-        moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
-				moduleItem->setForeground(2, Qt::lightGray);
-        categoryItem->addChild(moduleItem);
-        totalModules++;
+        categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
+        categoryItem->setForeground(1, Qt::magenta);
       }
-      categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
-			categoryItem->setForeground(1, Qt::magenta);
+      packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
+      packageItem->setForeground(1, Qt::magenta);
     }
-    packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
-		packageItem->setForeground(1, Qt::magenta);
   }
-}
 
   void sortFavorites(QTreeWidget* tree)
   {
@@ -1078,4 +1079,128 @@ QString SCIRunMainWindow::dataDirectory() const
 bool SCIRunMainWindow::newInterface() const
 {
   return Core::Application::Instance().parameters()->entireCommandLine().find("--experimentalGUI") != std::string::npos;
+}
+
+namespace {
+
+  void addElementDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map) 
+  {
+    if (xml.tokenType() != QXmlStreamReader::StartElement) 
+    {
+      std::cout << "didn't find start" << std::endl;
+      return;
+    }
+    QString elementName = xml.name().toString();
+    xml.readNext();
+    if (xml.tokenType() != QXmlStreamReader::Characters) 
+    {
+      std::cout << "not char data" << std::endl;
+      return;
+    }
+    map.insert(elementName, xml.text().toString());
+  }
+
+  void addItemDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map) 
+  {
+    if (xml.tokenType() != QXmlStreamReader::StartElement) 
+    {
+      std::cout << "didn't find start 2" << std::endl;
+      return;
+    }
+    xml.readNext();
+    if (xml.tokenType() != QXmlStreamReader::Characters) 
+    {
+      std::cout << "not char data 2" << std::endl;
+      return;
+    }
+    QXmlStreamAttributes attributes = xml.attributes();
+    if (attributes.hasAttribute("key") && attributes.hasAttribute("value")) 
+    {
+      map[attributes.value("key").toString()] = attributes.value("value").toString();
+    }
+    else
+      std::cout << 333 << std::endl;
+  }
+
+  QMap<QString, QString> parseStyle(QXmlStreamReader& xml) 
+  {
+    QMap<QString, QString> style;
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "style") 
+    {
+      std::cout << "didn't find style" << std::endl;
+      return style;
+    }
+    
+    xml.readNext();
+    
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "style")) 
+    {
+      if (xml.tokenType() == QXmlStreamReader::StartElement) 
+      {
+        if (xml.name() == "template") 
+          addElementDataToMap(xml, style);
+        if (xml.name() == "item") 
+          addItemDataToMap(xml, style);
+      }
+      else
+        std::cout << 222 << std::endl;
+      xml.readNext();
+    }
+    return style;
+  }
+
+}
+
+void SCIRunMainWindow::parseStyleXML()
+{
+  std::cout << "parsing style xml" << std::endl;
+  QFile file("./styleSheetDetails.xml");
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
+  {
+    QMessageBox::critical(this, "SCIRun", "Couldn't open styleSheetDetails.xml", QMessageBox::Ok);
+    return;
+  }
+  QXmlStreamReader xml(&file);
+  while (!xml.atEnd() && !xml.hasError()) 
+  {
+    QXmlStreamReader::TokenType token = xml.readNext();
+    if (token == QXmlStreamReader::StartDocument) {
+      continue;
+    }
+    if (token == QXmlStreamReader::StartElement) {
+      if(xml.name() == "styles") {
+        continue;
+      }
+      std::cout << "found: " << xml.name().toString().toStdString() << std::endl;
+      if(xml.name() == "style") {
+        QXmlStreamAttributes attributes = xml.attributes();
+        if (attributes.hasAttribute("widgetType")) 
+        {
+          styleSheetDetails_[attributes.value("widgetType").toString()] = parseStyle(xml);
+        }
+        else
+          std::cout << "111" << std::endl;
+      }
+    }
+  }
+
+  if (xml.hasError()) 
+  {
+    QMessageBox::critical(this, "SCIRun", xml.errorString(), QMessageBox::Ok);
+  }
+  xml.clear();
+  printStyleSheet();
+}
+
+void SCIRunMainWindow::printStyleSheet() const
+{
+  std::cout << "Printing style sheet details map" << std::endl;
+  for (auto styleMapIt = styleSheetDetails_.constBegin(); styleMapIt != styleSheetDetails_.constEnd(); ++styleMapIt)
+  {
+    std::cout << "Style for: " << styleMapIt.key().toStdString() << std::endl;
+    for (auto styleIt = styleMapIt.value().constBegin(); styleIt != styleMapIt.value().constEnd(); ++styleIt)
+    {
+      std::cout << "key: " << styleIt.key().toStdString() << " value: " << styleIt.value().toStdString() << std::endl;
+    }
+  }
 }
