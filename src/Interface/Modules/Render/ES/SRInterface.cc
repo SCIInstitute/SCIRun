@@ -28,6 +28,7 @@
 
 // Needed for OpenGL include files on Travis:
 #include <gl-platform/GLPlatform.hpp>
+#include <Interface/Modules/Render/UndefiningX11Cruft.h>
 #include <QtOpenGL/QGLWidget>
 
 #include <Interface/Modules/Render/namespaces.h>
