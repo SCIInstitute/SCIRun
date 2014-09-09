@@ -156,7 +156,6 @@ QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
 
 namespace
 {
-  //#define EXPERIMENTAL_GUI
   //TODO: make run-time configurable
   int moduleAlpha()
   {
@@ -683,17 +682,20 @@ bool ModuleWidget::hasDynamicPorts() const
 
 void ModuleWidget::pinUI()
 {
-  dockable_->setFloating(false);
+  if (dockable_)
+    dockable_->setFloating(false);
 }
 
 void ModuleWidget::hideUI()
 {
-  dockable_->hide();
+  if (dockable_)
+    dockable_->hide();
 }
 
 void ModuleWidget::showUI()
 {
-  dockable_->show();
+  if (dockable_)
+    dockable_->show();
 }
 
 void ModuleWidget::executeButtonPushed()

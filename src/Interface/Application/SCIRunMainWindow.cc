@@ -80,7 +80,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 	setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
 #ifdef EXPERIMENTAL_GUI
-	setStyleSheet("background-color: rgb(66,66,69); color: white; selection-color: yellow; selection-background-color: blue; border: 5px;");
+  setStyleSheet("background-color: rgb(66,66,69); color: white; selection-color: yellow; selection-background-color: blue; border: 5px;");
 #endif
 
 	dialogErrorControl_.reset(new DialogErrorControl(this));
@@ -901,11 +901,21 @@ void SCIRunMainWindow::makeModulesSmallSize()
 
 namespace {
 
+#ifdef EXPERIMENTAL_GUI
+  const QColor favesColor = Qt::yellow;
+  const QColor packageColor = Qt::yellow;
+  const QColor categoryColor = Qt::green;
+#else
+  const QColor favesColor = Qt::darkYellow;
+  const QColor packageColor = Qt::darkYellow;
+  const QColor categoryColor = Qt::darkGreen;
+#endif
+
   void addFavoriteMenu(QTreeWidget* tree)
   {
     auto faves = new QTreeWidgetItem();
     faves->setText(0, "Favorites");
-		faves->setForeground(0, Qt::darkYellow);
+		faves->setForeground(0, favesColor);
 
     tree->addTopLevelItem(faves);
   }
@@ -939,7 +949,7 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, co
     const std::string& packageName = package.first;
     auto packageItem = new QTreeWidgetItem();
     packageItem->setText(0, QString::fromStdString(packageName));
-		packageItem->setForeground(0, Qt::darkYellow);
+		packageItem->setForeground(0, packageColor);
     tree->addTopLevelItem(packageItem);
     size_t totalModules = 0;
     BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
@@ -947,7 +957,7 @@ void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, co
       const std::string& categoryName = category.first;
       auto categoryItem = new QTreeWidgetItem();
       categoryItem->setText(0, QString::fromStdString(categoryName));
-			categoryItem->setForeground(0, Qt::darkGreen);
+			categoryItem->setForeground(0, categoryColor);
       packageItem->addChild(categoryItem);
       BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
       {
