@@ -156,8 +156,24 @@ QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
 
 namespace
 {
-  int moduleAlpha() { return 100; }
-  int portAlpha() { return 175; }
+  //#define EXPERIMENTAL_GUI
+  //TODO: make run-time configurable
+  int moduleAlpha()
+  {
+    #ifdef EXPERIMENTAL_GUI
+    return 100;
+    #else
+    return 255;
+    #endif
+  }
+  int portAlpha()
+  {
+    #ifdef EXPERIMENTAL_GUI
+    return 175;
+    #else
+    return 255;
+    #endif
+  }
   QString moduleRGBA(int r, int g, int b)
   {
     return QString("rgba(%1,%2,%3,%4)")
@@ -181,7 +197,13 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   outputPortLayout_(0),
   editor_(ed),
   deleting_(false),
-  defaultBackgroundColor_(moduleRGBA(128,128,128))
+  defaultBackgroundColor_(
+  #ifdef EXPERIMENTAL_GUI
+    moduleRGBA(128,128,128)
+  #else
+    moduleRGBA(192,192,192)
+  #endif
+  )
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -541,7 +563,12 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)
   {
-    setStyleSheet("color: white; border-radius: 7px; background-color: " + color);
+    #ifdef EXPERIMENTAL_GUI
+    QString rounded = "color: white; border-radius: 7px;";
+    #else
+    QString rounded;
+    #endif
+    setStyleSheet(rounded + " background-color: " + color);
   }
 }
 

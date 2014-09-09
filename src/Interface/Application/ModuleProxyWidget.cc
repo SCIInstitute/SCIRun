@@ -121,8 +121,6 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
-  //setStyleSheet(module->styleSheet());
-  //setAttribute(Qt::WA_TranslucentBackground, true);
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
