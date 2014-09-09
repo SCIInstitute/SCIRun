@@ -36,8 +36,6 @@
 #include <Interface/Application/Note.h>
 #include "ui_SCIRunMainWindow.h"
 
-//#define EXPERIMENTAL_GUI
-
 namespace SCIRun {
   namespace Dataflow {
     namespace Engine {
@@ -71,6 +69,8 @@ public:
   void runPythonScript(const QString& scriptFileName);
   void setDataDirectory(const QString& scriptFileName);
   QString dataDirectory() const;
+
+  bool newInterface() const;
 
 public Q_SLOTS:
   void executeAll();

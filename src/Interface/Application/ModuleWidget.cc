@@ -159,19 +159,11 @@ namespace
   //TODO: make run-time configurable
   int moduleAlpha()
   {
-    #ifdef EXPERIMENTAL_GUI
-    return 100;
-    #else
-    return 255;
-    #endif
+    return SCIRunMainWindow::Instance()->newInterface() ? 100 : 255;
   }
   int portAlpha()
   {
-    #ifdef EXPERIMENTAL_GUI
-    return 175;
-    #else
-    return 255;
-    #endif
+    return SCIRunMainWindow::Instance()->newInterface() ? 175 : 255;
   }
   QString moduleRGBA(int r, int g, int b)
   {
@@ -196,13 +188,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   outputPortLayout_(0),
   editor_(ed),
   deleting_(false),
-  defaultBackgroundColor_(
-  #ifdef EXPERIMENTAL_GUI
-    moduleRGBA(128,128,128)
-  #else
-    moduleRGBA(192,192,192)
-  #endif
-  )
+  defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(128,128,128) : moduleRGBA(192,192,192))
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -562,11 +548,9 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)
   {
-    #ifdef EXPERIMENTAL_GUI
-    QString rounded = "color: white; border-radius: 7px;";
-    #else
     QString rounded;
-    #endif
+    if (SCIRunMainWindow::Instance()->newInterface())
+      rounded = "color: white; border-radius: 7px;";
     setStyleSheet(rounded + " background-color: " + color);
   }
 }
