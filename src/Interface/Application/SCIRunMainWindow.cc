@@ -1064,7 +1064,5 @@ QString SCIRunMainWindow::dataDirectory() const
 void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
-  //auto file = QFileDialog::getOpenFileName(this, "Open Field File", dial
-  std::cout << "setDataDirectoryFromGUI: " << dir.toStdString() << std::endl;
 	setDataDirectory(dir);
 }
