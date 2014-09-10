@@ -151,7 +151,11 @@ private Q_SLOTS:
   void showPythonWarning(bool visible);
   void makeModulesLargeSize();
   void makeModulesSmallSize();
+  void setDataDirectoryFromGUI();
   void displayAcknowledgement();
+  void setFocusOnFilterLine();
+  void addModuleKeyboardAction();
+  void selectModuleKeyboardAction();
   void exitApplication(int code);
 };
 
