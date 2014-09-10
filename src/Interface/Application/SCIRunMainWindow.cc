@@ -96,8 +96,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
-	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
-	moduleSearchAction->setDefaultWidget(new QLineEdit(this));
+  QWidgetAction* moduleSearchAction = new QWidgetAction(this);
+  moduleSearchAction->setDefaultWidget(new QLineEdit(this));
 
 #if 0
   {
@@ -130,9 +130,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   //setUnifiedTitleAndToolBarOnMac(true);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
-	executeBar->addAction(actionExecute_All_);
+  executeBar->addAction(actionExecute_All_);
 
-	networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
+  networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
   executeBar->addActions(networkProgressBar_->actions());
   executeBar->setStyleSheet(styleSheet());
   executeBar->setAutoFillBackground(true);
@@ -141,7 +141,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   connect(actionExecute_All_, SIGNAL(triggered()), dialogErrorControl_.get(), SLOT(resetCounter()));
 
-	scrollAreaWidgetContents_->addAction(actionExecute_All_);
+  scrollAreaWidgetContents_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
   sep->setSeparator(true);
   scrollAreaWidgetContents_->addAction(sep);
@@ -1095,6 +1095,12 @@ QString SCIRunMainWindow::dataDirectory() const
   return scirunDataLineEdit_->text();
 }
 
+void SCIRunMainWindow::setDataDirectoryFromGUI()
+{
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
+  setDataDirectory(dir);
+}
+
 bool SCIRunMainWindow::newInterface() const
 {
   return Core::Application::Instance().parameters()->entireCommandLine().find("--experimentalGUI") != std::string::npos;
@@ -1102,16 +1108,16 @@ bool SCIRunMainWindow::newInterface() const
 
 namespace {
 
-  void addElementDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
+  void addElementDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map) 
   {
-    if (xml.tokenType() != QXmlStreamReader::StartElement)
+    if (xml.tokenType() != QXmlStreamReader::StartElement) 
     {
       std::cout << "didn't find start" << std::endl;
       return;
     }
     QString elementName = xml.name().toString();
     xml.readNext();
-    if (xml.tokenType() != QXmlStreamReader::Characters)
+    if (xml.tokenType() != QXmlStreamReader::Characters) 
     {
       std::cout << "not char data" << std::endl;
       return;
@@ -1119,21 +1125,21 @@ namespace {
     map.insert(elementName, xml.text().toString());
   }
 
-  void addItemDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
+  void addItemDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map) 
   {
-    if (xml.tokenType() != QXmlStreamReader::StartElement)
+    if (xml.tokenType() != QXmlStreamReader::StartElement) 
     {
       std::cout << "didn't find start 2" << std::endl;
       return;
     }
     xml.readNext();
-    if (xml.tokenType() != QXmlStreamReader::Characters)
+    if (xml.tokenType() != QXmlStreamReader::Characters) 
     {
       std::cout << "not char data 2" << std::endl;
       return;
     }
     QXmlStreamAttributes attributes = xml.attributes();
-    if (attributes.hasAttribute("key") && attributes.hasAttribute("value"))
+    if (attributes.hasAttribute("key") && attributes.hasAttribute("value")) 
     {
       map[attributes.value("key").toString()] = attributes.value("value").toString();
     }
@@ -1141,24 +1147,24 @@ namespace {
       std::cout << 333 << std::endl;
   }
 
-  QMap<QString, QString> parseStyle(QXmlStreamReader& xml)
+  QMap<QString, QString> parseStyle(QXmlStreamReader& xml) 
   {
     QMap<QString, QString> style;
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "style")
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "style") 
     {
       std::cout << "didn't find style" << std::endl;
       return style;
     }
-
+    
     xml.readNext();
-
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "style"))
+    
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "style")) 
     {
-      if (xml.tokenType() == QXmlStreamReader::StartElement)
+      if (xml.tokenType() == QXmlStreamReader::StartElement) 
       {
-        if (xml.name() == "template")
+        if (xml.name() == "template") 
           addElementDataToMap(xml, style);
-        if (xml.name() == "item")
+        if (xml.name() == "item") 
           addItemDataToMap(xml, style);
       }
       else
@@ -1174,13 +1180,13 @@ void SCIRunMainWindow::parseStyleXML()
 {
   std::cout << "parsing style xml" << std::endl;
   QFile file("./styleSheetDetails.xml");
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
   {
     QMessageBox::critical(this, "SCIRun", "Couldn't open styleSheetDetails.xml", QMessageBox::Ok);
     return;
   }
   QXmlStreamReader xml(&file);
-  while (!xml.atEnd() && !xml.hasError())
+  while (!xml.atEnd() && !xml.hasError()) 
   {
     QXmlStreamReader::TokenType token = xml.readNext();
     if (token == QXmlStreamReader::StartDocument) {
@@ -1193,7 +1199,7 @@ void SCIRunMainWindow::parseStyleXML()
       std::cout << "found: " << xml.name().toString().toStdString() << std::endl;
       if(xml.name() == "style") {
         QXmlStreamAttributes attributes = xml.attributes();
-        if (attributes.hasAttribute("widgetType"))
+        if (attributes.hasAttribute("widgetType")) 
         {
           styleSheetDetails_[attributes.value("widgetType").toString()] = parseStyle(xml);
         }
@@ -1203,7 +1209,7 @@ void SCIRunMainWindow::parseStyleXML()
     }
   }
 
-  if (xml.hasError())
+  if (xml.hasError()) 
   {
     QMessageBox::critical(this, "SCIRun", xml.errorString(), QMessageBox::Ok);
   }
@@ -1222,12 +1228,6 @@ void SCIRunMainWindow::printStyleSheet() const
       std::cout << "key: " << styleIt.key().toStdString() << " value: " << styleIt.value().toStdString() << std::endl;
     }
   }
-}
-
-void SCIRunMainWindow::setDataDirectoryFromGUI()
-{
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
-	setDataDirectory(dir);
 }
 
 void SCIRunMainWindow::setFocusOnFilterLine()
