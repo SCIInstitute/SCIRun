@@ -1095,6 +1095,12 @@ QString SCIRunMainWindow::dataDirectory() const
   return scirunDataLineEdit_->text();
 }
 
+void SCIRunMainWindow::setDataDirectoryFromGUI()
+{
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
+  setDataDirectory(dir);
+}
+
 bool SCIRunMainWindow::newInterface() const
 {
   return Core::Application::Instance().parameters()->entireCommandLine().find("--experimentalGUI") != std::string::npos;
@@ -1222,4 +1228,24 @@ void SCIRunMainWindow::printStyleSheet() const
       std::cout << "key: " << styleIt.key().toStdString() << " value: " << styleIt.value().toStdString() << std::endl;
     }
   }
+}
+
+void SCIRunMainWindow::setFocusOnFilterLine()
+{
+  moduleFilterLineEdit_->setFocus(Qt::ShortcutFocusReason);
+  statusBar()->showMessage(tr("Module filter activated"), 2000);
+}
+
+void SCIRunMainWindow::addModuleKeyboardAction()
+{
+  //TODO
+  auto item = moduleSelectorTreeWidget_->currentItem();
+  if (item && item->childCount() == 0)
+    std::cout << "Current module: " << item->text(0).toStdString() << std::endl;
+}
+
+void SCIRunMainWindow::selectModuleKeyboardAction()
+{
+  moduleSelectorTreeWidget_->setFocus(Qt::ShortcutFocusReason);
+  statusBar()->showMessage(tr("Module selection activated"), 2000);
 }
