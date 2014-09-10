@@ -153,6 +153,9 @@ private Q_SLOTS:
   void makeModulesSmallSize();
   void setDataDirectoryFromGUI();
   void displayAcknowledgement();
+  void setFocusOnFilterLine();
+  void addModuleKeyboardAction();
+  void selectModuleKeyboardAction();
   void exitApplication(int code);
 };
 

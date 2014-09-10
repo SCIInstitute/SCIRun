@@ -157,9 +157,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   scrollArea_->setStyleSheet(styleSheet());
 
   logTextBrowser_->setText("Hello! Welcome to SCIRun 5.");
-
-
-
+  
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
@@ -168,7 +166,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionSelectAll_, SIGNAL(triggered()), networkEditor_, SLOT(selectAll()));
   actionQuit_->setShortcut(QKeySequence::Quit);
   connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
-  actionDelete_->setShortcut(QKeySequence::Delete);
+  actionDelete_->setShortcuts(QList<QKeySequence>() << QKeySequence::Delete << Qt::Key_Backspace);
 
   connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
   connect(actionPinAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(pinAllModuleUIs()));
@@ -220,6 +218,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
     networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/inflicted2X.png"));
 
   connect(scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
+  connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
+  connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
+  connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
 
   setupInputWidgets();
 
@@ -1225,4 +1226,24 @@ void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
 	setDataDirectory(dir);
+}
+
+void SCIRunMainWindow::setFocusOnFilterLine()
+{
+  moduleFilterLineEdit_->setFocus(Qt::ShortcutFocusReason);
+  statusBar()->showMessage(tr("Module filter activated"), 2000);
+}
+
+void SCIRunMainWindow::addModuleKeyboardAction()
+{
+  //TODO
+  auto item = moduleSelectorTreeWidget_->currentItem();
+  if (item && item->childCount() == 0)
+    std::cout << "Current module: " << item->text(0).toStdString() << std::endl;
+}
+
+void SCIRunMainWindow::selectModuleKeyboardAction()
+{
+  moduleSelectorTreeWidget_->setFocus(Qt::ShortcutFocusReason);
+  statusBar()->showMessage(tr("Module selection activated"), 2000);
 }
