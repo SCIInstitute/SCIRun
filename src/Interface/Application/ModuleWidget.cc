@@ -618,7 +618,7 @@ void ModuleWidget::makeOptionsDialog()
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();
-      connect(dialog_, SIGNAL(executeButtonPressed()), this, SLOT(execute()));
+      connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setWidget(dialog_);
