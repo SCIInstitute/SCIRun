@@ -115,41 +115,80 @@ namespace
 QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
 {
   QColor result;
-  if (str == "red")
-    result = Qt::red;
-  else if (str == "blue")
-    result = Qt::blue;
-  else if (str == "darkBlue")
-    result = Qt::darkBlue;
-  else if (str == "cyan")
-    result = Qt::cyan;
-  else if (str == "darkCyan")
-    result = Qt::darkCyan;
-  else if (str == "darkGreen")
-    result = Qt::darkGreen;
-  else if (str == "cyan")
-    result = Qt::cyan;
-  else if (str == "magenta")
-    result = Qt::magenta;
-  else if (str == "white")
-    result = Qt::white;
-  else if (str == "yellow")
-    result = Qt::yellow;
-  else if (str == "darkYellow")
-    result = Qt::darkYellow;
-  else if (str == "lightGray")
-    result = Qt::lightGray;
-  else if (str == "darkGray")
-    result = Qt::darkGray;
-  else if (str == "black")
-    result = Qt::black;
-  else if (str == "purple")
-    result = Qt::darkMagenta;
-  else if (str == "orange")
-    result = QColor(255, 165, 0);
+  if (SCIRunMainWindow::Instance()->newInterface())
+  {
+    if (str == "red")
+      result = Qt::red;
+    else if (str == "blue")
+      result = QColor(14,139,255);
+    else if (str == "darkBlue")
+      result = Qt::darkBlue;
+    else if (str == "cyan")
+      result = QColor(27,207,207);
+    else if (str == "darkCyan")
+      result = Qt::darkCyan;
+    else if (str == "darkGreen")
+      result = QColor(0,175,70);
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "magenta")
+      result = QColor(255,75,240);
+    else if (str == "white")
+      result = Qt::white;
+    else if (str == "yellow")
+      result = QColor(234,255,55);
+    else if (str == "darkYellow")
+      result = Qt::darkYellow;
+    else if (str == "lightGray")
+      result = Qt::lightGray;
+    else if (str == "darkGray")
+      result = Qt::darkGray;
+    else if (str == "black")
+      result = Qt::black;
+    else if (str == "purple")
+      result = QColor(122,119,226);
+    else if (str == "orange")
+      result = QColor(254, 139, 38);
+    else
+      result = Qt::black;
+  }
   else
-    result = Qt::black;
-
+  {
+    if (str == "red")
+      result = Qt::red;
+    else if (str == "blue")
+      result = Qt::blue;
+    else if (str == "darkBlue")
+      result = Qt::darkBlue;
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "darkCyan")
+      result = Qt::darkCyan;
+    else if (str == "darkGreen")
+      result = Qt::darkGreen;
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "magenta")
+      result = Qt::magenta;
+    else if (str == "white")
+      result = Qt::white;
+    else if (str == "yellow")
+      result = Qt::yellow;
+    else if (str == "darkYellow")
+      result = Qt::darkYellow;
+    else if (str == "lightGray")
+      result = Qt::lightGray;
+    else if (str == "darkGray")
+      result = Qt::darkGray;
+    else if (str == "black")
+      result = Qt::black;
+    else if (str == "purple")
+      result = Qt::darkMagenta;
+    else if (str == "orange")
+      result = QColor(255, 165, 0);
+    else
+      result = Qt::black;
+  }
   result.setAlpha(alpha);
   return result;
 }
@@ -159,11 +198,12 @@ namespace
   //TODO: make run-time configurable
   int moduleAlpha()
   {
+    //TODO: becky's alpha number didn't look good here, it may be a Qt/coloring problem. Will wait until I get correct background.
     return SCIRunMainWindow::Instance()->newInterface() ? 100 : 255;
   }
   int portAlpha()
   {
-    return SCIRunMainWindow::Instance()->newInterface() ? 175 : 255;
+    return SCIRunMainWindow::Instance()->newInterface() ? 230 : 255;
   }
   QString moduleRGBA(int r, int g, int b)
   {
@@ -188,7 +228,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   outputPortLayout_(0),
   editor_(ed),
   deleting_(false),
-  defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(128,128,128) : moduleRGBA(192,192,192))
+  defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192))
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");

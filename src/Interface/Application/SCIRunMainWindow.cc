@@ -222,7 +222,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   configurationDockWidget_->hide();
   actionConfiguration_->setChecked(false);
 
-  parseStyleXML();
+  //parseStyleXML();
 }
 
 void SCIRunMainWindow::initialize()
