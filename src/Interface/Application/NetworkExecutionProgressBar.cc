@@ -46,6 +46,7 @@ NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numM
   counterLabel_->setToolTip("modules done executing / total modules");
   counterLabel_->setWhatsThis("This shows the fraction of completed modules while the network is executing.");
   counterAction_->setVisible(true);
+  progressBar_->setStyleSheet(parent->styleSheet());
 }
 
 QList<QAction*> NetworkExecutionProgressBar::actions() const

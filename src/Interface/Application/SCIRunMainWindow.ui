@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1114</width>
-         <height>477</height>
+         <width>1117</width>
+         <height>516</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -95,11 +95,20 @@
    </widget>
    <widget class="QMenu" name="menuModules_">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>&amp;Modules</string>
     </property>
+    <widget class="QMenu" name="menuActions">
+     <property name="title">
+      <string>Actions</string>
+     </property>
+     <addaction name="actionFilter_modules_"/>
+     <addaction name="actionAddModule_"/>
+     <addaction name="actionSelectModule_"/>
+    </widget>
+    <addaction name="menuActions"/>
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="enabled">
@@ -370,7 +379,7 @@
         <enum>QTabWidget::Triangular</enum>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="networkEditorTab_">
         <property name="whatsThis">
@@ -622,7 +631,7 @@
        </widget>
        <widget class="QWidget" name="optionsTab_">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="whatsThis">
          <string>Stored paths available for use in module I/O.</string>
@@ -635,6 +644,9 @@
           <layout class="QHBoxLayout" name="optionsTabHorizontalLayout_">
            <item>
             <widget class="QGroupBox" name="pathSettingsGroupBox_">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="title">
               <string>SCIRun Path Settings*</string>
              </property>
@@ -661,7 +673,7 @@
                <item row="0" column="1">
                 <widget class="QLineEdit" name="scirunDataLineEdit_">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="readOnly">
                   <bool>true</bool>
@@ -671,7 +683,7 @@
                <item row="0" column="2">
                 <widget class="QPushButton" name="scirunDataPushButton_">
                  <property name="enabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <property name="text">
                   <string>Set...</string>
@@ -686,10 +698,17 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QLineEdit" name="scirunNetsLineEdit_"/>
+                <widget class="QLineEdit" name="scirunNetsLineEdit_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
                </item>
                <item row="1" column="2">
                 <widget class="QPushButton" name="scirunNetsPushButton_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Set</string>
                  </property>
@@ -703,10 +722,17 @@
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QLineEdit" name="userDataLineEdit_"/>
+                <widget class="QLineEdit" name="userDataLineEdit_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
                </item>
                <item row="2" column="2">
                 <widget class="QPushButton" name="userDataPushButton_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Set</string>
                  </property>
@@ -742,10 +768,17 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="dataSetLineEdit_"/>
+                <widget class="QLineEdit" name="dataSetLineEdit_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                </widget>
                </item>
                <item>
                 <widget class="QPushButton" name="dataSetPushButton_">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Set</string>
                  </property>
@@ -1077,6 +1110,33 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Up</string>
+   </property>
+  </action>
+  <action name="actionFilter_modules_">
+   <property name="text">
+    <string>Filter modules</string>
+   </property>
+   <property name="shortcut">
+    <string>/</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionAddModule_">
+   <property name="text">
+    <string>Add module</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionSelectModule_">
+   <property name="text">
+    <string>Select module</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>

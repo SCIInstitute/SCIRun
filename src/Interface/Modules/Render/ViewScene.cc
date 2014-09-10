@@ -162,12 +162,12 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 
   if (index == 0)
   {
-    spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
+    spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
     SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
   }
   else
   {
-    spire->setMouseMode(Render::SRInterface::MOUSE_NEWSCIRUN);
+    spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
     SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
   }
 }
