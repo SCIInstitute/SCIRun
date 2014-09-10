@@ -76,9 +76,9 @@ class CalculateDistanceFieldP
       VMesh::size_type num_evalues = ofield->num_evalues();
     
       double max = DBL_MAX;
-      if (algo_->get(Parameters::Truncate).getBool())
+      if (algo_->get(Parameters::Truncate).toBool())
       {
-        max = algo_->get(Parameters::TruncateDistance).getDouble();
+        max = algo_->get(Parameters::TruncateDistance).toDouble();
       }
       
       double val = 0.0;
@@ -139,7 +139,7 @@ class CalculateDistanceFieldP
       VMesh::size_type num_values = ofield->num_values();
       VMesh::size_type num_evalues = ofield->num_evalues();
     
-      if (algo_->get(Parameters::Truncate).getBool())
+      if (algo_->get(Parameters::Truncate).toBool())
       {
         // Cannot do both at the same time
         if (proc == 0) algo_->warning("Closest value has been requested, disabling truncated distance map.");
@@ -492,7 +492,7 @@ AlgorithmOutput CalculateDistanceFieldAlgo::run_generic(const AlgorithmInput& in
   auto objectField = input.get<Field>(Variables::ObjectField);
 
   FieldHandle distance, value;
-  if (get(Parameters::OutputValueField).getBool())
+  if (get(Parameters::OutputValueField).toBool())
   {
     if (!runImpl(inputField, objectField, distance, value))
       THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");

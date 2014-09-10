@@ -33,45 +33,59 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
 GenerateROIStatisticsModule::GenerateROIStatisticsModule() : Module(ModuleLookupInfo("GenerateROIStatistics", "BrainStimulator", "SCIRun"))
 {
- INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION2);
- INITIALIZE_PORT(COIL);
- INITIALIZE_PORT(COIL2);
- INITIALIZE_PORT(ELECTRODES_FIELD);
- INITIALIZE_PORT(COILS_FIELD);
+ INITIALIZE_PORT(MeshDataOnElements);
+ INITIALIZE_PORT(PhysicalUnit);
+ INITIALIZE_PORT(AtlasMesh);
+ INITIALIZE_PORT(AtlasMeshLabels);
+ INITIALIZE_PORT(CoordinateSpace);
+ INITIALIZE_PORT(StatisticalResults);
+ INITIALIZE_PORT(CoordinateSpaceLabel);
 }
 
 void GenerateROIStatisticsModule::setStateDefaults()
 {
-  /// @todo
+  setStateStringFromAlgoOption(Parameters::PhysicalUnitStr);  
 }
 
 void GenerateROIStatisticsModule::execute()
 {
-  auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
-   // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
-
-  //algorithm parameter
-  //algo_->set(Variables::AppendMatrixOption, param);
- 
+  auto meshData_ = getRequiredInput(MeshDataOnElements); /// get all the inputs
+  auto physicalUnit_ = getOptionalInput(PhysicalUnit);
+  auto atlasMesh_ = getRequiredInput(AtlasMesh);
+  auto atlasMeshLabels_ = getOptionalInput(AtlasMeshLabels);
+  auto coordinateSpace_ = getOptionalInput(CoordinateSpace);
+  auto coordinateSpaceLabel_ = getOptionalInput(CoordinateSpaceLabel);
   
+  setAlgoListFromState(Parameters::StatisticsTableValues); /// to transfer data between algo and dialog use the state variable 
+  
+  auto roiSpec = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI)); /// transfer the ROI specification from GUI dialog as additional input
   //algorithm input and run
-  auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_TRIANGULATION, elc_tri_mesh)));
+  auto input = make_input((MeshDataOnElements, meshData_)(PhysicalUnit, optionalAlgoInput(physicalUnit_))(AtlasMesh, atlasMesh_)(AtlasMeshLabels,
+  optionalAlgoInput(atlasMeshLabels_))(CoordinateSpace, optionalAlgoInput(coordinateSpace_))(CoordinateSpaceLabel,
+  optionalAlgoInput(coordinateSpaceLabel_)));
+  
+  if (roiSpec)
+    input[GenerateROIStatisticsAlgorithm::SpecifyROI] = roiSpec;
+  
+  auto output = algo().run_generic(input); /// call run generic 
 
+  auto table = output.additionalAlgoOutput(); /// get the two outputs, the upper table (as DenseMatrix) and the container that establishes data transfer between GUI/Algo via state  
+  get_state()->setTransientValue(Parameters::StatisticsTableValues, table);
+  
+  if (physicalUnit_ && *physicalUnit_) /// set physicalUnit string immediately to state, and then to dialog
+     get_state()->setTransientValue(Parameters::PhysicalUnitStr,(*physicalUnit_)->value());
+  
+  if (coordinateSpaceLabel_ && *coordinateSpaceLabel_)/// set coordinateSpaceLabel string immediately to state, and then to dialog
+     get_state()->setTransientValue(Parameters::CoordinateSpaceLabelStr,(*coordinateSpaceLabel_)->value()); 
+  
   //algorithm output
-  sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
-  sendOutputFromAlgorithm(COILS_FIELD, output);
+  sendOutputFromAlgorithm(StatisticalResults, output); /// set the upper table (DenseMatrix) as only output of the module
 }

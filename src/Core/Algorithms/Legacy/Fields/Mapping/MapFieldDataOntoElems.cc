@@ -143,7 +143,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
 
   barrier_.wait();
 
-  def_value_ = algo_->get(Parameters::OutsideValue).getDouble();
+  def_value_ = algo_->get(Parameters::OutsideValue).toDouble();
 
   VMesh* omesh = ofield_->vmesh();
   VField* ofield = ofield_->vfield();

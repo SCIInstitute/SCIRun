@@ -118,24 +118,24 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   using namespace Parameters;
 
   Log::get() << DEBUG_LOG << "SetConductivitiesToTetMeshAlgorithm parameters:"
-  << "\n\tSkin = " << get(Skin).getDouble()
-  << "\n\tSoftBone = " << get(SoftBone).getDouble()
-  << "\n\tHardBone = " << get(HardBone).getDouble()
-  << "\n\tCSF = " << get(CSF).getDouble()
-  << "\n\tGM = " << get(GM).getDouble()
-  << "\n\tWM = " << get(WM).getDouble()
-  << "\n\tElectrode = " << get(Electrode).getDouble()
-  << "\n\tInternalAir = " << get(InternalAir).getDouble() << std::endl;
+  << "\n\tSkin = " << get(Skin).toDouble()
+  << "\n\tSoftBone = " << get(SoftBone).toDouble()
+  << "\n\tHardBone = " << get(HardBone).toDouble()
+  << "\n\tCSF = " << get(CSF).toDouble()
+  << "\n\tGM = " << get(GM).toDouble()
+  << "\n\tWM = " << get(WM).toDouble()
+  << "\n\tElectrode = " << get(Electrode).toDouble()
+  << "\n\tInternalAir = " << get(InternalAir).toDouble() << std::endl;
 
   /// array holding conductivities
   /// @todo: enable when VS2013 is supported
-//  std::vector<double> conductivities = {get(Skin).getDouble(), get(SoftBone).getDouble(), get(HardBone).getDouble(),
-//  get(CSF).getDouble(), get(GM).getDouble(), get(WM).getDouble(), get(Electrode).getDouble(), get(InternalAir).getDouble()};
+//  std::vector<double> conductivities = {get(Skin).toDouble(), get(SoftBone).toDouble(), get(HardBone).toDouble(),
+//  get(CSF).toDouble(), get(GM).toDouble(), get(WM).toDouble(), get(Electrode).toDouble(), get(InternalAir).toDouble()};
 
   // stopgap measure until VS2013 is supported
   std::vector<double> conductivities;
-  conductivities += get(Skin).getDouble(), get(SoftBone).getDouble(), get(HardBone).getDouble(),
-  get(CSF).getDouble(), get(GM).getDouble(), get(WM).getDouble(), get(Electrode).getDouble(), get(InternalAir).getDouble();
+  conductivities += get(Skin).toDouble(), get(SoftBone).toDouble(), get(HardBone).toDouble(),
+  get(CSF).toDouble(), get(GM).toDouble(), get(WM).toDouble(), get(Electrode).toDouble(), get(InternalAir).toDouble();
 
   
   // check if defined conductivities and lookup table are consistent

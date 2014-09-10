@@ -103,12 +103,12 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     vmesh->synchronize(Mesh::NORMALS_E);
   
   /// \todo Determine a better way of handling all of the various object state.
-  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
-  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
-  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
-  bool invertNormals = state->getValue(ShowFieldModule::FaceInvertNormals).getBool();
+  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).toBool();
+  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
+  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
+  bool invertNormals = state->getValue(ShowFieldModule::FaceInvertNormals).toBool();
   //bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
-  const ColorRGB meshColor(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
+  const ColorRGB meshColor(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
   float meshRed   = static_cast<float>(meshColor.r() / 255.0f);
   float meshGreen = static_cast<float>(meshColor.g() / 255.0f);
   float meshBlue  = static_cast<float>(meshColor.b() / 255.0f);
@@ -260,7 +260,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     //gpuState.mLineWidth = 2.5f;
     //pass.addGPUState(gpuState);
 
-    bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).getBool();
+    bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).toBool();
     // Add appropriate uniforms to the pass (in this case, uColor).
     if (edgeTransparency)
       pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
@@ -296,7 +296,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName, 
                                        shaderToUse, spire::Interface::TRIANGLES);
 
-      bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
+      bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).toBool();
       float transparency    = 1.0f;
       if (faceTransparency) transparency = 0.1f;
 
@@ -323,7 +323,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
                                        shaderToUse, spire::Interface::TRIANGLES);
 
       // Apply misc user settings.
-      bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
+      bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).toBool();
       float transparency    = 1.0f;
       if (faceTransparency) transparency = 0.2f;
 
@@ -349,7 +349,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
                                      "UniformColor", spire::Interface::POINTS);
 
     // Add appropriate uniforms to the pass (in this case, uColor).
-    bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
+    bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).toBool();
     if (nodeTransparency)
       pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
     else

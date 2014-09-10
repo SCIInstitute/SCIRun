@@ -201,8 +201,8 @@ protected:
     EXPECT_EQ(9, matrixMathNetwork.nconnections());
 
     //Set module parameters.
-    matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1(), true);
-    matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2(), true);
+    matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
+    matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
     transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
     negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
     scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
@@ -321,15 +321,15 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
   ostr << order;
 
   std::string expected =
-    "0 SendTestMatrix:1\n"
     "0 SendTestMatrix:0\n"
+    "0 SendTestMatrix:1\n"
+    "1 EvaluateLinearAlgebraUnary:2\n"
     "1 EvaluateLinearAlgebraUnary:3\n"
     "1 EvaluateLinearAlgebraUnary:4\n"
-    "1 EvaluateLinearAlgebraUnary:2\n"
     "2 EvaluateLinearAlgebraBinary:5\n"
     "3 EvaluateLinearAlgebraBinary:6\n"
-    "4 ReportMatrixInfo:7\n"
-    "4 ReceiveTestMatrix:8\n";
+    "4 ReceiveTestMatrix:8\n"
+    "4 ReportMatrixInfo:7\n";
 
   EXPECT_EQ(expected, ostr.str());
 }
@@ -346,11 +346,11 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderWithSomeModulesDone)
 
   std::string expected =
     "0 EvaluateLinearAlgebraBinary:5\n"
-    "0 SendTestMatrix:1\n"
     "0 SendTestMatrix:0\n"
+    "0 SendTestMatrix:1\n"
     "1 EvaluateLinearAlgebraBinary:6\n"
-    "2 ReportMatrixInfo:7\n"
-    "2 ReceiveTestMatrix:8\n";
+    "2 ReceiveTestMatrix:8\n"
+    "2 ReportMatrixInfo:7\n";
 
   EXPECT_EQ(expected, ostr.str());
 }
@@ -372,31 +372,18 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
     std::ostringstream ostr;
     ostr << order;
 
-  
-  //TODO!!! today.
-  std::cout << "fix order within execution groups to be same across platform" << std::endl;
-  
-#ifdef WIN32
-  std::string expectedFirstPart =
-    "0 SendTestMatrix:0\n"
-    "0 CreateMatrix:9\n"
-    "0 SendTestMatrix:1\n";
-#else
-  std::string expectedFirstPart =
-    "0 CreateMatrix:9\n"
-    "0 SendTestMatrix:1\n"
-    "0 SendTestMatrix:0\n";
-#endif
-
-    std::string expected = expectedFirstPart +
+    std::string expected =
+      "0 CreateMatrix:9\n"
+      "0 SendTestMatrix:0\n"
+      "0 SendTestMatrix:1\n"
+      "1 EvaluateLinearAlgebraUnary:2\n"
       "1 EvaluateLinearAlgebraUnary:3\n"
       "1 EvaluateLinearAlgebraUnary:4\n"
       "1 ReportMatrixInfo:10\n"
-      "1 EvaluateLinearAlgebraUnary:2\n"
       "2 EvaluateLinearAlgebraBinary:5\n"
       "3 EvaluateLinearAlgebraBinary:6\n"
-      "4 ReportMatrixInfo:7\n"
-      "4 ReceiveTestMatrix:8\n";
+      "4 ReceiveTestMatrix:8\n"
+      "4 ReportMatrixInfo:7\n";
 
     EXPECT_EQ(expected, ostr.str());
   }
@@ -423,20 +410,18 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
     ostr << order;
 
     std::string expected =
-      "0 SendTestMatrix:1\n"
       "0 SendTestMatrix:0\n"
+      "0 SendTestMatrix:1\n"
+      "1 EvaluateLinearAlgebraUnary:2\n"
       "1 EvaluateLinearAlgebraUnary:3\n"
       "1 EvaluateLinearAlgebraUnary:4\n"
-      "1 EvaluateLinearAlgebraUnary:2\n"
       "2 EvaluateLinearAlgebraBinary:5\n"
       "3 EvaluateLinearAlgebraBinary:6\n"
-      "4 ReportMatrixInfo:7\n"
-      "4 ReceiveTestMatrix:8\n";
+      "4 ReceiveTestMatrix:8\n"
+      "4 ReportMatrixInfo:7\n";
 
     EXPECT_EQ(expected, ostr.str());
   }
-
-  //FAIL() << "todo";
 }
 
 namespace ThreadingPrototype

@@ -28,12 +28,10 @@
 
 SET(Core_Application_SRCS
   Application.cc
-  Preferences.cc
 )
 
 SET(Core_Application_HEADERS
   Application.h
-  Preferences.h
   share.h
 )
 
@@ -58,3 +56,5 @@ IF(BUILD_SHARED_LIBS)
 ENDIF(BUILD_SHARED_LIBS)
 
 SCIRUN_ADD_TEST_DIR(Tests)
+
+ADD_SUBDIRECTORY(Preferences)

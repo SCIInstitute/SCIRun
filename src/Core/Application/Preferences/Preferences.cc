@@ -26,9 +26,9 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmParameterHelper.h>
 #include <boost/filesystem.hpp>
 
 using namespace SCIRun::Core;
@@ -38,7 +38,10 @@ using namespace SCIRun::Core::Algorithms;
 CORE_SINGLETON_IMPLEMENTATION( Preferences );
 
 Preferences::Preferences() :
-  showModuleErrorDialogs(true), saveBeforeExecute(false), useNewViewSceneMouseControls(false)
+  showModuleErrorDialogs("showModuleErrorDialogs", true), 
+  saveBeforeExecute("saveBeforeExecute", false), 
+  useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
+  networkBackgroundColor("backgroundColor", "#808080")
 {	
 }
 
@@ -56,8 +59,6 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path)
     Log::get() << WARN << "Data directory " << path << " does not exist." << std::endl;
   if (!boost::filesystem::is_directory(path))
     Log::get() << WARN << "Data directory " << path << " is not a directory." << std::endl;
-  //else
-  //  dataDir_ = boost::filesystem::canonical(dataDir_);
 
   if (dataDir_.string().back() == boost::filesystem::path::preferred_separator)
   {
