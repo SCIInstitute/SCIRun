@@ -50,7 +50,7 @@ public:
 		{
 				path.moveTo(from);
 				path.lineTo(from.x(),from.y()+6);
-				path.lineTo(to.x(), to.y()-8); 
+				path.lineTo(to.x(), to.y()-8);
 				path.lineTo(to);
 				item->setPath(path);
 		}
@@ -58,7 +58,7 @@ public:
 		{
 				path.moveTo(from);
 				path.lineTo(from.x(),from.y());
-				path.lineTo(to.x(), to.y()); 
+				path.lineTo(to.x(), to.y());
 				path.lineTo(to);
 				item->setPath(path);
 		}
@@ -83,7 +83,7 @@ public:
 
     auto q1 = item->mapToScene(mid + qFactor * qDir);
     auto q2 = item->mapToScene(mid - qFactor * qDir);
-    path.cubicTo(q1, q2, to);  
+    path.cubicTo(q1, q2, to);
     item->setPath(path);
   }
 };
@@ -132,20 +132,20 @@ public:
     const int case1Threshold = 15;
 		if (from.y() > to.y() - case1Threshold) // input above output
 		{
-				//option 1 uses detection collision, not perfect 
+				//option 1 uses detection collision, not perfect
 				int collisions = item->collidingItems().count();
-				if (collisions < 1) collisions = 1; 
+				if (collisions < 1) collisions = 1;
 				path.lineTo(from.x(), from.y() + case1Threshold);
 				int leftSideBuffer = collisions * 15;
-				
-				//Option 2 -> noticeably slower 
-				//QList<QGraphicsItem*> collidesWithConnectionLine = item->collidingItems(); 
+
+				//Option 2 -> noticeably slower
+				//QList<QGraphicsItem*> collidesWithConnectionLine = item->collidingItems();
 				//if(!collidesWithConnectionLine.isEmpty())
 				//{
 				//		Q_FOREACH(QGraphicsItem* item_, collidesWithConnectionLine)
 				//				if(auto w = dynamic_cast<ConnectionLine*>(item_))
 				//				{
-				//						leftSideBuffer = leftSideBuffer + 15; 
+				//						leftSideBuffer = leftSideBuffer + 15;
 				//				}
 				//}
 				if (to.x() > from.x())
@@ -178,7 +178,7 @@ namespace SCIRun
     const QString insertModuleAction("Insert Module->*");
     const QString disableEnableAction("Disable*");
     const QString editNotesAction("Edit Notes...");
-  
+
     class ConnectionMenu : public QMenu
     {
     public:
@@ -210,14 +210,14 @@ namespace SCIRun
 }
 
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
-  : HasNotes(id, false), 
+  : HasNotes(id, false),
   NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
   fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(0), menuOpen_(0)
 {
   if (fromPort_)
   {
     fromPort_->addConnection(this);
-    fromPort_->turn_on_light(); 
+    fromPort_->turn_on_light();
   }
   else
     LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
@@ -232,21 +232,21 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   if (fromPort_ && toPort_)
   {
     setColor(fromPort_->color());
-	placeHoldingColor_ = fromPort_->color();
+	  placeHoldingColor_ = fromPort_->color();
   }
 
-  setFlags( ItemIsSelectable| ItemIsMovable | ItemSendsGeometryChanges);
-  
+  setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges);
+
   //TODO: need dynamic zValue
-  setZValue(1); 
-  setToolTip("Left - Highlight*\nDouble-Left - Menu");
+  setZValue(1);
+  setToolTip("Left - Highlight\nDouble-Left - Menu");
 
   menu_ = new ConnectionMenu();
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
 
   setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
-  
+
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
 }
@@ -256,7 +256,7 @@ ConnectionLine::~ConnectionLine()
   destroy();
 }
 
-void ConnectionLine::destroy() 
+void ConnectionLine::destroy()
 {
   if (!destroyed_)
   {
@@ -310,20 +310,20 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	setColor(placeHoldingColor_);
-	menuOpen_ = false; 
-	this->setZValue(0); 
+	menuOpen_ = false;
+	this->setZValue(0);
   QGraphicsPathItem::mouseReleaseEvent(event);
 }
 
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{	 
+{
 	this->setAcceptedMouseButtons(Qt::LeftButton);
 
 	if (!menuOpen_)
 	{
 		placeHoldingColor_ = color();
-		setColor(Qt::red);	
-		this->setZValue(100); 
+		setColor(Qt::red);
+		this->setZValue(100);
 	}
   QGraphicsPathItem::mousePressEvent(event);
 }
@@ -331,7 +331,7 @@ void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   auto action = menu_->exec(event->screenPos());
-  menuOpen_ = true; 
+  menuOpen_ = true;
   if (action && action->text() == deleteAction)
   {
     scene()->removeItem(this);
@@ -351,7 +351,7 @@ void ConnectionLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 QVariant ConnectionLine::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-	//Position drag movement relative to movement in network. Otherwise CL moves relative to modules as though they are the whole scene (faster, CL moves out of modules). 
+	//Position drag movement relative to movement in network. Otherwise CL moves relative to modules as though they are the whole scene (faster, CL moves out of modules).
 	if (change == ItemPositionChange && scene())
 	{
 		QPointF newPos = value.toPointF();
@@ -367,7 +367,7 @@ ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
 	return std::make_pair(toPort_->getUnderlyingModuleId(), fromPort_->getUnderlyingModuleId());
 }
 
-void ConnectionLine::setNoteGraphicsContext() 
+void ConnectionLine::setNoteGraphicsContext()
 {
   scene_ = scene();
   item_ = this;
@@ -394,7 +394,7 @@ void ConnectionInProgressStraight::update(const QPointF& end)
 {
   //TODO: use strategy object. probably need to improve first parameter: templatized? or just change this case to use QGraphicsPathItem directly
   //drawStrategy_->draw(this, fromPort_->position(), end);
-  
+
   setLine(QLineF(fromPort_->position(), end));
 }
 
@@ -432,8 +432,8 @@ QPointF MidpointPositioner::currentPosition() const
   return (p1_->currentPosition() + p2_->currentPosition()) / 2;
 }
 
-ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene), 
-  euclidean_(new EuclideanDrawStrategy), 
+ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene),
+  euclidean_(new EuclideanDrawStrategy),
   cubic_(new CubicBezierDrawStrategy),
   manhattan_(new ManhattanDrawStrategy)
 {}

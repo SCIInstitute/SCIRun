@@ -29,6 +29,7 @@
 #include <Core/CommandLine/CommandLine.h>
 #include <boost/program_options.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/algorithm/string/join.hpp>
 
 #include <iostream>
 
@@ -120,15 +121,17 @@ public:
     bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, isVerboseMode_;
   };
   ApplicationParametersImpl(
+    const std::string& entireCommandLine,
     const boost::optional<std::string>& inputFile,
     const boost::optional<boost::filesystem::path>& pythonScriptFile,
     const boost::optional<boost::filesystem::path>& dataDirectory,
     const boost::optional<std::string>& threadMode,
     const boost::optional<std::string>& reexecuteMode,
     const Flags& flags
-   ) : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory), 
-   threadMode_(threadMode), reexecuteMode_(reexecuteMode),
-   flags_(flags)
+   ) : entireCommandLine_(entireCommandLine),
+    inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory), 
+    threadMode_(threadMode), reexecuteMode_(reexecuteMode),
+    flags_(flags)
   {}
 
   virtual boost::optional<std::string> inputFile() const
@@ -196,7 +199,13 @@ public:
     return reexecuteMode_;
   }
 
+  virtual const std::string& entireCommandLine() const 
+  {
+    return entireCommandLine_;
+  }
+
 private:
+  std::string entireCommandLine_;
   boost::optional<std::string> inputFile_;
   boost::optional<boost::filesystem::path> pythonScriptFile_;
   boost::optional<boost::filesystem::path> dataDirectory_;
@@ -220,6 +229,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
   try
   {
     auto parsed = impl_->parse(argc, argv);
+    std::vector<std::string> cmdline(argv, argv + argc);
     auto inputFile = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::string>() : boost::optional<std::string>();
     auto pythonScriptFile = boost::optional<boost::filesystem::path>();
     if (parsed.count("script") != 0 && !parsed["script"].empty() && !parsed["script"].defaulted())
@@ -234,7 +244,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     auto threadMode = parsed.count("threadMode") != 0 ? parsed["threadMode"].as<std::string>() : boost::optional<std::string>();
     auto reexecuteMode = parsed.count("reexecuteMode") != 0 ? parsed["reexecuteMode"].as<std::string>() : boost::optional<std::string>();
     return boost::make_shared<ApplicationParametersImpl>
-      (
+      (boost::algorithm::join(cmdline, " "),
       inputFile,
       pythonScriptFile,
       dataDirectory,
