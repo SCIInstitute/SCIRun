@@ -41,6 +41,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
+using namespace SCIRun::Render;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
