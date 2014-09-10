@@ -67,7 +67,8 @@ void ModuleDialogGeneric::createExecuteAction()
 {
   executeAction_ = new QAction(this);
   executeAction_->setText("Execute");
-  executeAction_->setShortcut(QKeySequence("Ctrl+Shift+E"));
+  //TODO: doesn't work on Mac
+  //executeAction_->setShortcut(QKeySequence("Ctrl+1"));
   executeAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
 }
