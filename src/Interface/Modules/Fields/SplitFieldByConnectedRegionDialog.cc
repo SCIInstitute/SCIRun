@@ -26,19 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
-#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
+#include <Interface/Modules/Fields/SplitFieldByConnectedRegionDialog.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
-#include <boost/functional/factory.hpp>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::FiniteElements;
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-#define ADD_MODULE_ALGORITHM(module, algorithm) factoryMap_[#module] = boost::factory<algorithm*>()
 
-void HardCodedAlgorithmFactory::addToMakerMap2()
+SplitFieldByConnectedRegionDialog::SplitFieldByConnectedRegionDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  ADD_MODULE_ALGORITHM(BuildTDCSMatrix, BuildTDCSMatrixAlgo);
-  ADD_MODULE_ALGORITHM(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionAlgo);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  
+  addCheckBoxManager(SortDomainBySize, SplitFieldByConnectedRegionAlgo::SortDomainBySize());
+  addCheckBoxManager(SortAscending, SplitFieldByConnectedRegionAlgo::SortAscending());
+}                         
+                          
+void SplitFieldByConnectedRegionDialog::pull()
+{
+ pull_newVersionToReplaceOld();   
 }

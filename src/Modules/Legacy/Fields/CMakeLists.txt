@@ -57,6 +57,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GetFieldNodes.h
   JoinFields.h
   SplitFieldByDomain.h
+  SplitFieldByConnectedRegion.h
   CreateFieldData.h
   SplitFieldByDomain.h
   #ApplyMappingMatrix.h
@@ -180,7 +181,7 @@ SET(Modules_Legacy_Fields_SRCS
   #SelectAndSetFieldData.cc
   #SelectAndSetFieldData3.cc
   #SplitNodesByDomain.cc
-  #SplitFieldByConnectedRegion.cc
+  SplitFieldByConnectedRegion.cc
   GetDomainBoundary.cc
   CollectFields.cc
   ScaleFieldMeshAndData.cc
