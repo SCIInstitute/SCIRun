@@ -50,7 +50,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/work/SCIRun_fullcheckout/SCIRunUnitTestData/SCIRun5/UnitTests/splitfieldbyconnectedregion/splitfieldbyconnectedregion_tet.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/splitfieldbyconnectedregion_tet.fld</value>
 									</value>
 								</second>
 							</item>
@@ -102,7 +102,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/work/SCIRun_fullcheckout/SCIRunUnitTestData/SCIRun5/UnitTests/splitfieldbyconnectedregion/splitfieldbyconnectedregion_tri.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/splitfieldbyconnectedregion_tri.fld</value>
 									</value>
 								</second>
 							</item>
