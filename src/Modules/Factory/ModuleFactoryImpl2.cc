@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
+#include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
 #include <Modules/Legacy/Math/ConvertMatrixType.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
@@ -75,4 +76,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<ConvertMatrixTypeModule>("ConvertMatrixType", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
 }

@@ -42,6 +42,7 @@ SET(Modules_Fields_Tests_SRCS
   SetFieldDataTests.cc
   MapFieldDataFromNodeToElemTests.cc
   MapFieldDataFromElemToNodeTests.cc
+  SplitFieldByConnectedRegionTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests

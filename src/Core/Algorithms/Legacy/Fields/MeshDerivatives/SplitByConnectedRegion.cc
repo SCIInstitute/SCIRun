@@ -26,17 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshDerivatives/SplitByConnectedRegion.h>
-
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-
-#include <Core/Datatypes/FieldInformation.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
+AlgorithmInputName SplitFieldByConnectedRegionAlgo::InputField("InputField");
+AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField1("OutputField1");
+AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField2("OutputField2");
+AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField3("OutputField3");
+AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField4("OutputField4");
+AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField5("OutputField5");
+AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField6("OutputField6");
+AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField7("OutputField7");
+AlgorithmOutputName SplitFieldByConnectedRegionAlgo::OutputField8("OutputField8");
+
+AlgorithmParameterName SplitFieldByConnectedRegionAlgo::SortDomainBySize() { return AlgorithmParameterName("SortDomainBySize"); }
+AlgorithmParameterName SplitFieldByConnectedRegionAlgo::SortAscending() { return AlgorithmParameterName("SortAscending"); }
+
+/// TODO: These should be refactored to hold const std::vector<double>& rather than double*
 class SortSizes : public std::binary_function<index_type,index_type,bool>
 {
   public:
@@ -50,7 +67,7 @@ class SortSizes : public std::binary_function<index_type,index_type,bool>
   private:
     double*      sizes_;
 };
-
+/// TODO: These should be refactored to hold const std::vector<double>& rather than double*
 class AscSortSizes : public std::binary_function<index_type,index_type,bool>
 {
   public:
@@ -65,42 +82,42 @@ class AscSortSizes : public std::binary_function<index_type,index_type,bool>
     double*      sizes_;
 };
 
-bool 
-SplitByConnectedRegionAlgo::
-run(FieldHandle input, std::vector<FieldHandle>& output)
+SplitFieldByConnectedRegionAlgo::SplitFieldByConnectedRegionAlgo() 
 {
-  algo_start("SplitByConnectedRegion");
-  
-  output.clear();
-  
-  /// Check whether we have an input field
-  if (input.get_rep() == 0)
-  {
-    error("No input field");
-    algo_end(); return (false);
-  }
+  addParameter(SortDomainBySize(), false);
+  addParameter(SortAscending(), false);
+}
 
-  /// Figure out what the input type and output type have to be
+std::vector<FieldHandle> SplitFieldByConnectedRegionAlgo::run(FieldHandle input) const
+{
+ bool sortDomainBySize = get(SortDomainBySize()).toBool();
+ bool sortAscending = get(SortAscending()).toBool();
+ 
+ if (!input)
+ {
+      THROW_ALGORITHM_INPUT_ERROR("Input mesh is empty.");
+ }
+  
+ std::vector<FieldHandle> output;
+ 
+   /// Figure out what the input type and output type have to be
   FieldInformation fi(input);
     
   /// We do not yet support Quadratic and Cubic Meshes here
   if (fi.is_nonlinear())
   {
-    error("This function has not yet been defined for non-linear elements.");
-    algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("This function has not yet been defined for non-linear elements.");    
   }
   
   if (!(fi.is_unstructuredmesh()))
   {
-    warning("Structured meshes consist always of one piece. Hence there is no algorithm to perform.");
     output.push_back(input);
-    algo_end(); return (false);
+    remark("Structured meshes consist always of one piece. Hence there is no algorithm to perform."); 
   }  
   
   if (fi.is_pointcloudmesh())
   {
-    error("This algorithm has not yet been defined for point clouds.");
-    algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("This algorithm has not yet been defined for point clouds.");
   }  
  
   VField* ifield = input->vfield();
@@ -169,7 +186,7 @@ run(FieldHandle input, std::vector<FieldHandle>& output)
     }
   }
  
-  output.resize(k);
+ output.resize(k);
   for (size_type p=0; p<k; p++)
   {
     VField* ofield;
@@ -184,10 +201,9 @@ run(FieldHandle input, std::vector<FieldHandle>& output)
     for (VField::index_type q=0;q<num_elems;q++) if (elemmap[q] == p+1) ne++;
     
     mesh = CreateMesh(fi);
-    if (mesh.get_rep() == 0)
+    if (!mesh)
     {
-      error("Could not create output field.");
-      algo_end(); return (false);
+      THROW_ALGORITHM_INPUT_ERROR("Could not create output field.");
     }
     omesh = mesh->vmesh();
 
@@ -195,10 +211,9 @@ run(FieldHandle input, std::vector<FieldHandle>& output)
     omesh->elem_reserve(ne);
 
     field = CreateField(fi,mesh);
-    if (field.get_rep() == 0)
+    if (field == nullptr)
     {
-      error("Could not create output field");
-      algo_end(); return (false);  
+      THROW_ALGORITHM_INPUT_ERROR("Could not create output field");
     }      
     
     ofield = field->vfield();
@@ -253,11 +268,13 @@ run(FieldHandle input, std::vector<FieldHandle>& output)
         }
       }    
     }
-
+   
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     ofield->copy_properties(ifield);
+   #endif
   }
 
-  if (get_bool("sort_by_size"))
+  if (sortDomainBySize)
   {
     std::vector<double> sizes(output.size());
     std::vector<index_type> order(output.size());
@@ -277,7 +294,7 @@ run(FieldHandle input, std::vector<FieldHandle>& output)
       temp[j] = output[j];
     }
   
-    if (get_bool("sort_ascending"))
+    if (sortAscending)
     {
       std::sort(order.begin(),order.end(),AscSortSizes(&(sizes[0])));       
     }
@@ -291,9 +308,50 @@ run(FieldHandle input, std::vector<FieldHandle>& output)
       output[j] = temp[order[j]];
     }
   }
-  
-  algo_end();
-  return (true);
+ 
+ return output;
 }
 
-} // End namespace SCIRunAlgo
+
+AlgorithmOutput SplitFieldByConnectedRegionAlgo::run_generic(const AlgorithmInput& input) const
+{
+ AlgorithmOutput output;
+ 
+ auto mesh_ = input.get<Field>(Variables::InputField);
+ 
+ if (!mesh_)  
+     THROW_ALGORITHM_INPUT_ERROR("Input mesh is empty.");
+ 
+ std::vector<FieldHandle> output_fields=run(mesh_);
+  
+ if (output_fields.empty())
+  {
+    THROW_ALGORITHM_INPUT_ERROR(" No input fields given ");
+  }
+  
+  if (output_fields.size()>8)
+  {
+    remark(" Not all output meshes could be sent to the eight field output ports. ");
+  } 
+ 
+ if (output_fields.size() > 0) 
+    output[OutputField1]=output_fields[0];
+ if (output_fields.size() > 1) 
+    output[OutputField2]=output_fields[1];
+ if (output_fields.size() > 2) 
+    output[OutputField3]=output_fields[2];
+ if (output_fields.size() > 3) 
+    output[OutputField4]=output_fields[3];
+ if (output_fields.size() > 4) 
+    output[OutputField5]=output_fields[4];
+ if (output_fields.size() > 5) 
+    output[OutputField6]=output_fields[5];
+ if (output_fields.size() > 6) 
+    output[OutputField7]=output_fields[6];
+ if (output_fields.size() > 7) 
+    output[OutputField8]=output_fields[7];
+  
+ /// TODO: enable dynamic output ports
+    
+ return output; 
+}

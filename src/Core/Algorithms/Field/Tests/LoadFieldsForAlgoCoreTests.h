@@ -78,5 +78,7 @@ FieldHandle TetMeshOnElemScalar();
 FieldHandle PointCloudOnNodeScalar();
 FieldHandle PointCloudOnNodeVector();
 FieldHandle PointCloudOnNodeTensor();
+FieldHandle SplitFieldByConnectedRegionModuleTetTests();
+FieldHandle SplitFieldByConnectedRegionModuleTriTests();
 
 #endif

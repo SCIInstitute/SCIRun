@@ -26,19 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
-#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
-#include <boost/functional/factory.hpp>
+#ifndef INTERFACE_MODULES_SPLITFIELDBYCONNECTEDREGION_H
+#define INTERFACE_MODULES_SPLITFIELDBYCONNECTEDREGION_H
 
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::FiniteElements;
-using namespace SCIRun::Core::Algorithms::Fields;
+#include "Interface/Modules/Fields/ui_SplitFieldByConnectedRegionDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-#define ADD_MODULE_ALGORITHM(module, algorithm) factoryMap_[#module] = boost::factory<algorithm*>()
-
-void HardCodedAlgorithmFactory::addToMakerMap2()
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE SplitFieldByConnectedRegionDialog : public ModuleDialogGeneric, 
+  public Ui::SplitFieldByConnectedRegionDialog
 {
-  ADD_MODULE_ALGORITHM(BuildTDCSMatrix, BuildTDCSMatrixAlgo);
-  ADD_MODULE_ALGORITHM(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionAlgo);
+	Q_OBJECT
+	
+public:
+  SplitFieldByConnectedRegionDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
+
 }
+}
+
+#endif
