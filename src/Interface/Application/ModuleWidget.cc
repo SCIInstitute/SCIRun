@@ -663,6 +663,7 @@ void ModuleWidget::updateProgressBar(double percent)
 
 void ModuleWidget::updateModuleTime()
 {
+  //TODO: make this configurable
   progressBar_->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
 }
 
