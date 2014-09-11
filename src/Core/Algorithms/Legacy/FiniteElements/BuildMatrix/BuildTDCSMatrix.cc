@@ -560,6 +560,7 @@ DenseMatrixHandle ElectrodeElementType, DenseMatrixHandle ElectrodeElementDefini
   electrodeElementTypeCols_=static_cast<unsigned int>(electrodeElementType_->ncols());
   electrodeElementDefinitionCols_=static_cast<unsigned int>(electrodeElementDefinition_->ncols());
 
+
   if( !((electrodeElementsRows_==electrodeElementTypeRows_) && (electrodeElementTypeRows_==electrodeElementDefinitionRows_)) ) {
     THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Number of Matrix-rows of Matrices for Electrode-Definition should be the same!");   
   }
@@ -619,12 +620,11 @@ DenseMatrixHandle ElectrodeElementType, DenseMatrixHandle ElectrodeElementDefini
       number_electrodes_++;
     }
   }
-  
+
   if (!numbering_ok)
   {
    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" The electrode numbering should should start at 0 (allowed range: 0..#meshnodes-1) !");  
   }
-  
    // get surface impedance
   if(contactimpedance)
   {
@@ -643,7 +643,7 @@ DenseMatrixHandle ElectrodeElementType, DenseMatrixHandle ElectrodeElementDefini
   if (  !( (contactImpedanceInformation_->nrows()==electrodeElementsRows_) && (contactImpedanceInformation_->ncols()==1))  ) {
     THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" ContactImpedanceMatrix should have matrix dimensions: #electrodeselementsx1 !");   
   } 
-  
+
   stiffnessMatrix_ = stiff;
   if ( !( (stiffnessMatrix_->nrows()>0) && (stiffnessMatrix_->nrows()==stiffnessMatrix_->ncols()))) {
     THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" StiffnessMatrix should be square and non-empty !");    
@@ -696,14 +696,13 @@ ElectrodeElementDefinition, DenseMatrixHandle contactimpedance, SparseRowMatrixH
    
    return false;
  }  
-
+ 
  TDCSMatrixBuilder builder;
 ///
  builder.initialize_mesh(mesh); //set mesh 
 ///
  if (! builder.initialize_inputs(stiff, ElectrodeElements, ElectrodeElementType, ElectrodeElementDefinition, contactimpedance) ) // set other inputs
  {
-   
    return false;
  }
 ///
@@ -757,7 +756,7 @@ AlgorithmOutput BuildTDCSMatrixAlgo::run_generic(const AlgorithmInput & input) c
   auto e = input.get<DenseMatrix>(Electrode_Element_Definition);
   auto f = input.get<DenseMatrix>(Contact_Impedance);
 
-  SparseRowMatrixHandle tdcs;
+   SparseRowMatrixHandle tdcs;
   if (!run(a,b,c,d,e,f,tdcs))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
