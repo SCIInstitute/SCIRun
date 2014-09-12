@@ -79,7 +79,7 @@ class CalcFMField
   private:
     void interpolate(int proc, Point p);
     void set_up_cell_cache();
-    void calc_parallel(int proc, ProgressReporter *mod);
+    //void calc_parallel(int proc, ProgressReporter *mod);
 
     int np_;
     std::vector<Vector> interp_value_;
@@ -266,7 +266,7 @@ class CalcFMField
   private:
     void interpolate(int proc, Point p);
     void set_up_cell_cache();
-    void calc_parallel(int proc, ProgressReporter *mod);
+    //void calc_parallel(int proc, ProgressReporter *mod);
 
     int np_;
     std::vector<Vector> interp_value_;
