@@ -37,15 +37,53 @@ namespace SCIRun
 {
   namespace Core
   {
-    class SCISHARE Session : boost::noncopyable
+    // Idea phase now. Just mapping out potential functions and dependencies.
+    class SCISHARE SessionInterface
     {
-	    CORE_SINGLETON( Session );
+    public:
+      virtual ~SessionInterface() {}
+
+      virtual void beginSession() = 0;
+      virtual void endSession() = 0;
+
+      virtual void recordSystemDetails() = 0; // hardware/OS
+
+      virtual void networkFileLoaded() = 0;
+      virtual void networkFileSaved() = 0;
+
+      // lump all edits together for now.
+      virtual void networkEdited(/*EditDescription*/) = 0;
+
+      virtual void executionStarted() = 0;
+      virtual void executionFinished() = 0;
+
+      virtual void moduleExecutionStarted(/*ModuleId*/) = 0;
+      virtual void moduleExecutionFinished(/*ModuleId*/) = 0;
+
+      virtual void recordStateVariable(/*ModuleId, Variable*/) = 0;
+      virtual void fileRead(/*ModuleId, filename*/) = 0;
+      virtual void fileWritten(/*ModuleId, filename*/) = 0;
+
+      virtual void externalProgramAccessed() = 0;
+    };
+
+    // File or db.
+    class SCISHARE SessionBackEnd
+    {
+    public:
+      virtual ~SessionBackEnd() {}
+    };
+
+
+    class SCISHARE SessionManager : boost::noncopyable
+    {
+	    CORE_SINGLETON( SessionManager );
 
     private:
-	    Session();
-	
+	    SessionManager();
+
     public:
-	
+
     private:
 	    boost::filesystem::path sessionDir_;
     };
@@ -53,4 +91,3 @@ namespace SCIRun
 }}
 
 #endif
-

@@ -33,8 +33,8 @@
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
 
-CORE_SINGLETON_IMPLEMENTATION( Session );
+CORE_SINGLETON_IMPLEMENTATION( SessionManager );
 
-Session::Session() 
-{	
+SessionManager::SessionManager() 
+{
 }
