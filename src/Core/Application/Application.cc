@@ -39,6 +39,7 @@
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Logging/Log.h>
 #include <Core/IEPlugin/IEPluginInit.h>
+#include <Core/Application/Session/Session.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -59,7 +60,7 @@ namespace SCIRun
     public:
       CommandLineParser parser;
       boost::filesystem::path app_filepath_;
-      boost::filesystem::path app_filename_;	
+      boost::filesystem::path app_filename_;
       ApplicationParametersHandle parameters_;
       NetworkEditorControllerHandle controller_;
     };
@@ -106,6 +107,8 @@ NetworkEditorControllerHandle Application::controller()
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();
+
+    SessionManager::Instance().initialize(private_->app_filepath_);
   }
   return private_->controller_;
 }

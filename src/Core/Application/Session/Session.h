@@ -67,13 +67,23 @@ namespace SCIRun
       virtual void externalProgramAccessed() = 0;
     };
 
+    typedef boost::shared_ptr<SessionInterface> SessionHandle;
+
     // File or db.
     class SCISHARE SessionBackEnd
     {
     public:
       virtual ~SessionBackEnd() {}
+      virtual void consume(const std::string& statement) = 0;
     };
 
+    typedef boost::shared_ptr<SessionBackEnd> SessionBackEndHandle;
+
+    class SCISHARE SessionBuilder
+    {
+    public:
+      SessionHandle build(const boost::filesystem::path& file);
+    };
 
     class SCISHARE SessionManager : boost::noncopyable
     {
@@ -83,9 +93,20 @@ namespace SCIRun
 	    SessionManager();
 
     public:
-
+      void initialize(const boost::filesystem::path& dir);
+      SessionHandle session();
     private:
-	    boost::filesystem::path sessionDir_;
+	    //boost::filesystem::path sessionDir_;
+      SessionHandle session_;
+    };
+
+    class SCISHARE SessionUser
+    {
+    public:
+      SessionHandle session();
+    private:
+      friend class SessionManager;
+      static SessionHandle session_;
     };
 
 }}

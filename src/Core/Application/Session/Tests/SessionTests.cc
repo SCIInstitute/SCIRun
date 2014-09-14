@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,7 +32,15 @@
 
 using namespace SCIRun::Core;
 
+TEST(SessionTests, NullWithoutInitialization)
+{
+  SessionHandle session = SessionManager::Instance().session();
+  ASSERT_EQ(session, nullptr);
+}
+
 TEST(SessionTests, CanCreate)
 {
-  FAIL() << "todo";
+  SessionManager::Instance().initialize(".");
+  SessionHandle session = SessionManager::Instance().session();
+  ASSERT_TRUE(session != nullptr);
 }
