@@ -118,7 +118,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/scirun5_test_tms/first.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/simulateforwardmagneticfield/first.fld</value>
 									</value>
 								</second>
 							</item>
@@ -170,7 +170,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/scirun5_test_tms/second.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/simulateforwardmagneticfield/second.fld</value>
 									</value>
 								</second>
 							</item>
@@ -222,7 +222,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/scirun5_test_tms/third.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/simulateforwardmagneticfield/third.fld</value>
 									</value>
 								</second>
 							</item>
@@ -274,7 +274,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/scirun5_test_tms/fourth.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/simulateforwardmagneticfield/fourth.fld</value>
 									</value>
 								</second>
 							</item>
