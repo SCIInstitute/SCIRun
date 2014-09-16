@@ -241,7 +241,7 @@ void ModuleProxyWidget::createPortPositionProviders()
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
     //std::cout << "Setting position provider for port " << p->id() << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)) << "," << p->pos().y() << std::endl;
-    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)), p->pos().y());
+    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidgetBase::WIDTH + ModuleWidget::PORT_SPACING)), p->pos().y());
 
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
     p->setPositionObject(pp);

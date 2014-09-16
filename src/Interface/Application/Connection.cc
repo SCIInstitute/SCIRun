@@ -217,14 +217,14 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   if (fromPort_)
   {
     fromPort_->addConnection(this);
-    fromPort_->turn_on_light();
+    //fromPort_->turn_on_light();
   }
   else
     LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
   if (toPort_)
   {
     toPort_->addConnection(this);
-    toPort_->turn_on_light();
+    //toPort_->turn_on_light();
   }
   else
     LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
@@ -264,9 +264,9 @@ void ConnectionLine::destroy()
     if (fromPort_ && toPort_)
     {
       fromPort_->removeConnection(this);
-      fromPort_->turn_off_light();
+      //fromPort_->turn_off_light();
       toPort_->removeConnection(this);
-      toPort_->turn_off_light();
+      //toPort_->turn_off_light();
     }
     drawer_.reset();
     Q_EMIT deleted(id_);
@@ -311,7 +311,9 @@ void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	setColor(placeHoldingColor_);
 	menuOpen_ = false;
-	this->setZValue(0);
+	setZValue(0);
+  fromPort_->turn_off_light();
+  toPort_->turn_off_light();
   QGraphicsPathItem::mouseReleaseEvent(event);
 }
 
@@ -323,7 +325,9 @@ void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	{
 		placeHoldingColor_ = color();
 		setColor(Qt::red);
-		this->setZValue(100);
+		setZValue(100);
+    fromPort_->turn_on_light();
+    toPort_->turn_on_light();
 	}
   QGraphicsPathItem::mousePressEvent(event);
 }
