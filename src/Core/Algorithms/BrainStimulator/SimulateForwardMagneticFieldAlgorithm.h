@@ -55,7 +55,7 @@ class SCISHARE SimulateForwardMagneticFieldAlgo : public AlgorithmBase
     static AlgorithmOutputName MagneticFieldMagnitudes;
     boost::tuple<FieldHandle, FieldHandle> run(FieldHandle ElectricField, FieldHandle ConductivityTensors, FieldHandle DipoleSources, FieldHandle DetectorLocations) const;
     virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-    
+ 
 private:
 
 };

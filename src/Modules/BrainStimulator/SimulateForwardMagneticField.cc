@@ -57,7 +57,7 @@ void SimulateForwardMagneticFieldModule::setStateDefaults()
 void SimulateForwardMagneticFieldModule::execute()
 { 
   auto EField = getRequiredInput(ElectricField);
-  auto CondTensor = getOptionalInput(ConductivityTensor);
+  auto CondTensor = getRequiredInput(ConductivityTensor);
   auto Dipoles = getRequiredInput(DipoleSources);
   auto Detectors = getRequiredInput(DetectorLocations);
   
@@ -65,10 +65,16 @@ void SimulateForwardMagneticFieldModule::execute()
  // auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).getList();
  // algo().set(Parameters::ELECTRODE_VALUES, elc_vals_from_state);
  
+  if(!CondTensor)
+  {
+   std::cout << " xxxx "<< std::endl;
+  }
+  
   if (needToExecute())
   {
     //algo().set(SimulateForwardMagneticFieldAlgorithm::refnode(), get_state()->getValue(SimulateForwardMagneticFieldAlgorithm::refnode()).getInt());
-    auto output = algo().run_generic(make_input((ElectricField, EField)(ConductivityTensor, optionalAlgoInput(CondTensor))(DipoleSources, Dipoles)(DetectorLocations, Detectors)));
+    std::cout << " 1 "<< std::endl;
+    auto output = algo().run_generic(make_input((ElectricField, EField)(ConductivityTensor, CondTensor)(DipoleSources, Dipoles)(DetectorLocations, Detectors)));
 
     sendOutputFromAlgorithm(MagneticField, output);
     sendOutputFromAlgorithm(MagneticFieldMagnitudes, output);
