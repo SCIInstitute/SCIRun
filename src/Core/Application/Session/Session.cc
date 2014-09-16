@@ -30,7 +30,9 @@
 #include <Core/Logging/Log.h>
 #include <boost/filesystem.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <fstream>
+#include <locale>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -151,16 +153,27 @@ public:
 class SessionFile : public SessionBackEnd
 {
 public:
-  explicit SessionFile(const boost::filesystem::path& file) : file_(file), stream_(file.string().c_str())
+  explicit SessionFile(const boost::filesystem::path& file) : file_(file), stream_(file.string().c_str(), std::ios_base::app),
+    locale_(stream_.getloc(), new boost::posix_time::time_facet("%D %T"))
   {
   }
   virtual void consume(const std::string& statement)
   {
-    stream_ << statement << std::endl;
+    namespace pt = boost::posix_time;
+    const pt::ptime now = pt::second_clock::local_time();
+    static bool firstTime = true;
+    if (firstTime)
+    {
+      stream_.imbue(locale_);
+      firstTime = false;
+    }
+
+    stream_ << "[" << now << "] : " << statement << std::endl;
   }
 private:
   boost::filesystem::path file_;
   std::ofstream stream_;
+  std::locale locale_;
 };
 
 class SessionDB : public SessionBackEnd

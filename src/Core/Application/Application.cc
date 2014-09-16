@@ -73,10 +73,13 @@ Application::Application() :
 	private_( new ApplicationPrivate )
 {
   private_->app_filepath_ = boost::filesystem::current_path();
+  SessionManager::Instance().initialize(private_->app_filepath_);
+  SessionManager::Instance().session()->beginSession();
 }
 
 Application::~Application()
 {
+  SessionManager::Instance().session()->endSession();
 }
 
 ApplicationParametersHandle Application::parameters() const
@@ -107,8 +110,6 @@ NetworkEditorControllerHandle Application::controller()
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();
-
-    SessionManager::Instance().initialize(private_->app_filepath_);
   }
   return private_->controller_;
 }
