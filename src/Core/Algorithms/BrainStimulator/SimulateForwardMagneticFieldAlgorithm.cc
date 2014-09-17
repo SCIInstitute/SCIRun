@@ -27,7 +27,6 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Thread/Barrier.h>
 #include <Core/Thread/Parallel.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -42,12 +41,9 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/ScopedTimeRemarker.h>
 //#include <Core/Logging/Log.h>
 #include <Core/Algorithms/BrainStimulator/SimulateForwardMagneticFieldAlgorithm.h>
-
 #include <string>
 #include <vector>
 #include <algorithm>
-//#include <boost/shared_array.hpp>
-//#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -161,7 +157,6 @@ void CalcFMField::set_up_cell_cache()
   
   if (ctfld_ && ctfld_->is_tensor())
   {
-    std::cout << "6.3+" << std::endl;
     Tensor ten;
     for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
     {
@@ -177,15 +172,12 @@ void CalcFMField::set_up_cell_cache()
   }
   else
   {
-    std::cout << "6.3-" << std::endl;
     double val;
     for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
     {
       per_cell_cache c;
       emsh_->get_center(c.center_,idx);
       efld_->get_value(elemField,idx);
-      long i=(long)idx;
-      std::cout << "6.3/ " << i << std::endl;
       ctfld_->get_value(val,idx);   
       c.cur_density_ = val * -1 * elemField; 
       c.volume_ = emsh_->get_volume(idx);
@@ -281,7 +273,6 @@ boost::tuple<FieldHandle,FieldHandle> CalcFMField::calc_forward_magnetic_field(F
   have_tensors_ = ctfld_->get_property("conductivity_table", tens_); 
 #endif
 
-  std::cout << " 6 "<< std::endl;
   FieldInformation mfi(detectors);
   mfi.make_lineardata();
 
@@ -295,7 +286,6 @@ boost::tuple<FieldHandle,FieldHandle> CalcFMField::calc_forward_magnetic_field(F
 
   magmagfld_ = magnetic_field_magnitudes->vfield();
   magmagfld_->resize_values();
-  std::cout << " 6.1 "<< std::endl;
   mfi.make_vector();  
   FieldHandle magnetic_field = CreateField(mfi,detectors->mesh());
   if (!magnetic_field) 
@@ -306,15 +296,14 @@ boost::tuple<FieldHandle,FieldHandle> CalcFMField::calc_forward_magnetic_field(F
 
   magfld_ = magnetic_field->vfield();
   magfld_->resize_values();
-  std::cout << " 6.2 "<< std::endl;
+
   // Make sure we have more than zero threads
   np_ = Parallel::NumCores();
   interp_value_.resize(np_,Vector(0.0,0.0,0.0));
 
   // cache per cell calculations that are used over and over again.
-  std::cout << " 6.3 "<< std::endl;
   set_up_cell_cache();
-  std::cout << " 7 "<< std::endl;
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
   // do the parallel work.
   Thread::parallel(this, &CalcFMField::calc_parallel, np_, mod);
@@ -328,7 +317,6 @@ boost::tuple<FieldHandle,FieldHandle> CalcFMField::calc_forward_magnetic_field(F
 
 boost::tuple<FieldHandle, FieldHandle> SimulateForwardMagneticFieldAlgo::run(FieldHandle ElectricField, FieldHandle ConductivityTensors, FieldHandle DipoleSources, FieldHandle DetectorLocations) const
 {
-  std::cout << " 3 "<< std::endl;
   if (!ElectricField || !DipoleSources || !DetectorLocations || !ConductivityTensors)
   {
     THROW_ALGORITHM_INPUT_ERROR("At least one required input has a NULL pointer.");
@@ -352,8 +340,6 @@ boost::tuple<FieldHandle, FieldHandle> SimulateForwardMagneticFieldAlgo::run(Fie
   CalcFMField algo(this);
   FieldHandle MField, MFieldMagnitudes;
   
-  std::cout << " 4 "<< std::endl;
-  
   boost::tie(MField,MFieldMagnitudes) = algo.calc_forward_magnetic_field(ElectricField, ConductivityTensors, DipoleSources, DetectorLocations); 
 
   return boost::make_tuple(MField, MFieldMagnitudes);
@@ -368,8 +354,7 @@ AlgorithmOutput SimulateForwardMagneticFieldAlgo::run_generic(const AlgorithmInp
   auto dipoles = input.get<Field>(DipoleSources);
   auto detectors = input.get<Field>(DetectorLocations);
   FieldHandle MField, MFieldMagnitudes;
-  std::cout << " 2 "<< std::endl;
-  
+   
   boost::tie(MField,MFieldMagnitudes) = run(efield, condtensor, dipoles, detectors);
   
   output[MagneticField] = MField;
