@@ -31,6 +31,7 @@ SET(Algorithms_BrainStimulator_SRCS
   SetConductivitiesToTetMeshAlgorithm.cc
   GenerateROIStatisticsAlgorithm.cc
   SetupRHSforTDCSandTMSAlgorithm.cc
+  SimulateForwardMagneticFieldAlgorithm.cc
 )
 
 SET(Algorithms_BrainStimulator_HEADERS
@@ -38,6 +39,7 @@ SET(Algorithms_BrainStimulator_HEADERS
   SetConductivitiesToTetMeshAlgorithm.h
   GenerateROIStatisticsAlgorithm.h
   SetupRHSforTDCSandTMSAlgorithm.h
+  SimulateForwardMagneticFieldAlgorithm.h
   share.h
 )
 
@@ -51,6 +53,7 @@ TARGET_LINK_LIBRARIES(Algorithms_BrainStimulator
   Core_Datatypes_Legacy_Field 
   Core_Geometry_Primitives  #vectors
   Core_Basis #field basis
+  Core_Algorithms_Legacy_Fields
 #  Core_Datatypes_Legacy_BrainStimulator
   Algorithms_Base
   ${SCI_BOOST_LIBRARY}
