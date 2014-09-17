@@ -73,6 +73,7 @@ public:
   bool newInterface() const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
+  ~SCIRunMainWindow();
 public Q_SLOTS:
   void executeAll();
 protected:

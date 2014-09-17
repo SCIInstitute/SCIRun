@@ -311,6 +311,14 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
   return instance_;
 }
 
+SCIRunMainWindow::~SCIRunMainWindow()
+{
+  networkEditor_->disconnect();
+  networkEditor_->setNetworkEditorController(nullptr);
+  networkEditor_->clear();
+  Application::Instance().shutdown();
+}
+
 void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
 {
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
