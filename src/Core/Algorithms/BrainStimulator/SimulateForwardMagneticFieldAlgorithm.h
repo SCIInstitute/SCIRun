@@ -19,16 +19,23 @@
 
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVEN09/17T SHALL
    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : SimulateForwardMagneticField.h
-//    Author : Robert Van Uitert, ported by Moritz Dannhauer
-//    Date   : Mon Aug  4 14:46:51 2003
+///@file SimulateForwardMagneticField.h
+///@brief This module computes the magnetic vector potential for a given mesh.
+///
+///@author
+/// Robert Van Uitert (Mon Aug  4 14:46:51 2003), ported by Moritz Dannhauer (09/17/2014)
+///
+///@details
+///  The modules has four inputs: an electric field distribution (first) for mesh elements with defnied conductivity tensors (second), dipole sources (third)
+///  within that mesh and detector locations (fourth) to compute the magnetic field at. All inputs are of Field datatype. The algorithm/module is multi-threaded and
+///  outputs the magnetic vector potential and its magnitudes as first and second output.
 
 #ifndef CORE_ALGORITHMS_BRAINSTIMULATOR_SIMULATEFORWARDMAGNETICFIELD_H
 #define CORE_ALGORITHMS_BRAINSTIMULATOR_SIMULATEFORWARDMAGNETICFIELD_H 1

@@ -26,16 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@file SimulateForwardMagneticField
-///@brief 
-/// This module sets up TDCS by providing the right hand side vector (controlled by GUI) and inputs for the modules: AddKnownsToLinearSystem, BuildTDCSMatrix. 
+///@file SimulateForwardMagneticFieldModule.h
+///@brief This module computes the magnetic vector potential for a given mesh.
 ///
 ///@author
-/// ported from SCIRun4 by Moritz Dannhauer
+/// Robert Van Uitert (Mon Aug  4 14:46:51 2003), ported by Moritz Dannhauer (09/17/2014)
 ///
 ///@details
-/// .
-/// 
+///  The modules has four inputs: an electric field distribution (first) for mesh elements with defnied conductivity tensors (second), dipole sources (third)
+///  within that mesh and detector locations (fourth) to compute the magnetic field at. All inputs are of Field datatype. The algorithm/module is multi-threaded and
+///  outputs the magnetic vector potential and its magnitudes as first and second output.
 
 #ifndef MODULES_BRAINSTIMULATOR_SimulateForwardMagneticField_H
 #define MODULES_BRAINSTIMULATOR_SimulateForwardMagneticField_H

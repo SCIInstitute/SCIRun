@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
+#include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -39,7 +39,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Testing;
 using namespace SCIRun::Modules;
-using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
@@ -49,59 +49,94 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-class SplitFieldByConnectedRegionModuleTests : public ModuleTest
+class SimulateForwardMagneticFieldModuleTests : public ModuleTest
 {
 
 };
 
 namespace
 {
-  FieldHandle SplitFieldByConnectedRegionModuleTetTests()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "splitfieldbyconnectedregion/splitfieldbyconnectedregion_tet.fld");
-  }
-  FieldHandle SplitFieldByConnectedRegionModuleTriTests()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "splitfieldbyconnectedregion/splitfieldbyconnectedregion_tri.fld");
-  }
+  
+ FieldHandle LoadFieldFirstModuleInput()
+ {     
+  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/first.fld");
+ }
+
+ FieldHandle LoadFieldSecondModuleInput()
+ {     
+  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/second.fld");
+ }
+
+ FieldHandle LoadFieldThirdModuleInput()
+ {     
+  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/third.fld");
+ }
+
+ FieldHandle LoadFieldFourthModuleInput()
+ {     
+  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/fourth.fld");
+ }
+  
 }
 
-TEST_F(SplitFieldByConnectedRegionModuleTests, ThrowsForNullInput)
+TEST_F(SimulateForwardMagneticFieldModuleTests, ThrowsForNullInput)
 {
-  auto test = makeModule("SplitFieldByConnectedRegion");
-  FieldHandle nullField;
+  auto test = makeModule("SimulateForwardMagneticField");
+  FieldHandle nullField;  
   stubPortNWithThisData(test, 0, nullField);
+  EXPECT_THROW(test->execute(), NullHandleOnPortException);
+  
+  stubPortNWithThisData(test, 1, nullField);
+  EXPECT_THROW(test->execute(), NullHandleOnPortException);
+  
+  stubPortNWithThisData(test, 2, nullField);
+  EXPECT_THROW(test->execute(), NullHandleOnPortException);
+  
+  stubPortNWithThisData(test, 3, nullField);
   EXPECT_THROW(test->execute(), NullHandleOnPortException);
 }
 
-TEST_F(SplitFieldByConnectedRegionModuleTests, WrongDataType)
+TEST_F(SimulateForwardMagneticFieldModuleTests, WrongDataType)
 {
-  auto test = makeModule("SplitFieldByConnectedRegion");
+  auto test = makeModule("SimulateForwardMagneticField");
   DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
 	for (int i=0; i<3; i++)
 		(*m)(i, 0) = 1;
   stubPortNWithThisData(test, 0, m);
   EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
+  
+  stubPortNWithThisData(test, 1, m);
+  EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
+  
+  stubPortNWithThisData(test, 2, m);
+  EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
+  
+  stubPortNWithThisData(test, 3, m);
+  EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
 }
 
-TEST_F(SplitFieldByConnectedRegionModuleTests, NothingOnPortZeroOneTwo)
+TEST_F(SimulateForwardMagneticFieldModuleTests, NothingOnPortZeroOneTwo)
 {
-  auto sls = makeModule("SplitFieldByConnectedRegion");
+  auto sls = makeModule("SimulateForwardMagneticField");
   EXPECT_THROW(sls->execute(), DataPortException);
 }
 
-TEST_F(SplitFieldByConnectedRegionModuleTests, TetFieldInput)
+TEST_F(SimulateForwardMagneticFieldModuleTests, NormalExecution)
 {
-  auto test = makeModule("SplitFieldByConnectedRegion");
-  FieldHandle f = SplitFieldByConnectedRegionModuleTetTests();
-  stubPortNWithThisData(test, 0, f);
+  auto test = makeModule("SimulateForwardMagneticField");
+  FieldHandle f0 = LoadFieldFirstModuleInput();
+  stubPortNWithThisData(test, 0, f0);
+
+  FieldHandle f1 = LoadFieldSecondModuleInput();
+  stubPortNWithThisData(test, 1, f1);
+
+  FieldHandle f2 = LoadFieldThirdModuleInput();
+  stubPortNWithThisData(test, 2, f2);
+
+  FieldHandle f3 = LoadFieldFourthModuleInput();
+  stubPortNWithThisData(test, 3, f3);
+
   EXPECT_NO_THROW(test->execute());
 }
 
-TEST_F(SplitFieldByConnectedRegionModuleTests, TriFieldInput)
-{
-  auto test = makeModule("SplitFieldByConnectedRegion");
-  FieldHandle f = SplitFieldByConnectedRegionModuleTriTests();
-  stubPortNWithThisData(test, 0, f);
-  EXPECT_NO_THROW(test->execute());
-}
+
