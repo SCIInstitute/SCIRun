@@ -676,11 +676,11 @@ void ModuleWidget::toggleOptionsDialog()
 void ModuleWidget::updateProgressBar(double percent)
 {
   progressBar_->setValue(percent * progressBar_->maximum());
-  progressBar_->setToolTip(progressBar_->text());
 
   //TODO: make this configurable
-  progressBar_->setTextVisible(true);
+  //progressBar_->setTextVisible(true);
   updateModuleTime();
+  progressBar_->setToolTip(progressBar_->text());
 }
 
 void ModuleWidget::updateModuleTime()
