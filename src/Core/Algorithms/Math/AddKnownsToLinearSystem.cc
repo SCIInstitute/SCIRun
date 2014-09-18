@@ -114,7 +114,6 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   for (index_type p=0; p<m; p++)
 	{
 		// making sure the rhs vector is finite
-		if (rhs)
 		  if (!IsFinite((*rhsCol)[p]))
 			THROW_ALGORITHM_INPUT_ERROR("NaN exist in the b vector");
 			

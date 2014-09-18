@@ -221,7 +221,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_0)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)(r,1));
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }
 
 // this test compares the output from SCIRun4 when X contains two NaN, RHS is all 0
@@ -258,7 +258,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_0)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)(r,1));
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }
 
 // this test compares the output from SCIRun4 when X contains a single NaN, RHS is [1,2,3]
@@ -295,7 +295,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_numbers)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)(r,1));
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }
 
 // this test compares the output from SCIRun4 when X contains two NaN, RHS is [1,2,3]
@@ -332,7 +332,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_numbers)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)(r,1));
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }
 
 // test to make sure when X contains all NaN that outputs are copied from inputs
@@ -357,5 +357,5 @@ TEST (AddKnownsToLinearSystemTests, X_is_NaN)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)(r,1));
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }
