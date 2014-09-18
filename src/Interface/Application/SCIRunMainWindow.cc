@@ -683,7 +683,7 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(snapTo).toBool();
     prefs.modulesSnapToGrid.setValue(value);
     modulesSnapToCheckBox_->setChecked(value);
-    GuiLogger::Instance().log("Setting read: modules snap to grid = " + prefs.modulesSnapToGrid ? "true" : "false");
+    GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString(prefs.modulesSnapToGrid ? "true" : "false"));
   }
 
   const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
@@ -1129,16 +1129,16 @@ bool SCIRunMainWindow::newInterface() const
 
 namespace {
 
-  void addElementDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map) 
+  void addElementDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
   {
-    if (xml.tokenType() != QXmlStreamReader::StartElement) 
+    if (xml.tokenType() != QXmlStreamReader::StartElement)
     {
       std::cout << "didn't find start" << std::endl;
       return;
     }
     QString elementName = xml.name().toString();
     xml.readNext();
-    if (xml.tokenType() != QXmlStreamReader::Characters) 
+    if (xml.tokenType() != QXmlStreamReader::Characters)
     {
       std::cout << "not char data" << std::endl;
       return;
@@ -1146,21 +1146,21 @@ namespace {
     map.insert(elementName, xml.text().toString());
   }
 
-  void addItemDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map) 
+  void addItemDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
   {
-    if (xml.tokenType() != QXmlStreamReader::StartElement) 
+    if (xml.tokenType() != QXmlStreamReader::StartElement)
     {
       std::cout << "didn't find start 2" << std::endl;
       return;
     }
     xml.readNext();
-    if (xml.tokenType() != QXmlStreamReader::Characters) 
+    if (xml.tokenType() != QXmlStreamReader::Characters)
     {
       std::cout << "not char data 2" << std::endl;
       return;
     }
     QXmlStreamAttributes attributes = xml.attributes();
-    if (attributes.hasAttribute("key") && attributes.hasAttribute("value")) 
+    if (attributes.hasAttribute("key") && attributes.hasAttribute("value"))
     {
       map[attributes.value("key").toString()] = attributes.value("value").toString();
     }
@@ -1168,24 +1168,24 @@ namespace {
       std::cout << 333 << std::endl;
   }
 
-  QMap<QString, QString> parseStyle(QXmlStreamReader& xml) 
+  QMap<QString, QString> parseStyle(QXmlStreamReader& xml)
   {
     QMap<QString, QString> style;
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "style") 
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "style")
     {
       std::cout << "didn't find style" << std::endl;
       return style;
     }
-    
+
     xml.readNext();
-    
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "style")) 
+
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "style"))
     {
-      if (xml.tokenType() == QXmlStreamReader::StartElement) 
+      if (xml.tokenType() == QXmlStreamReader::StartElement)
       {
-        if (xml.name() == "template") 
+        if (xml.name() == "template")
           addElementDataToMap(xml, style);
-        if (xml.name() == "item") 
+        if (xml.name() == "item")
           addItemDataToMap(xml, style);
       }
       else
@@ -1201,13 +1201,13 @@ void SCIRunMainWindow::parseStyleXML()
 {
   std::cout << "parsing style xml" << std::endl;
   QFile file("./styleSheetDetails.xml");
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
     QMessageBox::critical(this, "SCIRun", "Couldn't open styleSheetDetails.xml", QMessageBox::Ok);
     return;
   }
   QXmlStreamReader xml(&file);
-  while (!xml.atEnd() && !xml.hasError()) 
+  while (!xml.atEnd() && !xml.hasError())
   {
     QXmlStreamReader::TokenType token = xml.readNext();
     if (token == QXmlStreamReader::StartDocument) {
@@ -1220,7 +1220,7 @@ void SCIRunMainWindow::parseStyleXML()
       std::cout << "found: " << xml.name().toString().toStdString() << std::endl;
       if(xml.name() == "style") {
         QXmlStreamAttributes attributes = xml.attributes();
-        if (attributes.hasAttribute("widgetType")) 
+        if (attributes.hasAttribute("widgetType"))
         {
           styleSheetDetails_[attributes.value("widgetType").toString()] = parseStyle(xml);
         }
@@ -1230,7 +1230,7 @@ void SCIRunMainWindow::parseStyleXML()
     }
   }
 
-  if (xml.hasError()) 
+  if (xml.hasError())
   {
     QMessageBox::critical(this, "SCIRun", xml.errorString(), QMessageBox::Ok);
   }

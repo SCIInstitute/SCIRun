@@ -209,8 +209,8 @@ namespace
   const int extraModuleWidth = 5;
   const int smushFactor = 15;
 #else
-  const int moduleWidthThreshold = 240;
-  const int extraModuleWidth = 30;
+  const int moduleWidthThreshold = 80;
+  const int extraModuleWidth = 5;
   const int smushFactor = 15;
 #endif
 }
@@ -233,7 +233,9 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192))
 {
   setupUi(this);
-  titleLabel_->setText("<b><h3>" + name + "</h3></b>");
+
+  titleLabel_->setFont(QFont("Arial", 10, QFont::Bold));
+  titleLabel_->setText(name);
 
   //TODO: ultra ugly. no other place for this code right now.
   //TODO: to be handled in issue #212
