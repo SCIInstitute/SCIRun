@@ -157,6 +157,7 @@ private Q_SLOTS:
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();
   void selectModuleKeyboardAction();
+  void modulesSnapToChanged();
   void exitApplication(int code);
 };
 

@@ -205,6 +205,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
 
+  connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
+  connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
+
   setupProvenanceWindow();
   setupDevConsole();
   setupPythonConsole();
@@ -674,6 +677,15 @@ void SCIRunMainWindow::readSettings()
     }
   }
 
+  const QString snapTo = qname(prefs.modulesSnapToGrid);
+  if (settings.contains(snapTo))
+  {
+    auto value = settings.value(snapTo).toBool();
+    prefs.modulesSnapToGrid.setValue(value);
+    modulesSnapToCheckBox_->setChecked(value);
+    GuiLogger::Instance().log("Setting read: modules snap to grid = " + prefs.modulesSnapToGrid ? "true" : "false");
+  }
+
   const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
   if (settings.contains(disableModuleErrorDialogsKey))
   {
@@ -726,11 +738,12 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("recentFiles", recentFiles_);
   settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
   settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
+  settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
-  settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls.val());
+  settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
 	settings.setValue("dataDirectory", dataDirectory());
 }
@@ -1256,4 +1269,10 @@ void SCIRunMainWindow::selectModuleKeyboardAction()
 {
   moduleSelectorTreeWidget_->setFocus(Qt::ShortcutFocusReason);
   statusBar()->showMessage(tr("Module selection activated"), 2000);
+}
+
+void SCIRunMainWindow::modulesSnapToChanged()
+{
+  bool snapTo = modulesSnapToCheckBox_->isChecked();
+  Preferences::Instance().modulesSnapToGrid.setValue(snapTo);
 }

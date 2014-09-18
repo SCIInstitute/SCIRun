@@ -36,10 +36,13 @@
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/PortWidgetManager.h>
 #include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath2.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core;
 
 namespace SCIRun
 {
@@ -163,6 +166,15 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
   }
 }
 
+static int snapTo(int oldPos)
+{
+  using namespace SCIRun::Core::Math;
+  const int strip = 76; // size of new background grid png
+  const int shift = oldPos % strip;
+
+  return oldPos - shift + (std::abs(shift) < strip/2 ? 0 : sgn(shift)*strip);
+}
+
 void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
   if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
@@ -178,11 +190,18 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
     if (position_ != pos())
     {
+      snapToGrid();
       Q_EMIT widgetMoved(ModuleId(module_->getModuleId()), pos().x(), pos().y());
     }
     QGraphicsItem::mouseReleaseEvent(event);
   }
   grabbedByWidget_ = false;
+}
+
+void ModuleProxyWidget::snapToGrid()
+{
+  if (Preferences::Instance().modulesSnapToGrid)
+    setPos(snapTo(pos().x()), snapTo(pos().y()));
 }
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -219,11 +238,6 @@ void ModuleProxyWidget::highlightIfSelected()
     isSelected_ = false;
   }
 }
-
-//void ModuleProxyWidget::setAsWaiting()
-//{
-//  module_->setColorAsWaiting();
-//}
 
 QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
 {
