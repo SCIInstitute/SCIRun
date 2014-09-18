@@ -26,6 +26,62 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
+#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Thread/Barrier.h>
+#include <Core/Thread/Parallel.h>
+//#include <Core/Geometry/Point.h>
+//#include <Core/Geometry/Tensor.h>
+//#include <Core/Logging/Log.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
+//using namespace SCIRun::Core::Logging;
+
+AlgorithmInputName BuildFEVolRHSAlgo::Mesh("Mesh");
+AlgorithmInputName BuildFEVolRHSAlgo::Vector_Table("Vector_Table");
+AlgorithmOutputName BuildFEVolRHSAlgo::RHS("RHS");
+
+
+FieldHandle BuildFEVolRHSAlgo::run(FieldHandle input, DenseMatrixHandle ctable) const
+{
+ FieldHandle a;
+ return a;
+}
+
+AlgorithmOutput BuildFEVolRHSAlgo::run_generic(const AlgorithmInput& input) const
+{
+/*  auto field = input.get<Field>(Variables::InputField);
+  auto ctable = input.get<DenseMatrix>(Conductivity_Table);
+
+  SparseRowMatrixHandle stiffness;
+  if (!run(field, ctable, stiffness))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");*/
+
+  AlgorithmOutput output;
+ // output[Stiffness_Matrix] = stiffness;
+  return output;
+}
+
+
+
+
+
+
+
+
+
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+
+
 #include <Core/Algorithms/FiniteElements/BuildRHS/BuildFEVolRHS.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
@@ -905,3 +961,6 @@ run(FieldHandle input, MatrixHandle vtable, MatrixHandle& output)
 }
 
 } // end namespace SCIRun
+
+
+#endif

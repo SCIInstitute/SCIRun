@@ -1,3 +1,4 @@
+ 
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -25,34 +26,35 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/FiniteElements/BuildFEVolRHSModule.h
 
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H 1
+#ifndef MODULES_LEGACY_FINITEELEMENTS_BuildFEVolRHSModule_H__
+#define MODULES_LEGACY_FINITEELEMENTS_BuildFEVolRHSModule_H__
 
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <vector>
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/FiniteElements/share.h>
 
 namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
+  namespace Modules {
+    namespace FiniteElements {
 
-class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
-{
-  public:
+      class SCISHARE BuildFEVolRHSModule : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, MatrixPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        BuildFEVolRHSModule();
+        virtual void setStateDefaults() {}
+        virtual void execute();
 
-    static AlgorithmInputName Mesh;
-    static AlgorithmInputName Vector_Table;
-    static AlgorithmOutputName RHS;
+        INPUT_PORT(0, Mesh, LegacyField);
+        INPUT_PORT(1, Vector_Table, Matrix);
+        OUTPUT_PORT(0, RHS, LegacyField);
 
-   FieldHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const;  
-   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-private:
+      };
 
-};
-
-}}}}
+    }
+  }
+}
 
 #endif

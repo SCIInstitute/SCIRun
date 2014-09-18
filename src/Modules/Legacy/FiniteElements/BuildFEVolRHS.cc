@@ -27,6 +27,74 @@
 */
 /// @todo Documentation Modules/Legacy/FiniteElements/BuildFEVolRHS.cc
 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
+ #include <Core/Datatypes/SparseRowMatrix.h>
+ #include <Core/Datatypes/DenseMatrix.h>
+ #include <Core/Datatypes/Matrix.h>
+ #include <Core/Datatypes/Field.h>
+ #include <Core/Datatypes/MatrixTypeConverter.h>
+
+ #include <Dataflow/Network/Ports/MatrixPort.h>
+ #include <Dataflow/Network/Ports/FieldPort.h>
+ #include <Dataflow/GuiInterface/GuiVar.h>
+ #include <Dataflow/Network/Module.h>
+#endif
+
+//#include <Core/Algorithms/FiniteElements/BuildRHS/BuildFEVolRHS.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
+
+
+using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Core::Datatypes;
+//using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun;
+
+BuildFEVolRHSModule::BuildFEVolRHSModule()
+  : Module(ModuleLookupInfo("BuildFEVolRHSModule", "FiniteElements", "SCIRun"), false)
+{
+  INITIALIZE_PORT(Mesh);
+  INITIALIZE_PORT(Vector_Table);
+  INITIALIZE_PORT(RHS);
+}
+
+void BuildFEVolRHSModule::execute()
+{
+ /* 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED  
+  FieldHandle Field;
+  MatrixHandle VectorTable;
+  MatrixHandle RHSMatrix;
+  
+  if (!(get_input_handle("Mesh",Field,true))) return;
+  get_input_handle("Vector Table", VectorTable, false);
+  
+  if (inputs_changed_ || gui_use_basis_.changed() || !oport_cached("RHS") )
+  {
+    algo_.set_bool("generate_basis",gui_use_basis_.get());
+    if(!(algo_.run(Field,VectorTable,RHSMatrix))) return;
+    
+    send_output_handle("RHS", RHSMatrix);
+  }
+#endif  
+  
+  auto mesh = getRequiredInput(Mesh);
+  auto vectorTable = getRequiredInput(Vector_Table);
+  
+  if (needToExecute())
+  {
+    Core::Algorithms::AlgorithmOutput output; //= algo().run_generic(withInputData((Mesh, mesh)(Vector_Table, vectorTable)));
+    sendOutputFromAlgorithm(RHS, output);
+  }
+ */ 
+}
+
+
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Matrix.h>
@@ -88,5 +156,5 @@ void BuildFEVolRHS::execute()
 
 } // End namespace SCIRun
 
-
+#endif
 
