@@ -624,7 +624,7 @@ DenseMatrixHandle ElectrodeElementType, DenseMatrixHandle ElectrodeElementDefini
   {
    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" The electrode numbering should should start at 0 (allowed range: 0..#meshnodes-1) !");  
   }
-
+  
    // get surface impedance
   if(contactimpedance)
   {
@@ -697,7 +697,7 @@ ElectrodeElementDefinition, DenseMatrixHandle contactimpedance, SparseRowMatrixH
    return false;
  }  
 
-TDCSMatrixBuilder builder;
+ TDCSMatrixBuilder builder;
 ///
  builder.initialize_mesh(mesh); //set mesh 
 ///
