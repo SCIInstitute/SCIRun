@@ -101,19 +101,6 @@ namespace Gui {
   };
 }}
 
-namespace
-{
-#ifdef WIN32
-  const int moduleWidthThreshold = 120;
-  const int extraModuleWidth = 5;
-  const int smushFactor = 15;
-#else
-  const int moduleWidthThreshold = 240;
-  const int extraModuleWidth = 30;
-  const int smushFactor = 15;
-#endif
-}
-
 QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
 {
   QColor result;
@@ -213,6 +200,19 @@ namespace
       .arg(r).arg(g).arg(b)
       .arg(moduleAlpha());
   }
+}
+
+namespace
+{
+#ifdef WIN32
+  const int moduleWidthThreshold = 120;
+  const int extraModuleWidth = 5;
+  const int smushFactor = 15;
+#else
+  const int moduleWidthThreshold = 240;
+  const int extraModuleWidth = 30;
+  const int smushFactor = 15;
+#endif
 }
 
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
