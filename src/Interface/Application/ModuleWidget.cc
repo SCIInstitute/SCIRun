@@ -205,7 +205,7 @@ namespace
 namespace
 {
 #ifdef WIN32
-  const int moduleWidthThreshold = 120;
+  const int moduleWidthThreshold = 110;
   const int extraModuleWidth = 5;
   const int smushFactor = 15;
 #else
@@ -270,7 +270,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   else
   {
     //std::cout << "\tMAKING SMALLER Current width: " << width() << std::endl;
-    resize(width() - smushFactor, height());
+    //resize(width() - smushFactor, height());
     //std::cout << "\tNew width: " << width() << std::endl;
   }
 

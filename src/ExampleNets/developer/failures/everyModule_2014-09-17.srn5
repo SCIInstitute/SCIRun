@@ -2356,16 +2356,64 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>0</count>
+			<count>4</count>
 			<item_version>0</item_version>
+			<item class_id="13" tracking_level="0" version="0">
+				<moduleId1_>BuildTDCSMatrix:30</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>TDCSMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SolveMinNormLeastSqSystem:40</moduleId2_>
+				<port2_>
+					<name>BasisVector1</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadMatrix:26</moduleId1_>
+				<port1_>
+					<name>FileLoaded</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>WriteMatrix:28</moduleId2_>
+				<port2_>
+					<name>Filename</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReportFieldInfo:41</moduleId1_>
+				<port1_>
+					<name>NumData</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetDomainBoundary:44</moduleId2_>
+				<port2_>
+					<name>MaxValue</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReportFieldInfo:41</moduleId1_>
+				<port1_>
+					<name>NumElements</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetDomainBoundary:44</moduleId2_>
+				<port2_>
+					<name>MinValue</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="13" tracking_level="0" version="0">
+	<modulePositions class_id="15" tracking_level="0" version="0">
 		<count>62</count>
 		<item_version>0</item_version>
-		<item class_id="14" tracking_level="0" version="0">
+		<item class_id="16" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:31</first>
-			<second class_id="15" tracking_level="0" version="0">
+			<second class_id="17" tracking_level="0" version="0">
 				<first>-1291</first>
 				<second>-1484</second>
 			</second>
@@ -2758,8 +2806,8 @@
 		<item>
 			<first>SolveMinNormLeastSqSystem:40</first>
 			<second>
-				<first>-1284</first>
-				<second>-739</second>
+				<first>-1283</first>
+				<second>-723</second>
 			</second>
 		</item>
 		<item>
@@ -2798,7 +2846,7 @@
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="16" tracking_level="0" version="0">
+	<moduleNotes class_id="18" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleNotes>
