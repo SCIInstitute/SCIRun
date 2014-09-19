@@ -26,24 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Testing/SendScalarDialog.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Interface/Modules/Fields/SplitFieldByConnectedRegionDialog.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle state,
+
+SplitFieldByConnectedRegionDialog::SplitFieldByConnectedRegionDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
+  fixSize();
   
-  addDoubleSpinBoxManager(scalarValueToSend_, SendScalarModule::ValueToSend());
-}
-
-void SendScalarDialog::pull()
+  addCheckBoxManager(SortDomainBySize, SplitFieldByConnectedRegionAlgo::SortDomainBySize());
+  addCheckBoxManager(SortAscending, SplitFieldByConnectedRegionAlgo::SortAscending());
+}                         
+                          
+void SplitFieldByConnectedRegionDialog::pull()
 {
-  pull_newVersionToReplaceOld();
+ pull_newVersionToReplaceOld();   
 }

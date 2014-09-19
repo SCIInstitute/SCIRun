@@ -26,24 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Testing/SendScalarDialog.h>
-#include <Modules/Basic/SendScalar.h>
+#ifndef INTERFACE_MODULES_SPLITFIELDBYCONNECTEDREGION_H
+#define INTERFACE_MODULES_SPLITFIELDBYCONNECTEDREGION_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Basic;
+#include "Interface/Modules/Fields/ui_SplitFieldByConnectedRegionDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
+namespace SCIRun {
+namespace Gui {
   
-  addDoubleSpinBoxManager(scalarValueToSend_, SendScalarModule::ValueToSend());
+class SCISHARE SplitFieldByConnectedRegionDialog : public ModuleDialogGeneric, 
+  public Ui::SplitFieldByConnectedRegionDialog
+{
+	Q_OBJECT
+	
+public:
+  SplitFieldByConnectedRegionDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
+
+}
 }
 
-void SendScalarDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}
+#endif

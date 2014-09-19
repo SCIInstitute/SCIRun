@@ -61,9 +61,10 @@ namespace Gui {
     void pull_newVersionToReplaceOld();
   Q_SIGNALS:
     void executionTimeChanged(int time);
-    void executeButtonPressed();
+    void executeActionTriggered();
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
+    virtual void contextMenuEvent(QContextMenuEvent* e) override;
     void fixSize();
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
 
@@ -88,8 +89,10 @@ namespace Gui {
     void addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
+    void createExecuteAction();
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
+    QAction* executeAction_;
   };
 
 }

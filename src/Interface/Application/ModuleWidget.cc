@@ -112,6 +112,106 @@ namespace
 #endif
 }
 
+QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
+{
+  QColor result;
+  if (SCIRunMainWindow::Instance()->newInterface())
+  {
+    if (str == "red")
+      result = Qt::red;
+    else if (str == "blue")
+      result = QColor(14,139,255);
+    else if (str == "darkBlue")
+      result = Qt::darkBlue;
+    else if (str == "cyan")
+      result = QColor(27,207,207);
+    else if (str == "darkCyan")
+      result = Qt::darkCyan;
+    else if (str == "darkGreen")
+      result = QColor(0,175,70);
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "magenta")
+      result = QColor(255,75,240);
+    else if (str == "white")
+      result = Qt::white;
+    else if (str == "yellow")
+      result = QColor(234,255,55);
+    else if (str == "darkYellow")
+      result = Qt::darkYellow;
+    else if (str == "lightGray")
+      result = Qt::lightGray;
+    else if (str == "darkGray")
+      result = Qt::darkGray;
+    else if (str == "black")
+      result = Qt::black;
+    else if (str == "purple")
+      result = QColor(122,119,226);
+    else if (str == "orange")
+      result = QColor(254, 139, 38);
+    else
+      result = Qt::black;
+  }
+  else
+  {
+    if (str == "red")
+      result = Qt::red;
+    else if (str == "blue")
+      result = Qt::blue;
+    else if (str == "darkBlue")
+      result = Qt::darkBlue;
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "darkCyan")
+      result = Qt::darkCyan;
+    else if (str == "darkGreen")
+      result = Qt::darkGreen;
+    else if (str == "cyan")
+      result = Qt::cyan;
+    else if (str == "magenta")
+      result = Qt::magenta;
+    else if (str == "white")
+      result = Qt::white;
+    else if (str == "yellow")
+      result = Qt::yellow;
+    else if (str == "darkYellow")
+      result = Qt::darkYellow;
+    else if (str == "lightGray")
+      result = Qt::lightGray;
+    else if (str == "darkGray")
+      result = Qt::darkGray;
+    else if (str == "black")
+      result = Qt::black;
+    else if (str == "purple")
+      result = Qt::darkMagenta;
+    else if (str == "orange")
+      result = QColor(255, 165, 0);
+    else
+      result = Qt::black;
+  }
+  result.setAlpha(alpha);
+  return result;
+}
+
+namespace
+{
+  //TODO: make run-time configurable
+  int moduleAlpha()
+  {
+    //TODO: becky's alpha number didn't look good here, it may be a Qt/coloring problem. Will wait until I get correct background.
+    return SCIRunMainWindow::Instance()->newInterface() ? 100 : 255;
+  }
+  int portAlpha()
+  {
+    return SCIRunMainWindow::Instance()->newInterface() ? 230 : 255;
+  }
+  QString moduleRGBA(int r, int g, int b)
+  {
+    return QString("rgba(%1,%2,%3,%4)")
+      .arg(r).arg(g).arg(b)
+      .arg(moduleAlpha());
+  }
+}
 
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
@@ -128,7 +228,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   outputPortLayout_(0),
   editor_(ed),
   deleting_(false),
-  defaultBackgroundColor_("lightgray;")
+  defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192))
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -201,10 +301,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 void ModuleWidget::setLogButtonColor(const QColor& color)
 {
   logButton2_->setStyleSheet(
-    QString("* { background-color: rgb(%1,%2,%3) }")
-    .arg(color.red())
-    .arg(color.green())
-    .arg(color.blue()));
+    QString("* { background-color: %1 }")
+    .arg(moduleRGBA(color.red(), color.green(), color.blue())));
 }
 
 void ModuleWidget::resetLogButtonColor()
@@ -220,7 +318,7 @@ void ModuleWidget::resetProgressBar()
 
 void ModuleWidget::setupModuleActions()
 {
-  actionsMenu_.reset(new ModuleActionsMenu(moduleActionButton_, moduleId_));
+  actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
 
   moduleActionButton_->setMenu(actionsMenu_->getMenu());
 }
@@ -244,7 +342,7 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
@@ -273,7 +371,7 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
   BOOST_FOREACH(OutputPortHandle port, moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     ports_->addPort(w);
     ++i;
@@ -475,10 +573,10 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
   switch (moduleState)
   {
   case (int)ModuleInterface::Waiting:
-    Q_EMIT backgroundColorUpdated("#CDBE70;");
+    Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
     break;
   case (int)ModuleInterface::Executing:
-    Q_EMIT backgroundColorUpdated("#AACCAA;");
+    Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
     break;
   case (int)ModuleInterface::Completed:
     Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
@@ -490,13 +588,16 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)
   {
-    setStyleSheet("background-color: " + color);
+    QString rounded;
+    if (SCIRunMainWindow::Instance()->newInterface())
+      rounded = "color: white; border-radius: 7px;";
+    setStyleSheet(rounded + " background-color: " + color);
   }
 }
 
 void ModuleWidget::setColorSelected()
 {
-  updateBackgroundColor("lightblue;");
+  updateBackgroundColor(moduleRGBA(0,255,255));
 }
 
 void ModuleWidget::setColorUnselected()
@@ -517,7 +618,7 @@ void ModuleWidget::makeOptionsDialog()
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();
-      connect(dialog_, SIGNAL(executeButtonPressed()), this, SLOT(execute()));
+      connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setWidget(dialog_);
@@ -562,6 +663,7 @@ void ModuleWidget::updateProgressBar(double percent)
 
 void ModuleWidget::updateModuleTime()
 {
+  //TODO: make this configurable
   progressBar_->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
 }
 
@@ -605,17 +707,20 @@ bool ModuleWidget::hasDynamicPorts() const
 
 void ModuleWidget::pinUI()
 {
-  dockable_->setFloating(false);
+  if (dockable_)
+    dockable_->setFloating(false);
 }
 
 void ModuleWidget::hideUI()
 {
-  dockable_->hide();
+  if (dockable_)
+    dockable_->hide();
 }
 
 void ModuleWidget::showUI()
 {
-  dockable_->show();
+  if (dockable_)
+    dockable_->show();
 }
 
 void ModuleWidget::executeButtonPushed()

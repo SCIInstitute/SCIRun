@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
+#include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
 #include <Modules/Legacy/Math/ConvertMatrixType.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
@@ -42,6 +43,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Modules/BrainStimulator/GenerateROIStatistics.h>
+#include <Modules/BrainStimulator/SimulateForwardMagneticField.h>
 #include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 
@@ -59,7 +61,8 @@ void ModuleDescriptionLookup::addBrainSpecificModules()
   addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
   addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", "New module", " Sets conveniently conductivity profile for tetrahedral mesh ");
   addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
-  addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
+  addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");
+  addModuleDesc<SimulateForwardMagneticFieldModule>("SimulateForwardMagneticField", "BrainStimulator", "SCIRun", "Real ported module", "...");      
 }
 
 void ModuleDescriptionLookup::addMoreModules()
@@ -75,4 +78,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<ConvertMatrixTypeModule>("ConvertMatrixType", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
 }

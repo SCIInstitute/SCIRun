@@ -69,6 +69,7 @@
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
+#include <Core/Algorithms/BrainStimulator/SimulateForwardMagneticFieldAlgorithm.h>
 #include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
@@ -145,6 +146,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(MapFieldDataOntoElems, MapFieldDataOntoElemsAlgo)
       ADD_MODULE_ALGORITHM(ClipFieldByFunction, ClipMeshBySelectionAlgo)
       ADD_MODULE_ALGORITHM(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationAlgo)
+      ADD_MODULE_ALGORITHM(SimulateForwardMagneticField, SimulateForwardMagneticFieldAlgo)
     ;
   }
 }
