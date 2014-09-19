@@ -35,6 +35,8 @@ SET(Interface_Modules_Render_HEADERS
   share.h
   ViewScene.h
   GLWidget.h
+  GLContext.h
+  GLContextPlatformCompatibility.h
   QtGLContext.h
   ES/SRCamera.h
   ES/SRInterface.h

@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <gl-platform/GLPlatform.hpp>
 #include "Registration.h"
 #include "CoreBootstrap.h"
 #include "AssetBootstrap.h"

@@ -43,14 +43,14 @@ namespace SCIRun {
 
 // Conversion templates.
 template <class T>
-SCISHARE bool valToColor( const T &v, Core::Datatypes::ColorRGB &c )
+bool valToColor( const T &v, Core::Datatypes::ColorRGB &c )
 {
   c = Core::Datatypes::ColorRGB(fabs(v), fabs(v), fabs(v));
   return true;
 }
 
 template <class T>
-SCISHARE bool valToDouble( const T& data_in, double &data_out)
+bool valToDouble( const T& data_in, double &data_out)
 {
   data_out = static_cast<double>(data_in);
   return true;
@@ -58,20 +58,20 @@ SCISHARE bool valToDouble( const T& data_in, double &data_out)
 
 
 template <class T>
-SCISHARE bool valToVector( const T&, Core::Geometry::Vector&)
+bool valToVector( const T&, Core::Geometry::Vector&)
 {
   return false;
 }
 
 
 template <class T>
-SCISHARE bool valToTensor( const T&, Core::Geometry::Tensor&)
+bool valToTensor( const T&, Core::Geometry::Tensor&)
 {
   return false;
 }
 
 template <class T>
-SCISHARE bool valToBuffer( const T &value, std::ostringstream &buffer)
+bool valToBuffer( const T &value, std::ostringstream &buffer)
 {
   buffer << value;
   return true;

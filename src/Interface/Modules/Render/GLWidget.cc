@@ -31,14 +31,13 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
+#include <Interface/Modules/Render/GLWidget.h>
 #include <iostream>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QTimer>
 #include <QtDebug>
 #include <Core/Application/Application.h>
-
-#include <Interface/Modules/Render/GLWidget.h>
 
 namespace SCIRun {
 namespace Gui {

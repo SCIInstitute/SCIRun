@@ -1459,7 +1459,7 @@ StructQuadSurfMesh<Basis>::compute_node_grid(Core::Geometry::BBox& bb)
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
     Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
-    node_grid_.reset(new SearchGridT<typename ImageMesh<Basis>::Node::index_type >(sx, sy, sz, b.min(), b.max()));
+    node_grid_.reset(new SearchGridT<typename ImageMesh<Basis>::Node::index_type >(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename ImageMesh<Basis>::Node::iterator ni, nie;
     this->begin(ni);
@@ -1495,7 +1495,7 @@ StructQuadSurfMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
         
     Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
-    elem_grid_.reset(new SearchGridT<typename ImageMesh<Basis>::Elem::index_type>(sx, sy, sz, b.min(), b.max()));
+    elem_grid_.reset(new SearchGridT<typename ImageMesh<Basis>::Elem::index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename ImageMesh<Basis>::Elem::iterator ci, cie;
     this->begin(ci);

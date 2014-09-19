@@ -141,8 +141,8 @@ class SearchGridT
     {
       index_type mini=0, minj=0, mink=0, maxi=0, maxj=0, maxk=0;
 
-      locate(mini, minj, mink, bbox.min());
-      locate(maxi, maxj, maxk, bbox.max());
+      locate(mini, minj, mink, bbox.get_min());
+      locate(maxi, maxj, maxk, bbox.get_max());
       
       for (index_type i = mini; i <= maxi; i++)
       {
@@ -160,8 +160,8 @@ class SearchGridT
     {
       index_type mini, minj, mink, maxi, maxj, maxk;
 
-      unsafe_locate(mini, minj, mink, bbox.min());
-      unsafe_locate(maxi, maxj, maxk, bbox.max());
+      unsafe_locate(mini, minj, mink, bbox.get_min());
+      unsafe_locate(maxi, maxj, maxk, bbox.get_max());
 
       for (index_type i = mini; i <= maxi; i++)
       {

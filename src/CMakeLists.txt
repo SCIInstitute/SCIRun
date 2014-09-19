@@ -434,7 +434,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 
 # TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
-  SET(QT_MIN_VERSION "4.8.0")
+  SET(QT_MIN_VERSION "4.8.1")
   FIND_PACKAGE(Qt4 REQUIRED)
   SET(QT_USE_QTOPENGL TRUE)
 
@@ -615,6 +615,7 @@ SET_PROPERTY(TARGET Algorithms_Field         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_BrainStimulator         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Factory   PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Visualization         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_FiniteElements         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_DataIO         PROPERTY FOLDER "Core/Algorithms")
 

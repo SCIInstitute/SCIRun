@@ -33,6 +33,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
+#include <boost/any.hpp>
 #include <gmock/gmock.h>
 
 namespace SCIRun {
@@ -106,6 +107,15 @@ namespace SCIRun {
     }
   }
 }
+
+namespace boost {
+inline std::ostream& operator<<(std::ostream& o, const boost::any& a)
+{
+  return o << "boost::any";
+}
+}
+
+#include <boost/optional/optional_io.hpp>
 
 #ifdef WIN32
 #define ENABLE_ON_WINDOWS(test) test

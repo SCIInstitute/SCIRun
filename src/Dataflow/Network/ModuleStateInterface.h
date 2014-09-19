@@ -105,7 +105,7 @@ namespace Networks {
   {
     return x ? any_cast_or_default_<T>(*x) : T();
   }
-  
+
   class SCISHARE StateChangeObserver
   {
   public:

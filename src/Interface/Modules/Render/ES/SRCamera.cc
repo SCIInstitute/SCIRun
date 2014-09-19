@@ -29,6 +29,7 @@
 /// \author James Hughes
 /// \date   March 2013
 
+#include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/namespaces.h>
 
 #include <Interface/Modules/Render/ES/SRCamera.h>
@@ -132,8 +133,8 @@ void SRCamera::mouseWheelEvent(int32_t delta)
 void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 {
   // Convert core geom bbox to AABB.
-  Core::Geometry::Point bboxMin = bbox.min();
-  Core::Geometry::Point bboxMax = bbox.max();
+  Core::Geometry::Point bboxMin = bbox.get_min();
+  Core::Geometry::Point bboxMax = bbox.get_max();
   glm::vec3 min(bboxMin.x(), bboxMin.y(), bboxMin.z());
   glm::vec3 max(bboxMax.x(), bboxMax.y(), bboxMax.z());
 
