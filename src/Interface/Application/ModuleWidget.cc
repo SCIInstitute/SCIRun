@@ -215,7 +215,7 @@ namespace
   const int extraModuleWidth = 5;
   const int extraWidthThreshold = 5;
   const int smushFactor = 15;
-  const int titleFontSize = 10;
+  const int titleFontSize = 12;
 #endif
 }
 
