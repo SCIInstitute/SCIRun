@@ -27,15 +27,17 @@
 */
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Core/Application/Preferences/Preferences.h>
+#include <Core/Application/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
+
+#include <Interface/Modules/Render/GLWidget.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
-using namespace SCIRun::Core::Algorithms::Render;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -47,7 +49,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   addToolBar();
   addViewBar();
-  
+
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
   fmt.setAlpha(true);
@@ -61,7 +63,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     glLayout->update();
 
     // Set spire transient value (should no longer be used).
-    mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
+    mSpire = std::weak_ptr<Render::SRInterface>(mGLWidget->getSpire());
   }
   else
   {
@@ -70,10 +72,17 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   }
 
   {
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
-    spire->setMouseMode(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? SRInterface::MOUSE_NEWSCIRUN : SRInterface::MOUSE_OLDSCIRUN);
+    if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
+    {
+      spire->setMouseMode(Render::SRInterface::MOUSE_NEWSCIRUN);
+    }
+    else
+    {
+      spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
+    }
   }
 
   state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
@@ -100,12 +109,12 @@ void ViewSceneDialog::newGeometryValue()
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
   Guard lock(SCIRun::Modules::Render::ViewScene::mutex_.get());
-  
+
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
   itemManager_->removeAll();
   // Grab the geomData transient value.
-  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  auto geomDataTransient = state_->getTransientValue("geomData");
   if (geomDataTransient && !geomDataTransient->empty())
   {
     auto geomData = optional_any_cast_or_default<SCIRun::Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
@@ -114,7 +123,7 @@ void ViewSceneDialog::newGeometryValue()
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
       return;
     }
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
     {
       LOG_DEBUG("Logical error: Spire lock not acquired.");
@@ -133,107 +142,107 @@ void ViewSceneDialog::newGeometryValue()
   }
   else
   {
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
     spire->removeAllGeomObjects();
   }
   //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
-  //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
+  //state_->setTransientValue("geomData", boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::menuMouseControlChanged(int index)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
   if (spire == nullptr)
     return;
 
   if (index == 0)
   {
-    spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
-    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(false);
+    spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
+    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls = false;
   }
   else
   {
-    spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
-    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(true);
+    spire->setMouseMode(Render::SRInterface::MOUSE_NEWSCIRUN);
+    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls = true;
   }
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::autoViewClicked()
 {
-  std::shared_ptr<SRInterface> spireLock = mSpire.lock();
+  std::shared_ptr<Render::SRInterface> spireLock = mSpire.lock();
   spireLock->doAutoView();
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewBarButtonClicked()
 {
-	hideViewBar_ = !hideViewBar_;
-	mViewBar->setHidden(hideViewBar_);
+    hideViewBar_ = !hideViewBar_;
+    mViewBar->setHidden(hideViewBar_);
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewAxisSelected(int index)
 {
-	
-	mUpVectorBox->clear();
-	mUpVectorBox->addItem("------");
-	switch(index)
-	{
-	case 0:
-		break;
-	case 1:
-		mUpVectorBox->addItem("+Y");
-		mUpVectorBox->addItem("-Y");
-		mUpVectorBox->addItem("+Z");
-		mUpVectorBox->addItem("-Z");
-		break;
-	case 2:
-		mUpVectorBox->addItem("+X");
-		mUpVectorBox->addItem("-X");
-		mUpVectorBox->addItem("+Z");
-		mUpVectorBox->addItem("-Z");
-		break;
-	case 3:
-		mUpVectorBox->addItem("+X");
-		mUpVectorBox->addItem("-X");
-		mUpVectorBox->addItem("+Y");
-		mUpVectorBox->addItem("-Y");
-		break;
-	case 4:
-		mUpVectorBox->addItem("+Y");
-		mUpVectorBox->addItem("-Y");
-		mUpVectorBox->addItem("+Z");
-		mUpVectorBox->addItem("-Z");
-		break;
-	case 5:
-		mUpVectorBox->addItem("+X");
-		mUpVectorBox->addItem("-X");
-		mUpVectorBox->addItem("+Z");
-		mUpVectorBox->addItem("-Z");
-		break;
-	case 6:
-		mUpVectorBox->addItem("+X");
-		mUpVectorBox->addItem("-X");
-		mUpVectorBox->addItem("+Y");
-		mUpVectorBox->addItem("-Y");
-		break;
-	}
-	
+
+    mUpVectorBox->clear();
+    mUpVectorBox->addItem("------");
+    switch(index)
+    {
+    case 0:
+        break;
+    case 1:
+        mUpVectorBox->addItem("+Y");
+        mUpVectorBox->addItem("-Y");
+        mUpVectorBox->addItem("+Z");
+        mUpVectorBox->addItem("-Z");
+        break;
+    case 2:
+        mUpVectorBox->addItem("+X");
+        mUpVectorBox->addItem("-X");
+        mUpVectorBox->addItem("+Z");
+        mUpVectorBox->addItem("-Z");
+        break;
+    case 3:
+        mUpVectorBox->addItem("+X");
+        mUpVectorBox->addItem("-X");
+        mUpVectorBox->addItem("+Y");
+        mUpVectorBox->addItem("-Y");
+        break;
+    case 4:
+        mUpVectorBox->addItem("+Y");
+        mUpVectorBox->addItem("-Y");
+        mUpVectorBox->addItem("+Z");
+        mUpVectorBox->addItem("-Z");
+        break;
+    case 5:
+        mUpVectorBox->addItem("+X");
+        mUpVectorBox->addItem("-X");
+        mUpVectorBox->addItem("+Z");
+        mUpVectorBox->addItem("-Z");
+        break;
+    case 6:
+        mUpVectorBox->addItem("+X");
+        mUpVectorBox->addItem("-X");
+        mUpVectorBox->addItem("+Y");
+        mUpVectorBox->addItem("-Y");
+        break;
+    }
+
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewVectorSelected(int index)
 {
-	viewBarButtonClicked();
-	//mDownViewBox->setCurrentIndex(0);
+    viewBarButtonClicked();
+    //mDownViewBox->setCurrentIndex(0);
 }
 
 //------------------------------------------------------------------------------
-void ViewSceneDialog::addToolBar() 
+void ViewSceneDialog::addToolBar()
 {
   mToolBar = new QToolBar(this);
 
@@ -290,54 +299,54 @@ void ViewSceneDialog::addObjectToggleMenu()
 
 void ViewSceneDialog::addViewBarButton()
 {
-	QPushButton* viewBarBtn = new QPushButton(this);
-	viewBarBtn->setText("Views");
-	viewBarBtn->setAutoDefault(false);
-	viewBarBtn->setDefault(false);
-	connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-	mToolBar->addWidget(viewBarBtn);
-	mToolBar->addSeparator();
+    QPushButton* viewBarBtn = new QPushButton(this);
+    viewBarBtn->setText("Views");
+    viewBarBtn->setAutoDefault(false);
+    viewBarBtn->setDefault(false);
+    connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
+    mToolBar->addWidget(viewBarBtn);
+    mToolBar->addSeparator();
 }
 
 void ViewSceneDialog::addViewBar()
 {
-	mViewBar = new QToolBar(this);
+    mViewBar = new QToolBar(this);
 
-	addViewOptions();
-	hideViewBar_ = true;
+    addViewOptions();
+    hideViewBar_ = true;
 
-	mViewBar->setHidden(hideViewBar_);
+    mViewBar->setHidden(hideViewBar_);
 
-	glLayout->addWidget(mViewBar);
+    glLayout->addWidget(mViewBar);
 }
 
 void ViewSceneDialog::addViewOptions()
 {
-	QLabel* axisLabel = new QLabel();
-	axisLabel->setText("Look Down Axis: ");
-	mViewBar->addWidget(axisLabel);
+    QLabel* axisLabel = new QLabel();
+        axisLabel->setText("Look Down Axis: ");
+        mViewBar->addWidget(axisLabel);
 
-	mDownViewBox = new QComboBox();
-	mDownViewBox->addItem("------");
-	mDownViewBox->addItem("+X");
-	mDownViewBox->addItem("+Y");
-	mDownViewBox->addItem("+Z");
-	mDownViewBox->addItem("-X");
-	mDownViewBox->addItem("-Y");
-	mDownViewBox->addItem("-Z");
-	connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
-	mViewBar->addWidget(mDownViewBox);	
-	mViewBar->addSeparator();
+        mDownViewBox = new QComboBox();
+        mDownViewBox->addItem("------");
+        mDownViewBox->addItem("+X");
+        mDownViewBox->addItem("+Y");
+        mDownViewBox->addItem("+Z");
+        mDownViewBox->addItem("-X");
+        mDownViewBox->addItem("-Y");
+        mDownViewBox->addItem("-Z");
+        connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
+        mViewBar->addWidget(mDownViewBox);
+        mViewBar->addSeparator();
 
-	QLabel* vectorLabel = new QLabel();
-	vectorLabel->setText("Up Vector: ");
-	mViewBar->addWidget(vectorLabel);
+        QLabel* vectorLabel = new QLabel();
+        vectorLabel->setText("Up Vector: ");
+        mViewBar->addWidget(vectorLabel);
 
-	mUpVectorBox = new QComboBox();
-	mUpVectorBox->addItem("------");
-	connect(mUpVectorBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewVectorSelected(int)));
-	mViewBar->addWidget(mUpVectorBox);	
-	mViewBar->addSeparator();	
+        mUpVectorBox = new QComboBox();
+        mUpVectorBox->addItem("------");
+        connect(mUpVectorBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewVectorSelected(int)));
+        mViewBar->addWidget(mUpVectorBox);
+        mViewBar->addSeparator();
 }
 
 void ViewSceneDialog::showEvent(QShowEvent *evt)

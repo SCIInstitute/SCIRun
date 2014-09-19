@@ -39,15 +39,7 @@
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
-#include <spire/Interface.h>
 #include <Interface/Modules/Render/namespaces.h>
-
-#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRCommonAttributes.h>
-#include <Interface/Modules/Render/SpireSCIRun/SRCommonUniforms.h>
-
-#include <Interface/Modules/Render/GLWidget.h>
-
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
@@ -56,15 +48,20 @@ class QStandardItemModel;
 class QStandardItem;
 
 namespace SCIRun {
+
+namespace Render { class SRInterface; }
+
 namespace Gui {
 
-class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, 
+class GLWidget;
+
+class SCISHARE ViewSceneDialog : public ModuleDialogGeneric,
   public Ui::ViewScene
 {
-	Q_OBJECT
-	
+    Q_OBJECT
+
 public:
-  ViewSceneDialog(const std::string& name, 
+  ViewSceneDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   ~ViewSceneDialog();
@@ -80,7 +77,6 @@ protected Q_SLOTS:
   void viewBarButtonClicked();
   void viewAxisSelected(int index);
   void viewVectorSelected(int index);
-  
 
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;
@@ -94,12 +90,12 @@ private:
   void addViewBar();
   void addViewOptions();
 
-  GLWidget*                     mGLWidget;		///< GL widget containing context.
-  std::weak_ptr<SRInterface>    mSpire;			///< Instance of Spire.
-  QToolBar*                     mToolBar;		///< Tool bar.
-  QToolBar*						mViewBar;		///< Tool bar for view options.
-  QComboBox*					mDownViewBox;	///< Combo box for Down axis options.
-  QComboBox*					mUpVectorBox;	///< Combo box for Up Vector options.
+  GLWidget*                             mGLWidget;		///< GL widget containing context.
+  std::weak_ptr<Render::SRInterface>    mSpire;			///< Instance of Spire.
+  QToolBar*                             mToolBar;		///< Tool bar.
+  QToolBar*                             mViewBar;		///< Tool bar for view options.
+  QComboBox*                            mDownViewBox;	///< Combo box for Down axis options.
+  QComboBox*                            mUpVectorBox;	///< Combo box for Up Vector options.
 
   bool shown_;
   bool hideViewBar_;

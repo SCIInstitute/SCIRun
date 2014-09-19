@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -36,30 +36,34 @@
 using namespace SCIRun::Core::Datatypes;
 
 ColorRGB::ColorRGB()
-  : r_(0), g_(0), b_(0)
+  : r_(1.0), g_(1.0), b_(1.0)
 {
 }
 
-ColorRGB::ColorRGB(int r, int g, int b)
+ColorRGB::ColorRGB(double r, double g, double b)
   : r_(r), g_(g), b_(b)
 {
 }
 
-ColorRGB::ColorRGB(const std::string& rgb) : r_(0), g_(0), b_(0)
+ColorRGB::ColorRGB(const std::string& rgb) : r_(1.0), g_(1.0), b_(1.0)
 {
   try
   {
     static boost::regex r("Color\\((\\d+),(\\d+),(\\d+)\\)");
     boost::smatch what;
     regex_match(rgb, what, r);
-    r_ = boost::lexical_cast<int>(what[1]);
-    g_ = boost::lexical_cast<int>(what[2]);
-    b_ = boost::lexical_cast<int>(what[3]);
+    int red = boost::lexical_cast<int>(what[1]);
+    int green = boost::lexical_cast<int>(what[2]);
+    int blue = boost::lexical_cast<int>(what[3]);
+
+    r_ = static_cast<double>(red) / 255.0f;
+    g_ = static_cast<double>(green) / 255.0f;
+    b_ = static_cast<double>(blue) / 255.0f;
   }
   catch (...)
   {
     //error results in white (so you can see things in viewer):
-    r_ = g_ = b_ = 255;
+    r_ = g_ = b_ = 1.0f;
   }
 }
 
