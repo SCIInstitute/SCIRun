@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>194</width>
+    <width>227</width>
     <height>59</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
+    <width>220</width>
     <height>50</height>
    </size>
   </property>
@@ -107,8 +107,10 @@
          </property>
          <property name="font">
           <font>
-           <family>Arial</family>
-           <pointsize>7</pointsize>
+           <family>Segoe UI</family>
+           <pointsize>8</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
           </font>
          </property>
          <property name="whatsThis">
@@ -297,6 +299,22 @@
           <bool>false</bool>
          </property>
         </widget>
+       </item>
+       <item row="0" column="1">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>23</width>
+           <height>23</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>

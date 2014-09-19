@@ -207,11 +207,15 @@ namespace
 #ifdef WIN32
   const int moduleWidthThreshold = 110;
   const int extraModuleWidth = 5;
+  const int extraWidthThreshold = 5;
   const int smushFactor = 15;
+  const int titleFontSize = 8;
 #else
   const int moduleWidthThreshold = 80;
   const int extraModuleWidth = 5;
+  const int extraWidthThreshold = 5;
   const int smushFactor = 15;
+  const int titleFontSize = 10;
 #endif
 }
 
@@ -234,7 +238,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 {
   setupUi(this);
 
-  titleLabel_->setFont(QFont("Arial", 10, QFont::Bold));
+  titleLabel_->setFont(QFont("Segoe UI", titleFontSize, QFont::Bold));
   titleLabel_->setText(name);
 
   //TODO: ultra ugly. no other place for this code right now.
@@ -245,7 +249,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
     optionsButton_->setToolTip("View renderer output");
     optionsButton_->resize(100, optionsButton_->height());
     executePushButton_->hide();
-    progressBar_->setVisible(false); //this looks bad, need to insert a spacer or something. TODO later
+    progressBar_->setVisible(false);
   }
   progressBar_->setMaximum(100);
   progressBar_->setMinimum(0);
@@ -263,16 +267,16 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   //std::cout << "\tPixelwidth = " << pixelWidth << std::endl;
   int extraWidth = pixelWidth - moduleWidthThreshold;
   //std::cout << "\textraWidth = " << extraWidth << std::endl;
-  if (extraWidth > 30)
+  if (extraWidth > extraWidthThreshold)
   {
-    //std::cout << "\tCurrent width: " << width() << std::endl;
+    //std::cout << "\tGROWING MODULE Current width: " << width() << std::endl;
     resize(width() + extraWidth + extraModuleWidth, height());
     //std::cout << "\tNew width: " << width() << std::endl;
   }
   else
   {
-    //std::cout << "\tMAKING SMALLER Current width: " << width() << std::endl;
-    //resize(width() - smushFactor, height());
+    //std::cout << "\tSHRINKING MODULE Current width: " << width() << std::endl;
+    resize(width() - smushFactor, height());
     //std::cout << "\tNew width: " << width() << std::endl;
   }
 
