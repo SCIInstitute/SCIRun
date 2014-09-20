@@ -28,11 +28,11 @@
 
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
+#include <Interface/Modules/FiniteElements/BuildFEVolRHSDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
 #include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
-
 #include <boost/assign.hpp>
 #include <boost/functional/factory.hpp>
 
@@ -47,6 +47,7 @@ void ModuleDialogFactory::addDialogsToMakerMap2()
     ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
     ADD_MODULE_DIALOG(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshDialog)
     ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
-    ADD_MODULE_DIALOG(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSDialog)      
+    ADD_MODULE_DIALOG(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSDialog)
+    ADD_MODULE_DIALOG(BuildFEVolRHS, BuildFEVolRHSDialog)     
   ;
 }

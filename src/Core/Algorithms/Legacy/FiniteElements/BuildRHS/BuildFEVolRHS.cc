@@ -29,6 +29,10 @@
 
 #include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Thread/Barrier.h>
 #include <Core/Thread/Parallel.h>
@@ -48,24 +52,32 @@ AlgorithmInputName BuildFEVolRHSAlgo::Mesh("Mesh");
 AlgorithmInputName BuildFEVolRHSAlgo::Vector_Table("Vector_Table");
 AlgorithmOutputName BuildFEVolRHSAlgo::RHS("RHS");
 
-
-FieldHandle BuildFEVolRHSAlgo::run(FieldHandle input, DenseMatrixHandle ctable) const
+BuildFEVolRHSAlgo::BuildFEVolRHSAlgo() 
 {
- FieldHandle a;
+
+}
+
+
+DenseMatrixHandle BuildFEVolRHSAlgo::run(FieldHandle input, DenseMatrixHandle ctable) const
+{
+ DenseMatrixHandle a;
+ 
+ 
+ 
+ 
+ 
  return a;
 }
 
 AlgorithmOutput BuildFEVolRHSAlgo::run_generic(const AlgorithmInput& input) const
 {
-/*  auto field = input.get<Field>(Variables::InputField);
-  auto ctable = input.get<DenseMatrix>(Conductivity_Table);
+  auto mesh = input.get<Field>(Mesh);
+  auto ctable = input.get<DenseMatrix>(Vector_Table);
 
-  SparseRowMatrixHandle stiffness;
-  if (!run(field, ctable, stiffness))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");*/
-
+  DenseMatrixHandle volrhs = run(mesh, ctable);
+  
   AlgorithmOutput output;
- // output[Stiffness_Matrix] = stiffness;
+  output[RHS] = volrhs;
   return output;
 }
 

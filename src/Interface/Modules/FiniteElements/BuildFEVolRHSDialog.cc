@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H 1
+#include <Interface/Modules/FiniteElements/BuildFEVolRHSDialog.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
+#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <vector>
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 
-namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
 
-class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
+BuildFEVolRHSDialog::BuildFEVolRHSDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  public:
-    BuildFEVolRHSAlgo();
-    static AlgorithmInputName Mesh;
-    static AlgorithmInputName Vector_Table;
-    static AlgorithmOutputName RHS;
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+}
 
-   Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const;  
-   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-private:
+void BuildFEVolRHSDialog::pull()
+{
+  //TODO
+}
 
-};
-
-}}}}
-
-#endif

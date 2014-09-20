@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 /// @todo Documentation Modules/Legacy/FiniteElements/BuildFEVolRHS.cc
-
+/*
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
  #include <Core/Datatypes/SparseRowMatrix.h>
  #include <Core/Datatypes/DenseMatrix.h>
@@ -39,28 +39,42 @@
  #include <Dataflow/GuiInterface/GuiVar.h>
  #include <Dataflow/Network/Module.h>
 #endif
-
-//#include <Core/Algorithms/FiniteElements/BuildRHS/BuildFEVolRHS.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+*/
 #include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
-
+#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-BuildFEVolRHSModule::BuildFEVolRHSModule()
-  : Module(ModuleLookupInfo("BuildFEVolRHSModule", "FiniteElements", "SCIRun"), false)
+BuildFEVolRHS::BuildFEVolRHS()
+  : Module(ModuleLookupInfo("BuildFEVolRHS", "FiniteElements", "SCIRun"))
 {
   INITIALIZE_PORT(Mesh);
   INITIALIZE_PORT(Vector_Table);
   INITIALIZE_PORT(RHS);
 }
 
-void BuildFEVolRHSModule::execute()
+void BuildFEVolRHS::setStateDefaults()
 {
+// setStateBoolFromAlgo(SetFieldDataAlgo::keepTypeCheckBox);
+}
+
+void BuildFEVolRHS::execute()
+{
+  auto mesh = getRequiredInput(Mesh);
+  auto vtable = getRequiredInput(Vector_Table);
+
+  if (needToExecute())
+  {
+    auto output = algo().run_generic(make_input((Mesh, mesh)(Vector_Table, vtable)));
+    sendOutputFromAlgorithm(RHS, output);
+  }
+ 
  /* 
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED  
   FieldHandle Field;

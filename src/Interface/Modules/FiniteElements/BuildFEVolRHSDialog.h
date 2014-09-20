@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H 1
+#ifndef INTERFACE_MODULES_BuildFEVolRHSDialog_H
+#define INTERFACE_MODULES_BuildFEVolRHSDialog_H
 
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <vector>
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
+#include "Interface/Modules/FiniteElements/ui_BuildFEVolRHS.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/FiniteElements/share.h>
 
 namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
-
-class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
+namespace Gui {
+  
+class SCISHARE BuildFEVolRHSDialog : public ModuleDialogGeneric, 
+  public Ui::BuildFEVolRHS
 {
-  public:
-    BuildFEVolRHSAlgo();
-    static AlgorithmInputName Mesh;
-    static AlgorithmInputName Vector_Table;
-    static AlgorithmOutputName RHS;
-
-   Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const;  
-   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-private:
-
+	Q_OBJECT
+	
+public:
+  BuildFEVolRHSDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
 };
 
-}}}}
+}
+}
 
 #endif

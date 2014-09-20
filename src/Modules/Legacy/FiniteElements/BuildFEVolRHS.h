@@ -26,10 +26,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/FiniteElements/BuildFEVolRHSModule.h
+/// @todo Documentation Modules/Legacy/FiniteElements/BuildFEVolRHS.h
 
-#ifndef MODULES_LEGACY_FINITEELEMENTS_BuildFEVolRHSModule_H__
-#define MODULES_LEGACY_FINITEELEMENTS_BuildFEVolRHSModule_H__
+#ifndef MODULES_LEGACY_FINITEELEMENTS_BuildFEVOLRHS_H__
+#define MODULES_LEGACY_FINITEELEMENTS_BuildFEVOLRHS_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/FiniteElements/share.h>
@@ -38,18 +38,18 @@ namespace SCIRun {
   namespace Modules {
     namespace FiniteElements {
 
-      class SCISHARE BuildFEVolRHSModule : public Dataflow::Networks::Module,
+      class SCISHARE BuildFEVolRHS : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, MatrixPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
-        BuildFEVolRHSModule();
-        virtual void setStateDefaults() {}
+        BuildFEVolRHS();
+        virtual void setStateDefaults();
         virtual void execute();
 
         INPUT_PORT(0, Mesh, LegacyField);
         INPUT_PORT(1, Vector_Table, Matrix);
-        OUTPUT_PORT(0, RHS, LegacyField);
+        OUTPUT_PORT(0, RHS,Matrix );
 
       };
 
