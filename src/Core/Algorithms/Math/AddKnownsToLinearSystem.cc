@@ -54,6 +54,8 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
+double AddKnownsToLinearSystemAlgo::bound_for_equality = 1e-7;
+
 bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 									  DenseMatrixHandle rhs,
 									  DenseMatrixHandle x,
