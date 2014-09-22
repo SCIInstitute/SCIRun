@@ -33,11 +33,8 @@ SET(Modules_Math_SRCS
   AppendMatrix.cc
   CreateMatrix.cc
   EvaluateLinearAlgebraUnary.cc
-  EvaluateLinearAlgebraUnaryState.cc
   EvaluateLinearAlgebraBinary.cc
-  EvaluateLinearAlgebraBinaryState.cc
   ReportMatrixInfo.cc
-  ReportMatrixInfoState.cc
   SolveLinearSystem.cc
 )
 
@@ -48,11 +45,8 @@ SET(Modules_Math_HEADERS
   AppendMatrix.h
   CreateMatrix.h
   EvaluateLinearAlgebraUnary.h
-  EvaluateLinearAlgebraUnaryState.h
   EvaluateLinearAlgebraBinary.h
-  EvaluateLinearAlgebraBinaryState.h
   ReportMatrixInfo.h
-  ReportMatrixInfoState.h
   share.h
   SolveLinearSystem.h
 )
