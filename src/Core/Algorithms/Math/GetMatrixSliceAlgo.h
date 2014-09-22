@@ -27,41 +27,28 @@
 */
 
 
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_GetSubMatrix_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_GetSubMatrix_H 1
+#ifndef CORE_ALGORITHMS_MATH_GetMATRIXSLICE_H
+#define CORE_ALGORITHMS_MATH_GetMATRIXSLICE_H 
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-//! for Windows support
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
 	namespace Core {
 		namespace Algorithms {
-			namespace FiniteElements {
+			namespace Math {
 
-class SCISHARE GetSubMatrixAlgo : public AlgorithmBase
-{
-  public:
+        ALGORITHM_PARAMETER_DECL(IsSliceColumn);
+        ALGORITHM_PARAMETER_DECL(SliceIndex);
 
-    static AlgorithmInputName INPUT_Matrix;
-    static AlgorithmInputName Optional_Range_Bounds;
-    static AlgorithmOutputName OUTPUT_Matrix;
-    
-    
+        class SCISHARE GetMatrixSliceAlgo : public AlgorithmBase
+        {
+        public:
+          GetMatrixSliceAlgo();
+          virtual AlgorithmOutput run_generic(const AlgorithmInput &) const override;
+        };
 
-  GetSubMatrixAlgo();
-  ~GetSubMatrixAlgo();
-  bool run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseColumnMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseColumnMatrixHandle& output_rhs) const;
-  virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-  
-}; // end namespace SCIRun
+}}}}
 
-			}}}}
 #endif 

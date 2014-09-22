@@ -24,36 +24,48 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   author: Moritz Dannhauer
+   last change: 4/13/14
+   TODO: check Sparse inputs, Matrix inputs broken
 */
 
-#ifndef ALGORITHMS_MATH_CONVERTMATRIXTYPE_H
-#define ALGORITHMS_MATH_CONVERTMATRIXTYPE_H
+#include <gtest/gtest.h>
 
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Math/share.h>
+#include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Math {
-  
-  class SCISHARE ConvertMatrixTypeAlgorithm : public AlgorithmBase
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
+
+namespace
+{
+  DenseMatrixHandle matrix1()
   {
-  public:
-    static AlgorithmInputName InputMatrix;
-    static AlgorithmOutputName ResultMatrix;    
-    static AlgorithmParameterName PassThrough();
-    static AlgorithmParameterName ConvertToColumnMatrix();
-    static AlgorithmParameterName ConvertToDenseMatrix();
-    static AlgorithmParameterName ConvertToSparseRowMatrix();
-    Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix) const; 
-    ConvertMatrixTypeAlgorithm();
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3, 4));
+    for (int i = 0; i < m->rows(); i++)
+      for (int j = 0; j < m->cols(); j++)
+        (*m)(i, j) = 3.0 * i + j - 5;
+    return m;
+  }
+  
+  DenseMatrixHandle matrix2()  
+  {
+    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(5, 5));
+    for (int i = 0; i < m->rows(); i++)
+      for (int j = 0; j < m->cols(); j++)
+        (*m)(i, j) = -3.0 * i + j + 5;
+    return m;
+  }
+}
 
-  };
+TEST(GetMatrixSliceAlgoTests, BoundaryChecksGUI)
+{
+  FAIL() << "todo";
+  GetMatrixSliceAlgo algo;
 
-}}}}
-
-#endif
+  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m2(matrix2());
+  
+}

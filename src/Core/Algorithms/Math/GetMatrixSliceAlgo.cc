@@ -24,56 +24,35 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
-   Author            : Moritz Dannhauer
-   Last modification : 10/24/2013 ported from SCIRun4
 */
 
-
-
-#include <Core/Algorithms/Math/GetSubMatrix.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Tensor.h>
-
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Math;
 
+ALGORITHM_PARAMETER_DEF(Math, IsSliceColumn);
+ALGORITHM_PARAMETER_DEF(Math, SliceIndex);
 
-bool GetSubMatrixAlgo::run(SparseRowMatrixHandle stiff, DenseColumnMatrixHandle rhs, DenseMatrixHandle x, SparseRowMatrixHandle& output_stiff, 
-DenseColumnMatrixHandle& output_rhs) const
+GetMatrixSliceAlgo::GetMatrixSliceAlgo()
 {
-     
- return true;
+  addParameter(Parameters::IsSliceColumn, true);
+  addParameter(Parameters::SliceIndex, 0);
 }
-    
-AlgorithmInputName GetSubMatrixAlgo::INPUT_Matrix("INPUT_Matrix");
-AlgorithmInputName GetSubMatrixAlgo::Optional_Range_Bounds("Optional_Range_Bounds");
-AlgorithmInputName GetSubMatrixAlgo::OUTPUT_Matrix("OUTPUT_Matrix");
 
-AlgorithmOutput GetSubMatrixAlgo::run_generic(const AlgorithmInput & input) const
+AlgorithmOutput GetMatrixSliceAlgo::run_generic(const AlgorithmInput& input) const
 { 
-  
-  auto input_matrix = input.get<MatrixHandle>(INPUT_Matrix);
-  auto input_rhs = input.get<DenseMatrix>(Optional_Range_Bounds);
+  auto input_matrix = input.get<MatrixHandle>(Variables::InputMatrix);
   MatrixHandle output_matrix;
+
 /*
   if (input_lhs->nrows() != input_lhs->ncols()) 
   {
@@ -86,12 +65,7 @@ AlgorithmOutput GetSubMatrixAlgo::run_generic(const AlgorithmInput & input) cons
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 */
   AlgorithmOutput output;
-  output[OUTPUT_Matrix] = output_matrix;
+  output[Variables::OutputMatrix] = output_matrix;
 
   return output;
 }
-
-GetSubMatrixAlgo::GetSubMatrixAlgo() {}
-GetSubMatrixAlgo::~GetSubMatrixAlgo() {}
-
-//} // end namespace SCIRun
