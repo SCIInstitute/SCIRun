@@ -34,8 +34,10 @@
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
@@ -49,23 +51,84 @@ namespace
         (*m)(i, j) = 3.0 * i + j - 5;
     return m;
   }
-  
-  DenseMatrixHandle matrix2()  
+
+  SparseRowMatrixHandle matrix2()
   {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(5, 5));
-    for (int i = 0; i < m->rows(); i++)
-      for (int j = 0; j < m->cols(); j++)
-        (*m)(i, j) = -3.0 * i + j + 5;
-    return m;
+    return matrix_convert::to_sparse(matrix1());
   }
 }
 
-TEST(GetMatrixSliceAlgoTests, BoundaryChecksGUI)
+TEST(GetMatrixSliceAlgoTests, ThrowsOnNullInput)
 {
-  FAIL() << "todo";
+  GetMatrixSliceAlgo algo;
+  EXPECT_THROW(algo.runImpl(nullptr, 0, true), NullPointerException);
+}
+
+TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowDense)
+{
   GetMatrixSliceAlgo algo;
 
   DenseMatrixHandle m1(matrix1());
-  DenseMatrixHandle m2(matrix2());
-  
+
+  for (int i = 0; i < m1->ncols(); ++i)
+  {
+    auto col = algo.runImpl(m1, i, true);
+    DenseMatrix expected(m1->col(i));
+    EXPECT_EQ(expected, *matrix_cast::as_dense(col));
+  }
+  for (int i = 0; i < m1->nrows(); ++i)
+  {
+    auto row = algo.runImpl(m1, i, false);
+    DenseMatrix expected(m1->row(i));
+    EXPECT_EQ(expected, *matrix_cast::as_dense(row));
+  }
+}
+
+TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowSparse)
+{
+  GetMatrixSliceAlgo algo;
+
+  SparseRowMatrixHandle m1(matrix2());
+
+  for (int i = 0; i < m1->ncols(); ++i)
+  {
+    auto col = algo.runImpl(m1, i, true);
+    SparseRowMatrix expected(m1->col(i));
+    ASSERT_TRUE(col != nullptr);
+    EXPECT_EQ(expected, *matrix_cast::as_sparse(col));
+  }
+  for (int i = 0; i < m1->nrows(); ++i)
+  {
+    auto row = algo.runImpl(m1, i, false);
+    SparseRowMatrix expected(m1->row(i));
+    ASSERT_TRUE(row != nullptr);
+    EXPECT_EQ(expected, *matrix_cast::as_sparse(row));
+  }
+}
+
+TEST(GetMatrixSliceAlgoTests, DISABLED_RunGenericWorks)
+{
+  GetMatrixSliceAlgo algo;
+
+  DenseMatrixHandle m1(matrix1());
+  //auto output = algo.run_generic()
+
+  FAIL() << "todo";
+}
+
+TEST(GetMatrixSliceAlgoTests, ThrowsForOutOfRangeIndex)
+{
+  GetMatrixSliceAlgo algo;
+
+  DenseMatrixHandle m1(matrix1());
+
+  EXPECT_THROW(algo.runImpl(m1, m1->ncols(), true), OutOfRangeException);
+  EXPECT_THROW(algo.runImpl(m1, m1->ncols()+1, true), OutOfRangeException);
+  EXPECT_THROW(algo.runImpl(m1, -1, true), OutOfRangeException);
+
+  EXPECT_THROW(algo.runImpl(m1, m1->nrows(), false), OutOfRangeException);
+  EXPECT_THROW(algo.runImpl(m1, m1->nrows()+1, false), OutOfRangeException);
+  EXPECT_THROW(algo.runImpl(m1, -1, false), OutOfRangeException);
+
+
 }

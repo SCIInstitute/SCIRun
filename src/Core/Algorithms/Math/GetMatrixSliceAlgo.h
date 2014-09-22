@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 
 
 #ifndef CORE_ALGORITHMS_MATH_GetMATRIXSLICE_H
-#define CORE_ALGORITHMS_MATH_GetMATRIXSLICE_H 
+#define CORE_ALGORITHMS_MATH_GetMATRIXSLICE_H
 
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -46,9 +46,10 @@ namespace SCIRun {
         {
         public:
           GetMatrixSliceAlgo();
-          virtual AlgorithmOutput run_generic(const AlgorithmInput &) const override;
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          Datatypes::MatrixHandle runImpl(Datatypes::MatrixHandle matrix, int index, bool getColumn) const;
         };
 
 }}}}
 
-#endif 
+#endif

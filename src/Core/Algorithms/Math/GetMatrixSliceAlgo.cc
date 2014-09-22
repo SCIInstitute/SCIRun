@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,6 +33,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -49,23 +50,51 @@ GetMatrixSliceAlgo::GetMatrixSliceAlgo()
 }
 
 AlgorithmOutput GetMatrixSliceAlgo::run_generic(const AlgorithmInput& input) const
-{ 
-  auto input_matrix = input.get<MatrixHandle>(Variables::InputMatrix);
-  MatrixHandle output_matrix;
+{
+  auto inputMatrix = input.get<Matrix>(Variables::InputMatrix);
+  auto outputMatrix = runImpl(inputMatrix, get(Parameters::SliceIndex).toInt(), get(Parameters::IsSliceColumn).toBool());
 
-/*
-  if (input_lhs->nrows() != input_lhs->ncols()) 
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("Stiffness matrix input needs to be a sparse squared matrix! ");
-  }
-
-  SparseRowMatrixHandle output_lhs;
-  DenseColumnMatrixHandle output_rhs;
-  if (!run(input_lhs,input_rhs,input_x,output_lhs,output_rhs))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-*/
   AlgorithmOutput output;
-  output[Variables::OutputMatrix] = output_matrix;
+  output[Variables::OutputMatrix] = outputMatrix;
 
   return output;
+}
+
+MatrixHandle GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, int index, bool getColumn) const
+{
+  ENSURE_NOT_NULL(matrix, "Input matrix");
+  if (getColumn)
+  {
+    if (index < 0 || index >= matrix->ncols())
+      THROW_OUT_OF_RANGE("Slice index out of range: " + boost::lexical_cast<std::string>(index));
+
+    // dense case only now
+    auto dense = matrix_cast::as_dense(matrix);
+    if (dense)
+      return boost::make_shared<DenseMatrix>(dense->col(index));
+    else
+    {
+      auto sparse = matrix_cast::as_sparse(matrix);
+      if (sparse)
+        return boost::make_shared<SparseRowMatrix>(sparse->col(index));
+      return nullptr;
+    }
+  }
+  else
+  {
+    if (index < 0 || index >= matrix->nrows())
+      THROW_OUT_OF_RANGE("Slice index out of range: " + boost::lexical_cast<std::string>(index));
+
+    // dense case only now
+    auto dense = matrix_cast::as_dense(matrix);
+    if (dense)
+      return boost::make_shared<DenseMatrix>(dense->row(index));
+    else
+    {
+      auto sparse = matrix_cast::as_sparse(matrix);
+      if (sparse)
+        return boost::make_shared<SparseRowMatrix>(sparse->row(index));
+      return nullptr;
+    }
+  }
 }
