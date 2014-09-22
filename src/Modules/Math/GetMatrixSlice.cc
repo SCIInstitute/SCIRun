@@ -25,18 +25,36 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraBinaryState.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
+/// @todo Documentation Modules/Math/GetMatrixSlice.cc
 
-#include <Dataflow/Network/Module.h>
+#include <iostream>
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Basic {
-      /// @todo 
-    
-}}}
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Modules/Math/GetMatrixSlice.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 
-#endif
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+
+const ModuleLookupInfo GetMatrixSlice::staticInfo_("GetMatrixSlice", "Math", "SCIRun");
+
+GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(Slice);
+}
+
+void GetMatrixSlice::setStateDefaults()
+{
+  auto state = get_state();
+//  state->setValue(TextEntry, std::string());
+}
+
+void GetMatrixSlice::execute()
+{
+//TODO
+}

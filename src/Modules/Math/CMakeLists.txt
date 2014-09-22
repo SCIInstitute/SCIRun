@@ -34,6 +34,7 @@ SET(Modules_Math_SRCS
   CreateMatrix.cc
   EvaluateLinearAlgebraUnary.cc
   EvaluateLinearAlgebraBinary.cc
+  GetMatrixSlice.cc
   ReportMatrixInfo.cc
   SolveLinearSystem.cc
 )
@@ -46,6 +47,7 @@ SET(Modules_Math_HEADERS
   CreateMatrix.h
   EvaluateLinearAlgebraUnary.h
   EvaluateLinearAlgebraBinary.h
+  GetMatrixSlice.h
   ReportMatrixInfo.h
   share.h
   SolveLinearSystem.h
