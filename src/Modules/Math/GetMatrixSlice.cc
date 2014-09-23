@@ -28,16 +28,13 @@
 
 /// @todo Documentation Modules/Math/GetMatrixSlice.cc
 
-#include <iostream>
-
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Modules/Math/GetMatrixSlice.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixIO.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 
 const ModuleLookupInfo GetMatrixSlice::staticInfo_("GetMatrixSlice", "Math", "SCIRun");
@@ -45,16 +42,23 @@ const ModuleLookupInfo GetMatrixSlice::staticInfo_("GetMatrixSlice", "Math", "SC
 GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
-  INITIALIZE_PORT(Slice);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
 void GetMatrixSlice::setStateDefaults()
 {
-  auto state = get_state();
-//  state->setValue(TextEntry, std::string());
+  setStateBoolFromAlgo(Parameters::IsSliceColumn);
+  setStateIntFromAlgo(Parameters::SliceIndex);
 }
 
 void GetMatrixSlice::execute()
 {
-//TODO
+  auto input = getRequiredInput(InputMatrix);
+  if (needToExecute())
+  {
+    setAlgoBoolFromState(Parameters::IsSliceColumn);
+    setAlgoIntFromState(Parameters::SliceIndex);
+    auto output = algo().run(withInputData((InputMatrix, input)));
+    sendOutputFromAlgorithm(OutputMatrix, output);
+  }
 }

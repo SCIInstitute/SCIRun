@@ -45,8 +45,8 @@ namespace Math {
     virtual void execute();
     virtual void setStateDefaults();
     INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, Slice, Matrix);
-  
+    OUTPUT_PORT(0, OutputMatrix, Matrix);
+
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 }}}
