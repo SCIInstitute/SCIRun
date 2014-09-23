@@ -152,6 +152,9 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: dataDirectory = " + dataDir);
     setDataDirectory(dataDir);
   }
+
+  restoreGeometry(settings.value("geometry").toByteArray());
+  restoreState(settings.value("windowState").toByteArray());
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -173,4 +176,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
   settings.setValue("dataDirectory", dataDirectory());
+
+  settings.setValue("geometry", saveGeometry());
+  settings.setValue("windowState", saveState());
 }

@@ -105,6 +105,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
     moduleSearchAction->setVisible(true);
 
     QToolBar* f = addToolBar(tr("&Search"));
+    f->setObjectName("SearchToolBar");
 
     QWidgetAction* showModuleLabel = new QWidgetAction(this);
     showModuleLabel->setDefaultWidget(new QLabel("Module Search:", this));
@@ -118,6 +119,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   setActionIcons();
 
   QToolBar* standardBar = addToolBar("Standard");
+  standardBar->setObjectName("StandardToolBar");
   standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
@@ -130,6 +132,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   //setUnifiedTitleAndToolBarOnMac(true);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
+  executeBar->setObjectName("ExecuteToolBar");
   executeBar->addAction(actionExecute_All_);
 
   networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
@@ -173,6 +176,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
   connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
 
+  connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
+
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
 #endif
@@ -195,9 +200,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   }
 
   setupPreferencesWindow();
-  readSettings();
-
-  setCurrentFile("");
+  setupProvenanceWindow();
+  setupDevConsole();
+  setupPythonConsole();
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
@@ -207,10 +212,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
-
-  setupProvenanceWindow();
-  setupDevConsole();
-  setupPythonConsole();
 
   makeFilterButtonMenu();
 
@@ -227,8 +228,13 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   setupInputWidgets();
 
-  configurationDockWidget_->hide();
-  actionConfiguration_->setChecked(false);
+  readSettings();
+
+  setCurrentFile("");
+
+  actionConfiguration_->setChecked(!configurationDockWidget_->isHidden());
+  actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
+  actionProvenance_->setChecked(!provenanceWindow_->isHidden());
 
   //parseStyleXML();
 }
@@ -671,9 +677,9 @@ void SCIRunMainWindow::setupProvenanceWindow()
   connect(actionProvenance_, SIGNAL(toggled(bool)), provenanceWindow_, SLOT(setVisible(bool)));
   connect(provenanceWindow_, SIGNAL(visibilityChanged(bool)), actionProvenance_, SLOT(setChecked(bool)));
 
-  provenanceWindow_->setVisible(false);
-  provenanceWindow_->setFloating(true);
-  addDockWidget(Qt::RightDockWidgetArea, provenanceWindow_);
+//  provenanceWindow_->setVisible(false);
+//  provenanceWindow_->setFloating(true);
+//  addDockWidget(Qt::RightDockWidgetArea, provenanceWindow_);
 
   connect(actionUndo_, SIGNAL(triggered()), provenanceWindow_, SLOT(undo()));
   connect(actionRedo_, SIGNAL(triggered()), provenanceWindow_, SLOT(redo()));
@@ -1138,4 +1144,16 @@ void SCIRunMainWindow::modulesSnapToChanged()
 {
   bool snapTo = modulesSnapToCheckBox_->isChecked();
   Preferences::Instance().modulesSnapToGrid.setValue(snapTo);
+}
+
+void SCIRunMainWindow::resetWindowLayout()
+{
+  configurationDockWidget_->hide();
+  devConsole_->hide();
+  provenanceWindow_->hide();
+  moduleSelectorDockWidget_->show();
+  moduleSelectorDockWidget_->setFloating(false);
+  addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
+
+  std::cout << "TODO: toolbars" << std::endl;
 }

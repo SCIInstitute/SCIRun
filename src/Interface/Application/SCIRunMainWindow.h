@@ -158,6 +158,7 @@ private Q_SLOTS:
   void addModuleKeyboardAction();
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
+  void resetWindowLayout();
   void exitApplication(int code);
 };
 
