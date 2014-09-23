@@ -109,16 +109,16 @@ namespace
 	}
 	
 	// RHS vector of zeros
-	DenseColumnMatrixHandle rhs_zero(int rows)
+	DenseMatrixHandle rhs_zero(int rows)
 	{
-		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(rows));
+		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
 		m->setZero();
 		return m;
 	}
 	// RHS vector [1; 2; ... n]
-	DenseColumnMatrixHandle rhs_num(int rows)
+	DenseMatrixHandle rhs_num(int rows)
 	{
-		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(rows));
+		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
     for (int i=0; i<rows; i++)
       (*m)(i,0) = 1+i;
 		return m;
@@ -129,7 +129,7 @@ TEST_F(AddKnownsToLinearSystemTests, ValidInputOnAllPorts_KnownsHaveNoNaN)
 {
   auto test = makeModule("AddKnownsToLinearSystem");
   SparseRowMatrixHandle   stiff = lhs();
-  DenseColumnMatrixHandle bvect = rhs_num(3);
+  DenseMatrixHandle bvect = rhs_num(3);
   DenseMatrixHandle       known = x_num(3);
   stubPortNWithThisData(test, 0, stiff);
   stubPortNWithThisData(test, 1, bvect);
@@ -141,7 +141,7 @@ TEST_F(AddKnownsToLinearSystemTests, ValidInputOnAllPorts_KnownsHaveAllNaN)
 {
   auto test = makeModule("AddKnownsToLinearSystem");
   SparseRowMatrixHandle   stiff = lhs();
-  DenseColumnMatrixHandle bvect = rhs_num(3);
+  DenseMatrixHandle bvect = rhs_num(3);
   DenseMatrixHandle       known = x_all_nan();
   stubPortNWithThisData(test, 0, stiff);
   stubPortNWithThisData(test, 1, bvect);
@@ -163,7 +163,7 @@ TEST_F(AddKnownsToLinearSystemTests, ThrowsForFieldInputOnPortZero)
 {
   auto test = makeModule("AddKnownsToLinearSystem");
   FieldHandle             stiff = CreatePointCloudeScalar();
-  DenseColumnMatrixHandle bvect = rhs_zero(3);
+  DenseMatrixHandle bvect = rhs_zero(3);
   DenseMatrixHandle       known = x_num(3);
   
   stubPortNWithThisData(test, 0, stiff);
@@ -191,7 +191,7 @@ TEST_F(AddKnownsToLinearSystemTests, ThrowsForFieldInputOnPortTwo)
 {
   auto test = makeModule("AddKnownsToLinearSystem");
   SparseRowMatrixHandle   stiff = lhs();
-  DenseColumnMatrixHandle bvect = rhs_zero(3);
+  DenseMatrixHandle bvect = rhs_zero(3);
   FieldHandle             known = CreateTriSurfScalarOnNode();
   
   stubPortNWithThisData(test, 0, stiff);
