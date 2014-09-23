@@ -209,6 +209,11 @@ namespace SCIRun
   }
 }
 
+namespace
+{
+  const int CONNECTION_WIDTH = 5.0;
+}
+
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false),
   NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
@@ -224,7 +229,6 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   if (toPort_)
   {
     toPort_->addConnection(this);
-    //toPort_->turn_on_light();
   }
   else
     LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
@@ -279,7 +283,7 @@ void ConnectionLine::destroy()
 
 void ConnectionLine::setColor(const QColor& color)
 {
-  setPen(QPen(color, 5.0));
+  setPen(QPen(color, CONNECTION_WIDTH));
 }
 
 QColor ConnectionLine::color() const
