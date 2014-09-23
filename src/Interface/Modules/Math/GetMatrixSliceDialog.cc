@@ -28,13 +28,12 @@
 
 #include <Interface/Modules/Math/GetMatrixSliceDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
+#include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::Math;
 
 GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -44,15 +43,11 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //TODO: map to enum on algo level
-//   addCheckableButtonManager(PassThrough_, ConvertMatrixTypeAlgorithm::PassThrough());
-//   addCheckableButtonManager(ConvertToColumnMatrix_, ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix());
-//   addCheckableButtonManager(ConvertToDenseMatrix_, ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix());
-//   addCheckableButtonManager(ConvertToSparseRowMatrix_, ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix());
+  addSpinBoxManager(indexSpinBox_, Parameters::SliceIndex);
+  addTwoChoiceBooleanComboBoxManager(rowColumnComboBox_, Parameters::IsSliceColumn);
 }
 
 void GetMatrixSliceDialog::pull()
 {
-  pull_newVersionToReplaceOld();  
+  pull_newVersionToReplaceOld();
 }
-

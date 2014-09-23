@@ -62,11 +62,10 @@ AlgorithmOutput GetMatrixSliceAlgo::run_generic(const AlgorithmInput& input) con
 
 MatrixHandle GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, int index, bool getColumn) const
 {
-  ENSURE_NOT_NULL(matrix, "Input matrix");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(matrix, "Input matrix");
   if (getColumn)
   {
-    if (index < 0 || index >= matrix->ncols())
-      THROW_OUT_OF_RANGE("Slice index out of range: " + boost::lexical_cast<std::string>(index));
+    checkIndex(index, matrix->ncols());
 
     // dense case only now
     auto dense = matrix_cast::as_dense(matrix);
@@ -82,8 +81,7 @@ MatrixHandle GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, int index, bool ge
   }
   else
   {
-    if (index < 0 || index >= matrix->nrows())
-      THROW_OUT_OF_RANGE("Slice index out of range: " + boost::lexical_cast<std::string>(index));
+    checkIndex(index, matrix->nrows());
 
     // dense case only now
     auto dense = matrix_cast::as_dense(matrix);
@@ -97,4 +95,10 @@ MatrixHandle GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, int index, bool ge
       return nullptr;
     }
   }
+}
+
+void GetMatrixSliceAlgo::checkIndex(int index, int max) const
+{
+  if (index < 0 || index >= max)
+    THROW_ALGORITHM_INPUT_ERROR("Slice index out of range: " + boost::lexical_cast<std::string>(index));
 }

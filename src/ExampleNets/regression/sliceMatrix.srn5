@@ -38,7 +38,7 @@
 									<name>ConvertToDenseMatrix</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -109,8 +109,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>IsSliceColumn</name>
+								</first>
+								<second>
+									<name>IsSliceColumn</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SliceIndex</name>
+								</first>
+								<second>
+									<name>SliceIndex</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -125,8 +149,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>IsSliceColumn</name>
+								</first>
+								<second>
+									<name>IsSliceColumn</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SliceIndex</name>
+								</first>
+								<second>
+									<name>SliceIndex</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -206,7 +254,7 @@
 			<item>
 				<moduleId1_>GetMatrixSlice:0</moduleId1_>
 				<port1_>
-					<name>Slice</name>
+					<name>OutputMatrix</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportMatrixInfo:1</moduleId2_>
@@ -218,7 +266,7 @@
 			<item>
 				<moduleId1_>GetMatrixSlice:4</moduleId1_>
 				<port1_>
-					<name>Slice</name>
+					<name>OutputMatrix</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportMatrixInfo:5</moduleId2_>

@@ -48,6 +48,8 @@ namespace SCIRun {
           GetMatrixSliceAlgo();
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
           Datatypes::MatrixHandle runImpl(Datatypes::MatrixHandle matrix, int index, bool getColumn) const;
+        private:
+          void checkIndex(int index, int max) const;
         };
 
 }}}}

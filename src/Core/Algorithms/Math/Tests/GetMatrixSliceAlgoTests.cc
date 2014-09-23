@@ -36,8 +36,10 @@
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
@@ -61,7 +63,7 @@ namespace
 TEST(GetMatrixSliceAlgoTests, ThrowsOnNullInput)
 {
   GetMatrixSliceAlgo algo;
-  EXPECT_THROW(algo.runImpl(nullptr, 0, true), NullPointerException);
+  EXPECT_THROW(algo.runImpl(nullptr, 0, true), AlgorithmInputException);
 }
 
 TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowDense)
@@ -122,13 +124,13 @@ TEST(GetMatrixSliceAlgoTests, ThrowsForOutOfRangeIndex)
 
   DenseMatrixHandle m1(matrix1());
 
-  EXPECT_THROW(algo.runImpl(m1, m1->ncols(), true), OutOfRangeException);
-  EXPECT_THROW(algo.runImpl(m1, m1->ncols()+1, true), OutOfRangeException);
-  EXPECT_THROW(algo.runImpl(m1, -1, true), OutOfRangeException);
+  EXPECT_THROW(algo.runImpl(m1, m1->ncols(), true), AlgorithmInputException);
+  EXPECT_THROW(algo.runImpl(m1, m1->ncols()+1, true), AlgorithmInputException);
+  EXPECT_THROW(algo.runImpl(m1, -1, true), AlgorithmInputException);
 
-  EXPECT_THROW(algo.runImpl(m1, m1->nrows(), false), OutOfRangeException);
-  EXPECT_THROW(algo.runImpl(m1, m1->nrows()+1, false), OutOfRangeException);
-  EXPECT_THROW(algo.runImpl(m1, -1, false), OutOfRangeException);
+  EXPECT_THROW(algo.runImpl(m1, m1->nrows(), false), AlgorithmInputException);
+  EXPECT_THROW(algo.runImpl(m1, m1->nrows()+1, false), AlgorithmInputException);
+  EXPECT_THROW(algo.runImpl(m1, -1, false), AlgorithmInputException);
 
 
 }
