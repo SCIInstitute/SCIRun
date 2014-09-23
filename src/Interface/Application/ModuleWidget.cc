@@ -646,6 +646,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
+      dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
       dockable_->setMinimumSize(dialog_->minimumSize());
       dockable_->setAllowedAreas(Qt::RightDockWidgetArea);
