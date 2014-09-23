@@ -36,10 +36,13 @@
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/PortWidgetManager.h>
 #include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath2.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core;
 
 namespace SCIRun
 {
@@ -109,7 +112,7 @@ namespace SCIRun
 }
 
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
-  : QGraphicsProxyWidget(parent), 
+  : QGraphicsProxyWidget(parent),
   NoteDisplayHelper(boost::make_shared<ModuleWidgetNoteDisplayStrategy>()),
   module_(module),
   grabbedByWidget_(false),
@@ -163,6 +166,15 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
   }
 }
 
+static int snapTo(int oldPos)
+{
+  using namespace SCIRun::Core::Math;
+  const int strip = 76; // size of new background grid png
+  const int shift = oldPos % strip;
+
+  return oldPos - shift + (std::abs(shift) < strip/2 ? 0 : sgn(shift)*strip);
+}
+
 void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
   if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
@@ -178,11 +190,18 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
     if (position_ != pos())
     {
+      snapToGrid();
       Q_EMIT widgetMoved(ModuleId(module_->getModuleId()), pos().x(), pos().y());
     }
     QGraphicsItem::mouseReleaseEvent(event);
   }
   grabbedByWidget_ = false;
+}
+
+void ModuleProxyWidget::snapToGrid()
+{
+  if (Preferences::Instance().modulesSnapToGrid)
+    setPos(snapTo(pos().x()), snapTo(pos().y()));
 }
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -201,8 +220,8 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
 {
-  return qobject_cast<QPushButton*>(alienWidget) || 
-    qobject_cast<QToolButton*>(alienWidget) || 
+  return qobject_cast<QPushButton*>(alienWidget) ||
+    qobject_cast<QToolButton*>(alienWidget) ||
     qobject_cast<QProgressBar*>(alienWidget);
 }
 
@@ -220,11 +239,6 @@ void ModuleProxyWidget::highlightIfSelected()
   }
 }
 
-//void ModuleProxyWidget::setAsWaiting()
-//{
-//  module_->setColorAsWaiting();
-//}
-
 QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
 {
   if (change == ItemPositionHasChanged)
@@ -241,8 +255,8 @@ void ModuleProxyWidget::createPortPositionProviders()
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
     //std::cout << "Setting position provider for port " << p->id() << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)) << "," << p->pos().y() << std::endl;
-    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)), p->pos().y());
-    
+    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidgetBase::WIDTH + ModuleWidget::PORT_SPACING)), p->pos().y());
+
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
     p->setPositionObject(pp);
   }
@@ -255,7 +269,7 @@ void ModuleProxyWidget::updateNote(const Note& note)
 
 PassThroughPositioner::PassThroughPositioner(const QGraphicsProxyWidget* widget) : widget_(widget) {}
 
-QPointF PassThroughPositioner::currentPosition() const 
+QPointF PassThroughPositioner::currentPosition() const
 {
   return widget_->pos();
 }

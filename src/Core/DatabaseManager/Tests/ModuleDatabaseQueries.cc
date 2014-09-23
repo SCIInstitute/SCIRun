@@ -133,8 +133,8 @@ protected:
     "('InterfaceWithCleaver',           1,        0,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
     "('JoinFields',                     1,        0,                  0,              0,          1,              0,                    1,                  1,                              1,             0),"
     "('SplitFieldByDomain',             1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
-    "('SplitFieldByConnectedRegion,     1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-  
+    "('SplitFieldByConnectedRegion',    1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
+    "('SimulateForwardMagneticField',   1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
     // Render                                                                                                                                                                                                
     "('ViewScene',                      1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
     // String                                                                                                                                                                                                
@@ -215,7 +215,7 @@ TEST_F(ModuleDatabaseQueries, CountEnabledModules)
 {
   auto count = countEnabledModules();
   std::cout << "# of enabled modules: " << count << std::endl;
-  EXPECT_EQ(54, count);
+  EXPECT_EQ(55, count);
 }
 
 //TODO: figure out better way to generate a report from these tests. Need a process to enforce keeping them up to date (special branch?)

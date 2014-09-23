@@ -33,24 +33,30 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Application/Application.h>
 #include <Core/ConsoleApplication/ConsoleApplication.h>
 #include <Core/ConsoleApplication/ConsoleCommandFactory.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Core::Console;
+using namespace SCIRun::Core::Logging;
 
 int ConsoleApplication::run(int argc, const char* argv[])
 {
   try
-  { 
+  {
     Application::Instance().executeCommandLineRequests(boost::make_shared<ConsoleGlobalCommandFactory>());
-    return 0;
   }
   catch (std::exception& e)
   {
+    Log::get() << EMERG << "Unhandled exception: " << e.what() << std::endl;
     std::cerr << "Critical error! Unhandled exception: " << e.what() << "\nExiting now." << std::endl;
     return 1;
   }
   catch (...)
   {
+    Log::get() << EMERG << "Unknown unhandled exception." << std::endl;
     std::cerr << "Critical error! Unknown unhandled exception: exiting now." << std::endl;
     return 1;
   }
+
+  Application::Instance().shutdown();
+  return 0;
 }

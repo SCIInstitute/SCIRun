@@ -1,29 +1,29 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
+  For more information, please see: http://software.sci.utah.edu
 
-   The MIT License
+  The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
-   University of Utah.
+  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+  University of Utah.
 
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
+  License for the specific language governing rights and limitations under
+  Permission is hereby granted, free of charge, to any person obtaining a
+  copy of this software and associated documentation files (the "Software"),
+  to deal in the Software without restriction, including without limitation
+  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  and/or sell copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be included
+  in all copies or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+  DEALINGS IN THE SOFTWARE.
 */
 
 #include <QtGui>
@@ -77,10 +77,12 @@ using namespace SCIRun::Core::Algorithms;
 
 SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 {
-	setupUi(this);
+  setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
-  
-	dialogErrorControl_.reset(new DialogErrorControl(this)); 
+  if (newInterface())
+    setStyleSheet("background-color: rgb(66,66,69); color: white; selection-color: yellow; selection-background-color: blue; border: 5px;");
+
+  dialogErrorControl_.reset(new DialogErrorControl(this));
   setupNetworkEditor();
 
   setTipsAndWhatsThis();
@@ -91,11 +93,11 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   connect(defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), networkEditor_, SIGNAL(defaultNotePositionChanged(NotePosition)));
-    
+
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
-	
-	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
-	moduleSearchAction->setDefaultWidget(new QLineEdit(this));
+
+  QWidgetAction* moduleSearchAction = new QWidgetAction(this);
+  moduleSearchAction->setDefaultWidget(new QLineEdit(this));
 
 #if 0
   {
@@ -107,7 +109,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
     QWidgetAction* showModuleLabel = new QWidgetAction(this);
     showModuleLabel->setDefaultWidget(new QLabel("Module Search:", this));
     showModuleLabel->setVisible(true);
-    
+
     f->addAction(showModuleLabel);
     f->addAction(moduleSearchAction);
   }
@@ -124,34 +126,37 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   standardBar->addAction(actionPinAllModuleUIs_);
   standardBar->addAction(actionRestoreAllModuleUIs_);
   standardBar->addAction(actionHideAllModuleUIs_);
+  standardBar->setStyleSheet(styleSheet());
   //setUnifiedTitleAndToolBarOnMac(true);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
-	executeBar->addAction(actionExecute_All_);
-	
-	networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
+  executeBar->addAction(actionExecute_All_);
+
+  networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
   executeBar->addActions(networkProgressBar_->actions());
+  executeBar->setStyleSheet(styleSheet());
+  executeBar->setAutoFillBackground(true);
   connect(actionExecute_All_, SIGNAL(triggered()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
-  
-  connect(actionExecute_All_, SIGNAL(triggered()), dialogErrorControl_.get(), SLOT(resetCounter())); 
 
-	scrollAreaWidgetContents_->addAction(actionExecute_All_);
+  connect(actionExecute_All_, SIGNAL(triggered()), dialogErrorControl_.get(), SLOT(resetCounter()));
+
+  scrollAreaWidgetContents_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
   sep->setSeparator(true);
   scrollAreaWidgetContents_->addAction(sep);
-	scrollAreaWidgetContents_->addActions(networkEditor_->getModuleSpecificActions());
+  scrollAreaWidgetContents_->addActions(networkEditor_->getModuleSpecificActions());
+  scrollAreaWidgetContents_->setStyleSheet(styleSheet());
 
   //TODO???????
   setContextMenuPolicy(Qt::NoContextMenu);
   //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
 
-	scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
-	scrollArea_->viewport()->setAutoFillBackground(true);	
+  scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
+  scrollArea_->viewport()->setAutoFillBackground(true);
+  scrollArea_->setStyleSheet(styleSheet());
 
-	logTextBrowser_->setText("Hello! Welcome to SCIRun 5.");
-
- 
+  logTextBrowser_->setText("Hello! Welcome to SCIRun 5.");
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
@@ -161,7 +166,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionSelectAll_, SIGNAL(triggered()), networkEditor_, SLOT(selectAll()));
   actionQuit_->setShortcut(QKeySequence::Quit);
   connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
-  actionDelete_->setShortcut(QKeySequence::Delete);
+  actionDelete_->setShortcuts(QList<QKeySequence>() << QKeySequence::Delete << Qt::Key_Backspace);
 
   connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
   connect(actionPinAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(pinAllModuleUIs()));
@@ -180,8 +185,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   connect(largeModuleSizeRadioButton_, SIGNAL(clicked()), this, SLOT(makeModulesLargeSize()));
   connect(smallModuleSizeRadioButton_, SIGNAL(clicked()), this, SLOT(makeModulesSmallSize()));
-  
-  for (int i = 0; i < MaxRecentFiles; ++i) 
+
+  for (int i = 0; i < MaxRecentFiles; ++i)
   {
     recentFileActions_.push_back(new QAction(this));
     recentFileActions_[i]->setVisible(false);
@@ -196,32 +201,44 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
-  
+
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
-  
+
+  connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
+  connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
+
   setupProvenanceWindow();
   setupDevConsole();
   setupPythonConsole();
 
   makeFilterButtonMenu();
-  
+
   connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
   connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
+  if (newInterface())
+    networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
+
+  connect(scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
+  connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
+  connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
+  connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
 
   setupInputWidgets();
 
   configurationDockWidget_->hide();
   actionConfiguration_->setChecked(false);
+
+  //parseStyleXML();
 }
 
 void SCIRunMainWindow::initialize()
 {
   postConstructionSignalHookup();
-    
+
   fillModuleSelector();
-  
+
   executeCommandLineRequests();
 }
 
@@ -232,18 +249,18 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
 
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)), 
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
 
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)),
     commandConverter_.get(), SLOT(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)), 
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     commandConverter_.get(), SLOT(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
     commandConverter_.get(), SLOT(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)), 
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)),
     commandConverter_.get(), SLOT(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)));
-  connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), 
+  connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)),
     commandConverter_.get(), SLOT(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
 
@@ -297,6 +314,14 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
   return instance_;
 }
 
+SCIRunMainWindow::~SCIRunMainWindow()
+{
+  networkEditor_->disconnect();
+  networkEditor_->setNetworkEditorController(nullptr);
+  networkEditor_->clear();
+  Application::Instance().shutdown();
+}
+
 void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
 {
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
@@ -343,7 +368,7 @@ void SCIRunMainWindow::setupQuitAfterExecute()
 
 void SCIRunMainWindow::exitApplication(int code)
 {
-  close(); 
+  close();
   /*qApp->*/exit(code);
 }
 
@@ -404,6 +429,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
       provenanceWindow_->clear();
       provenanceWindow_->showFile(command.openedFile_);
+			networkEditor_->viewport()->update();
     }
     else
     {
@@ -422,6 +448,7 @@ bool SCIRunMainWindow::newNetwork()
     networkEditor_->clear();
     provenanceWindow_->clear();
     setCurrentFile("");
+		networkEditor_->viewport()->update();
     return true;
   }
   return false;
@@ -457,19 +484,19 @@ void SCIRunMainWindow::updateRecentFileActions()
       i.remove();
   }
 
-  for (int j = 0; j < MaxRecentFiles; ++j) 
+  for (int j = 0; j < MaxRecentFiles; ++j)
   {
-    if (j < recentFiles_.count()) 
+    if (j < recentFiles_.count())
     {
       QString text = tr("&%1 %2")
         .arg(j + 1)
         .arg(strippedName(recentFiles_[j]));
-      
+
       recentFileActions_[j]->setText(text);
       recentFileActions_[j]->setData(recentFiles_[j]);
       recentFileActions_[j]->setVisible(true);
-    } 
-    else 
+    }
+    else
     {
       recentFileActions_[j]->setVisible(false);
     }
@@ -478,7 +505,7 @@ void SCIRunMainWindow::updateRecentFileActions()
 
 void SCIRunMainWindow::loadRecentNetwork()
 {
-  if (okToContinue()) 
+  if (okToContinue())
   {
     QAction *action = qobject_cast<QAction *>(sender());
     if (action)
@@ -501,10 +528,10 @@ bool SCIRunMainWindow::okToContinue()
 {
   if (isWindowModified() && !prefs_->isRegression())  //TODO: regressionMode
   {
-    int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"), 
+    int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"),
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
     if (QMessageBox::Yes == r)
-    { 
+    {
       saveNetwork();
       return true;
     }
@@ -521,7 +548,7 @@ void SCIRunMainWindow::networkModified()
   networkProgressBar_->updateTotalModules(networkEditor_->numModules());
 }
 
-void SCIRunMainWindow::setActionIcons() 
+void SCIRunMainWindow::setActionIcons()
 {
   actionNew_->setIcon(QPixmap(":/general/Resources/new.png"));
   actionLoad_->setIcon(QPixmap(":/general/Resources/load.png"));
@@ -541,9 +568,9 @@ void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
 {
   ShowAll show;
   visitTree(moduleSelectorTreeWidget_, show);
-  
+
   bool regexSelected = filterActionGroup_->checkedAction()->text().contains("wildcards");
-  
+
   HideItemsNotMatchingString func(regexSelected, start);
 
   //note: goofy double call, first to hide the leaves, then hide the categories.
@@ -638,16 +665,25 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: connection pipe style = " + QString::number(pipeType));
     switch (pipeType)
     {
-    case MANHATTAN: 
+    case MANHATTAN:
       manhattanPipesRadioButton_->setChecked(true);
       break;
-    case CUBIC: 
+    case CUBIC:
       cubicPipesRadioButton_->setChecked(true);
       break;
-    case EUCLIDEAN: 
+    case EUCLIDEAN:
       euclideanPipesRadioButton_->setChecked(true);
       break;
     }
+  }
+
+  const QString snapTo = qname(prefs.modulesSnapToGrid);
+  if (settings.contains(snapTo))
+  {
+    auto value = settings.value(snapTo).toBool();
+    prefs.modulesSnapToGrid.setValue(value);
+    modulesSnapToCheckBox_->setChecked(value);
+    GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString(prefs.modulesSnapToGrid ? "true" : "false"));
   }
 
   const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
@@ -681,6 +717,14 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: favoriteModules = " + faves.join(", "));
     favoriteModuleNames_ = faves;
   }
+
+	const QString dataDirectory = "dataDirectory";
+	if (settings.contains(dataDirectory))
+	{
+		auto dataDir = settings.value(dataDirectory).toString();
+		GuiLogger::Instance().log("Setting read: dataDirectory = " + dataDir);
+		setDataDirectory(dataDir);
+	}
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -694,12 +738,14 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("recentFiles", recentFiles_);
   settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
   settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
+  settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
-  settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls.val());
+  settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
+	settings.setValue("dataDirectory", dataDirectory());
 }
 
 namespace
@@ -865,8 +911,8 @@ void SCIRunMainWindow::updateMiniView()
   //networkEditorMiniViewLabel_->setText("+" + networkEditorMiniViewLabel_->text());
   QPixmap network = networkEditor_->sceneGrab();
   networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
-                                                   Qt::KeepAspectRatio,
-                                                   Qt::SmoothTransformation));
+    Qt::KeepAspectRatio,
+    Qt::SmoothTransformation));
 }
 
 void SCIRunMainWindow::showPythonWarning(bool visible)
@@ -874,7 +920,7 @@ void SCIRunMainWindow::showPythonWarning(bool visible)
   if (visible && firstTimePythonShown_)
   {
     firstTimePythonShown_ = false;
-    QMessageBox::warning(this, "Warning: Known Python interface issue", 
+    QMessageBox::warning(this, "Warning: Known Python interface issue",
       "Attention Python interface user: this feature is not fully implemented. The main issue is that changes made to the current network from the GUI, such as adding/removing modules, are not reflected in the Python console's state. Thus strange bugs can be created by switching between Python-edit mode and standard-GUI-edit mode. Please use the Python console to test your commands, then compose a script that you can run separately without needing the GUI. This issue will be resolved in the next milestone. Thank you!");
   }
 }
@@ -891,10 +937,24 @@ void SCIRunMainWindow::makeModulesSmallSize()
 
 namespace {
 
+  QColor favesColor()
+  {
+    return SCIRunMainWindow::Instance()->newInterface() ? Qt::yellow : Qt::darkYellow;
+  }
+  QColor packageColor()
+  {
+    return SCIRunMainWindow::Instance()->newInterface() ? Qt::yellow : Qt::darkYellow;
+  }
+  QColor categoryColor()
+  {
+    return SCIRunMainWindow::Instance()->newInterface() ? Qt::green : Qt::darkGreen;
+  }
+
   void addFavoriteMenu(QTreeWidget* tree)
   {
     auto faves = new QTreeWidgetItem();
     faves->setText(0, "Favorites");
+    faves->setForeground(0, favesColor());
 
     tree->addTopLevelItem(faves);
   }
@@ -916,51 +976,57 @@ namespace {
   {
     LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
     auto copy = new QTreeWidgetItem(*module);
-    copy->setData(0, Qt::CheckStateRole, QVariant());  
+    copy->setData(0, Qt::CheckStateRole, QVariant());
     faves->addChild(copy);
   }
 
-void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
-{
-  QTreeWidgetItem* faves = getFavoriteMenu(tree);
-  BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
+  void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
   {
-    const std::string& packageName = package.first;
-    auto packageItem = new QTreeWidgetItem();
-    packageItem->setText(0, QString::fromStdString(packageName));
-    tree->addTopLevelItem(packageItem);
-    size_t totalModules = 0;
-    BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
+    QTreeWidgetItem* faves = getFavoriteMenu(tree);
+    BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
     {
-      const std::string& categoryName = category.first;
-      auto categoryItem = new QTreeWidgetItem();
-      categoryItem->setText(0, QString::fromStdString(categoryName));
-      packageItem->addChild(categoryItem);
-      BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
+      const std::string& packageName = package.first;
+      auto packageItem = new QTreeWidgetItem();
+      packageItem->setText(0, QString::fromStdString(packageName));
+      packageItem->setForeground(0, packageColor());
+      tree->addTopLevelItem(packageItem);
+      size_t totalModules = 0;
+      BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
       {
-        const std::string& moduleName = module.first;
-        auto moduleItem = new QTreeWidgetItem();
-        auto name = QString::fromStdString(moduleName);
-        moduleItem->setText(0, name);
-        if (favoriteModuleNames.contains(name))
+        const std::string& categoryName = category.first;
+        auto categoryItem = new QTreeWidgetItem();
+        categoryItem->setText(0, QString::fromStdString(categoryName));
+        categoryItem->setForeground(0, categoryColor());
+        packageItem->addChild(categoryItem);
+        BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
         {
-          moduleItem->setCheckState(0, Qt::Checked);
-          addFavoriteItem(faves, moduleItem);
+          const std::string& moduleName = module.first;
+          auto moduleItem = new QTreeWidgetItem();
+          auto name = QString::fromStdString(moduleName);
+          moduleItem->setText(0, name);
+          if (favoriteModuleNames.contains(name))
+          {
+            moduleItem->setCheckState(0, Qt::Checked);
+            addFavoriteItem(faves, moduleItem);
+          }
+          else
+          {
+            moduleItem->setCheckState(0, Qt::Unchecked);
+          }
+          moduleItem->setText(1, QString::fromStdString(module.second.moduleStatus_));
+          moduleItem->setForeground(1, Qt::lightGray);
+          moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
+          moduleItem->setForeground(2, Qt::lightGray);
+          categoryItem->addChild(moduleItem);
+          totalModules++;
         }
-        else
-        {
-          moduleItem->setCheckState(0, Qt::Unchecked);
-        }
-        moduleItem->setText(1, QString::fromStdString(module.second.moduleStatus_));
-        moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
-        categoryItem->addChild(moduleItem);
-        totalModules++;
+        categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
+        categoryItem->setForeground(1, Qt::magenta);
       }
-      categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
+      packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
+      packageItem->setForeground(1, Qt::magenta);
     }
-    packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
   }
-}
 
   void sortFavorites(QTreeWidget* tree)
   {
@@ -1030,7 +1096,7 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
 
 void SCIRunMainWindow::displayAcknowledgement()
 {
-  QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment", 
+  QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment",
     "CIBC software and the data sets provided on this web site are Open Source software projects that are principally funded through the SCI Institute's NIH/NCRR CIBC. For us to secure the funding that allows us to continue providing this software, we must have evidence of its utility. Thus we ask users of our software and data to acknowledge us in their publications and inform us of these publications. Please use the following acknowledgment and send us references to any publications, presentations, or successful funding applications that make use of the NIH/NCRR CIBC software or data sets we provide. <p> <i>This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545.</i>");
 }
 
@@ -1039,10 +1105,174 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
   scirunDataLineEdit_->setText(dir);
   scirunDataLineEdit_->setToolTip(dir);
   if (!dir.isEmpty())
+	{
     RemembersFileDialogDirectory::setStartingDir(dir);
+		Core::Preferences::Instance().setDataDirectory(dir.toStdString());
+	}
 }
 
 QString SCIRunMainWindow::dataDirectory() const
 {
   return scirunDataLineEdit_->text();
+}
+
+void SCIRunMainWindow::setDataDirectoryFromGUI()
+{
+  QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
+  setDataDirectory(dir);
+}
+
+bool SCIRunMainWindow::newInterface() const
+{
+  return Core::Application::Instance().parameters()->entireCommandLine().find("--experimentalGUI") != std::string::npos;
+}
+
+namespace {
+
+  void addElementDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
+  {
+    if (xml.tokenType() != QXmlStreamReader::StartElement)
+    {
+      std::cout << "didn't find start" << std::endl;
+      return;
+    }
+    QString elementName = xml.name().toString();
+    xml.readNext();
+    if (xml.tokenType() != QXmlStreamReader::Characters)
+    {
+      std::cout << "not char data" << std::endl;
+      return;
+    }
+    map.insert(elementName, xml.text().toString());
+  }
+
+  void addItemDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
+  {
+    if (xml.tokenType() != QXmlStreamReader::StartElement)
+    {
+      std::cout << "didn't find start 2" << std::endl;
+      return;
+    }
+    xml.readNext();
+    if (xml.tokenType() != QXmlStreamReader::Characters)
+    {
+      std::cout << "not char data 2" << std::endl;
+      return;
+    }
+    QXmlStreamAttributes attributes = xml.attributes();
+    if (attributes.hasAttribute("key") && attributes.hasAttribute("value"))
+    {
+      map[attributes.value("key").toString()] = attributes.value("value").toString();
+    }
+    else
+      std::cout << 333 << std::endl;
+  }
+
+  QMap<QString, QString> parseStyle(QXmlStreamReader& xml)
+  {
+    QMap<QString, QString> style;
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "style")
+    {
+      std::cout << "didn't find style" << std::endl;
+      return style;
+    }
+
+    xml.readNext();
+
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "style"))
+    {
+      if (xml.tokenType() == QXmlStreamReader::StartElement)
+      {
+        if (xml.name() == "template")
+          addElementDataToMap(xml, style);
+        if (xml.name() == "item")
+          addItemDataToMap(xml, style);
+      }
+      else
+        std::cout << 222 << std::endl;
+      xml.readNext();
+    }
+    return style;
+  }
+
+}
+
+void SCIRunMainWindow::parseStyleXML()
+{
+  std::cout << "parsing style xml" << std::endl;
+  QFile file("./styleSheetDetails.xml");
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    QMessageBox::critical(this, "SCIRun", "Couldn't open styleSheetDetails.xml", QMessageBox::Ok);
+    return;
+  }
+  QXmlStreamReader xml(&file);
+  while (!xml.atEnd() && !xml.hasError())
+  {
+    QXmlStreamReader::TokenType token = xml.readNext();
+    if (token == QXmlStreamReader::StartDocument) {
+      continue;
+    }
+    if (token == QXmlStreamReader::StartElement) {
+      if(xml.name() == "styles") {
+        continue;
+      }
+      std::cout << "found: " << xml.name().toString().toStdString() << std::endl;
+      if(xml.name() == "style") {
+        QXmlStreamAttributes attributes = xml.attributes();
+        if (attributes.hasAttribute("widgetType"))
+        {
+          styleSheetDetails_[attributes.value("widgetType").toString()] = parseStyle(xml);
+        }
+        else
+          std::cout << "111" << std::endl;
+      }
+    }
+  }
+
+  if (xml.hasError())
+  {
+    QMessageBox::critical(this, "SCIRun", xml.errorString(), QMessageBox::Ok);
+  }
+  xml.clear();
+  printStyleSheet();
+}
+
+void SCIRunMainWindow::printStyleSheet() const
+{
+  std::cout << "Printing style sheet details map" << std::endl;
+  for (auto styleMapIt = styleSheetDetails_.constBegin(); styleMapIt != styleSheetDetails_.constEnd(); ++styleMapIt)
+  {
+    std::cout << "Style for: " << styleMapIt.key().toStdString() << std::endl;
+    for (auto styleIt = styleMapIt.value().constBegin(); styleIt != styleMapIt.value().constEnd(); ++styleIt)
+    {
+      std::cout << "key: " << styleIt.key().toStdString() << " value: " << styleIt.value().toStdString() << std::endl;
+    }
+  }
+}
+
+void SCIRunMainWindow::setFocusOnFilterLine()
+{
+  moduleFilterLineEdit_->setFocus(Qt::ShortcutFocusReason);
+  statusBar()->showMessage(tr("Module filter activated"), 2000);
+}
+
+void SCIRunMainWindow::addModuleKeyboardAction()
+{
+  //TODO
+  auto item = moduleSelectorTreeWidget_->currentItem();
+  if (item && item->childCount() == 0)
+    std::cout << "Current module: " << item->text(0).toStdString() << std::endl;
+}
+
+void SCIRunMainWindow::selectModuleKeyboardAction()
+{
+  moduleSelectorTreeWidget_->setFocus(Qt::ShortcutFocusReason);
+  statusBar()->showMessage(tr("Module selection activated"), 2000);
+}
+
+void SCIRunMainWindow::modulesSnapToChanged()
+{
+  bool snapTo = modulesSnapToCheckBox_->isChecked();
+  Preferences::Instance().modulesSnapToGrid.setValue(snapTo);
 }

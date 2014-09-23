@@ -41,11 +41,7 @@ ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHan
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name) + " --Receive");
-  executeButton_->setEnabled(false);
   
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  buttonBox->setVisible(false);
-
   addDoubleSpinBoxManager(scalarValueReceived_, ReceiveScalarModule::ReceivedValue);
 }
 

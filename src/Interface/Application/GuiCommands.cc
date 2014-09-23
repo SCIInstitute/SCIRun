@@ -71,13 +71,13 @@ bool ShowMainWindowGui::execute()
 {
   auto mainWin = SCIRunMainWindow::Instance();
   mainWin->activateWindow();
-  
+
   mainWin->raise();
   mainWin->show();
   return true;
 }
 
-ShowSplashScreenGui::ShowSplashScreenGui() 
+ShowSplashScreenGui::ShowSplashScreenGui()
 {
   initSplashScreen();
 }
@@ -151,8 +151,7 @@ bool SetupDataDirectoryCommandGui::execute()
   auto dir = Application::Instance().parameters()->dataDirectory().get();
   LOG_DEBUG("Data dir set to: " << dir << std::endl);
   
-  Core::Preferences::Instance().setDataDirectory(dir);
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
-  
+
   return true;
 }

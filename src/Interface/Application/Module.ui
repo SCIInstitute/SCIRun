@@ -6,15 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>245</width>
-    <height>74</height>
+    <width>227</width>
+    <height>59</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>220</width>
+    <height>50</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Frame</string>
@@ -34,30 +40,58 @@
   <property name="midLineWidth">
    <number>0</number>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3">
-   <property name="margin">
-    <number>0</number>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>1</number>
    </property>
-   <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="margin">
+    <number>4</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="spacing">
-      <number>0</number>
+      <number>1</number>
      </property>
      <item>
-      <layout class="QGridLayout" name="gridLayout_2" columnstretch="2,1">
-       <property name="leftMargin">
-        <number>10</number>
-       </property>
-       <property name="topMargin">
-        <number>2</number>
-       </property>
-       <property name="rightMargin">
-        <number>10</number>
-       </property>
-       <property name="bottomMargin">
-        <number>5</number>
-       </property>
-       <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="2" column="0">
+        <widget class="QProgressBar" name="progressBar_">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>75</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="whatsThis">
+          <string>Module execution progress bar.</string>
+         </property>
+         <property name="value">
+          <number>24</number>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="textDirection">
+          <enum>QProgressBar::TopToBottom</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
         <widget class="QLabel" name="titleLabel_">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
@@ -67,9 +101,17 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>140</width>
+           <width>75</width>
            <height>27</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Segoe UI</family>
+           <pointsize>8</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
          </property>
          <property name="whatsThis">
           <string>Title of the module.</string>
@@ -82,7 +124,139 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="2" column="1">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>1</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="1">
+        <widget class="QPushButton" name="helpButton_">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>23</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>23</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Launch Documentation Browser</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click this button to launch the module's help page in your browser.</string>
+         </property>
+         <property name="text">
+          <string>?</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="logButton2_">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>23</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>23</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Open Log Window</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click this button to open the module log in a separate window.</string>
+         </property>
+         <property name="text">
+          <string>i</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="executePushButton_">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>23</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>23</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="optionsButton_">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>23</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Module-specific options</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click this button to open the module's options dialog.</string>
+         </property>
+         <property name="text">
+          <string>UI</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
         <widget class="QPushButton" name="moduleActionButton_">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -92,7 +266,7 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>0</width>
+           <width>40</width>
            <height>23</height>
           </size>
          </property>
@@ -126,186 +300,21 @@
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>5</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0,0" columnminimumwidth="0,0,0,0,0">
-       <property name="sizeConstraint">
-        <enum>QLayout::SetFixedSize</enum>
-       </property>
-       <property name="horizontalSpacing">
-        <number>10</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="optionsButton_">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>30</width>
-           <height>23</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>30</width>
-           <height>23</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Module-specific options</string>
-         </property>
-         <property name="whatsThis">
-          <string>Click this button to open the module's options dialog.</string>
-         </property>
-         <property name="text">
-          <string>UI</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QProgressBar" name="progressBar_">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="whatsThis">
-          <string>Module execution progress bar.</string>
-         </property>
-         <property name="value">
-          <number>24</number>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
+       <item row="0" column="1">
+        <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="textDirection">
-          <enum>QProgressBar::TopToBottom</enum>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
          </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="helpButton_">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
+         <property name="sizeHint" stdset="0">
           <size>
            <width>23</width>
            <height>23</height>
           </size>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>23</width>
-           <height>23</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Launch Documentation Browser</string>
-         </property>
-         <property name="whatsThis">
-          <string>Click this button to launch the module's help page in your browser.</string>
-         </property>
-         <property name="text">
-          <string>?</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QPushButton" name="logButton2_">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>23</width>
-           <height>23</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>23</width>
-           <height>23</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Open Log Window</string>
-         </property>
-         <property name="whatsThis">
-          <string>Click this button to open the module log in a separate window.</string>
-         </property>
-         <property name="text">
-          <string>i</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="executePushButton_">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>25</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>25</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
+        </spacer>
        </item>
       </layout>
      </item>

@@ -75,6 +75,8 @@ public:
   std::string commandHelpString() const;
   std::string version() const;
 
+  void shutdown();
+
   /// @todo: following will be useful later
 #if 0
 public:
