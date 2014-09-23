@@ -65,6 +65,9 @@
    </item>
    <item>
     <widget class="QToolButton" name="nextIndexButton_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="text">
       <string>Next</string>
      </property>
