@@ -46,11 +46,15 @@ class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
     static AlgorithmInputName Mesh;
     static AlgorithmInputName Vector_Table;
     static AlgorithmOutputName RHS;
-
+    static AlgorithmParameterName vectorTableBasisMatrices();
+    
+    
+    
    Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const;  
    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 private:
-
+   mutable int generation_;
+   mutable Datatypes::MatrixHandle basis_fevolrhs_;
 };
 
 }}}}

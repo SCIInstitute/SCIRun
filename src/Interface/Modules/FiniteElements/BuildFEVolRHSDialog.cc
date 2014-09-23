@@ -44,10 +44,11 @@ BuildFEVolRHSDialog::BuildFEVolRHSDialog(const std::string& name, ModuleStateHan
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  //addCheckBoxManager(vectorTableBasisMatrices_, BuildFEVolRHSAlgo::vectorTableBasisMatrices());
 }
 
 void BuildFEVolRHSDialog::pull()
 {
-  //TODO
+  pull_newVersionToReplaceOld();
 }
 

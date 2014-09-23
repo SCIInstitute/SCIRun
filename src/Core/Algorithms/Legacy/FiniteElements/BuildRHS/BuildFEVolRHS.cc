@@ -28,6 +28,8 @@
 
 
 #include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -48,25 +50,223 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 //using namespace SCIRun::Core::Logging;
 
+class FEMVolRHSBuilder
+{
+ public:
+  
+  FEMVolRHSBuilder(const AlgorithmBase *algo) :
+      algo_(algo),
+      barrier_("FEMVolRHSBuilder Barrier", numprocessors_)
+    {
+    }
+  
+  bool build_RHS_Vol(FieldHandle input, MatrixHandle vtable, MatrixHandle& output);
+  
+  private:
+  const AlgorithmBase *algo_;
+  Barrier barrier_;
+  
+  VMesh* mesh_;
+  VField *field_;
+
+  MatrixHandle rhsmatrixhandle_;
+  DenseMatrix* rhsmatrix_;
+  
+  // num processors
+  int numprocessors_;
+
+  std::vector<bool> success_;
+    
+  index_type domain_dimension;
+
+  index_type local_dimension_nodes;
+  index_type local_dimension_add_nodes;
+  index_type local_dimension_derivatives;
+  index_type local_dimension;
+
+  index_type global_dimension_nodes;
+  index_type global_dimension_add_nodes;
+  index_type global_dimension_derivatives;
+  index_type global_dimension; 
+
+  bool use_vector_;
+  std::vector<std::pair<std::string, Vector> > vectors_;
+  
+  bool use_scalars_;
+  std::vector<std::pair<std::string, double> > scalars_;
+
+  // Entry point for the parallel version
+  void parallel(int proc);
+
+ private:
+
+    void create_numerical_integration(std::vector<VMesh::coords_type > &p,
+                                      std::vector<double> &w,
+                                      std::vector<std::vector<double> > &d);
+    bool build_local_matrix(VMesh::Elem::index_type c_ind,
+                            index_type row, 
+                            double &l_val,
+                            std::vector<VMesh::coords_type> &p,
+                            std::vector<double> &w,
+                            std::vector<std::vector<double> >  &d);
+    bool build_local_matrix_regular(VMesh::Elem::index_type c_ind,
+                                    index_type row, 
+                                    double &l_val,
+                                    std::vector<VMesh::coords_type> &p,
+                                    std::vector<double> &w,
+                                    std::vector<std::vector<double> >  &d, 
+                                    std::vector<std::vector<double> > &precompute);
+    bool setup();
+    
+};
+
 AlgorithmInputName BuildFEVolRHSAlgo::Mesh("Mesh");
 AlgorithmInputName BuildFEVolRHSAlgo::Vector_Table("Vector_Table");
 AlgorithmOutputName BuildFEVolRHSAlgo::RHS("RHS");
+AlgorithmParameterName BuildFEVolRHSAlgo::vectorTableBasisMatrices() { return AlgorithmParameterName("vectorTableBasisMatrices"); }
 
 BuildFEVolRHSAlgo::BuildFEVolRHSAlgo() 
 {
-
+  addParameter(vectorTableBasisMatrices(), false);
 }
-
 
 DenseMatrixHandle BuildFEVolRHSAlgo::run(FieldHandle input, DenseMatrixHandle ctable) const
 {
- DenseMatrixHandle a;
+ DenseMatrixHandle rhs_matrix;
  
+ if (input)
+ {
+    THROW_ALGORITHM_INPUT_ERROR("Could not obtain input field");
+ }
+
+ if (!input->vfield()->is_vector())
+ {
+    THROW_ALGORITHM_INPUT_ERROR("This function is only defined for elements with vector data");
+ }
+
+ if (input->vfield()->basis_order()!=0)
+ {
+    THROW_ALGORITHM_INPUT_ERROR("This function has only been defined for data that is located at the elements");
+ }
+
+ if (ctable)
+ {
+    if ((ctable->ncols() != 1)&&(ctable->ncols() != 3))
+    {
+      THROW_ALGORITHM_INPUT_ERROR("Vector table needs to have 1 or 3");
+     
+    } 
+    if (ctable->nrows() == 0)
+    { 
+      THROW_ALGORITHM_INPUT_ERROR("Vector table is empty");
+    }
+  }
+
+ FEMVolRHSBuilder builder(this);
  
+ if (get(vectorTableBasisMatrices()).toBool())
+ {
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+     BuildFEVolRHSPrivateData* privatedata;
+     get_privatedata(privatedata);
+    #endif 
+    
+    if (ctable)
+    {
+      std::vector<std::pair<std::string,Tensor> > tens;
+     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+      input->get_property("conductivity_table",tens);
+      if (tens.size() > 0)
+      {
+        vtable = new DenseMatrix(tens.size(),1);
+        double* data = vtable->get_data_pointer();
+        for (size_t i=0; i<tens.size();i++)
+        {
+          double t = tens[i].second.mat_[0][0];
+          data[i] = t;
+        }
+      }
+     #endif 
+    }
+      
+    if (ctable)
+    {
+      size_type nconds = ctable->nrows();
+      if ((input->vmesh()->generation() != generation_)||
+          (basis_fevolrhs_))
+      {
+       /* MatrixHandle con = new DenseMatrix(nconds,1);
+        double* data = con->get_data_pointer();
+        for (size_type i=0; i<nconds;i++) data[i] = 0.0;
+        builder->build_RHS_Vol(input,con,privatedata->basis_fevolrhs_);
+        if (privatedata->basis_fevolrhs_.get_rep() == 0)
+        {
+          error("Failed to build FEVolRHS structure");
+          algo_end(); return(false);
+        }
+        privatedata->basis_values_.resize(nconds);
+        for (size_type s=0; s< nconds; s++)
+        {
+          MatrixHandle temp;
+          data[s] = 1.0;
+          builder->build_RHS_Vol(input,con,temp);
+          if (temp.get_rep() == 0)
+          {
+            error("Failed to build FE component for one of the tissue types");
+            algo_end(); return(false);
+          }
+
+          SparseRowMatrix *m = temp->sparse();
+          privatedata->basis_values_[s].resize(m->get_nnz());
+          for (size_type p=0; p< m->get_nnz(); p++)
+          {
+            privatedata->basis_values_[s][p] = m->get_value(p);
+          }
+          data[s] = 0.0;
+        }
+
+        privatedata->generation_ = input->vmesh()->generation();
+	*/
+      }
+      
+      /*
+      output = privatedata->basis_fevolrhs_;
+      output.detach();
+      
+      SparseRowMatrix *m = output->sparse();
+      double *sum = m->get_vals();
+      double *cdata = vtable->get_data_pointer();
+      size_type n = vtable->ncols();
+      
+      if (privatedata->basis_values_.size() > 0) 
+        for (size_t p=0; p < privatedata->basis_values_[0].size(); p++) sum[p] = 0.0;
+      
+      for (int s=0; s<nconds; s++)
+      {
+        double weight = cdata[s*n];
+        for (size_t p=0; p < privatedata->basis_values_[s].size(); p++)
+        {
+          sum[p] += weight * privatedata->basis_values_[s][p];
+        }
+      }
+    */
+    }
+    else
+    {
+      THROW_ALGORITHM_INPUT_ERROR("No vector table present: The generate_basis option only works for indexed vectors");
+    }
+    
+  }
+
+  //builder->build_RHS_Vol(input,vtable,output);
+ /*
+  if (output)
+  {    
+    THROW_ALGORITHM_INPUT_ERROR("Could not build output matrix");
+  }
+ */
  
- 
- 
- return a;
+ return rhs_matrix;
 }
 
 AlgorithmOutput BuildFEVolRHSAlgo::run_generic(const AlgorithmInput& input) const

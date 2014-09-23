@@ -45,10 +45,12 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun;
 
 BuildFEVolRHS::BuildFEVolRHS()
@@ -61,7 +63,7 @@ BuildFEVolRHS::BuildFEVolRHS()
 
 void BuildFEVolRHS::setStateDefaults()
 {
-// setStateBoolFromAlgo(SetFieldDataAlgo::keepTypeCheckBox);
+  setStateBoolFromAlgo(BuildFEVolRHSAlgo::vectorTableBasisMatrices());
 }
 
 void BuildFEVolRHS::execute()
@@ -71,6 +73,8 @@ void BuildFEVolRHS::execute()
 
   if (needToExecute())
   {
+    update_state(Executing);
+    algo().set(BuildFEVolRHSAlgo::vectorTableBasisMatrices(), get_state()->getValue(BuildFEVolRHSAlgo::vectorTableBasisMatrices()).toBool());
     auto output = algo().run_generic(make_input((Mesh, mesh)(Vector_Table, vtable)));
     sendOutputFromAlgorithm(RHS, output);
   }
