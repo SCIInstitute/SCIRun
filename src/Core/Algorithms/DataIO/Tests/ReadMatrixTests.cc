@@ -183,7 +183,7 @@ TEST(ReadMatrixAlgorithmTest, DISABLED_TestLargeSparseFromRealASCIIMatFile)
 TEST(ReadMatrixAlgorithmTest, UnknownFileFormatThrows)
 {
   ReadMatrixAlgorithm algo;
-  auto notAMatrixFile = TestResources::rootDir() / "scirun5demo.srn";
+  auto notAMatrixFile = TestResources::rootDir() / "Other" / "scirun5demo.srn";
   if (boost::filesystem::exists(notAMatrixFile))
   {
     EXPECT_THROW(algo.run(notAMatrixFile.string()), Core::Algorithms::AlgorithmInputException);

@@ -153,7 +153,8 @@ TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e4)
   EXPECT_TRUE(expectedOutput("1e4.mat")->isApprox(*output));
 }
 
-TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e5)
+// move to nightly: file too big for github unit test repo
+TEST(BuildFEMatrixAlgorithmTests, DISABLED_TestMeshSize1e5)
 {
   using namespace FEInputData;
   auto mesh = loadTestMesh("fem_1e5_elements.fld");
@@ -176,7 +177,8 @@ TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e5)
   EXPECT_TRUE(compare_with_tolerance(*expectedOutput("1e5.mat"), *output));
 }
 
-TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e6)
+// move to nightly: file too big for github unit test repo
+TEST(BuildFEMatrixAlgorithmTests, DISABLED_TestMeshSize1e6)
 {
   using namespace FEInputData;
   auto mesh = loadTestMesh("fem_1e6_elements.fld");
