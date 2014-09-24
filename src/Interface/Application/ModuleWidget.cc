@@ -210,7 +210,7 @@ namespace
   const int extraWidthThreshold = 5;
   const int smushFactor = 15;
   const int titleFontSize = 8;
-  const int widgetHeightAdjust = 0;
+  const int widgetHeightAdjust = -20;
 #else
   const int moduleWidthThreshold = 80;
   const int extraModuleWidth = 5;
@@ -281,6 +281,13 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
     resize(width() - smushFactor, height());
     //std::cout << "\tNew width: " << width() << std::endl;
   }
+
+  //TODO: centralize platform-dependent code
+#ifdef WIN32
+  layout()->removeItem(verticalSpacer_Mac);
+  layout()->removeItem(horizontalSpacer_Mac1);
+  layout()->removeItem(horizontalSpacer_Mac2);
+#endif
   resize(width(), height() + widgetHeightAdjust);
 
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
