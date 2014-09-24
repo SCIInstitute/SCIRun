@@ -120,7 +120,7 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
 TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
 {
   ReadMatrixAlgorithm algo;
-  auto filename = TestResources::rootDir() / "Matrices" / "CGDarrell" / "xScirun.mat";
+  auto filename = TestResources::rootDir() / "Matrices" / "xScirun.mat";
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());
@@ -141,7 +141,7 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
 TEST(ReadMatrixAlgorithmTest, TestColumnFromRealASCIIMatFile)
 {
   ReadMatrixAlgorithm algo;
-  auto filename = TestResources::rootDir() / "Matrices" / "CGDarrell" / "xScirunColumn.mat";
+  auto filename = TestResources::rootDir() / "Matrices" / "xScirunColumn.mat";
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());
