@@ -217,7 +217,7 @@ namespace
   const int extraWidthThreshold = 5;
   const int smushFactor = 15;
   const int titleFontSize = 12;
-  const int widgetHeightAdjust = 10;
+  const int widgetHeightAdjust = 7;
 #endif
 }
 
