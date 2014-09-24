@@ -30,6 +30,7 @@
 SET(Core_Algorithms_Legacy_FiniteElements_HEADERS
   BuildMatrix/BuildTDCSMatrix.h
   BuildMatrix/BuildFEMatrix.h
+  BuildRHS/BuildFEVolRHS.h
 )
 
 # Sources of Core/Algorithms/Legacy/FiniteElements classes
@@ -39,7 +40,7 @@ SET(Core_Algorithms_Legacy_FiniteElements_SRCS
   #Mapping/BuildNodeLink.cc
   BuildMatrix/BuildFEMatrix.cc
   BuildMatrix/BuildTDCSMatrix.cc
-  #BuildRHS/BuildFEVolRHS.cc
+  BuildRHS/BuildFEVolRHS.cc
   #BuildRHS/BuildFESurfRHS.cc
 )
 

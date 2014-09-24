@@ -1,3 +1,4 @@
+ 
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -38,60 +39,32 @@
 /// the function is GRAD dot F.
 /// Input: A FE mesh with field vectors distributed on the elements (constant basis). Output: The Grad dot F
 
-#include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
-#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#ifndef MODULES_LEGACY_FINITEELEMENTS_BuildFEVOLRHS_H__
+#define MODULES_LEGACY_FINITEELEMENTS_BuildFEVOLRHS_H__
 
-using namespace SCIRun::Modules::FiniteElements;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::FiniteElements;
-using namespace SCIRun;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/FiniteElements/share.h>
 
-BuildFEVolRHS::BuildFEVolRHS()
-  : Module(ModuleLookupInfo("BuildFEVolRHS", "FiniteElements", "SCIRun"),false)
-{
-  INITIALIZE_PORT(Mesh);
-  INITIALIZE_PORT(RHS);
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace FiniteElements {
 
-void BuildFEVolRHS::setStateDefaults()
-{
- 
-}
+      class SCISHARE BuildFEVolRHS : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+      {
+      public:
+        BuildFEVolRHS();
+        virtual void setStateDefaults();
+        virtual void execute();
 
-void BuildFEVolRHS::execute()
-{
-  auto mesh = getRequiredInput(Mesh);
- #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
-  auto vtable = getRequiredInput(Vector_Table);
- #endif
-  if (needToExecute())
-  {
-    update_state(Executing);
-    auto output = algo().run_generic(make_input((Mesh, mesh)));
-    sendOutputFromAlgorithm(RHS, output);
+        INPUT_PORT(0, Mesh, LegacyField);
+        OUTPUT_PORT(0, RHS, Matrix);
+
+      };
+
+    }
   }
- 
-
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED  
-  FieldHandle Field;
-  MatrixHandle VectorTable;
-  MatrixHandle RHSMatrix;
-  
-  if (!(get_input_handle("Mesh",Field,true))) return;
-  get_input_handle("Vector Table", VectorTable, false);
-  
-  if (inputs_changed_ || gui_use_basis_.changed() || !oport_cached("RHS") )
-  {
-    algo_.set_bool("generate_basis",gui_use_basis_.get());
-    if(!(algo_.run(Field,VectorTable,RHSMatrix))) return;
-    
-    send_output_handle("RHS", RHSMatrix);
-  }
-#endif  
-
 }
+
+#endif

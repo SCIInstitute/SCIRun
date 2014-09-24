@@ -26,26 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Factory/ModuleDialogFactory.h>
-#include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
-#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
-#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
-#include <boost/assign.hpp>
-#include <boost/functional/factory.hpp>
+#include <Interface/Modules/FiniteElements/BuildFEVolRHSDialog.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
+#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace boost::assign;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 
-void ModuleDialogFactory::addDialogsToMakerMap2()
+
+BuildFEVolRHSDialog::BuildFEVolRHSDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(tDCSSimulator, TDCSSimulatorDialog)
-    ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
-    ADD_MODULE_DIALOG(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshDialog)
-    ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
-    ADD_MODULE_DIALOG(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSDialog)   
-  ;
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  //addCheckBoxManager(vectorTableBasisMatrices_, BuildFEVolRHSAlgo::vectorTableBasisMatrices());
 }
+
+void BuildFEVolRHSDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}
+
