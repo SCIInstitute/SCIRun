@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -38,9 +37,10 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Thread/Barrier.h>
 #include <Core/Thread/Parallel.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 //#include <Core/Geometry/Point.h>
 //#include <Core/Geometry/Tensor.h>
-//#include <Core/Logging/Log.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -48,32 +48,38 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
-//using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Logging;
 
 class FEMVolRHSBuilder
 {
  public:
   
   FEMVolRHSBuilder(const AlgorithmBase *algo) :
-      algo_(algo),
-      barrier_("FEMVolRHSBuilder Barrier", numprocessors_)
+      algo_(algo), numprocessors_(Parallel::NumCores()),
+      barrier_("FEMVolRHSBuilder Barrier", numprocessors_),
+      mesh_(0), field_(0),
+      domain_dimension(0), local_dimension_nodes(0),
+      local_dimension_add_nodes(0),
+      local_dimension_derivatives(0),
+      local_dimension(0),
+      global_dimension_nodes(0),
+      global_dimension_add_nodes(0),
+      global_dimension_derivatives(0),
+      global_dimension(0)
     {
     }
   
-  bool build_RHS_Vol(FieldHandle input, MatrixHandle vtable, MatrixHandle& output);
+  DenseMatrixHandle build_RHS_Vol(FieldHandle input);
   
   private:
   const AlgorithmBase *algo_;
+  int numprocessors_;
   Barrier barrier_;
   
   VMesh* mesh_;
   VField *field_;
 
-  MatrixHandle rhsmatrixhandle_;
-  DenseMatrix* rhsmatrix_;
-  
-  // num processors
-  int numprocessors_;
+  DenseMatrixHandle rhsmatrix_;
 
   std::vector<bool> success_;
     
@@ -89,10 +95,8 @@ class FEMVolRHSBuilder
   index_type global_dimension_derivatives;
   index_type global_dimension; 
 
-  bool use_vector_;
   std::vector<std::pair<std::string, Vector> > vectors_;
   
-  bool use_scalars_;
   std::vector<std::pair<std::string, double> > scalars_;
 
   // Entry point for the parallel version
@@ -121,388 +125,18 @@ class FEMVolRHSBuilder
 };
 
 AlgorithmInputName BuildFEVolRHSAlgo::Mesh("Mesh");
-AlgorithmInputName BuildFEVolRHSAlgo::Vector_Table("Vector_Table");
 AlgorithmOutputName BuildFEVolRHSAlgo::RHS("RHS");
-AlgorithmParameterName BuildFEVolRHSAlgo::vectorTableBasisMatrices() { return AlgorithmParameterName("vectorTableBasisMatrices"); }
 
 BuildFEVolRHSAlgo::BuildFEVolRHSAlgo() 
 {
-  addParameter(vectorTableBasisMatrices(), false);
+
 }
 
-DenseMatrixHandle BuildFEVolRHSAlgo::run(FieldHandle input, DenseMatrixHandle ctable) const
-{
- DenseMatrixHandle rhs_matrix;
- 
- if (input)
- {
-    THROW_ALGORITHM_INPUT_ERROR("Could not obtain input field");
- }
-
- if (!input->vfield()->is_vector())
- {
-    THROW_ALGORITHM_INPUT_ERROR("This function is only defined for elements with vector data");
- }
-
- if (input->vfield()->basis_order()!=0)
- {
-    THROW_ALGORITHM_INPUT_ERROR("This function has only been defined for data that is located at the elements");
- }
-
- if (ctable)
- {
-    if ((ctable->ncols() != 1)&&(ctable->ncols() != 3))
-    {
-      THROW_ALGORITHM_INPUT_ERROR("Vector table needs to have 1 or 3");
-     
-    } 
-    if (ctable->nrows() == 0)
-    { 
-      THROW_ALGORITHM_INPUT_ERROR("Vector table is empty");
-    }
-  }
-
- FEMVolRHSBuilder builder(this);
- 
- if (get(vectorTableBasisMatrices()).toBool())
- {
-    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-     BuildFEVolRHSPrivateData* privatedata;
-     get_privatedata(privatedata);
-    #endif 
-    
-    if (ctable)
-    {
-      std::vector<std::pair<std::string,Tensor> > tens;
-     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-      input->get_property("conductivity_table",tens);
-      if (tens.size() > 0)
-      {
-        vtable = new DenseMatrix(tens.size(),1);
-        double* data = vtable->get_data_pointer();
-        for (size_t i=0; i<tens.size();i++)
-        {
-          double t = tens[i].second.mat_[0][0];
-          data[i] = t;
-        }
-      }
-     #endif 
-    }
-      
-    if (ctable)
-    {
-      size_type nconds = ctable->nrows();
-      if ((input->vmesh()->generation() != generation_)||
-          (basis_fevolrhs_))
-      {
-       /* MatrixHandle con = new DenseMatrix(nconds,1);
-        double* data = con->get_data_pointer();
-        for (size_type i=0; i<nconds;i++) data[i] = 0.0;
-        builder->build_RHS_Vol(input,con,privatedata->basis_fevolrhs_);
-        if (privatedata->basis_fevolrhs_.get_rep() == 0)
-        {
-          error("Failed to build FEVolRHS structure");
-          algo_end(); return(false);
-        }
-        privatedata->basis_values_.resize(nconds);
-        for (size_type s=0; s< nconds; s++)
-        {
-          MatrixHandle temp;
-          data[s] = 1.0;
-          builder->build_RHS_Vol(input,con,temp);
-          if (temp.get_rep() == 0)
-          {
-            error("Failed to build FE component for one of the tissue types");
-            algo_end(); return(false);
-          }
-
-          SparseRowMatrix *m = temp->sparse();
-          privatedata->basis_values_[s].resize(m->get_nnz());
-          for (size_type p=0; p< m->get_nnz(); p++)
-          {
-            privatedata->basis_values_[s][p] = m->get_value(p);
-          }
-          data[s] = 0.0;
-        }
-
-        privatedata->generation_ = input->vmesh()->generation();
-	*/
-      }
-      
-      /*
-      output = privatedata->basis_fevolrhs_;
-      output.detach();
-      
-      SparseRowMatrix *m = output->sparse();
-      double *sum = m->get_vals();
-      double *cdata = vtable->get_data_pointer();
-      size_type n = vtable->ncols();
-      
-      if (privatedata->basis_values_.size() > 0) 
-        for (size_t p=0; p < privatedata->basis_values_[0].size(); p++) sum[p] = 0.0;
-      
-      for (int s=0; s<nconds; s++)
-      {
-        double weight = cdata[s*n];
-        for (size_t p=0; p < privatedata->basis_values_[s].size(); p++)
-        {
-          sum[p] += weight * privatedata->basis_values_[s][p];
-        }
-      }
-    */
-    }
-    else
-    {
-      THROW_ALGORITHM_INPUT_ERROR("No vector table present: The generate_basis option only works for indexed vectors");
-    }
-    
-  }
-
-  //builder->build_RHS_Vol(input,vtable,output);
- /*
-  if (output)
-  {    
-    THROW_ALGORITHM_INPUT_ERROR("Could not build output matrix");
-  }
- */
- 
- return rhs_matrix;
-}
-
-AlgorithmOutput BuildFEVolRHSAlgo::run_generic(const AlgorithmInput& input) const
-{
-  auto mesh = input.get<Field>(Mesh);
-  auto ctable = input.get<DenseMatrix>(Vector_Table);
-
-  DenseMatrixHandle volrhs = run(mesh, ctable);
-  
-  AlgorithmOutput output;
-  output[RHS] = volrhs;
-  return output;
-}
-
-
-
-
-
-
-
-
-
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-
-
-#include <Core/Algorithms/FiniteElements/BuildRHS/BuildFEVolRHS.h>
-
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixOperations.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-#include <Core/Thread/Barrier.h>
-#include <Core/Thread/Thread.h>
-
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Tensor.h>
-
-
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <iostream>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-// Helper class
-
-class FEMVolRHSBuilder
-{
-  public:
-
-    // Constructor needed as Barrier needs to have name
-    FEMVolRHSBuilder(AlgoBase* algo) :
-      ref_cnt(0),
-      algo_(algo),
-      barrier_("FEMVolRHSBuilder Barrier"),
-      mutex_("FEMVolRHSBuilder Mutex")
-    {
-    }
-
-    // Local entry function for none pure function.
-    bool build_RHS_Vol(FieldHandle input, 
-                       MatrixHandle vtable,
-                       MatrixHandle& output);
-    int ref_cnt;
-
-  private:
-
-    AlgoBase* algo_;
-    Barrier barrier_;
-  
-    Mutex mutex_;
-    
-    VMesh* mesh_;
-    VField *field_;
-
-    MatrixHandle rhsmatrixhandle_;
-    DenseMatrix* rhsmatrix_;
-  
-    // num processors
-    int numprocessors_;
-
-    std::vector<bool> success_;
-    
-    index_type domain_dimension;
-
-    index_type local_dimension_nodes;
-    index_type local_dimension_add_nodes;
-    index_type local_dimension_derivatives;
-    index_type local_dimension;
-
-    index_type global_dimension_nodes;
-    index_type global_dimension_add_nodes;
-    index_type global_dimension_derivatives;
-    index_type global_dimension; 
-
-    bool use_vector_;
-    std::vector<std::pair<std::string, Vector> > vectors_;
-  
-    bool use_scalars_;
-    std::vector<std::pair<std::string, double> > scalars_;
-
-    // Entry point for the parallel version
-    void parallel(int proc);
-
-  private:
-
-    void create_numerical_integration(std::vector<VMesh::coords_type > &p,
-                                      std::vector<double> &w,
-                                      std::vector<std::vector<double> > &d);
-    bool build_local_matrix(VMesh::Elem::index_type c_ind,
-                            index_type row, 
-                            double &l_val,
-                            std::vector<VMesh::coords_type> &p,
-                            std::vector<double> &w,
-                            std::vector<std::vector<double> >  &d);
-    bool build_local_matrix_regular(VMesh::Elem::index_type c_ind,
-                                    index_type row, 
-                                    double &l_val,
-                                    std::vector<VMesh::coords_type> &p,
-                                    std::vector<double> &w,
-                                    std::vector<std::vector<double> >  &d, 
-                                    std::vector<std::vector<double> > &precompute);
-    bool setup();
-  
-};
-
-
-bool
-FEMVolRHSBuilder::build_RHS_Vol(FieldHandle input, 
-                          MatrixHandle vtable,
-                          MatrixHandle& output)
-{
-  // Get virtual interface to data
-  field_ = input->vfield();
-  mesh_  = input->vmesh();
-
-  // Determine the number of processors to use:
-
-  numprocessors_ = Thread::numProcessors();
-  int numproc = algo_->get_int("num_processors");
-  if (numproc > 0) { numprocessors_ = numproc; }
-  
-  
-  // We added a second system of adding a vector table, using a matrix
-  // Convert that matrix into the vector table
-  if (vtable.get_rep())
-  {
-    vectors_.clear();
-    DenseMatrix* mat = vtable->dense();
-    MatrixHandle temphandle = mat;
-    // Only if we can convert it into a dense matrix, otherwise skip it
-    if (mat)
-    {
-      double* data = mat->get_data_pointer();
-      size_type m = mat->nrows();
-      size_type n = mat->ncols();
-      Vector V;
-
-      // Case the table has isotropic values
-      if (mat->ncols() == 1)
-      {
-        for (size_type p=0; p<m;p++)
-        {
-          V[0] = data[p*n+0];
-          V[1] = data[p*n+0];
-          V[2] = data[p*n+0];
-          
-          vectors_.push_back(std::pair<std::string, Vector>("",V));
-        }
-      }
-      else if (mat->ncols() == 3)
-      {
-        for (size_type p=0; p<m;p++)
-        {
-          V[0] = data[0+p*n];
-          V[1] = data[1+p*n];
-          V[2] = data[2+p*n];
-
-          vectors_.push_back(std::pair<std::string, Vector>("",V));
-        }
-      }
-      
-    }
-  }
-  
-  success_.resize(numprocessors_,true);
-
-  // Start the multi threaded FEMVolRHS builder.
-  Thread::parallel(this, &FEMVolRHSBuilder::parallel, numprocessors_);
-  for (size_t j=0; j<success_.size(); j++)
-  {
-    if (success_[j] == false) return (false);
-  }
-
-  output = rhsmatrixhandle_;
-  
-  return (true);
-}
-
-
-void 
-FEMVolRHSBuilder::
-create_numerical_integration(std::vector<VMesh::coords_type> &p,
-                             std::vector<double> &w,
-                             std::vector<std::vector<double> > &d)
-{
-  int int_basis = 1;
-  if (mesh_->is_quad_element() || 
-      mesh_->is_hex_element() || 
-      mesh_->is_prism_element())
-  {
-    int_basis = 2;
-  }
-  mesh_->get_gaussian_scheme(p,w,int_basis);
-  d.resize(p.size());
-  for (size_t j=0; j<p.size();j++)
-    mesh_->get_derivate_weights(p[j],d[j],1);
-    
-}
-
-
-/// build line of the local stiffness matrix
-
-bool
-FEMVolRHSBuilder::
-build_local_matrix(VMesh::Elem::index_type c_ind,
+bool FEMVolRHSBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
                    index_type row, double &l_val,
                    std::vector<VMesh::coords_type > &p,
                    std::vector<double> &w,
-                   std::vector<std::vector<double> >  &d)
+		   std::vector<std::vector<double> >  &d)
 {
   Vector V;
   
@@ -582,10 +216,7 @@ build_local_matrix(VMesh::Elem::index_type c_ind,
   return (true);
 }
 
-
-bool 
-FEMVolRHSBuilder
-::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
+bool FEMVolRHSBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
                              index_type row, double &l_val,
                              std::vector<VMesh::coords_type> &p,
                              std::vector<double> &w,
@@ -718,10 +349,25 @@ FEMVolRHSBuilder
   return (true);
 }
 
+void FEMVolRHSBuilder::create_numerical_integration(std::vector<VMesh::coords_type> &p,
+                             std::vector<double> &w,
+                             std::vector<std::vector<double> > &d)
+{
+  int int_basis = 1;
+  if (mesh_->is_quad_element() || 
+      mesh_->is_hex_element() || 
+      mesh_->is_prism_element())
+  {
+    int_basis = 2;
+  }
+  mesh_->get_gaussian_scheme(p,w,int_basis);
+  d.resize(p.size());
+  for (size_t j=0; j<p.size();j++)
+    mesh_->get_derivate_weights(p[j],d[j],1);
+    
+}
 
-bool
-FEMVolRHSBuilder::
-setup()
+bool FEMVolRHSBuilder::setup()
 {	
   // The domain dimension
   domain_dimension = mesh_->dimensionality();
@@ -742,7 +388,7 @@ setup()
   }
   
   local_dimension_derivatives = 0;
-  
+ 
   // Local degrees of freedom per element
   local_dimension = local_dimension_nodes + 
                     local_dimension_add_nodes + 
@@ -766,7 +412,7 @@ setup()
                      global_dimension_add_nodes+
                      global_dimension_derivatives;
 
-  if (mns > 0) 
+    if (mns > 0) 
 	{
 		// We only need edges for the higher order basis in case of quatric lagrangian
 		// Hence we should only synchronize it for this case
@@ -783,12 +429,7 @@ setup()
   return (true);
 }
 
-
-
-// -- callback routine to execute in parallel
-void 
-FEMVolRHSBuilder::
-parallel(int proc_num)
+void FEMVolRHSBuilder::parallel(int proc_num)
 {
   success_[proc_num] = true;
 
@@ -805,7 +446,8 @@ parallel(int proc_num)
     }
   }
 	
-	barrier_.wait(numprocessors_);
+  
+  barrier_.wait(); 
   
   // In case one of the threads fails, we should have them fail all
 	for (int q=0; q<numprocessors_;q++) 
@@ -822,8 +464,8 @@ parallel(int proc_num)
 
 	/// loop over system dofs for this thread
 	int cnt = 0;
-	size_type size_gd = end_gd-start_gd;
-  try
+ 	size_type size_gd = end_gd-start_gd;
+     try
 	{
   
 		for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
@@ -839,7 +481,7 @@ parallel(int proc_num)
 				/// check for additional nodes at edges
 				/// get neighboring cells for node
 				VMesh::Edge::index_type ii(i-global_dimension_nodes);
-        mesh_->get_elems(ca,ii);
+                                mesh_->get_elems(ca,ii);
 			}
 			else
 			{
@@ -859,7 +501,9 @@ parallel(int proc_num)
 			if (proc_num == 0) 
 			{
 				cnt++;
+			      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
 				if (cnt == 200) { cnt = 0; algo_->update_progress(i,2*size_gd); }
+			     #endif
 			}    
 		}
 
@@ -872,10 +516,10 @@ parallel(int proc_num)
 	}
 
 	std::vector<std::vector<double> > precompute;		
-	index_type st = 0;
+	//index_type st = 0;
   
-  /// check point
-  barrier_.wait(numprocessors_);
+        /// check point
+	barrier_.wait();
 
 	// Bail out if one of the processes failed
 	for (int q=0; q<numprocessors_;q++) 
@@ -886,24 +530,23 @@ parallel(int proc_num)
 		/// the main thread makes the matrix
 		if (proc_num == 0)
 		{
-      rhsmatrix_ = new DenseMatrix(global_dimension, 1);
-      rhsmatrixhandle_ = rhsmatrix_;
+		 rhsmatrix_ = boost::make_shared<DenseMatrix>(global_dimension,1); 
 		}
 		success_[proc_num] = true;
 	}
 	catch (...)
 	{
-		algo_->error(std::string("BuildVolRHS crashed while creating final output matrix"));
+	  algo_->error(std::string("BuildVolRHS crashed while creating final output matrix"));
 	  success_[proc_num] = false;
 	}	
-
-  /// check point
-  barrier_.wait(numprocessors_);
+       
+        /// check point
+        barrier_.wait();
 
 	// Bail out if one of the processes failed
 	for (int q=0; q<numprocessors_;q++) 
 		if (success_[q] == false) return;
-
+ 
 	try
 	{
 		std::vector<VMesh::coords_type > ni_points;
@@ -911,19 +554,20 @@ parallel(int proc_num)
 		std::vector<std::vector<double> > ni_derivatives;
 
 		create_numerical_integration(ni_points, ni_weights, ni_derivatives);
-    
-    double l_val;
+  
+                double l_val;
 					
 		/// loop over system dofs for this thread
 		cnt = 0;
 		
 		size_gd = end_gd-start_gd;
+		
 		for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
 		{
       
-      //zero output vector
-      rhsmatrix_->put(i, 0, 0.0);
-      
+                        //zero output vector
+                        (*rhsmatrix_)(i,0)=0.0; 
+                         
 			if (i < global_dimension_nodes)
 			{
 				/// check for nodes
@@ -943,23 +587,23 @@ parallel(int proc_num)
 			}
 		
 			/// loop over elements attributed elements
-			
+
 			if (mesh_->is_regularmesh())
 			{
         
 				for (size_t j = 0; j < ca.size(); j++)
 				{
 					mesh_->get_nodes(na, ca[j]); ///< get neighboring nodes
-          for(size_t k = 0; k < na.size(); k++)
+                                    for(size_t k = 0; k < na.size(); k++)
 					{
 						if (na[k] == i) 
 						{
-							build_local_matrix_regular(ca[j], k , l_val, ni_points, ni_weights, ni_derivatives,precompute);
-              rhsmatrix_->add(i, 0, l_val);
+					          build_local_matrix_regular(ca[j], k , l_val, ni_points, ni_weights, ni_derivatives,precompute);
+                                                  (*rhsmatrix_)(i,0)=(*rhsmatrix_)(i,0)+l_val; 
 						}
 					}
 				}
-			}
+			}			
 			else
 			{
         
@@ -970,7 +614,7 @@ parallel(int proc_num)
 					/// check for additional nodes at edges
 					if (global_dimension_add_nodes)
 					{
-						mesh_->get_edges(ea, ca[j]); ///< get neighboring edges
+					    mesh_->get_edges(ea, ca[j]); ///< get neighboring edges
 					}
 					
 					//ASSERT(static_cast<int>(neib_dofs.size()) == local_dimension);
@@ -978,8 +622,8 @@ parallel(int proc_num)
 					{
 						if (na[k] == i) 
 						{
-							build_local_matrix(ca[j], k , l_val, ni_points, ni_weights, ni_derivatives);
-              rhsmatrix_->add(i, 0, l_val);
+					            build_local_matrix(ca[j], k , l_val, ni_points, ni_weights, ni_derivatives);
+                                                    (*rhsmatrix_)(i,0)=(*rhsmatrix_)(i,0)+l_val;  //rhsmatrix_->add(i, 0, l_val);
 						}
 					}
 
@@ -989,8 +633,8 @@ parallel(int proc_num)
 						{
 							if (global_dimension + static_cast<int>(ea[k]) == i)
 							{
-								build_local_matrix(ca[j], k+na.size() , l_val, ni_points, ni_weights, ni_derivatives);
-                rhsmatrix_->add(i, 0, l_val);
+							     build_local_matrix(ca[j], k+na.size() , l_val, ni_points, ni_weights, ni_derivatives);
+                                                             (*rhsmatrix_)(i,0)=(*rhsmatrix_)(i,0)+l_val; 
 							}
 						}
 					}
@@ -1000,77 +644,129 @@ parallel(int proc_num)
 			if (proc_num == 0) 
 			{
 				cnt++;
-				if (cnt == 200) { cnt = 0; algo_->update_progress(i+size_gd,2*size_gd); }
+				//if (cnt == 200) { cnt = 0; algo_->update_progress(i+size_gd,2*size_gd); }
 			}
 		}
     
 		success_[proc_num] = true;
+		
 	}
 	catch (...)
 	{
-		algo_->error(std::string("BuildFEVolRHS crashed while filling out output matrix"));
+	  algo_->error(std::string("BuildFEVolRHS crashed while filling out output matrix"));
 	  success_[proc_num] = false;
 	}	
 	
-  barrier_.wait(numprocessors_);
+        barrier_.wait();
 	
 	// Bail out if one of the processes failed
 	for (int q=0; q<numprocessors_;q++) 
 		if (success_[q] == false) return;	
 }
 
-class BuildFEVolRHSPrivateData : public AlgoData
+
+DenseMatrixHandle FEMVolRHSBuilder::build_RHS_Vol(FieldHandle input)
 {
-  public:
-    int generation_;
-    std::vector<std::vector<double> > basis_values_;
-    MatrixHandle basis_fevolrhs_;
-};
-
-
-
-bool 
-BuildFEVolRHSAlgo::
-run(FieldHandle input, MatrixHandle vtable, MatrixHandle& output)
-{
-  algo_start("BuildFEVolRHS");
+  // Get virtual interface to data
+  field_ = input->vfield();
+  mesh_  = input->vmesh();
   
-  if (input.get_rep() == 0)
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+  // We added a second system of adding a vector table, using a matrix
+  // Convert that matrix into the vector table
+  if (vtable)
   {
-    error("Could not obtain input field");
-    algo_end(); return (false);
-  }
-
-  if (!input->vfield()->is_vector())
-  {
-    error("This function is only defined for elements with vector data");
-    algo_end(); return (false);
-  }
-
-  if (input->vfield()->basis_order()!=0)
-  {
-    error("This function has only been defined for data that is located at the elements");
-    algo_end(); return (false);
-  }
-
-  if (vtable.get_rep())
-  {
-    if ((vtable->ncols() != 1)&&(vtable->ncols() != 3))
+    vectors_.clear();
+    DenseMatrix* mat = vtable->dense();
+    MatrixHandle temphandle = mat;
+    // Only if we can convert it into a dense matrix, otherwise skip it
+    if (mat)
     {
-      error("Vector table needs to have 1 or 3");
-      algo_end(); return (false);
+      double* data = mat->get_data_pointer();
+      size_type m = mat->nrows();
+      size_type n = mat->ncols();
+      Vector V;
+
+      // Case the table has isotropic values
+      if (mat->ncols() == 1)
+      {
+        for (size_type p=0; p<m;p++)
+        {
+          V[0] = data[p*n+0];
+          V[1] = data[p*n+0];
+          V[2] = data[p*n+0];
+          
+          vectors_.push_back(std::pair<std::string, Vector>("",V));
+        }
+      }
+      else if (mat->ncols() == 3)
+      {
+        for (size_type p=0; p<m;p++)
+        {
+          V[0] = data[0+p*n];
+          V[1] = data[1+p*n];
+          V[2] = data[2+p*n];
+
+          vectors_.push_back(std::pair<std::string, Vector>("",V));
+        }
+      }
+      
+    }    
+  }
+  #endif  
+  
+  success_.resize(numprocessors_,true);
+
+  // Start the multi threaded FEMVolRHS builder.
+  Parallel::RunTasks([this](int i) { parallel(i); }, numprocessors_);
+  
+  for (size_t j=0; j<success_.size(); j++)
+  {
+    if (success_[j] == false) return nullptr;
+  }
+  
+  return rhsmatrix_;
+}
+
+DenseMatrixHandle BuildFEVolRHSAlgo::run(FieldHandle input) const
+{
+ 
+ if (!input)
+ {
+    THROW_ALGORITHM_INPUT_ERROR("Could not obtain input field");
+ }
+
+ if (!input->vfield()->is_vector())
+ {
+    THROW_ALGORITHM_INPUT_ERROR("This function is only defined for elements with vector data");
+ }
+
+ if (input->vfield()->basis_order()!=0)
+ {
+    THROW_ALGORITHM_INPUT_ERROR("This function has only been defined for data that is located at the elements");
+ }
+ 
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ if (ctable)
+ {
+    if ((ctable->ncols() != 1)&&(ctable->ncols() != 3))
+    {
+      THROW_ALGORITHM_INPUT_ERROR("Vector table needs to have 1 or 3");
+     
     } 
-    if (vtable->nrows() == 0)
+    if (ctable->nrows() == 0)
     { 
-      error("Vector table is empty");
-      algo_end(); return (false);
+      THROW_ALGORITHM_INPUT_ERROR("Vector table is empty");
     }
   }
+ #endif 
 
-  Handle<FEMVolRHSBuilder> builder = new FEMVolRHSBuilder(this);
-  // Call the the none pure version
+ LOG_DEBUG(" Note: The original SCIRun4 module looked for a field attribute ''conductivity_table'' of the second module input which could only be set outside of SCIRun4. This function is not available in SCIRun5. " << std::endl);
 
-  if (get_bool("generate_basis"))
+ FEMVolRHSBuilder builder(this);
+ 
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+   if (get_bool("generate_basis"))
   {
     BuildFEVolRHSPrivateData* privatedata;
     get_privatedata(privatedata);
@@ -1160,19 +856,30 @@ run(FieldHandle input, MatrixHandle vtable, MatrixHandle& output)
       algo_end(); return (false);
     }
   }
-
-  builder->build_RHS_Vol(input,vtable,output);
-
-  if (output.get_rep() == 0)
+ #endif 
+ 
+  DenseMatrixHandle output = builder.build_RHS_Vol(input);
+ 
+  if (!output)
   {    
-    error("Could not build output matrix");
-    algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("Could not build output matrix");
   }
-  
-  algo_end(); return (true);
+
+ return output;
 }
 
-} // end namespace SCIRun
+AlgorithmOutput BuildFEVolRHSAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto mesh = input.get<Field>(Mesh);
+ 
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+  auto ctable = input.get<DenseMatrix>(Vector_Table);
+ #endif 
 
+  DenseMatrixHandle volrhs = run(mesh);
+  
+  AlgorithmOutput output;
+  output[RHS] = volrhs;
+  return output;
+}
 
-#endif

@@ -26,6 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@file BuildFEVolRHS.h
+///@brief This module computes a volumetric right-hand-side. This module is needed for TMS simulations in the BrainStimulator package.
+///
+///@author
+/// ported by Moritz Dannhauer (09/24/2014) from SCIRun4
+///
+///@details
+/// Calculates the divergence of a vector field over the volume. It is designed to calculate the volume integral of the vector field 
+/// (gradient of the potential in electrical simulations). Builds the volume portion of the RHS of FE calculations where the RHS of 
+/// the function is GRAD dot F.
+/// Input: A FE mesh with field vectors distributed on the elements (constant basis). Output: The Grad dot F
+
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H 1
 
@@ -44,13 +56,14 @@ class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
   public:
     BuildFEVolRHSAlgo();
     static AlgorithmInputName Mesh;
-    static AlgorithmInputName Vector_Table;
     static AlgorithmOutputName RHS;
     static AlgorithmParameterName vectorTableBasisMatrices();
     
-    
-    
-   Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const;  
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER      
+   Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const; 
+  #endif
+  
+   Datatypes::DenseMatrixHandle run(FieldHandle input) const; 
    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 private:
    mutable int generation_;

@@ -29,18 +29,15 @@
 
 SET(Interface_Modules_FiniteElements_FORMS
  TDCSSimulatorDialog.ui
- BuildFEVolRHS.ui
 )
 
 SET(Interface_Modules_FiniteElements_HEADERS
   TDCSSimulatorDialog.h
-  BuildFEVolRHSDialog.h 
- share.h
+  share.h
 )
 
 SET(Interface_Modules_FiniteElements_SOURCES 
   TDCSSimulatorDialog.cc
-  BuildFEVolRHSDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_FiniteElements_FORMS_HEADERS ${Interface_Modules_FiniteElements_FORMS})
