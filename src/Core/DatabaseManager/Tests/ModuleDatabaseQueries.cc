@@ -41,12 +41,12 @@ protected:
     if (!CreateDatabaseFromScratch())
       throw std::runtime_error("Failure setting up new copy of module database in memory.");
   }
-  
+
   static DatabaseManager moduleDb_;
 
   static boost::filesystem::path moduleDatabasePath()
   {
-    return TestResources::rootDir() / "databases" / "scirun5modules.db";
+    return TestResources::rootDir() / "Databases" / "scirun5modules.db";
   }
 
   static bool loadModuleDatabase()
@@ -77,10 +77,10 @@ protected:
     "('GenerateROIStatistics',          1,        0,                  0,              0,          0,              0,                    1,                  0,                              0,             0),"
     "('SetConductivitiesToTetMesh',     1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
     "('SetupRHSforTDCSandTMS',          1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
-    // Bundle                                                                                                                                                                                                
+    // Bundle
     "('GetFieldsFromBundle',            1,        1,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('InsertFieldsIntoBundle',         1,        1,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
-    // ChangeFieldData                                                                                                                                                                                       
+    // ChangeFieldData
     "('ApplyMappingMatrix',             1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
     "('CalculateFieldData',             1,        1,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('CalculateGradients',             1,        1,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
@@ -91,12 +91,12 @@ protected:
     "('MapFieldDataFromElemToNode',     1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
     "('MapFieldDataFromNodeToElem',     1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
     "('SetFieldData',                   1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
-    // ChangeMesh                                                                                                                                                                                            
+    // ChangeMesh
     "('AlignMeshBoundingBoxes',         1,        0,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
     "('ConvertQuadSurfToTriSurf',       1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('GetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('SetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
-    // DataIO                                                                                                                                                                                                
+    // DataIO
     "('ReadField',                      1,        1,                  1,              0,          0,              0,                    0,                  0,                              1,             0),"
     "('ReadNRRD',                       0,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
     "('ReadMatrix',                     1,        1,                  1,              0,          1,              1,                    1,                  0,                              1,             0),"
@@ -109,11 +109,11 @@ protected:
     //  std::cout << "INSERT ERROR:\n\t" << error << std::endl;
 
     //stmt = "INSERT INTO modules VALUES "
-    // FiniteElements                                                                                                                                                                                        
+    // FiniteElements
     "('BuildFEMatrix',                  1,        1,                  1,              0,          0,              0,                    1,                  0,                              1,             0),"
     "('BuildTDCSMatrix',                1,        1,                  0,              0,          0,              0,                    1,                  0,                              0,             0),"
     "('tDCSSimulator',                  1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    // Math                                                                                                                                                                                                  
+    // Math
     "('AddKnownsToLinearSystem',        1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
     "('AppendMatrix',                   1,        1,                  1,              0,          1,              0,                    1,                  0,                              1,             1),"
     "('ConvertMatrixType',              1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
@@ -124,9 +124,9 @@ protected:
     "('SelectSubMatrix',                1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
     "('SolveLinearSystem',              1,        1,                  0,              0,          1,              0,                    1,                  1,                              1,             0),"
     "('SolveMinNormLeastSqSystem',      1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
-    // MiscField                                                                                                                                                                                             
+    // MiscField
     "('ReportFieldInfo',                1,        1,                  1,              0,          0,              0,                    1,                  0,                              1,             0),"
-    // NewField                                                                                                                                                                                              
+    // NewField
     "('CreateLatVol',                   1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('GetDomainBoundary',              1,        1,                  0,              0,          0,              0,                    1,                  1,                              1,             0),"
     "('GetFieldBoundary',               1,        0,                  0,              0,          0,              0,                    1,                  0,                              1,             0),"
@@ -135,18 +135,18 @@ protected:
     "('SplitFieldByDomain',             1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
     "('SplitFieldByConnectedRegion',    1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
     "('SimulateForwardMagneticField',   1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    // Render                                                                                                                                                                                                
+    // Render
     "('ViewScene',                      1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
-    // String                                                                                                                                                                                                
+    // String
     "('CreateString',                   1,        0,                  0,              0,          0,              0,                    0,                  0,                              1,             0),"
     "('PrintDatatype',                  1,        1,                  1,              0,          0,              0,                    0,                  0,                              0,             0),"
-    // Testing                                                                                                                                                                                               
+    // Testing
     "('DynamicPortTester',              1,        1,                  1,              0,          0,              0,                    0,                  0,                              0,             0),"
     "('ReceiveScalar',                  1,        0,                  0,              1,          1,              0,                    0,                  0,                              0,             0),"
     "('ReceiveTestMatrix',              1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
     "('SendScalar',                     1,        0,                  1,              1,          1,              0,                    0,                  0,                              0,             0),"
     "('SendTestMatrix',                 1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
-    // Visualization                                                                                                                                                                                         
+    // Visualization
     "('CreateStandardColorMap',         1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('ShowField',                      1,        1,                  1,              0,          0,              0,                    0,                  0,                              1,             0)";
 

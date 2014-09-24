@@ -32,7 +32,7 @@
 #include <Modules/BrainStimulator/GenerateROIStatistics.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
-#include <string> 
+#include <string>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
@@ -56,35 +56,35 @@ namespace
 {
   FieldHandle CreateGetMeshSolution()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "generateroistatistics/mesh_sol.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/generateroistatistics/mesh_sol.fld");
   }
-  
+
   FieldHandle CreateCoordinatesCubesShiftedBy10()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "generateroistatistics/coordinates_cubes_shifted_by_10.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/generateroistatistics/coordinates_cubes_shifted_by_10.fld");
   }
-  
+
   FieldHandle CreateCoordinatesCubes()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "generateroistatistics/coordinates_cubes.fld");
-  } 
-  
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/generateroistatistics/coordinates_cubes.fld");
+  }
+
   FieldHandle CreateAtlas()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "generateroistatistics/atlas.fld");
-  } 
-  
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/generateroistatistics/atlas.fld");
+  }
+
   // scalar fields covered by the algorithm tests
 }
 
 TEST_F(GenerateROIStatisticsTests, WrongDatatypeOnPortException)
 {
   auto test = makeModule("GenerateROIStatistics");
-  
+
   FieldHandle atlas = CreateAtlas();
-  FieldHandle createcoordcubes = CreateCoordinatesCubes();	
+  FieldHandle createcoordcubes = CreateCoordinatesCubes();
   FieldHandle createcoordcubesshiftby10 = CreateCoordinatesCubesShiftedBy10();
-  FieldHandle createmeshsolution = CreateGetMeshSolution();	
+  FieldHandle createmeshsolution = CreateGetMeshSolution();
   StringHandle str1(new String("Region1;Region2;Region3;Region4;Region5;Region6;Region7;Region8"));
   StringHandle str2(new String("[A/m*m]"));
   StringHandle str3(new String("Talairach"));
@@ -94,21 +94,21 @@ TEST_F(GenerateROIStatisticsTests, WrongDatatypeOnPortException)
   stubPortNWithThisData(test, 3, atlas);
   stubPortNWithThisData(test, 4, str3);
   stubPortNWithThisData(test, 5, createcoordcubes);
-  
-  
+
+
   EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
-   
+
 }
 
 
 TEST_F(GenerateROIStatisticsTests, RunItThroughWithValidInputs)
 {
   auto test = makeModule("GenerateROIStatistics");
-  
+
   FieldHandle atlas = CreateAtlas();
-  FieldHandle createcoordcubes = CreateCoordinatesCubes();	
+  FieldHandle createcoordcubes = CreateCoordinatesCubes();
   FieldHandle createcoordcubesshiftby10 = CreateCoordinatesCubesShiftedBy10();
-  FieldHandle createmeshsolution = CreateGetMeshSolution();	
+  FieldHandle createmeshsolution = CreateGetMeshSolution();
   StringHandle str1(new String("Region1;Region2;Region3;Region4;Region5;Region6;Region7;Region8"));
   StringHandle str2(new String("[A/m*m]"));
   StringHandle str3(new String("Talairach"));
@@ -118,8 +118,8 @@ TEST_F(GenerateROIStatisticsTests, RunItThroughWithValidInputs)
   stubPortNWithThisData(test, 3, str1);
   stubPortNWithThisData(test, 4, createcoordcubes);
   stubPortNWithThisData(test, 5, str3);
-  
-  EXPECT_NO_THROW(test->execute());  
+
+  EXPECT_NO_THROW(test->execute());
 }
 
 TEST_F(GenerateROIStatisticsTests, ThrowsForNullInput)
