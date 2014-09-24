@@ -104,9 +104,10 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
 
     auto sp = matrix_cast::as_sparse(matrix);
 
-    DenseMatrix a(2, 3);
-    a << 1, 0, 3.5,
-      -1, 2, 0;
+    DenseMatrix a(3, 4);
+    a << 1, 0, 0, -1,
+      0, 2, 0, 0,
+      0, 0, 3, 0;
 
     EXPECT_EQ(a, *matrix_convert::to_dense(matrix));
 #if !DEBUG
@@ -128,11 +129,11 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
     ASSERT_TRUE(matrix_is::dense(matrix));
 
     auto dense = matrix_cast::as_dense(matrix);
-    EXPECT_EQ(1, dense->cols());
-    EXPECT_EQ(428931, dense->rows());
-    EXPECT_NEAR(-7.86543, dense->minCoeff(), 1e-4);
-    EXPECT_NEAR(8.90886, dense->maxCoeff(), 1e-4);
-    EXPECT_DOUBLE_EQ(-0.346299309398506, (*dense)(0,0));
+    EXPECT_EQ(4, dense->cols());
+    EXPECT_EQ(3, dense->rows());
+    EXPECT_NEAR(-1, dense->minCoeff(), 1e-12);
+    EXPECT_NEAR(3, dense->maxCoeff(), 1e-12);
+    EXPECT_DOUBLE_EQ(1, (*dense)(0,0));
   }
   else
     FAIL() << "file " << filename.string() << " does not exist, skipping test." << std::endl;
@@ -150,10 +151,10 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealASCIIMatFile)
 
     auto col = matrix_cast::as_column(matrix);
     EXPECT_EQ(1, col->cols());
-    EXPECT_EQ(428931, col->rows());
-    EXPECT_NEAR(-7.86543, col->minCoeff(), 1e-4);
-    EXPECT_NEAR(8.90886, col->maxCoeff(), 1e-4);
-    EXPECT_DOUBLE_EQ(-0.346299309398506, (*col)(0,0));
+    EXPECT_EQ(5, col->rows());
+    EXPECT_NEAR(-4, col->minCoeff(), 1e-12);
+    EXPECT_NEAR(3, col->maxCoeff(), 1e-12);
+    EXPECT_DOUBLE_EQ(1, (*col)[0]);
   }
   else
     FAIL() << "file " << filename.string() << " does not exist, skipping test." << std::endl;
