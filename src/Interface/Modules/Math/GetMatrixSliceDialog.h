@@ -26,6 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
+#ifndef INTERFACE_MODULES_MATH_GETMATRIXSLICE_H
+#define INTERFACE_MODULES_MATH_GETMATRIXSLICE_H
 
-/// @todo 
+#include "Interface/Modules/Math/ui_GetMatrixSlice.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
+
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE GetMatrixSliceDialog : public ModuleDialogGeneric, 
+  public Ui::GetMatrixSlice
+{
+	Q_OBJECT
+	
+public:
+  GetMatrixSliceDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
+
+}
+}
+
+#endif

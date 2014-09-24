@@ -26,17 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#include <Interface/Modules/Math/GetMatrixSliceDialog.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 
-namespace SCIRun {
-namespace Modules {
-namespace Basic {
-  /// @todo 
- 
+GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-}}}
+  addSpinBoxManager(indexSpinBox_, Parameters::SliceIndex);
+  addTwoChoiceBooleanComboBoxManager(rowColumnComboBox_, Parameters::IsSliceColumn);
+}
 
-#endif
+void GetMatrixSliceDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

@@ -1217,8 +1217,8 @@ AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) 
   {
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
   }
-
+  
   AlgorithmOutput output;
-  output[Variables::Solution] = solution;
+  output[Variables::Solution] = boost::make_shared<DenseMatrix>(solution->col(0));
   return output;
 }

@@ -26,17 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_REPORTMATRIXINFOSTATE_H
-#define MODULES_MATH_REPORTMATRIXINFOSTATE_H
+/// @todo Documentation Modules/Math/GetMatrixSlice.cc
 
-#include <Dataflow/Network/Module.h>
+#include <Modules/Math/GetMatrixSlice.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace Basic {
-  /// @todo
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Dataflow::Networks;
 
+const ModuleLookupInfo GetMatrixSlice::staticInfo_("GetMatrixSlice", "Math", "SCIRun");
 
-}}}
+GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(OutputMatrix);
+}
 
-#endif
+void GetMatrixSlice::setStateDefaults()
+{
+  setStateBoolFromAlgo(Parameters::IsSliceColumn);
+  setStateIntFromAlgo(Parameters::SliceIndex);
+}
+
+void GetMatrixSlice::execute()
+{
+  auto input = getRequiredInput(InputMatrix);
+  if (needToExecute())
+  {
+    setAlgoBoolFromState(Parameters::IsSliceColumn);
+    setAlgoIntFromState(Parameters::SliceIndex);
+    auto output = algo().run(withInputData((InputMatrix, input)));
+    sendOutputFromAlgorithm(OutputMatrix, output);
+  }
+}

@@ -68,6 +68,7 @@ public:
   ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer);
   ~ConnectionLine();
   void setColor(const QColor& color);
+  void setColorAndWidth(const QColor& color, int width);
   QColor color() const; 
   ModuleIdPair getConnectedToModuleIds() const; 
   void updateNoteFromFile(const Note& note);
@@ -80,12 +81,14 @@ Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
 protected:
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override; 
-  void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-  void mouseMoveEvent(QGraphicsSceneMouseEvent * event) override; 
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override; 
+  void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override; 
   QVariant itemChange(GraphicsItemChange change, const QVariant& value);
-  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
   virtual void setNoteGraphicsContext() override;
+  void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+  void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
    
 private:
   PortWidget* fromPort_;
@@ -97,6 +100,7 @@ private:
   class ConnectionMenu* menu_;
   bool menuOpen_; 
   QColor placeHoldingColor_;
+  int placeHoldingWidth_;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};
