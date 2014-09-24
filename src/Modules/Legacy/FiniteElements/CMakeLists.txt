@@ -31,6 +31,7 @@
 SET(Modules_Legacy_FiniteElements_HEADERS
   BuildFEMatrix.h
   BuildTDCSMatrix.h
+  BuildFEVolRHS.h
 )
 
 SET(Modules_Legacy_FiniteElements_SRCS
@@ -40,7 +41,7 @@ SET(Modules_Legacy_FiniteElements_SRCS
   BuildFEMatrix.cc
   BuildTDCSMatrix.cc
   #BuildFESurfRHS.cc
-  #BuildFEVolRHS.cc
+  BuildFEVolRHS.cc
 )
     
 SCIRUN_ADD_LIBRARY(Modules_Legacy_FiniteElements

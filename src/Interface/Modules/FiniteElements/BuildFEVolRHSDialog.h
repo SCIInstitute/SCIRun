@@ -26,26 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Factory/ModuleDialogFactory.h>
-#include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
-#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
-#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
-#include <boost/assign.hpp>
-#include <boost/functional/factory.hpp>
+#ifndef INTERFACE_MODULES_BuildFEVolRHSDialog_H
+#define INTERFACE_MODULES_BuildFEVolRHSDialog_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace boost::assign;
+#include "Interface/Modules/FiniteElements/ui_BuildFEVolRHS.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/FiniteElements/share.h>
 
-void ModuleDialogFactory::addDialogsToMakerMap2()
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE BuildFEVolRHSDialog : public ModuleDialogGeneric, 
+  public Ui::BuildFEVolRHS
 {
-  insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(tDCSSimulator, TDCSSimulatorDialog)
-    ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
-    ADD_MODULE_DIALOG(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshDialog)
-    ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
-    ADD_MODULE_DIALOG(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSDialog)   
-  ;
+	Q_OBJECT
+	
+public:
+  BuildFEVolRHSDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
+
 }
+}
+
+#endif
