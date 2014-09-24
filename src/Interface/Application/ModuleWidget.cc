@@ -238,7 +238,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 {
   setupUi(this);
 
-  titleLabel_->setFont(QFont("Segoe UI", titleFontSize, QFont::Bold));
+  titleLabel_->setFont(QFont("Helvetica", titleFontSize, QFont::Bold));
   titleLabel_->setText(name);
 
   //TODO: ultra ugly. no other place for this code right now.
