@@ -78,6 +78,23 @@ GenerateROIStatisticsAlgorithm::GenerateROIStatisticsAlgorithm()
   addParameter(CoordinateSpaceLabelStr, std::string());
 }
 
+namespace
+{
+  std::string formatStatistic(double x)
+  {
+    if (IsNan(x))
+      return "NaN";
+    return boost::str(boost::format("%.3f") % x);
+  }
+
+  std::string formatCount(double x)
+  {
+    if (IsNan(x))
+      return "NaN";
+    return boost::str(boost::format("%d") % x);
+  }
+}
+
 /// the run function can deal with multiple inputs and performs the analysis for all ROIs in the atlas mesh and for the user specified ROI
 boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::run(FieldHandle mesh, FieldHandle AtlasMesh, const FieldHandle CoordinateSpace, const std::string& AtlasMeshLabels, const DenseMatrixHandle specROI) const
 {
@@ -249,11 +266,11 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
     {
       Variable::List tmp;
       tmp += makeVariable("name", AtlasMeshLabels_vector[i]), //label name
-        makeVariable("col0", boost::str(boost::format("%.3f") % (*output)(i,0))), //average
-        makeVariable("col1", boost::str(boost::format("%.3f") % (*output)(i,1))), //stddev
-        makeVariable("col2", boost::str(boost::format("%.3f") % (*output)(i,2))), //min
-        makeVariable("col3", boost::str(boost::format("%.3f") % (*output)(i,3))), //max
-        makeVariable("col4", boost::str(boost::format("%d") % (*output)(i,4))); //element count
+        makeVariable("col0", formatStatistic((*output)(i,0))), //average
+        makeVariable("col1", formatStatistic((*output)(i,1))), //stddev
+        makeVariable("col2", formatStatistic((*output)(i,2))), //min
+        makeVariable("col3", formatStatistic((*output)(i,3))), //max
+        makeVariable("col4", formatCount((*output)(i,4))); //element count
 
       elc_vals_in_table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp));
     }
