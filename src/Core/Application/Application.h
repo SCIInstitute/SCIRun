@@ -65,18 +65,19 @@ private:
 
 public:
   void readCommandLine(int argc, const char* argv[]);
-  
+
   CommandLine::ApplicationParametersHandle parameters() const;
   boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller();
 
   void executeCommandLineRequests(Commands::GlobalCommandFactoryHandle cmdFactory);
 
   boost::filesystem::path executablePath() const;
+  boost::filesystem::path configDirectory() const;
   bool get_user_directory( boost::filesystem::path& user_dir, bool config_path) const;
   bool get_config_directory( boost::filesystem::path& config_dir ) const;
   bool get_user_desktop_directory( boost::filesystem::path& user_desktop_dir ) const;
   bool get_user_name( std::string& user_name ) const;
-  
+
   std::string commandHelpString() const;
   std::string applicationName() const;
   std::string version() const;
@@ -102,10 +103,10 @@ public:
 
 private:
 	ApplicationPrivateHandle private_;
-  
+
 //public:
 //	static bool IsApplicationThread();
-//	static 
+//	static
 //	static int GetMajorVersion();
 //	static int GetMinorVersion();
 //	static int GetPatchVersion();

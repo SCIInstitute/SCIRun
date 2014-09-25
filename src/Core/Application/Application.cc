@@ -44,7 +44,7 @@
 
 // Includes for platform specific functions to get directory to store temp files and user data
 #ifdef _WIN32
-#include <shlobj.h>    
+#include <shlobj.h>
 #include <tlhelp32.h>
 #include <windows.h>
 #include <LMCons.h>
@@ -96,7 +96,7 @@ Application::Application() :
 	private_( new ApplicationPrivate )
 {
   private_->app_filepath_ = boost::filesystem::current_path();
-  SessionManager::Instance().initialize(private_->app_filepath_);
+  SessionManager::Instance().initialize(configDirectory());
   SessionManager::Instance().session()->beginSession();
 }
 
@@ -195,6 +195,14 @@ std::string Application::version() const
   return "5.0.0 developer version";
 }
 
+boost::filesystem::path Application::configDirectory() const
+{
+  boost::filesystem::path config;
+  if (!get_config_directory(config))
+    return executablePath();
+  return config;
+}
+
 // following ugly code copied from Seg3D.
 
 bool Application::get_user_directory( boost::filesystem::path& user_dir, bool config_path) const
@@ -240,7 +248,7 @@ bool Application::get_user_directory( boost::filesystem::path& user_dir, bool co
     if (! boost::filesystem::exists( user_dir ) )
     {
       Log::get() << ERROR_LOG << "Could not get user directory.";
-      return false;            
+      return false;
     }
 
     return true;
@@ -283,7 +291,7 @@ bool Application::get_user_desktop_directory( boost::filesystem::path& user_desk
     if (! boost::filesystem::exists( user_desktop_dir ) )
     {
       Log::get() << ERROR_LOG << "Could not get user desktop directory.";
-      return false;            
+      return false;
     }
 
 
@@ -302,7 +310,7 @@ bool Application::get_config_directory( boost::filesystem::path& config_dir ) co
   boost::filesystem::path user_dir;
   if ( !( get_user_directory( user_dir, true ) ) ) return false;
 
-#ifdef _WIN32	
+#ifdef _WIN32
   config_dir = user_dir / applicationName();
 #else
   std::string dot_app_name = std::string( "." ) + applicationName();
@@ -337,7 +345,7 @@ bool Application::get_user_name( std::string& user_name ) const
   else
   {
     Log::get() << ERROR_LOG << "Could not resolve user name.";
-    return false;	
+    return false;
   }
 #else
   if ( getenv( "USER" ) )
