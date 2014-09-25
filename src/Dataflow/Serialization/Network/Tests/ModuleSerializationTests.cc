@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -45,11 +45,11 @@ using namespace boost::assign;
 TEST(ModuleDescriptionXMLTest, CanSerializeModuleInfo)
 {
   ModuleLookupInfoXML info;
-  info.module_name_ = "ComputeSVD";  
+  info.module_name_ = "ComputeSVD";
   info.category_name_ = "Math";
   info.package_name_ = "SCIRun";
 
-  auto filename = TestResources::rootDir() / "info.xml";
+  auto filename = TestResources::rootDir() / "TransientOutput" / "info.xml";
 
   XMLSerializer::save_xml(info, filename.string(), "moduleInfo");
 
@@ -80,12 +80,12 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
   connections += conn, conn2;
 
   ModuleLookupInfoXML info1;
-  info1.module_name_ = "ComputeSVD";  
+  info1.module_name_ = "ComputeSVD";
   info1.category_name_ = "Math";
   info1.package_name_ = "SCIRun";
 
   ModuleLookupInfoXML info2;
-  info2.module_name_ = "CreateMatrix";  
+  info2.module_name_ = "CreateMatrix";
   info2.category_name_ = "Math";
   info2.package_name_ = "SCIRun";
 
@@ -99,5 +99,5 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
   NetworkXML network;
   network.connections = connections;
   network.modules = mods;
-  XMLSerializer::save_xml(network, (TestResources::rootDir() / "network.srn").string(), "network");
+  XMLSerializer::save_xml(network, (TestResources::rootDir() / "TransientOutput" / "network.srn").string(), "network");
 }

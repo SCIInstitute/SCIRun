@@ -30,6 +30,7 @@ SET(Modules_BrainStimulator_Tests_SRCS
   ElectrodeCoilSetupTests.cc
   SetConductivitiesToTetMeshTests.cc
   GenerateROIStatisticsTests.cc
+  SimulateForwardMagneticFieldTests.cc
   SetupRHSforTDCSandTMSTests
 )
 

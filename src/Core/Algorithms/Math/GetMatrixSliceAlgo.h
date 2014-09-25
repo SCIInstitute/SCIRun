@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,18 +25,33 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraBinaryState.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
 
-#include <Dataflow/Network/Module.h>
+#ifndef CORE_ALGORITHMS_MATH_GetMATRIXSLICE_H
+#define CORE_ALGORITHMS_MATH_GetMATRIXSLICE_H
+
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Basic {
-      /// @todo 
-    
-}}}
+	namespace Core {
+		namespace Algorithms {
+			namespace Math {
+
+        ALGORITHM_PARAMETER_DECL(IsSliceColumn);
+        ALGORITHM_PARAMETER_DECL(SliceIndex);
+
+        class SCISHARE GetMatrixSliceAlgo : public AlgorithmBase
+        {
+        public:
+          GetMatrixSliceAlgo();
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+          Datatypes::MatrixHandle runImpl(Datatypes::MatrixHandle matrix, int index, bool getColumn) const;
+        private:
+          void checkIndex(int index, int max) const;
+        };
+
+}}}}
 
 #endif

@@ -34,6 +34,7 @@ SET(Interface_Modules_Fields_FORMS
   FairMesh.ui
   ReportFieldInfoDialog.ui
   SplitFieldByDomain.ui
+  SplitFieldByConnectedRegionDialog.ui
   CreateFieldData.ui
   CalculateFieldData.ui
   InterfaceWithCleaverDialog.ui
@@ -58,6 +59,7 @@ SET(Interface_Modules_Fields_HEADERS
   FairMeshDialog.h
   ReportFieldInfoDialog.h
   SplitFieldByDomainDialog.h
+  SplitFieldByConnectedRegionDialog.h
   InterfaceWithCleaverDialog.h
   SetFieldDataDialog.h
   MapFieldDataFromElemToNodeDialog.h
@@ -81,6 +83,7 @@ SET(Interface_Modules_Fields_SOURCES
   FairMeshDialog.cc
   ReportFieldInfoDialog.cc
   SplitFieldByDomainDialog.cc
+  SplitFieldByConnectedRegionDialog.cc
   InterfaceWithCleaverDialog.cc
   SetFieldDataDialog.cc
   MapFieldDataFromElemToNodeDialog.cc

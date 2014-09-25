@@ -14,6 +14,8 @@
         <file>Resources/showAll.png</file>
         <file>Resources/faveNo.png</file>
         <file>Resources/faveYes.png</file>
-        <file>Resources/inflicted2X.png</file>
+        <file>Resources/SCIgrid-large.png</file>
+        <file>Resources/SCIgrid-medium.png</file>
+        <file>Resources/SCIgrid-small.png</file>
     </qresource>
 </RCC>

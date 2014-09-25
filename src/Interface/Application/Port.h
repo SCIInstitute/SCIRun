@@ -52,7 +52,30 @@ class ConnectionFactory;
 class ClosestPortFinder;
 class PortActionsMenu;
 
-class PortWidget : public QPushButton, public NeedsScenePositionProvider, public SCIRun::Dataflow::Networks::PortDescriptionInterface
+class PortWidgetBase : public QPushButton, public SCIRun::Dataflow::Networks::PortDescriptionInterface
+{
+public:
+  virtual SCIRun::Dataflow::Networks::PortId id() const = 0;
+  virtual size_t nconnections() const = 0;
+  virtual std::string get_typename() const = 0;
+  virtual std::string get_portname() const = 0;
+  virtual bool isInput() const = 0;
+  virtual bool isDynamic() const = 0;
+  virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const = 0;
+  virtual size_t getIndex() const = 0;
+
+  virtual QColor color() const = 0;
+  virtual bool isLightOn() const = 0;
+
+  static const int WIDTH = 11;
+
+protected:
+  explicit PortWidgetBase(QWidget* parent);
+  virtual QSize sizeHint() const override;
+  virtual void paintEvent(QPaintEvent* event) override;
+};
+
+class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider
 {
   Q_OBJECT
 public:
@@ -62,7 +85,7 @@ public:
   virtual ~PortWidget();
 
   QString name() const { return name_; }
-  QColor color() const { return color_; }
+  virtual QColor color() const override { return color_; }
   virtual bool isInput() const { return isInput_; }
   virtual bool isDynamic() const { return isDynamic_; }
   bool isConnected() const { return isConnected_; }
@@ -80,9 +103,7 @@ public:
   void toggleLight();
   void turn_on_light();
   void turn_off_light();
-  bool isLightOn() const { return lightOn_; }
-
-  QSize sizeHint() const;
+  virtual bool isLightOn() const override { return lightOn_; }
 
   void addConnection(ConnectionLine* c);
   void removeConnection(ConnectionLine* c);
@@ -99,8 +120,6 @@ public:
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
 
-  static const int WIDTH = 11;
-
 protected:
   virtual void moveEvent(QMoveEvent * event);
 
@@ -116,10 +135,9 @@ Q_SIGNALS:
   void portMoved();
   void connectionNoteChanged();
 protected:
-  void mousePressEvent(QMouseEvent* event);
-  void mouseReleaseEvent(QMouseEvent* event);
-  void mouseMoveEvent(QMouseEvent* event);
-  void paintEvent(QPaintEvent* event);
+  virtual void mousePressEvent(QMouseEvent* event) override;
+  virtual void mouseReleaseEvent(QMouseEvent* event) override;
+  virtual void mouseMoveEvent(QMouseEvent* event) override;
 private:
   void performDrag(const QPointF& endPos);
   void makeConnection(const QPointF& pos);
@@ -146,6 +164,24 @@ private:
   //TODO
   typedef std::map<std::string, std::map<bool, std::map<SCIRun::Dataflow::Networks::PortId, PortWidget*>>> PortWidgetMap;
   static PortWidgetMap portWidgetMap_;
+};
+
+// To fill the layout
+class BlankPort : public PortWidgetBase
+{
+public:
+  explicit BlankPort(QWidget* parent);
+  virtual SCIRun::Dataflow::Networks::PortId id() const;
+  virtual size_t nconnections() const { return 0; }
+  virtual std::string get_typename() const { return ""; }
+  virtual std::string get_portname() const { return "<Blank>"; }
+  virtual bool isInput() const { return false; }
+  virtual bool isDynamic() const { return false; }
+  virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const;// { return "<Blank>"; }
+  virtual size_t getIndex() const { return 0; }
+
+  virtual QColor color() const;
+  virtual bool isLightOn() const { return false; }
 };
 
 class InputPortWidget : public PortWidget 

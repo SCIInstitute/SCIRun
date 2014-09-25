@@ -39,6 +39,7 @@
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Logging/Log.h>
 #include <Core/IEPlugin/IEPluginInit.h>
+#include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
 
 using namespace SCIRun::Core;
@@ -82,13 +83,34 @@ Application::~Application()
   SessionManager::Instance().session()->endSession();
 }
 
+void Application::shutdown()
+{
+  if (!private_)
+    Log::get() << NOTICE << "Application shutdown called with null internals" << std::endl;
+  try
+  {
+    private_.reset();
+  }
+  catch (std::exception& e)
+  {
+    Log::get() << EMERG << "Unhandled exception during application shutdown: " << e.what() << std::endl;
+  }
+  catch (...)
+  {
+    Log::get() << EMERG << "Unknown unhandled exception during application shutdown" << std::endl;
+  }
+}
+
 ApplicationParametersHandle Application::parameters() const
 {
+  ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
   return private_->parameters_;
 }
 
 void Application::readCommandLine(int argc, const char* argv[])
 {
+  ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+
   private_->app_filename_ = boost::filesystem::path( argv[0] );
   private_->app_filepath_ = private_->app_filename_.parent_path();
   private_->parameters_ = private_->parser.parse(argc, argv);
@@ -98,6 +120,8 @@ void Application::readCommandLine(int argc, const char* argv[])
 
 NetworkEditorControllerHandle Application::controller()
 {
+  ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+
   if (!private_->controller_)
   {
     /// @todo: these all get configured
@@ -116,6 +140,8 @@ NetworkEditorControllerHandle Application::controller()
 
 void Application::executeCommandLineRequests(Commands::GlobalCommandFactoryHandle cmdFactory)
 {
+  ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+
   GlobalCommandBuilderFromCommandLine builder(cmdFactory);
   auto queue = builder.build(parameters());
   queue->runAll();
@@ -123,11 +149,15 @@ void Application::executeCommandLineRequests(Commands::GlobalCommandFactoryHandl
 
 boost::filesystem::path Application::executablePath() const
 {
+  ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+
   return private_->app_filepath_;
 }
 
 std::string Application::commandHelpString() const
 {
+  ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+
   return private_->parser.describe();
 }
 

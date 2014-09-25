@@ -26,45 +26,50 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@file BuildFEVolRHS.h
+///@brief This module computes a volumetric right-hand-side. This module is needed for TMS simulations in the BrainStimulator package.
+///
+///@author
+/// ported by Moritz Dannhauer (09/24/2014) from SCIRun4
+///
+///@details
+/// Calculates the divergence of a vector field over the volume. It is designed to calculate the volume integral of the vector field 
+/// (gradient of the potential in electrical simulations). Builds the volume portion of the RHS of FE calculations where the RHS of 
+/// the function is GRAD dot F.
+/// Input: A FE mesh with field vectors distributed on the elements (constant basis). Output: The Grad dot F
 
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEVOLRHS_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <vector>
+#include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+			namespace FiniteElements {
 
-// for Windows support
-#include <Core/Algorithms/FiniteElements/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE BuildFEVolRHSAlgo : public AlgoBase
+class SCISHARE BuildFEVolRHSAlgo : public AlgorithmBase
 {
   public:
-    BuildFEVolRHSAlgo()
-    { 
-      // Number of processors to use
-      add_int("num_processors",-1);
-      
-      // Store intermediate results to speed up computation for
-      // for instance vector search
-      // This option only works for an indexed vector table
-      add_bool("generate_basis",false);
-    }
+    BuildFEVolRHSAlgo();
+    static AlgorithmInputName Mesh;
+    static AlgorithmOutputName RHS;
+    static AlgorithmParameterName vectorTableBasisMatrices();
     
-    bool run(FieldHandle input,
-             MatrixHandle vtable,
-             MatrixHandle& output);
-
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER      
+   Datatypes::DenseMatrixHandle run(FieldHandle input, Datatypes::DenseMatrixHandle ctable) const; 
+  #endif
+  
+   Datatypes::DenseMatrixHandle run(FieldHandle input) const; 
+   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
+private:
+   mutable int generation_;
+   mutable Datatypes::MatrixHandle basis_fevolrhs_;
 };
 
-} // end namespace SCIRun
+}}}}
 
-#endif 
+#endif
