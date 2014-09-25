@@ -154,7 +154,7 @@ class SessionFile : public SessionBackEnd
 {
 public:
   explicit SessionFile(const boost::filesystem::path& file) : file_(file), stream_(file.string().c_str(), std::ios_base::app),
-    locale_(stream_.getloc(), new boost::posix_time::time_facet("%D %T"))
+    locale_(stream_.getloc(), new boost::posix_time::time_facet("%x %X"))
   {
   }
   virtual void consume(const std::string& statement)
