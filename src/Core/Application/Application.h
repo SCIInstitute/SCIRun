@@ -72,7 +72,13 @@ public:
   void executeCommandLineRequests(Commands::GlobalCommandFactoryHandle cmdFactory);
 
   boost::filesystem::path executablePath() const;
+  bool get_user_directory( boost::filesystem::path& user_dir, bool config_path) const;
+  bool get_config_directory( boost::filesystem::path& config_dir ) const;
+  bool get_user_desktop_directory( boost::filesystem::path& user_desktop_dir ) const;
+  bool get_user_name( std::string& user_name ) const;
+  
   std::string commandHelpString() const;
+  std::string applicationName() const;
   std::string version() const;
 
   void shutdown();
@@ -83,10 +89,6 @@ public:
 	void log_start();
 	void log_finish();
 
-  bool get_user_directory( boost::filesystem::path& user_dir, bool config_path = false );
-	bool get_config_directory( boost::filesystem::path& config_dir );
-	bool get_user_desktop_directory( boost::filesystem::path& user_desktop_dir );
-	bool get_user_name( std::string& user_name );
 	bool get_application_filepath( boost::filesystem::path& app_filepath );
 	bool get_application_filename( boost::filesystem::path& app_filename );
 
