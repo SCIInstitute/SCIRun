@@ -42,12 +42,26 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
 
+// Includes for platform specific functions to get directory to store temp files and user data
 #ifdef _WIN32
 #include <shlobj.h>    
 #include <tlhelp32.h>
 #include <windows.h>
 #include <LMCons.h>
 #include <psapi.h>
+#else
+#include <stdlib.h>
+#include <sys/types.h>
+#ifndef __APPLE__
+#include <unistd.h>
+#include <sys/sysinfo.h>
+#else
+#include <unistd.h>
+#include <sys/utsname.h>
+#include <sys/sysctl.h>
+#include <sys/param.h>
+#include <sys/mount.h>
+#endif
 #endif
 
 using namespace SCIRun::Core;
