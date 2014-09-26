@@ -96,7 +96,9 @@ Application::Application() :
 	private_( new ApplicationPrivate )
 {
   private_->app_filepath_ = boost::filesystem::current_path();
-  SessionManager::Instance().initialize(configDirectory());
+  auto configDir = configDirectory();
+  Log::setLogDirectory(configDir);
+  SessionManager::Instance().initialize(configDir);
   SessionManager::Instance().session()->beginSession();
 }
 

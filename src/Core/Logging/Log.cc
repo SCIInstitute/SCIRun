@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -60,12 +60,12 @@ namespace SCIRun
       class LogImpl
       {
       public:
-        LogImpl() : cppLogger_(log4cpp::Category::getRoot()), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
+        LogImpl() : name_("root"), cppLogger_(log4cpp::Category::getRoot()), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
           setAppenders();
         }
 
-        LogImpl(const std::string& name) : cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
+        explicit LogImpl(const std::string& name) : name_(name), cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
           /// @todo
           setAppenders();
@@ -84,7 +84,7 @@ namespace SCIRun
           return latestStream_;
         }
 
-        bool verbose() const 
+        bool verbose() const
         {
           return cppLogger_.getPriority() == log4cpp::Priority::DEBUG;
         }
@@ -114,7 +114,7 @@ namespace SCIRun
           case NOTICE: cpp_level = log4cpp::Priority::NOTICE; break;
           case INFO:   cpp_level = log4cpp::Priority::INFO;   break;
           case DEBUG_LOG:  cpp_level = log4cpp::Priority::DEBUG;  break;
-          default:         
+          default:
             THROW_INVALID_ARGUMENT("Unknown log level: " + boost::lexical_cast<std::string>((int)level));
           };
           if (cpp_level == log4cpp::Priority::NOTSET)
@@ -125,6 +125,7 @@ namespace SCIRun
         }
 
       private:
+        std::string name_;
         log4cpp::Category& cppLogger_;
         Log::Stream latestStream_;
 
@@ -148,7 +149,8 @@ namespace SCIRun
           }
           appender1->setLayout(layout1);
 
-          log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "scirun5.log");
+          boost::filesystem::path file = Log::logDirectory() / ("scirun5_" + name_ + ".log");
+          log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", file.string());
           auto layout2 = new log4cpp::PatternLayout();
           std::string backupPattern2 = layout1->getConversionPattern();
           try
@@ -174,11 +176,16 @@ namespace SCIRun
 
 Log::Log() : impl_(new LogImpl)
 {
-} 
+}
 
 Log::Log(const std::string& name) : impl_(new LogImpl(name))
 {
 }
+
+boost::filesystem::path Log::directory_(".");
+
+boost::filesystem::path Log::logDirectory() { return directory_; }
+void Log::setLogDirectory(const boost::filesystem::path& dir) { directory_ = dir; }
 
 Log& Log::get()
 {

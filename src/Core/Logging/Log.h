@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,16 +28,17 @@
 /// @todo Documentation Core/Logging/Log.h
 
 #ifndef CORE_LOGGING_LOG_H
-#define CORE_LOGGING_LOG_H 
+#define CORE_LOGGING_LOG_H
 
 #include <string>
 #include <Core/Logging/LoggerFwd.h>
 #ifndef Q_MOC_RUN
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem/path.hpp>
 #endif
 #include <Core/Logging/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
@@ -67,6 +68,9 @@ namespace SCIRun
         static Log& get();
         static Log& get(const std::string& name);
 
+        static void setLogDirectory(const boost::filesystem::path& dir);
+        static boost::filesystem::path logDirectory();
+
         class SCISHARE Stream
         {
         public:
@@ -95,6 +99,7 @@ namespace SCIRun
         Log& operator=(const Log&)/* =delete*/;
         Log& operator=(Log&&)/* =delete*/;
 
+        static boost::filesystem::path directory_;
       private:
         friend class Stream;
         boost::shared_ptr<class LogImpl> impl_;
