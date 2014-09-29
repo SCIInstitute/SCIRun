@@ -114,12 +114,14 @@ GenericWriter<HType, PortTag>::execute()
   // If there is an optional input string set the filename to it in the GUI.
   /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
-  if (!fileOption)
-    filename_ = get_state()->getValue(stateFilename_).toString();
-  else
+  if (fileOption && *fileOption)
   {
-    filename_ = (*fileOption)->value();
+    get_state()->setValue(stateFilename_, (*fileOption)->value());
+  }
 
+  filename_ = get_state()->getValue(stateFilename_).toFilename().string();
+
+  {
     boost::filesystem::path path(filename_);
     path = boost::filesystem::absolute(path);
     if (!boost::filesystem::exists(path.parent_path()))
