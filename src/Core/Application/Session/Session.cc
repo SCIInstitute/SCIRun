@@ -236,7 +236,10 @@ private:
   {
     std::cout << "DB consume: " << statement << std::endl;
     //TODO: use Parameters
-    std::string stmt = "INSERT INTO Trace VALUES (" + statement + ")";
+    std::string dequoted(statement);
+    dequoted.erase(std::remove(dequoted.begin(), dequoted.end(), '\"'), dequoted.end());
+    dequoted.erase(std::remove(dequoted.begin(), dequoted.end(), '\''), dequoted.end());
+    std::string stmt = "INSERT INTO Trace VALUES ('" + statement + "')";
     std::string error;
     return db_.run_sql_statement(stmt, error);
   }
