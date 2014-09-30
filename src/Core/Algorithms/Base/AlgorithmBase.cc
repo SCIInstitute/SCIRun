@@ -61,6 +61,25 @@ Name::Name(const std::string& name) : name_(name)
 
 AlgorithmBase::~AlgorithmBase() {}
 
+Variable::Variable(const Name& name, const Value& value) : name_(name)
+{
+  setValue(value);
+}
+
+void Variable::setValue(const Value& val)
+{
+  value_ = val;
+
+  {
+    if (boost::get<std::string>(&val))
+    {
+      auto stringPath = toString();
+      if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDir().string(), AlgorithmParameterHelper::dataDirPlaceholder()))
+        value_ = stringPath;
+    }
+  }
+}
+
 int AlgorithmParameter::toInt() const
 {
   const int* v = boost::get<int>(&value_);

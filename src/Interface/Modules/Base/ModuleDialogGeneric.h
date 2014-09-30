@@ -60,6 +60,7 @@ namespace Gui {
     virtual void pull() = 0;
     void pull_newVersionToReplaceOld();
   Q_SIGNALS:
+    void pullSignal();
     void executionTimeChanged(int time);
     void executeActionTriggered();
   protected:
