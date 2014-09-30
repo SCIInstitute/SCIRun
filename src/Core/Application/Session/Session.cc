@@ -234,7 +234,7 @@ private:
 
   bool insertRow(const std::string& statement)
   {
-    std::cout << "DB consume: " << statement << std::endl;
+    //std::cout << "DB consume: " << statement << std::endl;
     //TODO: use Parameters
     std::string dequoted(statement);
     dequoted.erase(std::remove(dequoted.begin(), dequoted.end(), '\"'), dequoted.end());
@@ -281,7 +281,7 @@ SessionHandle SessionBuilder::build(const boost::filesystem::path& file)
   {
   	std::cout << "Error creating DB session back end: " << e.what() << std::endl;
   }
-  
+
   try
   {
     boost::filesystem::path textFile(file);
