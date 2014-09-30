@@ -217,7 +217,9 @@ SessionHandle SessionBuilder::build(const boost::filesystem::path& file)
   // if db fail, create file version
 // TODO
   // for now just make file version
-  SessionBackEndHandle backend(new detail::SessionFile(file));
+  boost::filesystem::path textFile(file);
+  textFile.replace_extension(".txt");
+  SessionBackEndHandle backend(new detail::SessionFile(textFile));
   return boost::make_shared<detail::BasicSession>(backend);
 }
 
