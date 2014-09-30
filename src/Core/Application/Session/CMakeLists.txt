@@ -43,6 +43,7 @@ SCIRUN_ADD_LIBRARY(Core_Application_Session
 TARGET_LINK_LIBRARIES(Core_Application_Session
   Core_Logging
   Algorithms_Base
+  Core_DatabaseManager
   ${SCI_BOOST_LIBRARY}
 )
 

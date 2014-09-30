@@ -79,10 +79,6 @@ namespace Core
   {
   };
 
-  struct SCISHARE InvalidArgumentValue : virtual ExceptionBase
-  {
-  };
-  
   /// @todo should not need this in production code.
   //
   // Any prototype code using this exception should be reviewed and improved!!!
@@ -94,12 +90,7 @@ namespace Core
   BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() << SCIRun::Core::DimensionMismatchInfo( \
     SCIRun::Core::DimensionMismatchInfo::value_type( \
       std::string(message) )))
-
-#define REPORT_INVALID_ARGUMENT_VALUE(message) \
-  BOOST_THROW_EXCEPTION(SCIRun::Core::InvalidArgumentValue() << SCIRun::Core::InvalidArgumentValueInfo( \
-    SCIRun::Core::InvalidArgumentValueInfo::value_type( \
-      std::string(message) )))
-  
+ 
 /// @todo should not need this in production code.
 //
 // Any prototype code using this exception should be reviewed and improved!!!

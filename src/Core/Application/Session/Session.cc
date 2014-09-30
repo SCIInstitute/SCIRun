@@ -29,15 +29,19 @@
 #include <Core/Application/Session/Session.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Logging/Log.h>
+#include <Core/DatabaseManager/DatabaseManager.h>
+#include <Core/Utils/Exception.h>
 #include <boost/filesystem.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/foreach.hpp>
 #include <fstream>
 #include <locale>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Database;
 
 CORE_SINGLETON_IMPLEMENTATION( SessionManager );
 
@@ -197,30 +201,97 @@ public:
 class SessionTraceDB : public SessionBackEnd
 {
 public:
-  SessionTraceDB()
+  explicit SessionTraceDB(const boost::filesystem::path& file) : file_(file)
   {
-    // create a database file at standard location, with one table
+    std::string error;
+    if (!db_.save_database(file, error))
+      THROW_INVALID_ARGUMENT("Error creating/saving database: " + error);
+    if (!db_.load_database(file, error))
+      THROW_INVALID_ARGUMENT("Error loading database: " + error);
+    if (!createTable())
+      THROW_INVALID_ARGUMENT("Could not create table in SessionTraceDB");
+  }
+  ~SessionTraceDB()
+  {
+    std::string error;
+    db_.save_database(file_, error);
   }
   virtual void consume(const std::string& statement, const std::string& message)
   {
-    // add new row to trace table with statement
-    // TODO
+    if (!insertRow(statement + " / " + message))
+      std::cout << "problem inserting row" << std::endl;
   }
+private:
+  boost::filesystem::path file_;
+  DatabaseManager db_;
+
+  bool createTable()
+  {
+    std::string stmt = "CREATE TABLE IF NOT EXISTS Trace (SessionStatement TEXT)";
+    std::string error;
+    return db_.run_sql_statement(stmt, error);
+  }
+
+  bool insertRow(const std::string& statement)
+  {
+    std::cout << "DB consume: " << statement << std::endl;
+    //TODO: use Parameters
+    std::string stmt = "INSERT INTO Trace VALUES (" + statement + ")";
+    std::string error;
+    return db_.run_sql_statement(stmt, error);
+  }
+};
+
+class CompositeSessionBackEnd : public SessionBackEnd
+{
+public:
+  virtual void consume(const std::string& statement, const std::string& message)
+  {
+    BOOST_FOREACH(SessionBackEndHandle backEnd, backEnds_)
+    {
+      backEnd->consume(statement, message);
+    }
+  }
+  void add(SessionBackEndHandle backEnd)
+  {
+    if (backEnd)
+      backEnds_.push_back(backEnd);
+  }
+private:
+  std::vector<SessionBackEndHandle> backEnds_;
 };
 
 }
 
 SessionHandle SessionBuilder::build(const boost::filesystem::path& file)
 {
+  boost::shared_ptr<detail::CompositeSessionBackEnd> compositeSession(new detail::CompositeSessionBackEnd);
   // try create db backend
-// TODO
-  // if db fail, create file version
-// TODO
-  // for now just make file version
-  boost::filesystem::path textFile(file);
-  textFile.replace_extension(".txt");
-  SessionBackEndHandle backend(new detail::SessionFile(textFile));
-  return boost::make_shared<detail::BasicSession>(backend);
+  try
+  {
+    boost::filesystem::path dbFile(file);
+    dbFile.replace_extension(".sqlite");
+    SessionBackEndHandle db(new detail::SessionTraceDB(dbFile));
+    compositeSession->add(db);
+  }
+  catch (InvalidArgumentException& e)
+  {
+  	std::cout << "Error creating DB session back end: " << e.what() << std::endl;
+  }
+  
+  try
+  {
+    boost::filesystem::path textFile(file);
+    textFile.replace_extension(".txt");
+    SessionBackEndHandle text(new detail::SessionFile(textFile));
+    compositeSession->add(text);
+  }
+  catch (InvalidArgumentException& e)
+  {
+    std::cout << "Error creating text session back end: " << e.what() << std::endl;
+  }
+
+  return boost::make_shared<detail::BasicSession>(compositeSession);
 }
 
 SessionHandle SessionUser::session()
