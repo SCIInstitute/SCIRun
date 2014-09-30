@@ -74,7 +74,7 @@ namespace SCIRun
     {
     public:
       virtual ~SessionBackEnd() {}
-      virtual void consume(const std::string& statement) = 0;
+      virtual void consume(const std::string& statement, const std::string& message) = 0;
     };
 
     typedef boost::shared_ptr<SessionBackEnd> SessionBackEndHandle;

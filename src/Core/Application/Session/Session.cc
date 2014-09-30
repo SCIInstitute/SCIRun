@@ -27,6 +27,7 @@
  */
 
 #include <Core/Application/Session/Session.h>
+#include <Core/Thread/Mutex.h>
 #include <Core/Logging/Log.h>
 #include <boost/filesystem.hpp>
 #include <boost/make_shared.hpp>
@@ -36,6 +37,7 @@
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Thread;
 
 CORE_SINGLETON_IMPLEMENTATION( SessionManager );
 
@@ -65,12 +67,12 @@ public:
 
   virtual void beginSession()
   {
-    backEnd_->consume("Session begins.");
+    backEnd_->consume("", "Session begins.");
   }
 
   virtual void endSession()
   {
-    backEnd_->consume("Session ends.");
+    backEnd_->consume("", "Session ends.");
   }
 
   virtual void recordSystemDetails()
@@ -82,6 +84,7 @@ public:
   {
     // TODO
   }
+
   virtual void networkFileSaved()
   {
     // TODO
@@ -96,6 +99,7 @@ public:
   {
     // TODO
   }
+
   virtual void executionFinished()
   {
     // TODO
@@ -105,6 +109,7 @@ public:
   {
     // TODO
   }
+
   virtual void moduleExecutionFinished(/*ModuleId*/)
   {
     // TODO
@@ -114,10 +119,12 @@ public:
   {
     // TODO
   }
+
   virtual void fileRead(/*ModuleId, filename*/)
   {
     // TODO
   }
+
   virtual void fileWritten(/*ModuleId, filename*/)
   {
     // TODO
@@ -154,11 +161,12 @@ class SessionFile : public SessionBackEnd
 {
 public:
   explicit SessionFile(const boost::filesystem::path& file) : file_(file), stream_(file.string().c_str(), std::ios_base::app),
-    locale_(stream_.getloc(), new boost::posix_time::time_facet("%x %X"))
+    locale_(stream_.getloc(), new boost::posix_time::time_facet("%x %X")), mutex_("sessionFile")
   {
   }
-  virtual void consume(const std::string& statement)
+  virtual void consume(const std::string& statement, const std::string& message)
   {
+    Guard g(mutex_.get());
     namespace pt = boost::posix_time;
     const pt::ptime now = pt::second_clock::local_time();
     static bool firstTime = true;
@@ -168,19 +176,34 @@ public:
       firstTime = false;
     }
 
-    stream_ << "[" << now << "] : " << statement << std::endl;
+    stream_ << "[" << now << "] : " << message << " (" << statement << ")"<< std::endl;
   }
 private:
   boost::filesystem::path file_;
   std::ofstream stream_;
   std::locale locale_;
+  Mutex mutex_;
 };
 
 class SessionDB : public SessionBackEnd
 {
 public:
-  virtual void consume(const std::string& statement)
+  virtual void consume(const std::string& statement, const std::string& message)
   {
+    // TODO
+  }
+};
+
+class SessionTraceDB : public SessionBackEnd
+{
+public:
+  SessionTraceDB()
+  {
+    // create a database file at standard location, with one table
+  }
+  virtual void consume(const std::string& statement, const std::string& message)
+  {
+    // add new row to trace table with statement
     // TODO
   }
 };
