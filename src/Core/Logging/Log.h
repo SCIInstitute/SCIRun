@@ -103,6 +103,7 @@ namespace SCIRun
       private:
         friend class Stream;
         boost::shared_ptr<class LogImpl> impl_;
+        void init();
       };
 
       SCISHARE Log::Stream& operator<<(Log& log, LogLevel level);
@@ -116,6 +117,17 @@ namespace SCIRun
       }
 
       SCISHARE Log::Stream& operator<<(Log::Stream& log, std::ostream&(*func)(std::ostream&));
+
+      class SCISHARE ApplicationHelper
+      {
+      public:
+        static boost::filesystem::path configDirectory();
+        static std::string applicationName();
+        static bool get_user_directory( boost::filesystem::path& user_dir, bool config_path);
+        static bool get_config_directory( boost::filesystem::path& config_dir );
+        static bool get_user_desktop_directory( boost::filesystem::path& user_desktop_dir );
+        static bool get_user_name( std::string& user_name );
+      };
     }
   }
 }

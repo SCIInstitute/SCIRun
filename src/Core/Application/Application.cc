@@ -42,28 +42,6 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
 
-// Includes for platform specific functions to get directory to store temp files and user data
-#ifdef _WIN32
-#include <shlobj.h>
-#include <tlhelp32.h>
-#include <windows.h>
-#include <LMCons.h>
-#include <psapi.h>
-#else
-#include <stdlib.h>
-#include <sys/types.h>
-#ifndef __APPLE__
-#include <unistd.h>
-#include <sys/sysinfo.h>
-#else
-#include <unistd.h>
-#include <sys/utsname.h>
-#include <sys/sysctl.h>
-#include <sys/param.h>
-#include <sys/mount.h>
-#endif
-#endif
-
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::CommandLine;
@@ -127,7 +105,7 @@ void Application::shutdown()
 
 std::string Application::applicationName() const
 {
-  return "SCIRun";
+  return ApplicationHelper::applicationName();
 }
 
 ApplicationParametersHandle Application::parameters() const
@@ -199,169 +177,27 @@ std::string Application::version() const
 
 boost::filesystem::path Application::configDirectory() const
 {
-  boost::filesystem::path config;
-  if (!get_config_directory(config))
-    return executablePath();
-  return config;
+  return ApplicationHelper::configDirectory();
 }
-
-// following ugly code copied from Seg3D.
 
 bool Application::get_user_directory( boost::filesystem::path& user_dir, bool config_path) const
 {
-#ifdef _WIN32
-  TCHAR dir[MAX_PATH];
-
-  // Try to create the local application directory
-  // If it already exists return the name of the directory.
-
-  if( config_path )
-  {
-    if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_LOCAL_APPDATA, 0, 0, dir ) ) )
-    {
-      user_dir = boost::filesystem::path( dir );
-      return true;
-    }
-    else
-    {
-      Log::get() << ERROR_LOG << "Could not get user directory.";
-      return false;
-    }
-  }
-  else
-  {
-    if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, 0, 0, dir ) ) )
-    {
-      user_dir = boost::filesystem::path( dir );
-      return true;
-    }
-    else
-    {
-      Log::get() << ERROR_LOG << "Could not get user directory.";
-      return false;
-    }
-  }
-#else
-
-  if ( getenv( "HOME" ) )
-  {
-    user_dir = boost::filesystem::path( getenv( "HOME" ) );
-
-    if (! boost::filesystem::exists( user_dir ) )
-    {
-      Log::get() << ERROR_LOG << "Could not get user directory.";
-      return false;
-    }
-
-    return true;
-  }
-  else
-  {
-    Log::get() << ERROR_LOG << "Could not get user directory.";
-    return false;
-  }
-#endif
+  return ApplicationHelper::get_user_directory(user_dir, config_path);
 }
-
 
 bool Application::get_user_desktop_directory( boost::filesystem::path& user_desktop_dir ) const
 {
-#ifdef _WIN32
-  TCHAR dir[MAX_PATH];
-
-  // Try to create the local application directory
-  // If it already exists return the name of the directory.
-
-  if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_DESKTOPDIRECTORY, 0, 0, dir ) ) )
-  {
-    user_desktop_dir = boost::filesystem::path( dir );
-    return true;
-  }
-  else
-  {
-    Log::get() << ERROR_LOG << "Could not get user desktop directory.";
-    return false;
-  }
-
-
-#else
-
-  if ( getenv( "HOME" ) )
-  {
-    user_desktop_dir = boost::filesystem::path( getenv( "HOME" ) ) / "Desktop" / "";
-
-    if (! boost::filesystem::exists( user_desktop_dir ) )
-    {
-      Log::get() << ERROR_LOG << "Could not get user desktop directory.";
-      return false;
-    }
-
-
-    return true;
-  }
-  else
-  {
-    Log::get() << ERROR_LOG << "Could not get user desktop directory.";
-    return false;
-  }
-#endif
+  return ApplicationHelper::get_user_desktop_directory(user_desktop_dir);
 }
 
 bool Application::get_config_directory( boost::filesystem::path& config_dir ) const
 {
-  boost::filesystem::path user_dir;
-  if ( !( get_user_directory( user_dir, true ) ) ) return false;
-
-#ifdef _WIN32
-  config_dir = user_dir / applicationName();
-#else
-  std::string dot_app_name = std::string( "." ) + applicationName();
-  config_dir = user_dir / dot_app_name;
-#endif
-
-  if ( !( boost::filesystem::exists( config_dir ) ) )
-  {
-    if ( !( boost::filesystem::create_directory( config_dir ) ) )
-    {
-      Log::get() << ERROR_LOG << "Could not create directory: " << config_dir.string();
-      return false;
-    }
-
-    Log::get() << INFO << "Created directory: " << config_dir.string();
-  }
-
-  return true;
+  return ApplicationHelper::get_config_directory(config_dir);
 }
 
 bool Application::get_user_name( std::string& user_name ) const
 {
-#ifdef _WIN32
-  TCHAR name[UNLEN+1];
-  DWORD length = UNLEN;
-
-  if ( GetUserName( name, &length ) )
-  {
-    user_name = std::string( name );
-    return true;
-  }
-  else
-  {
-    Log::get() << ERROR_LOG << "Could not resolve user name.";
-    return false;
-  }
-#else
-  if ( getenv( "USER" ) )
-  {
-    user_name = std::string( getenv( "USER" ) );
-    return true;
-  }
-  else
-  {
-    Log::get() << ERROR_LOG << "Could not resolve user name.";
-    return false;
-  }
-#endif
-
+  return ApplicationHelper::get_user_name(user_name);
 }
 
 /*
