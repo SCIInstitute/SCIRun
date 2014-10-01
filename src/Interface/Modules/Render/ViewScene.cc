@@ -52,6 +52,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
 
   addToolBar();
+  addViewBar();
   
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -181,6 +182,70 @@ void ViewSceneDialog::autoViewClicked()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::viewBarButtonClicked()
+{
+	hideViewBar_ = !hideViewBar_;
+	mViewBar->setHidden(hideViewBar_);
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::viewAxisSelected(int index)
+{
+
+	mUpVectorBox->clear();
+	mUpVectorBox->addItem("------");
+	switch (index)
+	{
+	case 0:
+		break;
+	case 1:
+		mUpVectorBox->addItem("+Y");
+		mUpVectorBox->addItem("-Y");
+		mUpVectorBox->addItem("+Z");
+		mUpVectorBox->addItem("-Z");
+		break;
+	case 2:
+		mUpVectorBox->addItem("+X");
+		mUpVectorBox->addItem("-X");
+		mUpVectorBox->addItem("+Z");
+		mUpVectorBox->addItem("-Z");
+		break;
+	case 3:
+		mUpVectorBox->addItem("+X");
+		mUpVectorBox->addItem("-X");
+		mUpVectorBox->addItem("+Y");
+		mUpVectorBox->addItem("-Y");
+		break;
+	case 4:
+		mUpVectorBox->addItem("+Y");
+		mUpVectorBox->addItem("-Y");
+		mUpVectorBox->addItem("+Z");
+		mUpVectorBox->addItem("-Z");
+		break;
+	case 5:
+		mUpVectorBox->addItem("+X");
+		mUpVectorBox->addItem("-X");
+		mUpVectorBox->addItem("+Z");
+		mUpVectorBox->addItem("-Z");
+		break;
+	case 6:
+		mUpVectorBox->addItem("+X");
+		mUpVectorBox->addItem("-X");
+		mUpVectorBox->addItem("+Y");
+		mUpVectorBox->addItem("-Y");
+		break;
+	}
+
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::viewVectorSelected(int index)
+{
+	//mDownViewBox->setCurrentIndex(0);
+	viewBarButtonClicked();
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar() 
 {
   mToolBar = new QToolBar(this);
@@ -195,6 +260,7 @@ void ViewSceneDialog::addToolBar()
 void ViewSceneDialog::addMouseMenu()
 {
   auto menu = new QComboBox(this);
+  menu->setToolTip("Change Mouse Controls");
   menu->addItem("Legacy Mouse Control");
   menu->addItem("New Mouse Control");
   connect(menu, SIGNAL(currentIndexChanged(int)),this, SLOT(menuMouseControlChanged(int)));
@@ -206,6 +272,7 @@ void ViewSceneDialog::addMouseMenu()
 void ViewSceneDialog::addAutoViewButton()
 {
   QPushButton* autoViewBtn = new QPushButton(this);
+  autoViewBtn->setToolTip("View Entire Object");
   autoViewBtn->setText("Auto View");
   autoViewBtn->setAutoDefault(false);
   autoViewBtn->setDefault(false);
@@ -233,6 +300,63 @@ void ViewSceneDialog::addObjectToggleMenu()
   combo->setModel(itemManager_->model());
   mToolBar->addWidget(combo);
   mToolBar->addSeparator();
+}
+
+void ViewSceneDialog::addViewBarButton()
+{
+	QPushButton* viewBarBtn = new QPushButton(this);
+	viewBarBtn->setToolTip("Show View Options");
+	viewBarBtn->setText("Views");
+	viewBarBtn->setAutoDefault(false);
+	viewBarBtn->setDefault(false);
+	connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
+	mToolBar->addWidget(viewBarBtn);
+	mToolBar->addSeparator();
+}
+
+void ViewSceneDialog::addViewBar()
+{
+	mViewBar = new QToolBar(this);
+
+	addViewOptions();
+	hideViewBar_ = true;
+
+	mViewBar->setHidden(hideViewBar_);
+
+	glLayout->addWidget(mViewBar);
+
+	addViewBarButton();
+}
+
+void ViewSceneDialog::addViewOptions()
+{
+	QLabel* axisLabel = new QLabel();
+	axisLabel->setText("Look Down Axis: ");
+	mViewBar->addWidget(axisLabel);
+
+	mDownViewBox = new QComboBox();
+	mDownViewBox->setToolTip("Vector pointing out of the screen");
+	mDownViewBox->addItem("------");
+	mDownViewBox->addItem("+X");
+	mDownViewBox->addItem("+Y");
+	mDownViewBox->addItem("+Z");
+	mDownViewBox->addItem("-X");
+	mDownViewBox->addItem("-Y");
+	mDownViewBox->addItem("-Z");
+	connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
+	mViewBar->addWidget(mDownViewBox);
+	mViewBar->addSeparator();
+
+	QLabel* vectorLabel = new QLabel();
+	vectorLabel->setText("Up Vector: ");
+	mViewBar->addWidget(vectorLabel);
+
+	mUpVectorBox = new QComboBox();
+	mUpVectorBox->setToolTip("Vector pointing up");
+	mUpVectorBox->addItem("------");
+	connect(mUpVectorBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewVectorSelected(int)));
+	mViewBar->addWidget(mUpVectorBox);
+	mViewBar->addSeparator();
 }
 
 void ViewSceneDialog::showEvent(QShowEvent *evt)

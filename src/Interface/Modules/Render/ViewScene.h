@@ -74,9 +74,9 @@ protected Q_SLOTS:
   void menuMouseControlChanged(int index);
   void autoViewClicked();
   void newGeometryValue();
-  //void viewBarButtonClicked();
-  //void viewAxisSelected(int index);
-  //void viewVectorSelected(int index);
+  void viewBarButtonClicked();
+  void viewAxisSelected(int index);
+  void viewVectorSelected(int index);
 
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;
