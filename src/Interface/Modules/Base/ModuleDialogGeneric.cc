@@ -45,8 +45,10 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   {
     //TODO: replace with pull_newVersion
     LOG_DEBUG("ModuleDialogGeneric connecting to state" << std::endl);
-    stateConnection_ = state_->connect_state_changed([this]() { pull(); });
+    stateConnection_ = state_->connect_state_changed([this]() { pullSignal(); });
   }
+  connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
+  createExecuteAction();
 }
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
@@ -59,6 +61,25 @@ void ModuleDialogGeneric::fixSize()
   {
     setFixedSize(minimumWidth(), minimumHeight());
   }
+}
+
+void ModuleDialogGeneric::createExecuteAction()
+{
+  executeAction_ = new QAction(this);
+  executeAction_->setText("Execute");
+  //TODO: doesn't work on Mac
+  //executeAction_->setShortcut(QKeySequence("Ctrl+1"));
+  executeAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
+}
+
+void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e) 
+{
+  QMenu menu(this);
+  menu.addAction(executeAction_);
+  menu.exec(e->globalPos());
+
+  QDialog::contextMenuEvent(e);
 }
 
 void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr)

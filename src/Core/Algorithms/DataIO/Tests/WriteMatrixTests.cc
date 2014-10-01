@@ -79,7 +79,7 @@ TEST(WriteMatrixTests, CanWriteToStream)
 TEST(WriteMatrixAlgorithmTest, TestToRealTextFile)
 {
   WriteMatrixAlgorithm algo;
-  auto filename = TestResources::rootDir() / "matrix1Out.txt";
+  auto filename = TestResources::rootDir() / "TransientOutput" / "matrix1Out.txt";
 
   DenseMatrixHandle m1(matrix1().clone());
   algo.run(m1, filename.string());
@@ -88,7 +88,7 @@ TEST(WriteMatrixAlgorithmTest, TestToRealTextFile)
 TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
 {
   WriteMatrixAlgorithm write;
-  auto filename = TestResources::rootDir() / "matrix1Out.txt";
+  auto filename = TestResources::rootDir() / "TransientOutput" / "matrix1Out.txt";
 
   DenseMatrixHandle m1(matrix1().clone());
   write.run(m1, filename.string());
@@ -103,7 +103,7 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
 TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFile)
 {
   WriteMatrixAlgorithm write;
-  auto filename = TestResources::rootDir() / "matrix1Out.mat";
+  auto filename = TestResources::rootDir() / "TransientOutput" / "matrix1Out.mat";
 
   DenseMatrixHandle m1(matrix1().clone());
   write.run(m1, filename.string());
@@ -130,7 +130,7 @@ TEST(WriteMatrixAlgorithmTest, CheckBoostExceptionLoggingCapability)
   }
   catch (boost::exception& e)
   {
-    std::cout << boost::diagnostic_information(e) << std::endl; 	
+    std::cout << boost::diagnostic_information(e) << std::endl;
   }
 }
 
@@ -149,7 +149,7 @@ TEST(WriteMatrixTest, CanPrintSparseMatrix)
 #if !DEBUG
   EXPECT_EQ("1 0 0 \n0 0 -1.4 \n0 0 0 \n", ostr.str());
 #else
-  const std::string debugSparse = 
+  const std::string debugSparse =
     "Nonzero entries:\n"
     "(1,0) (_,_) (-1.4,2) (_,_) (_,_) (_,_) \n\n"
     "Outer pointers:\n"
@@ -173,7 +173,7 @@ TEST(WriteMatrixTest, CanPrintColumnMatrix)
   EXPECT_EQ("1\n2\n0", ostr.str());
 }
 
-namespace 
+namespace
 {
   SparseRowMatrixHandle readSparseMatrixFile(const boost::filesystem::path& filename)
   {
@@ -199,12 +199,12 @@ namespace
 
 TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileSparse)
 {
-  auto sparse4 = readSparseMatrixFile(TestResources::rootDir() / "sparse_v4.mat");
+  auto sparse4 = readSparseMatrixFile(TestResources::rootDir() / "Matrices" / "sparse_v4.mat");
   ASSERT_TRUE(sparse4.get() != nullptr);
   EXPECT_EQ(5, sparse4->nrows());
   EXPECT_EQ(6, sparse4->ncols());
-  
-  auto v5file = TestResources::rootDir() / "sparse_v5.mat";
+
+  auto v5file = TestResources::rootDir() / "Matrices" / "sparse_v5.mat";
   writeMatrixToFile(sparse4, v5file);
 
   auto sparse5 = readSparseMatrixFile(v5file);
@@ -215,12 +215,12 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileSparse)
 
 TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileDense)
 {
-  auto dense4 = readDenseMatrixFile(TestResources::rootDir() / "dense_v4.mat");
+  auto dense4 = readDenseMatrixFile(TestResources::rootDir()  / "Matrices" / "dense_v4.mat");
   ASSERT_TRUE(dense4.get() != nullptr);
   EXPECT_EQ(5, dense4->nrows());
   EXPECT_EQ(6, dense4->ncols());
-  
-  auto v5file = TestResources::rootDir() / "dense_v5.mat";
+
+  auto v5file = TestResources::rootDir()  / "Matrices" / "dense_v5.mat";
   writeMatrixToFile(dense4, v5file);
 
   auto dense5 = readDenseMatrixFile(v5file);

@@ -56,11 +56,11 @@ namespace
 {
   FieldHandle CreateTetMeshVectorOnElem()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
   }
   FieldHandle CreateTetMeshSevenElem()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh_7elem.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/tet_mesh_7elem.fld");
   }
   // scalar fields covered by the algorithm tests
 }
@@ -68,7 +68,7 @@ namespace
 TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarSevenElem)
 {
   UseRealAlgorithmFactory f;
-  
+
   auto test = makeModule("SetConductivitiesToTetMesh");
   stubPortNWithThisData(test, 0, CreateTetMeshSevenElem());
 
@@ -88,10 +88,10 @@ TEST_F(SetConductivitiesToTetMeshTests, TetMeshVectorOnElem)
 TEST_F(SetConductivitiesToTetMeshTests, CheckInputParameters)
 {
   UseRealAlgorithmFactory f;
-  
+
   auto test = makeModule("SetConductivitiesToTetMesh");
   stubPortNWithThisData(test, 0, CreateTetMeshVectorOnElem());
-  
+
   EXPECT_THROW(test->execute(), AlgorithmInputException);
 }
 

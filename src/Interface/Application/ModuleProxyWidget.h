@@ -53,6 +53,7 @@ namespace SCIRun
       //void setAsWaiting();
       void setDefaultNotePosition(NotePosition position);
       void createPortPositionProviders();
+      void snapToGrid();
 	 
     Q_SIGNALS:
       void selected();

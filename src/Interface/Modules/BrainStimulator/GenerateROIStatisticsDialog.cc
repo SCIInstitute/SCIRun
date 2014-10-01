@@ -95,37 +95,46 @@ void GenerateROIStatisticsDialog::push()
 void GenerateROIStatisticsDialog::pull()
 {
   Pulling p(this);
-  auto all_elc_values = optional_any_cast_or_default<Variable>(state_->getTransientValue(Parameters::StatisticsTableValues)).toVector();
-  StatisticsOutput_tableWidget->setRowCount(all_elc_values.size());
+  auto tableHandle = optional_any_cast_or_default<VariableHandle>(state_->getTransientValue(Parameters::StatisticsTableValues));
 
-  //TODO: use this example to improve Variable::List syntactical sugar
-
-  /// get the result data from the algorithm and put it in the GUI table
-  for (int i=0; i<all_elc_values.size(); i++)
+  if (tableHandle)
   {
-    auto col = (all_elc_values[i]).toVector();
+    auto all_elc_values = tableHandle->toVector();
+    StatisticsOutput_tableWidget->setRowCount(static_cast<int>(all_elc_values.size()));
 
-    int j = 0;
-    BOOST_FOREACH(const AlgorithmParameter& ap, col)
+    //TODO: use this example to improve Variable::List syntactical sugar
+
+    /// get the result data from the algorithm and put it in the GUI table
+    for (int i=0; i<all_elc_values.size(); i++)
     {
-      auto tmpstr = ap.toString();
+      auto col = (all_elc_values[i]).toVector();
 
-      auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
-      item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-      StatisticsOutput_tableWidget->setItem(i, j, item);
-      ++j;
+      int j = 0;
+      BOOST_FOREACH(const AlgorithmParameter& ap, col)
+      {
+        auto tmpstr = ap.toString();
+
+        auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
+        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+        StatisticsOutput_tableWidget->setItem(i, j, item);
+        ++j;
+      }
     }
+  }
+  else
+  {
+    // ?? log a message ? unsure.
   }
 
   /// get the strings PhysicalUnit / CoordinateSpaceLabel from state (directly from module level) and show it above GUI tables
-  std::string PhysicalUnitString = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr.name()));  /// change GUI Labels due to physical unit and used coordinate space
-  if(!PhysicalUnitString.empty())
+  std::string PhysicalUnitString = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr));  /// change GUI Labels due to physical unit and used coordinate space
+  if (!PhysicalUnitString.empty())
   {
     StatisticsTableGroupBox->setTitle("Statistics for ROIs: " + QString::fromStdString(PhysicalUnitString));
   }
 
-  std::string CoordinateSpaceLabelStr = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr.name()));  /// change GUI Labels due to physical unit and used coordinate space
-  if(!CoordinateSpaceLabelStr.empty())
+  std::string CoordinateSpaceLabelStr = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr));  /// change GUI Labels due to physical unit and used coordinate space
+  if (!CoordinateSpaceLabelStr.empty())
   {
     ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));
   }

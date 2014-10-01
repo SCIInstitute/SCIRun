@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
 #include <gtest/gtest.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -74,37 +74,37 @@ namespace {
     vmesh->add_elem(vdata);
     return singleTetField_;
   }
-  
+
   /*** TRI SURFs ***/
   FieldHandle CreateTriSurfVectorOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
   }
   FieldHandle CreateTriSurfVectorOnNodeSCIRun4Output()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/CalculatedVectorMagnitudesForTriSurfVectorOnNodeFromSCIRun4.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/CalculatedVectorMagnitudesForTriSurfVectorOnNodeFromSCIRun4.fld");
   }
   FieldHandle CreateTriSurfScalarOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
   }
 
   /*** TET MESHs ***/
   FieldHandle CreateTetMeshVectorOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
   }
   FieldHandle CreateTetMeshVectorOnNodeSCIRun4Output()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/CalculatedVectorMagnitudesForTetMeshVectorOnNodeFromSCIRun4.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/CalculatedVectorMagnitudesForTetMeshVectorOnNodeFromSCIRun4.fld");
   }
   FieldHandle CreateTetMeshScalarOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
   }
   FieldHandle CreateTetMeshTensorOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.fld");
   }
 }
 
@@ -114,17 +114,17 @@ TEST(CalculateVectorMagnitudesAlgoTests, CompareTriSurfVectorOnNodeToSCIRun4)
   FieldHandle out;
   CalculateVectorMagnitudesAlgo algo;
   algo.run(in, out);
-  
+
   FieldHandle SCIRUN4out = CreateTriSurfVectorOnNodeSCIRun4Output();
   VField* expected_vals = SCIRUN4out->vfield(); // what is to be expected
   VField* outputed_vals = out->vfield(); // the output
   double* expected_mag = reinterpret_cast<double*>(expected_vals->get_values_pointer());
   double* outputed_mag = reinterpret_cast<double*>(outputed_vals->get_values_pointer());
-  
+
   // getting the number of things to compare
   VMesh*  imesh  = in->vmesh();
   VField::size_type num_elems = imesh->num_elems();
-  
+
   for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
     EXPECT_EQ(expected_mag[idx],outputed_mag[idx]);
 }
@@ -142,18 +142,18 @@ TEST(CalculateVectorMagnitudesAlgoTests, TetMeshVectorOnNodeAsInput)
   FieldHandle in = CreateTetMeshVectorOnNode();
   FieldHandle out;
   CalculateVectorMagnitudesAlgo algo;
-  algo.run(in, out); 
-  
+  algo.run(in, out);
+
   FieldHandle SCIRUN4out = CreateTetMeshVectorOnNodeSCIRun4Output();
   VField* expected_vals = SCIRUN4out->vfield(); // what is to be expected
   VField* outputed_vals = out->vfield(); // the output
   double* expected_mag = reinterpret_cast<double*>(expected_vals->get_values_pointer());
   double* outputed_mag = reinterpret_cast<double*>(outputed_vals->get_values_pointer());
-  
+
   // getting the number of things to compare
   VMesh*  imesh  = in->vmesh();
   VField::size_type num_elems = imesh->num_elems();
-  
+
   // comparing every value
   for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
     EXPECT_EQ(expected_mag[idx],outputed_mag[idx]);

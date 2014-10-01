@@ -75,6 +75,7 @@ namespace SCIRun
       TrackedVariable<BooleanVariable> showModuleErrorDialogs;
       BooleanVariable saveBeforeExecute;
       BooleanVariable useNewViewSceneMouseControls;
+      BooleanVariable modulesSnapToGrid;
       StringVariable networkBackgroundColor;
     
       std::string dataDirectoryPlaceholder() const;

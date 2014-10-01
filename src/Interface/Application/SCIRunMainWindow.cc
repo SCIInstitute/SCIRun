@@ -105,6 +105,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
     moduleSearchAction->setVisible(true);
 
     QToolBar* f = addToolBar(tr("&Search"));
+    f->setObjectName("SearchToolBar");
 
     QWidgetAction* showModuleLabel = new QWidgetAction(this);
     showModuleLabel->setDefaultWidget(new QLabel("Module Search:", this));
@@ -118,6 +119,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   setActionIcons();
 
   QToolBar* standardBar = addToolBar("Standard");
+  standardBar->setObjectName("StandardToolBar");
   standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
@@ -130,6 +132,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   //setUnifiedTitleAndToolBarOnMac(true);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
+  executeBar->setObjectName("ExecuteToolBar");
   executeBar->addAction(actionExecute_All_);
 
   networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
@@ -173,6 +176,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
   connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
 
+  connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
+
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
 #endif
@@ -195,9 +200,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   }
 
   setupPreferencesWindow();
-  readSettings();
-
-  setCurrentFile("");
+  setupProvenanceWindow();
+  setupDevConsole();
+  setupPythonConsole();
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
@@ -205,9 +210,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
 
-  setupProvenanceWindow();
-  setupDevConsole();
-  setupPythonConsole();
+  connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
+  connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
   makeFilterButtonMenu();
 
@@ -215,7 +219,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   if (newInterface())
-    networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/inflicted2X.png"));
+    networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
 
   connect(scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
@@ -224,8 +228,13 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   setupInputWidgets();
 
-  configurationDockWidget_->hide();
-  actionConfiguration_->setChecked(false);
+  readSettings();
+
+  setCurrentFile("");
+
+  actionConfiguration_->setChecked(!configurationDockWidget_->isHidden());
+  actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
+  actionProvenance_->setChecked(!provenanceWindow_->isHidden());
 
   //parseStyleXML();
 }
@@ -309,6 +318,14 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
     instance_ = new SCIRunMainWindow;
   }
   return instance_;
+}
+
+SCIRunMainWindow::~SCIRunMainWindow()
+{
+  networkEditor_->disconnect();
+  networkEditor_->setNetworkEditorController(nullptr);
+  networkEditor_->clear();
+  Application::Instance().shutdown();
 }
 
 void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
@@ -602,133 +619,6 @@ void SCIRunMainWindow::makePipesManhattan()
 
 namespace
 {
-  QString qname(const AlgorithmParameter& ap)
-  {
-    return QString::fromStdString(ap.name().name());
-  }
-}
-
-void SCIRunMainWindow::readSettings()
-{
-  Preferences& prefs = Preferences::Instance();
-  QSettings settings("SCI:CIBC Software", "SCIRun5");
-
-  //TODO: centralize all these values in Preferences singleton, together with keys as names.
-  //TODO: extract QSettings logic into "PreferencesIO" class
-  //TODO: set up signal/slot for each prefs variable to make it easy to track changes from arbitrary widgets
-
-  latestNetworkDirectory_ = settings.value("networkDirectory").toString();
-  GuiLogger::Instance().log("Setting read: default network directory = " + latestNetworkDirectory_.path());
-
-  recentFiles_ = settings.value("recentFiles").toStringList();
-  updateRecentFileActions();
-  GuiLogger::Instance().log("Setting read: recent network file list");
-
-  QString regressionTestDataDir = settings.value("regressionTestDataDirectory").toString();
-  GuiLogger::Instance().log("Setting read: regression test data directory = " + regressionTestDataDir);
-  prefs_->setRegressionTestDataDir(regressionTestDataDir);
-
-  //TODO: make a separate class for these keys, bad duplication.
-  const QString colorKey = qname(prefs.networkBackgroundColor);
-  if (settings.contains(colorKey))
-  {
-    auto value = settings.value(colorKey).toString();
-    prefs.networkBackgroundColor.setValue(value.toStdString());
-    networkEditor_->setBackground(QColor(value));
-    GuiLogger::Instance().log("Setting read: background color = " + networkEditor_->background().color().name());
-  }
-
-  const QString notePositionKey = "defaultNotePositionIndex";
-  if (settings.contains(notePositionKey))
-  {
-    int notePositionIndex = settings.value(notePositionKey).toInt();
-    defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
-    GuiLogger::Instance().log("Setting read: default note position = " + QString::number(notePositionIndex));
-  }
-
-  const QString pipeTypeKey = "connectionPipeType";
-  if (settings.contains(pipeTypeKey))
-  {
-    int pipeType = settings.value(pipeTypeKey).toInt();
-    networkEditor_->setConnectionPipelineType(pipeType);
-    GuiLogger::Instance().log("Setting read: connection pipe style = " + QString::number(pipeType));
-    switch (pipeType)
-    {
-    case MANHATTAN:
-      manhattanPipesRadioButton_->setChecked(true);
-      break;
-    case CUBIC:
-      cubicPipesRadioButton_->setChecked(true);
-      break;
-    case EUCLIDEAN:
-      euclideanPipesRadioButton_->setChecked(true);
-      break;
-    }
-  }
-
-  const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
-  if (settings.contains(disableModuleErrorDialogsKey))
-  {
-    bool disableModuleErrorDialogs = settings.value(disableModuleErrorDialogsKey).toBool();
-    GuiLogger::Instance().log("Setting read: disable module error dialogs = " + QString::number(disableModuleErrorDialogs));
-    prefs_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
-  }
-
-  const QString saveBeforeExecute = "saveBeforeExecute";
-  if (settings.contains(saveBeforeExecute))
-  {
-    bool mode = settings.value(saveBeforeExecute).toBool();
-    GuiLogger::Instance().log("Setting read: save before execute = " + QString::number(mode));
-    prefs_->setSaveBeforeExecute(mode);
-  }
-
-  const QString newViewSceneMouseControls = "newViewSceneMouseControls";
-  if (settings.contains(newViewSceneMouseControls))
-  {
-    bool mode = settings.value(newViewSceneMouseControls).toBool();
-    GuiLogger::Instance().log("Setting read: newViewSceneMouseControls = " + QString::number(mode));
-    Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
-  }
-
-  const QString favoriteModules = "favoriteModules";
-  if (settings.contains(favoriteModules))
-  {
-    auto faves = settings.value(favoriteModules).toStringList();
-    GuiLogger::Instance().log("Setting read: favoriteModules = " + faves.join(", "));
-    favoriteModuleNames_ = faves;
-  }
-
-	const QString dataDirectory = "dataDirectory";
-	if (settings.contains(dataDirectory))
-	{
-		auto dataDir = settings.value(dataDirectory).toString();
-		GuiLogger::Instance().log("Setting read: dataDirectory = " + dataDir);
-		setDataDirectory(dataDir);
-	}
-}
-
-void SCIRunMainWindow::writeSettings()
-{
-  QSettings settings("SCI:CIBC Software", "SCIRun5");
-  Preferences& prefs = Preferences::Instance();
-
-  //TODO: centralize all these values in Preferences singleton, together with keys as names
-
-  settings.setValue("networkDirectory", latestNetworkDirectory_.path());
-  settings.setValue("recentFiles", recentFiles_);
-  settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
-  settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
-  settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
-  settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
-  settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
-  settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
-  settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls.val());
-  settings.setValue("favoriteModules", favoriteModuleNames_);
-	settings.setValue("dataDirectory", dataDirectory());
-}
-
-namespace
-{
   class SetDisableFlag : public boost::static_visitor<>
   {
   public:
@@ -787,9 +677,9 @@ void SCIRunMainWindow::setupProvenanceWindow()
   connect(actionProvenance_, SIGNAL(toggled(bool)), provenanceWindow_, SLOT(setVisible(bool)));
   connect(provenanceWindow_, SIGNAL(visibilityChanged(bool)), actionProvenance_, SLOT(setChecked(bool)));
 
-  provenanceWindow_->setVisible(false);
-  provenanceWindow_->setFloating(true);
-  addDockWidget(Qt::RightDockWidgetArea, provenanceWindow_);
+//  provenanceWindow_->setVisible(false);
+//  provenanceWindow_->setFloating(true);
+//  addDockWidget(Qt::RightDockWidgetArea, provenanceWindow_);
 
   connect(actionUndo_, SIGNAL(triggered()), provenanceWindow_, SLOT(undo()));
   connect(actionRedo_, SIGNAL(triggered()), provenanceWindow_, SLOT(redo()));
@@ -1108,16 +998,16 @@ bool SCIRunMainWindow::newInterface() const
 
 namespace {
 
-  void addElementDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map) 
+  void addElementDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
   {
-    if (xml.tokenType() != QXmlStreamReader::StartElement) 
+    if (xml.tokenType() != QXmlStreamReader::StartElement)
     {
       std::cout << "didn't find start" << std::endl;
       return;
     }
     QString elementName = xml.name().toString();
     xml.readNext();
-    if (xml.tokenType() != QXmlStreamReader::Characters) 
+    if (xml.tokenType() != QXmlStreamReader::Characters)
     {
       std::cout << "not char data" << std::endl;
       return;
@@ -1125,21 +1015,21 @@ namespace {
     map.insert(elementName, xml.text().toString());
   }
 
-  void addItemDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map) 
+  void addItemDataToMap(QXmlStreamReader& xml, QMap<QString, QString>& map)
   {
-    if (xml.tokenType() != QXmlStreamReader::StartElement) 
+    if (xml.tokenType() != QXmlStreamReader::StartElement)
     {
       std::cout << "didn't find start 2" << std::endl;
       return;
     }
     xml.readNext();
-    if (xml.tokenType() != QXmlStreamReader::Characters) 
+    if (xml.tokenType() != QXmlStreamReader::Characters)
     {
       std::cout << "not char data 2" << std::endl;
       return;
     }
     QXmlStreamAttributes attributes = xml.attributes();
-    if (attributes.hasAttribute("key") && attributes.hasAttribute("value")) 
+    if (attributes.hasAttribute("key") && attributes.hasAttribute("value"))
     {
       map[attributes.value("key").toString()] = attributes.value("value").toString();
     }
@@ -1147,24 +1037,24 @@ namespace {
       std::cout << 333 << std::endl;
   }
 
-  QMap<QString, QString> parseStyle(QXmlStreamReader& xml) 
+  QMap<QString, QString> parseStyle(QXmlStreamReader& xml)
   {
     QMap<QString, QString> style;
-    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "style") 
+    if (xml.tokenType() != QXmlStreamReader::StartElement && xml.name() == "style")
     {
       std::cout << "didn't find style" << std::endl;
       return style;
     }
-    
+
     xml.readNext();
-    
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "style")) 
+
+    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "style"))
     {
-      if (xml.tokenType() == QXmlStreamReader::StartElement) 
+      if (xml.tokenType() == QXmlStreamReader::StartElement)
       {
-        if (xml.name() == "template") 
+        if (xml.name() == "template")
           addElementDataToMap(xml, style);
-        if (xml.name() == "item") 
+        if (xml.name() == "item")
           addItemDataToMap(xml, style);
       }
       else
@@ -1180,13 +1070,13 @@ void SCIRunMainWindow::parseStyleXML()
 {
   std::cout << "parsing style xml" << std::endl;
   QFile file("./styleSheetDetails.xml");
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
     QMessageBox::critical(this, "SCIRun", "Couldn't open styleSheetDetails.xml", QMessageBox::Ok);
     return;
   }
   QXmlStreamReader xml(&file);
-  while (!xml.atEnd() && !xml.hasError()) 
+  while (!xml.atEnd() && !xml.hasError())
   {
     QXmlStreamReader::TokenType token = xml.readNext();
     if (token == QXmlStreamReader::StartDocument) {
@@ -1199,7 +1089,7 @@ void SCIRunMainWindow::parseStyleXML()
       std::cout << "found: " << xml.name().toString().toStdString() << std::endl;
       if(xml.name() == "style") {
         QXmlStreamAttributes attributes = xml.attributes();
-        if (attributes.hasAttribute("widgetType")) 
+        if (attributes.hasAttribute("widgetType"))
         {
           styleSheetDetails_[attributes.value("widgetType").toString()] = parseStyle(xml);
         }
@@ -1209,7 +1099,7 @@ void SCIRunMainWindow::parseStyleXML()
     }
   }
 
-  if (xml.hasError()) 
+  if (xml.hasError())
   {
     QMessageBox::critical(this, "SCIRun", xml.errorString(), QMessageBox::Ok);
   }
@@ -1248,4 +1138,22 @@ void SCIRunMainWindow::selectModuleKeyboardAction()
 {
   moduleSelectorTreeWidget_->setFocus(Qt::ShortcutFocusReason);
   statusBar()->showMessage(tr("Module selection activated"), 2000);
+}
+
+void SCIRunMainWindow::modulesSnapToChanged()
+{
+  bool snapTo = modulesSnapToCheckBox_->isChecked();
+  Preferences::Instance().modulesSnapToGrid.setValue(snapTo);
+}
+
+void SCIRunMainWindow::resetWindowLayout()
+{
+  configurationDockWidget_->hide();
+  devConsole_->hide();
+  provenanceWindow_->hide();
+  moduleSelectorDockWidget_->show();
+  moduleSelectorDockWidget_->setFloating(false);
+  addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
+
+  std::cout << "TODO: toolbars" << std::endl;
 }
