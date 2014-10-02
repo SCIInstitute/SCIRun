@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>7</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AddKnownsToLinearSystem:0</first>
@@ -23,7 +23,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ConvertMatrixType:11</first>
+				<first>ConvertMatrixType:9</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -41,70 +41,6 @@
 								<second class_id="10" tracking_level="0" version="0">
 									<name>ConvertToColumnMatrix</name>
 									<value class_id="11" tracking_level="0" version="0">
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ConvertToDenseMatrix</name>
-								</first>
-								<second>
-									<name>ConvertToDenseMatrix</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ConvertToSparseRowMatrix</name>
-								</first>
-								<second>
-									<name>ConvertToSparseRowMatrix</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>PassThrough</name>
-								</first>
-								<second>
-									<name>PassThrough</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ConvertMatrixType:9</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ConvertMatrixType</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>4</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>ConvertToColumnMatrix</name>
-								</first>
-								<second>
-									<name>ConvertToColumnMatrix</name>
-									<value>
 										<which>3</which>
 										<value>0</value>
 									</value>
@@ -258,7 +194,7 @@ NaN
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>6</count>
+			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>AddKnownsToLinearSystem:0</moduleId1_>
@@ -269,18 +205,6 @@ NaN
 				<moduleId2_>ReportMatrixInfo:16</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ConvertMatrixType:11</moduleId1_>
-				<port1_>
-					<name>ResultMatrix</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>AddKnownsToLinearSystem:0</moduleId2_>
-				<port2_>
-					<name>RHS_Vector</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -302,9 +226,9 @@ NaN
 					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ConvertMatrixType:11</moduleId2_>
+				<moduleId2_>AddKnownsToLinearSystem:0</moduleId2_>
 				<port2_>
-					<name>InputMatrix</name>
+					<name>RHS_Vector</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -335,7 +259,7 @@ NaN
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>7</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:0</first>

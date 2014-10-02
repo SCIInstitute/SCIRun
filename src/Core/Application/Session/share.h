@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,18 +25,15 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraBinaryState.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
+#undef SCISHARE
 
-#include <Dataflow/Network/Module.h>
-
-namespace SCIRun {
-  namespace Modules {
-    namespace Basic {
-      /// @todo 
-    
-}}}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_Application_Session
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

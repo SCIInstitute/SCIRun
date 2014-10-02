@@ -26,17 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#ifndef MODULES_MATH_GETMATRIXSLICEMODULE_H
+#define MODULES_MATH_GETMATRIXSLICEMODULE_H
 
 #include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace Basic {
-  /// @todo 
- 
+namespace Math {
 
+  class SCISHARE GetMatrixSlice : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
+  {
+  public:
+    GetMatrixSlice();
+    virtual void execute();
+    virtual void setStateDefaults();
+    INPUT_PORT(0, InputMatrix, Matrix);
+    OUTPUT_PORT(0, OutputMatrix, Matrix);
+
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
 }}}
 
 #endif

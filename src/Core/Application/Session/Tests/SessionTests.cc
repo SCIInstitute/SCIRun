@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,9 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
-#include <Core/Datatypes/Datatype.h>
+#include <gtest/gtest.h>
+/// @todo: this won't link in debug mode due to Application::Instance impl
+#if NDEBUG
 
-using namespace SCIRun::Core::Datatypes;
-/// @todo
+#include <Core/Application/Session/Session.h>
+
+using namespace SCIRun::Core;
+
+TEST(SessionTests, NullWithoutInitialization)
+{
+  SessionHandle session = SessionManager::Instance().session();
+  ASSERT_EQ(session, nullptr);
+}
+
+TEST(SessionTests, CanCreate)
+{
+  SessionManager::Instance().initialize(".");
+  SessionHandle session = SessionManager::Instance().session();
+  ASSERT_TRUE(session != nullptr);
+}
+#endif

@@ -58,11 +58,11 @@ namespace
 {
   FieldHandle SplitFieldByConnectedRegionModuleTetTests()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "splitfieldbyconnectedregion/splitfieldbyconnectedregion_tet.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/splitfieldbyconnectedregion_tet.fld");
   }
   FieldHandle SplitFieldByConnectedRegionModuleTriTests()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "splitfieldbyconnectedregion/splitfieldbyconnectedregion_tri.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/splitfieldbyconnectedregion_tri.fld");
   }
 }
 

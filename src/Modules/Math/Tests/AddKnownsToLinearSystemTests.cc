@@ -62,17 +62,17 @@ namespace
 {
   FieldHandle CreateTriSurfScalarOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
   }
   FieldHandle CreateTetMeshScalarOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
   }
   FieldHandle CreatePointCloudeScalar()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/point_cloud/scalar/pts_scalar.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.fld");
   }
-  
+
 	// x vector [1; 2; ... n]
 	DenseMatrixHandle x_num(int rows)
 	{
@@ -90,7 +90,7 @@ namespace
 		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
 		return m;
 	}
-	
+
 	// symmetric LHS (stiff) matrix
 	SparseRowMatrixHandle lhs()
 	{
@@ -107,18 +107,18 @@ namespace
 		m->makeCompressed();
 		return m;
 	}
-	
+
 	// RHS vector of zeros
-	DenseColumnMatrixHandle rhs_zero(int rows)
+	DenseMatrixHandle rhs_zero(int rows)
 	{
-		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(rows));
+		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
 		m->setZero();
 		return m;
 	}
 	// RHS vector [1; 2; ... n]
-	DenseColumnMatrixHandle rhs_num(int rows)
+	DenseMatrixHandle rhs_num(int rows)
 	{
-		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(rows));
+		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
     for (int i=0; i<rows; i++)
       (*m)(i,0) = 1+i;
 		return m;
@@ -129,7 +129,7 @@ TEST_F(AddKnownsToLinearSystemTests, ValidInputOnAllPorts_KnownsHaveNoNaN)
 {
   auto test = makeModule("AddKnownsToLinearSystem");
   SparseRowMatrixHandle   stiff = lhs();
-  DenseColumnMatrixHandle bvect = rhs_num(3);
+  DenseMatrixHandle bvect = rhs_num(3);
   DenseMatrixHandle       known = x_num(3);
   stubPortNWithThisData(test, 0, stiff);
   stubPortNWithThisData(test, 1, bvect);
@@ -141,7 +141,7 @@ TEST_F(AddKnownsToLinearSystemTests, ValidInputOnAllPorts_KnownsHaveAllNaN)
 {
   auto test = makeModule("AddKnownsToLinearSystem");
   SparseRowMatrixHandle   stiff = lhs();
-  DenseColumnMatrixHandle bvect = rhs_num(3);
+  DenseMatrixHandle bvect = rhs_num(3);
   DenseMatrixHandle       known = x_all_nan();
   stubPortNWithThisData(test, 0, stiff);
   stubPortNWithThisData(test, 1, bvect);
@@ -163,13 +163,13 @@ TEST_F(AddKnownsToLinearSystemTests, ThrowsForFieldInputOnPortZero)
 {
   auto test = makeModule("AddKnownsToLinearSystem");
   FieldHandle             stiff = CreatePointCloudeScalar();
-  DenseColumnMatrixHandle bvect = rhs_zero(3);
+  DenseMatrixHandle bvect = rhs_zero(3);
   DenseMatrixHandle       known = x_num(3);
-  
+
   stubPortNWithThisData(test, 0, stiff);
   stubPortNWithThisData(test, 1, bvect);
   stubPortNWithThisData(test, 2, known);
-  
+
   EXPECT_THROW(test->execute(), DataPortException);
 }
 
@@ -179,11 +179,11 @@ TEST_F(AddKnownsToLinearSystemTests, ThrowsForFieldInputOnPortOne)
   SparseRowMatrixHandle   stiff = lhs();
   FieldHandle             bvect = CreateTetMeshScalarOnNode();
   DenseMatrixHandle       known = x_num(3);
-  
+
   stubPortNWithThisData(test, 0, stiff);
   stubPortNWithThisData(test, 1, bvect);
   stubPortNWithThisData(test, 2, known);
-  
+
   EXPECT_THROW(test->execute(), DataPortException);
 }
 
@@ -191,13 +191,13 @@ TEST_F(AddKnownsToLinearSystemTests, ThrowsForFieldInputOnPortTwo)
 {
   auto test = makeModule("AddKnownsToLinearSystem");
   SparseRowMatrixHandle   stiff = lhs();
-  DenseColumnMatrixHandle bvect = rhs_zero(3);
+  DenseMatrixHandle bvect = rhs_zero(3);
   FieldHandle             known = CreateTriSurfScalarOnNode();
-  
+
   stubPortNWithThisData(test, 0, stiff);
   stubPortNWithThisData(test, 1, bvect);
   stubPortNWithThisData(test, 2, known);
-  
+
   EXPECT_THROW(test->execute(), DataPortException);
 }
 
@@ -212,4 +212,3 @@ TEST_F(AddKnownsToLinearSystemTests, ThrowsForNullInput)
 
   EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
 }
-

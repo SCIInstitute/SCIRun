@@ -42,6 +42,7 @@ HasNotes::HasNotes(const std::string& name, bool positionAdjustable) :
   noteEditor_(QString::fromStdString(name), positionAdjustable, 0),
   destroyed_(false)
 {
+  noteEditor_.setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
 }
 
 HasNotes::~HasNotes()

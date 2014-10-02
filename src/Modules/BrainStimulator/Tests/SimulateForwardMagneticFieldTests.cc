@@ -56,42 +56,42 @@ class SimulateForwardMagneticFieldModuleTests : public ModuleTest
 
 namespace
 {
-  
+
  FieldHandle LoadFieldFirstModuleInput()
- {     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/first.fld");
+ {
+  return loadFieldFromFile(TestResources::rootDir() / "Fields" / "simulateforwardmagneticfield/first.fld");
  }
 
  FieldHandle LoadFieldSecondModuleInput()
- {     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/second.fld");
+ {
+  return loadFieldFromFile(TestResources::rootDir() / "Fields" / "simulateforwardmagneticfield/second.fld");
  }
 
  FieldHandle LoadFieldThirdModuleInput()
- {     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/third.fld");
+ {
+  return loadFieldFromFile(TestResources::rootDir() / "Fields" / "simulateforwardmagneticfield/third.fld");
  }
 
  FieldHandle LoadFieldFourthModuleInput()
- {     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/fourth.fld");
+ {
+  return loadFieldFromFile(TestResources::rootDir() / "Fields" / "simulateforwardmagneticfield/fourth.fld");
  }
-  
+
 }
 
 TEST_F(SimulateForwardMagneticFieldModuleTests, ThrowsForNullInput)
 {
   auto test = makeModule("SimulateForwardMagneticField");
-  FieldHandle nullField;  
+  FieldHandle nullField;
   stubPortNWithThisData(test, 0, nullField);
   EXPECT_THROW(test->execute(), NullHandleOnPortException);
-  
+
   stubPortNWithThisData(test, 1, nullField);
   EXPECT_THROW(test->execute(), NullHandleOnPortException);
-  
+
   stubPortNWithThisData(test, 2, nullField);
   EXPECT_THROW(test->execute(), NullHandleOnPortException);
-  
+
   stubPortNWithThisData(test, 3, nullField);
   EXPECT_THROW(test->execute(), NullHandleOnPortException);
 }
@@ -104,13 +104,13 @@ TEST_F(SimulateForwardMagneticFieldModuleTests, WrongDataType)
 		(*m)(i, 0) = 1;
   stubPortNWithThisData(test, 0, m);
   EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
-  
+
   stubPortNWithThisData(test, 1, m);
   EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
-  
+
   stubPortNWithThisData(test, 2, m);
   EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
-  
+
   stubPortNWithThisData(test, 3, m);
   EXPECT_THROW(test->execute(), WrongDatatypeOnPortException);
 }
@@ -138,5 +138,3 @@ TEST_F(SimulateForwardMagneticFieldModuleTests, NormalExecution)
 
   EXPECT_NO_THROW(test->execute());
 }
-
-
