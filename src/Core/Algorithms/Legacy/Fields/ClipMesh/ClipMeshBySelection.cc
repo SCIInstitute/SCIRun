@@ -36,7 +36,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Logging/Log.h>
 
@@ -203,10 +203,8 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
         ofield->copy_value(ifield,node_mapping2[idx],idx);
       }
     }
-  
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
-    bool build_mapping = get_bool("build_mapping");
+    bool build_mapping = get(Parameters::BuildMapping).toBool();
     if (build_mapping)
     {
       size_type m,n,nnz;
@@ -215,71 +213,40 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
       {
         if (num_elems > 0 && num_oelems > 0)
         {
-          n =   num_elems;
-          nnz = num_oelems;
-          m =   num_oelems;
-          SparseRowMatrix::Data data(m+1, m);
+          SparseRowMatrixFromMap::Values map;
 
-          if (!data.allocated())
-          {
-            error("Could not allocate enough memory.");
-            return (false);     
-          }
-          const SparseRowMatrix::Rows& rr = data.rows();
-          const SparseRowMatrix::Columns& cc = data.columns();
-          const SparseRowMatrix::Storage& vv = data.data();
-          
-          for (index_type idx=0;idx<m+1;idx++)
-          {
-            rr[idx] = idx;
-          }
+          n =   num_elems;
+          m =   num_oelems;
 
           for (index_type idx=0;idx<m;idx++)
           {
-            cc[idx] = elem_mapping2[idx];
-            vv[idx] = 1.0;
+            map[idx][elem_mapping2[idx]] = 1.0;
           }
 
-          mapping = new SparseRowMatrix(m,n,data,nnz);
+          mapping = SparseRowMatrixFromMap::make(m, n, map);
         }
       }
       else if (ofield->basis_order() == 1)
       {
         if (num_nodes > 0 && num_onodes >0)
         {
+          SparseRowMatrixFromMap::Values map;
+
           n =   num_nodes;
-          nnz = num_onodes;
           m =   num_onodes;
-          SparseRowMatrix::Data data(m+1, m);
-
-          if (!data.allocated())
-          {
-            error("Could not allocate enough memory.");
-            return (false);     
-          }
-          const SparseRowMatrix::Rows& rr = data.rows();
-          const SparseRowMatrix::Columns& cc = data.columns();
-          const SparseRowMatrix::Storage& vv = data.data();
-
-          for (index_type idx=0;idx<m+1;idx++)
-          {
-            rr[idx] = idx;
-          }
 
           for (index_type idx=0;idx<m;idx++)
           {
-            cc[idx] = node_mapping2[idx];
-            vv[idx] = 1.0;
+            map[idx][node_mapping2[idx]] = 1.0;
           }
 
-          mapping.reset(new SparseRowMatrix(m,n,data,nnz));
+          mapping = SparseRowMatrixFromMap::make(m, n, map);
         }
       }
       // provide an empty matrix
       if (!mapping)
         mapping.reset(new DenseMatrix(0,0));
     }
-#endif
   }
   else
   {
@@ -354,8 +321,6 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
         ofield->copy_value(ifield,node_mapping2[idx],idx);
       }
     }
-  
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
     bool build_mapping = get(Parameters::BuildMapping).toBool();
     if (build_mapping)
@@ -366,76 +331,44 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
       {
         if (num_elems > 0 && num_oelems > 0)
         {
+          SparseRowMatrixFromMap::Values map;
+
           n =   num_elems;
-          nnz = num_oelems;
           m =   num_oelems;
-          SparseRowMatrix::Data data(m+1, m);
-
-          if (!data.allocated())
-          {
-            error("Could not allocate enough memory.");
-            return (false);     
-          }
-          const SparseRowMatrix::Rows& rr = data.rows();
-          const SparseRowMatrix::Columns& cc = data.columns();
-          const SparseRowMatrix::Storage& vv = data.data();
-
-          for (index_type idx=0;idx<m+1;idx++)
-          {
-            rr[idx] = idx;
-          }
 
           for (index_type idx=0;idx<m;idx++)
           {
-            cc[idx] = elem_mapping2[idx];
-            vv[idx] = 1.0;
+            map[idx][elem_mapping2[idx]] = 1.0;
           }
 
-          mapping = new SparseRowMatrix(m,n,data,nnz);
+          mapping = SparseRowMatrixFromMap::make(m, n, map);
         }
       }
       else if (ofield->basis_order() == 1)
       {
         if (num_nodes > 0 && num_onodes > 0)
         {
+          SparseRowMatrixFromMap::Values map;
+
           n =   num_nodes;
-          nnz = num_onodes;
           m =   num_onodes;
-          SparseRowMatrix::Data data(m+1, m);
-
-          if (!data.allocated())
-          {
-            error("Could not allocate enough memory.");
-            return (false);     
-          }
-          const SparseRowMatrix::Rows& rr = data.rows();
-          const SparseRowMatrix::Columns& cc = data.columns();
-          const SparseRowMatrix::Storage& vv = data.data();
-
-          for (index_type idx=0;idx<m+1;idx++)
-          {
-            rr[idx] = idx;
-          }
 
           for (index_type idx=0;idx<m;idx++)
           {
-            cc[idx] = node_mapping2[idx];
-            vv[idx] = 1.0;
+            map[idx][node_mapping2[idx]] = 1.0;
           }
-          mapping = new SparseRowMatrix(m,n,data,nnz);
+
+          mapping = SparseRowMatrixFromMap::make(m, n, map);
         }
       }
       // provide an empty matrix
       if (!mapping) mapping.reset(new DenseMatrix(0,0));
     }
-  #endif
   }
 
   /// Copy properties of the property manager
   CopyProperties(*input, *output);
-//	output->copy_properties(input.get_rep());
 
-  // Success:
   return (true);
 }
 
@@ -446,13 +379,13 @@ AlgorithmOutput ClipMeshBySelectionAlgo::run_generic(const AlgorithmInput& input
 {
   auto inputField = input.get<Field>(Variables::InputField);
   auto selectionField = input.get<Field>(SelectionField);
-  
+
   FieldHandle outputField;
   MatrixHandle mapping;
 
   if (!runImpl(inputField, selectionField, outputField, mapping))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-  
+
   AlgorithmOutput output;
   output[Variables::OutputField] = outputField;
   output[Mapping] = mapping;
