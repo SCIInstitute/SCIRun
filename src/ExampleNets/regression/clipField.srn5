@@ -7,7 +7,7 @@
 			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ClipFieldByFunction:0</first>
+				<first>ClipFieldByFunction:5</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
@@ -26,7 +26,7 @@
 									<name>ClipMethod</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>onenode</value>
+										<value>One Node</value>
 									</value>
 								</second>
 							</item>
@@ -38,7 +38,7 @@
 									<name>FunctionString</name>
 									<value>
 										<which>2</which>
-										<value>DATA &lt; 0</value>
+										<value>DATA1 &lt; 0;</value>
 									</value>
 								</second>
 							</item>
@@ -223,7 +223,7 @@
 			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ClipFieldByFunction:0</moduleId1_>
+				<moduleId1_>ClipFieldByFunction:5</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
 					<name>OutputField</name>
 					<id>0</id>
@@ -240,7 +240,7 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ClipFieldByFunction:0</moduleId2_>
+				<moduleId2_>ClipFieldByFunction:5</moduleId2_>
 				<port2_>
 					<name>InputFields</name>
 					<id>0</id>
@@ -276,31 +276,31 @@
 		<count>5</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>ClipFieldByFunction:0</first>
+			<first>ClipFieldByFunction:5</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-671</first>
-				<second>76</second>
+				<first>-760</first>
+				<second>152</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:2</first>
 			<second>
-				<first>-1074</first>
-				<second>90</second>
+				<first>-1064</first>
+				<second>0</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:1</first>
 			<second>
-				<first>-1033</first>
-				<second>-35</second>
+				<first>-1064</first>
+				<second>-152</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:3</first>
 			<second>
-				<first>-718</first>
-				<second>221</second>
+				<first>-760</first>
+				<second>228</second>
 			</second>
 		</item>
 		<item>

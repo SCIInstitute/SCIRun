@@ -57,7 +57,7 @@ ALGORITHM_PARAMETER_DEF(Fields, BuildMapping);
 
 ClipMeshBySelectionAlgo::ClipMeshBySelectionAlgo()
 {
-  add_option(Parameters::ClipMethod, "onenode", "element|onenode|majoritynodes|allnodes");
+  add_option(Parameters::ClipMethod, "One Node", "Element Center|One Node|Most Nodes|All Nodes");
   addParameter(Parameters::BuildMapping, true);
 }
 
@@ -138,9 +138,9 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
 
   // For point clouds elements and nodes are the same, but the basis order is
   // 0, so force it to run through the element method.
-  if (imesh->is_pointcloudmesh()) method = "element";
+  if (imesh->is_pointcloudmesh()) method = "Element Center";
 
-  if (method == "element")
+  if (method == "Element Center")
   {
     std::vector<index_type> node_mapping(imesh->num_nodes(),-1);
     std::vector<index_type> elem_mapping(imesh->num_elems(),-1);
@@ -284,9 +284,9 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
   else
   {
     int target = 1;
-    if (method == "onenode") target = 1;
-    else if (method == "majoritynodes") target = omesh->num_nodes_per_elem()/2;
-    else if (method == "allnodes") target = omesh->num_nodes_per_elem();
+    if (method == "One Node") target = 1;
+    else if (method == "Most Nodes") target = omesh->num_nodes_per_elem()/2;
+    else if (method == "All Nodes") target = omesh->num_nodes_per_elem();
 
     std::vector<index_type> node_mapping(imesh->num_nodes(),-1);
     std::vector<index_type> elem_mapping(imesh->num_elems(),-1);
