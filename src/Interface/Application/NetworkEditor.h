@@ -215,6 +215,7 @@ Q_SIGNALS:
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
     //QAction* executeAction_;
+		bool modulesSelectedByCL; 
 
     QGraphicsScene* scene_;
 

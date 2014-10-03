@@ -513,13 +513,16 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 
 			findById(scene_->items(),selectedPair.first)->setSelected(true);
 			findById(scene_->items(),selectedPair.second)->setSelected(true);
+			modulesSelectedByCL = 1; 
 		}
 	QGraphicsView::mouseMoveEvent(event);
 }
 
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
-	unselectConnectionGroup();
+		if(modulesSelectedByCL)
+				unselectConnectionGroup();
+		modulesSelectedByCL = 0; 
 	QGraphicsView::mouseReleaseEvent(event);
 }
 
