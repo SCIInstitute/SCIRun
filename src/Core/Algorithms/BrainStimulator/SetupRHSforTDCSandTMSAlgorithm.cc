@@ -130,7 +130,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  DenseMatrixHandle lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
  
  index_type refnode_number = get(refnode()).getInt();
- if ( refnode_number > mesh_num_nodes)
+ if ( refnode_number > mesh_num_nodes && refnode_number>0)
  {
     THROW_ALGORITHM_PROCESSING_ERROR(" Reference node exceeds number of FEM nodes. ");
  }
