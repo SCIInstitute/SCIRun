@@ -207,7 +207,7 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
     bool build_mapping = get(Parameters::BuildMapping).toBool();
     if (build_mapping)
     {
-      size_type m,n,nnz;
+      size_type m,n;
 
       if (ofield->basis_order() == 0)
       {
@@ -325,7 +325,7 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
     bool build_mapping = get(Parameters::BuildMapping).toBool();
     if (build_mapping)
     {
-      size_type m,n,nnz;
+      size_type m,n;
 
       if (ofield->basis_order() == 0)
       {
