@@ -77,7 +77,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   unsigned int m = static_cast<unsigned int>(stiff->ncols()), 
     n = static_cast<unsigned int>(stiff->nrows());
 
-  // Checking if the rhs matrix is allocated and that the dimenions agree with the stiff matrix
+  // Checking if the rhs matrix is allocated and that the dimensions agree with the stiff matrix
   if (rhs)
   {
     if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))) )
@@ -89,7 +89,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   // casting rhs to be a column
   auto rhsCol = rhs ?  matrix_convert::to_column(rhs) : boost::make_shared<DenseColumnMatrix>(DenseColumnMatrix::Zero(m));
 
-  // Checking if x matrix was given and that the dimenions agree with the stiff matrix
+  // Checking if x matrix was given and that the dimensions agree with the stiff matrix
   if (!x)
   {
     THROW_ALGORITHM_INPUT_ERROR("No x vector was given");
@@ -111,7 +111,7 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
 
   // performs calculation adjustments for setting row and col values to zero
   // NOTE: right hand side vector values are reset multiple times during this
-  //   proccess, thus it was necessary to have a second for loop to set the
+  //   process, thus it was necessary to have a second for loop to set the
   //   right hand side vector equal to the known values
   for (index_type p=0; p<m; p++)
   {
