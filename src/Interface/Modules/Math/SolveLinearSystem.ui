@@ -104,7 +104,7 @@
       <item row="2" column="1">
        <widget class="QDoubleSpinBox" name="targetErrorSpinBox_">
         <property name="decimals">
-         <number>10</number>
+         <number>20</number>
         </property>
         <property name="maximum">
          <double>999999999.000000000000000</double>
