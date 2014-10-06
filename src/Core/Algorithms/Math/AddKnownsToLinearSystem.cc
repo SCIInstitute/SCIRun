@@ -74,105 +74,105 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff,
   }
 
   // Storing the number of columns in m and rows in n from the stiff matrix, m == n
-  unsigned int m = static_cast<unsigned int>(stiff->ncols()), 
-    n = static_cast<unsigned int>(stiff->nrows());
+  const unsigned int numCols = static_cast<unsigned int>(stiff->ncols());
+  const unsigned int numRows = static_cast<unsigned int>(stiff->nrows());
 
   // Checking if the rhs matrix is allocated and that the dimensions agree with the stiff matrix
   if (rhs)
   {
-    if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))) )
+    if ( !(((rhs->ncols() == numCols) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == numCols))) )
     {
       THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector b do not match the dimensions of matrix A"); 
     }
   }
 
   // casting rhs to be a column
-  auto rhsCol = rhs ?  matrix_convert::to_column(rhs) : boost::make_shared<DenseColumnMatrix>(DenseColumnMatrix::Zero(m));
+  auto rhsCol = rhs ?  matrix_convert::to_column(rhs) : boost::make_shared<DenseColumnMatrix>(DenseColumnMatrix::Zero(numCols));
+  ENSURE_NOT_NULL(rhsCol, "rhsCol");
+  DenseColumnMatrix& rhsColRef = *rhsCol;
 
   // Checking if x matrix was given and that the dimensions agree with the stiff matrix
   if (!x)
   {
     THROW_ALGORITHM_INPUT_ERROR("No x vector was given");
   }
-  else if ( !(((x->ncols() == m) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == m))) )
+  else if ( !(((x->ncols() == numCols) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == numCols))) )
   {
     THROW_ALGORITHM_INPUT_ERROR("The dimensions of vector x do not match the dimensions of matrix A");
   } 
 
   // casting x to be a column
   auto xCol = matrix_cast::as_column(x);
-  if (!xCol) xCol = matrix_convert::to_column(x);  
+  if (!xCol) xCol = matrix_convert::to_column(x);
+  ENSURE_NOT_NULL(xCol, "xColumn");
+  const DenseColumnMatrix& xColRef = *xCol;
 
   // cnt used for updating the progress bar
   index_type cnt = 0;
 
   bool just_copying_inputs = true;
 
-
   // performs calculation adjustments for setting row and col values to zero
   // NOTE: right hand side vector values are reset multiple times during this
   //   process, thus it was necessary to have a second for loop to set the
   //   right hand side vector equal to the known values
-  for (index_type p=0; p<m; p++)
+  for (index_type i=0; i<numRows; i++)
   {
-    // making sure the rhs vector is finite
-    if (!IsFinite((*rhsCol)[p]))
-      THROW_ALGORITHM_INPUT_ERROR("NaN exist in the b vector");
-
-    if (IsFinite((*x).coeff(p)))
+    for (SparseRowMatrix::InnerIterator it(*stiff,i); it; ++it)
+    //for (index_type p=0; p<numCols; p++)    
     {
-      just_copying_inputs = false;
-      for (index_type i=0; i<m; i++)
+      const int p = it.col();
+      // making sure the rhs vector is finite
+      if (!IsFinite(rhsColRef[p]))
+        THROW_ALGORITHM_INPUT_ERROR("NaN exist in the b vector");
+
+      const double xCol_p = xColRef[p];
+      if (IsFinite(xCol_p))
       {
+        just_copying_inputs = false;
         if (i!=p)
         {
-          (*rhsCol).coeffRef(i) += -(*stiff).coeff(i,p) * (*xCol).coeff(p);
+          rhsColRef[i] += -it.value() * xCol_p;
           additionalData[i][p] = 0.0;
           additionalData[p][i] = 0.0;
         }
-        else
-        {
-          additionalData[p][p] = 1.0;
-        }
       }
-    }
-    cnt++;
-    if (cnt == 10)
-    {
-      cnt = 0;
-      update_progress((double)p/m);
+      cnt++;
+      if (cnt == 1000)
+      {
+        cnt = 0;
+        update_progress_max(i, numRows);
+      }
     }
   }
 
+  for (int i = 0; i < std::min(numRows, numCols); ++i)
+  {
+    if (IsFinite(xColRef[i]))
+      additionalData[i][i] = 1.0;
+  }
 
   // assigns value for right hand side vector
-  for (index_type p=0; p<m; p++)
+  for (index_type p=0; p<numCols; p++)
   {
-    if (IsFinite((*x).coeff(p)))
+    if (IsFinite(xColRef[p]))
     {
       just_copying_inputs = false;
-      for (index_type i=0; i<m; i++)
-      {
-        if (i == p)
-        {
-          (*rhsCol)[p] = (*xCol).coeff(p);
-        }
-      }
+      rhsColRef[p] = xColRef[p];
     }
     cnt++;
-    if (cnt == 10)
+    if (cnt == 100)
     {
       cnt = 0;
-      update_progress((double)p/m);
+      update_progress((double)p/numCols);
     }
   }
 
   if (just_copying_inputs)
     remark("X vector does not contain any knowns! Copying inputs to outputs.");
 
-  output_stiff = SparseRowMatrixFromMap::appendToSparseMatrix(m, n, *stiff, additionalData);
+  output_stiff = SparseRowMatrixFromMap::appendToSparseMatrix(numCols, numRows, *stiff, additionalData);
   output_rhs = rhsCol;
-  output_stiff->makeCompressed();
 
   return true;
 }
