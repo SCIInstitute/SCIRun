@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath.h>
 #include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
@@ -71,6 +72,14 @@ MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDi
 void MapFieldDataFromSourceToDestinationDialog::pull()
 {
   pull_newVersionToReplaceOld();
+  if (IsNan(state_->getValue(Parameters::DefaultValue).toDouble()))
+  {
+    useNanForUnassignedValuesCheckBox_->setChecked(true);
+  }
+  if (state_->getValue(Parameters::MaxDistance).toDouble() < 0)
+  {
+    noMaxCheckBox_->setChecked(true);
+  }
 }
 
 void MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue(int state)

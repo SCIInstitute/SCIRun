@@ -567,8 +567,8 @@
 								<second>
 									<name>DefaultValue</name>
 									<value>
-										<which>1</which>
-										<value>1.#QNAN</value>
+										<which>2</which>
+										<value>NaN</value>
 									</value>
 								</second>
 							</item>
@@ -619,8 +619,8 @@
 								<second>
 									<name>DefaultValue</name>
 									<value>
-										<which>1</which>
-										<value>1.#QNAN</value>
+										<which>2</which>
+										<value>NaN</value>
 									</value>
 								</second>
 							</item>
