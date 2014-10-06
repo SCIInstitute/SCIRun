@@ -1038,7 +1038,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>8</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1058,6 +1058,18 @@
 								</first>
 								<second>
 									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceInvertNormals</name>
+								</first>
+								<second>
+									<name>FaceInvertNormals</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
