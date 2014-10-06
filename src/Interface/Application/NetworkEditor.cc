@@ -521,7 +521,10 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
 		if(modulesSelectedByCL)
+		{
 				unselectConnectionGroup();
+				Q_EMIT modified(); 
+		}
 		modulesSelectedByCL = 0; 
 	QGraphicsView::mouseReleaseEvent(event);
 }
