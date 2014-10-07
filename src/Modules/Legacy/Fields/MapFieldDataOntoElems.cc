@@ -37,7 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-const ModuleLookupInfo MapFieldDataOntoElements::staticInfo_("MapFieldDataOntoElems", "ChangeFieldData", "SCIRun");
+const ModuleLookupInfo MapFieldDataOntoElements::staticInfo_("MapFieldDataOntoElements", "ChangeFieldData", "SCIRun");
 
 /// @class MapFieldDataOntoElems
 /// @brief Maps data from one mesh to another mesh. The output mesh will have
