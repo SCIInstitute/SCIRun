@@ -28,6 +28,7 @@
 
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+//#include <Interface/Application/MainWindowCollaborators.h>
 #include <Core/Logging/Log.h>
 #include <boost/foreach.hpp>
 
@@ -71,6 +72,8 @@ void ModuleDialogGeneric::createExecuteAction()
   //executeAction_->setShortcut(QKeySequence("Ctrl+1"));
   executeAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
+  //TODO
+  //addWidgetToExecutionDisableList(executeAction_);
 }
 
 void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e) 

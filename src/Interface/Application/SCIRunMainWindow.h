@@ -51,8 +51,6 @@ class DeveloperConsole;
 class PreferencesWindow;
 class PythonConsoleWidget;
 
-typedef boost::variant<QAction*, QWidget*> InputWidget;
-
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
 	Q_OBJECT
@@ -123,7 +121,6 @@ private:
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
-  std::vector<InputWidget> inputWidgets_;
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
@@ -139,8 +136,6 @@ private Q_SLOTS:
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
-  void disableInputWidgets(); 
-  void enableInputWidgets();
   void chooseBackgroundColor();
   void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);

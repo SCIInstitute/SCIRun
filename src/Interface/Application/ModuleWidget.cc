@@ -47,6 +47,7 @@
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Application/MainWindowCollaborators.h>
 
 #include <Dataflow/Network/Module.h>
 
@@ -263,6 +264,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 
   executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   connect(executePushButton_, SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  addWidgetToExecutionDisableList(executePushButton_);
 
   int pixelWidth = titleLabel_->fontMetrics().boundingRect(titleLabel_->text()).width();
   //std::cout << titleLabel_->text().toStdString() << std::endl;
@@ -348,7 +350,7 @@ void ModuleWidget::resetProgressBar()
 void ModuleWidget::setupModuleActions()
 {
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
-
+  addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
   moduleActionButton_->setMenu(actionsMenu_->getMenu());
 }
 
