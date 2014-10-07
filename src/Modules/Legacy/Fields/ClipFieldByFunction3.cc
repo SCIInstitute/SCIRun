@@ -72,15 +72,15 @@ void ClipFieldByFunction::execute()
   auto fields = getRequiredDynamicInputs(InputFields);
   auto func = getOptionalInput(Function);
   auto state = get_state();
-  if (func && *func)
-  {
-    state->setValue(FunctionString, (*func)->value());
-  }
-  
   auto matrices = getOptionalDynamicInputs(InputArrays);
   
   if (needToExecute())
   {
+    if (func && *func)
+    {
+      state->setValue(FunctionString, (*func)->value());
+    }
+
     update_state(Executing);
     // Get number of matrix ports with data (the last one is always empty)
     size_t numinputs = matrices.size();
