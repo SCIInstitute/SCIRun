@@ -658,7 +658,7 @@
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>ChangeFieldData</category_name_>
-						<module_name_>MapFieldDataOntoElems</module_name_>
+						<module_name_>MapFieldDataOntoElements</module_name_>
 					</module>
 					<state>
 						<stateMap>
