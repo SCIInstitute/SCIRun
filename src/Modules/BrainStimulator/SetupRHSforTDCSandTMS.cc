@@ -71,7 +71,7 @@ void SetupRHSforTDCSandTMSModule::execute()
  
   if (needToExecute())
   {
-    algo().set(SetupRHSforTDCSandTMSAlgorithm::refnode(), get_state()->getValue(SetupRHSforTDCSandTMSAlgorithm::refnode()).getInt());
+    algo().set(SetupRHSforTDCSandTMSAlgorithm::refnode(), get_state()->getValue(SetupRHSforTDCSandTMSAlgorithm::refnode()).toInt());
     auto output = algo().run_generic(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT_TYPE, output);

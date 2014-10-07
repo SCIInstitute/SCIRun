@@ -48,7 +48,7 @@ namespace Algorithms {
   protected:
     void dumpAlgoState() const;
   };
-
+  
 }}}
 
 #endif

@@ -86,6 +86,12 @@ int AlgorithmParameter::toInt() const
   return v ? *v : 0;
 }
 
+std::vector<Variable> AlgorithmParameter::getList() const
+{
+  const std::vector<Variable>* v = boost::get<std::vector<Variable>>(&value_);
+  return v ? *v : std::vector<Variable>();
+}
+
 double AlgorithmParameter::toDouble() const
 {
   const double* v = boost::get<double>(&value_);

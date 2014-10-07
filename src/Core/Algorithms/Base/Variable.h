@@ -67,6 +67,7 @@ namespace Algorithms {
 
     int toInt() const;
     double toDouble() const;
+    std::vector<Variable> getList() const;
     std::string toString() const;
     boost::filesystem::path toFilename() const;
     bool toBool() const;
