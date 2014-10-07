@@ -28,7 +28,6 @@
 
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-//#include <Interface/Application/MainWindowCollaborators.h>
 #include <Core/Logging/Log.h>
 #include <boost/foreach.hpp>
 
@@ -38,7 +37,8 @@ using namespace SCIRun::Core::Algorithms;
 
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
-  pulling_(false)
+  pulling_(false),
+  executeAction_(0)
 {
   setModal(false);
 
@@ -72,8 +72,6 @@ void ModuleDialogGeneric::createExecuteAction()
   //executeAction_->setShortcut(QKeySequence("Ctrl+1"));
   executeAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
-  //TODO
-  //addWidgetToExecutionDisableList(executeAction_);
 }
 
 void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e) 
