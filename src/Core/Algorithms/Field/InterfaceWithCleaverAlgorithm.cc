@@ -82,7 +82,7 @@ InterfaceWithCleaverAlgorithm::InterfaceWithCleaverAlgorithm()
 FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& input) const
 {
   FieldHandle output;      
-     
+
   std::vector<FieldHandle> inputs;
   std::copy_if(input.begin(), input.end(), std::back_inserter(inputs), [](FieldHandle f) { return f; });
 
@@ -93,131 +93,134 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   }
   if (inputs.size()<2)
   {
-      THROW_ALGORITHM_INPUT_ERROR(" At least 2 indicator functions stored as float values are needed to run cleaver! " );
-      return FieldHandle();
+    THROW_ALGORITHM_INPUT_ERROR(" At least 2 indicator functions stored as float values are needed to run cleaver! " );
+    return FieldHandle();
   }
-  
+
   std::vector<boost::shared_ptr<Cleaver::ScalarField>> fields;  
   VMesh::dimension_type dims; int x=0,y=0,z=0; 
   for (size_t p=1; p<inputs.size(); p++)
   {
     VMesh*  imesh1   = inputs[p]->vmesh();
-    
+
     if( !imesh1->is_structuredmesh() )
     {
-     THROW_ALGORITHM_INPUT_ERROR("needs to be structured mesh!");    
-    } else
+      THROW_ALGORITHM_INPUT_ERROR("needs to be structured mesh!");    
+    } 
+    else
     {
-     VField* vfield1 = inputs[p]->vfield();
-     if (!vfield1->is_scalar())
-     {
-      THROW_ALGORITHM_INPUT_ERROR("values at the node needs to be scalar!");
-      return FieldHandle();
-     }
-
-     imesh1->get_dimensions( dims ); 
-     if (p==1)
-     {
-       x=dims[0]; y=dims[1]; z=dims[2];
-       if (x<1 || y<1 || z<1)
-       {
-        THROW_ALGORITHM_INPUT_ERROR(" Size of input fields should be non-zero !");
-       }
-     } else
-     {
-       if ( dims[0]!=x || dims[1]!=y || dims[2]!=z)
-       {
-         THROW_ALGORITHM_INPUT_ERROR(" Size of input fields is inconsistent !");
-       }
-     }
-     
-     if (dims.size()!=3)
-     {
-       THROW_ALGORITHM_INPUT_ERROR("need a three dimensional indicator function");
-       return FieldHandle();
-     }    
-
-     if (vfield1->is_float())
-     {
-      float* ptr = static_cast<float*>(vfield1->fdata_pointer());
-      if (ptr)
+      VField* vfield1 = inputs[p]->vfield();
+      if (!vfield1->is_scalar())
       {
-        fields.push_back(boost::make_shared<Cleaver::FloatField>(dims[0], dims[1], dims[2], ptr)); 
-      } else
-      {
-        THROW_ALGORITHM_INPUT_ERROR(" float field is NULL pointer");
+        THROW_ALGORITHM_INPUT_ERROR("values at the node needs to be scalar!");
         return FieldHandle();
       }
-     }
+
+      imesh1->get_dimensions( dims ); 
+      if (p==1)
+      {
+        x=dims[0]; y=dims[1]; z=dims[2];
+        if (x<1 || y<1 || z<1)
+        {
+          THROW_ALGORITHM_INPUT_ERROR(" Size of input fields should be non-zero !");
+        }
+      }
+      else
+      {
+        if ( dims[0]!=x || dims[1]!=y || dims[2]!=z)
+        {
+          THROW_ALGORITHM_INPUT_ERROR(" Size of input fields is inconsistent !");
+        }
+      }
+
+      if (dims.size()!=3)
+      {
+        THROW_ALGORITHM_INPUT_ERROR("need a three dimensional indicator function");
+        return FieldHandle();
+      }    
+
+      if (vfield1->is_float())
+      {
+        float* ptr = static_cast<float*>(vfield1->fdata_pointer());
+        if (ptr)
+        {
+          fields.push_back(boost::make_shared<Cleaver::FloatField>(dims[0], dims[1], dims[2], ptr)); 
+        }
+        else
+        {
+          THROW_ALGORITHM_INPUT_ERROR(" float field is NULL pointer");
+          return FieldHandle();
+        }
+      }
 
     }
-    
+
   }
-  
+
   boost::shared_ptr<Cleaver::Volume> volume(new Cleaver::Volume(toVectorOfRawPointers(fields)));
 
   if ( get(VolumeScalingSpinBox_X).toDouble()>0 && get(VolumeScalingSpinBox_Y).toDouble()>0 && get(VolumeScalingSpinBox_Z).toDouble()>0 )
   {
     if (get(AbsoluteVolumeScalingRadioButton).toBool()) 
-        volume->setSize(get(VolumeScalingSpinBox_X).toDouble(),get(VolumeScalingSpinBox_Y).toDouble(),get(VolumeScalingSpinBox_Z).toDouble());
-      else
-	if (get(RelativeVolumeScalingRadioButton).toBool())
-	  volume->setSize(get(VolumeScalingSpinBox_X).toDouble()*volume->size().x, get(VolumeScalingSpinBox_Y).toDouble()*volume->size().y, get(VolumeScalingSpinBox_Z).toDouble()*volume->size().z);
-        else
-	 volume->setSize(dims[0],dims[1],dims[2]);
-   }
+      volume->setSize(get(VolumeScalingSpinBox_X).toDouble(),get(VolumeScalingSpinBox_Y).toDouble(),get(VolumeScalingSpinBox_Z).toDouble());
     else
-    {
-      volume->setSize(dims[0],dims[1],dims[2]);
-      THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
-    }
-   
-    /// Padding is now optional! 
-    boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(get(PaddingCheckBox).toBool() ?  ((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get() : volume.get(), get(VerboseCheckBox).toBool()));        
-    
-    FieldInformation fi("TetVolMesh",0,"double");   ///create output field
+      if (get(RelativeVolumeScalingRadioButton).toBool())
+        volume->setSize(get(VolumeScalingSpinBox_X).toDouble()*volume->size().x, get(VolumeScalingSpinBox_Y).toDouble()*volume->size().y, get(VolumeScalingSpinBox_Z).toDouble()*volume->size().z);
+      else
+        volume->setSize(dims[0],dims[1],dims[2]);
+  }
+  else
+  {
+    volume->setSize(dims[0],dims[1],dims[2]);
+    THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
+  }
 
-    output = CreateField(fi);
-    auto omesh = output->vmesh();
-    auto ofield = output->vfield();
+  /// Padding is now optional! 
+  boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(get(PaddingCheckBox).toBool() ?  ((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get() : volume.get(), get(VerboseCheckBox).toBool()));        
 
-    auto nr_of_tets  = mesh->tets.size();
-    auto nr_of_verts = mesh->verts.size();
+  FieldInformation fi("TetVolMesh",0,"double");   ///create output field
 
-    omesh->node_reserve(nr_of_verts);
-    omesh->elem_reserve(nr_of_tets);
+  output = CreateField(fi);
+  auto omesh = output->vmesh();
+  auto ofield = output->vfield();
 
-    for (auto i=0; i<nr_of_verts; i++)
-    {
-      omesh->add_point(Point(mesh->verts[i]->pos().x,mesh->verts[i]->pos().y,mesh->verts[i]->pos().z));
-    }
+  auto nr_of_tets  = mesh->tets.size();
+  auto nr_of_verts = mesh->verts.size();
 
-    VMesh::Node::array_type vdata;
-    vdata.resize(4);
-    std::vector<double> values(nr_of_tets);
+  omesh->node_reserve(nr_of_verts);
+  omesh->elem_reserve(nr_of_tets);
 
-    for (auto i=0; i<nr_of_tets; i++)
-    {    
-      vdata[0]=mesh->tets[i]->verts[0]->tm_v_index;
-      vdata[1]=mesh->tets[i]->verts[1]->tm_v_index;
-      vdata[2]=mesh->tets[i]->verts[2]->tm_v_index;
-      vdata[3]=mesh->tets[i]->verts[3]->tm_v_index;
-      omesh->add_elem(vdata);
-      auto mat_label = mesh->tets[i]->mat_label+1;
-      values[i]=mat_label;
-    }
-    ofield->resize_values();
-    ofield->set_values(values);
-    mesh->computeAngles();
-    std::ostringstream ostr1;
-    ostr1 << "Number of tetrahedral elements:" << ofield->vmesh()->num_elems() <<  std::endl;
-    ostr1 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes() << std::endl;
-    ostr1 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes() << std::endl;
-    ostr1 << "Worst Angle (min):" <<  mesh->min_angle << std::endl;
-    ostr1 << "Worst Angle (max):" <<  mesh->max_angle << std::endl;
-    ostr1 << "Volume:" << volume->size().toString() << std::endl;
-    
-    remark(ostr1.str()); 
+  for (auto i=0; i<nr_of_verts; i++)
+  {
+    omesh->add_point(Point(mesh->verts[i]->pos().x,mesh->verts[i]->pos().y,mesh->verts[i]->pos().z));
+  }
+
+  VMesh::Node::array_type vdata;
+  vdata.resize(4);
+  std::vector<double> values(nr_of_tets);
+
+  for (auto i=0; i<nr_of_tets; i++)
+  {    
+    vdata[0]=mesh->tets[i]->verts[0]->tm_v_index;
+    vdata[1]=mesh->tets[i]->verts[1]->tm_v_index;
+    vdata[2]=mesh->tets[i]->verts[2]->tm_v_index;
+    vdata[3]=mesh->tets[i]->verts[3]->tm_v_index;
+    omesh->add_elem(vdata);
+    auto mat_label = mesh->tets[i]->mat_label+1;
+    values[i]=mat_label;
+  }
+  ofield->resize_values();
+  ofield->set_values(values);
+  mesh->computeAngles();
+  std::ostringstream ostr1;
+  ostr1 << "Number of tetrahedral elements:" << ofield->vmesh()->num_elems() <<  std::endl;
+  ostr1 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes() << std::endl;
+  ostr1 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes() << std::endl;
+  ostr1 << "Worst Angle (min):" <<  mesh->min_angle << std::endl;
+  ostr1 << "Worst Angle (max):" <<  mesh->max_angle << std::endl;
+  ostr1 << "Volume:" << volume->size().toString() << std::endl;
+
+  remark(ostr1.str()); 
 
   return output;
 }
@@ -225,7 +228,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
 AlgorithmOutput InterfaceWithCleaverAlgorithm::run_generic(const AlgorithmInput& input) const
 { 
   auto inputfields = input.getList<Field>(InputFields);
-  
+
   FieldHandle output_fld;
   output_fld=run(inputfields); 
   if ( !output_fld ) THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
