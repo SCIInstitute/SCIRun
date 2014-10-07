@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
 #include <gtest/gtest.h>
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
@@ -75,35 +75,35 @@ namespace
     vmesh->add_elem(vdata);
     return singleTetField_;
   }
-  
+
   /*** TRI SURFs ***/
   FieldHandle CreateTriSurfScalarOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
   }
   FieldHandle CreateTriSurfVectorOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
   }
 
   /*** TET MESHs ***/
   FieldHandle CreateTetMeshVectorOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
   }
   FieldHandle CreateTetMeshScalarOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
   }
   FieldHandle CreateTetMeshTensorOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.fld");
   }
-  
+
   /*** CLOUD POINT ***/
   FieldHandle CreatePointClodeScalar()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/point_cloud/scalar/pts_scalar.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.fld");
   }
 }
 
@@ -169,6 +169,3 @@ TEST(CalculateGradientsAlgoTests, NoFieldDataInput)
   CalculateGradientsAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
 }
-
-
-

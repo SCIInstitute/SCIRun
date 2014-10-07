@@ -53,6 +53,7 @@ SET(Interface_Application_SOURCES
   Port.cc
   PreferencesWindow.cc
   PythonConsoleWidget.cc
+  Settings.cc
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc

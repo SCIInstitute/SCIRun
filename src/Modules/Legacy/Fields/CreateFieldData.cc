@@ -89,10 +89,6 @@ CreateFieldData::execute()
   TCLInterface::eval(get_id()+" update_text");
 #endif
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || guiformat_.changed() || guibasis_.changed() 
-                    || guifunction_.changed() || !oport_cached("Field"))
-#endif
   if (needToExecute())
   {
     update_state(Executing);
@@ -109,9 +105,9 @@ CreateFieldData::execute()
     NewArrayMathEngine engine;
     engine.setLogger(this);
     
-    std::string format = state->getValue(FormatString).getString();
+    std::string format = state->getValue(FormatString).toString();
     if (format.empty()) format = "double";
-    std::string basis = state->getValue(BasisString).getString();
+    std::string basis = state->getValue(BasisString).toString();
     if (basis.empty()) basis = "Linear";
 
     // Add as well the output object
@@ -147,7 +143,7 @@ CreateFieldData::execute()
     if(!(engine.add_index("INDEX"))) return;
     if(!(engine.add_size("SIZE"))) return;
 
-    std::string function = state->getValue(FunctionString).getString();
+    std::string function = state->getValue(FunctionString).toString();
     if(!(engine.add_expressions(function))) return;
     
     // Actual engine call, which does the dynamic compilation, the creation of the

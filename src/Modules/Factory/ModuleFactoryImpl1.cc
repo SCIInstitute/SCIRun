@@ -43,6 +43,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/AppendMatrix.h>
 #include <Modules/Math/CreateMatrix.h>
+#include <Modules/Math/GetMatrixSlice.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
@@ -145,9 +146,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoElements>("Real ported module", "...");
-  //TODO: incomplete impl
-  //addModuleDesc<ClipFieldByFunction>("In progress", "...");
+  addModuleDesc<ClipFieldByFunction>("In progress", "...");
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
+  addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
 
   // insert module desc here
 }

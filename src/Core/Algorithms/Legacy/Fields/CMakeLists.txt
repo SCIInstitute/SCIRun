@@ -48,6 +48,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Mapping/BuildMappingMatrixAlgo.h
   DomainFields/GetDomainBoundaryAlgo.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
+  MeshDerivatives/SplitByConnectedRegion.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
   ConvertMeshType/ConvertMeshToIrregularMesh.h
   TransformMesh/AlignMeshBoundingBoxes.h

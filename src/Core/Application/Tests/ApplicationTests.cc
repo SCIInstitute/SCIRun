@@ -53,4 +53,46 @@ TEST(ApplicationSingletonTest, CanCreateAndParseCommandLine)
   EXPECT_EQ("network.srn5", appParams->inputFile().get());
   EXPECT_TRUE(appParams->executeNetwork());
 }
+
+
+TEST(ApplicationTest, GetUserDirectoryConfig)
+{
+  Application& app = Application::Instance();
+  boost::filesystem::path userDir;
+  ASSERT_TRUE(app.get_user_directory(userDir, true));
+  std::cout << userDir << std::endl;
+}
+
+TEST(ApplicationTest, GetUserDirectoryNotConfig)
+{
+  Application& app = Application::Instance();
+  boost::filesystem::path userDir;
+  ASSERT_TRUE(app.get_user_directory(userDir, false));
+  std::cout << userDir << std::endl;
+}
+
+TEST(ApplicationTest, GetConfigDirectory)
+{
+  Application& app = Application::Instance();
+  boost::filesystem::path config;
+  ASSERT_TRUE(app.get_config_directory(config));
+  std::cout << config << std::endl;
+}
+
+TEST(ApplicationTest, GetUserName)
+{
+  Application& app = Application::Instance();
+  std::string user;
+  ASSERT_TRUE(app.get_user_name(user));
+  std::cout << user << std::endl;
+}
+
+TEST(ApplicationTest, GetUserDesktopDirectory)
+{
+  Application& app = Application::Instance();
+  boost::filesystem::path desktop;
+  ASSERT_TRUE(app.get_user_desktop_directory(desktop));
+  std::cout << desktop << std::endl;
+}
+
 #endif

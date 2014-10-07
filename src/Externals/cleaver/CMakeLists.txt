@@ -44,6 +44,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 #SET(CMAKE_CXX_FLAGS "-Dexit=cleaverScirunExit" )
 
 OPTION(BUILD_CLEAVER_APP "Build Cleaver Command Line App (Requires TEEM)" OFF)
+MARK_AS_ADVANCED(BUILD_CLEAVER_APP)
 
 # Build Cleaver Library (no dependencies)
 ADD_SUBDIRECTORY(lib)

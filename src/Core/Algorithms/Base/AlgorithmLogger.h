@@ -26,16 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#ifndef ALGORITHMS_BASE_ALGORITHMLOGGER_H
+#define ALGORITHMS_BASE_ALGORITHMLOGGER_H
 
-#include <Dataflow/Network/Module.h>
+#include <Core/Logging/LoggerInterface.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Basic {
-  /// @todo 
- 
+namespace Core {
+namespace Algorithms {
+
+  class SCISHARE AlgorithmLogger : public Core::Logging::LegacyLoggerInterface
+  {
+  public:
+    AlgorithmLogger();
+    ~AlgorithmLogger();
+    void setLogger(Core::Logging::LoggerHandle logger);
+
+    /// functions for the algorithm, so it can forward errors if needed
+    virtual void error(const std::string& error) const;
+    virtual void warning(const std::string& warning) const;
+    virtual void remark(const std::string& remark) const;
+    virtual void status(const std::string& status) const;
+  private:
+    Core::Logging::LoggerHandle logger_;
+    Core::Logging::LoggerHandle defaultLogger_;
+  };
 
 }}}
 

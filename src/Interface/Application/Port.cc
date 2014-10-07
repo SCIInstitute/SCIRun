@@ -126,12 +126,14 @@ namespace SCIRun {
 
 PortWidget::PortWidgetMap PortWidget::portWidgetMap_;
 
+PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent) {}
+
 PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId, 
   const PortId& portId, size_t index,
   bool isInput, bool isDynamic,
   boost::shared_ptr<ConnectionFactory> connectionFactory,
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent /* = 0 */)
-  : QPushButton(parent), 
+  : PortWidgetBase(parent), 
   name_(name), moduleId_(moduleId), portId_(portId), index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(0),
   connectionFactory_(connectionFactory),
   closestPortFinder_(closestPortFinder),
@@ -139,7 +141,8 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
-  setToolTip(QString(name_).replace("_", " ") + "[" + QString::number(portId_.id) + "] : " + typename_.c_str());
+  setToolTip(QString(name_).replace("_", " ") + "[" + QString::number(portId_.id) + "] : " + QString::fromStdString(typename_));
+  
 
   setMenu(menu_);
 
@@ -151,7 +154,7 @@ PortWidget::~PortWidget()
   portWidgetMap_[moduleId_.id_][isInput_][portId_] = 0;
 }
 
-QSize PortWidget::sizeHint() const
+QSize PortWidgetBase::sizeHint() const
 {
   const int width = WIDTH;
   const int coloredHeight = isInput() ? 5 : 4;
@@ -174,13 +177,16 @@ void PortWidget::turn_on_light()
   lightOn_ = true;
 }
 
-void PortWidget::paintEvent(QPaintEvent* event)
+void PortWidgetBase::paintEvent(QPaintEvent* event)
 {
   QSize size = sizeHint();
   QPainter painter(this);
   painter.fillRect(QRect(QPoint(), size), color());
   QPoint lightStart = isInput() ? QPoint(0,5) : QPoint(0,0);
-  QColor lightColor = isLightOn() ? Qt::cyan : Qt::black;
+  
+  //TODO: remove light entirely?
+  QColor lightColor = isLightOn() ? Qt::red : color();
+    
   painter.fillRect(QRect(lightStart, QSize(size.width(), 2)), lightColor);
 }
 
@@ -427,4 +433,21 @@ OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, con
   QWidget* parent /* = 0 */)
   : PortWidget(name, color, datatype, moduleId, portId, index, false, isDynamic, connectionFactory, closestPortFinder, parent)
 {
+}
+
+BlankPort::BlankPort(QWidget* parent) : PortWidgetBase(parent) {}
+
+PortId BlankPort::id() const
+{
+  return PortId(0, "<Blank>");
+}
+
+ModuleId BlankPort::getUnderlyingModuleId() const
+{
+  return ModuleId("<Blank>");
+}
+
+QColor BlankPort::color() const
+{
+  return QColor(0,0,0,0);
 }

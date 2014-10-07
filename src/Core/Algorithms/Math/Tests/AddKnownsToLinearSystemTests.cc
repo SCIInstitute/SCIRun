@@ -125,25 +125,25 @@ namespace
 	}
 	
 	// RHS vector of zeros
-	DenseColumnMatrixHandle rhs_zero(int rows)
+	DenseMatrixHandle rhs_zero(int rows)
 	{
-		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(rows));
+		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
 		m->setZero();
 		return m;
 	}
 	// RHS vector [1;2;3]
-	DenseColumnMatrixHandle rhs()
+	DenseMatrixHandle rhs()
 	{
-		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
 		(*m)(0,0) = 1;
 		(*m)(1,0) = 2;
 		(*m)(2,0) = 3;
 		return m;
 	}
 	// RHS vector with NaN
-	DenseColumnMatrixHandle rhs_nan()
+	DenseMatrixHandle rhs_nan()
 	{
-		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
+		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
 		(*m)(0,0) = 1;
 		(*m)(1,0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2,0) = 3;
@@ -202,7 +202,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_0)
   m->insert(2,1) = 0;
   m->insert(2,2) = 1;
   m->makeCompressed();
-  DenseColumnMatrixHandle ro(boost::make_shared<DenseColumnMatrix>(3));
+  DenseMatrixHandle ro(boost::make_shared<DenseMatrix>(3,1));
   (*ro)(0,0) = 1;
   (*ro)(1,0) = 3;
   (*ro)(2,0) = 2;
@@ -221,7 +221,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_0)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }
 
 // this test compares the output from SCIRun4 when X contains two NaN, RHS is all 0
@@ -239,7 +239,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_0)
   m->insert(2,1) = -5;
   m->insert(2,2) = 6;
   m->makeCompressed();
-  DenseColumnMatrixHandle ro(boost::make_shared<DenseColumnMatrix>(3));
+  DenseMatrixHandle ro(boost::make_shared<DenseMatrix>(3,1));
   (*ro)(0,0) = 3;
   (*ro)(1,0) = -21;
   (*ro)(2,0) = -9;
@@ -258,7 +258,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_0)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }
 
 // this test compares the output from SCIRun4 when X contains a single NaN, RHS is [1,2,3]
@@ -276,7 +276,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_numbers)
   m->insert(2,1) = 0;
   m->insert(2,2) = 1;
   m->makeCompressed();
-  DenseColumnMatrixHandle ro(boost::make_shared<DenseColumnMatrix>(3));
+  DenseMatrixHandle ro(boost::make_shared<DenseMatrix>(3,1));
   (*ro)(0,0) = 1;
   (*ro)(1,0) = 5;
   (*ro)(2,0) = 2;
@@ -295,7 +295,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_numbers)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }
 
 // this test compares the output from SCIRun4 when X contains two NaN, RHS is [1,2,3]
@@ -313,7 +313,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_numbers)
   m->insert(2,1) = -5;
   m->insert(2,2) = 6;
   m->makeCompressed();
-  DenseColumnMatrixHandle ro(boost::make_shared<DenseColumnMatrix>(3));
+  DenseMatrixHandle ro(boost::make_shared<DenseMatrix>(3,1));
   (*ro)(0,0) = 3;
   (*ro)(1,0) = -19;
   (*ro)(2,0) = -6;
@@ -332,7 +332,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_numbers)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }
 
 // test to make sure when X contains all NaN that outputs are copied from inputs
@@ -340,7 +340,7 @@ TEST (AddKnownsToLinearSystemTests, X_is_NaN)
 {
   // this is what is expected to be returned (the input)
   SparseRowMatrixHandle m = LHS();
-  DenseColumnMatrixHandle ro = rhs_zero(3);
+  DenseMatrixHandle ro = rhs_zero(3);
   
   SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
@@ -357,5 +357,5 @@ TEST (AddKnownsToLinearSystemTests, X_is_NaN)
   }
   // making sure each element of RHS are equal
   for (int r=0; r < ro->rows(); r++)
-    EXPECT_EQ((*output_rhs)[r],(*ro)[r]);
+    EXPECT_EQ((*output_rhs)[r],(*ro)(r,0));
 }

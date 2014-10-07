@@ -215,7 +215,7 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, FieldList& output) const
   }
   
   
-  if (get(SortBySize).getBool())
+  if (get(SortBySize).toBool())
   {
     std::vector<double> sizes(output.size());
     std::vector<index_type> order(output.size());
@@ -234,7 +234,7 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, FieldList& output) const
       order[j] = j;
     }
   
-    if (get(SortAscending).getBool())
+    if (get(SortAscending).toBool())
     {
       std::sort(order.begin(),order.end(),AscSortSizes(sizes)); 
     }

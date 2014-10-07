@@ -75,7 +75,7 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
 
 AlgorithmOutput WriteMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto filename = get(Variables::Filename).getString();
+  auto filename = get(Variables::Filename).toFilename().string();
   run(input.get<Matrix>(Variables::MatrixToWrite), filename);
   return AlgorithmOutput();
 }

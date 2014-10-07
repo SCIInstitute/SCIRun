@@ -34,10 +34,15 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/filesystem/operations.hpp>
-#include <Core/Utils/StringUtil.h>
 #include <boost/foreach.hpp>
+
+#include <Core/Utils/StringUtil.h>
+#include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmParameterHelper.h>
+#include <Core/Algorithms/Base/AlgorithmInputBuilder.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmFactory.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
 
@@ -56,25 +61,44 @@ Name::Name(const std::string& name) : name_(name)
 
 AlgorithmBase::~AlgorithmBase() {}
 
-int AlgorithmParameter::getInt() const
+Variable::Variable(const Name& name, const Value& value) : name_(name)
+{
+  setValue(value);
+}
+
+void Variable::setValue(const Value& val)
+{
+  value_ = val;
+
+  {
+    if (boost::get<std::string>(&val))
+    {
+      auto stringPath = toString();
+      if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDir().string(), AlgorithmParameterHelper::dataDirPlaceholder()))
+        value_ = stringPath;
+    }
+  }
+}
+
+int AlgorithmParameter::toInt() const
 {
   const int* v = boost::get<int>(&value_);
   return v ? *v : 0;
 }
 
-double AlgorithmParameter::getDouble() const
+double AlgorithmParameter::toDouble() const
 {
   const double* v = boost::get<double>(&value_);
-  return v ? *v : getInt();
+  return v ? *v : toInt();
 }
 
-std::string AlgorithmParameter::getString() const
+std::string AlgorithmParameter::toString() const
 {
   const std::string* v = boost::get<std::string>(&value_);
   return v ? *v : "";
 }
 
-boost::filesystem::path AlgorithmParameter::getFilename() const
+boost::filesystem::path AlgorithmParameter::toFilename() const
 {
   {
 #ifdef _MSC_VER
@@ -88,26 +112,26 @@ boost::filesystem::path AlgorithmParameter::getFilename() const
 #endif
   }
 
-  auto stringPath = getString();
+  auto stringPath = toString();
   if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), ""))
     return AlgorithmParameterHelper::dataDir() / stringPath;
   boost::filesystem::path p(stringPath);
   return p;
 }
 
-bool AlgorithmParameter::getBool() const
+bool AlgorithmParameter::toBool() const
 {
   const bool* v = boost::get<bool>(&value_);
-  return v ? *v : (getInt() != 0);
+  return v ? *v : (toInt() != 0);
 }
 
-AlgoOption AlgorithmParameter::getOption() const
+AlgoOption AlgorithmParameter::toOption() const
 {
   const AlgoOption* opt = boost::get<AlgoOption>(&value_);
   return opt ? *opt : AlgoOption();
 }
 
-std::vector<Variable> AlgorithmParameter::getList() const
+std::vector<Variable> AlgorithmParameter::toVector() const
 {
   const std::vector<Variable>* v = boost::get<std::vector<Variable>>(&value_);
   return v ? *v : std::vector<Variable>();
@@ -115,7 +139,12 @@ std::vector<Variable> AlgorithmParameter::getList() const
 
 DatatypeHandle AlgorithmParameter::getDatatype() const
 {
-  return data_;
+  return data_.get_value_or(nullptr);
+}
+
+Variable SCIRun::Core::Algorithms::makeVariable(const std::string& name, const Variable::Value& value)
+{
+  return Variable(Name(name), value);
 }
 
 void AlgorithmParameterHelper::setDataDir(const boost::filesystem::path& path)
@@ -181,7 +210,7 @@ bool AlgorithmParameterList::set(const AlgorithmParameterName& key, const Algori
   auto iter = parameters_.find(key);
   if (iter == parameters_.end())
     return keyNotFoundPolicy(key);
-  iter->second.value_ = value;
+  iter->second.setValue(value);
   return true;
 }
 
@@ -239,13 +268,13 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
   if (paramIt == parameters_.end())
     return keyNotFoundPolicy(key);
   
-  AlgoOption param = paramIt->second.getOption();
+  AlgoOption param = paramIt->second.toOption();
 
   if (param.options_.find(value) == param.options_.end())
     BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("parameter \"" + key.name_ + "\" has no option \"" + value + "\""));
 
   param.option_ = value;
-  parameters_[key].value_ = param;
+  parameters_[key].setValue(param);
   return true;
 }
 
@@ -261,7 +290,7 @@ bool AlgorithmParameterList::get_option(const AlgorithmParameterName& key, std::
   if (paramIt == parameters_.end())
     return keyNotFoundPolicy(key);
 
-  value = paramIt->second.getOption().option_;
+  value = paramIt->second.toOption().option_;
   return true;
 }
 
@@ -279,14 +308,15 @@ bool AlgorithmParameterList::check_option(const AlgorithmParameterName& key, con
   return boost::iequals(value, currentValue);
 }
 
-void AlgorithmParameterList::dumpAlgoState() const
+void AlgorithmBase::dumpAlgoState() const
 {
   std::ostringstream ostr;
   ostr << "Algorithm state for " << typeid(*this).name() << " id#" << id() << std::endl;
   
-  BOOST_FOREACH(const ParameterMap::value_type& pair, parameters_)
+  auto range = std::make_pair(paramsBegin(), paramsEnd());
+  BOOST_FOREACH(const ParameterMap::value_type& pair, range)
   {
-    ostr << "\t" << pair.first.name() << ": " << pair.second.value_ << std::endl;
+    ostr << "\t" << pair.first.name() << ": " << pair.second.value() << std::endl;
   }
   LOG_DEBUG(ostr.str());
 }
@@ -335,10 +365,12 @@ AlgorithmInput SCIRun::Core::Algorithms::makeNullInput()
 
 bool SCIRun::Core::Algorithms::operator==(const Variable& lhs, const Variable& rhs)
 {
-  return lhs.name_ == rhs.name_ && lhs.value_ == rhs.value_ && lhs.data_ == rhs.data_;
+  return lhs.name() == rhs.name() && lhs.value() == rhs.value() && lhs.getDatatype() == rhs.getDatatype();
 }
 
 std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Variable& var)
 {
-  return out << "[" << var.name_ << ", " << var.value_ << "]";
+  return out << "[" << var.name() << ", " << var.value() << "]";
 }
+
+AlgorithmCollaborator::~AlgorithmCollaborator() {}

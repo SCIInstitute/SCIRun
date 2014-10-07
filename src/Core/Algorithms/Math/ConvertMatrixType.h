@@ -29,9 +29,8 @@
 #ifndef ALGORITHMS_MATH_CONVERTMATRIXTYPE_H
 #define ALGORITHMS_MATH_CONVERTMATRIXTYPE_H
 
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/share.h>
 

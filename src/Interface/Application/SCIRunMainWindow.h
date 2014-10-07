@@ -70,6 +70,10 @@ public:
   void setDataDirectory(const QString& scriptFileName);
   QString dataDirectory() const;
 
+  bool newInterface() const;
+  const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
+
+  ~SCIRunMainWindow();
 public Q_SLOTS:
   void executeAll();
 protected:
@@ -105,12 +109,16 @@ private:
   void setupPythonConsole();
   void fillModuleSelector();
   void setupInputWidgets();
+  void parseStyleXML();
+  void printStyleSheet() const;
+
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
+  QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   boost::shared_ptr<class DialogErrorControl> dialogErrorControl_; 
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
@@ -144,7 +152,13 @@ private Q_SLOTS:
   void showPythonWarning(bool visible);
   void makeModulesLargeSize();
   void makeModulesSmallSize();
+  void setDataDirectoryFromGUI();
   void displayAcknowledgement();
+  void setFocusOnFilterLine();
+  void addModuleKeyboardAction();
+  void selectModuleKeyboardAction();
+  void modulesSnapToChanged();
+  void resetWindowLayout();
   void exitApplication(int code);
 };
 

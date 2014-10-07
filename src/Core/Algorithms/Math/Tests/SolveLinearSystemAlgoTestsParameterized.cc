@@ -50,13 +50,13 @@ using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
 
-#if GTEST_HAS_COMBINE 
+#if GTEST_HAS_COMBINE
 
 using ::testing::Values;
 using ::testing::Combine;
-using ::testing::Range; 
+using ::testing::Range;
 
-class SolveLinearSystemTestsAlgoParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<const char*, const char*, int> > 
+class SolveLinearSystemTestsAlgoParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<const char*, const char*, int> >
 {
 public:
 	ReadMatrixAlgorithm reader;
@@ -70,9 +70,9 @@ public:
 protected:
 	virtual void SetUp()
 	{
-		auto Afile = TestResources::rootDir() /  "moritz_A.mat";
+		auto Afile = TestResources::rootDir() / "Matrices" /  "moritz_A.mat";
 
-		auto rhsFile = TestResources::rootDir() / "moritz_b.mat";
+		auto rhsFile = TestResources::rootDir() / "Matrices" / "moritz_b.mat";
 		if (!boost::filesystem::exists(Afile) || !boost::filesystem::exists(rhsFile))
 		{
 			FAIL() << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
@@ -89,7 +89,7 @@ protected:
 		}
 		 // algo object will initialize x0 to the zero vector
 
-		algo.set(Variables::Preconditioner, ::std::tr1::get<1>(GetParam())); 
+		algo.set(Variables::Preconditioner, ::std::tr1::get<1>(GetParam()));
 		algo.set(Variables::MaxIterations, 670);
 		algo.set(Variables::TargetError, ::std::tr1::get<2>(GetParam()));
 
@@ -101,9 +101,9 @@ protected:
 
 		/*
 		{
-			ScopedTimer t("Running solver");			
+			ScopedTimer t("Running solver");
 		}
-        const std::string& c = ::std::tr1::get<0>(GetParam()); 
+        const std::string& c = ::std::tr1::get<0>(GetParam());
 
 		auto solutionFile = TestResources::rootDir() / ("dan_sol_" + c + ".mat");
 
@@ -139,7 +139,7 @@ TEST_P(SolveLinearSystemTestsAlgoParameterized, CanSolveDarrellParameterized)
 		ASSERT_FALSE(x0);
 
 		ASSERT_TRUE(algo.run(A, matrix_convert::to_column(rhs), x0, solution));
-		
+
 		ASSERT_TRUE(solution.get() != nullptr);
 		EXPECT_EQ(10149, solution->nrows());
 		EXPECT_EQ(1, solution->ncols());
@@ -159,4 +159,4 @@ INSTANTIATE_TEST_CASE_P(
 	);
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform(){}
-#endif 
+#endif

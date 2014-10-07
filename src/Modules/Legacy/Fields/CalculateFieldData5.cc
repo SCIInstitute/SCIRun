@@ -203,10 +203,10 @@ void CalculateFieldData::execute()
 
     int basis_order = field->vfield()->basis_order();
     
-    std::string format = state->getValue(FormatString).getString();
+    std::string format = state->getValue(FormatString).toString();
     if (format.empty()) format = "double";
 
-    std::string function = state->getValue(FunctionString).getString();
+    std::string function = state->getValue(FunctionString).toString();
     bool has_RESULT = true;
     if (function.find("RESULT") != std::string::npos)
     {

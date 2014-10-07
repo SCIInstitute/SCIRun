@@ -51,7 +51,7 @@ void PrintDatatypeDialog::pullAndDisplayInfo()
   auto data = state_->getValue(PrintDatatypeModule::ReceivedValue);
 
   std::ostringstream ostr;
-  ostr << "Value: " << data.value_ << std::endl;
+  ostr << "Value: " << data.value() << std::endl;
  
 
   datatypeTextEdit_->setPlainText(QString::fromStdString(ostr.str()));

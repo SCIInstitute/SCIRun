@@ -78,7 +78,7 @@ AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run_generic(const Algorith
   auto LHS = input.get<DenseMatrix>(Variables::LHS);
   auto RHS = input.get<DenseMatrix>(Variables::RHS);
 
-  auto result = run(boost::make_tuple(LHS, RHS), Operator(get(Variables::Operator).getInt()));
+  auto result = run(boost::make_tuple(LHS, RHS), Operator(get(Variables::Operator).toInt()));
 
   AlgorithmOutput output;
   output[Variables::Result] = result;

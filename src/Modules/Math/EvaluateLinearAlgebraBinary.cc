@@ -56,10 +56,10 @@ void EvaluateLinearAlgebraBinaryModule::execute()
   auto rhs = getRequiredInput(RHS);
 
   auto state = get_state();
-  auto oper = state->getValue(Variables::Operator).getInt();
+  auto oper = state->getValue(Variables::Operator).toInt();
 
   algo().set(Variables::Operator, oper);
-  auto output = algo().run_generic(make_input((LHS, lhs)(RHS, rhs))); 
+  auto output = algo().run_generic(withInputData((LHS, lhs)(RHS, rhs))); 
 
   sendOutputFromAlgorithm(Result, output);
 }

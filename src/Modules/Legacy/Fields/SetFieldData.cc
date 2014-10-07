@@ -65,7 +65,7 @@ void SetFieldDataModule::execute()
   {    
     update_state(Executing);
 
-    auto output = algo().run_generic(make_input((InputField, input_field)(InputMatrix, input_matrix)));
+    auto output = algo().run_generic(withInputData((InputField, input_field)(InputMatrix, input_matrix)));
 
     sendOutputFromAlgorithm(OutputField, output);
   }
