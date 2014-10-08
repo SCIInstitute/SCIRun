@@ -94,8 +94,8 @@ using namespace SCIRun::TestUtils;
 
 TEST(CleaverInterfaceTest, SphereSignedDistanceFieldMatrix1)
 {
- 
- InterfaceWithCleaverAlgorithm algo;
+  InterfaceWithCleaverAlgorithm algo;
+  FAIL() << "todo";
  
 /* auto info = algo.run(SphereSignedDistanceField(false),SphereSignedDistanceField(true));
  
