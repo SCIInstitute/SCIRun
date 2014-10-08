@@ -49,7 +49,6 @@ namespace SCIRun {
           static AlgorithmParameterName Tolerance;
           static AlgorithmParameterName MatchNodeValues;
           static AlgorithmParameterName MakeNoData;
-          static AlgorithmInputName InputFields;
 
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
         };

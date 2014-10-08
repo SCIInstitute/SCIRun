@@ -57,27 +57,22 @@ using namespace SCIRun;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
 
-AlgorithmInputName InterfaceWithCleaverAlgorithm::InputFields("InputFields");
-AlgorithmOutputName InterfaceWithCleaverAlgorithm::OutputField("OutputField");
-AlgorithmParameterName InterfaceWithCleaverAlgorithm::VerboseCheckBox("VerboseCheckBox");
-AlgorithmParameterName InterfaceWithCleaverAlgorithm::PaddingCheckBox("PaddingCheckBox");
-AlgorithmParameterName InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton("AbsoluteVolumeScalingRadioButton");
-AlgorithmParameterName InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton("RelativeVolumeScalingRadioButton");
-AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X("VolumeScalingSpinBox_X");
-AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y("VolumeScalingSpinBox_Y");
-AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z("VolumeScalingSpinBox_Z");
+AlgorithmParameterName InterfaceWithCleaverAlgorithm::Verbose("VerboseCheckBox");
+AlgorithmParameterName InterfaceWithCleaverAlgorithm::Padding("PaddingCheckBox");
+AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingOption("VolumeScalingOption");
+AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingX("VolumeScalingSpinBox_X");
+AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingY("VolumeScalingSpinBox_Y");
+AlgorithmParameterName InterfaceWithCleaverAlgorithm::VolumeScalingZ("VolumeScalingSpinBox_Z");
 
 InterfaceWithCleaverAlgorithm::InterfaceWithCleaverAlgorithm()
 {
-  addParameter(VerboseCheckBox,true);
-  addParameter(PaddingCheckBox,true);
-  addParameter(AbsoluteVolumeScalingRadioButton,false);
-  addParameter(RelativeVolumeScalingRadioButton,true);  
-  addParameter(VolumeScalingSpinBox_X,1.0);
-  addParameter(VolumeScalingSpinBox_Y,1.0);  
-  addParameter(VolumeScalingSpinBox_Z,1.0);  
+  addParameter(Verbose,true);
+  addParameter(Padding,true);
+  add_option(VolumeScalingOption, "Relative size", "Absolute size|Relative size|None");
+  addParameter(VolumeScalingX,1.0);
+  addParameter(VolumeScalingY,1.0);  
+  addParameter(VolumeScalingZ,1.0);  
 }
-
 
 FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& input) const
 {
@@ -159,24 +154,41 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
 
   boost::shared_ptr<Cleaver::Volume> volume(new Cleaver::Volume(toVectorOfRawPointers(fields)));
 
-  if ( get(VolumeScalingSpinBox_X).toDouble()>0 && get(VolumeScalingSpinBox_Y).toDouble()>0 && get(VolumeScalingSpinBox_Z).toDouble()>0 )
+  const double xScale = get(VolumeScalingX).toDouble();
+  const double yScale = get(VolumeScalingY).toDouble();
+  const double zScale = get(VolumeScalingZ).toDouble();
+
+  if (xScale > 0 && yScale > 0 && zScale > 0)
   {
-    if (get(AbsoluteVolumeScalingRadioButton).toBool()) 
-      volume->setSize(get(VolumeScalingSpinBox_X).toDouble(),get(VolumeScalingSpinBox_Y).toDouble(),get(VolumeScalingSpinBox_Z).toDouble());
-    else
-      if (get(RelativeVolumeScalingRadioButton).toBool())
-        volume->setSize(get(VolumeScalingSpinBox_X).toDouble()*volume->size().x, get(VolumeScalingSpinBox_Y).toDouble()*volume->size().y, get(VolumeScalingSpinBox_Z).toDouble()*volume->size().z);
-      else
-        volume->setSize(dims[0],dims[1],dims[2]);
+    const std::string scaling = get_option(VolumeScalingOption);
+    if ("Absolute size" == scaling) 
+    {
+      volume->setSize(xScale, yScale,zScale);
+    }
+    else if ("Relative size" == scaling)
+    {
+      double newX = xScale*volume->size().x;
+      double newY = yScale*volume->size().y;
+      double newZ = zScale*volume->size().z;
+      std::cout << "Cleaver setting volume size to " << newX << "," << newY << "," << newZ << std::endl;
+      volume->setSize(newX, newY, newZ);
+    }
+    else // None
+      volume->setSize(dims[0],dims[1],dims[2]);
   }
   else
   {
-    volume->setSize(dims[0],dims[1],dims[2]);
     THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
   }
 
   /// Padding is now optional! 
-  boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(get(PaddingCheckBox).toBool() ?  ((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get() : volume.get(), get(VerboseCheckBox).toBool()));        
+  boost::shared_ptr<Cleaver::AbstractVolume> paddedVolume(volume);
+
+  const bool verbose = get(Verbose).toBool();
+  const bool pad = get(Padding).toBool();
+  if (pad)
+    paddedVolume.reset(new Cleaver::PaddedVolume(volume.get()));
+  boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(paddedVolume.get(), verbose));
 
   FieldInformation fi("TetVolMesh",0,"double");   ///create output field
 
@@ -227,13 +239,13 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
 
 AlgorithmOutput InterfaceWithCleaverAlgorithm::run_generic(const AlgorithmInput& input) const
 { 
-  auto inputfields = input.getList<Field>(InputFields);
+  auto inputfields = input.getList<Field>(Variables::InputFields);
 
-  FieldHandle output_fld;
-  output_fld=run(inputfields); 
-  if ( !output_fld ) THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  FieldHandle output_fld = run(inputfields); 
+  if ( !output_fld ) 
+    THROW_ALGORITHM_PROCESSING_ERROR("Null returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[OutputField] = output_fld;
+  output[Variables::OutputField] = output_fld;
   return output;
 }

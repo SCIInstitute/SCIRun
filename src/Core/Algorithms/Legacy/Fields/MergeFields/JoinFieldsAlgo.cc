@@ -537,11 +537,9 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   return (true);
 }
 
-AlgorithmInputName JoinFieldsAlgo::InputFields("InputFields");
-
 AlgorithmOutput JoinFieldsAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto inputFields = input.getList<Field>(InputFields);
+  auto inputFields = input.getList<Field>(Variables::InputFields);
 
   FieldHandle outputField;
   if (!runImpl(inputFields, outputField))
