@@ -156,8 +156,8 @@ bool DataIOAlgo::ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, con
     const std::string ext = filename.substr(filename.size()-5,5);
     if (ext == ".nhdr" || ext == ".nrrd")
     {
-      nrrd = new NrrdData;
-      if (nrrd.get_rep() == 0) return (false);
+      nrrd.reset(new NrrdData);
+      if (!nrrd) return (false);
      
       NrrdData::lock_teem(); 
       if (nrrdLoad(nrrd->nrrd_, airStrdup(filename.c_str()), 0)) 
@@ -185,7 +185,7 @@ bool DataIOAlgo::ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, con
 
   // Read the file through Pio
   Pio(*stream, nrrd);
-  if (!nrrd.get_rep() || stream->error())
+  if (!nrrd || stream->error())
   {
     error("Error reading data from file '" + filename +"'.");
     return (false);
@@ -421,9 +421,9 @@ bool DataIOAlgo::WriteBundle(const std::string& filename, BundleHandle& bundle, 
 #endif
 
 
-bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& exporter)
+bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle nrrd, const std::string& exporter)
 {
-  if (nrrd.get_rep() == 0) return (false);
+  if (!nrrd) return (false);
   
   if ((exporter == "text")||(exporter == "Text"))
   {
@@ -439,7 +439,7 @@ bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle& nrrd, co
       Pio(*stream, nrrd);
     } 
   }
-  else if (exporter == "")
+  else if (exporter.empty())
   {
   
     if (filename.size() > 4)
@@ -626,7 +626,7 @@ bool DataIOAlgo::WritePath(const std::string& filename, PathHandle& path, const 
 }
 #endif
 
-AlgorithmOutput DataIOAlgo::run_generic(const AlgorithmInput& input) const override
+AlgorithmOutput DataIOAlgo::run_generic(const AlgorithmInput& input) const
 {
   throw "not implemented";
 }

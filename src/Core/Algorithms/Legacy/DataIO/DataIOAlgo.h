@@ -47,31 +47,31 @@ public:
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   bool ReadField(const std::string& filename, FieldHandle& field, const std::string& importer = "");
-  bool WriteField(const std::string& filename, FieldHandle& field, const std::string& exporter = "");
+  bool WriteField(const std::string& filename, FieldHandle field, const std::string& exporter = "");
 
   bool ReadMatrix(const std::string& filename, Datatypes::MatrixHandle& matrix, const std::string& importer = "");
-  bool WriteMatrix(const std::string& filename, Datatypes::MatrixHandle& matrix, const std::string& exporter = "");
+  bool WriteMatrix(const std::string& filename, Datatypes::MatrixHandle matrix, const std::string& exporter = "");
 #endif
 
   bool ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& importer = "");
-  bool WriteNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& exporter = "");
+  bool WriteNrrd(const std::string& filename, NrrdDataHandle nrrd, const std::string& exporter = "");
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   bool ReadBundle(const std::string& filename, Datatypes::BundleHandle& bundle, const std::string& importer = "");
-  bool WriteBundle(const std::string& filename, Datatypes::BundleHandle& bundle, const std::string& exporter = "");
+  bool WriteBundle(const std::string& filename, Datatypes::BundleHandle bundle, const std::string& exporter = "");
   
   bool ReadColorMap(const std::string& filename, Datatypes::ColorMapHandle& colorMap, const std::string& importer = "");
-  bool WriteColorMap(const std::string& filename, Datatypes::ColorMapHandle& colorMap, const std::string& exporter = "");
+  bool WriteColorMap(const std::string& filename, Datatypes::ColorMapHandle colorMap, const std::string& exporter = "");
 #endif
 
   virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   bool ReadColorMap2(const std::string& filename, ColorMap2Handle& colorMap2, const std::string& importer = "");
-  bool WriteColorMap2(const std::string& filename, ColorMap2Handle& colorMap2, const std::string& exporter = "");
+  bool WriteColorMap2(const std::string& filename, ColorMap2Handle colorMap2, const std::string& exporter = "");
 
   bool ReadPath(const std::string& filename, PathHandle& path, const std::string& importer = "");
-  bool WritePath(const std::string& filename, PathHandle& path, const std::string& exporter = "");
+  bool WritePath(const std::string& filename, PathHandle path, const std::string& exporter = "");
 #endif
 private:
   Core::Logging::LoggerHandle pr_;
