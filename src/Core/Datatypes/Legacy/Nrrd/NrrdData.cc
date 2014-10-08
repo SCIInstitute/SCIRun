@@ -37,14 +37,13 @@
  *@date  February 2001
  */
 
-#include <Core/Util/Debug.h>
-#include <Core/Thread/RecursiveMutex.h>
-#include <Core/Datatypes/NrrdData.h>
-#include <Core/Persistent/Pstreams.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+
+//#include <Core/Persistent/Pstreams.h>
 
 #include <iostream>
 
-namespace SCIRun {
+using namespace SCIRun;
 
 
 

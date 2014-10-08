@@ -41,28 +41,21 @@
 #define SCI_Teem_NrrdData_h
 
 #include <Core/Datatypes/Datatype.h>
-//#include <teem/nrrd.h>
-
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <teem/nrrd.h>
 #include <Core/Datatypes/Legacy/Nrrd/share.h>
 
 namespace SCIRun {
 
-/////////
-// Structure to hold NrrdData
-class SCISHARE NrrdData : public PropertyManager {
-public:  
-  // GROUP: public data
-  //////////
-  // 
-  Nrrd *nrrd_;
-
+class SCISHARE NrrdData : public Core::Datatypes::Datatype 
+{
+public:
   NrrdData();
-  NrrdData(Nrrd *nrrd);
-  NrrdData(LockingHandle<Datatype> data_owner);
-  NrrdData(const NrrdData&);
+  explicit NrrdData(struct Nrrd *nrrd);
+  explicit NrrdData(const NrrdData&);
   virtual ~NrrdData();
 
-  virtual NrrdData* clone();
+  virtual NrrdData* clone() const override;
 
   virtual void io(Piostream&);
   static PersistentTypeID type_id;
@@ -72,11 +65,9 @@ public:
   void set_embed_object(bool v) { embed_object_ = v; }
   bool get_embed_object() { return embed_object_; }
 
-  void set_filename( const std::string &f )
-  { nrrd_fname_ = f; embed_object_ = false; }
-  const std::string get_filename() const { return nrrd_fname_; }
-
-  bool    write_nrrd_;
+//   void set_filename( const std::string &f )
+//   { nrrd_fname_ = f; embed_object_ = false; }
+//   const std::string get_filename() const { return nrrd_fname_; }
 
   // As parts of TEEM are by design not thread safe we need to enforce thread-safety
   // on certain functionality by forcing it to run single threaded.
@@ -86,23 +77,18 @@ public:
   static void lock_teem();
   static void unlock_teem();
 
-protected:
+private:
+  Nrrd *nrrd_;
+  bool    write_nrrd_;
   bool    embed_object_;
 
   bool in_name_set(const std::string &s) const;
 
-  /// Either the NrrdData owns the data or it wraps this external object.
-  LockingHandle<Datatype> data_owner_;
-
   // To help with pio
-  std::string                nrrd_fname_;
+  std::string nrrd_fname_;
 
   static Persistent *maker();
 };
-
-
-typedef LockingHandle<NrrdData> NrrdDataHandle;
-
 
 // nrrd Types that we need to convert to:
 //  nrrdTypeChar,          
@@ -151,7 +137,7 @@ template <>
 SCISHARE int get_nrrd_type<float>();
 
 template <>
-SCISHARE int get_nrrd_type<Tensor>();
+SCISHARE int get_nrrd_type<Core::Geometry::Tensor>();
 
 template <class T>
 int get_nrrd_type()
@@ -166,15 +152,13 @@ SCISHARE void get_nrrd_compile_type( const unsigned int type,
 SCISHARE double get_nrrd_value( Nrrd* nrrd,
 				unsigned int p );
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 class SCISHARE NrrdGuard {
   public:
-    // Constructor
     NrrdGuard();
-    
-    // Destructor
     ~NrrdGuard(); 
 };
+#endif
 
 
 } // end namespace SCIRun
