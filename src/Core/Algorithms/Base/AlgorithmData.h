@@ -31,6 +31,7 @@
 
 #include <map>
 #include <boost/filesystem/path.hpp>
+#include <boost/any.hpp>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/Variable.h>

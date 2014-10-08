@@ -30,9 +30,11 @@
 #include <Core/Algorithms/Legacy/DataIO/DataIOAlgo.h>
 #include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/IEPlugin/NrrdField_Plugin.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms;
 
 // This file contains readers for nrrds as fields. We currently have 5 variations
 // depending on whether data is defined on the nodes or the elements and what the
@@ -57,11 +59,11 @@ using namespace SCIRun::Core::Logging;
 
 FieldHandle SCIRun::NrrdToField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle field = 0;
-  NrrdDataHandle nrrd = 0;
+  FieldHandle field;
+  NrrdDataHandle nrrd;
   
-  SCIRunAlgo::DataIOAlgo dalgo(pr);
-  SCIRunAlgo::ConverterAlgo calgo(pr);
+  DataIOAlgo dalgo(pr);
+  ConverterAlgo calgo(pr);
 
   std::string fn(filename);
   
@@ -76,11 +78,11 @@ FieldHandle SCIRun::NrrdToField_reader(LoggerHandle pr, const char *filename)
 bool
 SCIRun::FieldToNrrd_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 { 
-  FieldHandle field = 0;
-  NrrdDataHandle nrrd = 0;
+  FieldHandle field;
+  NrrdDataHandle nrrd;
   
-  SCIRunAlgo::DataIOAlgo dalgo(pr);
-  SCIRunAlgo::ConverterAlgo calgo(pr);
+  DataIOAlgo dalgo(pr);
+  ConverterAlgo calgo(pr);
 
   if (calgo.FieldToNrrd(fh,nrrd))
   {
@@ -170,6 +172,3 @@ FieldHandle IPModal_NrrdToField_reader(ProgressReporter *pr, const char *filenam
 //static FieldIEPlugin  ModalNrrdToField_plugin("NrrdFile[DataOnElements]","{.nhdr} {.nrrd}", "", Modal_NrrdToField_reader, 0);
 //static FieldIEPlugin  IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","{.nhdr} {.nrrd}", "", IPNodal_NrrdToField_reader, 0);
 //static FieldIEPlugin  IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","{.nhdr} {.nrrd}", "", IPModal_NrrdToField_reader, 0);
-
-
-}

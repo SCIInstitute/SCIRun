@@ -30,61 +30,47 @@
 #ifndef CORE_ALGORITHMS_DATAIO_DATAIOALGO_H
 #define CORE_ALGORITHMS_DATAIO_DATAIOALGO_H 1
 
-#include <Core/Algorithms/Util/AlgoLibrary.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Legacy/DataIO/share.h>
 
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/NrrdData.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Geom/Path.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Core/Volume/ColorMap2.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
+namespace SCIRun 
+{
+  namespace Core
+  {
+    namespace Algorithms
+    {
 
-
-
-#include <string>
-#include <sstream>
-
-
-#include <Core/Algorithms/DataIO/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE DataIOAlgo : public AlgoLibrary {
+class SCISHARE DataIOAlgo : public AlgorithmBase {
 public:
-  DataIOAlgo(ProgressReporter* pr) : AlgoLibrary(pr) {}
+  explicit DataIOAlgo(Core::Logging::LoggerHandle pr);
 
   bool ReadField(const std::string& filename, FieldHandle& field, const std::string& importer = "");
   bool WriteField(const std::string& filename, FieldHandle& field, const std::string& exporter = "");
 
-  bool ReadMatrix(const std::string& filename, MatrixHandle& matrix, const std::string& importer = "");
-  bool WriteMatrix(const std::string& filename, MatrixHandle& matrix, const std::string& exporter = "");
+  bool ReadMatrix(const std::string& filename, Datatypes::MatrixHandle& matrix, const std::string& importer = "");
+  bool WriteMatrix(const std::string& filename, Datatypes::MatrixHandle& matrix, const std::string& exporter = "");
    
-  bool ReadNrrd(const std::string& filename, NrrdDataHandle& matrix, const std::string& importer = "");
-  bool WriteNrrd(const std::string& filename, NrrdDataHandle& matrix, const std::string& exporter = "");
+  bool ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& importer = "");
+  bool WriteNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& exporter = "");
 
-  bool ReadBundle(const std::string& filename, BundleHandle& matrix, const std::string& importer = "");
-  bool WriteBundle(const std::string& filename, BundleHandle& matrix, const std::string& exporter = "");
+  bool ReadBundle(const std::string& filename, Datatypes::BundleHandle& bundle, const std::string& importer = "");
+  bool WriteBundle(const std::string& filename, Datatypes::BundleHandle& bundle, const std::string& exporter = "");
   
-  bool ReadColorMap(const std::string& filename, ColorMapHandle& matrix, const std::string& importer = "");
-  bool WriteColorMap(const std::string& filename, ColorMapHandle& matrix, const std::string& exporter = "");
+  bool ReadColorMap(const std::string& filename, Datatypes::ColorMapHandle& colorMap, const std::string& importer = "");
+  bool WriteColorMap(const std::string& filename, Datatypes::ColorMapHandle& colorMap, const std::string& exporter = "");
 
-  bool ReadColorMap2(const std::string& filename, ColorMap2Handle& matrix, const std::string& importer = "");
-  bool WriteColorMap2(const std::string& filename, ColorMap2Handle& matrix, const std::string& exporter = "");
+  virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 
-  bool ReadPath(const std::string& filename, PathHandle& matrix, const std::string& importer = "");
-  bool WritePath(const std::string& filename, PathHandle& matrix, const std::string& exporter = "");
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  bool ReadColorMap2(const std::string& filename, ColorMap2Handle& colorMap2, const std::string& importer = "");
+  bool WriteColorMap2(const std::string& filename, ColorMap2Handle& colorMap2, const std::string& exporter = "");
 
-  bool FileExists(const std::string& filename);
-  bool CreateDir(const std::string& dirname);
-  
+  bool ReadPath(const std::string& filename, PathHandle& path, const std::string& importer = "");
+  bool WritePath(const std::string& filename, PathHandle& path, const std::string& exporter = "");
+#endif
 };
 
-} // end namespace SCIRunAlgo
+}}}
 
 #endif

@@ -26,27 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef _WIN32
-#include <unistd.h>
-#else
-#include <io.h>
-#endif
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h> 
-#include <boost/filesystem.hpp>
-
-#include <Core/Algorithms/DataIO/DataIOAlgo.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/DataIO/DataIOAlgo.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 
 bool DataIOAlgo::ReadField(const std::string& filename, FieldHandle& field, const std::string& importer)
 {  
-  if (importer == "")
+  if (importer.empty())
   {
     PiostreamPtr stream = auto_istream(filename, pr_);
     if (!stream)
@@ -72,7 +59,7 @@ bool DataIOAlgo::ReadField(const std::string& filename, FieldHandle& field, cons
     if (pl)
     {
       field = pl->filereader(pr_, filename.c_str());
-      if (field.get_rep()) return (true);
+      if (field) return (true);
     }
     else
     {
@@ -97,7 +84,7 @@ bool DataIOAlgo::ReadMatrix(const std::string& filename, MatrixHandle& matrix, c
       
     // Read the file
     Pio(*stream, matrix);
-    if (!matrix.get_rep() || stream->error())
+    if (!matrix || stream->error())
     {
       error("Error reading data from file '" + filename +"'.");
       return (false);
@@ -513,7 +500,7 @@ bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle& nrrd, co
   return (true);
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool DataIOAlgo::WriteColorMap(const std::string& filename, ColorMapHandle& colormap, const std::string& exporter)
 {
   if (colormap.get_rep() == 0) return (false);
@@ -633,19 +620,4 @@ bool DataIOAlgo::WritePath(const std::string& filename, PathHandle& path, const 
   }
   return (true);
 }
-
-bool DataIOAlgo::FileExists(const std::string& filename)
-{
-  return boost::filesystem::exists(filename);
-}
-
-
-bool DataIOAlgo::CreateDir(const std::string& dirname)
-{
-  return boost::filesystem::create_directory(dirname);
-}
-
-
-} // end namespace SCIRunAlgo
-
-
+#endif

@@ -30,71 +30,65 @@
 #ifndef CORE_ALGORITHMS_CONVERTER_CONVERTERALGO_H
 #define CORE_ALGORITHMS_CONVERTER_CONVERTERALGO_H 1
 
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/Tensor.h>
+namespace SCIRun 
+{
+  namespace Core
+  {
+    namespace Algorithms
+    {
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Geometry/Transform.h>
-
-#include <Core/Algorithms/Util/AlgoLibrary.h>
-#include <Core/Algorithms/Converter/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE ConverterAlgo : public AlgoLibrary {
+class SCISHARE ConverterAlgo : public AlgorithmBase 
+{
 
   public:
-    ConverterAlgo(ProgressReporter* pr); // normal case
+    explicit ConverterAlgo(Core::Logging::LoggerHandle pr);
 
-    // Conversion tools for Matrices
-    bool MatrixToDouble(MatrixHandle matrix, double &val);
-    bool MatrixToInt(MatrixHandle matrix, int &val);
-    bool MatrixToIndex(MatrixHandle matrix, index_type &val);
-    bool MatrixToUnsignedInt(MatrixHandle matrix, unsigned int &val);
-    bool MatrixToVector(MatrixHandle matrix, Vector& vec);
-    bool MatrixToPoint(MatrixHandle matrix, Point& point);
-    bool MatrixToDoubleVector(MatrixHandle matrix, std::vector<double>& vec);
-    bool MatrixToIntVector(MatrixHandle matrix, std::vector<int>& vec);
-    bool MatrixToIndexVector(MatrixHandle matrix, std::vector<index_type>& vec);
-    bool MatrixToUnsignedIntVector(MatrixHandle matrix, std::vector<unsigned int>& vec);
-    bool MatrixToTensor(MatrixHandle matrix, Tensor& ten);
-    bool MatrixToTransform(MatrixHandle matrix, Transform& trans);
+    bool MatrixToDouble(Datatypes::MatrixHandle matrix, double &val);
+    bool MatrixToInt(Datatypes::MatrixHandle matrix, int &val);
+    bool MatrixToIndex(Datatypes::MatrixHandle matrix, index_type &val);
+    bool MatrixToUnsignedInt(Datatypes::MatrixHandle matrix, unsigned int &val);
+    bool MatrixToVector(Datatypes::MatrixHandle matrix, Geometry::Vector& vec);
+    bool MatrixToPoint(Datatypes::MatrixHandle matrix, Geometry::Point& point);
+    bool MatrixToDoubleVector(Datatypes::MatrixHandle matrix, std::vector<double>& vec);
+    bool MatrixToIntVector(Datatypes::MatrixHandle matrix, std::vector<int>& vec);
+    bool MatrixToIndexVector(Datatypes::MatrixHandle matrix, std::vector<index_type>& vec);
+    bool MatrixToUnsignedIntVector(Datatypes::MatrixHandle matrix, std::vector<unsigned int>& vec);
+    bool MatrixToTensor(Datatypes::MatrixHandle matrix, Geometry::Tensor& ten);
+    bool MatrixToTransform(Datatypes::MatrixHandle matrix, Geometry::Transform& trans);
 
-    bool DoubleVectorToMatrix(std::vector<double> val, MatrixHandle& matrix);
-    bool IntVectorToMatrix(std::vector<int> val, MatrixHandle& matrix);    
-    bool IndexVectorToMatrix(std::vector<index_type> val, MatrixHandle& matrix);    
-    bool UnsignedIntVectorToMatrix(std::vector<unsigned int> val, MatrixHandle& matrix);    
-    bool DoubleToMatrix(double val, MatrixHandle& matrix);
-    bool IndexToMatrix(index_type val, MatrixHandle& matrix);
-    bool IntToMatrix(int val, MatrixHandle& matrix);
-    bool UnsignedIntToMatrix(unsigned int val, MatrixHandle& matrix);
-    bool VectorToMatrix(Vector& vec, MatrixHandle& matrix);
-    bool PointToMatrix(Point& point, MatrixHandle& matrix);
-    bool TensorToMatrix(Tensor& ten, MatrixHandle matrix);
-    bool TransformToMatrix(Transform& trans, MatrixHandle& matrix);
+    bool DoubleVectorToMatrix(const std::vector<double>& val, Datatypes::MatrixHandle& matrix);
+    bool IntVectorToMatrix(const std::vector<int>& val, Datatypes::MatrixHandle& matrix);    
+    bool IndexVectorToMatrix(const std::vector<index_type>& val, Datatypes::MatrixHandle& matrix);    
+    bool UnsignedIntVectorToMatrix(const std::vector<unsigned int>& val, Datatypes::MatrixHandle& matrix);    
+    bool DoubleToMatrix(double val, Datatypes::MatrixHandle& matrix);
+    bool IndexToMatrix(index_type val, Datatypes::MatrixHandle& matrix);
+    bool IntToMatrix(int val, Datatypes::MatrixHandle& matrix);
+    bool UnsignedIntToMatrix(unsigned int val, Datatypes::MatrixHandle& matrix);
+    bool VectorToMatrix(Geometry::Vector& vec, Datatypes::MatrixHandle& matrix);
+    bool PointToMatrix(Geometry::Point& point, Datatypes::MatrixHandle& matrix);
+    bool TensorToMatrix(Geometry::Tensor& ten, Datatypes::MatrixHandle matrix);
+    bool TransformToMatrix(Geometry::Transform& trans, Datatypes::MatrixHandle& matrix);
     
-    bool MatricesToDipoleField(MatrixHandle locations,MatrixHandle strengths,FieldHandle& Dipoles);
+    bool MatricesToDipoleField(Datatypes::MatrixHandle locations, Datatypes::MatrixHandle strengths, FieldHandle& Dipoles);
     
     // Converters from regular spaced data to a regular field
     // datalocation specifies whether the data is "Node" or "Element" based
-    bool MatrixToField(MatrixHandle input, FieldHandle& output, const std::string& datalocation);
+    bool MatrixToField(Datatypes::MatrixHandle input, FieldHandle& output, const std::string& datalocation);
     bool NrrdToField(NrrdDataHandle input, FieldHandle& output, const std::string& datalocation = "Auto", const std::string& fieldtype = "Auto", const std::string& convertparity= "Make Right Hand Sided");
 
-    // For who ever insists on using nrrds
     bool FieldToNrrd(FieldHandle input, NrrdDataHandle& output);
+    bool NrrdToMatrix(NrrdDataHandle input, Datatypes::MatrixHandle& output);
+    bool MatrixToString(Datatypes::MatrixHandle input, Datatypes::StringHandle& output);
 
-    // Converter from NrrdToMatrix
-    bool NrrdToMatrix(NrrdDataHandle input, MatrixHandle& output);
-
-    // Convert Matrix to String
-    bool MatrixToString(MatrixHandle input, StringHandle& output);
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 };
-
-} // SCIRunAlgo
+  }
+}
+}
 
 #endif
