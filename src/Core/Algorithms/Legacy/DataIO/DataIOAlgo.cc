@@ -27,10 +27,14 @@
 */
 
 #include <Core/Algorithms/Legacy/DataIO/DataIOAlgo.h>
+#include <Core/Persistent/Persistent.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool DataIOAlgo::ReadField(const std::string& filename, FieldHandle& field, const std::string& importer)
 {  
   if (importer.empty())
@@ -44,7 +48,7 @@ bool DataIOAlgo::ReadField(const std::string& filename, FieldHandle& field, cons
       
     // Read the file
     Pio(*stream, field);
-    if (!field.get_rep() || stream->error())
+    if (!field || stream->error())
     {
       error("Error reading data from file '" + filename +"'.");
       return false;
@@ -135,10 +139,10 @@ bool DataIOAlgo::ReadBundle(const std::string& filename, BundleHandle& bundle, c
      
   return (true);
 }
-
+#endif
 bool DataIOAlgo::ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& importer)
 {
-  if (importer != "")
+  if (!importer.empty())
   {
     error("Error no external importers are defined for nrrds");
     return (false);
@@ -190,7 +194,7 @@ bool DataIOAlgo::ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, con
   return (true);
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool DataIOAlgo::ReadColorMap(const std::string& filename, ColorMapHandle& colormap, const std::string& importer)
 {
   if (!importer.empty())
@@ -414,7 +418,7 @@ bool DataIOAlgo::WriteBundle(const std::string& filename, BundleHandle& bundle, 
   }
   return (true);
 }
-
+#endif
 
 
 bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& exporter)
@@ -621,3 +625,8 @@ bool DataIOAlgo::WritePath(const std::string& filename, PathHandle& path, const 
   return (true);
 }
 #endif
+
+AlgorithmOutput DataIOAlgo::run_generic(const AlgorithmInput& input) const override
+{
+  throw "not implemented";
+}

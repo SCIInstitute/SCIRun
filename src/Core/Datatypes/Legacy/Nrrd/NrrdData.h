@@ -40,14 +40,10 @@
 #if !defined(SCI_Teem_NrrdData_h)
 #define SCI_Teem_NrrdData_h
 
-#include <Core/Thread/Guard.h>
-
 #include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Containers/LockingHandle.h>
-#include <teem/nrrd.h>
+//#include <teem/nrrd.h>
 
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/Legacy/Nrrd/share.h>
 
 namespace SCIRun {
 
