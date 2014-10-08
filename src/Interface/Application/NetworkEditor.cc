@@ -59,6 +59,10 @@ using namespace SCIRun::Dataflow::Engine;
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
   boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent)
   : QGraphicsView(parent),
+  deleteAction_(0),
+  sendToBackAction_(0),
+  propertiesAction_(0),
+  modulesSelectedByCL_(false),
   scene_(new QGraphicsScene(parent)),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
@@ -66,8 +70,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
-  zLevelManager_(new ZLevelManager(scene_)),
-	modulesSelectedByCL_(false)
+  zLevelManager_(new ZLevelManager(scene_))
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
@@ -514,7 +517,7 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 
 			findById(scene_->items(),selectedPair.first)->setSelected(true);
 			findById(scene_->items(),selectedPair.second)->setSelected(true);
-			modulesSelectedByCL_ = true; 
+			modulesSelectedByCL_ = true;
 		}
 	QGraphicsView::mouseMoveEvent(event);
 }
@@ -524,9 +527,9 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 		if(modulesSelectedByCL_)
 		{
 				unselectConnectionGroup();
-				Q_EMIT modified(); 
+				Q_EMIT modified();
 		}
-		modulesSelectedByCL_ = false; 
+		modulesSelectedByCL_ = false;
 	QGraphicsView::mouseReleaseEvent(event);
 }
 
