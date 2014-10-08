@@ -29,7 +29,7 @@
 # Sources of Core/Algorithms/DataIO classes
 
 SET(Core_Algorithms_Legacy_DataIO_SRCS
-  #DataIOAlgo.cc
+  DataIOAlgo.cc
   #MRCReader.cc
   ObjToFieldReader.cc
   #StreamData/StreamACQFile.cc
@@ -37,6 +37,7 @@ SET(Core_Algorithms_Legacy_DataIO_SRCS
 
 SET(Core_Algorithms_Legacy_DataIO_HEADERS
   ObjToFieldReader.h
+  DataIOAlgo.h
 )
 
 #IF(ITK_FOUND)
