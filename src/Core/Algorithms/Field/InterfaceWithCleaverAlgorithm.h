@@ -33,6 +33,11 @@
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Field/share.h>
 
+namespace Cleaver
+{
+  class ScalarField;
+}
+
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
@@ -52,6 +57,8 @@ namespace Fields {
     
     FieldHandle run(const FieldList& input) const;
     virtual AlgorithmOutput run_generic(const AlgorithmInput &) const override;
+
+    static boost::shared_ptr<Cleaver::ScalarField> makeCleaverFieldFromLatVol(FieldHandle field);
   };
 
 }}}}

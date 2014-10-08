@@ -74,6 +74,34 @@ InterfaceWithCleaverAlgorithm::InterfaceWithCleaverAlgorithm()
   addParameter(VolumeScalingZ,1.0);  
 }
 
+boost::shared_ptr<Cleaver::ScalarField> InterfaceWithCleaverAlgorithm::makeCleaverFieldFromLatVol(FieldHandle field)
+{
+  //TODO: this function assumes input is completely valid, may want to move various checks from run() function here.
+
+  VMesh*  vmesh   = field->vmesh();
+  VField* vfield = field->vfield();
+  VMesh::dimension_type dims;
+  vmesh->get_dimensions( dims ); 
+  float* ptr = static_cast<float*>(vfield->fdata_pointer());
+  auto cleaverField = boost::make_shared<Cleaver::FloatField>(dims[0], dims[1], dims[2], ptr);
+
+  //0 = constant, 1 = linear
+  if (0 == vfield->basis_order())
+    cleaverField->setCenter(Cleaver::FloatField::CellCentered);
+  else if (1 == vfield->basis_order())
+    cleaverField->setCenter(Cleaver::FloatField::NodeCentered);
+  //else: TODO? handle other bases, probably by throwing exception.
+
+  //TODO: Cleaver FloatField needs more setup (constructor is not sufficient)
+  // 1.
+  // setBounds(BoundingBox). Convert vmesh->get_bounding_box() to Cleaver BoundingBox.
+  // 2.
+  // setScale(vec3). Need to figure out which vmesh function to call, and convert to Cleaver::vec3.
+  // 3. unit test heavily.
+
+  return cleaverField;
+}
+
 FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& input) const
 {
   FieldHandle output;      
@@ -96,7 +124,8 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   VMesh::dimension_type dims; int x=0,y=0,z=0; 
   for (size_t p=1; p<inputs.size(); p++)
   {
-    VMesh*  imesh1   = inputs[p]->vmesh();
+    FieldHandle input = inputs[p];
+    VMesh*  imesh1   = input->vmesh();
 
     if( !imesh1->is_structuredmesh() )
     {
@@ -104,7 +133,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
     } 
     else
     {
-      VField* vfield1 = inputs[p]->vfield();
+      VField* vfield1 = input->vfield();
       if (!vfield1->is_scalar())
       {
         THROW_ALGORITHM_INPUT_ERROR("values at the node needs to be scalar!");
@@ -139,7 +168,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
         float* ptr = static_cast<float*>(vfield1->fdata_pointer());
         if (ptr)
         {
-          fields.push_back(boost::make_shared<Cleaver::FloatField>(dims[0], dims[1], dims[2], ptr)); 
+          fields.push_back(makeCleaverFieldFromLatVol(input));
         }
         else
         {
