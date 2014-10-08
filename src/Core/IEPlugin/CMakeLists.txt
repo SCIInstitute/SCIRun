@@ -38,7 +38,7 @@ SET(Core_IEPlugin_SRCS
   #MRC_Plugin.cc
   #MTextFileToTriSurf_Plugin.cc
   #MatlabFiles_Plugin.cc
-  #NrrdField_Plugin.cc
+  NrrdField_Plugin.cc
   #NrrdToMatrix_Plugin.cc
   ObjToField_Plugin.cc
   #PointCloudField_Plugin.cc
@@ -65,7 +65,7 @@ SET(Core_IEPlugin_HEADERS
   #MRC_Plugin.h
   #MTextFileToTriSurf_Plugin.h
   #MatlabFiles_Plugin.h
-  #NrrdField_Plugin.h
+  NrrdField_Plugin.h
   #NrrdToMatrix_Plugin.h
   ObjToField_Plugin.h
   #PointCloudField_Plugin.h

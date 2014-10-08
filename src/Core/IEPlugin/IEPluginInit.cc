@@ -27,6 +27,7 @@
 */
 
 #include <Core/IEPlugin/ObjToField_Plugin.h>
+#include <Core/IEPlugin/NrrdField_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 
@@ -37,5 +38,11 @@ template class GenericIEPluginManager<Field>;
 
 void IEPluginManager::Initialize()
 {
-  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "obj", "", SCIRun::ObjToField_reader, SCIRun::FieldToObj_writer);
+  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "obj", "", ObjToField_reader, FieldToObj_writer);
+
+  static FieldIEPluginLegacyAdapter  NrrdToField_plugin("NrrdFile","{.nhdr} {.nrrd}", "*.nrrd", NrrdToField_reader, FieldToNrrd_writer);
+//   static FieldIEPluginLegacyAdapter  NodalNrrdToField_plugin("NrrdFile[DataOnNodes]","{.nhdr} {.nrrd}", "", Nodal_NrrdToField_reader, 0);
+//   static FieldIEPluginLegacyAdapter  ModalNrrdToField_plugin("NrrdFile[DataOnElements]","{.nhdr} {.nrrd}", "", Modal_NrrdToField_reader, 0);
+//   static FieldIEPluginLegacyAdapter  IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","{.nhdr} {.nrrd}", "", IPNodal_NrrdToField_reader, 0);
+//   static FieldIEPluginLegacyAdapter  IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","{.nhdr} {.nrrd}", "", IPModal_NrrdToField_reader, 0);
 }

@@ -27,9 +27,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/DataIO/DataIOAlgo.h>
-#include <Core/Algorithms/Converter/ConverterAlgo.h>
+#include <Core/Algorithms/Legacy/DataIO/DataIOAlgo.h>
+#include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
 
 // This file contains readers for nrrds as fields. We currently have 5 variations
 // depending on whether data is defined on the nodes or the elements and what the
@@ -38,23 +41,21 @@
 // Although these properties are defined in the nrrd file format, most nrrds are
 // annotated improperly and hence corrections have to made.
 
-namespace SCIRun {
+//// Default reader use the definitions in the nrrd
+//FieldHandle  NrrdToField_reader(ProgressReporter *pr, const char *filename);
+//// Override the location settings and force data on the nodes
+//FieldHandle  Nodal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
+//// Override the location settings and force data on the elements
+//FieldHandle  Modal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
+//// Override the location settings and force data on the nodes and invert space parity
+//FieldHandle  IPNodal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
+//// Override the location settings and force data on the elements and invert space parity
+//FieldHandle  IPModal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
+//
+//// Default writer
+//bool FieldToNrrd_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
 
-// Default reader use the definitions in the nrrd
-FieldHandle  NrrdToField_reader(ProgressReporter *pr, const char *filename);
-// Override the location settings and force data on the nodes
-FieldHandle  Nodal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
-// Override the location settings and force data on the elements
-FieldHandle  Modal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
-// Override the location settings and force data on the nodes and invert space parity
-FieldHandle  IPNodal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
-// Override the location settings and force data on the elements and invert space parity
-FieldHandle  IPModal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
-
-// Default writer
-bool FieldToNrrd_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-
-FieldHandle NrrdToField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::NrrdToField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle field = 0;
   NrrdDataHandle nrrd = 0;
@@ -73,7 +74,7 @@ FieldHandle NrrdToField_reader(ProgressReporter *pr, const char *filename)
 }
 
 bool
-FieldToNrrd_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+SCIRun::FieldToNrrd_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 { 
   FieldHandle field = 0;
   NrrdDataHandle nrrd = 0;
@@ -90,7 +91,7 @@ FieldToNrrd_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
   return (false);
 }
 
-
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
 FieldHandle Nodal_NrrdToField_reader(ProgressReporter *pr, const char *filename)
 {
   FieldHandle field = 0;
@@ -162,13 +163,13 @@ FieldHandle IPModal_NrrdToField_reader(ProgressReporter *pr, const char *filenam
   
   return (field);
 }
-
-
-static FieldIEPlugin  NrrdToField_plugin("NrrdFile","{.nhdr} {.nrrd}", "*.nrrd", NrrdToField_reader, FieldToNrrd_writer);
-static FieldIEPlugin  NodalNrrdToField_plugin("NrrdFile[DataOnNodes]","{.nhdr} {.nrrd}", "", Nodal_NrrdToField_reader, 0);
-static FieldIEPlugin  ModalNrrdToField_plugin("NrrdFile[DataOnElements]","{.nhdr} {.nrrd}", "", Modal_NrrdToField_reader, 0);
-static FieldIEPlugin  IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","{.nhdr} {.nrrd}", "", IPNodal_NrrdToField_reader, 0);
-static FieldIEPlugin  IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","{.nhdr} {.nrrd}", "", IPModal_NrrdToField_reader, 0);
+#endif
+//
+//static FieldIEPlugin  NrrdToField_plugin("NrrdFile","{.nhdr} {.nrrd}", "*.nrrd", NrrdToField_reader, FieldToNrrd_writer);
+//static FieldIEPlugin  NodalNrrdToField_plugin("NrrdFile[DataOnNodes]","{.nhdr} {.nrrd}", "", Nodal_NrrdToField_reader, 0);
+//static FieldIEPlugin  ModalNrrdToField_plugin("NrrdFile[DataOnElements]","{.nhdr} {.nrrd}", "", Modal_NrrdToField_reader, 0);
+//static FieldIEPlugin  IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","{.nhdr} {.nrrd}", "", IPNodal_NrrdToField_reader, 0);
+//static FieldIEPlugin  IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","{.nhdr} {.nrrd}", "", IPModal_NrrdToField_reader, 0);
 
 
 }
