@@ -34,6 +34,7 @@ SET(Core_IEPlugin_SRCS
   #EcgsimFileToMatrix_Plugin.cc
   #EcgsimFileToTriSurf_Plugin.cc
   #HexVolField_Plugin.cc
+  IEPluginInit.cc
   #MRC_Plugin.cc
   #MTextFileToTriSurf_Plugin.cc
   #MatlabFiles_Plugin.cc

@@ -26,47 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- * Implementation notes:
- *
- * This reader does not read textures, just geometry.
- * 
- */
-
 #include <Core/IEPlugin/ObjToField_Plugin.h>
-#include <Core/Algorithms/Legacy/DataIO/ObjToFieldReader.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/Logging/Log.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Core::Algorithms;
 
-FieldHandle SCIRun::ObjToField_reader(LoggerHandle pr, const char *filename)
+template class GenericIEPluginManager<Field>;
+
+void IEPluginManager::Initialize()
 {
-  FieldHandle result;
-  ObjToFieldReader reader(pr);
-  std::string fn(filename);
-  if (! reader.read(fn, result))
-  {
-    if (pr) pr->error("Convert Obj to field failed.");
-    return (result);
-  }
-
-  return result;
-}
-
-bool SCIRun::FieldToObj_writer(LoggerHandle pr, FieldHandle fh, const char* filename)
-{
-  ObjToFieldReader writer(pr);
-
-  if(!writer.write(std::string(filename), fh))
-  {
-    if (pr) pr->error("Converting field to Obj failed.");
-    return false;
-  }
-
-  return true;
+  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "obj", "", SCIRun::ObjToField_reader, SCIRun::FieldToObj_writer);
 }
