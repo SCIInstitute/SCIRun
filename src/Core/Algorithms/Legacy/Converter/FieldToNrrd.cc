@@ -30,40 +30,47 @@
 #include <Core/Algorithms/Legacy/Converter/FieldToNrrd.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/Logging/LoggerInterface.h>
+#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
 
-namespace detail {
-class FieldToNrrdAlgoT {
+namespace detail 
+{
+class FieldToNrrdAlgoT 
+{
 public:
-  bool FieldToNrrd(ProgressReporter* pr,FieldHandle input, NrrdDataHandle& output);
-
   // Converters for node centered data
   template<class T>
-  bool ScalarFieldToNrrd(ProgressReporter* pr,FieldHandle input, NrrdDataHandle& output, int datatype);
-  bool VectorFieldToNrrd(ProgressReporter* pr,FieldHandle input, NrrdDataHandle& output);
-  bool TensorFieldToNrrd(ProgressReporter* pr,FieldHandle input, NrrdDataHandle& output);
-
+  bool scalarFieldToNrrd(LoggerHandle pr, FieldHandle input, NrrdDataHandle& output, int datatype);
+  bool vectorFieldToNrrd(LoggerHandle pr, FieldHandle input, NrrdDataHandle& output);
+  bool tensorFieldToNrrd(LoggerHandle pr, FieldHandle input, NrrdDataHandle& output);
 };
 
 
 // Templated converter for Scalar data so we can use every type supported by the Teem library
 
 template<class T>
-bool FieldToNrrdAlgoT::ScalarFieldToNrrd(ProgressReporter* pr,FieldHandle input, NrrdDataHandle& output,int datatype)
+bool FieldToNrrdAlgoT::scalarFieldToNrrd(LoggerHandle pr,FieldHandle input, NrrdDataHandle& output,int datatype)
 {
-  output = new NrrdData();
-  output->nrrd_ = nrrdNew();
+  output.reset(new NrrdData());
 
-  if (output->nrrd_ == 0)
+  Nrrd* nrrd = output->getNrrd();
+
+  if (!nrrd)
   {
     pr->error("FieldToNrrd: Could not create new Nrrd");
     return (false);
   }
-
-  // Get a pointer to make program more readable
-  Nrrd* nrrd = output->nrrd_;
 
   int nrrddim = 0;
   int nrrdcenter = nrrdCenterNode;
@@ -269,21 +276,17 @@ bool FieldToNrrdAlgoT::ScalarFieldToNrrd(ProgressReporter* pr,FieldHandle input,
   return (false);
 }
 
-
-
-bool FieldToNrrdAlgoT::VectorFieldToNrrd(ProgressReporter* pr,FieldHandle input, NrrdDataHandle& output)
+bool FieldToNrrdAlgoT::vectorFieldToNrrd(LoggerHandle pr,FieldHandle input, NrrdDataHandle& output)
 {
-  output = new NrrdData();
-  output->nrrd_ = nrrdNew();
+  output.reset(new NrrdData());
 
-  if (output->nrrd_ == 0)
+  Nrrd* nrrd = output->getNrrd();
+
+  if (!nrrd)
   {
     pr->error("FieldToNrrd: Could not create new Nrrd");
     return (false);
   }
-
-  // Get a pointer to make program more readable
-  Nrrd* nrrd = output->nrrd_;
 
   int nrrddim = 0;
   int nrrdcenter = nrrdCenterNode;
@@ -581,20 +584,17 @@ bool FieldToNrrdAlgoT::VectorFieldToNrrd(ProgressReporter* pr,FieldHandle input,
   return (false);
 }
 
-
-bool FieldToNrrdAlgoT::TensorFieldToNrrd(ProgressReporter* pr,FieldHandle input, NrrdDataHandle& output)
+bool FieldToNrrdAlgoT::tensorFieldToNrrd(LoggerHandle pr,FieldHandle input, NrrdDataHandle& output)
 {
-  output = new NrrdData();
-  output->nrrd_ = nrrdNew();
+  output.reset(new NrrdData());
 
-  if (output->nrrd_ == 0)
+  Nrrd* nrrd = output->getNrrd();
+
+  if (!nrrd)
   {
     pr->error("FieldToNrrd: Could not create new Nrrd");
     return (false);
   }
-
-  // Get a pointer to make program more readable
-  Nrrd* nrrd = output->nrrd_;
 
   int nrrddim = 0;
   int nrrdcenter = nrrdCenterNode;
@@ -915,8 +915,7 @@ bool FieldToNrrdAlgoT::TensorFieldToNrrd(ProgressReporter* pr,FieldHandle input,
 
 bool FieldToNrrdAlgo::fieldToNrrd(LoggerHandle pr, FieldHandle input, NrrdDataHandle& output)
 {
-
-  if (input.get_rep() == 0)
+  if (!input)
   {
     pr->error("FieldToNrrd: No input Field");
     return (false);
@@ -948,32 +947,32 @@ bool FieldToNrrdAlgo::fieldToNrrd(LoggerHandle pr, FieldHandle input, NrrdDataHa
     return (false);
   }
 
-  FieldToNrrdAlgoT algo;
+  detail::FieldToNrrdAlgoT algo;
 
   if (fi.is_scalar())
   {
-    if (fi.is_double())               return(algo.ScalarFieldToNrrd<double>(pr,input,output,nrrdTypeDouble));
-    if (fi.is_float())                return(algo.ScalarFieldToNrrd<float>(pr,input,output,nrrdTypeFloat));
-    if (fi.is_char())                 return(algo.ScalarFieldToNrrd<char>(pr,input,output,nrrdTypeChar));
-    if (fi.is_unsigned_char())        return(algo.ScalarFieldToNrrd<unsigned char>(pr,input,output,nrrdTypeUChar));
-    if (fi.is_short())                return(algo.ScalarFieldToNrrd<short>(pr,input,output,nrrdTypeShort));
-    if (fi.is_unsigned_short())       return(algo.ScalarFieldToNrrd<unsigned short>(pr,input,output,nrrdTypeUShort));
-    if (fi.is_int())                  return(algo.ScalarFieldToNrrd<int>(pr,input,output,nrrdTypeInt));
-    if (fi.is_unsigned_int())         return(algo.ScalarFieldToNrrd<unsigned int>(pr,input,output,nrrdTypeUInt));
-    if (fi.is_longlong())            return(algo.ScalarFieldToNrrd<long long>(pr,input,output,nrrdTypeLLong));
-    if (fi.is_unsigned_longlong())   return(algo.ScalarFieldToNrrd<unsigned long long>(pr,input,output,nrrdTypeULLong));
+    if (fi.is_double())               return(algo.scalarFieldToNrrd<double>(pr,input,output,nrrdTypeDouble));
+    if (fi.is_float())                return(algo.scalarFieldToNrrd<float>(pr,input,output,nrrdTypeFloat));
+    if (fi.is_char())                 return(algo.scalarFieldToNrrd<char>(pr,input,output,nrrdTypeChar));
+    if (fi.is_unsigned_char())        return(algo.scalarFieldToNrrd<unsigned char>(pr,input,output,nrrdTypeUChar));
+    if (fi.is_short())                return(algo.scalarFieldToNrrd<short>(pr,input,output,nrrdTypeShort));
+    if (fi.is_unsigned_short())       return(algo.scalarFieldToNrrd<unsigned short>(pr,input,output,nrrdTypeUShort));
+    if (fi.is_int())                  return(algo.scalarFieldToNrrd<int>(pr,input,output,nrrdTypeInt));
+    if (fi.is_unsigned_int())         return(algo.scalarFieldToNrrd<unsigned int>(pr,input,output,nrrdTypeUInt));
+    if (fi.is_longlong())             return(algo.scalarFieldToNrrd<long long>(pr,input,output,nrrdTypeLLong));
+    if (fi.is_unsigned_longlong())    return(algo.scalarFieldToNrrd<unsigned long long>(pr,input,output,nrrdTypeULLong));
     pr->error("FieldToNrrd: The field type is not supported by nrrd format, hence we cannot convert it");
     return (false);
   }
 
   if (fi.is_vector())
   {
-    return(algo.VectorFieldToNrrd(pr,input,output));
+    return(algo.vectorFieldToNrrd(pr,input,output));
   }
 
   if (fi.is_tensor())
   {
-    return(algo.TensorFieldToNrrd(pr,input,output));
+    return(algo.tensorFieldToNrrd(pr,input,output));
   }
 
   pr->error("FieldToNrrd: Unknown Field type encountered, cannot convert Field into Nrrd");

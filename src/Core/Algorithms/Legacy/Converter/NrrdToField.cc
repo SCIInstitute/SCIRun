@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <vector>
-
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
