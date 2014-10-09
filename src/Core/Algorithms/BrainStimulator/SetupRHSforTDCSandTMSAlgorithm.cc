@@ -86,8 +86,8 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   // consistency check:
   for (int i=0; i<all_elc_values.size(); i++)
   {
-    auto elecName = all_elc_values[i].name(); 
-   // auto elecValue = all_elc_values[i].toDouble(); // why is not that used?
+    auto elecName = all_elc_values[i].nameForXml(); 
+   // auto elecValue = all_elc_values[i].getDouble(); // why is not that used?
     auto expectedElecName = SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(i); // ElecrodeParameterName(i);
     if(elecName.name_.compare(expectedElecName.name_) != 0) // if so, electrodes are being stored out of order.
       THROW_ALGORITHM_PROCESSING_ERROR("Values are being stored out of order!");
