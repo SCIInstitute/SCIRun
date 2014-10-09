@@ -399,6 +399,7 @@ void ViewSceneDialog::addObjectToggleMenu()
   QComboBox* combo = new QComboBox();
   combo->setItemDelegate(new FixMacCheckBoxes);
   combo->setModel(itemManager_->model());
+  combo->setToolTip("Select an Object");
   mToolBar->addWidget(combo);
   mToolBar->addSeparator();
 }
