@@ -800,3 +800,8 @@ bool ConverterAlgo::MatrixToString(MatrixHandle input, StringHandle& output)
   return true;
 }
 #endif
+
+AlgorithmOutput ConverterAlgo::run_generic(const AlgorithmInput& input) const 
+{
+  throw "not implemented";
+}

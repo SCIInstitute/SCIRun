@@ -51,6 +51,8 @@ ADD_LIBRARY(Core_Algorithms_Legacy_Converter
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Converter
   Algorithms_Base
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
+  Core_Datatypes_Legacy_Nrrd
   #Core_Util
   #Core_Exceptions
   #Core_Thread
