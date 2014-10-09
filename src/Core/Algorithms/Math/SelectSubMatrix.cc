@@ -103,12 +103,12 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
   }
    
   MatrixHandle sub_matrix;
-  bool row_select = get(rowCheckBox()).getBool();
-  bool col_select = get(columnCheckBox()).getBool();
-  index_type row_start = get(rowStartSpinBox()).getInt();
-  index_type row_end = get(rowEndSpinBox()).getInt();
-  index_type col_start = get(columnStartSpinBox()).getInt();
-  index_type col_end = get(columnEndSpinBox()).getInt();
+  bool row_select = get(rowCheckBox()).toBool();
+  bool col_select = get(columnCheckBox()).toBool();
+  index_type row_start = get(rowStartSpinBox()).toInt();
+  index_type row_end = get(rowEndSpinBox()).toInt();
+  index_type col_start = get(columnStartSpinBox()).toInt();
+  index_type col_end = get(columnEndSpinBox()).toInt();
   
   if ( !row_select && !col_select )  ///pipe input through
    if ( !row_indices && !col_indices)

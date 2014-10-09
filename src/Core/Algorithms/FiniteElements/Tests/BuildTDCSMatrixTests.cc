@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -52,12 +52,12 @@ namespace TDCSInputData
       (0,0,0)
       (0,2,0));
   }
-  
+
   FieldHandle mesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "mesh_scirun5.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields" / "mesh_scirun5.fld");
   }
-  
+
   DenseMatrixHandle ElectrodeElements()
   {
     /// @todo: MORITZ insert values as above.
@@ -65,7 +65,7 @@ namespace TDCSInputData
       (1,0)
       (0,1));
   }
-  
+
   DenseMatrixHandle ElectrodeElementType()
   {
     /// @todo: MORITZ insert values as above.
@@ -73,7 +73,7 @@ namespace TDCSInputData
       (1,0)
       (0,1));
   }
-  
+
   DenseMatrixHandle ElectrodeElementDefinition()
   {
     /// @todo: MORITZ insert values as above.
@@ -81,7 +81,7 @@ namespace TDCSInputData
       (1,0)
       (0,1));
   }
-  
+
   DenseMatrixHandle contactimpedance()
   {
     /// @todo: MORITZ insert values as above.
@@ -89,7 +89,7 @@ namespace TDCSInputData
       (1,0)
       (0,1));
   }
-  
+
   SparseRowMatrixHandle expectedOutput()
   {
     /// @todo: MORITZ insert values as above.
@@ -143,5 +143,5 @@ TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullElectrodeElements)
 // etc for checks lines 567-575
 // cover as many error cases with tests as you can, there are a lot in TDCSMatrixBuilder::singlethread() but there may be reasonable conceptual groupings to simplify the test code (may also lead to simplifying/refactoring the algorithm code
 
-/// @todo next: 
+/// @todo next:
 //TEST(BuildTDCSMatrixAlgorithmTests, SuccessfulRunTest)  //here's where you pass in the real matrices/fields above and compare the output to an expected matrix.

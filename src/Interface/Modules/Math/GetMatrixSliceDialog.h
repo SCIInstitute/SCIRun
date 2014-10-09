@@ -26,20 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_ALGORITHMFWD_H
-#define ALGORITHMS_MATH_ALGORITHMFWD_H
+#ifndef INTERFACE_MODULES_MATH_GETMATRIXSLICE_H
+#define INTERFACE_MODULES_MATH_GETMATRIXSLICE_H
 
-#include <Core/Datatypes/MatrixFwd.h>
-
-/// @todo DAN
+#include "Interface/Modules/Math/ui_GetMatrixSlice.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Math {
+namespace Gui {
+  
+class SCISHARE GetMatrixSliceDialog : public ModuleDialogGeneric, 
+  public Ui::GetMatrixSlice
+{
+	Q_OBJECT
+	
+public:
+  GetMatrixSliceDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+private Q_SLOTS:
+  void incrementIndex();
+  void decrementIndex();
+  void selectFirstIndex();
+  void selectLastIndex();
+};
 
-  struct EvaluateLinearAlgebraUnaryAlgorithmParameters;
-
-}}}}
+}
+}
 
 #endif

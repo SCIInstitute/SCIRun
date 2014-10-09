@@ -102,11 +102,11 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   ScopedAlgorithmStatusReporter asr(this, "GetDomainBoundary");
   using namespace Parameters;
 
-  int minval = get(MinRange).getInt();
-  int maxval = get(MaxRange).getInt();
-  const int domval = get(Domain).getInt();
+  int minval = get(MinRange).toInt();
+  int maxval = get(MaxRange).toInt();
+  const int domval = get(Domain).toInt();
   
-  const bool userange = get(UseRange).getBool();
+  const bool userange = get(UseRange).toBool();
   
   if (!userange)
   {
@@ -114,10 +114,10 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
     maxval = domval;
   }
   
-  bool addouterboundary = get(AddOuterBoundary).getBool();
-  bool innerboundaryonly = get(InnerBoundaryOnly).getBool();
-  bool noinnerboundary = get(NoInnerBoundary).getBool();
-  bool disconnect = get(DisconnectBoundaries).getBool();
+  bool addouterboundary = get(AddOuterBoundary).toBool();
+  bool innerboundaryonly = get(InnerBoundaryOnly).toBool();
+  bool noinnerboundary = get(NoInnerBoundary).toBool();
+  bool disconnect = get(DisconnectBoundaries).toBool();
   
   Log::get() << DEBUG_LOG << "GetDomainBoundaryAlgo parameters:" 
     << "\n\tminval = " << minval 

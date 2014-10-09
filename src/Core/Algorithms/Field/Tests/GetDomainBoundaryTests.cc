@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -45,7 +45,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 using ::testing::NotNull;
 using ::testing::TestWithParam;
-using ::testing::Values; 
+using ::testing::Values;
 
 class GetDomainBoundaryTests : public ::testing::Test
 {
@@ -58,14 +58,14 @@ protected:
   void runTest(bool includeOuterBoundary, bool useRange, int domainValue,
     int expectedBoundaryNodes, int expectedBoundaryElements)
   {
-    FieldHandle latVol = loadFieldFromFile(TestResources::rootDir() / "latVolWithNormData.fld");
+    FieldHandle latVol = loadFieldFromFile(TestResources::rootDir() / "Fields" / "latVolWithNormData.fld");
     ASSERT_TRUE(latVol->vmesh()->is_latvolmesh());
 
     GetDomainBoundaryAlgo algo;
 
     // How to set parameters on an algorithm (that come from the GUI)
     algo.set(Parameters::AddOuterBoundary, includeOuterBoundary);
-    
+
     /// @todo: this logic matches the wacky module behavior
 
     algo.set(Parameters::UseRange, useRange);
@@ -160,20 +160,20 @@ public:
   SparseRowMatrixHandle unused_;
   GetDomainBoundaryAlgo algo_;
   FieldHandle latVol_;
-  GetDomainBoundaryTestsParameterized() 
+  GetDomainBoundaryTestsParameterized()
   {
-    latVol_ = loadFieldFromFile(TestResources::rootDir() / "latVolWithNormData.fld");
+    latVol_ = loadFieldFromFile(TestResources::rootDir() / "Fields" / "latVolWithNormData.fld");
     SCIRun::Core::Logging::Log::get().setVerbose(true);
-  } 
+  }
 
 protected:
   virtual void SetUp()
   {
     ASSERT_TRUE(latVol_->vmesh()->is_latvolmesh());
-    
+
     // How to set parameters on an algorithm (that come from the GUI)
     algo_.set(Parameters::AddOuterBoundary, ::std::tr1::get<0>(GetParam()));
-    
+
     /// @todo: this logic matches the wacky module behavior
     algo_.set(Parameters::UseRange, ::std::tr1::get<1>(GetParam()));
     if (!::std::tr1::get<1>(GetParam()))///useRange)
@@ -185,7 +185,7 @@ protected:
     }
 	//algo_.set(Parameters::InnerBoundaryOnly, ::std::tr1::get<3>(GetParam()));
 	//algo_.set(Parameters::NoInnerBoundary, ::std::tr1::get<4>(GetParam()));
-	//algo_.set(Parameters::DisconnectBoundaries, ::std::tr1::get<5>(GetParam())); 
+	//algo_.set(Parameters::DisconnectBoundaries, ::std::tr1::get<5>(GetParam()));
     //ASSERT_TRUE(algo_.runImpl(latVol, unused, boundary));
   }
   virtual void TearDown()
@@ -194,7 +194,7 @@ protected:
 
 TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)
 {
-    //EXPECT_EQ(0, boundary->vmesh()->num_nodes()); 
+    //EXPECT_EQ(0, boundary->vmesh()->num_nodes());
   boundary_.reset();
   ASSERT_TRUE(algo_.runImpl(latVol_, unused_, boundary_));
   ASSERT_THAT(boundary_, NotNull());
@@ -206,9 +206,9 @@ TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)
 INSTANTIATE_TEST_CASE_P(
   LatVolBoundry_Parameterized,
   GetDomainBoundaryTestsParameterized,
-  Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4)) 
+  Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4))
   );
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
 
-#endif 
+#endif

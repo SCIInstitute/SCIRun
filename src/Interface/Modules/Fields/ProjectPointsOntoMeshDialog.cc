@@ -60,7 +60,7 @@ void ProjectPointsOntoMeshDialog::pull()
   Pulling p(this);
   
   using namespace Parameters;
-  auto method = state_->getValue(ProjectMethod).getString();
+  auto method = state_->getValue(ProjectMethod).toString();
   pointsOntoElementsRadioButton_->setChecked("elements" == method);
   pointsOntoNodesRadioButton_->setChecked("nodes" == method);
 

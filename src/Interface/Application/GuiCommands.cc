@@ -28,7 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QtGui>
 #include <Core/Application/Application.h>
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/GuiLogger.h>
@@ -71,13 +71,13 @@ bool ShowMainWindowGui::execute()
 {
   auto mainWin = SCIRunMainWindow::Instance();
   mainWin->activateWindow();
-  
+
   mainWin->raise();
   mainWin->show();
   return true;
 }
 
-ShowSplashScreenGui::ShowSplashScreenGui() 
+ShowSplashScreenGui::ShowSplashScreenGui()
 {
   initSplashScreen();
 }
@@ -151,8 +151,7 @@ bool SetupDataDirectoryCommandGui::execute()
   auto dir = Application::Instance().parameters()->dataDirectory().get();
   LOG_DEBUG("Data dir set to: " << dir << std::endl);
   
-  Core::Preferences::Instance().setDataDirectory(dir);
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
-  
+
   return true;
 }

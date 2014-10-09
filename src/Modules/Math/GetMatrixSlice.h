@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,42 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_MATH_GETMATRIXSLICEMODULE_H
+#define MODULES_MATH_GETMATRIXSLICEMODULE_H
 
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_GetSubMatrix_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_GetSubMatrix_H 1
-
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-//! for Windows support
-#include <Core/Algorithms/Math/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
+namespace Modules {
+namespace Math {
 
-class SCISHARE GetSubMatrixAlgo : public AlgorithmBase
-{
+  class SCISHARE GetMatrixSlice : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
+  {
   public:
+    GetMatrixSlice();
+    virtual void execute();
+    virtual void setStateDefaults();
+    INPUT_PORT(0, InputMatrix, Matrix);
+    OUTPUT_PORT(0, OutputMatrix, Matrix);
 
-    static AlgorithmInputName INPUT_Matrix;
-    static AlgorithmInputName Optional_Range_Bounds;
-    static AlgorithmOutputName OUTPUT_Matrix;
-    
-    
+    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  };
+}}}
 
-  GetSubMatrixAlgo();
-  ~GetSubMatrixAlgo();
-  bool run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseColumnMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseColumnMatrixHandle& output_rhs) const;
-  virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-  
-}; // end namespace SCIRun
-
-			}}}}
-#endif 
+#endif

@@ -28,7 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Application/Preferences.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
@@ -38,8 +38,8 @@ TEST(FilenameVariableTests, CanReplaceDataDirectoryWindows)
   Preferences::Instance().setDataDirectory("E:\\scirun\\trunk_ref\\SCIRunData");
   const std::string path = Preferences::Instance().dataDirectoryPlaceholder() + "\\aneurysm\\aneurysm-mra.lvs.fld";
   AlgorithmParameter fileParameter(Name("filename"), path);
-  EXPECT_EQ(path, fileParameter.getString());
-  auto pathFromState = fileParameter.getFilename().string();
+  EXPECT_EQ(path, fileParameter.toString());
+  auto pathFromState = fileParameter.toFilename().string();
 #ifdef WIN32
   EXPECT_EQ("E:\\scirun\\trunk_ref\\SCIRunData\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
 #endif
@@ -50,8 +50,8 @@ TEST(FilenameVariableTests, CanReplaceDataDirectoryMac)
   Preferences::Instance().setDataDirectory("/Users/scirun/trunk_ref/SCIRunData");
   const std::string path = Preferences::Instance().dataDirectoryPlaceholder() + "/aneurysm/aneurysm-mra.lvs.fld";
   AlgorithmParameter fileParameter(Name("filename"), path);
-  EXPECT_EQ(path, fileParameter.getString());
-  auto pathFromState = fileParameter.getFilename().string();
+  EXPECT_EQ(path, fileParameter.toString());
+  auto pathFromState = fileParameter.toFilename().string();
   EXPECT_EQ("/Users/scirun/trunk_ref/SCIRunData/aneurysm/aneurysm-mra.lvs.fld", pathFromState);
 }
 
@@ -60,8 +60,8 @@ TEST(FilenameVariableTests, CanReplaceDataDirectoryWindowsSlashAtEnd)
   Preferences::Instance().setDataDirectory("E:\\scirun\\trunk_ref\\SCIRunData\\");
   const std::string path = Preferences::Instance().dataDirectoryPlaceholder() + "\\aneurysm\\aneurysm-mra.lvs.fld";
   AlgorithmParameter fileParameter(Name("filename"), path);
-  EXPECT_EQ(path, fileParameter.getString());
-  auto pathFromState = fileParameter.getFilename().string();
+  EXPECT_EQ(path, fileParameter.toString());
+  auto pathFromState = fileParameter.toFilename().string();
 #ifdef WIN32
   EXPECT_EQ("E:\\scirun\\trunk_ref\\SCIRunData\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
 #endif
@@ -72,8 +72,8 @@ TEST(FilenameVariableTests, CanReplaceDataDirectoryMacSlashAtEnd)
   Preferences::Instance().setDataDirectory("/Users/scirun/trunk_ref/SCIRunData/");
   const std::string path = Preferences::Instance().dataDirectoryPlaceholder() + "/aneurysm/aneurysm-mra.lvs.fld";
   AlgorithmParameter fileParameter(Name("filename"), path);
-  EXPECT_EQ(path, fileParameter.getString());
-  auto pathFromState = fileParameter.getFilename().string();
+  EXPECT_EQ(path, fileParameter.toString());
+  auto pathFromState = fileParameter.toFilename().string();
 #ifndef WIN32
   EXPECT_EQ("/Users/scirun/trunk_ref/SCIRunData/aneurysm/aneurysm-mra.lvs.fld", pathFromState);
 #else
@@ -87,7 +87,28 @@ TEST(FilenameVariableTests, PreservesPathIfNoPlaceholder)
   Preferences::Instance().setDataDirectory("E:\\scirun\\trunk_ref\\SCIRunData");
   const std::string path = "E:\\scirun\\aneurysm\\aneurysm-mra.lvs.fld";
   AlgorithmParameter fileParameter(Name("filename"), path);
-  EXPECT_EQ(path, fileParameter.getString());
-  auto pathFromState = fileParameter.getFilename().string();
+  EXPECT_EQ(path, fileParameter.toString());
+  auto pathFromState = fileParameter.toFilename().string();
   EXPECT_EQ("E:\\scirun\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
+}
+
+TEST(NaNVaribleTests, CanHandleNaNValues)
+{
+  AlgorithmParameter nan1(Name("nan"), std::numeric_limits<double>::quiet_NaN());
+  double value = nan1.toDouble();
+  EXPECT_NE(value, value);
+  std::string str = nan1.toString();
+  EXPECT_EQ("NaN", str);
+
+  nan1.setValue(1.0);
+  value = nan1.toDouble();
+  EXPECT_EQ(1.0, value);
+  str = nan1.toString();
+  EXPECT_EQ("", str);
+
+  nan1.setValue(std::numeric_limits<double>::quiet_NaN());
+  value = nan1.toDouble();
+  EXPECT_NE(value, value);
+  str = nan1.toString();
+  EXPECT_EQ("NaN", str);
 }

@@ -29,7 +29,8 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
+//#include <Core/Datatypes/SparseRowMatrix.h>
+//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -67,8 +68,8 @@ void SplitFieldByConnectedRegion::execute()
  if (needToExecute())
   {
     update_state(Executing);
-    algo().set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), get_state()->getValue(SplitFieldByConnectedRegionAlgo::SortDomainBySize()).getBool());
-    algo().set(SplitFieldByConnectedRegionAlgo::SortAscending(), get_state()->getValue(SplitFieldByConnectedRegionAlgo::SortAscending()).getBool());
+    setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
+    setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortAscending());
  
     auto output = algo().run_generic(make_input((InputField, input_field)));
 
@@ -80,5 +81,15 @@ void SplitFieldByConnectedRegion::execute()
     sendOutputFromAlgorithm(OutputField6, output);
     sendOutputFromAlgorithm(OutputField7, output);
     sendOutputFromAlgorithm(OutputField8, output);
+    
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    boutput = new Bundle;
+    for (size_t j=0; j< output.size(); j++)
+    {
+      std::ostringstream oss;
+      oss << "Field" << j;
+      boutput->setField(oss.str(),output[j]);
+    }
+    #endif    
   }
 }

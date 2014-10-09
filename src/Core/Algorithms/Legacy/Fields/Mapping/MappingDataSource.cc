@@ -3139,8 +3139,8 @@ MappingDataSourceHandle SCIRun::Core::Algorithms::Fields::CreateDataSource(Field
   std::string quantity = algo->get_option(Parameters::Quantity);
   const std::string value =  algo->get_option(Parameters::InterpolationModel);
 
-  const double def_value = algo->get(Parameters::OutsideValue).getDouble();
-  const double max_dist = algo->get(Parameters::MaxDistance).getDouble();
+  const double def_value = algo->get(Parameters::OutsideValue).toDouble();
+  const double max_dist = algo->get(Parameters::MaxDistance).toDouble();
 
   const double nan_value = std::numeric_limits<double>::quiet_NaN();
 

@@ -70,8 +70,8 @@ void GetDomainBoundaryDialog::pull()
   Pulling p(this);
   
   using namespace Parameters;
-  compartmentRadioButton_->setChecked(!state_->getValue(UseRange).getBool());
-  compartmentsRangeRadioButton_->setChecked(state_->getValue(UseRange).getBool());
+  compartmentRadioButton_->setChecked(!state_->getValue(UseRange).toBool());
+  compartmentsRangeRadioButton_->setChecked(state_->getValue(UseRange).toBool());
 
   pull_newVersionToReplaceOld();
 }

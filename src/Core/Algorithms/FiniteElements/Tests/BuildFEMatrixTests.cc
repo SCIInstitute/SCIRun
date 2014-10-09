@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -47,19 +47,19 @@ using ::testing::NotNull;
 
 namespace FEInputData
 {
-  boost::filesystem::path feMeshRoot() 
+  boost::filesystem::path feMeshRoot()
   {
-    return TestResources::rootDir() / "buildFE" / "inputFields";
+    return TestResources::rootDir() / "Fields" / "buildFE" / "inputFields";
   }
 
   FieldHandle loadTestMesh(const std::string& file)
   {
     return loadFieldFromFile(feMeshRoot() / file);
   }
-   
-  boost::filesystem::path expectedOutputRoot() 
+
+  boost::filesystem::path expectedOutputRoot()
   {
-    return TestResources::rootDir() / "buildFE" / "v4Output";
+    return TestResources::rootDir() / "Matrices" / "buildFE" / "v4Output";
   }
 
   SparseRowMatrixHandle expectedOutput(const std::string& file)
@@ -100,7 +100,7 @@ TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e1)
 
   EXPECT_EQ(7, output->nrows());
   EXPECT_EQ(7, output->ncols());
-    
+
   EXPECT_DOUBLE_EQ(0.5855738571534416, output->coeff(0,0));
   EXPECT_DOUBLE_EQ(0.3117198873128934, output->coeff(output->nrows() - 1, output->ncols() - 1));
 
@@ -153,7 +153,8 @@ TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e4)
   EXPECT_TRUE(expectedOutput("1e4.mat")->isApprox(*output));
 }
 
-TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e5)
+// move to nightly: file too big for github unit test repo
+TEST(BuildFEMatrixAlgorithmTests, DISABLED_TestMeshSize1e5)
 {
   using namespace FEInputData;
   auto mesh = loadTestMesh("fem_1e5_elements.fld");
@@ -176,7 +177,8 @@ TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e5)
   EXPECT_TRUE(compare_with_tolerance(*expectedOutput("1e5.mat"), *output));
 }
 
-TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e6)
+// move to nightly: file too big for github unit test repo
+TEST(BuildFEMatrixAlgorithmTests, DISABLED_TestMeshSize1e6)
 {
   using namespace FEInputData;
   auto mesh = loadTestMesh("fem_1e6_elements.fld");

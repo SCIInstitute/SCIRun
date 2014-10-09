@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 
 #include <Core/Logging/LoggerInterface.h>
+#include <Core/Utils/Singleton.h>
 #include <Interface/Application/NetworkEditor.h>  //TODO
 
 class QTextEdit;
@@ -72,6 +73,39 @@ namespace Gui {
   private:
     QComboBox& combo_;
   };
+
+  typedef boost::variant<QAction*, QWidget*> InputWidget;
+
+  // During network execution, this class manages disabling parts of the GUI
+  class WidgetDisablingService : public QObject, boost::noncopyable
+  {
+    Q_OBJECT
+
+    CORE_SINGLETON( WidgetDisablingService );
+
+  private:
+    WidgetDisablingService() : ne_(0) {}
+  public Q_SLOTS:
+    void disableInputWidgets(); 
+    void enableInputWidgets();
+  public:
+    void addNetworkEditor(NetworkEditor* ne);
+    void addWidget(const InputWidget& w);
+
+    template <class Iter>
+    void addWidgets(Iter begin, Iter end)
+    {
+      std::copy(begin, end, std::back_inserter(inputWidgets_));
+    }
+  private:
+    NetworkEditor* ne_;
+    std::vector<InputWidget> inputWidgets_;
+  };
+
+  inline void addWidgetToExecutionDisableList(const InputWidget& w)
+  {
+    WidgetDisablingService::Instance().addWidget(w);
+  }
 
 }
 }

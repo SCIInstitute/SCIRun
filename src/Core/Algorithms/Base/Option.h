@@ -25,18 +25,33 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/EvaluateLinearAlgebraBinaryState.h
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULESTATE_H
+#ifndef ALGORITHMS_BASE_ALGORITHMOPTION_H
+#define ALGORITHMS_BASE_ALGORITHMOPTION_H
 
-#include <Dataflow/Network/Module.h>
+#include <string>
+#include <set>
+#include <iosfwd>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Basic {
-      /// @todo 
-    
+namespace Core {
+namespace Algorithms {
+  
+  class SCISHARE AlgoOption 
+  {
+  public:
+    AlgoOption() {}
+    AlgoOption(const std::string& option, const std::set<std::string>& options) 
+      : option_(option), options_(options) {}
+
+    std::string option_;
+    std::set<std::string> options_;
+  };
+
+  SCISHARE bool operator==(const AlgoOption& lhs, const AlgoOption& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const AlgoOption& op);
+  
 }}}
 
 #endif

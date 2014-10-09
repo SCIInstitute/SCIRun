@@ -26,17 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_REPORTMATRIXINFOSTATE_H
-#define MODULES_MATH_REPORTMATRIXINFOSTATE_H
+#ifndef ALGORITHMS_BASE_NAME_H
+#define ALGORITHMS_BASE_NAME_H
 
-#include <Dataflow/Network/Module.h>
+#include <string>
+#include <iosfwd>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Basic {
-  /// @todo
+namespace Core {
+namespace Algorithms {
 
+  struct SCISHARE Name
+  {
+    Name() : name_("_unspecified_") {}
+    explicit Name(const std::string& name);
 
+    const std::string& name() const { return name_; }
+    
+    bool operator<(const Name& rhs) const
+    {
+      return name_ < rhs.name_;
+    }
+
+    std::string name_;
+  };
+
+  SCISHARE bool operator==(const Name& lhs, const Name& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const Name& name);
+    
+  typedef Name AlgorithmParameterName;
+  typedef Name AlgorithmInputName;
+  typedef Name AlgorithmOutputName;
+  
 }}}
 
 #endif

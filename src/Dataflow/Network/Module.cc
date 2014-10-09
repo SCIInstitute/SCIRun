@@ -451,42 +451,52 @@ void Module::removeInputPort(const PortId& id)
 
 void Module::setStateBoolFromAlgo(const AlgorithmParameterName& name)
 {
-  get_state()->setValue(name, algo().get(name).getBool());
+  get_state()->setValue(name, algo().get(name).toBool());
 }
 
 void Module::setAlgoIntFromState(const AlgorithmParameterName& name)
 {
-  algo().set(name, get_state()->getValue(name).getInt());
+  algo().set(name, get_state()->getValue(name).toInt());
 }
 
 void Module::setAlgoBoolFromState(const AlgorithmParameterName& name)
 {
-  algo().set(name, get_state()->getValue(name).getBool());
+  algo().set(name, get_state()->getValue(name).toBool());
 }
 
 void Module::setStateIntFromAlgo(const AlgorithmParameterName& name)
 {
-  get_state()->setValue(name, algo().get(name).getInt());
+  get_state()->setValue(name, algo().get(name).toInt());
 }
 
 void Module::setStateDoubleFromAlgo(const AlgorithmParameterName& name)
 {
-  get_state()->setValue(name, algo().get(name).getDouble());
+  get_state()->setValue(name, algo().get(name).toDouble());
+}
+
+void Module::setStateListFromAlgo(const AlgorithmParameterName& name)
+{
+  get_state()->setValue(name, algo().get(name).toVector());
 }
 
 void Module::setAlgoDoubleFromState(const AlgorithmParameterName& name)
 {
-  algo().set(name, get_state()->getValue(name).getDouble());
+  algo().set(name, get_state()->getValue(name).toDouble());
 }
 
 void Module::setAlgoOptionFromState(const AlgorithmParameterName& name)
 {
-  algo().set_option(name, get_state()->getValue(name).getString());
+  algo().set_option(name, get_state()->getValue(name).toString());
 }
 
 void Module::setStateStringFromAlgoOption(const AlgorithmParameterName& name)
 {
   get_state()->setValue(name, algo().get_option(name));
+}
+
+void Module::setAlgoListFromState(const AlgorithmParameterName& name)
+{
+  algo().set(name, get_state()->getValue(name).toVector());
 }
 
 ModuleInterface::ExecutionState Module::executionState() const

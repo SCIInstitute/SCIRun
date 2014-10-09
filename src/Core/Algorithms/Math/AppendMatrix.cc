@@ -84,7 +84,7 @@ AlgorithmOutput AppendMatrixAlgorithm::run_generic(const AlgorithmInput& input) 
   auto lhs = input.get<DenseMatrix>(Variables::FirstMatrix);
   auto rhs = input.get<DenseMatrix>(Variables::SecondMatrix);
 
-  auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::RowsOrColumns).getInt()));
+  auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::RowsOrColumns).toInt()));
 
   AlgorithmOutput output;
   output[Variables::ResultMatrix] = outputs;

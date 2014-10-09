@@ -42,7 +42,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/buildFE/inputFields/fem_1e6_elements.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/buildFE/inputFields/fem_1e3_elements.fld</value>
 									</value>
 								</second>
 							</item>

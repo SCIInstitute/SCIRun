@@ -25,51 +25,59 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/FiniteElements/BuildFEVolRHS.cc
 
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
+////@file BuildFEVolRHS.h
+///@brief This module computes a volumetric right-hand-side. This module is needed for TMS simulations in the BrainStimulator package.
+///
+///@author
+/// ported by Moritz Dannhauer (09/24/2014) from SCIRun4
+///
+///@details
+/// Calculates the divergence of a vector field over the volume. It is designed to calculate the volume integral of the vector field 
+/// (gradient of the potential in electrical simulations). Builds the volume portion of the RHS of FE calculations where the RHS of 
+/// the function is GRAD dot F.
+/// Input: A FE mesh with field vectors distributed on the elements (constant basis). Output: The Grad dot F
+
+#include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
+using namespace SCIRun;
 
-#include <Core/Algorithms/FiniteElements/BuildRHS/BuildFEVolRHS.h>
-
-
-namespace SCIRun {
-
-class BuildFEVolRHS : public Module {
-  public:
-    BuildFEVolRHS(GuiContext*);
-    virtual ~BuildFEVolRHS() {}
-
-    virtual void execute();
-
-    GuiInt gui_use_basis_;
-    //GuiInt gui_force_symmetry_;
-  
-  private:
-    SCIRunAlgo::BuildFEVolRHSAlgo algo_;
-};
-
-
-DECLARE_MAKER(BuildFEVolRHS)
-
-BuildFEVolRHS::BuildFEVolRHS(GuiContext* ctx)
-  : Module("BuildFEVolRHS", ctx, Source, "FiniteElements", "SCIRun"),
-    gui_use_basis_(get_ctx()->subVar("use-basis"),0)
+BuildFEVolRHS::BuildFEVolRHS()
+  : Module(ModuleLookupInfo("BuildFEVolRHS", "FiniteElements", "SCIRun"),false)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Mesh);
+  INITIALIZE_PORT(RHS);
 }
 
+void BuildFEVolRHS::setStateDefaults()
+{
+ 
+}
 
 void BuildFEVolRHS::execute()
 {
+  auto mesh = getRequiredInput(Mesh);
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
+  auto vtable = getRequiredInput(Vector_Table);
+ #endif
+  if (needToExecute())
+  {
+    update_state(Executing);
+    auto output = algo().run_generic(make_input((Mesh, mesh)));
+    sendOutputFromAlgorithm(RHS, output);
+  }
+ 
+
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED  
   FieldHandle Field;
   MatrixHandle VectorTable;
   MatrixHandle RHSMatrix;
@@ -84,9 +92,6 @@ void BuildFEVolRHS::execute()
     
     send_output_handle("RHS", RHSMatrix);
   }
+#endif  
+
 }
-
-} // End namespace SCIRun
-
-
-

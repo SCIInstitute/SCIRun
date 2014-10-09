@@ -31,7 +31,6 @@
 #define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Modules/Math/share.h>
 
 namespace SCIRun {

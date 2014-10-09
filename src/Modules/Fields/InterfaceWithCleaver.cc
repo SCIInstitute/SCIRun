@@ -42,35 +42,35 @@ const ModuleLookupInfo InterfaceWithCleaverModule::staticInfo_("InterfaceWithCle
 
 InterfaceWithCleaverModule::InterfaceWithCleaverModule() : Module(staticInfo_)
 {
-    INITIALIZE_PORT(InputFields);
-    INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(InputFields);
+  INITIALIZE_PORT(OutputField);
 }
-
 
 void InterfaceWithCleaverModule::setStateDefaults()
 {
-  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::VerboseCheckBox);
-  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::PaddingCheckBox);
-  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton);
-  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton);
-  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X);
-  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y); 
-  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z);  
+  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::Verbose);
+  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::Padding);
+  setStateStringFromAlgoOption(InterfaceWithCleaverAlgorithm::VolumeScalingOption);
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingX);
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingY); 
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingZ);  
 }
 
 void InterfaceWithCleaverModule::execute()
 {
   auto fields = getRequiredDynamicInputs(InputFields);
   
-  setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::VerboseCheckBox);
-  setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::PaddingCheckBox);
-  setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton);
-  setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton);
-  setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X);
-  setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y);
-  setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z);
+  if (needToExecute())
+  {
+    setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::Verbose);
+    setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::Padding);
+    setAlgoOptionFromState(InterfaceWithCleaverAlgorithm::VolumeScalingOption);
+    setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingX);
+    setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingY);
+    setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingZ);
 
-  auto output = algo().run_generic(make_input((InputFields, fields)));
-  
-  sendOutputFromAlgorithm(OutputField,output);
+    auto output = algo().run_generic(withInputData((InputFields, fields)));
+
+    sendOutputFromAlgorithm(OutputField,output);
+  }
 }

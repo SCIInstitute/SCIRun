@@ -61,7 +61,7 @@ AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& i
   ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");*/
   //old-style run call, just put algorithm code here
-  //auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).getInt()));
+  //auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).toInt()));
   // CODE HERE
   FieldHandle out1,out2;
 

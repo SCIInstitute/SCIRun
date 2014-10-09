@@ -77,7 +77,7 @@ void FairMesh::execute()
     setAlgoDoubleFromState(Parameters::FilterCutoff);
     setAlgoOptionFromState(Parameters::FairMeshMethod);
 
-    auto output = algo().run_generic(make_input((Input_Mesh, input)));
+    auto output = algo().run_generic(withInputData((Input_Mesh, input)));
 
     sendOutputFromAlgorithm(Faired_Mesh, output);
   }

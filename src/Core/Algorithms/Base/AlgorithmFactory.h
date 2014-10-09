@@ -26,6 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
+#ifndef ALGORITHMS_BASE_ALGORITHMFACTORY_H
+#define ALGORITHMS_BASE_ALGORITHMFACTORY_H
 
-/// @todo
+#include <Core/Logging/LoggerInterface.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
+#include <Core/Algorithms/Base/AlgorithmStatusReporter.h>
+#include <Core/Algorithms/Base/share.h>
+
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+
+  class SCISHARE AlgorithmCollaborator
+  {
+  public:
+    virtual ~AlgorithmCollaborator();
+    virtual Logging::LoggerHandle getLogger() const = 0;
+    virtual AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const = 0;
+  };
+
+  class SCISHARE AlgorithmFactory
+  {
+  public:
+    virtual ~AlgorithmFactory() {}
+    virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const = 0;
+  };
+  
+}}}
+
+#endif

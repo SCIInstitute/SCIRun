@@ -86,8 +86,8 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   // consistency check:
   for (int i=0; i<all_elc_values.size(); i++)
   {
-    auto elecName = all_elc_values[i].name_; 
-   // auto elecValue = all_elc_values[i].getDouble(); // why is not that used?
+    auto elecName = all_elc_values[i].name(); 
+   // auto elecValue = all_elc_values[i].toDouble(); // why is not that used?
     auto expectedElecName = SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(i); // ElecrodeParameterName(i);
     if(elecName.name_.compare(expectedElecName.name_) != 0) // if so, electrodes are being stored out of order.
       THROW_ALGORITHM_PROCESSING_ERROR("Values are being stored out of order!");
@@ -129,7 +129,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  VMesh::size_type mesh_num_nodes = mesh->vmesh()->num_nodes();
  DenseMatrixHandle lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
  
- index_type refnode_number = get(refnode()).getInt();
+ index_type refnode_number = get(refnode()).toInt();
  if ( refnode_number > mesh_num_nodes && refnode_number>0)
  {
     THROW_ALGORITHM_PROCESSING_ERROR(" Reference node exceeds number of FEM nodes. ");
@@ -416,7 +416,7 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, c
   double min_current = 0;
   for (int i=0; i<elcs_wanted.size(); i++)
   {
-    double temp = std::fabs(elcs_wanted[i].getDouble());
+    double temp = std::fabs(elcs_wanted[i].toDouble());
     min_current += temp;
   }
   if (min_current < 0.00001) remark("Electrode current intensities are negligible");
@@ -432,7 +432,7 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, c
     if (i < node_elements)
       (*output)(i,0) = 0.0; // for the nodes
     else
-      (*output)(i,0) = elcs_wanted[i-node_elements].getDouble()/1000.0; // for electrodes ~ converting to Amps
+      (*output)(i,0) = elcs_wanted[i-node_elements].toDouble()/1000.0; // for electrodes ~ converting to Amps
     
     cnt++;
     if (cnt == total_elements/4)

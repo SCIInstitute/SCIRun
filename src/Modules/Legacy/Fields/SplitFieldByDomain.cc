@@ -81,7 +81,7 @@ void SplitFieldByDomain::execute()
     setAlgoBoolFromState(SplitFieldByDomainAlgo::SortBySize);
     setAlgoBoolFromState(SplitFieldByDomainAlgo::SortAscending);
 
-    auto algoOutput = algo().run_generic(make_input((InputField, input)));
+    auto algoOutput = algo().run_generic(withInputData((InputField, input)));
     
     auto output = algoOutput.getList<Field>(Variables::ListOfOutputFields);
 

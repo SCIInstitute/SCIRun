@@ -143,7 +143,7 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
 
   barrier_.wait();
 
-  def_value_ = algo_->get(Parameters::OutsideValue).getDouble();
+  def_value_ = algo_->get(Parameters::OutsideValue).toDouble();
 
   VMesh* omesh = ofield_->vmesh();
   VField* ofield = ofield_->vfield();
@@ -252,9 +252,9 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
           for (size_t j=0; j<grads.size();j++) values[j] = Dot(grads[j],norms[j]);
-          val = DBL_MAX;
+          val = std::numeric_limits<double>::max();
           for (size_t j=0; j<values.size(); j++) if (exist(values[j])) if (values[j] < val) val = values[j];
-          if (val == DBL_MAX) val = def_value_;
+          if (val == std::numeric_limits<double>::max()) val = def_value_;
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
@@ -267,9 +267,9 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           omesh->get_normals(norms,coords,idx);
           datasource->get_data(grads,points);
           for (size_t j=0; j<grads.size();j++) values[j] = Dot(grads[j],norms[j]);
-          val = -DBL_MAX;
+          val = -std::numeric_limits<double>::max();
           for (size_t j=0; j<values.size(); j++) if (exist(values[j])) if (values[j] > val) val = values[j];
-          if (val == -DBL_MAX) val = def_value_;
+          if (val == -std::numeric_limits<double>::max()) val = def_value_;
           ofield->set_value(val,idx);
           if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
         }
@@ -396,9 +396,9 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           {
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
-            val = DBL_MAX;
+            val = std::numeric_limits<double>::max();
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { if (values[j] < val) val = values[j]; }
-            if (val == DBL_MAX) val = def_value_;
+            if (val == std::numeric_limits<double>::max()) val = def_value_;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }
@@ -409,9 +409,9 @@ MapFieldDataOntoElemsPAlgo::parallel(int proc)
           {
             omesh->minterpolate(points,coords,idx);
             datasource->get_data(values,points);
-            val = -DBL_MAX;
+            val = -std::numeric_limits<double>::max();
             for (size_t j=0; j<values.size(); j++) if (exist(values[j])) { if (values[j] > val) val = values[j]; }
-            if (val == -DBL_MAX) val = def_value_;
+            if (val == -std::numeric_limits<double>::max()) val = def_value_;
             ofield->set_value(val,idx);
             if (proc == 0) { cnt++; if (cnt == 400) {cnt = 0; algo_->update_progress_max(idx,end); } }
           }

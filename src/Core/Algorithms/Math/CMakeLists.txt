@@ -33,6 +33,7 @@ SET(Algorithms_Math_SRCS
   EvaluateLinearAlgebraUnaryAlgo.cc
   EvaluateLinearAlgebraBinaryAlgo.cc
   ReportMatrixInfo.cc
+  GetMatrixSliceAlgo.cc
   SolveLinearSystemWithEigen.cc
   LinearSystem/SolveLinearSystemAlgo.cc
   ParallelAlgebra/ParallelLinearAlgebra.cc
@@ -46,6 +47,7 @@ SET(Algorithms_Math_HEADERS
   EvaluateLinearAlgebraUnaryAlgo.h
   EvaluateLinearAlgebraBinaryAlgo.h
   ReportMatrixInfo.h
+  GetMatrixSliceAlgo.h
   share.h
   SolveLinearSystemWithEigen.h
   LinearSystem/SolveLinearSystemAlgo.h

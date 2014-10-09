@@ -39,7 +39,6 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/CalculateVectorMagnitudesAlgo.h
   #FieldData/ConvertMappingMatrixToFieldData.h
   #FieldData/ConvertFieldDataType.h             
-  #FieldData/ConvertFieldBasisType.h            
   #FieldData/CalculateLatVolGradientsAtNodes.h  
   #FieldData/GetFieldData.h
   FieldData/SetFieldData.h
@@ -48,6 +47,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Mapping/BuildMappingMatrixAlgo.h
   DomainFields/GetDomainBoundaryAlgo.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
+  MeshDerivatives/SplitByConnectedRegion.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
   ConvertMeshType/ConvertMeshToIrregularMesh.h
   TransformMesh/AlignMeshBoundingBoxes.h

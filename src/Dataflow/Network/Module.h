@@ -240,11 +240,13 @@ namespace Networks {
     void setStateBoolFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setStateIntFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setStateDoubleFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setStateListFromAlgo(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setStateStringFromAlgoOption(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoBoolFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoIntFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoDoubleFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
     void setAlgoOptionFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
+    void setAlgoListFromState(const SCIRun::Core::Algorithms::AlgorithmParameterName& name);
 
     virtual size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
@@ -371,7 +373,7 @@ namespace Networks {
     if (!data)
     {
       std::ostringstream ostr;
-      ostr << "Wrong datatype on port #" << id.name << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
+      ostr << "Wrong datatype on port " << id.name << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
       MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
     }
     return data;

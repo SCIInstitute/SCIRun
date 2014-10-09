@@ -33,9 +33,21 @@ SET(Algorithms_Base_SRCS
 
 SET(Algorithms_Base_HEADERS
   AlgorithmBase.h
+  AlgorithmData.h
+  AlgorithmFactory.h
   AlgorithmFwd.h
+  AlgorithmInputBuilder.h
+  AlgorithmInterfaces.h
+  AlgorithmLogger.h
+  AlgorithmMacros.h
+  AlgorithmParameterHelper.h
+  AlgorithmParameterList.h
   AlgorithmPreconditions.h
+  AlgorithmStatusReporter.h
   AlgorithmVariableNames.h
+  Name.h
+  Option.h
+  Variable.h
   share.h
 )
 

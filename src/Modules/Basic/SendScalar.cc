@@ -49,7 +49,7 @@ void SendScalarModule::execute()
 {
   if (needToExecute())
   {
-    data_ = get_state()->getValue(ValueToSend()).getDouble();
+    data_ = get_state()->getValue(ValueToSend()).toDouble();
     LOG_DEBUG("Executing SendScalar with new value: " << data_);
     boost::shared_ptr<Double> output(new Double(data_));
     sendOutput(Scalar, output);

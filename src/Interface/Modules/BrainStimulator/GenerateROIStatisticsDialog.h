@@ -31,6 +31,7 @@
 
 #include "Interface/Modules/BrainStimulator/ui_GenerateROIStatisticsDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
@@ -45,7 +46,9 @@ public:
   GenerateROIStatisticsDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
+  private Q_SLOTS:
+  void pull();
+  void push();
 };
 
 }
