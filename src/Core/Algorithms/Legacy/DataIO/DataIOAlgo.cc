@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of pr_ software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,10 +33,13 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
+
+DataIOAlgo::DataIOAlgo(LoggerHandle pr) : pr_(pr) {}
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool DataIOAlgo::ReadField(const std::string& filename, FieldHandle& field, const std::string& importer)
-{  
+{
   if (importer.empty())
   {
     PiostreamPtr stream = auto_istream(filename, pr_);
@@ -45,7 +48,7 @@ bool DataIOAlgo::ReadField(const std::string& filename, FieldHandle& field, cons
       error("Error reading file '" + filename + "'.");
       return (false);
     }
-      
+
     // Read the file
     Pio(*stream, field);
     if (!field || stream->error())
@@ -53,7 +56,7 @@ bool DataIOAlgo::ReadField(const std::string& filename, FieldHandle& field, cons
       error("Error reading data from file '" + filename +"'.");
       return false;
     }
-       
+
     return true;
   }
   else
@@ -71,7 +74,7 @@ bool DataIOAlgo::ReadField(const std::string& filename, FieldHandle& field, cons
       return false;
     }
   }
-  return false;  
+  return false;
 }
 
 
@@ -85,7 +88,7 @@ bool DataIOAlgo::ReadMatrix(const std::string& filename, MatrixHandle& matrix, c
       error("Error reading file '" + filename + "'.");
       return (false);
     }
-      
+
     // Read the file
     Pio(*stream, matrix);
     if (!matrix || stream->error())
@@ -110,7 +113,7 @@ bool DataIOAlgo::ReadMatrix(const std::string& filename, MatrixHandle& matrix, c
       return (false);
     }
   }
-  return (false);  
+  return (false);
 }
 
 
@@ -121,14 +124,14 @@ bool DataIOAlgo::ReadBundle(const std::string& filename, BundleHandle& bundle, c
     error("Error no external importers are defined for bundles");
     return (false);
   }
-  
+
   PiostreamPtr stream = auto_istream(filename, pr_);
   if (!stream)
   {
     error("Error reading file '" + filename + "'.");
     return (false);
   }
-    
+
   // Read the file
   Pio(*stream, bundle);
   if (!bundle.get_rep() || stream->error())
@@ -136,7 +139,7 @@ bool DataIOAlgo::ReadBundle(const std::string& filename, BundleHandle& bundle, c
     error("Error reading data from file '" + filename +"'.");
     return (false);
   }
-     
+
   return (true);
 }
 #endif
@@ -147,10 +150,10 @@ bool DataIOAlgo::ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, con
     error("Error no external importers are defined for nrrds");
     return (false);
   }
-  
-  
+
+
   // Somehow we do not have support in the wrapper class for reading and writing nrrds
-  
+
   if (filename.size() > 4)
   {
     const std::string ext = filename.substr(filename.size()-5,5);
@@ -158,20 +161,20 @@ bool DataIOAlgo::ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, con
     {
       nrrd.reset(new NrrdData);
       if (!nrrd) return (false);
-     
-      NrrdData::lock_teem(); 
-      if (nrrdLoad(nrrd->nrrd_, airStrdup(filename.c_str()), 0)) 
+
+      NrrdData::lock_teem();
+      if (nrrdLoad(nrrd->getNrrd(), airStrdup(filename.c_str()), 0))
       {
         char *err = biffGetDone(NRRD);
         error("Could not read nrrd '" + filename + "' because teem crashed for the following reason: " + err);
         free(err);
-        NrrdData::unlock_teem(); 
+        NrrdData::unlock_teem();
         return (false);
       }
-      
-      NrrdData::unlock_teem(); 
 
-      return (true); 
+      NrrdData::unlock_teem();
+
+      return (true);
     }
   }
 
@@ -190,7 +193,7 @@ bool DataIOAlgo::ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, con
     error("Error reading data from file '" + filename +"'.");
     return (false);
   }
-     
+
   return (true);
 }
 
@@ -202,14 +205,14 @@ bool DataIOAlgo::ReadColorMap(const std::string& filename, ColorMapHandle& color
     error("Error no external importers are defined for colormaps");
     return (false);
   }
-  
+
   PiostreamPtr stream = auto_istream(filename, pr_);
   if (!stream)
   {
     error("Error reading file '" + filename + "'.");
     return (false);
   }
-    
+
   // Read the file
   Pio(*stream, colormap);
   if (!colormap.get_rep() || stream->error())
@@ -217,7 +220,7 @@ bool DataIOAlgo::ReadColorMap(const std::string& filename, ColorMapHandle& color
     error("Error reading data from file '" + filename +"'.");
     return (false);
   }
-     
+
   return (true);
 }
 
@@ -228,14 +231,14 @@ bool DataIOAlgo::ReadColorMap2(const std::string& filename, ColorMap2Handle& col
     error("Error no external importers are defined for colormaps");
     return (false);
   }
-  
+
   PiostreamPtr stream = auto_istream(filename, pr_);
   if (!stream)
   {
     error("Error reading file '" + filename + "'.");
     return (false);
   }
-    
+
   // Read the file
   Pio(*stream, colormap);
   if (!colormap.get_rep() || stream->error())
@@ -243,7 +246,7 @@ bool DataIOAlgo::ReadColorMap2(const std::string& filename, ColorMap2Handle& col
     error("Error reading data from file '" + filename +"'.");
     return (false);
   }
-     
+
   return (true);
 }
 
@@ -255,14 +258,14 @@ bool DataIOAlgo::ReadPath(const std::string& filename, PathHandle& path, const s
     error("Error no external importers are defined for colormaps");
     return (false);
   }
-  
+
   PiostreamPtr stream = auto_istream(filename, pr_);
   if (!stream)
   {
     error("Error reading file '" + filename + "'.");
     return (false);
   }
-    
+
   // Read the file
   Pio(*stream, path);
   if (!path.get_rep() || stream->error())
@@ -270,7 +273,7 @@ bool DataIOAlgo::ReadPath(const std::string& filename, PathHandle& path, const s
     error("Error reading data from file '" + filename +"'.");
     return (false);
   }
-     
+
   return (true);
 }
 
@@ -278,7 +281,7 @@ bool DataIOAlgo::ReadPath(const std::string& filename, PathHandle& path, const s
 bool DataIOAlgo::WriteField(const std::string& filename, FieldHandle& field, const std::string& exporter)
 {
   if (field.get_rep() == 0) return (false);
-  
+
   if ((exporter == "text")||(exporter == "Text"))
   {
     PiostreamPtr stream = auto_ostream(filename, "Text", pr_);
@@ -291,7 +294,7 @@ bool DataIOAlgo::WriteField(const std::string& filename, FieldHandle& field, con
     {
       // Write the file
       Pio(*stream, field);
-    } 
+    }
   }
   else if (exporter == "")
   {
@@ -305,7 +308,7 @@ bool DataIOAlgo::WriteField(const std::string& filename, FieldHandle& field, con
     {
       // Write the file
       Pio(*stream, field);
-    } 
+    }
   }
   else
   {
@@ -314,7 +317,7 @@ bool DataIOAlgo::WriteField(const std::string& filename, FieldHandle& field, con
     if (pl)
     {
       pl->filewriter(pr_, field, filename.c_str());
-      if (field.get_rep()) return (true); 
+      if (field.get_rep()) return (true);
     }
     else
     {
@@ -343,7 +346,7 @@ bool DataIOAlgo::WriteMatrix(const std::string& filename, MatrixHandle& matrix, 
     {
       // Write the file
       Pio(*stream, matrix);
-    } 
+    }
   }
   else if (exporter == "")
   {
@@ -357,7 +360,7 @@ bool DataIOAlgo::WriteMatrix(const std::string& filename, MatrixHandle& matrix, 
     {
       // Write the file
       Pio(*stream, matrix);
-    } 
+    }
   }
   else
   {
@@ -366,7 +369,7 @@ bool DataIOAlgo::WriteMatrix(const std::string& filename, MatrixHandle& matrix, 
     if (pl)
     {
       pl->fileWriter_(pr_, matrix, filename.c_str());
-      if (matrix.get_rep()) return (true); 
+      if (matrix.get_rep()) return (true);
     }
     else
     {
@@ -395,7 +398,7 @@ bool DataIOAlgo::WriteBundle(const std::string& filename, BundleHandle& bundle, 
     {
       // Write the file
       Pio(*stream, bundle);
-    } 
+    }
   }
   else if (exporter == "")
   {
@@ -409,7 +412,7 @@ bool DataIOAlgo::WriteBundle(const std::string& filename, BundleHandle& bundle, 
     {
       // Write the file
       Pio(*stream, bundle);
-    } 
+    }
   }
   else
   {
@@ -424,7 +427,7 @@ bool DataIOAlgo::WriteBundle(const std::string& filename, BundleHandle& bundle, 
 bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle nrrd, const std::string& exporter)
 {
   if (!nrrd) return (false);
-  
+
   if ((exporter == "text")||(exporter == "Text"))
   {
     PiostreamPtr stream = auto_ostream(filename, "Text", pr_);
@@ -437,18 +440,18 @@ bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle nrrd, con
     {
       // Write the file
       Pio(*stream, nrrd);
-    } 
+    }
   }
   else if (exporter.empty())
   {
-  
+
     if (filename.size() > 4)
     {
-      if (filename.substr(filename.size()-5,5) == ".nhdr" ||  
+      if (filename.substr(filename.size()-5,5) == ".nhdr" ||
           filename.substr(filename.size()-5,5) == ".nrrd")
-      { 
-        NrrdData::lock_teem(); 
-  
+      {
+        NrrdData::lock_teem();
+
         NrrdIoState *nio = nrrdIoStateNew();
         // set encoding to be raw
         nio->encoding = nrrdEncodingArray[nrrdEncodingTypeGzip];
@@ -457,29 +460,29 @@ bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle nrrd, con
         // set endian to be endian of machine
         nio->endian = AIR_ENDIAN;
         nio->zlibLevel = 6;
-        if (filename.substr(filename.size()-5,5) == ".nhdr") 
+        if (filename.substr(filename.size()-5,5) == ".nhdr")
         {
-          if (nio->format != nrrdFormatNRRD) 
+          if (nio->format != nrrdFormatNRRD)
           {
             nio->format = nrrdFormatNRRD;
           }
         }
-             
-                           
-        if (nrrdSave( airStrdup(filename.c_str()), nrrd->nrrd_,nio)) 
+
+
+        if (nrrdSave( airStrdup(filename.c_str()), nrrd->getNrrd(), nio))
         {
           // Ugly...
           char *err = biffGetDone(NRRD);
           error("Could not save nrrd '" + filename + "' because teem crashed for the following reason: " + err);
           free(err);
-          
-          NrrdData::unlock_teem(); 
+
+          NrrdData::unlock_teem();
 
           return (false);
         }
-        
+
         NrrdData::unlock_teem();
-        return (true);    
+        return (true);
       }
     }
 
@@ -494,7 +497,7 @@ bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle nrrd, con
     {
       // Write the file
       Pio(*stream, nrrd);
-    } 
+    }
   }
   else
   {
@@ -521,7 +524,7 @@ bool DataIOAlgo::WriteColorMap(const std::string& filename, ColorMapHandle& colo
     {
       // Write the file
       Pio(*stream, colormap);
-    } 
+    }
   }
   else if (exporter == "")
   {
@@ -535,7 +538,7 @@ bool DataIOAlgo::WriteColorMap(const std::string& filename, ColorMapHandle& colo
     {
       // Write the file
       Pio(*stream, colormap);
-    } 
+    }
   }
   else
   {
@@ -561,7 +564,7 @@ bool DataIOAlgo::WriteColorMap2(const std::string& filename, ColorMap2Handle& co
     {
       // Write the file
       Pio(*stream, colormap);
-    } 
+    }
   }
   else if (exporter == "")
   {
@@ -575,7 +578,7 @@ bool DataIOAlgo::WriteColorMap2(const std::string& filename, ColorMap2Handle& co
     {
       // Write the file
       Pio(*stream, colormap);
-    } 
+    }
   }
   else
   {
@@ -601,7 +604,7 @@ bool DataIOAlgo::WritePath(const std::string& filename, PathHandle& path, const 
     {
       // Write the file
       Pio(*stream, path);
-    } 
+    }
   }
   else if (exporter == "")
   {
@@ -615,7 +618,7 @@ bool DataIOAlgo::WritePath(const std::string& filename, PathHandle& path, const 
     {
       // Write the file
       Pio(*stream, path);
-    } 
+    }
   }
   else
   {

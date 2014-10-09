@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -47,11 +47,11 @@
 
 namespace SCIRun {
 
-class SCISHARE NrrdData : public Core::Datatypes::Datatype 
+class SCISHARE NrrdData : public Core::Datatypes::Datatype
 {
 public:
   NrrdData();
-  explicit NrrdData(struct Nrrd *nrrd);
+  explicit NrrdData(Nrrd* nrrd);
   explicit NrrdData(const NrrdData&);
   virtual ~NrrdData();
 
@@ -65,6 +65,9 @@ public:
   void set_embed_object(bool v) { embed_object_ = v; }
   bool get_embed_object() { return embed_object_; }
 
+  Nrrd*& getNrrd() { return nrrd_; }
+  const Nrrd* getNrrd() const { return nrrd_; }
+
 //   void set_filename( const std::string &f )
 //   { nrrd_fname_ = f; embed_object_ = false; }
 //   const std::string get_filename() const { return nrrd_fname_; }
@@ -73,7 +76,7 @@ public:
   // on certain functionality by forcing it to run single threaded.
   // The main issue is that error reporting uses global variables and internally
   // global variables are used.
-  
+
   static void lock_teem();
   static void unlock_teem();
 
@@ -91,15 +94,15 @@ private:
 };
 
 // nrrd Types that we need to convert to:
-//  nrrdTypeChar,          
-//  nrrdTypeUChar,         
-//  nrrdTypeShort,         
-//  nrrdTypeUShort,        
-//  nrrdTypeInt,           
-//  nrrdTypeUInt,          
-//  nrrdTypeLLong,         
-//  nrrdTypeULLong,        
-//  nrrdTypeFloat,         
+//  nrrdTypeChar,
+//  nrrdTypeUChar,
+//  nrrdTypeShort,
+//  nrrdTypeUShort,
+//  nrrdTypeInt,
+//  nrrdTypeUInt,
+//  nrrdTypeLLong,
+//  nrrdTypeULLong,
+//  nrrdTypeFloat,
 //  nrrdTypeDouble,
 
 
@@ -152,13 +155,12 @@ SCISHARE void get_nrrd_compile_type( const unsigned int type,
 SCISHARE double get_nrrd_value( Nrrd* nrrd,
 				unsigned int p );
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-class SCISHARE NrrdGuard {
-  public:
-    NrrdGuard();
-    ~NrrdGuard(); 
+class SCISHARE NrrdGuard
+{
+public:
+  NrrdGuard();
+  ~NrrdGuard();
 };
-#endif
 
 
 } // end namespace SCIRun
