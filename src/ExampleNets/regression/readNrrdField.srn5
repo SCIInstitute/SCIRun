@@ -50,7 +50,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/Dev/scirun_refactoring/SCIRunData/FwdInvToolbox/pot_based_FEM_forward/Segmentation.nrrd</value>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/pot_based_FEM_forward/Segmentation.nrrd</value>
 									</value>
 								</second>
 							</item>
