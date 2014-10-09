@@ -34,13 +34,15 @@
 #include <vector>
 #include <algorithm>
 
-#include <Core/Datatypes/MatrixTypeConverter.h>
-#include <Core/Algorithms/Converter/NrrdToField.h>
-#include <Core/Algorithms/Converter/FieldToNrrd.h>
+//#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Algorithms/Legacy/Converter/NrrdToField.h>
+#include <Core/Algorithms/Legacy/Converter/FieldToNrrd.h>
 //#include <Core/Algorithms/Converter/MatrixToField.h>
 //#include <Core/Algorithms/Converter/MatricesToDipoleField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 
 ConverterAlgo::ConverterAlgo(LoggerHandle pr) :
   pr_(pr)
@@ -621,13 +623,13 @@ bool ConverterAlgo::MatrixToField(MatrixHandle input, FieldHandle& output, const
 bool ConverterAlgo::NrrdToField(NrrdDataHandle input, FieldHandle& output, const std::string& datalocation, const std::string& fieldtype, const std::string& convertparity)
 {
   NrrdToFieldAlgo algo;
-  return(algo.NrrdToField(pr_,input,output,datalocation,fieldtype,convertparity));
+  return(algo.nrrdToField(pr_,input,output,datalocation,fieldtype,convertparity));
 }
 
 bool ConverterAlgo::FieldToNrrd(FieldHandle input, NrrdDataHandle& output)
 {
   FieldToNrrdAlgo algo;
-  return(algo.FieldToNrrd(pr_,input,output));
+  return(algo.fieldToNrrd(pr_,input,output));
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER

@@ -31,8 +31,8 @@
 SET(Core_Algorithms_Legacy_Converter_SRCS
   ConverterAlgo.cc
   #MatrixToField.cc
-  #NrrdToField.cc
-  #FieldToNrrd.cc
+  NrrdToField.cc
+  FieldToNrrd.cc
   #ConvertToNrrd.cc
   #MatricesToDipoleField.cc
   #ConvertBundleToField.cc
@@ -40,6 +40,8 @@ SET(Core_Algorithms_Legacy_Converter_SRCS
 
 SET(Core_Algorithms_Legacy_Converter_HEADERS
   ConverterAlgo.h
+  NrrdToField.h
+  FieldToNrrd.h
 )
 
 ADD_LIBRARY(Core_Algorithms_Legacy_Converter

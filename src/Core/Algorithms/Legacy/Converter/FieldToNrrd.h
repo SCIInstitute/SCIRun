@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,19 +30,21 @@
 #ifndef CORE_ALGORITHMS_CONVERTER_FIELDTONRRD_H
 #define CORE_ALGORITHMS_CONVERTER_FIELDTONRRD_H 1
 
-#include <Core/Algorithms/Util/DynamicAlgo.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
-namespace SCIRunAlgo {
+namespace SCIRun
+{
+  namespace Core
+  {
+    namespace Algorithms
+    {
 
-using namespace SCIRun;
-
-class FieldToNrrdAlgo
+class SCISHARE FieldToNrrdAlgo
 {
 public:
-  bool FieldToNrrd(ProgressReporter *pr, FieldHandle input, NrrdDataHandle& output);
+  bool fieldToNrrd(Core::Logging::LoggerHandle pr, FieldHandle input, NrrdDataHandle& output);
 };
 
-} // end namespace SCIRunAlgo
+}}}
 
-#endif 
-
+#endif
