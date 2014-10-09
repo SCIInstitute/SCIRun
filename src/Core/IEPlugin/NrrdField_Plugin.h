@@ -6,7 +6,7 @@
   Copyright (c) 2009 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -33,9 +33,27 @@
 #include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <Core/IEPlugin/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
+  // This file contains readers for nrrds as fields. We currently have 5 variations
+  // depending on whether data is defined on the nodes or the elements and what the
+  // parity of the data is.
+  //
+  // Although these properties are defined in the nrrd file format, most nrrds are
+  // annotated improperly and hence corrections have to made.
+
+  // Default reader use the definitions in the nrrd
   SCISHARE FieldHandle NrrdToField_reader(Core::Logging::LoggerHandle pr, const char *filename);
+  // Override the location settings and force data on the nodes
+  SCISHARE FieldHandle Nodal_NrrdToField_reader(Core::Logging::LoggerHandle pr, const char *filename);
+  // Override the location settings and force data on the elements
+  SCISHARE FieldHandle Modal_NrrdToField_reader(Core::Logging::LoggerHandle pr, const char *filename);
+  // Override the location settings and force data on the nodes and invert space parity
+  SCISHARE FieldHandle IPNodal_NrrdToField_reader(Core::Logging::LoggerHandle pr, const char *filename);
+  // Override the location settings and force data on the elements and invert space parity
+  SCISHARE FieldHandle IPModal_NrrdToField_reader(Core::Logging::LoggerHandle pr, const char *filename);
+
+  // Default writer
   SCISHARE bool FieldToNrrd_writer(Core::Logging::LoggerHandle pr, FieldHandle fh, const char* filename);
 }
 

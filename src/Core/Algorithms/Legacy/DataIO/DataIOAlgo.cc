@@ -143,7 +143,8 @@ bool DataIOAlgo::ReadBundle(const std::string& filename, BundleHandle& bundle, c
   return (true);
 }
 #endif
-bool DataIOAlgo::ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& importer)
+
+bool DataIOAlgo::readNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& importer)
 {
   if (!importer.empty())
   {
@@ -423,7 +424,7 @@ bool DataIOAlgo::WriteBundle(const std::string& filename, BundleHandle& bundle, 
 #endif
 
 
-bool DataIOAlgo::WriteNrrd(const std::string& filename, NrrdDataHandle nrrd, const std::string& exporter)
+bool DataIOAlgo::writeNrrd(const std::string& filename, NrrdDataHandle nrrd, const std::string& exporter)
 {
   if (!nrrd) return (false);
 

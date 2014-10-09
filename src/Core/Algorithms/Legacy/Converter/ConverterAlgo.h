@@ -81,9 +81,9 @@ class SCISHARE ConverterAlgo : public AlgorithmBase
     // datalocation specifies whether the data is "Node" or "Element" based
     bool MatrixToField(Datatypes::MatrixHandle input, FieldHandle& output, const std::string& datalocation);
     #endif
-    bool NrrdToField(NrrdDataHandle input, FieldHandle& output, const std::string& datalocation = "Auto", const std::string& fieldtype = "Auto", const std::string& convertparity= "Make Right Hand Sided");
+    bool nrrdToField(NrrdDataHandle input, FieldHandle& output, const std::string& datalocation = "Auto", const std::string& fieldtype = "Auto", const std::string& convertparity= "Make Right Hand Sided");
 
-    bool FieldToNrrd(FieldHandle input, NrrdDataHandle& output);
+    bool fieldToNrrd(FieldHandle input, NrrdDataHandle& output);
 
     #ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
     bool NrrdToMatrix(NrrdDataHandle input, Datatypes::MatrixHandle& output);

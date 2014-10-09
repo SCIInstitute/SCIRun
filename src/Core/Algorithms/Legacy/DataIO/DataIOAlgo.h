@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -34,7 +34,7 @@
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Legacy/DataIO/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
@@ -53,13 +53,13 @@ public:
   bool WriteMatrix(const std::string& filename, Datatypes::MatrixHandle matrix, const std::string& exporter = "");
 #endif
 
-  bool ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& importer = "");
-  bool WriteNrrd(const std::string& filename, NrrdDataHandle nrrd, const std::string& exporter = "");
+  bool readNrrd(const std::string& filename, NrrdDataHandle& nrrd, const std::string& importer = "");
+  bool writeNrrd(const std::string& filename, NrrdDataHandle nrrd, const std::string& exporter = "");
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   bool ReadBundle(const std::string& filename, Datatypes::BundleHandle& bundle, const std::string& importer = "");
   bool WriteBundle(const std::string& filename, Datatypes::BundleHandle bundle, const std::string& exporter = "");
-  
+
   bool ReadColorMap(const std::string& filename, Datatypes::ColorMapHandle& colorMap, const std::string& importer = "");
   bool WriteColorMap(const std::string& filename, Datatypes::ColorMapHandle colorMap, const std::string& exporter = "");
 #endif

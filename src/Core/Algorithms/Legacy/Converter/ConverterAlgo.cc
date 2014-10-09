@@ -620,13 +620,13 @@ bool ConverterAlgo::MatrixToField(MatrixHandle input, FieldHandle& output, const
 }
 #endif
 
-bool ConverterAlgo::NrrdToField(NrrdDataHandle input, FieldHandle& output, const std::string& datalocation, const std::string& fieldtype, const std::string& convertparity)
+bool ConverterAlgo::nrrdToField(NrrdDataHandle input, FieldHandle& output, const std::string& datalocation, const std::string& fieldtype, const std::string& convertparity)
 {
   NrrdToFieldAlgo algo;
   return(algo.nrrdToField(pr_,input,output,datalocation,fieldtype,convertparity));
 }
 
-bool ConverterAlgo::FieldToNrrd(FieldHandle input, NrrdDataHandle& output)
+bool ConverterAlgo::fieldToNrrd(FieldHandle input, NrrdDataHandle& output)
 {
   FieldToNrrdAlgo algo;
   return(algo.fieldToNrrd(pr_,input,output));
@@ -801,7 +801,7 @@ bool ConverterAlgo::MatrixToString(MatrixHandle input, StringHandle& output)
 }
 #endif
 
-AlgorithmOutput ConverterAlgo::run_generic(const AlgorithmInput& input) const 
+AlgorithmOutput ConverterAlgo::run_generic(const AlgorithmInput& input) const
 {
   throw "not implemented";
 }
