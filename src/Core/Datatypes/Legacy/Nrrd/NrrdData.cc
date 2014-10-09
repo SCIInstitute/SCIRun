@@ -183,7 +183,6 @@ void NrrdData::io(Piostream& stream)
   // Do the base class first.
   if (version > 2)
   {
-    Datatype::io(stream);
     PropertyManager().io(stream);
   }
 
