@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Converter/ConverterAlgo.h>
+#include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
 
 
 #include <string>
@@ -37,18 +37,17 @@
 #include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Core/Algorithms/Converter/NrrdToField.h>
 #include <Core/Algorithms/Converter/FieldToNrrd.h>
-#include <Core/Algorithms/Converter/MatrixToField.h>
-#include <Core/Algorithms/Converter/MatricesToDipoleField.h>
-
-namespace SCIRunAlgo {
+//#include <Core/Algorithms/Converter/MatrixToField.h>
+//#include <Core/Algorithms/Converter/MatricesToDipoleField.h>
 
 using namespace SCIRun;
 
-ConverterAlgo::ConverterAlgo(ProgressReporter* pr) :
-  AlgoLibrary(pr)
+ConverterAlgo::ConverterAlgo(LoggerHandle pr) :
+  pr_(pr)
 {
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
 bool ConverterAlgo::MatrixToDoubleVector(MatrixHandle matrix, std::vector<double> &val)
 {
   if (matrix.get_rep() == 0)
@@ -58,15 +57,15 @@ bool ConverterAlgo::MatrixToDoubleVector(MatrixHandle matrix, std::vector<double
   }
 
   val.resize(matrix->nrows() * matrix->ncols());
-  
+
   MatrixHandle mat = matrix->dense();
   if (mat.get_rep() == 0)
   {
     error("MatrixToDoubleVector: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
   double* data = mat->get_data_pointer();
-  
+
   for (size_t r=0; r<val.size(); r++)
     val[r] = static_cast<double>(data[r]);
 
@@ -83,15 +82,15 @@ bool ConverterAlgo::MatrixToIntVector(MatrixHandle matrix, std::vector<int> &val
   }
 
   val.resize(matrix->nrows() * matrix->ncols());
-  
+
   MatrixHandle mat = matrix->dense();
   if (mat.get_rep() == 0)
   {
     error("MatrixToIntVector: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
   double* data = mat->get_data_pointer();
-  
+
   for (size_t r=0; r<val.size(); r++)
     val[r] = static_cast<int>(data[r]);
 
@@ -108,15 +107,15 @@ bool ConverterAlgo::MatrixToIndexVector(MatrixHandle matrix, std::vector<index_t
   }
 
   val.resize(matrix->nrows() * matrix->ncols());
-  
+
   MatrixHandle mat = (matrix->dense());
   if (mat.get_rep() == 0)
   {
     error("MatrixToIntVector: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
   double* data = mat->get_data_pointer();
-  
+
   for (size_t r=0; r<val.size(); r++)
     val[r] = static_cast<index_type>(data[r]);
 
@@ -134,15 +133,15 @@ bool ConverterAlgo::MatrixToUnsignedIntVector(MatrixHandle matrix, std::vector<u
   }
 
   val.resize(matrix->nrows() * matrix->ncols());
-  
+
   MatrixHandle mat = (matrix->dense());
   if (mat.get_rep() == 0)
   {
     error("MatrixToIntVector: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
   double* data = mat->get_data_pointer();
-  
+
   for (size_t r=0; r<val.size(); r++)
     val[r] = static_cast<unsigned int>(data[r]);
 
@@ -161,14 +160,14 @@ bool ConverterAlgo::MatrixToDouble(MatrixHandle matrix, double &val)
     error("MatrixToDouble: Matrix has not dimensions 1 x 1");
     return false;
   }
-  
+
   MatrixHandle mat = matrix->dense();
   if (mat.get_rep() == 0)
   {
     error("MatrixToDouble: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
-  
+
   val = mat->get(0,0);
   return true;
 }
@@ -184,21 +183,21 @@ bool ConverterAlgo::MatrixToInt(MatrixHandle matrix, int &val)
     error("MatrixToInt: Matrix has not dimensions 1 x 1");
     return false;
   }
-  
+
   MatrixHandle mat = matrix->dense();
   if (mat.get_rep() == 0)
   {
     error("MatrixToInt: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
-  
-  double temp = mat->get(0,0);   
+
+  double temp = mat->get(0,0);
   val = static_cast<int>(temp);
-  
+
   if ((temp - static_cast<double>(val)) != 0.0)
   {
     warning("MatrixToInt: Value in matrix is not of integer value, rounding value to nearest integer value");
-  }  
+  }
   return true;
 }
 
@@ -212,17 +211,17 @@ bool ConverterAlgo::MatrixToIndex(MatrixHandle matrix, index_type &idx)
     error("MatrixToInt: Matrix has not dimensions 1 x 1");
     return false;
   }
-  
+
   MatrixHandle mat = matrix->dense();
   if (mat.get_rep() == 0)
   {
     error("MatrixToInt: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
-  
-  double temp = mat->get(0,0);   
+
+  double temp = mat->get(0,0);
   idx = static_cast<index_type>(temp);
-  
+
   return true;
 }
 
@@ -238,21 +237,21 @@ bool ConverterAlgo::MatrixToUnsignedInt(MatrixHandle matrix, unsigned int &val)
     error("MatrixToUnsignedInt: Matrix has not dimensions 1 x 1");
     return false;
   }
-  
+
   MatrixHandle mat = (matrix->dense());
   if (mat.get_rep() == 0)
   {
     error("MatrixToUnsignedInt: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
-  
-  double temp = mat->get(0,0);   
+
+  double temp = mat->get(0,0);
   val = static_cast<unsigned int>(temp);
-  
+
   if ((temp - static_cast<double>(val)) != 0.0)
   {
     warning("MatrixToUnsignedInt: Value in matrix is not of integer value, rounding value to nearest integer value");
-  }  
+  }
   return true;
 }
 
@@ -265,34 +264,34 @@ bool ConverterAlgo::MatrixToVector(MatrixHandle matrix, Vector& vec)
   if (mat.get_rep() == 0)
   {
     error("MatrixToVector: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
-  
+
   double* data = mat->get_data_pointer();
   if (data == 0)
   {
     error("MatrixToVector: Could not access the matrix data");
-    return false;      
+    return false;
   }
-  
+
   if ((mat->nrows() * mat->ncols()) == 1)
   {
     vec = Vector(data[0],data[0],data[0]);
     return true;
   }
-  
+
   if ((mat->nrows() * mat->ncols()) == 2)
-  {  
+  {
     vec = Vector(data[0],data[1],data[1]);
-    return true;  
+    return true;
   }
 
   if ((mat->nrows() * mat->ncols()) == 3)
-  {    
+  {
     vec = Vector(data[0],data[1],data[2]);
     return true;
   }
-  
+
   error("MatrixToVector: Improper matrix dimensions");
   return false;
 }
@@ -308,34 +307,34 @@ bool ConverterAlgo::MatrixToPoint(MatrixHandle matrix, Point& point)
   if (mat.get_rep() == 0)
   {
     error("MatrixToVector: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
-  
+
   double* data = mat->get_data_pointer();
   if (data == 0)
   {
     error("MatrixToVector: Could not access the matrix data");
-    return false;      
+    return false;
   }
-  
+
   if ((mat->nrows() * mat->ncols()) == 1)
   {
     point = Point(data[0],data[0],data[0]);
     return true;
   }
-  
+
   if ((mat->nrows() * mat->ncols()) == 2)
-  {  
+  {
     point = Point(data[0],data[1],data[1]);
-    return true;  
+    return true;
   }
 
   if ((mat->nrows() * mat->ncols()) == 3)
-  {    
+  {
     point = Point(data[0],data[1],data[2]);
     return true;
   }
-  
+
   error("MatrixToVector: Improper matrix dimensions");
   return false;
 }
@@ -351,14 +350,14 @@ bool ConverterAlgo::MatrixToTensor(MatrixHandle matrix, Tensor& ten)
   if (mat.get_rep() == 0)
   {
     error("MatrixToTensor: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
-  
+
   double* data = mat->get_data_pointer();
   if (data == 0)
   {
     error("MatrixToTensor: Could not access the matrix data");
-    return false;      
+    return false;
   }
 
   if ((mat->nrows() * mat->ncols()) == 1)
@@ -385,7 +384,7 @@ bool ConverterAlgo::MatrixToTensor(MatrixHandle matrix, Tensor& ten)
   }
 
   error("MatrixToTensor: Improper matrix dimensions");
-  return false;  
+  return false;
 }
 
 bool ConverterAlgo::MatrixToTransform(MatrixHandle matrix, Transform& trans)
@@ -394,14 +393,14 @@ bool ConverterAlgo::MatrixToTransform(MatrixHandle matrix, Transform& trans)
   if (mat.get_rep() == 0)
   {
     error("MatrixToTransform: Matrix could not be translated into a dense matrix");
-    return false;    
+    return false;
   }
-  
+
   double* data = mat->get_data_pointer();
   if (data == 0)
   {
     error("MatrixToTransform: Could not access the matrix data");
-    return false;      
+    return false;
   }
 
   if ((mat->nrows() * mat->ncols()) == 1)
@@ -418,16 +417,16 @@ bool ConverterAlgo::MatrixToTransform(MatrixHandle matrix, Transform& trans)
     trans.set(data);
     return true;
   }
-  
+
   error("MatrixToTransform: Improper matrix dimensions");
-  return false;    
+  return false;
 }
 
 
 bool ConverterAlgo::DoubleVectorToMatrix(std::vector<double> val, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(val.size(),1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("DoubleToMatrix: Could not allocate memory");
     return false;
@@ -442,7 +441,7 @@ bool ConverterAlgo::DoubleVectorToMatrix(std::vector<double> val, MatrixHandle& 
 bool ConverterAlgo::IntVectorToMatrix(std::vector<int> val, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(val.size(),1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("DoubleToMatrix: Could not allocate memory");
     return false;
@@ -457,7 +456,7 @@ bool ConverterAlgo::IntVectorToMatrix(std::vector<int> val, MatrixHandle& matrix
 bool ConverterAlgo::UnsignedIntVectorToMatrix(std::vector<unsigned int> val, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(val.size(),1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("DoubleToMatrix: Could not allocate memory");
     return false;
@@ -473,7 +472,7 @@ bool ConverterAlgo::UnsignedIntVectorToMatrix(std::vector<unsigned int> val, Mat
 bool ConverterAlgo::IndexVectorToMatrix(std::vector<index_type> val, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(val.size(),1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("DoubleToMatrix: Could not allocate memory");
     return false;
@@ -489,7 +488,7 @@ bool ConverterAlgo::IndexVectorToMatrix(std::vector<index_type> val, MatrixHandl
 bool ConverterAlgo::DoubleToMatrix(double val, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(1,1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("DoubleToMatrix: Could not allocate memory");
     return false;
@@ -501,7 +500,7 @@ bool ConverterAlgo::DoubleToMatrix(double val, MatrixHandle& matrix)
 bool ConverterAlgo::IntToMatrix(int val, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(1,1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("IntToMatrix: Could not allocate memory");
     return false;
@@ -513,7 +512,7 @@ bool ConverterAlgo::IntToMatrix(int val, MatrixHandle& matrix)
 bool ConverterAlgo::IndexToMatrix(index_type idx, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(1,1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("IntToMatrix: Could not allocate memory");
     return false;
@@ -525,7 +524,7 @@ bool ConverterAlgo::IndexToMatrix(index_type idx, MatrixHandle& matrix)
 bool ConverterAlgo::UnsignedIntToMatrix(unsigned int val, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(1,1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("IntToMatrix: Could not allocate memory");
     return false;
@@ -537,7 +536,7 @@ bool ConverterAlgo::UnsignedIntToMatrix(unsigned int val, MatrixHandle& matrix)
 bool ConverterAlgo::VectorToMatrix(Vector& vec, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(3,1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("VectorToMatrix: Could not allocate memory");
     return false;
@@ -552,7 +551,7 @@ bool ConverterAlgo::VectorToMatrix(Vector& vec, MatrixHandle& matrix)
 bool ConverterAlgo::PointToMatrix(Point& point, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(3,1);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("VectorToMatrix: Could not allocate memory");
     return false;
@@ -566,7 +565,7 @@ bool ConverterAlgo::PointToMatrix(Point& point, MatrixHandle& matrix)
 bool ConverterAlgo::TensorToMatrix(Tensor& ten, MatrixHandle matrix)
 {
   matrix = new DenseMatrix(3,3);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("TensorToMatrix: Could not allocate memory");
     return false;
@@ -587,7 +586,7 @@ bool ConverterAlgo::TensorToMatrix(Tensor& ten, MatrixHandle matrix)
 bool ConverterAlgo::TransformToMatrix(Transform& trans, MatrixHandle& matrix)
 {
   matrix = new DenseMatrix(4,4);
-  if (matrix.get_rep() == 0) 
+  if (matrix.get_rep() == 0)
   {
     error("DoubleToMatrix: Could not allocate memory");
     return false;
@@ -595,12 +594,12 @@ bool ConverterAlgo::TransformToMatrix(Transform& trans, MatrixHandle& matrix)
 
   double *dptr;
   double sptr[16];
-  
+
   trans.get(sptr);
   dptr = matrix->get_data_pointer();
   for (int p=0;p<16;p++)
     dptr[p] = sptr[p];
-  
+
   return true;
 }
 
@@ -617,7 +616,7 @@ bool ConverterAlgo::MatrixToField(MatrixHandle input, FieldHandle& output, const
   MatrixToFieldAlgo algo;
   return(algo.MatrixToField(pr_,input,output,datalocation));
 }
-
+#endif
 
 bool ConverterAlgo::NrrdToField(NrrdDataHandle input, FieldHandle& output, const std::string& datalocation, const std::string& fieldtype, const std::string& convertparity)
 {
@@ -631,7 +630,7 @@ bool ConverterAlgo::FieldToNrrd(FieldHandle input, NrrdDataHandle& output)
   return(algo.FieldToNrrd(pr_,input,output));
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
 bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input,MatrixHandle& output)
 {
   if (!(input.get_rep()))
@@ -641,10 +640,10 @@ bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input,MatrixHandle& output)
   }
 
   Nrrd* nrrd = input->nrrd_;
-    
+
   if (nrrd == 0)
   {
-    error("NrrdToMatrix: NrrdData does not contain Nrrd");    
+    error("NrrdToMatrix: NrrdData does not contain Nrrd");
     return false;
   }
 
@@ -653,13 +652,13 @@ bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input,MatrixHandle& output)
     error("NrrdToMatrix: Nrrd has a dimension larger than 2 which cannot be stored into a matrix");
     return false;
   }
-  
+
   if (nrrd->dim < 1)
   {
     error("NrrdToMatrix: Nrrd dimension is zero");
     return false;
   }
-  
+
   int m = 1;
   int n = 1;
   if (nrrd->dim > 0)
@@ -667,18 +666,18 @@ bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input,MatrixHandle& output)
 
   if (nrrd->dim > 1)
     n = nrrd->axis[1].size;
-  
+
   output = new DenseMatrix(n,m);
-  
+
   if (output.get_rep() == 0)
   {
     error("NrrdToMatrix: Could not allocate the output Matrix");
-    return false;    
+    return false;
   }
   double* data = output->get_data_pointer();
-  
+
   int size = n*m;
-  
+
   switch (nrrd->type)
   {
     case nrrdTypeChar:
@@ -732,10 +731,10 @@ bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input,MatrixHandle& output)
     default:
     {
       error("NrrdToMatrix: Unknown Nrrd type");
-      return false;    
+      return false;
     }
-  }    
-  
+  }
+
   return true;
 }
 
@@ -747,7 +746,7 @@ bool ConverterAlgo::MatrixToString(MatrixHandle input, StringHandle& output)
     error("MatrixToString: No input matrix");
     return false;
   }
-   
+
   SparseRowMatrix* sparse = matrix_cast::as_sparse(input);
   if (sparse)
   {
@@ -756,7 +755,7 @@ bool ConverterAlgo::MatrixToString(MatrixHandle input, StringHandle& output)
     double *d  = sparse->get_vals();
     size_type m   = sparse->nrows();
     size_type n   = sparse->ncols();
-    
+
     oss << "Sparse Matrix ("<<m<<"x"<<n<<"):\n";
     if (sparse->is_valid())
     {
@@ -777,7 +776,7 @@ bool ConverterAlgo::MatrixToString(MatrixHandle input, StringHandle& output)
     double* d = input->get_data_pointer();
     oss << "Dense inputrix ("<<m<<"x"<<n<<"):\n";
     int k = 0;
-    
+
     for (index_type r=0; r<m;r++)
     {
       for (index_type c=0; c<n;c++)
@@ -787,7 +786,7 @@ bool ConverterAlgo::MatrixToString(MatrixHandle input, StringHandle& output)
       oss << "\n";
     }
   }
-  
+
   output = new String(oss.str());
 
   if (output.get_rep()==0)
@@ -795,11 +794,7 @@ bool ConverterAlgo::MatrixToString(MatrixHandle input, StringHandle& output)
     error("MatrixToString: Could not generate output");
     return false;
   }
-  
+
   return true;
 }
-
-
-
-} // end namespace SCIRunAlgo
-
+#endif

@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,19 +35,20 @@
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Algorithms/Legacy/Converter/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
     namespace Algorithms
     {
 
-class SCISHARE ConverterAlgo : public AlgorithmBase 
+class SCISHARE ConverterAlgo : public AlgorithmBase
 {
 
   public:
     explicit ConverterAlgo(Core::Logging::LoggerHandle pr);
 
+#ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
     bool MatrixToDouble(Datatypes::MatrixHandle matrix, double &val);
     bool MatrixToInt(Datatypes::MatrixHandle matrix, int &val);
     bool MatrixToIndex(Datatypes::MatrixHandle matrix, index_type &val);
@@ -62,9 +63,9 @@ class SCISHARE ConverterAlgo : public AlgorithmBase
     bool MatrixToTransform(Datatypes::MatrixHandle matrix, Geometry::Transform& trans);
 
     bool DoubleVectorToMatrix(const std::vector<double>& val, Datatypes::MatrixHandle& matrix);
-    bool IntVectorToMatrix(const std::vector<int>& val, Datatypes::MatrixHandle& matrix);    
-    bool IndexVectorToMatrix(const std::vector<index_type>& val, Datatypes::MatrixHandle& matrix);    
-    bool UnsignedIntVectorToMatrix(const std::vector<unsigned int>& val, Datatypes::MatrixHandle& matrix);    
+    bool IntVectorToMatrix(const std::vector<int>& val, Datatypes::MatrixHandle& matrix);
+    bool IndexVectorToMatrix(const std::vector<index_type>& val, Datatypes::MatrixHandle& matrix);
+    bool UnsignedIntVectorToMatrix(const std::vector<unsigned int>& val, Datatypes::MatrixHandle& matrix);
     bool DoubleToMatrix(double val, Datatypes::MatrixHandle& matrix);
     bool IndexToMatrix(index_type val, Datatypes::MatrixHandle& matrix);
     bool IntToMatrix(int val, Datatypes::MatrixHandle& matrix);
@@ -73,19 +74,25 @@ class SCISHARE ConverterAlgo : public AlgorithmBase
     bool PointToMatrix(Geometry::Point& point, Datatypes::MatrixHandle& matrix);
     bool TensorToMatrix(Geometry::Tensor& ten, Datatypes::MatrixHandle matrix);
     bool TransformToMatrix(Geometry::Transform& trans, Datatypes::MatrixHandle& matrix);
-    
+
     bool MatricesToDipoleField(Datatypes::MatrixHandle locations, Datatypes::MatrixHandle strengths, FieldHandle& Dipoles);
-    
+
     // Converters from regular spaced data to a regular field
     // datalocation specifies whether the data is "Node" or "Element" based
     bool MatrixToField(Datatypes::MatrixHandle input, FieldHandle& output, const std::string& datalocation);
+    #endif
     bool NrrdToField(NrrdDataHandle input, FieldHandle& output, const std::string& datalocation = "Auto", const std::string& fieldtype = "Auto", const std::string& convertparity= "Make Right Hand Sided");
 
     bool FieldToNrrd(FieldHandle input, NrrdDataHandle& output);
+
+    #ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
     bool NrrdToMatrix(NrrdDataHandle input, Datatypes::MatrixHandle& output);
     bool MatrixToString(Datatypes::MatrixHandle input, Datatypes::StringHandle& output);
+    #endif
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+  private:
+    Core::Logging::LoggerHandle pr_;
 };
   }
 }
