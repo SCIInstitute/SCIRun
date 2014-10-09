@@ -59,6 +59,10 @@ using namespace SCIRun::Dataflow::Engine;
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
   boost::shared_ptr<DefaultNotePositionGetter> dnpg, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl, QWidget* parent)
   : QGraphicsView(parent),
+  deleteAction_(0),
+  sendToBackAction_(0),
+  propertiesAction_(0),
+  modulesSelectedByCL_(false),
   scene_(new QGraphicsScene(parent)),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
@@ -222,12 +226,14 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(modified()));
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
+  connect(this, SIGNAL(snapToModules()), proxy, SLOT(snapToGrid()));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
 
   scene_->addItem(proxy);
+  proxy->snapToGrid();
 
   scene_->clearSelection();
   proxy->setSelected(true);
@@ -511,13 +517,19 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 
 			findById(scene_->items(),selectedPair.first)->setSelected(true);
 			findById(scene_->items(),selectedPair.second)->setSelected(true);
+			modulesSelectedByCL_ = true;
 		}
 	QGraphicsView::mouseMoveEvent(event);
 }
 
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
-	unselectConnectionGroup();
+		if(modulesSelectedByCL_)
+		{
+				unselectConnectionGroup();
+				Q_EMIT modified();
+		}
+		modulesSelectedByCL_ = false;
 	QGraphicsView::mouseReleaseEvent(event);
 }
 

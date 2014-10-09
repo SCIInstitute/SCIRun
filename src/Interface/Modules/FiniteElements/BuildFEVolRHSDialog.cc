@@ -26,17 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_REPORTMATRIXINFOSTATE_H
-#define MODULES_MATH_REPORTMATRIXINFOSTATE_H
+#include <Interface/Modules/FiniteElements/BuildFEVolRHSDialog.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
+#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#include <Dataflow/Network/Module.h>
-
-namespace SCIRun {
-namespace Modules {
-namespace Basic {
-  /// @todo
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 
 
-}}}
+BuildFEVolRHSDialog::BuildFEVolRHSDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  //addCheckBoxManager(vectorTableBasisMatrices_, BuildFEVolRHSAlgo::vectorTableBasisMatrices());
+}
 
-#endif
+void BuildFEVolRHSDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}
+

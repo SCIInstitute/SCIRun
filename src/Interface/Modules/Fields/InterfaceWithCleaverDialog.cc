@@ -43,15 +43,13 @@ InterfaceWithCleaverDialog::InterfaceWithCleaverDialog(const std::string& name, 
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addDoubleSpinBoxManager(VolumeScalingSpinBox_X_, InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X);
-  addDoubleSpinBoxManager(VolumeScalingSpinBox_Y_, InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y);
-  addDoubleSpinBoxManager(VolumeScalingSpinBox_Z_, InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z);
-  addCheckBoxManager(VerboseCheckBox_, InterfaceWithCleaverAlgorithm::VerboseCheckBox);
-  addCheckBoxManager(PaddingCheckBox_, InterfaceWithCleaverAlgorithm::PaddingCheckBox);
+  addDoubleSpinBoxManager(VolumeScalingSpinBox_X_, InterfaceWithCleaverAlgorithm::VolumeScalingX);
+  addDoubleSpinBoxManager(VolumeScalingSpinBox_Y_, InterfaceWithCleaverAlgorithm::VolumeScalingY);
+  addDoubleSpinBoxManager(VolumeScalingSpinBox_Z_, InterfaceWithCleaverAlgorithm::VolumeScalingZ);
+  addCheckBoxManager(VerboseCheckBox_, InterfaceWithCleaverAlgorithm::Verbose);
+  addCheckBoxManager(PaddingCheckBox_, InterfaceWithCleaverAlgorithm::Padding);
 
-  //TODO: change the algorithm layer to a single boolean for these two radio buttons. Right now the logic allows all 4 combinations. 
-  addCheckableButtonManager(AbsoluteVolumeScalingRadioButton_, InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton);
-  addCheckableButtonManager(RelativeVolumeScalingRadioButton_, InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton);
+  addComboBoxManager(scalingComboBox_, InterfaceWithCleaverAlgorithm::VolumeScalingOption);
 }                         
                           
 void InterfaceWithCleaverDialog::pull()

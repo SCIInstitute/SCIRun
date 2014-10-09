@@ -51,8 +51,6 @@ class DeveloperConsole;
 class PreferencesWindow;
 class PythonConsoleWidget;
 
-typedef boost::variant<QAction*, QWidget*> InputWidget;
-
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
 	Q_OBJECT
@@ -73,6 +71,7 @@ public:
   bool newInterface() const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
+  ~SCIRunMainWindow();
 public Q_SLOTS:
   void executeAll();
 protected:
@@ -122,7 +121,6 @@ private:
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
-  std::vector<InputWidget> inputWidgets_;
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
@@ -138,8 +136,6 @@ private Q_SLOTS:
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
-  void disableInputWidgets(); 
-  void enableInputWidgets();
   void chooseBackgroundColor();
   void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
@@ -156,6 +152,8 @@ private Q_SLOTS:
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();
   void selectModuleKeyboardAction();
+  void modulesSnapToChanged();
+  void resetWindowLayout();
   void exitApplication(int code);
 };
 

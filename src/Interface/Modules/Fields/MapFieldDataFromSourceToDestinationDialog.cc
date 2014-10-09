@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath.h>
 #include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
@@ -65,15 +66,30 @@ MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDi
   addDoubleSpinBoxManager(maxDistanceSpinBox_, Parameters::MaxDistance);
   addDoubleSpinBoxManager(defaultValueDoubleSpinBox_, Parameters::DefaultValue);
   connect(noMaxCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setNoMaximumValue(int)));
+  connect(useNanForUnassignedValuesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(setUseNanForUnassignedValues(int)));
 }
 
 void MapFieldDataFromSourceToDestinationDialog::pull()
 {
   pull_newVersionToReplaceOld();
+  if (IsNan(state_->getValue(Parameters::DefaultValue).toDouble()))
+  {
+    useNanForUnassignedValuesCheckBox_->setChecked(true);
+  }
+  if (state_->getValue(Parameters::MaxDistance).toDouble() < 0)
+  {
+    noMaxCheckBox_->setChecked(true);
+  }
 }
 
 void MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue(int state)
 {
   if (0 != state)
     state_->setValue(Parameters::MaxDistance, -1.0);
+}
+
+void MapFieldDataFromSourceToDestinationDialog::setUseNanForUnassignedValues(int state)
+{
+  if (0 != state)
+    state_->setValue(Parameters::DefaultValue, std::numeric_limits<double>::quiet_NaN());
 }

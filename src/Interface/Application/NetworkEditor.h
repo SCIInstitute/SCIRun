@@ -184,6 +184,7 @@ Q_SIGNALS:
     void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     void defaultNotePositionChanged(NotePosition position);
     void sceneChanged(const QList<QRectF>& region);
+    void snapToModules();
   private Q_SLOTS:
     void cut();
     void copy();
@@ -214,6 +215,7 @@ Q_SIGNALS:
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
     //QAction* executeAction_;
+		bool modulesSelectedByCL_; 
 
     QGraphicsScene* scene_;
 

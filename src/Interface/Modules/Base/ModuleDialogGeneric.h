@@ -49,6 +49,7 @@ namespace Gui {
   public:
     virtual ~ModuleDialogGeneric();
     bool isPulling() const { return pulling_; } //yuck
+    QAction* getExecuteAction() { return executeAction_; }
 
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
@@ -60,6 +61,7 @@ namespace Gui {
     virtual void pull() = 0;
     void pull_newVersionToReplaceOld();
   Q_SIGNALS:
+    void pullSignal();
     void executionTimeChanged(int time);
     void executeActionTriggered();
   protected:

@@ -46,8 +46,6 @@ namespace Algorithms {
   class SCISHARE Variable
   {
   public:
-    /// @todo: expand this 
-
     typedef std::vector<Variable> List;
 
     typedef boost::variant<
@@ -60,12 +58,12 @@ namespace Algorithms {
     > Value;
 
     Variable() {}
-    Variable(const Name& name, const Value& value) : name_(name), value_(value) {}
-    Variable(const Name& name, const Datatypes::DatatypeHandle& value) : name_(name), data_(value) {}
+    Variable(const Name& name, const Value& value);
+    Variable(const Name& name, const Datatypes::DatatypeHandle& data) : name_(name), data_(data) {}
 
     const Name& name() const { return name_; }
     const Value& value() const { return value_; }
-    virtual void setValue(const Value& val) { value_ = val; }
+    virtual void setValue(const Value& val);
 
     int toInt() const;
     double toDouble() const;

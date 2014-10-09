@@ -37,7 +37,8 @@ using namespace SCIRun::Core::Algorithms;
 
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
-  pulling_(false)
+  pulling_(false),
+  executeAction_(0)
 {
   setModal(false);
 
@@ -45,9 +46,9 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   {
     //TODO: replace with pull_newVersion
     LOG_DEBUG("ModuleDialogGeneric connecting to state" << std::endl);
-    stateConnection_ = state_->connect_state_changed([this]() { pull(); });
+    stateConnection_ = state_->connect_state_changed([this]() { pullSignal(); });
   }
-  
+  connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();
 }
 

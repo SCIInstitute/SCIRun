@@ -47,6 +47,7 @@
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Application/MainWindowCollaborators.h>
 
 #include <Dataflow/Network/Module.h>
 
@@ -100,17 +101,6 @@ namespace Gui {
     QMenu* menu_;
   };
 }}
-
-namespace
-{
-#ifdef WIN32
-  const int moduleWidthThreshold = 220;
-  const int extraModuleWidth = 40;
-#else
-  const int moduleWidthThreshold = 240;
-  const int extraModuleWidth = 30;
-#endif
-}
 
 QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
 {
@@ -213,6 +203,25 @@ namespace
   }
 }
 
+namespace
+{
+#ifdef WIN32
+  const int moduleWidthThreshold = 110;
+  const int extraModuleWidth = 5;
+  const int extraWidthThreshold = 5;
+  const int smushFactor = 15;
+  const int titleFontSize = 8;
+  const int widgetHeightAdjust = -20;
+#else
+  const int moduleWidthThreshold = 80;
+  const int extraModuleWidth = 5;
+  const int extraWidthThreshold = 5;
+  const int smushFactor = 15;
+  const int titleFontSize = 12;
+  const int widgetHeightAdjust = 1;
+#endif
+}
+
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QFrame(parent), HasNotes(theModule->get_id(), true),
@@ -231,7 +240,9 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192))
 {
   setupUi(this);
-  titleLabel_->setText("<b><h3>" + name + "</h3></b>");
+
+  titleLabel_->setFont(QFont("Helvetica", titleFontSize, QFont::Bold));
+  titleLabel_->setText(name);
 
   //TODO: ultra ugly. no other place for this code right now.
   //TODO: to be handled in issue #212
@@ -241,7 +252,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
     optionsButton_->setToolTip("View renderer output");
     optionsButton_->resize(100, optionsButton_->height());
     executePushButton_->hide();
-    //progressBar_->setVisible(false); //this looks bad, need to insert a spacer or something. TODO later
+    progressBar_->setVisible(false);
   }
   progressBar_->setMaximum(100);
   progressBar_->setMinimum(0);
@@ -253,13 +264,33 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 
   executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   connect(executePushButton_, SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  addWidgetToExecutionDisableList(executePushButton_);
 
-  int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
+  int pixelWidth = titleLabel_->fontMetrics().boundingRect(titleLabel_->text()).width();
+  //std::cout << titleLabel_->text().toStdString() << std::endl;
+  //std::cout << "\tPixelwidth = " << pixelWidth << std::endl;
   int extraWidth = pixelWidth - moduleWidthThreshold;
-  if (extraWidth > 0)
+  //std::cout << "\textraWidth = " << extraWidth << std::endl;
+  if (extraWidth > extraWidthThreshold)
   {
+    //std::cout << "\tGROWING MODULE Current width: " << width() << std::endl;
     resize(width() + extraWidth + extraModuleWidth, height());
+    //std::cout << "\tNew width: " << width() << std::endl;
   }
+  else
+  {
+    //std::cout << "\tSHRINKING MODULE Current width: " << width() << std::endl;
+    resize(width() - smushFactor, height());
+    //std::cout << "\tNew width: " << width() << std::endl;
+  }
+
+  //TODO: centralize platform-dependent code
+#ifdef WIN32
+  layout()->removeItem(verticalSpacer_Mac);
+  layout()->removeItem(horizontalSpacer_Mac1);
+  layout()->removeItem(horizontalSpacer_Mac2);
+#endif
+  resize(width(), height() + widgetHeightAdjust);
 
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
   makeOptionsDialog();
@@ -319,13 +350,13 @@ void ModuleWidget::resetProgressBar()
 void ModuleWidget::setupModuleActions()
 {
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
-
+  addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
   moduleActionButton_->setMenu(actionsMenu_->getMenu());
 }
 
 void ModuleWidget::addPortLayouts()
 {
-  verticalLayout->setContentsMargins(5,0,5,0);
+  layout()->setContentsMargins(5,0,5,0);
 }
 
 void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
@@ -399,19 +430,25 @@ void ModuleWidget::addOutputPortsToLayout()
     outputPortLayout_ = new QHBoxLayout;
     outputPortLayout_->setSpacing(PORT_SPACING);
     outputPortLayout_->setAlignment(Qt::AlignLeft);
-    verticalLayout->insertLayout(-1, outputPortLayout_);
+    qobject_cast<QVBoxLayout*>(layout())->insertLayout(-1, outputPortLayout_, 1);
   }
   ports_->addOutputsToLayout(outputPortLayout_);
 }
 
 void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
 {
+  if (inputPorts_.empty())
+    layout->addWidget(new BlankPort(layout->parentWidget()));
+
   BOOST_FOREACH(PortWidget* port, inputPorts_)
     layout->addWidget(port);
 }
 
 void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
 {
+  if (outputPorts_.empty())
+    layout->addWidget(new BlankPort(layout->parentWidget()));
+
   BOOST_FOREACH(PortWidget* port, outputPorts_)
     layout->addWidget(port);
 }
@@ -423,7 +460,7 @@ void ModuleWidget::addInputPortsToLayout()
     inputPortLayout_ = new QHBoxLayout;
     inputPortLayout_->setSpacing(PORT_SPACING);
     inputPortLayout_->setAlignment(Qt::AlignLeft);
-    verticalLayout->insertLayout(0, inputPortLayout_);
+    qobject_cast<QVBoxLayout*>(layout())->insertLayout(0, inputPortLayout_, 1);
   }
   ports_->addInputsToLayout(inputPortLayout_);
 }
@@ -618,9 +655,11 @@ void ModuleWidget::makeOptionsDialog()
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();
+      addWidgetToExecutionDisableList(dialog_->getExecuteAction());
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
+      dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
       dockable_->setMinimumSize(dialog_->minimumSize());
       dockable_->setAllowedAreas(Qt::RightDockWidgetArea);
@@ -657,13 +696,15 @@ void ModuleWidget::toggleOptionsDialog()
 void ModuleWidget::updateProgressBar(double percent)
 {
   progressBar_->setValue(percent * progressBar_->maximum());
-  progressBar_->setTextVisible(true);
+
+  //TODO: make this configurable
+  //progressBar_->setTextVisible(true);
   updateModuleTime();
+  progressBar_->setToolTip(progressBar_->text());
 }
 
 void ModuleWidget::updateModuleTime()
 {
-  //TODO: make this configurable
   progressBar_->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
 }
 

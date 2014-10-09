@@ -46,19 +46,6 @@ using namespace SCIRun::Modules::Fields;
 /// @class ClipFieldByFunction3
 /// @brief This module selects a subset of one or more (up to three) fields
 /// using a function. 
-/*
-class ClipFieldByFunction3 : public Module {
-  public:
-    ClipFieldByFunction3(GuiContext*);
-
-    virtual void execute();
-  
-  private:
-    GuiString guifunction_;  
-    GuiString guimethod_;
-    SCIRunAlgo::ClipMeshBySelectionAlgo clipping_algo_;
-};
-*/
 
 const ModuleLookupInfo ClipFieldByFunction::staticInfo_("ClipFieldByFunction", "NewField", "SCIRun");
 const AlgorithmParameterName ClipFieldByFunction::FunctionString("FunctionString");
@@ -76,7 +63,7 @@ ClipFieldByFunction::ClipFieldByFunction()
 void ClipFieldByFunction::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(FunctionString, std::string("DATA < 0"));
+  state->setValue(FunctionString, std::string("DATA1 < 0;"));
   setStateStringFromAlgoOption(Parameters::ClipMethod);
 }
 
@@ -85,20 +72,15 @@ void ClipFieldByFunction::execute()
   auto fields = getRequiredDynamicInputs(InputFields);
   auto func = getOptionalInput(Function);
   auto state = get_state();
-  if (func)
+  auto matrices = getOptionalDynamicInputs(InputArrays);
+  
+  if (needToExecute())
   {
-    if (*func)
+    if (func && *func)
     {
       state->setValue(FunctionString, (*func)->value());
     }
-  }
-  
-  auto matrices = getOptionalDynamicInputs(InputArrays);
-  
-//  if (inputs_changed_ || guifunction_.changed() || guimethod_.changed() ||
-//      !oport_cached("Field") || !oport_cached("Mapping"))
-  if (needToExecute())
-  {
+
     update_state(Executing);
     // Get number of matrix ports with data (the last one is always empty)
     size_t numinputs = matrices.size();
@@ -109,10 +91,13 @@ void ClipFieldByFunction::execute()
     }
   
     auto field = fields[0];
-    std::string method = state->getValue(Parameters::ClipMethod).toString();
-    if (field->vmesh()->is_pointcloudmesh()) method = "element";
+    std::string method;
+    if (field->vmesh()->is_pointcloudmesh()) 
+      method = "Element Center";
+    else
+      method = state->getValue(Parameters::ClipMethod).toString();
 
-    const int basis_order = method == "element" ? 0 : 1;
+    const int basis_order = method == "Element Center" ? 0 : 1;
 
     if (field->vmesh()->is_empty())
     {
@@ -132,6 +117,7 @@ void ClipFieldByFunction::execute()
     if (basis_order == field_basis_order)
     {
       if(!(engine.add_input_fielddata("DATA",field))) return;
+      if(!(engine.add_input_fielddata("DATA1",field))) return;
     }
     else
     {

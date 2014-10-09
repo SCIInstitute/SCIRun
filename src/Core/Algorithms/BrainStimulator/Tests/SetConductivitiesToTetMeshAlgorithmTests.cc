@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
 #include <gtest/gtest.h>
 
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -47,28 +47,28 @@ namespace
 {
   FieldHandle CreateTetMeshVectorOnElem()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
   }
   FieldHandle CreateTetMeshScalarSevenElem()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh_7elem.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/tet_mesh_7elem.fld");
   }
   FieldHandle CreateTetMeshScalarOnElem()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
   }
   FieldHandle CreateTetMeshScalarOnNode()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
   }
 }
 
 TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalars)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
-  
+
   double conductivities[] = {9.25, 25.1988, 18.99999, 3.5, 5.1988, 5.22, 22.2013};
-  
+
   algo.set(Parameters::Skin,  conductivities[0]);
   algo.set(Parameters::SoftBone, conductivities[1]);
   algo.set(Parameters::HardBone, conductivities[2]);
@@ -76,10 +76,10 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalars)
   algo.set(Parameters::GM,    conductivities[4]);
   algo.set(Parameters::WM,    conductivities[5]);
   algo.set(Parameters::Electrode, conductivities[6]);
-  
+
   auto input  = CreateTetMeshScalarSevenElem();
   auto output = algo.run(input);
-  
+
   VField* ivfield = input->vfield();
   VField* ovfield = output->vfield();
   int ival = 0;
@@ -96,9 +96,9 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalars)
 TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
-  
+
   double conductivities[] = {9.25, 25.1988, 18.99999, 3.5, 5.1988, 5.22, 22.2013};
-  
+
   algo.set(Parameters::Skin,  conductivities[0]);
   algo.set(Parameters::SoftBone, conductivities[1]);
   algo.set(Parameters::HardBone, conductivities[2]);
@@ -109,7 +109,7 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
 
   FieldHandle input  = CreateTetMeshScalarSevenElem();
   FieldHandle output = algo.run(CreateTetMeshScalarSevenElem());
-  
+
   VField* ivfield = input->vfield();
   VField* ovfield = output->vfield();
   int ival = 0;
@@ -136,7 +136,7 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarThreeElem)
 
   FieldHandle input  = CreateTetMeshScalarOnElem();
   FieldHandle output = algo.run(CreateTetMeshScalarOnElem());
-  
+
   VField* ivfield = input->vfield();
   VField* ovfield = output->vfield();
   int ival = 0;

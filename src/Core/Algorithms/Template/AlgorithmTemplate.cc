@@ -51,7 +51,7 @@ AlgorithmOutput @AlgorithmName@Algo::run_generic(const AlgorithmInput& input) co
   auto inputField = input.get<Field>(Variables::InputField);
   
   FieldHandle outputField(inputField->deep_clone());
-  double knob2 = get(Parameters::Knob2).getDouble();
+  double knob2 = get(Parameters::Knob2).toDouble();
   if (get(Parameters::Knob1).getBool())
   {
     // do something

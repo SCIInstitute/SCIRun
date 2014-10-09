@@ -98,7 +98,7 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
 
 AlgorithmOutput ReadMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto filename = get(Variables::Filename).toString();
+  auto filename = get(Variables::Filename).toFilename().string();
   auto file = run(filename);
   AlgorithmOutput output;
   output[Variables::MatrixLoaded] = file;

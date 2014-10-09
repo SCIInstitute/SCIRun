@@ -55,45 +55,45 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 
 FieldHandle LoadFieldFirstModuleInput()
-{     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/first.fld");
+{
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/simulateforwardmagneticfield/first.fld");
 }
 
 FieldHandle LoadFieldSecondModuleInput()
-{     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/second.fld");
+{
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/simulateforwardmagneticfield/second.fld");
 }
 
 FieldHandle LoadFieldThirdModuleInput()
-{     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/third.fld");
+{
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/simulateforwardmagneticfield/third.fld");
 }
 
 FieldHandle LoadFieldFourthModuleInput()
-{     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/fourth.fld");
+{
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/simulateforwardmagneticfield/fourth.fld");
 }
 
 FieldHandle LoadFieldMagneticFieldResult()
-{     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/result_magnetic_field.fld");
+{
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/simulateforwardmagneticfield/result_magnetic_field.fld");
 }
 
 FieldHandle LoadFieldMagneticFieldMagnitudesResult()
-{     
-  return loadFieldFromFile(TestResources::rootDir() / "simulateforwardmagneticfield/result_magnetic_field_magnitudes.fld");
+{
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/simulateforwardmagneticfield/result_magnetic_field_magnitudes.fld");
 }
 
 
 TEST(SimulateForwardMagneticFieldAlgoTest, TestOnLatVol)
 {
   FieldHandle first = LoadFieldFirstModuleInput();
-  FieldHandle second = LoadFieldSecondModuleInput();  
+  FieldHandle second = LoadFieldSecondModuleInput();
   FieldHandle third = LoadFieldThirdModuleInput();
   FieldHandle fourth = LoadFieldFourthModuleInput();
   long nr_nodes = (long)second->vmesh()->num_nodes();
   DenseMatrixHandle tensor_matrix(boost::make_shared<DenseMatrix>(nr_nodes,9));
-  
+
   for (long i=0;i<nr_nodes;i++)
   {
    for (int j=0;j<7;j++)
@@ -101,31 +101,30 @@ TEST(SimulateForwardMagneticFieldAlgoTest, TestOnLatVol)
     if (j==0 || j==4 || j==8)
       (*tensor_matrix)(i,j)=1;
     else
-      (*tensor_matrix)(i,j)=0; 
+      (*tensor_matrix)(i,j)=0;
    }
   }
-  
+
   SetFieldDataAlgo algo;
 
-  FieldHandle second_with_tensor = algo.run(second, tensor_matrix); 
+  FieldHandle second_with_tensor = algo.run(second, tensor_matrix);
 
   SimulateForwardMagneticFieldAlgo algo2;
-  
+
   FieldHandle MField, MFieldMagnitudes;
   boost::tie(MField,MFieldMagnitudes) = algo2.run(first,second_with_tensor,third,fourth);
-  
+
   GetFieldDataAlgo algo3;
-  
+
   DenseMatrixHandle MField_matrix = algo3.run(MField);
   DenseMatrixHandle MFieldMagnitudes_matrix = algo3.run(MFieldMagnitudes);
-  
+
   FieldHandle MField_expected = LoadFieldMagneticFieldResult();
   FieldHandle MFieldMagnitudes_expected = LoadFieldMagneticFieldMagnitudesResult();
-  
+
   DenseMatrixHandle MField_expected_matrix = algo3.run(MField_expected);
   DenseMatrixHandle MFieldMagnitudes_expected_matrix = algo3.run(MFieldMagnitudes_expected);
-  
+
   EXPECT_MATRIX_EQ_TOLERANCE(*MField_matrix, *MField_expected_matrix, 1e-16);
   EXPECT_MATRIX_EQ_TOLERANCE(*MFieldMagnitudes_matrix, *MFieldMagnitudes_expected_matrix, 1e-16);
 }
-

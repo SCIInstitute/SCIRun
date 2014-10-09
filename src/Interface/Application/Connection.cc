@@ -34,6 +34,7 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
+#include <Interface/Application/MainWindowCollaborators.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 
@@ -184,7 +185,7 @@ namespace SCIRun
     public:
       ConnectionMenu(QWidget* parent = 0) : QMenu(parent)
       {
-        addAction(deleteAction);
+        addWidgetToExecutionDisableList(addAction(deleteAction));
         addAction(insertModuleAction)->setDisabled(true);
         addAction(disableEnableAction)->setDisabled(true);
         notesAction_ = addAction(editNotesAction);
@@ -209,22 +210,26 @@ namespace SCIRun
   }
 }
 
+namespace
+{
+  const int DEFAULT_CONNECTION_WIDTH = 3.0;
+  const int HOVERED_CONNECTION_WIDTH = 5.0;
+}
+
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : HasNotes(id, false),
   NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
-  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(0), menuOpen_(0)
+  fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(0), menuOpen_(0), placeHoldingWidth_(0)
 {
   if (fromPort_)
   {
     fromPort_->addConnection(this);
-    fromPort_->turn_on_light();
   }
   else
     LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
   if (toPort_)
   {
     toPort_->addConnection(this);
-    toPort_->turn_on_light();
   }
   else
     LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
@@ -240,6 +245,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   //TODO: need dynamic zValue
   setZValue(1);
   setToolTip("Left - Highlight\nDouble-Left - Menu");
+  setAcceptHoverEvents(true);
 
   menu_ = new ConnectionMenu();
   connectNoteEditorToAction(menu_->notesAction_);
@@ -264,9 +270,7 @@ void ConnectionLine::destroy()
     if (fromPort_ && toPort_)
     {
       fromPort_->removeConnection(this);
-      fromPort_->turn_off_light();
       toPort_->removeConnection(this);
-      toPort_->turn_off_light();
     }
     drawer_.reset();
     Q_EMIT deleted(id_);
@@ -279,7 +283,12 @@ void ConnectionLine::destroy()
 
 void ConnectionLine::setColor(const QColor& color)
 {
-  setPen(QPen(color, 5.0));
+  setColorAndWidth(color, DEFAULT_CONNECTION_WIDTH);
+}
+
+void ConnectionLine::setColorAndWidth(const QColor& color, int width)
+{
+  setPen(QPen(color, width));
 }
 
 QColor ConnectionLine::color() const
@@ -309,26 +318,31 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-	setColor(placeHoldingColor_);
+	setColorAndWidth(placeHoldingColor_, placeHoldingWidth_);
 	menuOpen_ = false;
-	this->setZValue(0);
+	setZValue(0);
+  fromPort_->turn_off_light();
+  toPort_->turn_off_light();
   QGraphicsPathItem::mouseReleaseEvent(event);
 }
 
 void ConnectionLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	this->setAcceptedMouseButtons(Qt::LeftButton);
+	setAcceptedMouseButtons(Qt::LeftButton);
 
 	if (!menuOpen_)
 	{
 		placeHoldingColor_ = color();
-		setColor(Qt::red);
-		this->setZValue(100);
+    placeHoldingWidth_ = pen().width();
+		setColorAndWidth(Qt::red, HOVERED_CONNECTION_WIDTH);
+		setZValue(100);
+    fromPort_->turn_on_light();
+    toPort_->turn_on_light();
 	}
   QGraphicsPathItem::mousePressEvent(event);
 }
 
-void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
   auto action = menu_->exec(event->screenPos());
   menuOpen_ = true;
@@ -344,7 +358,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   QGraphicsPathItem::mouseDoubleClickEvent(event);
 }
 
-void ConnectionLine::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void ConnectionLine::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
   QGraphicsPathItem::mouseMoveEvent(event);
 }
@@ -383,6 +397,16 @@ void ConnectionLine::updateNoteFromFile(const Note& note)
 {
   setCurrentNote(note, true);
   updateNote(note);
+}
+
+void ConnectionLine::hoverEnterEvent(QGraphicsSceneHoverEvent*) 
+{
+  setColorAndWidth(color(), HOVERED_CONNECTION_WIDTH);
+}
+
+void ConnectionLine::hoverLeaveEvent(QGraphicsSceneHoverEvent*) 
+{
+  setColorAndWidth(color(), DEFAULT_CONNECTION_WIDTH);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)

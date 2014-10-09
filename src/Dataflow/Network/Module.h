@@ -373,7 +373,7 @@ namespace Networks {
     if (!data)
     {
       std::ostringstream ostr;
-      ostr << "Wrong datatype on port #" << id.name << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
+      ostr << "Wrong datatype on port " << id.name << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
       MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
     }
     return data;

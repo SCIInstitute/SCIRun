@@ -58,6 +58,7 @@
 #include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Algorithms/Math/SelectSubMatrix.h>
 #include <Core/Algorithms/Math/ConvertMatrixType.h>
+#include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
@@ -65,6 +66,7 @@
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFEVolRHS.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
@@ -128,6 +130,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(InterfaceWithCleaver, InterfaceWithCleaverAlgorithm)
       ADD_MODULE_ALGORITHM(GetFieldData, GetFieldDataAlgo)
       ADD_MODULE_ALGORITHM(SetFieldData, SetFieldDataAlgo)
+      ADD_MODULE_ALGORITHM(GetMatrixSlice, GetMatrixSliceAlgo)
       ADD_MODULE_ALGORITHM(JoinFields, JoinFieldsAlgo)
       ADD_MODULE_ALGORITHM(SplitFieldByDomain, SplitFieldByDomainAlgo)
       ADD_MODULE_ALGORITHM(ApplyMappingMatrix, ApplyMappingMatrixAlgo)
@@ -143,10 +146,11 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(CalculateDistanceToField, CalculateDistanceFieldAlgo)
       ADD_MODULE_ALGORITHM(CalculateDistanceToFieldBoundary, CalculateDistanceFieldAlgo)
       ADD_MODULE_ALGORITHM(MapFieldDataOntoNodes, MapFieldDataOntoNodesAlgo)
-      ADD_MODULE_ALGORITHM(MapFieldDataOntoElems, MapFieldDataOntoElemsAlgo)
+      ADD_MODULE_ALGORITHM(MapFieldDataOntoElements, MapFieldDataOntoElemsAlgo)
       ADD_MODULE_ALGORITHM(ClipFieldByFunction, ClipMeshBySelectionAlgo)
       ADD_MODULE_ALGORITHM(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationAlgo)
       ADD_MODULE_ALGORITHM(SimulateForwardMagneticField, SimulateForwardMagneticFieldAlgo)
+      ADD_MODULE_ALGORITHM(BuildFEVolRHS, BuildFEVolRHSAlgo)
     ;
   }
 }

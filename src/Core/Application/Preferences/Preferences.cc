@@ -41,6 +41,7 @@ Preferences::Preferences() :
   showModuleErrorDialogs("showModuleErrorDialogs", true), 
   saveBeforeExecute("saveBeforeExecute", false), 
   useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
+  modulesSnapToGrid("modulesSnapToGrid", true),
   networkBackgroundColor("backgroundColor", "#808080")
 {	
 }
