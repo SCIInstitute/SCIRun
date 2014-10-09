@@ -29,41 +29,50 @@
 #include <vector>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/Logging/LoggerInterface.h>
+#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Algorithms/Legacy/Converter/NrrdToField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
 
 namespace detail {
 class NrrdToFieldAlgoT {
 public:
   // Convert a nrrd to a normal Scalar Field
   template<class T>
-  bool NrrdToField(ProgressReporter* pr,NrrdDataHandle input, FieldHandle& output,std::string datalocation, std::string spaceparity);
+  bool nrrdToField(LoggerHandle pr, NrrdDataHandle input, FieldHandle& output,const std::string& datalocation, const std::string& spaceparity);
 
   // Convert a nrrd to a Vector Field, we need to know which axis is the
   // vector dimension, if -1 it will try to detect dimension automatically
   // Experience tells us mostly this information is not stored in the nrrd
   // So we need a method to set it.
   template<class T>
-  bool NrrdToVectorField(ProgressReporter* pr,NrrdDataHandle input, FieldHandle& output,std::string datalocation, std::string spaceparity,int vecdim = -1);
+  bool nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, FieldHandle& output,const std::string& datalocation, const std::string& spaceparity,int vecdim = -1);
 
   // Convert a nrrd to a Tensor Field, we need to know which axis is the
   // vector dimension, if -1 it will try to detect dimension automatically
   // Experience tells us mostly this information is not stored in the nrrd
   // So we need a method to set it.
   template<class T>
-  bool NrrdToTensorField(ProgressReporter* pr,NrrdDataHandle input, FieldHandle& output,std::string datalocation, std::string spaceparity,int tendim = -1);
+  bool nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, FieldHandle& output,const std::string& datalocation, const std::string& spaceparity,int tendim = -1);
 };
 
 // Templated converter for Scalar data so we can use every type supported by the Teem library
 template<class T>
-bool NrrdToFieldAlgoT::NrrdToField(ProgressReporter* pr,NrrdDataHandle input, FieldHandle& output,std::string datalocation, std::string spaceparity)
+bool NrrdToFieldAlgoT::nrrdToField(LoggerHandle pr,NrrdDataHandle input, FieldHandle& output,const std::string& datalocation, const std::string& spaceparity)
 {
-  Nrrd *nrrd = input->nrrd_;
+  const Nrrd *nrrd = input->getNrrd();
 
-  if (nrrd == 0)
+  if (!nrrd)
   {
     pr->error("NrrdToField: NrrdData does not contain Nrrd");
     return false;
@@ -528,9 +537,9 @@ bool NrrdToFieldAlgoT::NrrdToField(ProgressReporter* pr,NrrdDataHandle input, Fi
 
 // Templated converter for Scalar data so we can use every type supported by the Teem library
 template<class T>
-bool NrrdToFieldAlgoT::NrrdToVectorField(ProgressReporter* pr,NrrdDataHandle input, FieldHandle& output,std::string datalocation, std::string spaceparity, int vecdim)
+bool NrrdToFieldAlgoT::nrrdToVectorField(LoggerHandle pr,NrrdDataHandle input, FieldHandle& output,const std::string& datalocation, const std::string& spaceparity, int vecdim)
 {
-  Nrrd *nrrd = input->nrrd_;
+  const Nrrd *nrrd = input->getNrrd();
   double M[3][3];
   M[0][0] = 1.0; M[0][1] = 0.0; M[0][2] = 0.0;
   M[1][0] = 0.0; M[1][1] = 1.0; M[1][2] = 0.0;
@@ -1062,9 +1071,9 @@ bool NrrdToFieldAlgoT::NrrdToVectorField(ProgressReporter* pr,NrrdDataHandle inp
 
 // Templated converter for Scalar data so we can use every type supported by the Teem library
 template<class T>
-bool NrrdToFieldAlgoT::NrrdToTensorField(ProgressReporter* pr,NrrdDataHandle input, FieldHandle& output,std::string datalocation, std::string spaceparity, int vecdim)
+bool NrrdToFieldAlgoT::nrrdToTensorField(LoggerHandle pr,NrrdDataHandle input, FieldHandle& output,const std::string& datalocation, const std::string& spaceparity, int vecdim)
 {
-  Nrrd *nrrd = input->nrrd_;
+  const Nrrd *nrrd = input->getNrrd();
 
   double M[3][3];
   M[0][0] = 1.0; M[0][1] = 0.0; M[0][2] = 0.0;
@@ -1749,19 +1758,17 @@ bool NrrdToFieldAlgoT::NrrdToTensorField(ProgressReporter* pr,NrrdDataHandle inp
 
 
 bool NrrdToFieldAlgo::nrrdToField(LoggerHandle pr, NrrdDataHandle input, FieldHandle& output,
-  const std::string& datalocation, const std::string& fieldtype, const std::string& spaceparity)
+  const std::string& datalocationIn, const std::string& fieldtypeIn, const std::string& spaceparity)
 {
-  int datadim = -1;
-
-  if (input.get_rep() == 0)
+  if (!input)
   {
     pr->error("NrrdToField: No input Nrrd");
     return false;
   }
 
-  Nrrd *nrrd = input->nrrd_;
+  const Nrrd *nrrd = input->getNrrd();
 
-  if (nrrd == 0)
+  if (!nrrd)
   {
     pr->error("NrrdToField: NrrdData does not contain Nrrd");
     return (false);
@@ -1774,8 +1781,10 @@ bool NrrdToFieldAlgo::nrrdToField(LoggerHandle pr, NrrdDataHandle input, FieldHa
     return false;
   }
 
+  std::string datalocation(datalocationIn);
+
   // Automatically detect nrrd type Element of Node based.
-  if (datalocation == "Auto")
+  if (datalocationIn == "Auto")
   {
     datalocation = "Node";
     for (unsigned int p = 0; p < dim; p++)
@@ -1788,6 +1797,9 @@ bool NrrdToFieldAlgo::nrrdToField(LoggerHandle pr, NrrdDataHandle input, FieldHa
     }
   }
 
+  int datadim = -1;
+
+  std::string fieldtype(fieldtypeIn);
   // Automatically detect field type based on the clues given in the nrrd
   // annotation.
 
@@ -1926,34 +1938,34 @@ bool NrrdToFieldAlgo::nrrdToField(LoggerHandle pr, NrrdDataHandle input, FieldHa
   if (fieldtype == "Auto")
     fieldtype = "ScalarField";
 
-  NrrdToFieldAlgoT algo;
+  detail::NrrdToFieldAlgoT algo;
 
   if (fieldtype == "ScalarField")
   {
     switch (nrrd->type)
     {
       case nrrdTypeChar :
-        return (algo.NrrdToField<char>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<char>(pr,input,output,datalocation,spaceparity));
       case nrrdTypeUChar :
-        return (algo.NrrdToField<unsigned char>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<unsigned char>(pr,input,output,datalocation,spaceparity));
       case nrrdTypeShort :
-        return (algo.NrrdToField<short>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<short>(pr,input,output,datalocation,spaceparity));
       case nrrdTypeUShort :
-        return (algo.NrrdToField<unsigned short>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<unsigned short>(pr,input,output,datalocation,spaceparity));
       case nrrdTypeInt :
-        return (algo.NrrdToField<int>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<int>(pr,input,output,datalocation,spaceparity));
       case nrrdTypeUInt :
-        return (algo.NrrdToField<unsigned int>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<unsigned int>(pr,input,output,datalocation,spaceparity));
       case nrrdTypeLLong :
-        return (algo.NrrdToField<long long>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<long long>(pr,input,output,datalocation,spaceparity));
       case nrrdTypeULLong :
-        return (algo.NrrdToField<unsigned long long>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<unsigned long long>(pr,input,output,datalocation,spaceparity));
       case nrrdTypeFloat :
-        return (algo.NrrdToField<float>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<float>(pr,input,output,datalocation,spaceparity));
       case nrrdTypeDouble :
-        return (algo.NrrdToField<double>(pr,input,output,datalocation,spaceparity));
+        return (algo.nrrdToField<double>(pr,input,output,datalocation,spaceparity));
       default:
-        pr->error("NrrdToField: This datatype is not supported");
+        pr->error("nrrdToField: This datatype is not supported");
         return false;
     }
   }
@@ -1962,27 +1974,27 @@ bool NrrdToFieldAlgo::nrrdToField(LoggerHandle pr, NrrdDataHandle input, FieldHa
     switch (nrrd->type)
     {
       case nrrdTypeChar :
-        return (algo.NrrdToVectorField<char>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<char>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeUChar :
-        return (algo.NrrdToVectorField<unsigned char>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<unsigned char>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeShort :
-        return (algo.NrrdToVectorField<short>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<short>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeUShort :
-        return (algo.NrrdToVectorField<unsigned short>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<unsigned short>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeInt :
-        return (algo.NrrdToVectorField<int>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<int>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeUInt :
-        return (algo.NrrdToVectorField<unsigned int>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<unsigned int>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeLLong :
-        return (algo.NrrdToVectorField<long long>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<long long>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeULLong :
-        return (algo.NrrdToVectorField<unsigned long long>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<unsigned long long>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeFloat :
-        return (algo.NrrdToVectorField<float>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<float>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeDouble :
-        return (algo.NrrdToVectorField<double>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToVectorField<double>(pr,input,output,datalocation,spaceparity,datadim));
       default:
-        pr->error("NrrdToVectorField: This datatype is not supported");
+        pr->error("nrrdToVectorField: This datatype is not supported");
         return false;
     }
   }
@@ -1991,33 +2003,33 @@ bool NrrdToFieldAlgo::nrrdToField(LoggerHandle pr, NrrdDataHandle input, FieldHa
     switch (nrrd->type)
     {
       case nrrdTypeChar :
-        return (algo.NrrdToTensorField<char>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<char>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeUChar :
-        return (algo.NrrdToTensorField<unsigned char>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<unsigned char>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeShort :
-        return (algo.NrrdToTensorField<short>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<short>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeUShort :
-        return (algo.NrrdToTensorField<unsigned short>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<unsigned short>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeInt :
-        return (algo.NrrdToTensorField<int>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<int>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeUInt :
-        return (algo.NrrdToTensorField<unsigned int>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<unsigned int>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeLLong :
-        return (algo.NrrdToTensorField<long long>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<long long>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeULLong :
-        return (algo.NrrdToTensorField<unsigned long long>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<unsigned long long>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeFloat :
-        return (algo.NrrdToTensorField<float>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<float>(pr,input,output,datalocation,spaceparity,datadim));
       case nrrdTypeDouble :
-        return (algo.NrrdToTensorField<double>(pr,input,output,datalocation,spaceparity,datadim));
+        return (algo.nrrdToTensorField<double>(pr,input,output,datalocation,spaceparity,datadim));
       default:
-        pr->error("NrrdToTensorField: This datatype is not supported");
+        pr->error("nrrdToTensorField: This datatype is not supported");
         return false;
     }
   }
   else
   {
-    pr->error("NrrdToField: Unknown field type");
+    pr->error("nrrdToField: Unknown field type");
     return false;
   }
 

@@ -30,6 +30,8 @@
 #ifndef CORE_ALGORITHMS_CONVERTER_NRRDTOFIELD_H
 #define CORE_ALGORITHMS_CONVERTER_NRRDTOFIELD_H 1
 
+#include <Core/Logging/LoggerFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Legacy/Converter/share.h>
 
 namespace SCIRun
@@ -38,16 +40,14 @@ namespace SCIRun
   {
     namespace Algorithms
     {
-
-class SCISHARE NrrdToFieldAlgo
-{
-public:
-  bool nrrdToField(Core::Logging::LoggerHandle pr, NrrdDataHandle input, FieldHandle& output,
-    const std::string& datalocation = "Auto",
-    const std::string& fieldtype = "Auto",
-    const std::string& correctparity = "Make Right Hand Sided");
-};
-
+      class SCISHARE NrrdToFieldAlgo
+      {
+      public:
+        bool nrrdToField(Core::Logging::LoggerHandle pr, NrrdDataHandle input, FieldHandle& output,
+          const std::string& datalocation = "Auto",
+          const std::string& fieldtype = "Auto",
+          const std::string& correctparity = "Make Right Hand Sided");
+      };
 }}}
 
 #endif

@@ -30,6 +30,8 @@
 #ifndef CORE_ALGORITHMS_CONVERTER_FIELDTONRRD_H
 #define CORE_ALGORITHMS_CONVERTER_FIELDTONRRD_H 1
 
+#include <Core/Logging/LoggerFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Legacy/Converter/share.h>
 
 namespace SCIRun
@@ -39,11 +41,11 @@ namespace SCIRun
     namespace Algorithms
     {
 
-class SCISHARE FieldToNrrdAlgo
-{
-public:
-  bool fieldToNrrd(Core::Logging::LoggerHandle pr, FieldHandle input, NrrdDataHandle& output);
-};
+      class SCISHARE FieldToNrrdAlgo
+      {
+      public:
+        bool fieldToNrrd(Core::Logging::LoggerHandle pr, FieldHandle input, NrrdDataHandle& output);
+      };
 
 }}}
 
