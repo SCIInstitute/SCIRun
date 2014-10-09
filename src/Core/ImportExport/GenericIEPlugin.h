@@ -330,11 +330,11 @@ std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>&
     types << ";;" << name;
     if (!pl->fileExtension().empty())
     {
-      types << " (*." << pl->fileExtension() << ")";
+      types << " (" << pl->fileExtension() << ")";
     }
     else
     {
-      types << " (.*)";
+      types << " (*.*)";
     }
   }
 

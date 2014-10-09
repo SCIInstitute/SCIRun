@@ -151,7 +151,6 @@ bool DataIOAlgo::ReadNrrd(const std::string& filename, NrrdDataHandle& nrrd, con
     return (false);
   }
 
-
   // Somehow we do not have support in the wrapper class for reading and writing nrrds
 
   if (filename.size() > 4)
