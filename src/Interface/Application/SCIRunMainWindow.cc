@@ -252,8 +252,9 @@ void SCIRunMainWindow::postConstructionSignalHookup()
 {
   connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
 
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
+  WidgetDisablingService::Instance().addNetworkEditor(networkEditor_);
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), &WidgetDisablingService::Instance(), SLOT(disableInputWidgets()));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), &WidgetDisablingService::Instance(), SLOT(enableInputWidgets()));
 
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
@@ -293,8 +294,10 @@ void SCIRunMainWindow::setTipsAndWhatsThis()
 
 void SCIRunMainWindow::setupInputWidgets()
 {
+  // will be slicker in C++11
   using namespace boost::assign;
-  inputWidgets_ += actionExecute_All_,
+  std::vector<InputWidget> widgets;
+  widgets += actionExecute_All_,
     actionSave_,
     actionLoad_,
     actionSave_As_,
@@ -302,11 +305,12 @@ void SCIRunMainWindow::setupInputWidgets()
     actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
-  std::copy(recentFileActions_.begin(), recentFileActions_.end(), std::back_inserter(inputWidgets_));
-
 #ifdef BUILD_WITH_PYTHON
-  inputWidgets_ += pythonConsole_;
+  widgets += pythonConsole_;
 #endif
+
+  WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
+  WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
 }
 
 SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
@@ -615,38 +619,6 @@ void SCIRunMainWindow::makePipesEuclidean()
 void SCIRunMainWindow::makePipesManhattan()
 {
   networkEditor_->setConnectionPipelineType(MANHATTAN);
-}
-
-namespace
-{
-  class SetDisableFlag : public boost::static_visitor<>
-  {
-  public:
-    explicit SetDisableFlag(bool flag) : flag_(flag) {}
-    template <typename T>
-    void operator()( T* widget ) const
-    {
-      widget->setDisabled(flag_);
-    }
-    bool flag_;
-  };
-
-  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets, bool flag)
-  {
-    std::for_each(widgets.begin(), widgets.end(), [=](InputWidget& v) { boost::apply_visitor(SetDisableFlag(flag), v); });
-  }
-}
-
-void SCIRunMainWindow::disableInputWidgets()
-{
-  networkEditor_->disableInputWidgets();
-  setWidgetsDisableFlag(inputWidgets_, true);
-}
-
-void SCIRunMainWindow::enableInputWidgets()
-{
-  networkEditor_->enableInputWidgets();
-  setWidgetsDisableFlag(inputWidgets_, false);
 }
 
 void SCIRunMainWindow::chooseBackgroundColor()

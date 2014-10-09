@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
+#include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
+#include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshBySelection.h>
 
-#ifndef CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H
-#define CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H 1
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
+typedef SCIRun::Modules::Fields::ClipFieldByFunction ClipFieldDataModule;
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+ClipFieldByFunctionDialog::ClipFieldByFunctionDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  
+  addTextEditManager(expressionTextEdit_, ClipFieldDataModule::FunctionString);
+  addComboBoxManager(clippingLocationComboBox_, Parameters::ClipMethod);
+}
 
-namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
-
-        class SCISHARE JoinFieldsAlgo : public AlgorithmBase
-        {
-        public:
-          JoinFieldsAlgo();
-          bool runImpl(const FieldList& input, FieldHandle& output) const;
-
-          static AlgorithmParameterName MergeNodes;
-          static AlgorithmParameterName MergeElems;
-          static AlgorithmParameterName Tolerance;
-          static AlgorithmParameterName MatchNodeValues;
-          static AlgorithmParameterName MakeNoData;
-
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
-        };
-
-}}}}
-
-#endif
+void ClipFieldByFunctionDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

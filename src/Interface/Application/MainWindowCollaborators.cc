@@ -78,3 +78,47 @@ NotePosition ComboBoxDefaultNotePositionGetter::position() const
 {
   return NotePosition(combo_.currentIndex() + 1);
 }
+
+CORE_SINGLETON_IMPLEMENTATION( WidgetDisablingService )
+
+namespace
+{
+  class SetDisableFlag : public boost::static_visitor<>
+  {
+  public:
+    explicit SetDisableFlag(bool flag) : flag_(flag) {}
+    template <typename T>
+    void operator()( T* widget ) const
+    {
+      widget->setDisabled(flag_);
+    }
+    bool flag_;
+  };
+
+  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets, bool flag)
+  {
+    std::for_each(widgets.begin(), widgets.end(), [=](InputWidget& v) { boost::apply_visitor(SetDisableFlag(flag), v); });
+  }
+}
+
+void WidgetDisablingService::addNetworkEditor(NetworkEditor* ne) 
+{
+  ne_ = ne;
+}
+
+void WidgetDisablingService::addWidget(const InputWidget& w)
+{
+  inputWidgets_.push_back(w);
+}
+
+void WidgetDisablingService::disableInputWidgets()
+{
+  ne_->disableInputWidgets();
+  setWidgetsDisableFlag(inputWidgets_, true);
+}
+
+void WidgetDisablingService::enableInputWidgets()
+{
+  ne_->enableInputWidgets();
+  setWidgetsDisableFlag(inputWidgets_, false);
+}

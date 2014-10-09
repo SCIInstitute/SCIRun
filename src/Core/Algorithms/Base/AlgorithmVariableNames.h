@@ -62,6 +62,7 @@ public:
   static const AlgorithmInputName InputField;
   static const AlgorithmInputName ObjectField;
   static const AlgorithmInputName ListOfInputFields;
+  static const AlgorithmInputName InputFields;
   static const AlgorithmInputName Source;
   static const AlgorithmInputName Destination;
 

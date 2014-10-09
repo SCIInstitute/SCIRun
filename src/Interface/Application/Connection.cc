@@ -34,6 +34,7 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
+#include <Interface/Application/MainWindowCollaborators.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 
@@ -184,7 +185,7 @@ namespace SCIRun
     public:
       ConnectionMenu(QWidget* parent = 0) : QMenu(parent)
       {
-        addAction(deleteAction);
+        addWidgetToExecutionDisableList(addAction(deleteAction));
         addAction(insertModuleAction)->setDisabled(true);
         addAction(disableEnableAction)->setDisabled(true);
         notesAction_ = addAction(editNotesAction);

@@ -210,7 +210,7 @@ Log::Log(const std::string& name) : impl_(new LogImpl(name))
 
 void Log::init()
 {
-  *this << INFO << "Logging to file: " << impl_->file_.string() << std::endl;
+  *this << DEBUG_LOG << "Logging to file: " << impl_->file_.string() << std::endl;
 }
 
 boost::filesystem::path Log::directory_(ApplicationHelper::configDirectory());

@@ -17,11 +17,11 @@ https://github.com/SCIInstitute/SCIRun
 	- [In Progress](#user-content-in-progress)
 	- [Planned Features for Next Release](#user-content-planned-features-for-next-release)
 	- [Limitations](#user-content-limitations)
+	- [Documentation](#user-content-documentation)
 	- [Platform Notes](#user-content-platform-notes)
 		- [Build requirements](#user-content-build-requirements)
 		- [CMake Build Generators](#user-content-cmake-build-generators)
 		- [Unix Makefiles notes](#user-content-unix-makefiles-notes)
-	- [Documentation](#user-content-documentation)
 	- [Questions and Answers](#user-content-questions-and-answers)
 	- [License and Credits](#user-content-license-and-credits)
 
@@ -89,6 +89,9 @@ efficient middle layer, with support for Python scripting.
 * Cannot load SCIRun 4 network files
 * Limited set of modules at the moment
 
+### Documentation
+For documentation, please see: http://sciinstitute.github.io/SCIRun/
+
 ### Platform Notes
 #### Build requirements
 * OS X (tested on 10.7 and 10.8)
@@ -122,9 +125,6 @@ efficient middle layer, with support for Python scripting.
 * Boost must be built before the SCIRun libraries.
 * Parallel make builds can be used as long the Boost target is built first, for example:
   - make -j4 Boost_external && make -j4
-
-### Documentation
-For documentation, please see: http://sciinstitute.github.io/SCIRun/
 
 ### Questions and Answers
 For help, email the testing mailing list at scirun5-testers@sci.utah.edu.
