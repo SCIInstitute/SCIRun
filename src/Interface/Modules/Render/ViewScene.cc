@@ -196,39 +196,39 @@ void ViewSceneDialog::viewAxisSelected(int index)
 	mUpVectorBox->addItem("------");
 	switch (index)
 	{
-	case 0:
+    case 0: //default selection no value
 		break;
-	case 1:
+    case 1: //Look down on +X Vector
 		mUpVectorBox->addItem("+Y");
 		mUpVectorBox->addItem("-Y");
 		mUpVectorBox->addItem("+Z");
 		mUpVectorBox->addItem("-Z");
 		break;
-	case 2:
+    case 2: //Look down on +Y Vector
 		mUpVectorBox->addItem("+X");
 		mUpVectorBox->addItem("-X");
 		mUpVectorBox->addItem("+Z");
 		mUpVectorBox->addItem("-Z");
 		break;
-	case 3:
+    case 3: //Look down on +Z Vector
 		mUpVectorBox->addItem("+X");
 		mUpVectorBox->addItem("-X");
 		mUpVectorBox->addItem("+Y");
 		mUpVectorBox->addItem("-Y");
 		break;
-	case 4:
+    case 4: //Look down on -X Vector
 		mUpVectorBox->addItem("+Y");
 		mUpVectorBox->addItem("-Y");
 		mUpVectorBox->addItem("+Z");
 		mUpVectorBox->addItem("-Z");
 		break;
-	case 5:
+    case 5: //Look down on -Y Vector
 		mUpVectorBox->addItem("+X");
 		mUpVectorBox->addItem("-X");
 		mUpVectorBox->addItem("+Z");
 		mUpVectorBox->addItem("-Z");
 		break;
-	case 6:
+    case 6: //Look down on -Z Vector
 		mUpVectorBox->addItem("+X");
 		mUpVectorBox->addItem("-X");
 		mUpVectorBox->addItem("+Y");
@@ -241,8 +241,138 @@ void ViewSceneDialog::viewAxisSelected(int index)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewVectorSelected(int index)
 {
-	//mDownViewBox->setCurrentIndex(0);
+    int downIndex = mDownViewBox->currentIndex();
+    switch(downIndex)
+    {
+    case 0:
+        return;
+    case 1:
+        lookDownPosX(index);
+        break;
+    case 2:
+        lookDownPosY(index);
+        break;
+    case 3:
+        lookDownPosZ(index);
+        break;
+    case 4:
+        lookDownNegX(index);
+        break;
+    case 5:
+        lookDownNegY(index);
+        break;
+    case 6:
+        lookDownNegZ(index);
+        break;
+    }
+
 	viewBarButtonClicked();
+}
+
+void ViewSceneDialog::lookDownPosX(int upIndex)
+{
+    switch(upIndex)
+    {
+    case 0:
+        break;
+    case 1: //+Y axis
+        break;
+    case 2: //-Y axis
+        break;
+    case 3: //+Z axis
+        break;
+    case 4: //-Z axis
+        break;
+    }
+
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+}
+void ViewSceneDialog::lookDownPosY(int upIndex)
+{
+    switch(upIndex)
+    {
+    case 0:
+        break;
+    case 1: //+X axis
+        break;
+    case 2: //-X axis
+        break;
+    case 3: //+Z axis
+        break;
+    case 4: //-Z axis
+        break;
+    }
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+}
+void ViewSceneDialog::lookDownPosZ(int upIndex)
+{
+    switch(upIndex)
+    {
+    case 0:
+        break;
+    case 1: //+X axis
+        break;
+    case 2: //-X axis
+        break;
+    case 3: //+Y axis
+        break;
+    case 4: //-Y axis
+        break;
+    }
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+}
+void ViewSceneDialog::lookDownNegX(int upIndex)
+{
+    switch(upIndex)
+    {
+    case 0:
+        break;
+    case 1: //+Y axis
+        break;
+    case 2: //-Y axis
+        break;
+    case 3: //+Z axis
+        break;
+    case 4: //-Z axis
+        break;
+    }
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+}
+
+void ViewSceneDialog::lookDownNegY(int upIndex)
+{
+    switch(upIndex)
+    {
+    case 0:
+        break;
+    case 1: //+X axis
+        break;
+    case 2: //-X axis
+        break;
+    case 3: //+Z axis
+        break;
+    case 4: //-Z axis
+        break;
+    }
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+}
+
+void ViewSceneDialog::lookDownNegZ(int upIndex)
+{
+    switch(upIndex)
+    {
+    case 0:
+        break;
+    case 1: //+X axis
+        break;
+    case 2: //-X axis
+        break;
+    case 3: //+Y axis
+        break;
+    case 4: //-Y axis
+        break;
+    }
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
 }
 
 //------------------------------------------------------------------------------

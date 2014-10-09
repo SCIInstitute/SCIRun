@@ -90,6 +90,13 @@ private:
   void addViewBar();
   void addViewOptions();
 
+  void lookDownPosX(int upIndex);
+  void lookDownPosY(int upIndex);
+  void lookDownPosZ(int upIndex);
+  void lookDownNegX(int upIndex);
+  void lookDownNegY(int upIndex);
+  void lookDownNegZ(int upIndex);
+
   GLWidget*                             mGLWidget;		///< GL widget containing context.
   std::weak_ptr<Render::SRInterface>    mSpire;			///< Instance of Spire.
   QToolBar*                             mToolBar;		///< Tool bar.
