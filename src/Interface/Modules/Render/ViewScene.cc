@@ -186,6 +186,7 @@ void ViewSceneDialog::viewBarButtonClicked()
 {
 	hideViewBar_ = !hideViewBar_;
 	mViewBar->setHidden(hideViewBar_);
+	mDownViewBox->setCurrentIndex(0);
 }
 
 //------------------------------------------------------------------------------
@@ -242,137 +243,107 @@ void ViewSceneDialog::viewAxisSelected(int index)
 void ViewSceneDialog::viewVectorSelected(int index)
 {
     int downIndex = mDownViewBox->currentIndex();
+	glm::vec3 up = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 view = glm::vec3(0.0f, 0.0f, 0.0f);
     switch(downIndex)
     {
     case 0:
-        return;
-    case 1:
-        lookDownPosX(index);
         break;
-    case 2:
-        lookDownPosY(index);
+    case 1:	//+X axis view
+		view.x = 1.0f;
+		lookDownAxisX(index, up);
         break;
-    case 3:
-        lookDownPosZ(index);
+    case 2:	//+Y axis view
+		view.y = 1.0f;
+		lookDownAxisY(index, up);
         break;
-    case 4:
-        lookDownNegX(index);
+    case 3:	//+Z axis view
+		view.z = 1.0f;
+		lookDownAxisZ(index, up);
         break;
-    case 5:
-        lookDownNegY(index);
+    case 4:	//-X axis view
+		view.x = -1.0f;
+		lookDownAxisX(index, up);
         break;
-    case 6:
-        lookDownNegZ(index);
+	case 5:	//-Y axis view
+		view.y = 1.0f;
+		lookDownAxisY(index, up);
+        break;
+	case 6:	//-Z axis view
+		view.z = -1.0f;
+		lookDownAxisZ(index, up);
         break;
     }
-
-	viewBarButtonClicked();
+	if (index > 0)
+	{
+		std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+		spire->setView(view, up);
+		viewBarButtonClicked();
+	}
 }
 
-void ViewSceneDialog::lookDownPosX(int upIndex)
+//------------------------------------------------------------------------------
+void ViewSceneDialog::lookDownAxisX(int upIndex, glm::vec3& up)
 {
     switch(upIndex)
     {
     case 0:
         break;
     case 1: //+Y axis
+		up.y = 1.0f;
         break;
     case 2: //-Y axis
+		up.y = -1.0f;
         break;
     case 3: //+Z axis
+		up.z = 1.0f;
         break;
     case 4: //-Z axis
-        break;
+		up.z = -1.0f;
+		break;
     }
+}
 
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-}
-void ViewSceneDialog::lookDownPosY(int upIndex)
+void ViewSceneDialog::lookDownAxisY(int upIndex, glm::vec3& up)
 {
     switch(upIndex)
     {
     case 0:
         break;
     case 1: //+X axis
+		up.x = 1.0f;
         break;
     case 2: //-X axis
+		up.x = -1.0f;
         break;
     case 3: //+Z axis
+		up.z = 1.0f;
         break;
     case 4: //-Z axis
+		up.z = -1.0f;
         break;
     }
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
 }
-void ViewSceneDialog::lookDownPosZ(int upIndex)
+
+void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 {
     switch(upIndex)
     {
     case 0:
         break;
     case 1: //+X axis
+		up.x = 1.0f;
         break;
     case 2: //-X axis
+		up.x = -1.0f;
         break;
     case 3: //+Y axis
+		up.y = 1.0f;
         break;
     case 4: //-Y axis
+		up.y = -1.0f;
         break;
     }
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-}
-void ViewSceneDialog::lookDownNegX(int upIndex)
-{
-    switch(upIndex)
-    {
-    case 0:
-        break;
-    case 1: //+Y axis
-        break;
-    case 2: //-Y axis
-        break;
-    case 3: //+Z axis
-        break;
-    case 4: //-Z axis
-        break;
-    }
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-}
-
-void ViewSceneDialog::lookDownNegY(int upIndex)
-{
-    switch(upIndex)
-    {
-    case 0:
-        break;
-    case 1: //+X axis
-        break;
-    case 2: //-X axis
-        break;
-    case 3: //+Z axis
-        break;
-    case 4: //-Z axis
-        break;
-    }
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-}
-
-void ViewSceneDialog::lookDownNegZ(int upIndex)
-{
-    switch(upIndex)
-    {
-    case 0:
-        break;
-    case 1: //+X axis
-        break;
-    case 2: //-X axis
-        break;
-    case 3: //+Y axis
-        break;
-    case 4: //-Y axis
-        break;
-    }
-    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
 }
 
 //------------------------------------------------------------------------------
@@ -402,7 +373,7 @@ void ViewSceneDialog::addMouseMenu()
 void ViewSceneDialog::addAutoViewButton()
 {
   QPushButton* autoViewBtn = new QPushButton(this);
-  autoViewBtn->setToolTip("View Entire Object");
+  autoViewBtn->setToolTip("Fit Object to Screen");
   autoViewBtn->setText("Auto View");
   autoViewBtn->setAutoDefault(false);
   autoViewBtn->setDefault(false);

@@ -217,9 +217,9 @@ void SRInterface::doAutoView()
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::setView(const glm::ivec2 &pos)
+void SRInterface::setView(const glm::vec3& view, const glm::vec3& up)
 {
-    mCamera->setView(pos);
+    mCamera->setView(view, up);
 }
 
 //------------------------------------------------------------------------------

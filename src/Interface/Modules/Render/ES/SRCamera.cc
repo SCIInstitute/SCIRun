@@ -145,10 +145,9 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 }
 
 //------------------------------------------------------------------------------
-void SRCamera::setView(const glm::ivec2 &pos)
+void SRCamera::setView(const glm::vec3& view, const glm::vec3& up)
 {
-    glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
-    mArcLookAt->doRotation(screenSpace);
+    mArcLookAt->setView(view, up);
 }
 
 //------------------------------------------------------------------------------

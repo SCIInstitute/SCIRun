@@ -42,6 +42,8 @@
 #include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/share.h>
 
+#include <glm/glm.hpp>
+
 //TODO: needs to inherit from ModuleWidget somehow
 class QToolBar;
 class QStandardItemModel;
@@ -90,12 +92,9 @@ private:
   void addViewBar();
   void addViewOptions();
 
-  void lookDownPosX(int upIndex);
-  void lookDownPosY(int upIndex);
-  void lookDownPosZ(int upIndex);
-  void lookDownNegX(int upIndex);
-  void lookDownNegY(int upIndex);
-  void lookDownNegZ(int upIndex);
+  void lookDownAxisX(int upIndex, glm::vec3& up);
+  void lookDownAxisY(int upIndex, glm::vec3& up);
+  void lookDownAxisZ(int upIndex, glm::vec3& up);
 
   GLWidget*                             mGLWidget;		///< GL widget containing context.
   std::weak_ptr<Render::SRInterface>    mSpire;			///< Instance of Spire.

@@ -78,7 +78,7 @@ public:
   void doAutoView(const Core::Geometry::BBox& bbox);
 
   /// Sets the selected View of the window
-  void setView(const glm::ivec2& pos);
+  void setView(const glm::vec3& view, const glm::vec3& up);
 
   /// Default camera settings
   /// @{
