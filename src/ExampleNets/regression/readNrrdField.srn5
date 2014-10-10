@@ -38,7 +38,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>NrrdFile</value>
+										<value>NrrdFile[DataOnElements]</value>
 									</value>
 								</second>
 							</item>

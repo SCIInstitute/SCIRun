@@ -39,7 +39,7 @@
 namespace SCIRun {
 namespace Modules {
 namespace DataIO {
-  
+
   class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
   {
   public:
@@ -49,8 +49,10 @@ namespace DataIO {
     virtual void setStateDefaults() {}
     virtual bool useCustomImporter(const std::string& filename) const override;
     virtual bool call_importer(const std::string& filename, FieldHandle& handle) override;
-    
+
     OUTPUT_PORT(0, Field, LegacyField);
+
+    static std::string fileTypeList();
   };
 
 }}}
