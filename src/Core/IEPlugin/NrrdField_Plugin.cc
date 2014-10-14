@@ -29,7 +29,6 @@
 
 #include <Core/Algorithms/Legacy/DataIO/DataIOAlgo.h>
 #include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/IEPlugin/NrrdField_Plugin.h>
 
 using namespace SCIRun;
