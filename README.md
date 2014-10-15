@@ -1,4 +1,4 @@
-![alt text](http://www.sci.utah.edu/images/banners/splash-scirun.png "")
+![SCIRun Banner](http://www.sci.utah.edu/images/software/SCIRun/scirun.png "")
 
 ## SCIRun 5
 https://github.com/SCIInstitute/SCIRun
