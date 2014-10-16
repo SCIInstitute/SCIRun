@@ -29,16 +29,31 @@
 # CMakeLists.txt for Core/Matlab
 
 SET(Core_Matlab_SRCS
+  fieldtomatlab.cc
   matfile.cc
   matfiledata.cc
   matlabarray.cc
-  matlabfile.cc
   matlabconverter.cc
-  fieldtomatlab.cc
+  matlabfile.cc
   matlabtofield.cc
 )
 
-SCIRUN_ADD_LIBRARY(Core_Matlab ${Core_Matlab_SRCS})
+SET(Core_Matlab_HEADERS
+  fieldtomatlab.h
+  matfile.h
+  matfilebase.h
+  matfiledata.h
+  matfiledefs.h
+  matfiletemplate.h
+  matlabarray.h
+  matlabconverter.h
+  matlabfile.h
+  MatlabIO.h
+  matlabtofield.h
+  share.h
+)
+
+ADD_LIBRARY(Core_Matlab ${Core_Matlab_SRCS})
 
 TARGET_LINK_LIBRARIES(Core_Matlab
   Core_Datatypes
