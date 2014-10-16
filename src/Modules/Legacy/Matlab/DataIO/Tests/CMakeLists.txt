@@ -44,6 +44,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Matlab_DataIO_Tests
   Modules_Factory
   Dataflow_State
   Testing_Utils
+  Testing_ModuleTestBase
   Algorithms_Factory
   gtest_main
   gtest

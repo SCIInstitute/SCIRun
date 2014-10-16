@@ -45,24 +45,24 @@ ADD_LIBRARY(Modules_Legacy_Matlab_DataIO
 )
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Matlab_DataIO
-  Core_Persistent
+  #Core_Persistent
   #Core_Util
   #Core_Exceptions
-  Core_Thread
+  #Core_Thread
   #Dataflow_GuiInterface
   Core_Datatypes
-  Core_Geometry
+  #Core_Geometry
   #Core_GeomInterface
   #Dataflow_TkExtensions
-  #Dataflow_Network
+  Dataflow_Network
   #Core_XMLUtil
-  Core_Matlab
+  #Core_Matlab
   #Core_Services
   #Core_ICom
   #Core_SystemCall
   ${SCI_TEEM_LIBRARY}
   ${SCI_ZLIB_LIBRARY}
-#  ${M_LIBRARY}
+  #${M_LIBRARY}
   #${TK_LIBRARY}
   #${GL_LIBRARY}
 )

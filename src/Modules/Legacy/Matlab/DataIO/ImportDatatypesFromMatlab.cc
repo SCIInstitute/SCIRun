@@ -26,12 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/* 
- * This module reads a matlab file and converts it to a SCIRun matrix
- *
- */
+#include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+
+using namespace SCIRun::Modules::Matlab::DataIO;
+//using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+
+const ModuleLookupInfo ImportDatatypesFromMatlab::staticInfo_("ImportDatatypesFromMatlab", "DataIO", "Matlab");
+
+ImportDatatypesFromMatlab::ImportDatatypesFromMatlab() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(FilenameOut);
+}
+
+void ImportDatatypesFromMatlab::setStateDefaults()
+{
+
+}
+
+void ImportDatatypesFromMatlab::execute()
+{
+}
 
 
+#if 0
 #include <sstream>
 #include <string>
 #include <vector>
@@ -508,3 +534,5 @@ void ImportDatatypesFromMatlab::displayerror(std::string str)
 
 
 } // End namespace MatlabIO
+
+#endif

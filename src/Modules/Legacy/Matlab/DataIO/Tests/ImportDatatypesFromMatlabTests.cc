@@ -26,22 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Dataflow/Network/Network.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
-#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/String.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Matlab::DataIO;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Networks::Mocks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+// using ::testing::_;
+// using ::testing::NiceMock;
+// using ::testing::DefaultValue;
+// using ::testing::Return;
 
-/// @todo 
+class ImportDatatypesFromMatlabModuleTest : public ModuleTest
+{
+
+};
+
+TEST_F(ImportDatatypesFromMatlabModuleTest, ThrowsForNullInput)
+{
+  auto csdf = makeModule("ImportDatatypesFromMatlab");
+  StringHandle nullField;
+  stubPortNWithThisData(csdf, 0, nullField);
+
+  EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
+}
+
+TEST_F(ImportDatatypesFromMatlabModuleTest, DISABLED_Foo)
+{
+  FAIL() << "TODO";
+}
