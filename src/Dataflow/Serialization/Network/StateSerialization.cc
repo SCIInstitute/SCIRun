@@ -39,6 +39,7 @@ SimpleMapModuleStateXML::SimpleMapModuleStateXML()
 
 SimpleMapModuleStateXML::SimpleMapModuleStateXML(const SimpleMapModuleState& state) : SimpleMapModuleState(state)
 {
+  //std::cout << "SMMSxml copy" << std::endl;
 }
 
 boost::shared_ptr<SimpleMapModuleStateXML> SCIRun::Dataflow::State::make_state_xml(SCIRun::Dataflow::Networks::ModuleStateHandle state)

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2010 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Module/DataIO/ReadField.h
+// File:   ConvertBundleToField.cc
+// Author: Fangxiang Jiao
+// Date:   March 25 2010
 
-#ifndef MODULES_DATAIO_READ_FIELD_H
-#define MODULES_DATAIO_READ_FIELD_H
+#ifndef CORE_ALGORITHMS_CONVERTER_CONVERTBUNDLETOFIELD_H
+#define CORE_ALGORITHMS_CONVERTER_CONVERTBUNDLETOFIELD_H 1
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+//! Datatypes used
+#include <Core/Datatypes/Bundle.h>
+#include <Core/Datatypes/Field.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
+//! Base for algorithm
+#include <Core/Algorithms/Util/AlgoBase.h>
 
-  class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
-  {
+//! for Windows support
+#include <Core/Algorithms/Converter/share.h>
+
+namespace SCIRunAlgo {
+
+class SCISHARE ConvertBundleToFieldAlgo : public AlgoBase
+{
   public:
-    typedef GenericReader<FieldHandle, FieldPortTag> my_base;
-    ReadFieldModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, FieldHandle& handle) override;
+    // Algorithm defaults
+    ConvertBundleToFieldAlgo();
+    ~ConvertBundleToFieldAlgo();
 
-    OUTPUT_PORT(0, Field, LegacyField);
+  public:
+    // Algorithm Functions
+    bool run(SCIRun::BundleHandle& input, SCIRun::FieldHandle& output);
+};
 
-    static std::string fileTypeList();
-  };
-
-}}}
+} // namespace SCIRunAlgo
 
 #endif
+

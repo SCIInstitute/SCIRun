@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Module/DataIO/ReadField.h
 
-#ifndef MODULES_DATAIO_READ_FIELD_H
-#define MODULES_DATAIO_READ_FIELD_H
+#ifndef CORE_ALGORITHMS_CONVERTER_NRRDTOFIELD_H
+#define CORE_ALGORITHMS_CONVERTER_NRRDTOFIELD_H 1
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+#include <Core/Logging/LoggerFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
-
-  class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
+namespace SCIRun
+{
+  namespace Core
   {
-  public:
-    typedef GenericReader<FieldHandle, FieldPortTag> my_base;
-    ReadFieldModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, FieldHandle& handle) override;
-
-    OUTPUT_PORT(0, Field, LegacyField);
-
-    static std::string fileTypeList();
-  };
-
+    namespace Algorithms
+    {
+      class SCISHARE NrrdToFieldAlgo
+      {
+      public:
+        bool nrrdToField(Core::Logging::LoggerHandle pr, NrrdDataHandle input, FieldHandle& output,
+          const std::string& datalocation = "Auto",
+          const std::string& fieldtype = "Auto",
+          const std::string& correctparity = "Make Right Hand Sided");
+      };
 }}}
 
 #endif

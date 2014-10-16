@@ -27,6 +27,7 @@
 */
 
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
+#include <Modules/DataIO/ReadField.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/ImportExport/GenericIEPlugin.h>
@@ -45,7 +46,7 @@ ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle stat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
@@ -57,7 +58,7 @@ void ReadFieldDialog::pull()
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
-void ReadFieldDialog::pushFileNameToState() 
+void ReadFieldDialog::pushFileNameToState()
 {
   auto file = fileNameLineEdit_->text().trimmed().toStdString();
   state_->setValue(Variables::Filename, file);
@@ -65,7 +66,7 @@ void ReadFieldDialog::pushFileNameToState()
 
 void ReadFieldDialog::openFile()
 {
-  auto types = state_->getValue(Variables::FileTypeList).toString();
+  auto types = Modules::DataIO::ReadFieldModule::fileTypeList();
   QString selectedFilter;
   auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter);
   if (file.length() > 0)

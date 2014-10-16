@@ -6,7 +6,7 @@
    Copyright (c) 2010 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,47 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- * Implementation notes:
- *
- * This reader does not read textures, just geometry.
- * 
- */
-
 #include <Core/IEPlugin/ObjToField_Plugin.h>
-#include <Core/Algorithms/Legacy/DataIO/ObjToFieldReader.h>
+#include <Core/IEPlugin/NrrdField_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/Logging/Log.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Core::Algorithms;
 
-FieldHandle SCIRun::ObjToField_reader(LoggerHandle pr, const char *filename)
+namespace SCIRun
 {
-  FieldHandle result;
-  ObjToFieldReader reader(pr);
-  std::string fn(filename);
-  if (! reader.read(fn, result))
-  {
-    if (pr) pr->error("Convert Obj to field failed.");
-    return (result);
-  }
-
-  return result;
+  template class GenericIEPluginManager<Field>;
 }
 
-bool SCIRun::FieldToObj_writer(LoggerHandle pr, FieldHandle fh, const char* filename)
+void IEPluginManager::Initialize()
 {
-  ObjToFieldReader writer(pr);
+  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "*.obj", "", ObjToField_reader, FieldToObj_writer);
 
-  if(!writer.write(std::string(filename), fh))
-  {
-    if (pr) pr->error("Converting field to Obj failed.");
-    return false;
-  }
-
-  return true;
+  static FieldIEPluginLegacyAdapter NrrdToField_plugin("NrrdFile","*.nhdr *.nrrd", "*.nrrd", NrrdToField_reader, FieldToNrrd_writer);
+  static FieldIEPluginLegacyAdapter NodalNrrdToField_plugin("NrrdFile[DataOnNodes]","*.nhdr *.nrrd", "", Nodal_NrrdToField_reader, 0);
+  static FieldIEPluginLegacyAdapter ModalNrrdToField_plugin("NrrdFile[DataOnElements]","*.nhdr *.nrrd", "", Modal_NrrdToField_reader, 0);
+  static FieldIEPluginLegacyAdapter IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","*.nhdr *.nrrd", "", IPNodal_NrrdToField_reader, 0);
+  static FieldIEPluginLegacyAdapter IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","*.nhdr *.nrrd", "", IPModal_NrrdToField_reader, 0);
 }

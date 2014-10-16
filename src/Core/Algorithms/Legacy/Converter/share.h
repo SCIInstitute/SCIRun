@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Module/DataIO/ReadField.h
+#undef SCISHARE
 
-#ifndef MODULES_DATAIO_READ_FIELD_H
-#define MODULES_DATAIO_READ_FIELD_H
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_Algorithms_Legacy_Converter
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
-
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
-
-  class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
-  {
-  public:
-    typedef GenericReader<FieldHandle, FieldPortTag> my_base;
-    ReadFieldModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, FieldHandle& handle) override;
-
-    OUTPUT_PORT(0, Field, LegacyField);
-
-    static std::string fileTypeList();
-  };
-
-}}}
-
+#if defined(min)
+#undef min
+#undef max
 #endif

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Module/DataIO/ReadField.h
 
-#ifndef MODULES_DATAIO_READ_FIELD_H
-#define MODULES_DATAIO_READ_FIELD_H
+#ifndef CORE_ALGORITHMS_CONVERTER_MATRIXTOFIELD_H
+#define CORE_ALGORITHMS_CONVERTER_MATRIXTOFIELD_H 1
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/share.h>
+#include <Core/Algorithms/Util/DynamicAlgo.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
+#include <Core/Algorithms/Converter/share.h>
 
-  class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
-  {
-  public:
-    typedef GenericReader<FieldHandle, FieldPortTag> my_base;
-    ReadFieldModule();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-    virtual bool useCustomImporter(const std::string& filename) const override;
-    virtual bool call_importer(const std::string& filename, FieldHandle& handle) override;
+namespace SCIRunAlgo {
 
-    OUTPUT_PORT(0, Field, LegacyField);
+using namespace SCIRun;
 
-    static std::string fileTypeList();
-  };
+class SCISHARE MatrixToFieldAlgo 
+{
+public:
+  bool MatrixToField(ProgressReporter *pr, MatrixHandle input, FieldHandle& output, const std::string& datalocation);
+};
 
-}}}
+} // end namespace SCIRunAlgo
 
-#endif
+#endif 
+

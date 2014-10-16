@@ -26,61 +26,44 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/Algorithms/DataIO classes
+# Sources of Core/Algorithms/Converter classes
 
-SET(Core_Algorithms_Legacy_DataIO_SRCS
-  DataIOAlgo.cc
-  #MRCReader.cc
-  ObjToFieldReader.cc
-  #StreamData/StreamACQFile.cc
+SET(Core_Algorithms_Legacy_Converter_SRCS
+  ConverterAlgo.cc
+  #MatrixToField.cc
+  NrrdToField.cc
+  FieldToNrrd.cc
+  #ConvertToNrrd.cc
+  #MatricesToDipoleField.cc
+  #ConvertBundleToField.cc
 )
 
-SET(Core_Algorithms_Legacy_DataIO_HEADERS
-  ObjToFieldReader.h
-  DataIOAlgo.h
+SET(Core_Algorithms_Legacy_Converter_HEADERS
+  ConverterAlgo.h
+  NrrdToField.h
+  FieldToNrrd.h
 )
 
-#IF(ITK_FOUND)
-#  SET(Core_Algorithms_Legacy_DataIO_SRCS
-#      ${Core_Algorithms_DataIO_SRCS}
-#      AnalyzeImage.cc
-#      AnalyzeReader.cc
-#      AnalyzeSliceImageIO.cc)
-#ENDIF(ITK_FOUND)
+ADD_LIBRARY(Core_Algorithms_Legacy_Converter
+  ${Core_Algorithms_Legacy_Converter_SRCS}
+  ${Core_Algorithms_Legacy_Converter_HEADERS})
 
-SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_DataIO
-  ${Core_Algorithms_Legacy_DataIO_SRCS}
-  ${Core_Algorithms_Legacy_DataIO_HEADERS}
-)
-
-TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO
-  #Core_Algorithms_Util
+TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Converter
   Algorithms_Base
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Nrrd
-  #Core_Thread
-  #Core_Exceptions
-  #Core_Geometry
   #Core_Util
-  Core_Math
-  Core_Persistent
+  #Core_Exceptions
+  #Core_Thread
   #Core_Geom
-  Core_ImportExport
-  #Core_Volume
-  #${SCI_TEEM_LIBRARY}
-  #${SCI_ZLIB_LIBRARY}
+  #Core_Geometry
+  #Core_Persistent
+  #Core_Basis
   #${M_LIBRARY}
+  #${SCI_TEEM_LIBRARY}
 )
 
-#IF(ITK_FOUND)
-#  TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO
-#    ITKCommon
-#    ITKIO
-#    ${GDCM_LIBRARY}
-#    ${GL_LIBRARY})
-#ENDIF(ITK_FOUND)
-
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_DataIO)
+  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Converter)
 ENDIF(BUILD_SHARED_LIBS)
