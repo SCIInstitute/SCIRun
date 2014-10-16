@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,27 +26,31 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(Basis)
-ADD_SUBDIRECTORY(Command)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(ConsoleApplication)
-ADD_SUBDIRECTORY(Containers)
-ADD_SUBDIRECTORY(DatabaseManager)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(Exceptions)
-ADD_SUBDIRECTORY(GeometryPrimitives)
-ADD_SUBDIRECTORY(ImportExport)
-ADD_SUBDIRECTORY(IEPlugin)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Matlab)
-ADD_SUBDIRECTORY(Persistent)
-ADD_SUBDIRECTORY(Utils)
-ADD_SUBDIRECTORY(Thread)
-ADD_SUBDIRECTORY(Parser)
+# CMakeLists.txt for Core/Matlab
 
-IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
-ENDIF()
+SET(Core_Matlab_SRCS
+  matfile.cc
+  matfiledata.cc
+  matlabarray.cc
+  matlabfile.cc
+  matlabconverter.cc
+  fieldtomatlab.cc
+  matlabtofield.cc
+)
+
+SCIRUN_ADD_LIBRARY(Core_Matlab ${Core_Matlab_SRCS})
+
+TARGET_LINK_LIBRARIES(Core_Matlab
+  Core_Datatypes
+  Core_Exceptions
+  Core_Thread
+  Core_Geometry
+  Core_Util
+  Core_Math
+  ${SCI_ZLIB_LIBRARY}
+  ${SCI_TEEM_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Matlab)
+ENDIF(BUILD_SHARED_LIBS)
