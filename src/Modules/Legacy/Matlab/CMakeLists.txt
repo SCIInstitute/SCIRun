@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,10 +26,7 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-#ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(FiniteElements)
-#ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Bundle)
-ADD_SUBDIRECTORY(Matlab)
+# CMakeLists.txt for Packages/MatlabInterface/Dataflow/Modules
+
+ADD_SUBDIRECTORY(DataIO)
+#ADD_SUBDIRECTORY(Interface)

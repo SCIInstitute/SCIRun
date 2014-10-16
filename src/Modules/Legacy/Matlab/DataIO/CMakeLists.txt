@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,10 +26,49 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-#ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(FiniteElements)
-#ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Bundle)
-ADD_SUBDIRECTORY(Matlab)
+# CMakeLists.txt for Packages/MatlabInterface/Dataflow/Modules/DataIO
+
+SET(Modules_Legacy_Matlab_DataIO_SRCS
+  ImportDatatypesFromMatlab.cc
+  #ExportDatatypesToMatlab.cc
+)
+
+SET(Modules_Legacy_Matlab_DataIO_HEADERS
+  ImportDatatypesFromMatlab.h
+  #ExportDatatypesToMatlab.h
+  share.h
+)
+
+ADD_LIBRARY(Modules_Legacy_Matlab_DataIO 
+  ${Modules_Legacy_Matlab_DataIO_SRCS}
+  ${Modules_Legacy_Matlab_DataIO_HEADERS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_Legacy_Matlab_DataIO
+  Core_Persistent
+  #Core_Util
+  #Core_Exceptions
+  Core_Thread
+  #Dataflow_GuiInterface
+  Core_Datatypes
+  Core_Geometry
+  #Core_GeomInterface
+  #Dataflow_TkExtensions
+  #Dataflow_Network
+  #Core_XMLUtil
+  Core_Matlab
+  #Core_Services
+  #Core_ICom
+  #Core_SystemCall
+  ${SCI_TEEM_LIBRARY}
+  ${SCI_ZLIB_LIBRARY}
+#  ${M_LIBRARY}
+  #${TK_LIBRARY}
+  #${GL_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Matlab_DataIO)
+ENDIF(BUILD_SHARED_LIBS)
+
+SCIRUN_ADD_TEST_DIR(Tests)

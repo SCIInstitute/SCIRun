@@ -26,10 +26,27 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-#ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(FiniteElements)
-#ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Bundle)
-ADD_SUBDIRECTORY(Matlab)
+SET(Modules_Legacy_Matlab_DataIO_Tests_SRCS
+  ImportDatatypesFromMatlabTests.cc
+  #ExportDatatypesFromMatlabTests.cc
+)
+
+#SET(Engine_Network_Tests_HEADERS
+#  NetworkEditorControllerTests_.h
+#)
+
+SCIRUN_ADD_UNIT_TEST(Modules_Legacy_Matlab_DataIO_Tests
+  ${Modules_Legacy_Matlab_DataIO_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_Legacy_Matlab_DataIO_Tests
+  Modules_Legacy_Matlab_DataIO
+  Modules_Factory
+  Dataflow_State
+  Testing_Utils
+  Algorithms_Factory
+  gtest_main
+  gtest
+  gmock
+  ${SCI_BOOST_LIBRARY}
+)
