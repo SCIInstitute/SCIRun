@@ -43,12 +43,13 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <boost/assign/std/vector.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
-
+using namespace boost::assign;
 
 // Currently the property converter only manages strings
 // all other data is ignored both on Matlab side as well
@@ -1366,19 +1367,16 @@ void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHa
     }
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void matlabconverter::sciNrrdDataTOmlMatrix(NrrdDataHandle scinrrd, matlabarray &mlarray)
 {
-
-  Nrrd *nrrdptr;
   matlabarray::mitype dataformat = datatype_;
 
   mlarray.clear();
 
   // first determine the size of a nrrd
   std::vector<int> dims;
-  nrrdptr = scinrrd->getNrrd();
-  
+  const Nrrd *nrrdptr = scinrrd->getNrrd();
+
   if (!nrrdptr)
   {
     return;
@@ -1386,55 +1384,53 @@ void matlabconverter::sciNrrdDataTOmlMatrix(NrrdDataHandle scinrrd, matlabarray 
 
   // check if there is any data 
   if (nrrdptr->dim == 0) return;
-      
+
   dims.resize(nrrdptr->dim);
-        
+
   int totsize = 1; // this one is used as an internal check and is handy to have
   for (int p=0; p<static_cast<int>(nrrdptr->dim);p++)
   {
     dims[p] = nrrdptr->axis[p].size;
     totsize *= dims[p];
   }
-      
+
   // if there is no data leave the object empty
   if (totsize == 0) return;
-        
+
   // we now have to determine the type of the Matlab array
   // It can be either the same as in the nrrd array or casted
   // to a more appropriate type
   // type will store the new Matlab array type
-        
+
   if(dataformat == matlabarray::miSAMEASDATA) dataformat = convertnrrdtype(nrrdptr->type);
-        
+
   // create the Matlab array structure
   mlarray.createdensearray(dims,dataformat);
-        
+
   // having the correct pointer type will automatically invoke
   // the proper template function for casting and storing the data
-  
+
   if (nrrdptr->data)
   {            
     switch (nrrdptr->type)
-      {
-      case nrrdTypeDouble  : mlarray.setnumericarray(static_cast<double *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeFloat   : mlarray.setnumericarray(static_cast<float *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeChar    : mlarray.setnumericarray(static_cast<signed char *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeUChar   : mlarray.setnumericarray(static_cast<unsigned char *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeShort   : mlarray.setnumericarray(static_cast<signed short *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeUShort  : mlarray.setnumericarray(static_cast<unsigned short *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeInt     : mlarray.setnumericarray(static_cast<signed int *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeUInt    : mlarray.setnumericarray(static_cast<unsigned int *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeLLong   : mlarray.setnumericarray(static_cast<int64_t *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeULLong  : mlarray.setnumericarray(static_cast<uint64_t *>(nrrdptr->data),totsize,dataformat); break;   
-      }
+    {
+    case nrrdTypeDouble  : mlarray.setnumericarray(static_cast<double *>(nrrdptr->data),totsize,dataformat); break;
+    case nrrdTypeFloat   : mlarray.setnumericarray(static_cast<float *>(nrrdptr->data),totsize,dataformat); break;
+    case nrrdTypeChar    : mlarray.setnumericarray(static_cast<signed char *>(nrrdptr->data),totsize,dataformat); break;
+    case nrrdTypeUChar   : mlarray.setnumericarray(static_cast<unsigned char *>(nrrdptr->data),totsize,dataformat); break;
+    case nrrdTypeShort   : mlarray.setnumericarray(static_cast<signed short *>(nrrdptr->data),totsize,dataformat); break;
+    case nrrdTypeUShort  : mlarray.setnumericarray(static_cast<unsigned short *>(nrrdptr->data),totsize,dataformat); break;
+    case nrrdTypeInt     : mlarray.setnumericarray(static_cast<signed int *>(nrrdptr->data),totsize,dataformat); break;
+    case nrrdTypeUInt    : mlarray.setnumericarray(static_cast<unsigned int *>(nrrdptr->data),totsize,dataformat); break;
+    case nrrdTypeLLong   : mlarray.setnumericarray(static_cast<int64_t *>(nrrdptr->data),totsize,dataformat); break;
+    case nrrdTypeULLong  : mlarray.setnumericarray(static_cast<uint64_t *>(nrrdptr->data),totsize,dataformat); break;   
+    }
   }
 }
 
-
 void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle scinrrd, matlabarray &mlarray)
 {
-
-  if (numericarray_ == true)
+  if (numericarray_)
   {
     sciNrrdDataTOmlMatrix(scinrrd,mlarray);
     return;
@@ -1446,15 +1442,9 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle scinrrd, matlabarray &
   mlarray.createstructarray();
   mlarray.setfield(0,"data",matrix);
                 
-  // Set the properies of the axis
-  std::vector<std::string> axisfieldnames(7);
-  axisfieldnames[0] = "size";
-  axisfieldnames[1] = "spacing";
-  axisfieldnames[2] = "min";
-  axisfieldnames[3] = "max";
-  axisfieldnames[4] = "center";
-  axisfieldnames[5] = "label";
-  axisfieldnames[6] = "unit";
+  // Set the properties of the axis
+  std::vector<std::string> axisfieldnames;
+  axisfieldnames += "size", "spacing", "min", "max", "center", "label", "unit";
         
   Nrrd  *nrrdptr;
   nrrdptr = scinrrd->getNrrd();
@@ -1520,7 +1510,6 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle scinrrd, matlabarray &
   sciPropertyTOmlProperty(static_cast<PropertyManager *>(scinrrd.get_rep()),mlarray);
 #endif
 }
-#endif
 
 // Routine for discovering which kind of mesh is being supplied
 // It reads the matlabarray and looks for certain fields to see whether

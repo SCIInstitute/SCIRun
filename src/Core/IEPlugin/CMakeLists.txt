@@ -37,7 +37,7 @@ SET(Core_IEPlugin_SRCS
   IEPluginInit.cc
   #MRC_Plugin.cc
   #MTextFileToTriSurf_Plugin.cc
-  #MatlabFiles_Plugin.cc
+  MatlabFiles_Plugin.cc
   NrrdField_Plugin.cc
   #NrrdToMatrix_Plugin.cc
   ObjToField_Plugin.cc
@@ -64,7 +64,7 @@ SET(Core_IEPlugin_HEADERS
   #HexVolField_Plugin.h
   #MRC_Plugin.h
   #MTextFileToTriSurf_Plugin.h
-  #MatlabFiles_Plugin.h
+  MatlabFiles_Plugin.h
   NrrdField_Plugin.h
   #NrrdToMatrix_Plugin.h
   ObjToField_Plugin.h
@@ -91,7 +91,7 @@ TARGET_LINK_LIBRARIES(Core_IEPlugin
   #Core_Geometry
   #Core_Math
   #Core_Util
-  #Core_Matlab
+  Core_Matlab
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_ImportExport

@@ -28,7 +28,9 @@
 
 #include <Core/IEPlugin/ObjToField_Plugin.h>
 #include <Core/IEPlugin/NrrdField_Plugin.h>
+#include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 
 using namespace SCIRun;
@@ -37,6 +39,7 @@ using namespace SCIRun::Core::Logging;
 namespace SCIRun
 {
   template class GenericIEPluginManager<Field>;
+  template class GenericIEPluginManager<Core::Datatypes::Matrix>;
 }
 
 void IEPluginManager::Initialize()
@@ -48,4 +51,9 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter ModalNrrdToField_plugin("NrrdFile[DataOnElements]","*.nhdr *.nrrd", "", Modal_NrrdToField_reader, 0);
   static FieldIEPluginLegacyAdapter IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","*.nhdr *.nrrd", "", IPNodal_NrrdToField_reader, 0);
   static FieldIEPluginLegacyAdapter IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","*.nhdr *.nrrd", "", IPModal_NrrdToField_reader, 0);
+
+  static MatrixIEPluginLegacyAdapter MatlabMatrix_plugin("Matlab Matrix",".mat", "*.mat", MatlabMatrix_reader, MatlabMatrix_writer);
+  static FieldIEPluginLegacyAdapter MatlabField_plugin("Matlab Field", "*.mat", "*.mat", MatlabField_reader, MatlabField_writer);   
+  //TODO
+  //static NrrdIEPluginLegacyAdapter MatlabNrrd_plugin("Matlab Matrix",".mat", "*.mat",MatlabNrrd_reader,MatlabNrrd_writer);     
 }

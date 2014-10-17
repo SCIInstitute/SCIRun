@@ -26,25 +26,26 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
-#include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
+#include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/matlabconverter.h>
-
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
 // This file contains plugins to read and write files in MathWork's Matlab
 // file format.
 
-
-namespace SCIRun {
-
-using namespace MatlabIO;
+using namespace SCIRun;
+using namespace SCIRun::MatlabIO;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Datatypes;
 
 // Write a matrix as matlab object
 MatrixHandle
-MatlabMatrix_reader(ProgressReporter *pr, const char *filename)
+SCIRun::MatlabMatrix_reader(LoggerHandle pr, const char *filename)
 {
   // Create a matlab file object, which will be linked to input file
   matlabfile mf;
@@ -90,7 +91,7 @@ MatlabMatrix_reader(ProgressReporter *pr, const char *filename)
 }
 
 bool
-MatlabMatrix_writer(ProgressReporter *pr,
+SCIRun::MatlabMatrix_writer(LoggerHandle pr,
 			   MatrixHandle mh, const char *filename)
 {
   matlabfile mf;
@@ -106,7 +107,7 @@ MatlabMatrix_writer(ProgressReporter *pr,
     // Convert the matrix into a matlab object
     mc.sciMatrixTOmlArray(mh,ma);
     // If the SCIRun object has a name, use it
-    mh->get_property("name",name);
+    mh->properties().get_property("name",name);
     // Set a default name if none was supplied
     if ((name=="")||(!mc.isvalidmatrixname(name))) name = "scirunmatrix";
     // Open the file
@@ -126,7 +127,7 @@ MatlabMatrix_writer(ProgressReporter *pr,
 
 
 NrrdDataHandle
-MatlabNrrd_reader(ProgressReporter *pr, const char *filename)
+SCIRun::MatlabNrrd_reader(LoggerHandle pr, const char *filename)
 {
   matlabfile mf;
   matlabconverter mc(pr);
@@ -168,8 +169,8 @@ MatlabNrrd_reader(ProgressReporter *pr, const char *filename)
 }
 
 bool
-MatlabNrrd_writer(ProgressReporter *pr,
-			   NrrdDataHandle mh, const char *filename)
+SCIRun::MatlabNrrd_writer(LoggerHandle pr,
+			   NrrdDataHandle nrrd, const char *filename)
 {
   matlabfile mf;
   matlabconverter mc(pr);
@@ -178,12 +179,12 @@ MatlabNrrd_writer(ProgressReporter *pr,
  
   try
   {
-    // Make sure we make it into a numeric array, no annotion and headers
+    // Make sure we make it into a numeric array, no annotation and headers
     mc.converttonumericmatrix();
     // Convert the object
-    mc.sciNrrdDataTOmlArray(mh,ma);
+    mc.sciNrrdDataTOmlArray(nrrd,ma);
     // Check if the object has a name
-    mh->get_property("name",name);
+    nrrd->properties().get_property("name",name);
     // if no name available give it one
     if ((name=="")||(!mc.isvalidmatrixname(name))) name = "scirunnrrd";
     // Open the file
@@ -203,7 +204,7 @@ MatlabNrrd_writer(ProgressReporter *pr,
 
          
 FieldHandle
-MatlabField_reader(ProgressReporter *pr, const char *filename)
+SCIRun::MatlabField_reader(LoggerHandle pr, const char *filename)
 {
   matlabfile mf;
   // Make sure that errors are forwarded in the conversion process
@@ -248,8 +249,8 @@ MatlabField_reader(ProgressReporter *pr, const char *filename)
 }
 
 bool
-MatlabField_writer(ProgressReporter *pr,
-			   FieldHandle mh, const char *filename)
+SCIRun::MatlabField_writer(LoggerHandle pr,
+			   FieldHandle field, const char *filename)
 {
   matlabfile mf;
   // Make sure that errors are forwarded in the conversion process
@@ -262,9 +263,9 @@ MatlabField_writer(ProgressReporter *pr,
     // We want all the annotation. A field without annotation is hard to use
     mc.converttostructmatrix();
     // Convert the object
-    mc.sciFieldTOmlArray(mh,ma);
+    mc.sciFieldTOmlArray(field,ma);
     // Get the name
-    mh->get_property("name",name);
+    field->properties().get_property("name",name);
     // If no name, set a default
     if ((name=="")||(!mc.isvalidmatrixname(name))) name = "scirunfield";
     // Write the object to the file
@@ -279,10 +280,4 @@ MatlabField_writer(ProgressReporter *pr,
   }
   return(true);
 }
-
-static MatrixIEPlugin MatlabMatrix_plugin("Matlab Matrix",".mat", "*.mat", MatlabMatrix_reader, MatlabMatrix_writer);
-static FieldIEPlugin MatlabField_plugin("Matlab Field",".mat", "*.mat",MatlabField_reader,MatlabField_writer);   
-static NrrdIEPlugin MatlabNrrd_plugin("Matlab Matrix",".mat", "*.mat",MatlabNrrd_reader,MatlabNrrd_writer);     
-  
-} // end namespace SCIRun
 

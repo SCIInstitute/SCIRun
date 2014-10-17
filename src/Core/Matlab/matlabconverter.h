@@ -217,10 +217,10 @@ class SCISHARE matlabconverter : public matfilebase
     // FUNCTIONS FOR TRANSLATING THE PROPERTY MANAGER
     void mlPropertyTOsciProperty(matlabarray &ma,SCIRun::PropertyManager *handle);
     void sciPropertyTOmlProperty(SCIRun::PropertyManager *handle,matlabarray &ma);
-
-    // FUNCTIONS FOR TRANSLATING THE CONTENTS OF A NRRD (THE NUMERIC PART OF THE DATA)
-    void sciNrrdDataTOmlMatrix(SCIRun::NrrdDataHandle &scinrrd, matlabarray &mlmat);
 #endif
+    // FUNCTIONS FOR TRANSLATING THE CONTENTS OF A NRRD (THE NUMERIC PART OF THE DATA)
+    void sciNrrdDataTOmlMatrix(SCIRun::NrrdDataHandle scinrrd, matlabarray &mlmat);
+
     unsigned int convertmitype(matlabarray::mitype type);
     matlabarray::mitype convertnrrdtype(int type);
     

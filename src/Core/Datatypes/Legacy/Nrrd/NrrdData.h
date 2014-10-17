@@ -42,12 +42,13 @@
 
 #include <Core/Datatypes/Datatype.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
 #include <teem/nrrd.h>
 #include <Core/Datatypes/Legacy/Nrrd/share.h>
 
 namespace SCIRun {
 
-class SCISHARE NrrdData : public Core::Datatypes::Datatype
+class SCISHARE NrrdData : public Core::Datatypes::Datatype, public Core::Datatypes::HasPropertyManager
 {
 public:
   NrrdData();
