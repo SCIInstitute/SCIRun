@@ -27,7 +27,7 @@
 */
 
 // NOTE: This MatlabIO file is used in different projects as well. Please, do not
-// make it depend on other scirun code. This way it is easier to maintain matlabIO 
+// make it depend on other Scirun code. This way it is easier to maintain matlabIO 
 // code among different projects. Thank you.
 
 /*
@@ -36,20 +36,20 @@
  * DATE: 5 JAN 2004
  */
  
-#ifndef JGS_MATLABIO_MATFILE_H
-#define JGS_MATLABIO_MATFILE_H 1
+#ifndef CORE_MATLABIO_MATFILE_H
+#define CORE_MATLABIO_MATFILE_H 1
 
 /*
  * The matfile class is the basic interface for reading and
- * writing .mat files (matlab files). This class currently
- * only supports the so called matlab version 5 file format
+ * writing .mat files (Matlab files). This class currently
+ * only supports the so called Matlab version 5 file format
  * which is used from version 5.0 to version 6.5, currently 
- * the lastest version of matlab available. Matlab V4 files
- * should be converted using matlab into the newer file format.
+ * the latest version of Matlab available. Matlab V4 files
+ * should be converted using Matlab into the newer file format.
  *
  * This class handles the following aspects:
  * - opening and closing .mat files
- * - handling byteswapping
+ * - handling byte swapping
  * - reading/writing the file header
  * - reading/writing the tags in the .mat file
  *
@@ -58,15 +58,15 @@
 
 /*
  * CLASS DESCRIPTION
- * This class is an interface to a matfile and handles the raw fileformat
- * it deals with headers, byteswapping and reading and writing tags and the
+ * This class is an interface to a matfile and handles the raw file format
+ * it deals with headers, byte swapping and reading and writing tags and the
  * associated data
  *
  * MEMORY MODEL
  * The class maintains its own copies of the data. Each vector, string and other
  * data unit is copied.
  * Large quantities of data are shipped in and out in matfiledata objects. These
- * objects are handles to memoryblockss and maintain their own data integrity. 
+ * objects are handles to memory blocks and maintain their own data integrity. 
  * When copying a matfiledata object only pointers are copied, however all information
  * for freeing the object is stored inside and no memory losses should occur.
  *
@@ -82,19 +82,13 @@
  *
  */
 
-#include <stdio.h>
+#include <Core/Matlab/matfiledata.h>
+#include <Core/Matlab/share.h>
 
-#include <string>
-#include <stack>
-#include <iostream> 
-
-
-#include "matfilebase.h"
-#include "matfiledata.h" 
- 
-#include "share.h"
-
-namespace MatlabIO {
+namespace SCIRun 
+{
+namespace MatlabIO 
+{
        
 class SCISHARE matfile : public matfilebase {
 
@@ -282,5 +276,6 @@ class SCISHARE matfile : public matfilebase {
 	bool iswriteaccess();
 };
  
-} // end namespace 
+}}
+
 #endif 
