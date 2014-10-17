@@ -206,17 +206,14 @@ SCIRun::MatlabNrrd_writer(LoggerHandle pr,
 FieldHandle
 SCIRun::MatlabField_reader(LoggerHandle pr, const char *filename)
 {
-  matlabfile mf;
   // Make sure that errors are forwarded in the conversion process
   matlabconverter mc(pr);
-  matlabarray ma;
   std::string dummytext;
   FieldHandle mh;
   
-  mh = 0;
-  
   try
   {
+    matlabfile mf;
     // Open the file
     mf.open(std::string(filename),"r");
     // How many object do we have in the file
@@ -226,7 +223,7 @@ SCIRun::MatlabField_reader(LoggerHandle pr, const char *filename)
     for (int p=0;p<numarrays;p++)
     {
       // Get the header of the object
-      ma = mf.getmatlabarrayinfo(p);
+      matlabarray ma = mf.getmatlabarrayinfo(p);
       // Is this object compatible?
       if (mc.sciFieldCompatible(ma,dummytext)) 
       {
