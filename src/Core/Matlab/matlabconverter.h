@@ -52,6 +52,7 @@
  */
 
 #include <Core/Matlab/matfilebase.h>
+#include <Core/Matlab/matlabarray.h>
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Matlab/share.h>
@@ -130,28 +131,28 @@ class SCISHARE matlabconverter : public matfilebase
     // These key value pairs are not supported yet, like in the rest of SCIRun
 
     matlabconverter();
-    matlabconverter(SCIRun::Core::Logging::LoggerHandle pr);
+    explicit matlabconverter(SCIRun::Core::Logging::LoggerHandle pr);
 
     // SET CONVERTER OPTIONS:
     // Data type sets the export type of the data
-    inline void setdatatype(matlabarray::mitype dataformat);
+    void setdatatype(matlabarray::mitype dataformat);
     // Index base sets the index base used for indices in for example geometries
-    inline void setindexbase(int indexbase);
+    void setindexbase(int indexbase);
     // In a numeric matrix all data will be stripped and the data will be saved as
     // a plain dense or sparse matrix.
-    inline void setdisabletranspose(bool dt);
+    void setdisabletranspose(bool dt);
 
-    inline void converttonumericmatrix();
-    inline void converttostructmatrix();
+    void converttonumericmatrix();
+    void converttostructmatrix();
 
     // The following options are for controlling the conversion to bundles
     // In case prefernrrds is set, numerical data is converted into nrrds
     // only sparse matrices become matrices. If prefermatrices is set, the
     // behavior is opposite and only ND (N>2) matrices become nrrds.
 
-    inline void prefernrrds();
-    inline void preferfields();
-    inline void prefermatrices();
+    void prefernrrds();
+    void preferfields();
+    void prefermatrices();
 
     // Since Bundles can be bundled, a choice needs to be made whether structured
     // Matlab matrices should become bundles or if possible should be converted into
@@ -162,8 +163,8 @@ class SCISHARE matlabconverter : public matfilebase
     // resort it will be a bundle. Note that the comparison is done to see whether the
     // required number of fields is there if so other fields are ignored.
 
-    inline void preferbundles();
-    inline void prefersciobjects();
+    void preferbundles();
+    void prefersciobjects();
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // SCIRun STRINGS
     int sciStringCompatible(const matlabarray& mlarray, std::string& infostring, bool postremarks = true);
@@ -205,9 +206,9 @@ class SCISHARE matlabconverter : public matfilebase
 
     SCIRun::Core::Logging::LoggerHandle pr_;
     
-    inline void error(const std::string& error);
-    inline void warning(const std::string& warning);
-    inline void remark(const std::string& remark);
+    void error(const std::string& error);
+    void warning(const std::string& warning);
+    void remark(const std::string& remark);
 
     // FUNCTION FOR TRANSLATING THE CONTENTS OF A MATRIX (THE NUMERIC PART OF THE DATA)
     void sciMatrixTOmlMatrix(SCIRun::Core::Datatypes::MatrixHandle &scimat,matlabarray &mlmat);
@@ -239,74 +240,6 @@ class SCISHARE matlabconverter : public matfilebase
 
 };
 
-inline void matlabconverter::error(const std::string& error)
-{
-  if(pr_) pr_->error(error);
-}
-
-inline void matlabconverter::warning(const std::string& warning)
-{
-  if(pr_) pr_->warning(warning);
-}
-
-inline void matlabconverter::remark(const std::string& remark)
-{
-  if(pr_) pr_->remark(remark);
-}
-
-inline void matlabconverter::setdatatype(matlabarray::mitype dataformat)
-{
-  datatype_ = dataformat;
-}
-
-inline void matlabconverter::setindexbase(int indexbase)
-{
-  indexbase_ = indexbase;
-}
-
-inline void matlabconverter::converttonumericmatrix()
-{
-  numericarray_ = true;
-}
-
-inline void matlabconverter::converttostructmatrix()
-{
-  numericarray_ = false;
-}
-
-inline void matlabconverter::setdisabletranspose(bool disabletranspose)
-{
-  disable_transpose_ = disabletranspose;
-}
-
-
-inline void matlabconverter::preferfields()
-{
-  prefer_fields = true;
-  prefer_nrrds = false;
-}
-
-inline void matlabconverter::prefernrrds()
-{
-  prefer_nrrds = true;
-  prefer_fields = false;
-}
-
-inline void matlabconverter::prefermatrices()
-{
-  prefer_nrrds = false;
-  prefer_fields = false;
-}
-
-inline void matlabconverter::preferbundles()
-{
-  prefer_bundles = true;
-}
-
-inline void matlabconverter::prefersciobjects()
-{
-  prefer_bundles = false;
-}
 
 }} // end namespace
 

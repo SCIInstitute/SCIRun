@@ -34,11 +34,12 @@
 
 #include <Core/Matlab/matlabconverter.h>
 
+using namespace SCIRun;
 using namespace SCIRun::MatlabIO;
 
 
 // Currently the property converter only manages strings
-// all other data is ignored both on matlab side as well
+// all other data is ignored both on Matlab side as well
 // as on the property manager side.
 
 /* DESIGN NOTES : */
@@ -120,7 +121,7 @@ unsigned int matlabconverter::convertmitype(matlabarray::mitype type)
 
 
 // This function converts nrrds into Matlab matrices
-// only the datais being transformed into a Matlab array
+// only the data is being transformed into a Matlab array
 
 matlabarray::mitype matlabconverter::convertnrrdtype(int type)
 {
@@ -1922,4 +1923,71 @@ void matlabconverter::sciBundleTOmlArray(BundleHandle &scibundle, matlabarray &m
   }
 }
 
+void matlabconverter::error(const std::string& error)
+{
+  if(pr_) pr_->error(error);
+}
+
+void matlabconverter::warning(const std::string& warning)
+{
+  if(pr_) pr_->warning(warning);
+}
+
+void matlabconverter::remark(const std::string& remark)
+{
+  if(pr_) pr_->remark(remark);
+}
+
+void matlabconverter::setdatatype(matlabarray::mitype dataformat)
+{
+  datatype_ = dataformat;
+}
+
+void matlabconverter::setindexbase(int indexbase)
+{
+  indexbase_ = indexbase;
+}
+
+void matlabconverter::converttonumericmatrix()
+{
+  numericarray_ = true;
+}
+
+void matlabconverter::converttostructmatrix()
+{
+  numericarray_ = false;
+}
+
+void matlabconverter::setdisabletranspose(bool disabletranspose)
+{
+  disable_transpose_ = disabletranspose;
+}
+
+
+void matlabconverter::preferfields()
+{
+  prefer_fields = true;
+  prefer_nrrds = false;
+}
+
+void matlabconverter::prefernrrds()
+{
+  prefer_nrrds = true;
+  prefer_fields = false;
+}
+
+void matlabconverter::prefermatrices()
+{
+  prefer_nrrds = false;
+  prefer_fields = false;
+}
+
+void matlabconverter::preferbundles()
+{
+  prefer_bundles = true;
+}
+
+void matlabconverter::prefersciobjects()
+{
+  prefer_bundles = false;
 }

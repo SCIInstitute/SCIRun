@@ -264,7 +264,7 @@ std::string matfiledata::getstring()
 	
 }	
 
-void matfiledata::putstring(std::string str)
+void matfiledata::putstring(const std::string& str)
 {
   int dsize;
   char *ptr;
@@ -311,7 +311,7 @@ std::vector<std::string> matfiledata::getstringarray(int maxstrlen)
   return(vec);
 }
 
-int matfiledata::putstringarray(std::vector<std::string> vec)
+int matfiledata::putstringarray(const std::vector<std::string>& vec)
 {
   char *ptr;
   int maxstrlen = 8;
