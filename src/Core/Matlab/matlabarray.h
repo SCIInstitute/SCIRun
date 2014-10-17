@@ -88,6 +88,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <Core/Matlab/matfile.h>
+#include <iostream> //TODO
 #include <Core/Matlab/share.h>
 
 namespace SCIRun
