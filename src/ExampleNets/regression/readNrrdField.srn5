@@ -142,7 +142,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/fieldOut.nhdr</value>
+										<value>%SCIRUNDATADIR%/Fields/nrrd/fieldOut.nhdr</value>
 									</value>
 								</second>
 							</item>
@@ -324,8 +324,8 @@
 		<item>
 			<first>ReadField:5</first>
 			<second>
-				<first>-1976</first>
-				<second>-760</second>
+				<first>-1977</first>
+				<second>-761</second>
 			</second>
 		</item>
 		<item>
