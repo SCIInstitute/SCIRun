@@ -60,6 +60,8 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Core/Matlab/matfilebase.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Logging/LoggerFwd.h>
 #include <Core/Matlab/share.h>
 
 namespace SCIRun 
@@ -90,11 +92,11 @@ namespace SCIRun
 
       virtual bool execute(SCIRun::FieldHandle fieldH, matlabarray& mlarray);
 
-      inline void setreporter(SCIRun::Logging::LoggerHandle pr);
+      inline void setreporter(SCIRun::Core::Logging::LoggerHandle pr);
 
     protected:
 
-      bool mladdmeshheader(SCIRun::FieldInformation fi, const matlabarray& mlarray);
+      bool mladdmeshheader(const SCIRun::FieldInformation& fi, const matlabarray& mlarray);
       bool mladdnodes(SCIRun::VMesh* mesh,const matlabarray& mlarray);
       bool mladdedges(SCIRun::VMesh* mesh,const matlabarray& mlarray);
       bool mladdfaces(SCIRun::VMesh* mesh,const matlabarray& mlarray);    
@@ -110,7 +112,7 @@ namespace SCIRun
       bool mladddimension2d(SCIRun::VMesh* mesh,const matlabarray& mlarray);
       bool mladddimension3d(SCIRun::VMesh* mesh,const matlabarray& mlarray);
 
-      bool mladdfieldheader(SCIRun::FieldInformation fi, const matlabarray& mlarray);                          
+      bool mladdfieldheader(const SCIRun::FieldInformation& fi, const matlabarray& mlarray);                          
 
       bool mladdfielddata(SCIRun::VField* field,SCIRun::VMesh* mesh,const matlabarray& mlarray);
 

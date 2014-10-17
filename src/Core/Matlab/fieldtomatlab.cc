@@ -44,7 +44,7 @@ option_forceoldnames_(false),
 {
 }
 
-void FieldToMatlabAlgo::setreporter(SCIRun::ProgressReporter* pr)
+void FieldToMatlabAlgo::setreporter(LoggerHandle pr)
 {
   pr_ = pr;
 }

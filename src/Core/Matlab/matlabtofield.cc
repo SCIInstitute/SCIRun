@@ -33,13 +33,9 @@
  */
 
 #include <Core/Matlab/matlabtofield.h>
-
 #include <Core/Datatypes/FieldInformation.h>
 
-namespace MatlabIO {
-
-
-using namespace SCIRun;
+using namespace SCIRun::MatlabIO;
 
 
 MatlabToFieldAlgo::~MatlabToFieldAlgo()
@@ -480,7 +476,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     return (0);
   }
   // If it is regular matrix translate it to a image or a latvol
-  // The following section of code rewrites the matlab matrix into a
+  // The following section of code rewrites the Matlab matrix into a
   // structure and then the normal routine picks up the field and translates it
   // properly.
 
@@ -1214,7 +1210,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
       }
     }
               
-    // Minimum number of dimensions is in matlab is 2 and hence detect any empty dimension
+    // Minimum number of dimensions is in Matlab is 2 and hence detect any empty dimension
     if (size == 2)
     {
       // This case will filter out the scanline objects
@@ -2738,7 +2734,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     return(1+ret);
   }
 
-  if (postremark) remark(std::string("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (cannot match the matlab structure with any of the supported mesh classes)"));
+  if (postremark) remark(std::string("Matrix '" + mlarray.getname() + "' cannot be translated into a SCIRun Field (cannot match the Matlab structure with any of the supported mesh classes)"));
   return(0);
 }        
 
@@ -2759,7 +2755,7 @@ bool MatlabToFieldAlgo::addtransform(SCIRun::VMesh* vmesh)
 
 bool MatlabToFieldAlgo::addnodes(SCIRun::VMesh* vmesh)
 {
-	// Get the data from the matlab file, which has been buffered
+	// Get the data from the Matlab file, which has been buffered
 	// but whose format can be anything. The next piece of code
 	// copies and casts the data
 	
@@ -2790,7 +2786,7 @@ bool MatlabToFieldAlgo::addnodes(SCIRun::VMesh* vmesh)
 
 bool MatlabToFieldAlgo::addedges(SCIRun::VMesh* vmesh)
 {
-	// Get the data from the matlab file, which has been buffered
+	// Get the data from the Matlab file, which has been buffered
 	// but whose format can be anything. The next piece of code
 	// copies and casts the data
 	
@@ -2815,7 +2811,7 @@ bool MatlabToFieldAlgo::addedges(SCIRun::VMesh* vmesh)
 	for (p = 0; p < size; p++) { if (mldata[p] == 0) {zerobased = true; break;} }
 	
 	if (zerobased == false)
-	{   // renumber to go from matlab indexing to C++ indexing
+	{   // renumber to go from Matlab indexing to C++ indexing
 		for (p = 0; p < size; p++) { mldata[p]--;}
 	}
 	
@@ -2846,7 +2842,7 @@ bool MatlabToFieldAlgo::addedges(SCIRun::VMesh* vmesh)
 
 bool MatlabToFieldAlgo::addfaces(SCIRun::VMesh* vmesh)
 {
-   // Get the data from the matlab file, which has been buffered
+   // Get the data from the Matlab file, which has been buffered
    // but whose format can be anything. The next piece of code
    // copies and casts the data
 
@@ -2869,7 +2865,7 @@ bool MatlabToFieldAlgo::addfaces(SCIRun::VMesh* vmesh)
   for (int p = 0; p < size; p++) { if (mldata[p] == 0) {zerobased = true; break;} }
 
   if (zerobased == false)
-  {   // renumber to go from matlab indexing to C++ indexing
+  {   // renumber to go from Matlab indexing to C++ indexing
     for (int p = 0; p < size; p++) { mldata[p]--;}
   }
 
@@ -2899,7 +2895,7 @@ bool MatlabToFieldAlgo::addfaces(SCIRun::VMesh* vmesh)
 
 bool MatlabToFieldAlgo::addcells(SCIRun::VMesh* vmesh)
 {
-  // Get the data from the matlab file, which has been buffered
+  // Get the data from the Matlab file, which has been buffered
   // but whose format can be anything. The next piece of code
   // copies and casts the data
 
@@ -2922,7 +2918,7 @@ bool MatlabToFieldAlgo::addcells(SCIRun::VMesh* vmesh)
   for (int p = 0; p < size; p++) { if (mldata[p] == 0) {zerobased = true; break;} }
 
   if (zerobased == false)
-  {   // renumber to go from matlab indexing to C++ indexing
+  {   // renumber to go from Matlab indexing to C++ indexing
     for (int p = 0; p < size; p++) { mldata[p]--;}
   }
 

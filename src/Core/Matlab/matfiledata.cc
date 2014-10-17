@@ -38,11 +38,11 @@
  
 /*
  * The matfile class is the basic interface for reading and
- * writing .mat files (matlab files). This class currently
- * only supports the so called matlab version 5 file format
+ * writing .mat files (Matlab files). This class currently
+ * only supports the so called Matlab version 5 file format
  * which is used from version 5.0 to version 6.5, currently 
- * the lastest version of matlab available. Matlab V4 files
- * should be converted using matlab into the newer file format.
+ * the latest version of Matlab available. Matlab V4 files
+ * should be converted using Matlab into the newer file format.
  *
  * This class handles the following aspects:
  * - opening and closing .mat files
@@ -51,16 +51,11 @@
  * - reading/writing the tags in the .mat file
  *
  */
- 
- 
-#include "matfiledata.h"
-#include <string.h>
- 
-namespace MatlabIO {
 
-// matfiledata functions
+#include <Core/Matlab/matfiledata.h>
+ 
+using namespace SCIRun::MatlabIO;
 
-// basic constructor
 matfiledata::matfiledata()
     : m_(0), ptr_(0) 
 {

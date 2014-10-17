@@ -49,7 +49,7 @@
 // CANNOT INSTANTIATE EVERY PIECE, ALTHOUGH NEWER COMPILERS LIKE GCC4, WILL CHECK
 // THE CODE EVEN IF IT IS NOT USED.....
 
-// Class for reading matlab files
+// Class for reading Matlab files
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
 #include <Core/Matlab/share.h>
@@ -84,7 +84,7 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
     int analyze_iscompatible(matlabarray mlarray, std::string& infotext, bool postremark = true);
     int analyze_fieldtype(matlabarray mlarray, std::string& fielddesc);
 
-    inline void setreporter(SCIRun::ProgressReporter* pr);
+    inline void setreporter(LoggerHandle pr);
     
   protected:
 
@@ -177,7 +177,7 @@ inline MatlabToFieldAlgo::MatlabToFieldAlgo() :
 {
 }
 
-inline void MatlabToFieldAlgo::setreporter(SCIRun::ProgressReporter* pr)
+inline void MatlabToFieldAlgo::setreporter(LoggerHandle pr)
 {
   pr_ = pr;
 }

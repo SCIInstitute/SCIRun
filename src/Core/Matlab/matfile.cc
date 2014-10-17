@@ -39,11 +39,11 @@
  
 /*
  * The matfile class is the basic interface for reading and
- * writing .mat files (matlab files). This class currently
- * only supports the so called matlab version 5 file format
+ * writing .mat files (Matlab files). This class currently
+ * only supports the so called Matlab version 5 file format
  * which is used from version 5.0 to version 6.5, currently 
- * the lastest version of matlab available. Matlab V4 files
- * should be converted using matlab into the newer file format.
+ * the lastest version of Matlab available. Matlab V4 files
+ * should be converted using Matlab into the newer file format.
  *
  * This class handles the following aspects:
  * - opening and closing .mat files
@@ -53,14 +53,10 @@
  *
  */
  
-#include "matfile.h"
-#include "matfiledata.h"
-
+#include <Core/Matlab/matfile.h>
 #include <zlib.h>
-#include <string.h>
 
- 
-namespace MatlabIO {
+using namespace SCIRun::MatlabIO;
 
 // Function for doing byteswapping when loading a file created on a different platform 
   
@@ -337,7 +333,7 @@ void matfile::open(const std::string& filename,const std::string& mode)
             if(!(m_->fptr_ = fopen(m_->fname_.c_str(),"wb"))) throw could_not_open_file();
             
             // Setup the default parameters for the header
-            // Version 0x0100 is the matlab default for an externaly created std::FILE
+            // Version 0x0100 is the Matlab default for an externaly created std::FILE
             // All files are written in the native format, byteswapping is done
             // when reading files.
             

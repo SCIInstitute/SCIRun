@@ -37,9 +37,9 @@
  * DATE: 16 MAY 2005
  */
 
-#include "matlabarray.h"
+#include <Core/Matlab/fieldtomatlab.h>
 
-namespace MatlabIO {
+using namespace SCIRun::MatlabIO;
 
 // matlabarray management functions
 // constructor/destructor

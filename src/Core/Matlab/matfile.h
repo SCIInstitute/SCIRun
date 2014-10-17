@@ -82,6 +82,7 @@
  *
  */
 
+#include <cstdint>
 #include <stack>
 #include <Core/Matlab/matfiledata.h>
 #include <Core/Matlab/share.h>

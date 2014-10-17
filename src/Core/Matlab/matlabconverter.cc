@@ -32,17 +32,13 @@
  * DATE: 17 OCT 2004
  */
 
-#include <math.h>
 #include <Core/Matlab/matlabconverter.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-#include <Core/Datatypes/Matrix.h>
 
-namespace MatlabIO {
+using namespace SCIRun::MatlabIO;
 
-using namespace SCIRun;
 
 // Currently the property converter only manages strings
-// all other data is ignored both on matlabside as well
+// all other data is ignored both on matlab side as well
 // as on the property manager side.
 
 /* DESIGN NOTES : */
@@ -55,21 +51,21 @@ using namespace SCIRun;
  * which leads to a huge conversion problem. Hence only the useful
  * objects are translated the rest is just discarded. Until there
  * is a better data management structure within SCIRun, the conversion
- * process is basically a big switch statemet scanning for each possible
+ * process is basically a big switch statement scanning for each possible
  * object structure
  */
 
 /* 
  * With the hope in mind that a better data management system will be
  * in place in the future, all conversion algorithms are grouped in
- * this one object. All the other matlab classes function independent
+ * this one object. All the other Matlab classes function independent
  * of the main SCIRun structure, it has its own memory and data management
- * making it easier to adapt to future changes. The separation of matlab
- * and SCIRun data management has the advantage that the matlab side can be
- * further enhanced to deal with different future matlab fileformats, without
- * having to comb through the conversion prs. Though there is a little 
+ * making it easier to adapt to future changes. The separation of Matlab
+ * and SCIRun data management has the advantage that the Matlab side can be
+ * further enhanced to deal with different future Matlab file formats, without
+ * having to comb through the conversion code. Though there is a little 
  * memory overhead. Especially with the V7 compressed files, more memory
- * is needed to maintain the integrity of the matlab reader. Some changes 
+ * is needed to maintain the integrity of the Matlab reader. Some changes 
  * in this converter may be needed to enhance performance. Currently the
  * a compressed file will be decompressed and scanned for suitable objects.
  * Upon loading the matrix, the matrix will be decompressed again as after
@@ -91,7 +87,7 @@ matlabconverter::matlabconverter() :
 {
 }
 
-matlabconverter::matlabconverter(SCIRun::ProgressReporter* pr) : 
+matlabconverter::matlabconverter(LoggerHandle pr) : 
     pr_(pr),
     numericarray_(false), 
     indexbase_(1), 
@@ -123,8 +119,8 @@ unsigned int matlabconverter::convertmitype(matlabarray::mitype type)
 }
 
 
-// This function converts nrrds into matlab matrices
-// only the datais being transformed into a matlab array
+// This function converts nrrds into Matlab matrices
+// only the datais being transformed into a Matlab array
 
 matlabarray::mitype matlabconverter::convertnrrdtype(int type)
 {
@@ -145,7 +141,7 @@ matlabarray::mitype matlabconverter::convertnrrdtype(int type)
 }
 
 // Support function to check whether the names supplied are within the 
-// rules that matlab allows. Otherwise we could save the file, but matlab 
+// rules that Matlab allows. Otherwise we could save the file, but Matlab 
 // would complain it could not read the file.
 
 bool matlabconverter::isvalidmatrixname(std::string name)
@@ -626,7 +622,7 @@ void matlabconverter::mlArrayTOsciMatrix(matlabarray &ma,MatrixHandle &handle)
           // There is no transpose function to operate on the same memory block
           // Hence, it is a little memory inefficient.
                       
-          handle = dm.make_transpose(); // SCIRun has a C++-style matrix and matlab a FORTRAN-style matrix;
+          handle = dm.make_transpose(); // SCIRun has a C++-style matrix and Matlab a FORTRAN-style matrix;
         }
       }
       break;
@@ -650,7 +646,7 @@ void matlabconverter::mlArrayTOsciMatrix(matlabarray &ma,MatrixHandle &handle)
         const SparseRowMatrix::Storage& values = data.data();
 
         // NOTE: this was flipped around in the old code: the arrays rows/cols were passed as cols/rows into the SparseRowMatrix ctor.  Hence the screwy order here, and the transpose call below.
-        // REASON: SCIRun uses Row sparse matrices and matlab Column sparse matrices.
+        // REASON: SCIRun uses Row sparse matrices and Matlab Column sparse matrices.
         ma.getnumericarray(values.get(), nnz);
         ma.getrowsarray(cols.get(), nnz);
         ma.getcolsarray(rows.get(), (n+1));
@@ -916,7 +912,7 @@ int matlabconverter::sciNrrdDataCompatible(matlabarray &mlarray, std::string &in
 void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &scinrrd)
 {
   // Depending on the matlabclass there are several converters
-  // for converting the data from matlab into a SCIRun Nrrd object
+  // for converting the data from Matlab into a SCIRun Nrrd object
         
   matlabarray::mlclass mclass;
   mclass = mlarray.getclass();
@@ -943,7 +939,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
                   
           // obtain the type of the new nrrd
           // we want to keep the nrrd type the same
-          // as the original matlab type
+          // as the original Matlab type
                       
           unsigned int nrrdtype = convertmitype(mlarray.gettype());
                   
@@ -1402,14 +1398,14 @@ void matlabconverter::sciNrrdDataTOmlMatrix(NrrdDataHandle &scinrrd, matlabarray
   // if there is no data leave the object empty
   if (totsize == 0) return;
         
-  // we now have to determine the type of the matlab array
+  // we now have to determine the type of the Matlab array
   // It can be either the same as in the nrrd array or casted
   // to a more appropriate type
-  // type will store the new matlab array type
+  // type will store the new Matlab array type
         
   if(dataformat == matlabarray::miSAMEASDATA) dataformat = convertnrrdtype(nrrdptr->type);
         
-  // create the matlab array structure
+  // create the Matlab array structure
   mlarray.createdensearray(dims,dataformat);
         
   // having the correct pointer type will automatically invoke
@@ -1645,7 +1641,7 @@ void matlabconverter::sciFieldTOmlArray(FieldHandle &scifield,matlabarray &mlarr
   // Since the matlabconverter holds all our converter settings, we don't want to lose it, hence it is added
   // here. The only disadvantage is that some of the functions in the matlabconverter class nedd to be public
 
-  // create a new structured matlab array
+  // create a new structured Matlab array
   mlarray.createstructarray();
         
   if(!(algo.execute(scifield,mlarray)))
@@ -1660,7 +1656,7 @@ void matlabconverter::sciFieldTOmlArray(FieldHandle &scifield,matlabarray &mlarr
     
   if (mlarray.isempty())
   {
-    // Apparently my sanity check did not work, we did not get a matlab object
+    // Apparently my sanity check did not work, we did not get a Matlab object
     error("Converter did not result in a useful translation, something went wrong, giving up.");
     throw matlabconverter_error();
   }
@@ -1874,7 +1870,7 @@ void matlabconverter::sciBundleTOmlArray(BundleHandle &scibundle, matlabarray &m
     
   // This routine scans systematically whether certain
   // SCIRun objects are contained in the bundle and then
-  // converts them into matlab objects  
+  // converts them into Matlab objects  
     
   for (int p=0; p < numhandles; p++)
   {
