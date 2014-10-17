@@ -975,10 +975,10 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
               mlarray.getnumericarray(static_cast<unsigned int *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
               break;
             case nrrdTypeLLong:
-              mlarray.getnumericarray(static_cast<int64 *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<int64_t *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
               break;
             case nrrdTypeULLong:
-              mlarray.getnumericarray(static_cast<uint64 *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<uint64_t *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
               break;
             case nrrdTypeFloat:
               mlarray.getnumericarray(static_cast<float *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
@@ -1423,8 +1423,8 @@ void matlabconverter::sciNrrdDataTOmlMatrix(NrrdDataHandle &scinrrd, matlabarray
       case nrrdTypeUShort  : mlarray.setnumericarray(static_cast<unsigned short *>(nrrdptr->data),totsize,dataformat); break;
       case nrrdTypeInt     : mlarray.setnumericarray(static_cast<signed int *>(nrrdptr->data),totsize,dataformat); break;
       case nrrdTypeUInt    : mlarray.setnumericarray(static_cast<unsigned int *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeLLong   : mlarray.setnumericarray(static_cast<int64 *>(nrrdptr->data),totsize,dataformat); break;
-      case nrrdTypeULLong  : mlarray.setnumericarray(static_cast<uint64 *>(nrrdptr->data),totsize,dataformat); break;   
+      case nrrdTypeLLong   : mlarray.setnumericarray(static_cast<int64_t *>(nrrdptr->data),totsize,dataformat); break;
+      case nrrdTypeULLong  : mlarray.setnumericarray(static_cast<uint64_t *>(nrrdptr->data),totsize,dataformat); break;   
       }
   }
 }

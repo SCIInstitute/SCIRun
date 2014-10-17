@@ -91,7 +91,7 @@ FieldToMatlabAlgo::~FieldToMatlabAlgo()
 }
 
 bool 
-FieldToMatlabAlgo::execute(SCIRun::FieldHandle fieldH, matlabarray &mlarray)
+FieldToMatlabAlgo::execute(FieldHandle fieldH, matlabarray &mlarray)
 {
   // Check whether the field actually contains a field;
   if (!fieldH)
@@ -101,9 +101,9 @@ FieldToMatlabAlgo::execute(SCIRun::FieldHandle fieldH, matlabarray &mlarray)
   }
 
   // input is a general FieldHandle, cast this to the specific one
-  SCIRun::VField* field = fieldH->vfield();
-  SCIRun::VMesh*  mesh = fieldH->vmesh();
-  SCIRun::FieldInformation fi(fieldH);
+  VField* field = fieldH->vfield();
+  VMesh*  mesh = fieldH->vmesh();
+  FieldInformation fi(fieldH);
   
   if (!field)
   {
@@ -281,7 +281,7 @@ FieldToMatlabAlgo::execute(SCIRun::FieldHandle fieldH, matlabarray &mlarray)
   return (false);
 }
 
-bool FieldToMatlabAlgo::mladdmeshheader(const SCIRun::FieldInformation& fi, const matlabarray& mlarray)
+bool FieldToMatlabAlgo::mladdmeshheader(const FieldInformation& fi, matlabarray& mlarray)
 {    
   matlabarray mlmeshbasis;
   mlmeshbasis.createstringarray(fi.get_mesh_basis_type());
@@ -299,7 +299,7 @@ bool FieldToMatlabAlgo::mladdmeshheader(const SCIRun::FieldInformation& fi, cons
 }
 
 
-bool FieldToMatlabAlgo::mladdnodes(SCIRun::VMesh* mesh,const matlabarray& mlarray)
+bool FieldToMatlabAlgo::mladdnodes(VMesh* mesh, matlabarray& mlarray)
 {
   matlabarray node;
 
@@ -310,7 +310,7 @@ bool FieldToMatlabAlgo::mladdnodes(SCIRun::VMesh* mesh,const matlabarray& mlarra
   unsigned int numnodes = static_cast<unsigned int>(mesh->num_nodes());
 
   // Request that it generates the node matrix
-  mesh->synchronize(SCIRun::Mesh::NODES_E); 
+  mesh->synchronize(Mesh::NODES_E); 
 
   // Buffers for exporting the data to Matlab.
   // The MatlabIO does not use SCIRun style iterators hence we need to extract
@@ -321,12 +321,10 @@ bool FieldToMatlabAlgo::mladdnodes(SCIRun::VMesh* mesh,const matlabarray& mlarra
   // Setup the dimensions of the Matlab array
   dims[0] = 3; dims[1] = static_cast<int>(numnodes);
 
-  // Extracting data from the SCIRun classes is a painfull process.
-  // I'd like to change this, but hey a lot of code should be rewritten
   // This works, it might not be really efficient, at least it does not
   // hack into the object.
 
-  SCIRun::Point P;
+  Point P;
   unsigned int q = 0;
 
   VMesh::Node::iterator it, it_end;
@@ -359,9 +357,9 @@ bool FieldToMatlabAlgo::mladdnodes(SCIRun::VMesh* mesh,const matlabarray& mlarra
 
 
 bool 
-FieldToMatlabAlgo::mladdedges(SCIRun::VMesh *mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdedges(VMesh *mesh, matlabarray& mlarray)
 {
-  mesh->synchronize(SCIRun::Mesh::EDGES_E); 
+  mesh->synchronize(Mesh::EDGES_E); 
 
   size_t num = mesh->num_nodes_per_edge();
   size_t numedges = mesh->num_edges();
@@ -370,15 +368,15 @@ FieldToMatlabAlgo::mladdedges(SCIRun::VMesh *mesh,const matlabarray& mlarray)
   dims[0] = static_cast<int>(num); 
   dims[1] = static_cast<int>(numedges);
 
-  std::vector<SCIRun::VMesh::index_type> edges(num*numedges);
+  std::vector<VMesh::index_type> edges(num*numedges);
 
-  SCIRun::VMesh::Node::array_type array;
+  VMesh::Node::array_type array;
   
   // SCIRun iterators are limited in supporting any index management
   // Hence I prefer to do it with integer and convert to the required
   // class at the last moment. Hopefully the compiler is smart and
   // has a fast translation. 	
-  SCIRun::VMesh::Edge::iterator it, it_end;
+  VMesh::Edge::iterator it, it_end;
   mesh->begin(it);
   mesh->end(it_end);
   size_t q = 0;
@@ -386,7 +384,7 @@ FieldToMatlabAlgo::mladdedges(SCIRun::VMesh *mesh,const matlabarray& mlarray)
   while (it != it_end)
   {
     mesh->get_nodes(array,*(it));
-    for (size_t r = 0; r < num; r++) edges[q++] = static_cast<SCIRun::VMesh::index_type>(array[r]) + option_indexbase_;
+    for (size_t r = 0; r < num; r++) edges[q++] = static_cast<VMesh::index_type>(array[r]) + option_indexbase_;
     ++it;
   }
 
@@ -400,28 +398,28 @@ FieldToMatlabAlgo::mladdedges(SCIRun::VMesh *mesh,const matlabarray& mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdfaces(SCIRun::VMesh *mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdfaces(VMesh *mesh, matlabarray& mlarray)
 {
-  mesh->synchronize(SCIRun::Mesh::FACES_E);
+  mesh->synchronize(Mesh::FACES_E);
   
   size_t num = mesh->num_nodes_per_face();
   size_t numfaces = mesh->num_faces();
 
-  SCIRun::VMesh::Node::array_type array;
+  VMesh::Node::array_type array;
   
-  std::vector<SCIRun::VMesh::index_type> faces(num*numfaces);
+  std::vector<VMesh::index_type> faces(num*numfaces);
   std::vector<int> dims(2);	
   dims[0] = static_cast<int>(num); 
   dims[1] = static_cast<int>(numfaces);
     
   size_t q = 0;
-  SCIRun::VMesh::Face::iterator it, it_end;
+  VMesh::Face::iterator it, it_end;
   mesh->begin(it);
   mesh->end(it_end);
   while (it != it_end)
   {
     mesh->get_nodes(array,*(it));
-    for (size_t r = 0; r < num; r++) faces[q++] = static_cast<SCIRun::VMesh::index_type>(array[r]) + option_indexbase_;
+    for (size_t r = 0; r < num; r++) faces[q++] = static_cast<VMesh::index_type>(array[r]) + option_indexbase_;
     ++it;
   }
 
@@ -435,20 +433,20 @@ FieldToMatlabAlgo::mladdfaces(SCIRun::VMesh *mesh,const matlabarray& mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdcells(SCIRun::VMesh* mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdcells(VMesh* mesh, matlabarray& mlarray)
 {
-  mesh->synchronize(SCIRun::Mesh::CELLS_E);
+  mesh->synchronize(Mesh::CELLS_E);
 
   size_t numcells = mesh->num_cells();
   size_t num = mesh->num_nodes_per_elem();
 
-  SCIRun::VMesh::Node::array_type array;
-  std::vector<SCIRun::VMesh::index_type> cells(num*numcells);
+  VMesh::Node::array_type array;
+  std::vector<VMesh::index_type> cells(num*numcells);
   std::vector<int> dims(2);	
   dims[0] = static_cast<int>(num); 
   dims[1] = static_cast<int>(numcells);
 
-  SCIRun::VMesh::Cell::iterator it, it_end;
+  VMesh::Cell::iterator it, it_end;
   mesh->begin(it);
   mesh->end(it_end);
   size_t q = 0;
@@ -456,7 +454,7 @@ FieldToMatlabAlgo::mladdcells(SCIRun::VMesh* mesh,const matlabarray& mlarray)
   while(it != it_end)
   {
     mesh->get_nodes(array,*(it));
-    for (size_t r = 0; r < num; r++) cells[q++] = static_cast<SCIRun::VMesh::index_type>(array[r]) + option_indexbase_;
+    for (size_t r = 0; r < num; r++) cells[q++] = static_cast<VMesh::index_type>(array[r]) + option_indexbase_;
     ++it;
   }
 
@@ -470,12 +468,12 @@ FieldToMatlabAlgo::mladdcells(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdmeshderivatives(SCIRun::VMesh* mesh,const matlabarray& /*mlarray*/)
+FieldToMatlabAlgo::mladdmeshderivatives(VMesh* mesh, matlabarray& /*mlarray*/)
 {
   if (mesh->is_cubicmesh())
   {
-    // CANNOT DO THIS NEITHER, NO ACCESS FUNCTIONS TO DATA
-    // UNLESS I HACK INTO THE BASIS CLASSS
+    // CANNOT DO THIS EITHER, NO ACCESS FUNCTIONS TO DATA
+    // UNLESS I HACK INTO THE BASIS CLASS
     
     error("FieldToMatlab: Currently no access function available to get higher order node derivatives.");
     return (false);
@@ -488,7 +486,7 @@ FieldToMatlabAlgo::mladdmeshderivatives(SCIRun::VMesh* mesh,const matlabarray& /
 
 
 bool 
-FieldToMatlabAlgo::mladdtransform(SCIRun::VMesh* mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdtransform(VMesh* mesh, matlabarray& mlarray)
 {
   if (mesh->is_nonlinearmesh())
   {
@@ -496,7 +494,7 @@ FieldToMatlabAlgo::mladdtransform(SCIRun::VMesh* mesh,const matlabarray& mlarray
     return(false);
   }
 
-  SCIRun::Transform T;
+  Transform T;
   matlabarray transform;
   double data[16];
   
@@ -510,13 +508,13 @@ FieldToMatlabAlgo::mladdtransform(SCIRun::VMesh* mesh,const matlabarray& mlarray
 
 
 bool 
-FieldToMatlabAlgo::mladddimension1d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladddimension1d(VMesh* mesh, matlabarray& mlarray)
 {
   matlabarray dim;
   dim.createdensearray(1,1,matlabarray::miDOUBLE);
   std::vector<double> dims(1);
 
-  SCIRun::VMesh::Node::size_type size;
+  VMesh::Node::size_type size;
   mesh->size(size);
   dims[0] = static_cast<double>(size);
 
@@ -528,7 +526,7 @@ FieldToMatlabAlgo::mladddimension1d(SCIRun::VMesh* mesh,const matlabarray& mlarr
 
 
 bool 
-FieldToMatlabAlgo::mladddimension2d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladddimension2d(VMesh* mesh, matlabarray& mlarray)
 {
   matlabarray dim;
   dim.createdensearray(1,2,matlabarray::miDOUBLE);
@@ -545,7 +543,7 @@ FieldToMatlabAlgo::mladddimension2d(SCIRun::VMesh* mesh,const matlabarray& mlarr
 
 
 bool 
-FieldToMatlabAlgo::mladddimension3d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladddimension3d(VMesh* mesh, matlabarray& mlarray)
 {
   matlabarray dim;
   dim.createdensearray(1,3,matlabarray::miDOUBLE);
@@ -563,7 +561,7 @@ FieldToMatlabAlgo::mladddimension3d(SCIRun::VMesh* mesh,const matlabarray& mlarr
 
 
 bool 
-FieldToMatlabAlgo::mladdxyzmesh1d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdxyzmesh1d(VMesh* mesh, matlabarray& mlarray)
 {
   if (!(mesh->is_linearmesh()))
   {
@@ -572,9 +570,9 @@ FieldToMatlabAlgo::mladdxyzmesh1d(SCIRun::VMesh* mesh,const matlabarray& mlarray
   }
 
   matlabarray x,y,z;
-  mesh->synchronize(SCIRun::Mesh::NODES_E);
+  mesh->synchronize(Mesh::NODES_E);
 
-  SCIRun::VMesh::Node::size_type size;
+  VMesh::Node::size_type size;
   mesh->size(size);
   unsigned int numnodes = static_cast<unsigned int>(size);
 
@@ -586,10 +584,10 @@ FieldToMatlabAlgo::mladdxyzmesh1d(SCIRun::VMesh* mesh,const matlabarray& mlarray
   std::vector<double> ybuffer(numnodes);
   std::vector<double> zbuffer(numnodes);
         
-  SCIRun::Point P;
+  Point P;
   for (unsigned int p = 0; p < numnodes ; p++)
   {
-    mesh->get_point(P,SCIRun::VMesh::Node::index_type(p));
+    mesh->get_point(P,VMesh::Node::index_type(p));
     xbuffer[p] = P.x();
     ybuffer[p] = P.y();
     zbuffer[p] = P.z();
@@ -609,7 +607,7 @@ FieldToMatlabAlgo::mladdxyzmesh1d(SCIRun::VMesh* mesh,const matlabarray& mlarray
 
 
 bool 
-FieldToMatlabAlgo::mladdxyzmesh2d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdxyzmesh2d(VMesh* mesh, matlabarray& mlarray)
 {
   if (!(mesh->is_linearmesh()))
   {
@@ -618,7 +616,7 @@ FieldToMatlabAlgo::mladdxyzmesh2d(SCIRun::VMesh* mesh,const matlabarray& mlarray
   }
 
   matlabarray x,y,z;
-  mesh->synchronize(SCIRun::Mesh::NODES_E);  
+  mesh->synchronize(Mesh::NODES_E);  
 
   unsigned int dim1 = static_cast<unsigned int>(mesh->get_ni());
   unsigned int dim2 = static_cast<unsigned int>(mesh->get_nj());
@@ -637,13 +635,13 @@ FieldToMatlabAlgo::mladdxyzmesh2d(SCIRun::VMesh* mesh,const matlabarray& mlarray
   std::vector<double> ybuffer(numnodes);
   std::vector<double> zbuffer(numnodes);
       
-  SCIRun::Point P;
+  Point P;
   unsigned int r = 0;
   for (unsigned int p = 0; p < dim1 ; p++)
     for (unsigned int q = 0; q < dim2 ; q++)
     {   
       // It's ulgy, it's SCIRun ......
-      mesh->get_point(P,SCIRun::VMesh::Node::index_type(r));
+      mesh->get_point(P,VMesh::Node::index_type(r));
       xbuffer[r] = P.x();
       ybuffer[r] = P.y();
       zbuffer[r] = P.z();
@@ -663,7 +661,7 @@ FieldToMatlabAlgo::mladdxyzmesh2d(SCIRun::VMesh* mesh,const matlabarray& mlarray
 
 
 bool 
-FieldToMatlabAlgo::mladdxyzmesh3d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdxyzmesh3d(VMesh* mesh, matlabarray& mlarray)
 {
   if (!(mesh->is_linearmesh()))
   {
@@ -672,7 +670,7 @@ FieldToMatlabAlgo::mladdxyzmesh3d(SCIRun::VMesh* mesh,const matlabarray& mlarray
   }
   
   matlabarray x,y,z;
-  mesh->synchronize(SCIRun::Mesh::NODES_E);  
+  mesh->synchronize(Mesh::NODES_E);  
 
   unsigned int dim1 = static_cast<unsigned int>(mesh->get_ni());
   unsigned int dim2 = static_cast<unsigned int>(mesh->get_nj());
@@ -694,13 +692,13 @@ FieldToMatlabAlgo::mladdxyzmesh3d(SCIRun::VMesh* mesh,const matlabarray& mlarray
   std::vector<double> ybuffer(numnodes);
   std::vector<double> zbuffer(numnodes);
       
-  SCIRun::Point P;
+  Point P;
   unsigned int r = 0;
   for (unsigned int p = 0; p < dim1 ; p++)
     for (unsigned int q = 0; q < dim2 ; q++)
       for (unsigned int s = 0; s < dim3 ; s++)
       {   
-        mesh->get_point(P,SCIRun::VMesh::Node::index_type(r));
+        mesh->get_point(P,VMesh::Node::index_type(r));
         xbuffer[r] = P.x();
         ybuffer[r] = P.y();
         zbuffer[r] = P.z();
@@ -720,7 +718,7 @@ FieldToMatlabAlgo::mladdxyzmesh3d(SCIRun::VMesh* mesh,const matlabarray& mlarray
 
 
 bool 
-FieldToMatlabAlgo::mladdfieldheader(SCIRun::FieldInformation fi, const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdfieldheader(const FieldInformation& fi,  matlabarray& mlarray)
 {
   matlabarray mlfieldbasis;
   mlfieldbasis.createstringarray(fi.get_basis_type());
@@ -741,7 +739,7 @@ FieldToMatlabAlgo::mladdfieldheader(SCIRun::FieldInformation fi, const matlabarr
 
 
 bool 
-FieldToMatlabAlgo::mladdfielddata(SCIRun::VField* field, SCIRun::VMesh* /*mesh*/, const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdfielddata(VField* field, VMesh* /*mesh*/, matlabarray& mlarray)
 {
   matlabarray mlfield;
   
@@ -750,7 +748,7 @@ FieldToMatlabAlgo::mladdfielddata(SCIRun::VField* field, SCIRun::VMesh* /*mesh*/
     return (true);
   }
 
-  SCIRun::VMesh::size_type size = field->num_values();
+  VMesh::size_type size = field->num_values();
 
   if (field->is_char())
   {
@@ -870,8 +868,8 @@ FieldToMatlabAlgo::mladdfielddata(SCIRun::VField* field, SCIRun::VMesh* /*mesh*/
     std::vector<double> data(size*3);
     for (p = 0, q = 0; p < static_cast<int>(size); p++) 
     {
-      SCIRun::Vector v;
-      field->get_value(v,SCIRun::VMesh::index_type(p));
+      Vector v;
+      field->get_value(v,VMesh::index_type(p));
       data[q++] = v.x();
       data[q++] = v.y();
       data[q++] = v.z();
@@ -889,8 +887,8 @@ FieldToMatlabAlgo::mladdfielddata(SCIRun::VField* field, SCIRun::VMesh* /*mesh*/
     std::vector<double> data(size*9);
     for (p = 0, q = 0; p < static_cast<int>(size); p++) 
     {
-      SCIRun::Tensor v;
-      field->get_value(v,SCIRun::VMesh::index_type(p));
+      Tensor v;
+      field->get_value(v,VMesh::index_type(p));
       data[q++] = v.mat_[0][0];
       data[q++] = v.mat_[0][1];
       data[q++] = v.mat_[0][2];
@@ -914,7 +912,7 @@ FieldToMatlabAlgo::mladdfielddata(SCIRun::VField* field, SCIRun::VMesh* /*mesh*/
 ///////////////////////////////////////////////////////////////////
 
 bool 
-FieldToMatlabAlgo::mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdfieldedges(VField *field,VMesh *mesh, matlabarray& mlarray)
 {
   matlabarray fieldedge;
   
@@ -933,7 +931,7 @@ FieldToMatlabAlgo::mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,con
   
   if (field->is_constantdata())
   {
-    SCIRun::VMesh::size_type numvalues = field->num_values();
+    VMesh::size_type numvalues = field->num_values();
     fieldedge.createdensearray(1,static_cast<int>(numvalues),matlabarray::miUINT32);
     std::vector<unsigned int> mapping(numvalues);
     for (VMesh::index_type p = 0; p < numvalues; p++)
@@ -951,10 +949,10 @@ FieldToMatlabAlgo::mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,con
     size_t num = mesh->num_nodes_per_edge();
     size_t numedges = mesh->num_edges();
  
-    mesh->synchronize(SCIRun::Mesh::EDGES_E); 
+    mesh->synchronize(Mesh::EDGES_E); 
 
-    SCIRun::VMesh::Node::array_type array;
-    std::vector<SCIRun::VMesh::index_type> edges(num*numedges);
+    VMesh::Node::array_type array;
+    std::vector<VMesh::index_type> edges(num*numedges);
     std::vector<int> dims(2);	
     dims[0] = static_cast<int>(num); 
     dims[1] = static_cast<int>(numedges);
@@ -964,7 +962,7 @@ FieldToMatlabAlgo::mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,con
     // Hence I prefer to do it with integer and convert to the required
     // class at the last moment. Hopefully the compiler is smart and
     // has a fast translation. 	
-     SCIRun::VMesh::Edge::iterator it, it_end;
+     VMesh::Edge::iterator it, it_end;
     mesh->begin(it);
     mesh->end(it_end);
     size_t q = 0;
@@ -972,7 +970,7 @@ FieldToMatlabAlgo::mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,con
     while (it != it_end)
     {
       mesh->get_nodes(array,*(it));
-      for (size_t r = 0; r < num; r++) edges[q++] = static_cast<SCIRun::VMesh::index_type>(array[r]) + option_indexbase_;
+      for (size_t r = 0; r < num; r++) edges[q++] = static_cast<VMesh::index_type>(array[r]) + option_indexbase_;
       ++it;
     }
     
@@ -992,7 +990,7 @@ FieldToMatlabAlgo::mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,con
 
 
 bool 
-FieldToMatlabAlgo::mladdfieldfaces(SCIRun::VField *field, SCIRun::VMesh *mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdfieldfaces(VField *field, VMesh *mesh, matlabarray& mlarray)
 {
   matlabarray fieldface;
   
@@ -1029,16 +1027,16 @@ FieldToMatlabAlgo::mladdfieldfaces(SCIRun::VField *field, SCIRun::VMesh *mesh,co
     size_t num = mesh->num_nodes_per_face();
     size_t numfaces = mesh->num_faces();
 
-    mesh->synchronize(SCIRun::Mesh::FACES_E); 
+    mesh->synchronize(Mesh::FACES_E); 
 
-    SCIRun::VMesh::Node::array_type array;
-    std::vector<SCIRun::VMesh::index_type> faces(num*numfaces);
+    VMesh::Node::array_type array;
+    std::vector<VMesh::index_type> faces(num*numfaces);
     std::vector<int> dims(2);	
     dims[0] = static_cast<int>(num); 
     dims[1] = static_cast<int>(numfaces);
     fieldface.createdensearray(dims,matlabarray::miUINT32);    
     
-    SCIRun::VMesh::Face::iterator it, it_end;
+    VMesh::Face::iterator it, it_end;
     mesh->begin(it);
     mesh->end(it_end);
     size_t q = 0;
@@ -1046,7 +1044,7 @@ FieldToMatlabAlgo::mladdfieldfaces(SCIRun::VField *field, SCIRun::VMesh *mesh,co
     while (it != it_end)
     {
       mesh->get_nodes(array,*(it));
-      for (size_t r = 0; r < num; r++) faces[q++] = static_cast<SCIRun::VMesh::index_type>(array[r]) + option_indexbase_;
+      for (size_t r = 0; r < num; r++) faces[q++] = static_cast<VMesh::index_type>(array[r]) + option_indexbase_;
       ++it;
     }
     
@@ -1067,7 +1065,7 @@ FieldToMatlabAlgo::mladdfieldfaces(SCIRun::VField *field, SCIRun::VMesh *mesh,co
 
 
 bool 
-FieldToMatlabAlgo::mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray)
+FieldToMatlabAlgo::mladdfieldcells(VField *field,VMesh *mesh, matlabarray& mlarray)
 {
   matlabarray fieldcell;
   
@@ -1104,10 +1102,10 @@ FieldToMatlabAlgo::mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,con
     size_t num = mesh->num_nodes_per_elem();
     size_t numcells = mesh->num_elems();
     
-    mesh->synchronize(SCIRun::Mesh::CELLS_E); 
+    mesh->synchronize(Mesh::CELLS_E); 
 
-    SCIRun::VMesh::Node::array_type array;
-    std::vector<SCIRun::VMesh::index_type> cells(num*numcells);
+    VMesh::Node::array_type array;
+    std::vector<VMesh::index_type> cells(num*numcells);
     std::vector<int> dims(2);	
     dims[0] = static_cast<int>(num); dims[1] = static_cast<int>(numcells);
     fieldcell.createdensearray(dims,matlabarray::miUINT32);    
@@ -1116,7 +1114,7 @@ FieldToMatlabAlgo::mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,con
     // Hence I prefer to do it with integer and convert to the required
     // class at the last moment. Hopefully the compiler is smart and
     // has a fast translation. 	
-    SCIRun::VMesh::Cell::iterator it, it_end;
+    VMesh::Cell::iterator it, it_end;
     mesh->begin(it);
     mesh->end(it_end);
     size_t q = 0;
@@ -1124,7 +1122,7 @@ FieldToMatlabAlgo::mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,con
     while (it != it_end)
     {
       mesh->get_nodes(array,*(it));
-      for (size_t r = 0; r < num; r++) cells[q++] = static_cast<SCIRun::VMesh::index_type>(array[r]) + option_indexbase_;
+      for (size_t r = 0; r < num; r++) cells[q++] = static_cast<VMesh::index_type>(array[r]) + option_indexbase_;
       ++it;
     }
     
@@ -1139,11 +1137,11 @@ FieldToMatlabAlgo::mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,con
     return (false);
   }
   
-  error("FieldToMatlab: Unknow basis type");
+  error("FieldToMatlab: Unknown basis type");
   return (false);  
 }
 
-bool FieldToMatlabAlgo::mladdfieldedgederivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, const matlabarray& /*mlarray*/)
+bool FieldToMatlabAlgo::mladdfieldedgederivatives(VField *field, VMesh* /*mesh*/, matlabarray& /*mlarray*/)
 {
   if (field->is_cubicdata())
   {
@@ -1154,7 +1152,7 @@ bool FieldToMatlabAlgo::mladdfieldedgederivatives(SCIRun::VField *field, SCIRun:
 }
 
 
-bool FieldToMatlabAlgo::mladdfieldfacederivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, const matlabarray& /*mlarray*/)
+bool FieldToMatlabAlgo::mladdfieldfacederivatives(VField *field, VMesh* /*mesh*/, matlabarray& /*mlarray*/)
 {
   if (field->is_cubicdata())
   {
@@ -1165,7 +1163,7 @@ bool FieldToMatlabAlgo::mladdfieldfacederivatives(SCIRun::VField *field, SCIRun:
 }
 
 
-bool FieldToMatlabAlgo::mladdfieldcellderivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, const matlabarray& /*mlarray*/)
+bool FieldToMatlabAlgo::mladdfieldcellderivatives(VField *field, VMesh* /*mesh*/, matlabarray& /*mlarray*/)
 {
   if (field->is_cubicdata())
   {
@@ -1176,7 +1174,7 @@ bool FieldToMatlabAlgo::mladdfieldcellderivatives(SCIRun::VField *field, SCIRun:
 }
 
 
-bool FieldToMatlabAlgo::mladdfieldderivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, const matlabarray& /*mlarray*/)
+bool FieldToMatlabAlgo::mladdfieldderivatives(VField *field, VMesh* /*mesh*/, matlabarray& /*mlarray*/)
 {
   if (field->is_cubicdata())
   {
@@ -1185,6 +1183,3 @@ bool FieldToMatlabAlgo::mladdfieldderivatives(SCIRun::VField *field, SCIRun::VMe
   }
   return (true);
 }
-
-
-} // end namespace

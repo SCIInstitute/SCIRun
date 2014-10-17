@@ -92,11 +92,11 @@ namespace SCIRun
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
         break;		
       case miINT64: 
-        { int64 *ptr = static_cast<int64 *>(databuffer());
+        { int64_t *ptr = static_cast<int64_t *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
         break;   
       case miUINT64: 
-        { uint64 *ptr = static_cast<uint64 *>(databuffer());
+        { uint64_t *ptr = static_cast<uint64_t *>(databuffer());
         for(int p=0;p<dsize;p++) {dataptr[p] = static_cast<T>(ptr[p]); }}
         break;	
       case miSINGLE: 
@@ -153,11 +153,11 @@ namespace SCIRun
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
         break;		
       case miINT64: 
-        { int64 *ptr = static_cast<int64 *>(databuffer());
+        { int64_t *ptr = static_cast<int64_t *>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
         break;   
       case miUINT64: 
-        { uint64 *ptr = static_cast<uint64*>(databuffer());
+        { uint64_t *ptr = static_cast<uint64_t*>(databuffer());
         for(int p=0;p<dsize;p++) {vec[p] = static_cast<T>(ptr[p]); }}
         break;	
       case miSINGLE: 
@@ -203,10 +203,10 @@ namespace SCIRun
         { unsigned int *ptr = static_cast<unsigned int *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
       case miINT64: 
-        { int64 *ptr = static_cast<int64 *>(databuffer()); val = static_cast<T>(ptr[index]);}
+        { int64_t *ptr = static_cast<int64_t *>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
       case miUINT64: 
-        { uint64 *ptr = static_cast<uint64*>(databuffer()); val = static_cast<T>(ptr[index]);}
+        { uint64_t *ptr = static_cast<uint64_t*>(databuffer()); val = static_cast<T>(ptr[index]);}
         break;
       case miSINGLE: 
         { float *ptr = static_cast<float *>(databuffer()); val = static_cast<T>(ptr[index]);}
@@ -263,12 +263,12 @@ namespace SCIRun
         for(int p=0;p<dsize;p++) { ptr[p] = static_cast<unsigned int>(dataptr[p]); }}
         break;
       case miINT64: 
-        { int64 *ptr = static_cast<int64 *>(databuffer());
-        for(int p=0;p<dsize;p++) { ptr[p] = static_cast<int64>(dataptr[p]); }}
+        { int64_t *ptr = static_cast<int64_t *>(databuffer());
+        for(int p=0;p<dsize;p++) { ptr[p] = static_cast<int64_t>(dataptr[p]); }}
         break;   
       case miUINT64: 
-        { uint64 *ptr = static_cast<uint64 *>(databuffer());
-        for(int p=0;p<dsize;p++) { ptr[p] = static_cast<uint64>(dataptr[p]); }}
+        { uint64_t *ptr = static_cast<uint64_t *>(databuffer());
+        for(int p=0;p<dsize;p++) { ptr[p] = static_cast<uint64_t>(dataptr[p]); }}
         break;	
       case miSINGLE: 
         { float *ptr = static_cast<float *>(databuffer());
@@ -320,12 +320,12 @@ namespace SCIRun
         for(int p=0;p<dsize;p++) {ptr[p] = static_cast<unsigned int>(vec[p]); }}
         break;	
       case miINT64: 
-        { int64 *ptr = static_cast<int64 *>(databuffer());
-        for(int p=0;p<dsize;p++) {ptr[p] = static_cast<int64>(vec[p]); }}
+        { int64_t *ptr = static_cast<int64_t *>(databuffer());
+        for(int p=0;p<dsize;p++) {ptr[p] = static_cast<int64_t>(vec[p]); }}
         break;   
       case miUINT64: 
-        { uint64 *ptr = static_cast<uint64 *>(databuffer());
-        for(int p=0;p<dsize;p++) {ptr[p] = static_cast<uint64>(vec[p]); }}
+        { uint64_t *ptr = static_cast<uint64_t *>(databuffer());
+        for(int p=0;p<dsize;p++) {ptr[p] = static_cast<uint64_t>(vec[p]); }}
         break;	
       case miSINGLE: 
         { float *ptr = static_cast<float *>(databuffer());
@@ -366,10 +366,10 @@ namespace SCIRun
         { unsigned int *ptr = static_cast<unsigned int *>(databuffer()); ptr[index] = static_cast<unsigned int>(val);}
         break;
       case miINT64: 
-        { int64 *ptr = static_cast<int64 *>(databuffer()); ptr[index] = static_cast<int64>(val);}
+        { int64_t *ptr = static_cast<int64_t *>(databuffer()); ptr[index] = static_cast<int64_t>(val);}
         break;
       case miUINT64: 
-        { uint64 *ptr = static_cast<uint64 *>(databuffer()); ptr[index] = static_cast<uint64>(val);}
+        { uint64_t *ptr = static_cast<uint64_t *>(databuffer()); ptr[index] = static_cast<uint64_t>(val);}
         break;
       case miSINGLE: 
         { float *ptr = static_cast<float *>(databuffer()); ptr[index] = static_cast<float>(val);}

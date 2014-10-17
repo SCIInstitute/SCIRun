@@ -97,34 +97,34 @@ namespace SCIRun
     protected:
 
       bool mladdmeshheader(const SCIRun::FieldInformation& fi, matlabarray& mlarray);
-      bool mladdnodes(const SCIRun::VMesh* mesh,matlabarray& mlarray);
-      bool mladdedges(const SCIRun::VMesh* mesh, matlabarray& mlarray);
-      bool mladdfaces(const SCIRun::VMesh* mesh, matlabarray& mlarray);    
-      bool mladdcells(const SCIRun::VMesh* mesh, matlabarray& mlarray);
-      bool mladdmeshderivatives(const SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladdnodes(SCIRun::VMesh* mesh,matlabarray& mlarray);
+      bool mladdedges(SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladdfaces(SCIRun::VMesh* mesh, matlabarray& mlarray);    
+      bool mladdcells(SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladdmeshderivatives(SCIRun::VMesh* mesh, matlabarray& mlarray);
 
-      bool mladdtransform(const SCIRun::VMesh* mesh, matlabarray& mlarray);
-      bool mladdxyzmesh1d(const SCIRun::VMesh* mesh, matlabarray& mlarray);
-      bool mladdxyzmesh2d(const SCIRun::VMesh* mesh, matlabarray& mlarray);
-      bool mladdxyzmesh3d(const SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladdtransform(SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladdxyzmesh1d(SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladdxyzmesh2d(SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladdxyzmesh3d(SCIRun::VMesh* mesh, matlabarray& mlarray);
 
-      bool mladddimension1d(const SCIRun::VMesh* mesh, matlabarray& mlarray);
-      bool mladddimension2d(const SCIRun::VMesh* mesh, matlabarray& mlarray);
-      bool mladddimension3d(const SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladddimension1d(SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladddimension2d(SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladddimension3d(SCIRun::VMesh* mesh, matlabarray& mlarray);
 
       bool mladdfieldheader(const SCIRun::FieldInformation& fi,  matlabarray& mlarray);                          
 
-      bool mladdfielddata(const SCIRun::VField* field,SCIRun::VMesh* mesh, matlabarray& mlarray);
+      bool mladdfielddata(SCIRun::VField* field,SCIRun::VMesh* mesh, matlabarray& mlarray);
 
-      bool mladdfieldedges(const SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
-      bool mladdfieldfaces(const SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
-      bool mladdfieldcells(const SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
+      bool mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
+      bool mladdfieldfaces(SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
+      bool mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
 
-      bool mladdfieldedgederivatives(const SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
-      bool mladdfieldfacederivatives(const SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
-      bool mladdfieldcellderivatives(const SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
+      bool mladdfieldedgederivatives(SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
+      bool mladdfieldfacederivatives(SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
+      bool mladdfieldcellderivatives(SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
 
-      bool mladdfieldderivatives(const SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
+      bool mladdfieldderivatives(SCIRun::VField *field,SCIRun::VMesh *mesh, matlabarray& mlarray);
 
 
       //////// ERROR REPORTING MECHANISM /////////////////
