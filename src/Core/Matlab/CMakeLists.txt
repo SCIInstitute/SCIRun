@@ -57,11 +57,12 @@ ADD_LIBRARY(Core_Matlab ${Core_Matlab_SRCS})
 
 TARGET_LINK_LIBRARIES(Core_Matlab
   Core_Datatypes
-  Core_Exceptions
-  Core_Thread
-  Core_Geometry
-  Core_Util
+  #Core_Exceptions
+  #Core_Thread
+  Core_Geometry_Primitives
+  #Core_Util
   Core_Math
+  Core_Logging
   ${SCI_ZLIB_LIBRARY}
   ${SCI_TEEM_LIBRARY}
 )

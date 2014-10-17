@@ -52,6 +52,8 @@
  */
 
 #include <Core/Matlab/matfilebase.h>
+#include <Core/Logging/LoggerFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Matlab/share.h>
 
 /*
@@ -128,7 +130,7 @@ class SCISHARE matlabconverter : public matfilebase
     // These key value pairs are not supported yet, like in the rest of SCIRun
 
     matlabconverter();
-    matlabconverter(SCIRun::ProgressReporter* pr);
+    matlabconverter(SCIRun::Core::Logging::LoggerHandle pr);
 
     // SET CONVERTER OPTIONS:
     // Data type sets the export type of the data
@@ -170,15 +172,15 @@ class SCISHARE matlabconverter : public matfilebase
 #endif
     // SCIRun MATRICES
     int sciMatrixCompatible(const matlabarray& mlarray, std::string& infostring, bool postremarks = true);
-    void mlArrayTOsciMatrix(const matlabarray& mlmat, SCIRun::MatrixHandle& scimat);
-    void sciMatrixTOmlArray(SCIRun::MatrixHandle scimat, matlabarray &mlmat);
+    void mlArrayTOsciMatrix(const matlabarray& mlmat, SCIRun::Core::Datatypes::MatrixHandle& scimat);
+    void sciMatrixTOmlArray(SCIRun::Core::Datatypes::MatrixHandle scimat, matlabarray &mlmat);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // SCIRun NRRDS
     int sciNrrdDataCompatible(const matlabarray& mlarray, std::string& infostring, bool postremarks = true);
     void mlArrayTOsciNrrdData(const matlabarray& mlmat, SCIRun::NrrdDataHandle& scinrrd);
     void sciNrrdDataTOmlArray(SCIRun::NrrdDataHandle scinrrd, matlabarray& mlmat);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // SCIRun BUNDLES 
     int sciBundleCompatible(matlabarray &mlarray, std::string &infostring, bool postremarks = true);
     void mlArrayTOsciBundle(matlabarray &mlmat, SCIRun::BundleHandle &scibundle);
@@ -194,29 +196,30 @@ class SCISHARE matlabconverter : public matfilebase
     void sciFieldTOmlArray(SCIRun::FieldHandle scifield, matlabarray& mlarray);
 
     // SUPPORT FUNCTIONS
-    // Test whether the proposed name of a matlab matrix is valid.
+    // Test whether the proposed name of a Matlab matrix is valid.
     bool isvalidmatrixname(const std::string& name);
     
   private:
 
     // FUNCTIONS FOR COMMUNICATING WITH THE USER
 
-    SCIRun::ProgressReporter* pr_;
+    SCIRun::Core::Logging::LoggerHandle pr_;
     
     inline void error(const std::string& error);
     inline void warning(const std::string& warning);
     inline void remark(const std::string& remark);
 
     // FUNCTION FOR TRANSLATING THE CONTENTS OF A MATRIX (THE NUMERIC PART OF THE DATA)
-    void sciMatrixTOmlMatrix(SCIRun::MatrixHandle &scimat,matlabarray &mlmat);
+    void sciMatrixTOmlMatrix(SCIRun::Core::Datatypes::MatrixHandle &scimat,matlabarray &mlmat);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // FUNCTIONS FOR TRANSLATING THE PROPERTY MANAGER
     void mlPropertyTOsciProperty(matlabarray &ma,SCIRun::PropertyManager *handle);
     void sciPropertyTOmlProperty(SCIRun::PropertyManager *handle,matlabarray &ma);
 
     // FUNCTIONS FOR TRANSLATING THE CONTENTS OF A NRRD (THE NUMERIC PART OF THE DATA)
     void sciNrrdDataTOmlMatrix(SCIRun::NrrdDataHandle &scinrrd, matlabarray &mlmat);
-
+#endif
     unsigned int convertmitype(matlabarray::mitype type);
     matlabarray::mitype convertnrrdtype(int type);
     
@@ -236,18 +239,17 @@ class SCISHARE matlabconverter : public matfilebase
 
 };
 
-// FUNCTIONS FOR OUTPUTTING ERRORS TO USER
-inline void matlabconverter::error(std::string error)
+inline void matlabconverter::error(const std::string& error)
 {
   if(pr_) pr_->error(error);
 }
 
-inline void matlabconverter::warning(std::string warning)
+inline void matlabconverter::warning(const std::string& warning)
 {
   if(pr_) pr_->warning(warning);
 }
 
-inline void matlabconverter::remark(std::string remark)
+inline void matlabconverter::remark(const std::string& remark)
 {
   if(pr_) pr_->remark(remark);
 }

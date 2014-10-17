@@ -28,7 +28,7 @@
 
 
 // NOTE: This MatlabIO file is used in different projects as well. Please, do not
-// make it depend on other scirun code. This way it is easier to maintain matlabIO 
+// make it depend on other Scirun code. This way it is easier to maintain matlabIO 
 // code among different projects. Thank you.
 
 /*
@@ -40,18 +40,18 @@
 /*
  * CLASS DESCRIPTION
  *
- * This class is a container for storing a tree of matlab
+ * This class is a container for storing a tree of Matlab
  * arrays. Structured and cell arrays are stored as a vector of
  * matlabarray objects. Hence, the object can contain sub objects of
  * the same class. In order to have an efficient memory management,
  * the object is a handle and object in one. Each function call uses
  * the handle to access the data in the object. The objects are
- * pointers to the internal data structure of a full matlab
- * array. When aquiring a pointer to one of it subfields it is a
+ * pointers to the internal data structure of a full Matlab
+ * array. When acquiring a pointer to one of it subfields it is a
  * pointer to that subarray in the whole three. Hence altering an
  * array at a sub level will automatically change the total array. The
- * class supports building and altering matlabarrays. Once an array
- * has been built, it can be handed over to the matlabfile class to
+ * class supports building and altering Matlab arrays. Once an array
+ * has been built, it can be handed over to the Matlab file class to
  * store it in a file.
  *
  * MEMORY MODEL
@@ -83,24 +83,19 @@
  */ 
  
  
-#ifndef JGS_MATLABIO_MATLABARRAY_H
-#define JGS_MATLABIO_MATLABARRAY_H 1
+#ifndef CORE_MATLABIO_MATLABARRAY_H
+#define CORE_MATLABIO_MATLABARRAY_H 1
 
-#include "matfilebase.h"
-#include "matfile.h"
+#include <Core/Matlab/matfile.h>
+#include <Core/Matlab/share.h>
 
-#include <string>
-#include <vector>
-#include <iostream>
-#include <sstream>
+namespace SCIRun
+{
+namespace MatlabIO 
+{
 
-#include <stdlib.h>
- 
-#include "share.h"
- 
-namespace MatlabIO {
-
-class SCISHARE matlabarray : public matfilebase {
+class SCISHARE matlabarray : public matfilebase 
+{
 private:
   
   class mxarray {
@@ -123,12 +118,12 @@ private:
     mitype  type_;      // type of the data in the array 
     unsigned char flags_;   // matrix flags 
     
-    // storage for navigating the numericc data
+    // storage for navigating the numeric data
     
     std::vector<int> dims_;    // dimensions of the matrix
     
     std::string name_;        // name of the matrix
-    std::string classname_;      // matlab class name 
+    std::string classname_;      // Matlab class name 
     std::string string_;      // string array contents
     
     std::vector<std::string> fieldnames_;  // fieldnames
@@ -155,7 +150,7 @@ private:
   // to the object is stored. So multiple copies of the object can
   // exist, without duplicating data in memory. Especially since
   // matlabarray can be nested as a tree deleting the top one would
-  // delete them all. This behaviour is circumvented by only storing a
+  // delete them all. This behavior is circumvented by only storing a
   // pointer to the real object.
   
   mxarray* m_; 
@@ -181,7 +176,7 @@ public:
   // vector and does not resize any of the data fields
   void setdims(std::vector<int> &dims);
   
-  // Set the type of the data in the matlab array
+  // Set the type of the data in the Matlab array
   void settype(mitype type);
   
   // function to create, copy, and destroy the object
@@ -206,15 +201,15 @@ public:
   mlclass getclass();
   mitype  gettype();
   
-  // name is the matrix name. In matlab only the top level matrix
+  // name is the matrix name. In Matlab only the top level matrix
   // names are used any submatrix can have a name, but it is not used
-  // in the current versions of matlab
+  // in the current versions of Matlab
     
   std::string getname();
-  void setname(std::string name);
+  void setname(const std::string& name);
   
   // matrix flags complex indicates a matrix is complex logical
-  // indicates that in matlab the matrix is considered logical (zero
+  // indicates that in Matlab the matrix is considered logical (zero
   // or non-zero) global indicates it was originally a global matrix
   // in the global workspace
   
@@ -229,9 +224,9 @@ public:
   // classname to link it to its class "functions".
   
   std::string getclassname();
-  void setclassname(std::string classname);
+  void setclassname(const std::string& classname);
   
-  // Everything in matlab has dimensions. The minimum amount of
+  // Everything in Matlab has dimensions. The minimum amount of
   // dimensions is two. A smaller dimension will be expanded to
   // two. The dimensions are laid out as follows first the "fast"
   // dimensions and than the slower ones.
@@ -262,13 +257,13 @@ public:
   //
   // (1) to access all fields as one big vector with just one index
   // ignoring the dimensions of the object.
-  // (2) access bya vector of indices that use the
+  // (2) access by a vector of indices that use the
   // dimensions vector to field the location in the big vector
   //
   // The first one is direct access, where as the second needs
   // a conversion to find where a certain element is.
   // NOTE: everything is coupled through pointers, so be careful not
-  // to link matrices in a loop as that would cause some unintented
+  // to link matrices in a loop as that would cause some unintended
   // effects.
   
   matlabarray getcell(int index);
@@ -286,13 +281,13 @@ public:
   // have similar addressing modes with a single or a vector of
   // indices.
   
-  matlabarray getfield(int index,std::string fieldname);
-  matlabarray getfield(std::vector<int> &indexvec,std::string fieldname);  
-  matlabarray getfieldCI(int index,std::string fieldname);   // Case Insensitive version
-  matlabarray getfieldCI(std::vector<int> &indexvec,std::string fieldname); // Case Insensitive version
+  matlabarray getfield(int index,const std::string& fieldname);
+  matlabarray getfield(std::vector<int> &indexvec,const std::string& fieldname);  
+  matlabarray getfieldCI(int index,const std::string& fieldname);   // Case Insensitive version
+  matlabarray getfieldCI(std::vector<int> &indexvec,const std::string& fieldname); // Case Insensitive version
   
-  void setfield(int index,std::string fieldname,matlabarray m);
-  void setfield(std::vector<int> &indexvec,std::string fieldname,matlabarray m);
+  void setfield(int index,const std::string& fieldname,matlabarray m);
+  void setfield(std::vector<int> &indexvec,const std::string& fieldname,matlabarray m);
   matlabarray getfield(int index,int fieldnameindex);
   matlabarray getfield(std::vector<int> &indexvec,int fieldnameindex);
   void setfield(int index,int fieldnameindex,matlabarray m);
@@ -310,37 +305,37 @@ public:
   
   // Get the index of a fieldname
   // Two version case sensitive and case insensitive
-  int getfieldnameindex(std::string fieldname);
-  int getfieldnameindexCI(std::string fieldname);    // Case Insensitive version
+  int getfieldnameindex(const std::string& fieldname);
+  int getfieldnameindexCI(const std::string& fieldname);    // Case Insensitive version
   
   // Change a certain fieldname
-  void setfieldname(int fieldnameindex,std::string);
+  void setfieldname(int fieldnameindex,const std::string&);
   
   // Check whether a certain fieldname exists
-  bool isfield(std::string fieldname);
-  bool isfieldCI(std::string fieldname);  // Case Insensitive Version
+  bool isfield(const std::string& fieldname);
+  bool isfieldCI(const std::string& fieldname);  // Case Insensitive Version
   
   // Add and remove entries
   // This will internally reorder matrix
-  int addfieldname(std::string);
-  void removefieldname(std::string);
+  int addfieldname(const std::string&);
+  void removefieldname(const std::string&);
   void removefieldname(int fieldnameindex);
   
   // string specific functions
   std::string getstring();
-  void setstring(std::string string);
-  bool compare(std::string str);
-  bool compareCI(std::string str);
+  void setstring(const std::string& string);
+  bool compare(const std::string& str);
+  bool compareCI(const std::string& str);
   
   
   // creation functions
-  // There are a few basic matlab array classes
+  // There are a few basic Matlab array classes
   //   Dense matrices     - in various numeric formats
-  //   Sparse matrices    - in matlab only in double, but data can be entered in any format
+  //   Sparse matrices    - in Matlab only in double, but data can be entered in any format
   //   Cell matrices      - matrix of pointers to submatrices
   //   Struct matrices    - similar to cell array, but with an extra dimension with fieldnames
   //   Class matrices     - based on the struct matrix with an extra field of the classname
-  //   String matrices    - A charater array that needs to interpreted as a string
+  //   String matrices    - A character array that needs to interpreted as a string
   
   void createdensearray(std::vector<int> &dims,mitype type);  
   void createsparsearray(std::vector<int> &dims,mitype type); 
@@ -351,8 +346,8 @@ public:
   void createstructarray();
   void createstructarray(std::vector<std::string> &fieldnames); 
   void createstructarray(std::vector<int> &dims,std::vector<std::string> &fieldnames);   
-  void createclassarray(std::vector<std::string> &fieldnames,std::string classname);
-  void createclassarray(std::vector<int> &dims,std::vector<std::string> &fieldnames,std::string classname);
+  void createclassarray(std::vector<std::string> &fieldnames,const std::string& classname);
+  void createclassarray(std::vector<int> &dims,std::vector<std::string> &fieldnames,const std::string& classname);
   
   // A shortway to create some basic matrices/vectors/scalars.  These
   // functions use STL vectors or the C-style pointer to a memory
@@ -372,7 +367,7 @@ public:
   
   // string arrays in this implementation will allow changing the size 
   void createstringarray(); 
-  void createstringarray(std::string string); 
+  void createstringarray(const std::string& string); 
   
   // check type of an array
   
@@ -402,7 +397,7 @@ public:
   template<class T> void getimagnumericarray(std::vector<T> &vec);
   
   // C-style write access. The data will be copied out of the
-  // databuffer and casted to the format of the matlab file. If a type
+  // databuffer and casted to the format of the Matlab file. If a type
   // is specified the data will be stored in that format. Otherwise it
   // depends on the definition given in createdensearray() or in
   // createsparsearray().  Note Submatrices cannot be enterred this
@@ -446,10 +441,10 @@ public:
   template<class T> void setcolsarray(T *cols,int size);
   
   std::string getinfotext();
-  std::string getinfotext(std::string name);
+  std::string getinfotext(const std::string& name);
   
   // reordering functions (for DENSE matrices only)
-  // Useful as matlab uses Fortran ordering of matrices and
+  // Useful as Matlab uses Fortran ordering of matrices and
   // C++ uses the C-style ordering.
   
   void transpose();   // matrix must be 2D
@@ -476,12 +471,12 @@ private:
   
   // multi dimensional scheme for computing the new order of the
   // elements in case of switching certain dimensions.  e.g. for a 2D
-  // matrix a permuation or of [1 0] wil transpose the matrix. However
-  // for n dimensional matrices a transpose operation is a permuation
+  // matrix a permutation or of [1 0] will transpose the matrix. However
+  // for n dimensional matrices a transpose operation is a permutation
   // of the order of the dimensions. Based on this order this function
-  // will calculate the neworder of all elements
+  // will calculate the new order of all elements
   
-  void reorder_permute(std::vector<int> &newindices,std::vector<int> permorder);
+  void reorder_permute(std::vector<int> &newindices, const std::vector<int>& permorder);
 };
   
   
@@ -1016,6 +1011,6 @@ matlabarray::mitype  inline matlabarray::getmitype(float &/*test*/)
 matlabarray::mitype  inline matlabarray::getmitype(double &/*test*/) 
 { return(matlabarray::miDOUBLE); } 
 
-} // namespace
+}}
 
 #endif

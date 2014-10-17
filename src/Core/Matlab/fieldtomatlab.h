@@ -59,6 +59,7 @@ DEALINGS IN THE SOFTWARE.
 #define CORE_MATLABIO_MATLABCONVERTER_FIELDTOMATLAB_H 1
 
 #include <Core/Matlab/matfilebase.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Matlab/share.h>
 
 namespace SCIRun 
@@ -69,14 +70,12 @@ namespace SCIRun
     class SCISHARE FieldToMatlabAlgo : public matfilebase
     {
     public:
-
-      //////// CONSTRUCTOR ///////////////////////////////////
-      inline FieldToMatlabAlgo();
+      FieldToMatlabAlgo();
       virtual ~FieldToMatlabAlgo();
 
       //////// OPTIONS FOR CONVERTER ////////////////////////
 
-      // Set the index base for the matlab code, normally htis one is 1
+      // Set the index base for the Matlab code, normally this one is 1
       inline void option_indexbase(int indexbase);
       // Option to switch on the old way of dealing with tensors, the ordering
       // is different. When switched off, ordering will be same as SCIRun 
@@ -89,49 +88,47 @@ namespace SCIRun
       // elements.
       inline void option_forceoldnames(bool value);
 
-      //////// DYNAMIC ALGO ENTRY POINT /////////////////////
+      virtual bool execute(SCIRun::FieldHandle fieldH, matlabarray& mlarray);
 
-      virtual bool execute(SCIRun::FieldHandle fieldH, matlabarray &mlarray);
-
-      inline void setreporter(SCIRun::ProgressReporter* pr);
+      inline void setreporter(SCIRun::Logging::LoggerHandle pr);
 
     protected:
 
-      bool mladdmeshheader(SCIRun::FieldInformation fi, matlabarray mlarray);
-      bool mladdnodes(SCIRun::VMesh* mesh,matlabarray mlarray);
-      bool mladdedges(SCIRun::VMesh* mesh,matlabarray mlarray);
-      bool mladdfaces(SCIRun::VMesh* mesh,matlabarray mlarray);    
-      bool mladdcells(SCIRun::VMesh* mesh,matlabarray mlarray);
-      bool mladdmeshderivatives(SCIRun::VMesh* mesh,matlabarray mlarray);
+      bool mladdmeshheader(SCIRun::FieldInformation fi, const matlabarray& mlarray);
+      bool mladdnodes(SCIRun::VMesh* mesh,const matlabarray& mlarray);
+      bool mladdedges(SCIRun::VMesh* mesh,const matlabarray& mlarray);
+      bool mladdfaces(SCIRun::VMesh* mesh,const matlabarray& mlarray);    
+      bool mladdcells(SCIRun::VMesh* mesh,const matlabarray& mlarray);
+      bool mladdmeshderivatives(SCIRun::VMesh* mesh,const matlabarray& mlarray);
 
-      bool mladdtransform(SCIRun::VMesh* mesh,matlabarray mlarray);
-      bool mladdxyzmesh1d(SCIRun::VMesh* mesh,matlabarray mlarray);
-      bool mladdxyzmesh2d(SCIRun::VMesh* mesh,matlabarray mlarray);
-      bool mladdxyzmesh3d(SCIRun::VMesh* mesh,matlabarray mlarray);
+      bool mladdtransform(SCIRun::VMesh* mesh,const matlabarray& mlarray);
+      bool mladdxyzmesh1d(SCIRun::VMesh* mesh,const matlabarray& mlarray);
+      bool mladdxyzmesh2d(SCIRun::VMesh* mesh,const matlabarray& mlarray);
+      bool mladdxyzmesh3d(SCIRun::VMesh* mesh,const matlabarray& mlarray);
 
-      bool mladddimension1d(SCIRun::VMesh* mesh,matlabarray mlarray);
-      bool mladddimension2d(SCIRun::VMesh* mesh,matlabarray mlarray);
-      bool mladddimension3d(SCIRun::VMesh* mesh,matlabarray mlarray);
+      bool mladddimension1d(SCIRun::VMesh* mesh,const matlabarray& mlarray);
+      bool mladddimension2d(SCIRun::VMesh* mesh,const matlabarray& mlarray);
+      bool mladddimension3d(SCIRun::VMesh* mesh,const matlabarray& mlarray);
 
-      bool mladdfieldheader(SCIRun::FieldInformation fi, matlabarray mlarray);                          
+      bool mladdfieldheader(SCIRun::FieldInformation fi, const matlabarray& mlarray);                          
 
-      bool mladdfielddata(SCIRun::VField* field,SCIRun::VMesh* mesh,matlabarray mlarray);
+      bool mladdfielddata(SCIRun::VField* field,SCIRun::VMesh* mesh,const matlabarray& mlarray);
 
-      bool mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,matlabarray mlarray);
-      bool mladdfieldfaces(SCIRun::VField *field,SCIRun::VMesh *mesh,matlabarray mlarray);
-      bool mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,matlabarray mlarray);
+      bool mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray);
+      bool mladdfieldfaces(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray);
+      bool mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray);
 
-      bool mladdfieldedgederivatives(SCIRun::VField *field,SCIRun::VMesh *mesh,matlabarray mlarray);
-      bool mladdfieldfacederivatives(SCIRun::VField *field,SCIRun::VMesh *mesh,matlabarray mlarray);
-      bool mladdfieldcellderivatives(SCIRun::VField *field,SCIRun::VMesh *mesh,matlabarray mlarray);
+      bool mladdfieldedgederivatives(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray);
+      bool mladdfieldfacederivatives(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray);
+      bool mladdfieldcellderivatives(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray);
 
-      bool mladdfieldderivatives(SCIRun::VField *field,SCIRun::VMesh *mesh,matlabarray mlarray);
+      bool mladdfieldderivatives(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray);
 
 
-      //////// ERROR REPORTERING MECHANISM /////////////////
+      //////// ERROR REPORTING MECHANISM /////////////////
 
-      inline void error(std::string error);
-      inline void warning(std::string warning);
+      void error(const std::string& error);
+      void warning(const std::string& warning);
 
       //////// OPTION PARAMETERS //////////////////////////
 
@@ -140,49 +137,11 @@ namespace SCIRun
       int  option_indexbase_;
 
     private:
-      SCIRun::ProgressReporter *pr_;
+      SCIRun::Logging::LoggerHandle pr_;
 
     };
 
-    inline FieldToMatlabAlgo::FieldToMatlabAlgo() :
-    option_forceoldnames_(false),
-      option_nofieldconnectivity_(false),  
-      option_indexbase_(1),
-      pr_(0)
-    {
-    }
-
-    inline void FieldToMatlabAlgo::setreporter(SCIRun::ProgressReporter* pr)
-    {
-      pr_ = pr;
-    }
-
-
-    inline void FieldToMatlabAlgo::option_forceoldnames(bool value) 
-    {
-      option_forceoldnames_ = value;
-    }
-
-    inline void FieldToMatlabAlgo::option_nofieldconnectivity(bool value) 
-    {
-      option_nofieldconnectivity_ = value;
-    }
-
-    inline void FieldToMatlabAlgo::option_indexbase(int indexbase) 
-    {
-      option_indexbase_ = indexbase;
-    }
-
-    inline void FieldToMatlabAlgo::error(std::string error)
-    {
-      if(pr_) pr_->error(error);
-    }
-
-    inline void FieldToMatlabAlgo::warning(std::string warning)
-    {
-      if(pr_) pr_->warning(warning);
-    }
-
+    
 
   }}
 

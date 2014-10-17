@@ -34,10 +34,46 @@
 
 #include <Core/Matlab/fieldtomatlab.h>
 
-namespace MatlabIO {
+using namespace SCIRun::MatlabIO;
+
+FieldToMatlabAlgo::FieldToMatlabAlgo() :
+option_forceoldnames_(false),
+  option_nofieldconnectivity_(false),  
+  option_indexbase_(1),
+  pr_(0)
+{
+}
+
+void FieldToMatlabAlgo::setreporter(SCIRun::ProgressReporter* pr)
+{
+  pr_ = pr;
+}
 
 
-using namespace SCIRun;
+void FieldToMatlabAlgo::option_forceoldnames(bool value) 
+{
+  option_forceoldnames_ = value;
+}
+
+void FieldToMatlabAlgo::option_nofieldconnectivity(bool value) 
+{
+  option_nofieldconnectivity_ = value;
+}
+
+void FieldToMatlabAlgo::option_indexbase(int indexbase) 
+{
+  option_indexbase_ = indexbase;
+}
+
+void FieldToMatlabAlgo::error(std::string error)
+{
+  if(pr_) pr_->error(error);
+}
+
+void FieldToMatlabAlgo::warning(std::string warning)
+{
+  if(pr_) pr_->warning(warning);
+}
 
 
 FieldToMatlabAlgo::~FieldToMatlabAlgo()
@@ -269,13 +305,13 @@ bool FieldToMatlabAlgo::mladdnodes(SCIRun::VMesh* mesh,matlabarray mlarray)
   // Request that it generates the node matrix
   mesh->synchronize(SCIRun::Mesh::NODES_E); 
 
-  // Buffers for exporting the data to matlab.
+  // Buffers for exporting the data to Matlab.
   // The MatlabIO does not use SCIRun style iterators hence we need to extract
   // the data first. 
   std::vector<double> nodes(3*numnodes);
   std::vector<int> dims(2);
 
-  // Setup the dimensions of the matlab array
+  // Setup the dimensions of the Matlab array
   dims[0] = 3; dims[1] = static_cast<int>(numnodes);
 
   // Extracting data from the SCIRun classes is a painfull process.
@@ -587,7 +623,7 @@ FieldToMatlabAlgo::mladdxyzmesh2d(SCIRun::VMesh* mesh,matlabarray mlarray)
   y.createdensearray(static_cast<int>(dim2),static_cast<int>(dim1),matlabarray::miDOUBLE);
   z.createdensearray(static_cast<int>(dim2),static_cast<int>(dim1),matlabarray::miDOUBLE);
       
-  // We use temp buffers to store all the values before committing them to the matlab
+  // We use temp buffers to store all the values before committing them to the Matlab
   // classes, this takes up more memory, but should decrease the number of actual function
   // calls, which should be boost performance 
   std::vector<double> xbuffer(numnodes);
@@ -644,7 +680,7 @@ FieldToMatlabAlgo::mladdxyzmesh3d(SCIRun::VMesh* mesh,matlabarray mlarray)
   y.createdensearray(dims,matlabarray::miDOUBLE);
   z.createdensearray(dims,matlabarray::miDOUBLE);
       
-  // We use temp buffers to store all the values before committing them to the matlab
+  // We use temp buffers to store all the values before committing them to the Matlab
   // classes, this takes up more memory, but should decrease the number of actual function
   // calls, which should be boost performance 
   std::vector<double> xbuffer(numnodes);

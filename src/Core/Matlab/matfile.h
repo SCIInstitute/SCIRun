@@ -82,6 +82,7 @@
  *
  */
 
+#include <stack>
 #include <Core/Matlab/matfiledata.h>
 #include <Core/Matlab/share.h>
 
@@ -107,7 +108,7 @@ class SCISHARE matfile : public matfilebase {
             };
 
 	// This next struct is used for buffering sections of the compressed
-	// data chuncks in V7 of matlab.
+	// data chuncks in V7 of Matlab.
 	// The basic idea is to decompress compressed pieces of the files and maintain a
 	// list of the pieces that have been compresse
 	// Using the offset in the file these pieces can be unique identified and cataloged
@@ -185,7 +186,7 @@ class SCISHARE matfile : public matfilebase {
 	bool byteswap();
 	bool byteswapmachine();
 	
-	// Reading the matlab-file header
+	// Reading the Matlab-file header
 	// This header contains text (126 bytes) explaining the origin of the data
 	// Can be an arbritrary text
 	 
@@ -242,7 +243,7 @@ class SCISHARE matfile : public matfilebase {
 	void closechild();
     
 	// open and close a compressed section of data
-	// Compression is only used for reading matlab V7 files
+	// Compression is only used for reading Matlab V7 files
 	// Data is exported as non compressed data to be compatible with
 	// version 5 and 6.
 	

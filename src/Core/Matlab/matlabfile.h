@@ -42,7 +42,7 @@ DEALINGS IN THE SOFTWARE.
 /*
 * CLASS DESCRIPTION
 * This class is an interface to a matfile and handles the importing and exporting
-* matlabarray objects. The latter represent the full complexity of a matlab array.
+* matlabarray objects. The latter represent the full complexity of a Matlab array.
 *
 * MEMORY MODEL
 * The class maintains its own copies of the data. Each vector, string and other
@@ -68,21 +68,17 @@ DEALINGS IN THE SOFTWARE.
 #ifndef CORE_MATLABIO_MATLABFILE_H
 #define CORE_MATLABIO_MATLABFILE_H 1
 
+#include <Core/Matlab/matfilebase.h>
+#include <Core/Matlab/matfile.h>
+#include <Core/Matlab/share.h>
 
-#include "matfilebase.h"
-#include "matfile.h"
-#include "matfiledata.h"
-#include "matlabarray.h"
+namespace SCIRun 
+{
+namespace MatlabIO 
+{
 
-#include <vector>
-#include <string>
-#include <iostream>
-
-#include "share.h"
-
-namespace MatlabIO {
-
-  class SCISHARE matlabfile : public matfile {
+  class SCISHARE matlabfile : public matfile 
+  {
 
   private:
     // matrixaddress is a vector of offsets
@@ -112,7 +108,7 @@ namespace MatlabIO {
     void open(const std::string& filename, const std::string& accessmode);
     void close();
 
-    // functions for scanning through the contents of a matlab file
+    // functions for scanning through the contents of a Matlab file
     // getnummatlabarrays() gets the number of arrays stored in the file
     // and getmatlabarrayinfo() loads the matrix header but not the data
     // inside, it does read the headers of sub matrices, getmatlabarrayshortinfo()
@@ -133,11 +129,11 @@ namespace MatlabIO {
 
     // function writing the matrices
     // A matrix name needs to be added. This the name of the object
-    // as it appears in matlab
+    // as it appears in Matlab
     void putmatlabarray(matlabarray& ma, const std::string& matrixname);
 
   };
 
-} // end namespace MatlabIO
+}}
 
 #endif

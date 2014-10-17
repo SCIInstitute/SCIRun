@@ -59,6 +59,8 @@ namespace SCIRun
   namespace MatlabIO 
   {
 
+    class matlabarray;
+
     class SCISHARE matfilebase 
     {
     public:
@@ -147,5 +149,6 @@ namespace SCIRun
       }; 
     };
 
-  } // end namespace
+  }}
+
 #endif 

@@ -33,14 +33,15 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 #include <Core/Matlab/matlabfile.h>
-//#include <Core/Matlab/matlabarray.h>
-//#include <Core/Matlab/matlabconverter.h>
+#include <Core/Matlab/matlabarray.h>
+#include <Core/Matlab/matlabconverter.h>
 
 using namespace SCIRun::Modules::Matlab::DataIO;
 //using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::MatlabIO;
+using namespace SCIRun::Core::Logging;
 
 const ModuleLookupInfo ImportDatatypesFromMatlab::staticInfo_("ImportDatatypesFromMatlab", "DataIO", "Matlab");
 
@@ -49,10 +50,13 @@ namespace detail
   class ImportDatatypesFromMatlabImpl
   {
   public:
+    explicit ImportDatatypesFromMatlabImpl(LoggerHandle logger);
     void indexmatlabfile(bool postmsg);
     void displayerror(const std::string& str) const;
 
-    std::string guimatrixinfotextslist_, guimatrixnameslist_, guimatrixname_;
+    std::string guimatrixinfotextslist_, guimatrixnameslist_, guimatrixname_, guifilename_;
+  private:
+    LoggerHandle logger_;
   };
 }
 
@@ -133,7 +137,7 @@ class ImportDatatypesFromMatlab : public Module
     void		indexmatlabfile(bool postmsg);
     
     // readmatlabarray():
-    //   This function reads the in the gui selected matlab array. It
+    //   This function reads the in the gui selected Matlab array. It
     //   retrieves the current filename and the matrix selected in this
     //   file and returns an object containing the full matrix
     
@@ -293,7 +297,7 @@ void ImportDatatypesFromMatlab::execute()
   }
   catch (matlabfile::empty_matlabarray)
   {
-    error("ImportDatatypesFromMatlab: Empty matlab array");
+    error("ImportDatatypesFromMatlab: Empty Matlab array");
   }
   catch (matlabfile::matfileerror) 
   {
@@ -381,32 +385,30 @@ namespace detail
 void ImportDatatypesFromMatlabImpl::indexmatlabfile(bool postmsg)
 {
 	const int NUMPORTS = 9;
-  std::string filename = "";
   std::string matrixinfotexts[NUMPORTS];
   std::string matrixnames[NUMPORTS];
-  std::string matrixinfotextslist = "";
-  std::string matrixnameslist = "";
-  std::string newmatrixname = "";
-  std::string matrixname = "";
+  std::string matrixinfotextslist;
+  std::string matrixnameslist;
+  std::string newmatrixname;
   
   guimatrixinfotextslist_ = matrixinfotextslist;
   guimatrixnameslist_ = matrixnameslist;
   
 //   SCIRun::ProgressReporter* pr = 0;
 //   if (postmsg) pr = dynamic_cast<SCIRun::ProgressReporter* >(this);
-  matlabconverter translate(nullptr);
+  matlabconverter translate(logger_);
   
-  filename = guifilename_;
+  std::string filename = guifilename_;
 
-  if (filename == "") 
+  if (filename.empty()) 
   {
-          // No file has been loaded, so reset the
-          // matrix name variable
-          guimatrixname_ = newmatrixname;
-          return;
+    // No file has been loaded, so reset the
+    // matrix name variable
+    guimatrixname_ = newmatrixname;
+    return;
   }
-  
-  matrixname = guimatrixname_;
+
+  std::string matrixname = guimatrixname_;
   
   std::vector<std::string> matrixnamelist(NUMPORTS);
   bool foundmatrixname[NUMPORTS];
@@ -427,13 +429,13 @@ void ImportDatatypesFromMatlabImpl::indexmatlabfile(bool postmsg)
     matlabfile mfile;
     // Open the .mat file
     // This function also scans through the file and makes
-    // sure it is amat file and counts the number of arrays
+    // sure it is a mat file and counts the number of arrays
     
     mfile.open(filename,"r");
     
-    // all matlab data is stored in a matlabarray object
+    // all Matlab data is stored in a matlabarray object
     matlabarray ma;
-    int cindex = 0;		// compatibility index, which matlab array fits the SCIRun matrix best? 
+    int cindex = 0;		// compatibility index, which Matlab array fits the SCIRun matrix best? 
     int maxindex = 0;		// highest index found so far
             
     // Scan the file and see which matrices are compatible
@@ -532,7 +534,7 @@ void ImportDatatypesFromMatlabImpl::indexmatlabfile(bool postmsg)
   }
   catch (matlabfile::empty_matlabarray&)
   {
-    displayerror("ImportDatatypesFromMatlab: Empty matlab array");
+    displayerror("ImportDatatypesFromMatlab: Empty Matlab array");
   }
   catch (matlabfile::matfileerror&) 
   {
