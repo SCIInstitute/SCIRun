@@ -78,21 +78,21 @@ namespace SCIRun
       //////// OPTIONS FOR CONVERTER ////////////////////////
 
       // Set the index base for the Matlab code, normally this one is 1
-      inline void option_indexbase(int indexbase);
+      void option_indexbase(int indexbase);
       // Option to switch on the old way of dealing with tensors, the ordering
       // is different. When switched off, ordering will be same as SCIRun 
       // ordering.
-      inline void option_oldtensor(bool value);
+      void option_oldtensor(bool value);
       // When isoparametric the connectivity matrix of mesh and field should
       // be the same hence one can specify to remove it if not wanted
-      inline void option_nofieldconnectivity(bool value);
+      void option_nofieldconnectivity(bool value);
       // Force old naming scheme when exporting, this will not work for H.O.
       // elements.
-      inline void option_forceoldnames(bool value);
+      void option_forceoldnames(bool value);
 
       virtual bool execute(SCIRun::FieldHandle fieldH, matlabarray& mlarray);
 
-      inline void setreporter(SCIRun::Core::Logging::LoggerHandle pr);
+      void setreporter(SCIRun::Core::Logging::LoggerHandle pr);
 
     protected:
 
