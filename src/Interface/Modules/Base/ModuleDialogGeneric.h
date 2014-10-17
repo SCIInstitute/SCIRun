@@ -50,6 +50,8 @@ namespace Gui {
     virtual ~ModuleDialogGeneric();
     bool isPulling() const { return pulling_; } //yuck
     QAction* getExecuteAction() { return executeAction_; }
+    void setDockable(QDockWidget* dock) { dock_ = dock; } // to enable title changes
+    void updateWindowTitle(const QString& title);
 
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
@@ -60,6 +62,7 @@ namespace Gui {
     //need a better name: read/updateUI
     virtual void pull() = 0;
     void pull_newVersionToReplaceOld();
+    void moduleSelected(bool selected);
   Q_SIGNALS:
     void pullSignal();
     void executionTimeChanged(int time);
@@ -95,6 +98,8 @@ namespace Gui {
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
     QAction* executeAction_;
+    QString windowTitle_;
+    QDockWidget* dock_;
   };
 
 }

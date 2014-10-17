@@ -635,11 +635,13 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 void ModuleWidget::setColorSelected()
 {
   updateBackgroundColor(moduleRGBA(0,255,255));
+  Q_EMIT moduleSelected(true);
 }
 
 void ModuleWidget::setColorUnselected()
 {
   updateBackgroundColor(defaultBackgroundColor_);
+  Q_EMIT moduleSelected(false);
 }
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
@@ -658,9 +660,11 @@ void ModuleWidget::makeOptionsDialog()
       addWidgetToExecutionDisableList(dialog_->getExecuteAction());
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
+      connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
+      dialog_->setDockable(dockable_);
       dockable_->setMinimumSize(dialog_->minimumSize());
       dockable_->setAllowedAreas(Qt::RightDockWidgetArea);
       dockable_->setAutoFillBackground(true);
