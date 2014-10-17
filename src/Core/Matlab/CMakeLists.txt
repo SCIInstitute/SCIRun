@@ -56,6 +56,8 @@ ADD_LIBRARY(Core_Matlab ${Core_Matlab_SRCS} ${Core_Matlab_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_Matlab
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
+  Core_Datatypes_Legacy_Nrrd
   #Core_Exceptions
   #Core_Thread
   Core_Geometry_Primitives

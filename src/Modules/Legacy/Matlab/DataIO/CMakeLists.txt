@@ -56,12 +56,12 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Matlab_DataIO
   #Dataflow_TkExtensions
   Dataflow_Network
   #Core_XMLUtil
-  #Core_Matlab
+  Core_Matlab
   #Core_Services
   #Core_ICom
   #Core_SystemCall
-  ${SCI_TEEM_LIBRARY}
-  ${SCI_ZLIB_LIBRARY}
+  #${SCI_TEEM_LIBRARY}
+  #${SCI_ZLIB_LIBRARY}
   #${M_LIBRARY}
   #${TK_LIBRARY}
   #${GL_LIBRARY}

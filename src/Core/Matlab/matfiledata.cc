@@ -296,7 +296,7 @@ void matfiledata::getdata(void *dataptr,int dbytesize) const
 }
 
 
-void matfiledata::putdata(void *dataptr,int dbytesize,mitype type)
+void matfiledata::putdata(const void *dataptr,int dbytesize,mitype type)
 {
 	clear();
 	if (dataptr == 0) return;
