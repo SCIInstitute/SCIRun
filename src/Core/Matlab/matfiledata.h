@@ -79,6 +79,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include <Core/Matlab/matfilebase.h>
 #include <Core/Matlab/share.h>
 
@@ -110,30 +111,25 @@ namespace SCIRun
     private:
       struct mxdata 
       {
+        mxdata() : dataptr_(0), owndata_(false), bytesize_(0), type_(miUNKNOWN) {}
+        ~mxdata() { if (owndata_) delete[] dataptr_; }
         void	*dataptr_;	// Store the data to put in the matfile
         bool	owndata_;   // Do we own the data
         int	bytesize_;	// Size of the data in bytes
         mitype	type_;		// The type of the data
-        int	ref_;		// reference counter
       };    
 
       // data objects	
     private:
-      mxdata *m_;
+      boost::shared_ptr<mxdata> m_;
       void *ptr_;
-      void clearptr();
 
       // functions  
     public:
       matfiledata();
-      ~matfiledata();
+      explicit matfiledata(mitype type);
 
-      matfiledata(mitype type);
-
-      matfiledata(const matfiledata &m); // copy constructor
-      matfiledata& operator= (const matfiledata &m); // assignment
-
-      // clear() will remove any databuffer and emtpty the object
+      // clear() will remove any databuffer and empty the object
       // After calling this function a new buffer can be created
       void clear();
 
@@ -194,13 +190,13 @@ namespace SCIRun
       template<class T> void putandcastvalue(T value,int index);
 
       // string functions	
-      // support functions for reading and writing fieldnames and matrixnames
-      // A struct arrray, can have multiple fields, hence an array of strings
+      // support functions for reading and writing field names and matrix names
+      // A struct array, can have multiple fields, hence an array of strings
       // needs to be read or written. Matlab stores string arrays differently
       // in comparison to a single string, hence the two different types of access
       // functions.
 
-      std::string		 getstring();
+      std::string getstring() const;
       void 			 putstring(const std::string& str);
       std::vector<std::string> getstringarray(int strlength);
       int 			 putstringarray(const std::vector<std::string>&);
@@ -218,19 +214,13 @@ namespace SCIRun
       // This function should be used with care as destroying the object
       // will free the databuffer. A similar effect has clearing or
       // initiating a new buffer. 
-      void *databuffer();
+      void *databuffer() const;
 
       void ptrset(void *ptr);
       void ptrclear();
 
     };
-
-
-    ////////////////////////////////////////
-    ////// TEMPLATE FUNCTIONS///////////////
-    ////////////////////////////////////////
-
-
+    
     template<class T> void matfiledata::getandcast(T *dataptr,int dsize) const
     {
       // This function copies and casts the data in the matfilebuffer into
@@ -289,7 +279,6 @@ namespace SCIRun
         throw unknown_type();
       }
     }
-
 
     template<class T> void matfiledata::getandcast(T **dataptr,int dim1, int dim2) const
     {
@@ -364,7 +353,6 @@ namespace SCIRun
         throw unknown_type();
       }
     }
-
 
     template<class T> void matfiledata::getandcast(T ***dataptr,int dim1, int dim2, int dim3) const
     {
@@ -442,7 +430,6 @@ namespace SCIRun
         throw unknown_type();
       }
     }
-
 
     template<class T> void matfiledata::getandcastvector(std::vector<T> &vec) const
     {

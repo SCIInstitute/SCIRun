@@ -742,7 +742,7 @@ void matfile::readtag(matfiledata& md)
       if (type >= miEND) throw unknown_type();
       
       md.clear();
-      md.type(static_cast<mitype>(type));
+      md.setType(static_cast<mitype>(type));
       m_->curptr_.type = static_cast<mitype>(type);
     }
     catch(...)

@@ -181,7 +181,7 @@ void matlabfile::exportmatlabarray(matlabarray &matrix)
   matfiledata matrixdims;
   matfiledata matrixname;
 
-  matrixheader.type(miMATRIX);
+  matrixheader.setType(miMATRIX);
   writedat(matrixheader);
 
   std::vector<unsigned int> classinfo(2);
@@ -228,7 +228,7 @@ void matlabfile::exportmatlabarray(matlabarray &matrix)
 
   // Create the different tags and data fields
 
-  matrixheader.type(miMATRIX);
+  matrixheader.setType(miMATRIX);
   matrixclass.putandcastvector(classinfo,miUINT32);
   std::vector<int> mdims = matrix.getdims();
   matrixdims.putandcastvector(mdims,miINT32);
