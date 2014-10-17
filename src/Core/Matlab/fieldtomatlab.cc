@@ -33,14 +33,24 @@
  */
 
 #include <Core/Matlab/fieldtomatlab.h>
+#include <Core/Matlab/matlabarray.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Logging/LoggerInterface.h>
+#include <Core/GeometryPrimitives/Point.h>
 
+using namespace SCIRun;
 using namespace SCIRun::MatlabIO;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Geometry;
+
 
 FieldToMatlabAlgo::FieldToMatlabAlgo() :
 option_forceoldnames_(false),
   option_nofieldconnectivity_(false),  
-  option_indexbase_(1),
-  pr_(0)
+  option_indexbase_(1)
 {
 }
 
@@ -65,12 +75,12 @@ void FieldToMatlabAlgo::option_indexbase(int indexbase)
   option_indexbase_ = indexbase;
 }
 
-void FieldToMatlabAlgo::error(std::string error)
+void FieldToMatlabAlgo::error(const std::string& error)
 {
   if(pr_) pr_->error(error);
 }
 
-void FieldToMatlabAlgo::warning(std::string warning)
+void FieldToMatlabAlgo::warning(const std::string& warning)
 {
   if(pr_) pr_->warning(warning);
 }
@@ -80,13 +90,11 @@ FieldToMatlabAlgo::~FieldToMatlabAlgo()
 {
 }
 
-
 bool 
 FieldToMatlabAlgo::execute(SCIRun::FieldHandle fieldH, matlabarray &mlarray)
 {
-
   // Check whether the field actually contains a field;
-  if (fieldH.get_rep() == 0)
+  if (!fieldH)
   {
     error("FieldToMatlab: Field is empty.");
     return(false);
@@ -97,13 +105,13 @@ FieldToMatlabAlgo::execute(SCIRun::FieldHandle fieldH, matlabarray &mlarray)
   SCIRun::VMesh*  mesh = fieldH->vmesh();
   SCIRun::FieldInformation fi(fieldH);
   
-  if (field == 0)
+  if (!field)
   {
     error("FieldToMatlab: This algorithm cannot handle this kind of field.");
     return(false);  
   }
 
-  if (mesh == 0)
+  if (!mesh)
   {
     error("FieldToMatlab: This algorithm cannot handle this kind of mesh.");
     return (false);
@@ -273,8 +281,7 @@ FieldToMatlabAlgo::execute(SCIRun::FieldHandle fieldH, matlabarray &mlarray)
   return (false);
 }
 
-
-bool FieldToMatlabAlgo::mladdmeshheader(SCIRun::FieldInformation fi, matlabarray mlarray)
+bool FieldToMatlabAlgo::mladdmeshheader(const SCIRun::FieldInformation& fi, const matlabarray& mlarray)
 {    
   matlabarray mlmeshbasis;
   mlmeshbasis.createstringarray(fi.get_mesh_basis_type());
@@ -292,7 +299,7 @@ bool FieldToMatlabAlgo::mladdmeshheader(SCIRun::FieldInformation fi, matlabarray
 }
 
 
-bool FieldToMatlabAlgo::mladdnodes(SCIRun::VMesh* mesh,matlabarray mlarray)
+bool FieldToMatlabAlgo::mladdnodes(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 {
   matlabarray node;
 
@@ -352,7 +359,7 @@ bool FieldToMatlabAlgo::mladdnodes(SCIRun::VMesh* mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdedges(SCIRun::VMesh *mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdedges(SCIRun::VMesh *mesh,const matlabarray& mlarray)
 {
   mesh->synchronize(SCIRun::Mesh::EDGES_E); 
 
@@ -393,7 +400,7 @@ FieldToMatlabAlgo::mladdedges(SCIRun::VMesh *mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdfaces(SCIRun::VMesh *mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdfaces(SCIRun::VMesh *mesh,const matlabarray& mlarray)
 {
   mesh->synchronize(SCIRun::Mesh::FACES_E);
   
@@ -428,7 +435,7 @@ FieldToMatlabAlgo::mladdfaces(SCIRun::VMesh *mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdcells(SCIRun::VMesh* mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdcells(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 {
   mesh->synchronize(SCIRun::Mesh::CELLS_E);
 
@@ -463,7 +470,7 @@ FieldToMatlabAlgo::mladdcells(SCIRun::VMesh* mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdmeshderivatives(SCIRun::VMesh* mesh,matlabarray /*mlarray*/)
+FieldToMatlabAlgo::mladdmeshderivatives(SCIRun::VMesh* mesh,const matlabarray& /*mlarray*/)
 {
   if (mesh->is_cubicmesh())
   {
@@ -481,7 +488,7 @@ FieldToMatlabAlgo::mladdmeshderivatives(SCIRun::VMesh* mesh,matlabarray /*mlarra
 
 
 bool 
-FieldToMatlabAlgo::mladdtransform(SCIRun::VMesh* mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdtransform(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 {
   if (mesh->is_nonlinearmesh())
   {
@@ -503,7 +510,7 @@ FieldToMatlabAlgo::mladdtransform(SCIRun::VMesh* mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladddimension1d(SCIRun::VMesh* mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladddimension1d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 {
   matlabarray dim;
   dim.createdensearray(1,1,matlabarray::miDOUBLE);
@@ -521,7 +528,7 @@ FieldToMatlabAlgo::mladddimension1d(SCIRun::VMesh* mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladddimension2d(SCIRun::VMesh* mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladddimension2d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 {
   matlabarray dim;
   dim.createdensearray(1,2,matlabarray::miDOUBLE);
@@ -538,7 +545,7 @@ FieldToMatlabAlgo::mladddimension2d(SCIRun::VMesh* mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladddimension3d(SCIRun::VMesh* mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladddimension3d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 {
   matlabarray dim;
   dim.createdensearray(1,3,matlabarray::miDOUBLE);
@@ -556,7 +563,7 @@ FieldToMatlabAlgo::mladddimension3d(SCIRun::VMesh* mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdxyzmesh1d(SCIRun::VMesh* mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdxyzmesh1d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 {
   if (!(mesh->is_linearmesh()))
   {
@@ -602,7 +609,7 @@ FieldToMatlabAlgo::mladdxyzmesh1d(SCIRun::VMesh* mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdxyzmesh2d(SCIRun::VMesh* mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdxyzmesh2d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 {
   if (!(mesh->is_linearmesh()))
   {
@@ -656,7 +663,7 @@ FieldToMatlabAlgo::mladdxyzmesh2d(SCIRun::VMesh* mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdxyzmesh3d(SCIRun::VMesh* mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdxyzmesh3d(SCIRun::VMesh* mesh,const matlabarray& mlarray)
 {
   if (!(mesh->is_linearmesh()))
   {
@@ -713,7 +720,7 @@ FieldToMatlabAlgo::mladdxyzmesh3d(SCIRun::VMesh* mesh,matlabarray mlarray)
 
 
 bool 
-FieldToMatlabAlgo::mladdfieldheader(SCIRun::FieldInformation fi, matlabarray mlarray)
+FieldToMatlabAlgo::mladdfieldheader(SCIRun::FieldInformation fi, const matlabarray& mlarray)
 {
   matlabarray mlfieldbasis;
   mlfieldbasis.createstringarray(fi.get_basis_type());
@@ -734,7 +741,7 @@ FieldToMatlabAlgo::mladdfieldheader(SCIRun::FieldInformation fi, matlabarray mla
 
 
 bool 
-FieldToMatlabAlgo::mladdfielddata(SCIRun::VField* field, SCIRun::VMesh* /*mesh*/, matlabarray mlarray)
+FieldToMatlabAlgo::mladdfielddata(SCIRun::VField* field, SCIRun::VMesh* /*mesh*/, const matlabarray& mlarray)
 {
   matlabarray mlfield;
   
@@ -907,7 +914,7 @@ FieldToMatlabAlgo::mladdfielddata(SCIRun::VField* field, SCIRun::VMesh* /*mesh*/
 ///////////////////////////////////////////////////////////////////
 
 bool 
-FieldToMatlabAlgo::mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray)
 {
   matlabarray fieldedge;
   
@@ -985,7 +992,7 @@ FieldToMatlabAlgo::mladdfieldedges(SCIRun::VField *field,SCIRun::VMesh *mesh,mat
 
 
 bool 
-FieldToMatlabAlgo::mladdfieldfaces(SCIRun::VField *field, SCIRun::VMesh *mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdfieldfaces(SCIRun::VField *field, SCIRun::VMesh *mesh,const matlabarray& mlarray)
 {
   matlabarray fieldface;
   
@@ -1060,7 +1067,7 @@ FieldToMatlabAlgo::mladdfieldfaces(SCIRun::VField *field, SCIRun::VMesh *mesh,ma
 
 
 bool 
-FieldToMatlabAlgo::mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,matlabarray mlarray)
+FieldToMatlabAlgo::mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,const matlabarray& mlarray)
 {
   matlabarray fieldcell;
   
@@ -1136,7 +1143,7 @@ FieldToMatlabAlgo::mladdfieldcells(SCIRun::VField *field,SCIRun::VMesh *mesh,mat
   return (false);  
 }
 
-bool FieldToMatlabAlgo::mladdfieldedgederivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, matlabarray /*mlarray*/)
+bool FieldToMatlabAlgo::mladdfieldedgederivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, const matlabarray& /*mlarray*/)
 {
   if (field->is_cubicdata())
   {
@@ -1147,7 +1154,7 @@ bool FieldToMatlabAlgo::mladdfieldedgederivatives(SCIRun::VField *field, SCIRun:
 }
 
 
-bool FieldToMatlabAlgo::mladdfieldfacederivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, matlabarray /*mlarray*/)
+bool FieldToMatlabAlgo::mladdfieldfacederivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, const matlabarray& /*mlarray*/)
 {
   if (field->is_cubicdata())
   {
@@ -1158,7 +1165,7 @@ bool FieldToMatlabAlgo::mladdfieldfacederivatives(SCIRun::VField *field, SCIRun:
 }
 
 
-bool FieldToMatlabAlgo::mladdfieldcellderivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, matlabarray /*mlarray*/)
+bool FieldToMatlabAlgo::mladdfieldcellderivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, const matlabarray& /*mlarray*/)
 {
   if (field->is_cubicdata())
   {
@@ -1169,7 +1176,7 @@ bool FieldToMatlabAlgo::mladdfieldcellderivatives(SCIRun::VField *field, SCIRun:
 }
 
 
-bool FieldToMatlabAlgo::mladdfieldderivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, matlabarray /*mlarray*/)
+bool FieldToMatlabAlgo::mladdfieldderivatives(SCIRun::VField *field, SCIRun::VMesh* /*mesh*/, const matlabarray& /*mlarray*/)
 {
   if (field->is_cubicdata())
   {

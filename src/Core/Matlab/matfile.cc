@@ -893,5 +893,3 @@ bool matfile::byteswapmachine()
 	if (ptr[0]) return(true);
 	return(false);
 }
-
-} // end namespace

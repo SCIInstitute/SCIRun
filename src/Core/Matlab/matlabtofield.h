@@ -52,6 +52,9 @@
 // Class for reading Matlab files
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Logging/LoggerFwd.h>
 #include <Core/Matlab/share.h>
 
 /*
@@ -69,10 +72,7 @@ namespace MatlabIO {
 class SCISHARE MatlabToFieldAlgo : public matfilebase
 {
   public:
-    int ref_cnt;
-
-    //////// CONSTRUCTOR ///////////////////////////////////
-    inline MatlabToFieldAlgo();
+    MatlabToFieldAlgo();
     virtual ~MatlabToFieldAlgo();
 
     //////// DYNAMIC ALGO ENTRY POINT /////////////////////
@@ -84,12 +84,12 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
     int analyze_iscompatible(matlabarray mlarray, std::string& infotext, bool postremark = true);
     int analyze_fieldtype(matlabarray mlarray, std::string& fielddesc);
 
-    inline void setreporter(LoggerHandle pr);
+    void setreporter(SCIRun::Core::Logging::LoggerHandle pr);
     
   protected:
 
     int mlanalyze(matlabarray mlarray, bool postremark);  
-    matlabarray findfield(matlabarray mlarray,std::string fieldnames);
+    matlabarray findfield(matlabarray mlarray,const std::string& fieldnames);
   
     matlabarray mlnode; 
     matlabarray mledge;
@@ -137,12 +137,10 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
     std::vector<int> numnodesvec;
     std::vector<int> numelementsvec;
     
-    int              numnodes;
-    int              numelements;
-    int              numfield;
-    int              datasize;
-
-    //////// FUNCTIONS FOR BUIDLIGN THE MESH //////////////
+    int numnodes;
+    int numelements;
+    int numfield;
+    int datasize;
     
   protected:
     // Sub functions for building mesh
@@ -156,72 +154,17 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
 
     bool addfield(SCIRun::VField* field);
     
-    inline void uncompressedtensor(std::vector<double> &fielddata,SCIRun::Tensor &tens, unsigned int p);
-    inline void compressedtensor(std::vector<double> &fielddata,SCIRun::Tensor &tens, unsigned int p);	
-
-    //////// ERROR REPORTERING MECHANISM /////////////////
-
-  protected:
+    void uncompressedtensor(std::vector<double> &fielddata,SCIRun::Core::Geometry::Tensor &tens, unsigned int p);
+    void compressedtensor(std::vector<double> &fielddata,SCIRun::Core::Geometry::Tensor &tens, unsigned int p);	
     
-    inline void error(std::string error);
-    inline void warning(std::string warning);
-    inline void remark(std::string remark);
+    void error(const std::string& error);
+    void warning(const std::string& warning);
+    void remark(const std::string& remark);
     
   private:
-    SCIRun::ProgressReporter *pr_;
+    SCIRun::Core::Logging::LoggerHandle pr_;
     
 };
-
-inline MatlabToFieldAlgo::MatlabToFieldAlgo() :
-  ref_cnt(0), pr_(0)
-{
-}
-
-inline void MatlabToFieldAlgo::setreporter(LoggerHandle pr)
-{
-  pr_ = pr;
-}
-
-inline void MatlabToFieldAlgo::error(std::string error)
-{
-  if(pr_) pr_->error(error);
-}
-
-inline void MatlabToFieldAlgo::warning(std::string warning)
-{
-  if(pr_) pr_->warning(warning);
-}
-
-inline void MatlabToFieldAlgo::remark(std::string remark)
-{
-  if(pr_) pr_->remark(remark);
-}
-
-inline void MatlabToFieldAlgo::compressedtensor(std::vector<double> &fielddata,SCIRun::Tensor &tens, unsigned int p)
-{
-   tens.mat_[0][0] = fielddata[p+0];
-   tens.mat_[0][1] = fielddata[p+1];
-   tens.mat_[0][2] = fielddata[p+2];
-   tens.mat_[1][0] = fielddata[p+1];
-   tens.mat_[1][1] = fielddata[p+3];
-   tens.mat_[1][2] = fielddata[p+4];
-   tens.mat_[2][0] = fielddata[p+2];
-   tens.mat_[2][1] = fielddata[p+4];
-   tens.mat_[2][2] = fielddata[p+5];
-}
-
-inline void MatlabToFieldAlgo::uncompressedtensor(std::vector<double> &fielddata,SCIRun::Tensor &tens, unsigned int p)
-{
-  tens.mat_[0][0] = fielddata[p];
-  tens.mat_[0][1] = fielddata[p+1];
-  tens.mat_[0][2] = fielddata[p+2];
-  tens.mat_[1][0] = fielddata[p+3];
-  tens.mat_[1][1] = fielddata[p+4];
-  tens.mat_[1][2] = fielddata[p+5];
-  tens.mat_[2][0] = fielddata[p+6];
-  tens.mat_[2][1] = fielddata[p+7];
-  tens.mat_[2][2] = fielddata[p+8];
-}
 
 
 }}

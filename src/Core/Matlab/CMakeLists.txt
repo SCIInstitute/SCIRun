@@ -43,7 +43,6 @@ SET(Core_Matlab_HEADERS
   matfile.h
   matfilebase.h
   matfiledata.h
-  matfiledefs.h
   matfiletemplate.h
   matlabarray.h
   matlabconverter.h

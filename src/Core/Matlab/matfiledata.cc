@@ -53,7 +53,9 @@
  */
 
 #include <Core/Matlab/matfiledata.h>
- 
+#include <iostream>
+#include <cstdint>
+
 using namespace SCIRun::MatlabIO;
 
 matfiledata::matfiledata()
@@ -570,7 +572,7 @@ matfiledata matfiledata::castdata(matfiledata::mitype type)
 		break;	
 		case miUINT32: case miUTF32:
 		{
-			u_int32_t *ptr = static_cast<u_int32_t *>(newdata.databuffer());
+			uint32_t *ptr = static_cast<uint32_t *>(newdata.databuffer());
 			getandcast(ptr,newdata.bytesize());
 		}
 		break;
@@ -582,13 +584,13 @@ matfiledata matfiledata::castdata(matfiledata::mitype type)
 		break;
 		case miUINT64:
 		{
-			uint64 *ptr = static_cast<uint64 *>(newdata.databuffer());
+			uint64_t *ptr = static_cast<uint64_t *>(newdata.databuffer());
 			getandcast(ptr,newdata.bytesize());
 		}
 		break;
 		case miINT64:
 		{
-			int64 *ptr = static_cast<int64 *>(newdata.databuffer());
+			int64_t *ptr = static_cast<int64_t *>(newdata.databuffer());
 			getandcast(ptr,newdata.bytesize());
 		}
 		break;
@@ -611,8 +613,3 @@ matfiledata matfiledata::castdata(matfiledata::mitype type)
 	}
 	return(newdata);
 }
-
-
-
-} //end namespace
-

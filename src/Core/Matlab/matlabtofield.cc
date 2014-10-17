@@ -33,23 +33,27 @@
  */
 
 #include <Core/Matlab/matlabtofield.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
+using namespace SCIRun;
 using namespace SCIRun::MatlabIO;
-
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Geometry;
 
 MatlabToFieldAlgo::~MatlabToFieldAlgo()
 {
 }
 
-
-bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarray*/)
+bool MatlabToFieldAlgo::execute(FieldHandle& field, matlabarray& /*mlarray*/)
 {
-  SCIRun::FieldInformation fi(meshtype,meshbasis,fieldbasis,fieldtype);
+  FieldInformation fi(meshtype,meshbasis,fieldbasis,fieldtype);
 
   field = CreateField(fi);
 
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error("MatlobToField: Could not allocate output field");
     return (false);
@@ -127,18 +131,18 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
     std::vector<int> dims; 
     mldims.getnumericarray(dims);
 
-    SCIRun::Point PointO(0.0,0.0,0.0);
-    SCIRun::Point PointP(static_cast<double>(dims[0]),0.0,0.0);
+    Point PointO(0.0,0.0,0.0);
+    Point PointP(static_cast<double>(dims[0]),0.0,0.0);
 
     field = 0;
     MeshHandle handle = CreateMesh(fi,static_cast<unsigned int>(dims[0]),PointO,PointP);
-    if (handle.get_rep() == 0) 
+    if (!handle) 
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
     }
     field = CreateField(fi,handle);
-    if (field.get_rep() == 0)
+    if (!field)
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
@@ -157,18 +161,18 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
     std::vector<int> dims; 
     mldims.getnumericarray(dims);
 
-    SCIRun::Point PointO(0.0,0.0,0.0);
-    SCIRun::Point PointP(static_cast<double>(dims[0]),static_cast<double>(dims[1]),0.0);
+    Point PointO(0.0,0.0,0.0);
+    Point PointP(static_cast<double>(dims[0]),static_cast<double>(dims[1]),0.0);
 
     field = 0;
     MeshHandle handle = CreateMesh(fi,static_cast<unsigned int>(dims[0]),static_cast<unsigned int>(dims[1]),PointO,PointP);
-    if (handle.get_rep() == 0) 
+    if (!handle) 
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
     }
     field = CreateField(fi,handle);
-    if (field.get_rep() == 0)
+    if (!field)
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
@@ -187,8 +191,8 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
     std::vector<int> dims; 
     mldims.getnumericarray(dims);
 
-    SCIRun::Point PointO(0.0,0.0,0.0);
-    SCIRun::Point PointP(static_cast<double>(dims[0]),static_cast<double>(dims[1]),static_cast<double>(dims[2]));
+    Point PointO(0.0,0.0,0.0);
+    Point PointP(static_cast<double>(dims[0]),static_cast<double>(dims[1]),static_cast<double>(dims[2]));
 
     field = 0;
     MeshHandle handle = CreateMesh(fi,static_cast<unsigned int>(dims[0]),static_cast<unsigned int>(dims[1]),static_cast<unsigned int>(dims[2]),PointO,PointP);
@@ -198,7 +202,7 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
       return (false);
     }
     field = CreateField(fi,handle);
-    if (field.get_rep() == 0)
+    if (!field)
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
@@ -228,13 +232,13 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
 
     field = 0;
     MeshHandle handle = CreateMesh(fi,static_cast<unsigned int>(dims[0]));
-    if (handle.get_rep() == 0) 
+    if (!handle) 
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
     }
     field = CreateField(fi,handle);
-    if (field.get_rep() == 0)
+    if (!field)
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
@@ -254,7 +258,7 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
           
     for (VMesh::size_type p = 0; p < numnodes; p++)
     {
-      vmesh->set_point(SCIRun::Point(X[p],Y[p],Z[p]),SCIRun::VMesh::Node::index_type(p));
+      vmesh->set_point(Point(X[p],Y[p],Z[p]),VMesh::Node::index_type(p));
     }
   }
   if (vmesh->is_structquadsurfmesh())
@@ -269,13 +273,13 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
 
     field = 0;
     MeshHandle handle = CreateMesh(fi,static_cast<unsigned int>(dims[0]),static_cast<unsigned int>(dims[1]));
-    if (handle.get_rep() == 0) 
+    if (!handle) 
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
     }
     field = CreateField(fi,handle);
-    if (field.get_rep() == 0)
+    if (!field)
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
@@ -294,7 +298,7 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
     unsigned m = mdims[0]*mdims[1];
     for (unsigned int p = 0; p < m; p++)
     {
-      vmesh->set_point(SCIRun::Point(X[p],Y[p],Z[p]),SCIRun::VMesh::Node::index_type(p));
+      vmesh->set_point(Point(X[p],Y[p],Z[p]),VMesh::Node::index_type(p));
     }
   }
 
@@ -317,13 +321,13 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
           
     field = 0;
     MeshHandle handle = CreateMesh(fi,static_cast<unsigned int>(dims[0]),static_cast<unsigned int>(dims[1]),static_cast<unsigned int>(dims[2]));
-    if (handle.get_rep() == 0) 
+    if (!handle) 
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
     }
     field = CreateField(fi,handle);
-    if (field.get_rep() == 0)
+    if (!field)
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
@@ -335,7 +339,7 @@ bool MatlabToFieldAlgo::execute(SCIRun::FieldHandle& field, matlabarray& /*mlarr
     unsigned int m = mdims[0]*mdims[1]*mdims[2];
     for (unsigned int p = 0; p < m; p++)
     {
-      vmesh->set_point(SCIRun::Point(X[p],Y[p],Z[p]),SCIRun::VMesh::Node::index_type(p));
+      vmesh->set_point(Point(X[p],Y[p],Z[p]),VMesh::Node::index_type(p));
     }
   }
 
@@ -438,7 +442,7 @@ int MatlabToFieldAlgo::analyze_fieldtype(matlabarray mlarray, std::string& field
   return(1);
 }
 
-matlabarray MatlabToFieldAlgo::findfield(matlabarray mlarray,std::string fieldnames)
+matlabarray MatlabToFieldAlgo::findfield(matlabarray mlarray,const std::string& fieldnames)
 {
   matlabarray subarray;
   
@@ -796,7 +800,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     if (mlx.isempty()||mly.isempty()||mlz.isempty())
     {
       if (postremark) remark(std::string("Matrix '" + mlarray.getname() + 
-      "' cannot be translated into a SCIRun Field (does not have a complete set of  x, y, or z coodinates"));
+      "' cannot be translated into a SCIRun Field (does not have a complete set of  x, y, or z coordinates"));
       return (0);
     }
   }
@@ -2739,11 +2743,11 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
 }        
 
 
-bool MatlabToFieldAlgo::addtransform(SCIRun::VMesh* vmesh)
+bool MatlabToFieldAlgo::addtransform(VMesh* vmesh)
 {
   if (mltransform.isdense())
   {
-    SCIRun::Transform T;
+    Transform T;
     double trans[16];
     mltransform.getnumericarray(trans,16);
     T.set_trans(trans);
@@ -2753,7 +2757,7 @@ bool MatlabToFieldAlgo::addtransform(SCIRun::VMesh* vmesh)
 }
 
 
-bool MatlabToFieldAlgo::addnodes(SCIRun::VMesh* vmesh)
+bool MatlabToFieldAlgo::addnodes(VMesh* vmesh)
 {
 	// Get the data from the Matlab file, which has been buffered
 	// but whose format can be anything. The next piece of code
@@ -2772,19 +2776,19 @@ bool MatlabToFieldAlgo::addnodes(SCIRun::VMesh* vmesh)
 	// a vector of Point objects
 	
 	int numnodes = mlnode.getn();	
-	vmesh->node_reserve(SCIRun::VMesh::Node::size_type(numnodes));
+	vmesh->node_reserve(VMesh::Node::size_type(numnodes));
 	
 	int p,q;
 	for (p = 0, q = 0; p < numnodes; p++, q+=3)
 	{ 
-    vmesh->add_point(SCIRun::Point(mldata[q],mldata[q+1],mldata[q+2]));
+    vmesh->add_point(Point(mldata[q],mldata[q+1],mldata[q+2]));
   }
   
   return (true);
 }
 
 
-bool MatlabToFieldAlgo::addedges(SCIRun::VMesh* vmesh)
+bool MatlabToFieldAlgo::addedges(VMesh* vmesh)
 {
 	// Get the data from the Matlab file, which has been buffered
 	// but whose format can be anything. The next piece of code
@@ -2819,9 +2823,9 @@ bool MatlabToFieldAlgo::addedges(SCIRun::VMesh* vmesh)
    m = mledge.getm();
    n = mledge.getn();
   
-	vmesh->elem_reserve(SCIRun::VMesh::Elem::size_type(n));
+	vmesh->elem_reserve(VMesh::Elem::size_type(n));
 	
-  SCIRun::VMesh::Node::array_type edge(m); 
+  VMesh::Node::array_type edge(m); 
   
   int r;
   r = 0;
@@ -2840,7 +2844,7 @@ bool MatlabToFieldAlgo::addedges(SCIRun::VMesh* vmesh)
 }
 
 
-bool MatlabToFieldAlgo::addfaces(SCIRun::VMesh* vmesh)
+bool MatlabToFieldAlgo::addfaces(VMesh* vmesh)
 {
    // Get the data from the Matlab file, which has been buffered
    // but whose format can be anything. The next piece of code
@@ -2873,9 +2877,9 @@ bool MatlabToFieldAlgo::addfaces(SCIRun::VMesh* vmesh)
   m = mlface.getm();
   n = mlface.getn();
 
-  vmesh->elem_reserve(SCIRun::VMesh::Elem::size_type(n));	  
+  vmesh->elem_reserve(VMesh::Elem::size_type(n));	  
           
-  SCIRun::VMesh::Node::array_type face(m);  
+  VMesh::Node::array_type face(m);  
 
   int r;
   r = 0;
@@ -2893,7 +2897,7 @@ bool MatlabToFieldAlgo::addfaces(SCIRun::VMesh* vmesh)
 }
 
 
-bool MatlabToFieldAlgo::addcells(SCIRun::VMesh* vmesh)
+bool MatlabToFieldAlgo::addcells(VMesh* vmesh)
 {
   // Get the data from the Matlab file, which has been buffered
   // but whose format can be anything. The next piece of code
@@ -2926,9 +2930,9 @@ bool MatlabToFieldAlgo::addcells(SCIRun::VMesh* vmesh)
   m = mlcell.getm();
   n = mlcell.getn();
 
-  vmesh->elem_reserve(SCIRun::VMesh::Elem::size_type(n));	  
+  vmesh->elem_reserve(VMesh::Elem::size_type(n));	  
           
-  SCIRun::VMesh::Node::array_type cell(m);  
+  VMesh::Node::array_type cell(m);  
 
   int r;
   r = 0;
@@ -2946,7 +2950,7 @@ bool MatlabToFieldAlgo::addcells(SCIRun::VMesh* vmesh)
 }
 
 
-bool MatlabToFieldAlgo::addderivatives(SCIRun::VMesh* /*vmesh*/)
+bool MatlabToFieldAlgo::addderivatives(VMesh* /*vmesh*/)
 {
   if (meshbasistype == "cubic")
   {
@@ -2957,7 +2961,7 @@ bool MatlabToFieldAlgo::addderivatives(SCIRun::VMesh* /*vmesh*/)
 }
     
 
-bool MatlabToFieldAlgo::addscalefactors(SCIRun::VMesh* /*vmesh*/)
+bool MatlabToFieldAlgo::addscalefactors(VMesh* /*vmesh*/)
 {
   if (meshbasistype == "cubic")
   {
@@ -3057,7 +3061,7 @@ bool MatlabToFieldAlgo::addfield(VField* field)
     VField::index_type p,q;
     for (p=0,q=0; p < numdata; q++) 
     { 
-      SCIRun::Vector v(fielddata[p],fielddata[p+1],fielddata[p+2]); p+=3;
+      Vector v(fielddata[p],fielddata[p+1],fielddata[p+2]); p+=3;
       field->set_value(v,VMesh::index_type(q));
     }
   
@@ -3071,7 +3075,7 @@ bool MatlabToFieldAlgo::addfield(VField* field)
     mlfield.getnumericarray(fielddata); // cast and copy the real part of the data
 
     VMesh::size_type numdata = static_cast<VMesh::size_type>(fielddata.size());
-    SCIRun::Tensor tensor;
+    Tensor tensor;
 
     if (mlfield.getm() == 6)
     { // Compressed tensor data : xx,yy,zz,xy,xz,yz
@@ -3080,7 +3084,7 @@ bool MatlabToFieldAlgo::addfield(VField* field)
       for (p = 0, q = 0; p < numdata; p +=6, q++) 
       { 
         compressedtensor(fielddata,tensor,p); 
-        field->set_value(tensor,SCIRun::VMesh::index_type(q)); 
+        field->set_value(tensor,VMesh::index_type(q)); 
       }
     }
     else
@@ -3090,7 +3094,7 @@ bool MatlabToFieldAlgo::addfield(VField* field)
       for (p = 0, q = 0; p < numdata; p +=9, q++) 
       { 
         uncompressedtensor(fielddata,tensor,p);
-        field->set_value(tensor,SCIRun::VMesh::index_type(q)); 
+        field->set_value(tensor,VMesh::index_type(q)); 
       }
     }
   }
@@ -3098,7 +3102,53 @@ bool MatlabToFieldAlgo::addfield(VField* field)
   return(true);
 }
 
+MatlabToFieldAlgo::MatlabToFieldAlgo() :
+ref_cnt(0), pr_(0)
+{
+}
 
+void MatlabToFieldAlgo::setreporter(LoggerHandle pr)
+{
+  pr_ = pr;
+}
 
+void MatlabToFieldAlgo::error(std::string error)
+{
+  if(pr_) pr_->error(error);
+}
 
-} // end namespace
+void MatlabToFieldAlgo::warning(std::string warning)
+{
+  if(pr_) pr_->warning(warning);
+}
+
+void MatlabToFieldAlgo::remark(std::string remark)
+{
+  if(pr_) pr_->remark(remark);
+}
+
+void MatlabToFieldAlgo::compressedtensor(std::vector<double> &fielddata,Tensor &tens, unsigned int p)
+{
+  tens.mat_[0][0] = fielddata[p+0];
+  tens.mat_[0][1] = fielddata[p+1];
+  tens.mat_[0][2] = fielddata[p+2];
+  tens.mat_[1][0] = fielddata[p+1];
+  tens.mat_[1][1] = fielddata[p+3];
+  tens.mat_[1][2] = fielddata[p+4];
+  tens.mat_[2][0] = fielddata[p+2];
+  tens.mat_[2][1] = fielddata[p+4];
+  tens.mat_[2][2] = fielddata[p+5];
+}
+
+void MatlabToFieldAlgo::uncompressedtensor(std::vector<double> &fielddata,Tensor &tens, unsigned int p)
+{
+  tens.mat_[0][0] = fielddata[p];
+  tens.mat_[0][1] = fielddata[p+1];
+  tens.mat_[0][2] = fielddata[p+2];
+  tens.mat_[1][0] = fielddata[p+3];
+  tens.mat_[1][1] = fielddata[p+4];
+  tens.mat_[1][2] = fielddata[p+5];
+  tens.mat_[2][0] = fielddata[p+6];
+  tens.mat_[2][1] = fielddata[p+7];
+  tens.mat_[2][2] = fielddata[p+8];
+}

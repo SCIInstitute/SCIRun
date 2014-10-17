@@ -51,14 +51,12 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <string>
-#include <Core/Matlab/matfiledefs.h>
 #include <Core/Matlab/share.h>
 
 namespace SCIRun 
 {
   namespace MatlabIO 
   {
-
     class matlabarray;
 
     class SCISHARE matfilebase 
