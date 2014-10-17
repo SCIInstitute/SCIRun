@@ -191,7 +191,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
         }
       } else
       {
-       THROW_ALGORITHM_INPUT_ERROR(" Input field needs to be a structured mesh (LatVOL) with float values defnied on the elements. "); 
+       THROW_ALGORITHM_INPUT_ERROR(" Input field needs to be a structured mesh (best would be a LatVol) with float values defnied on the elements. "); 
       }
 
     }
@@ -239,14 +239,19 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
     
   boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(paddedVolume.get(), verbose));
 
+  auto nr_of_tets  = mesh->tets.size();
+  auto nr_of_verts = mesh->verts.size();
+
+  if (nr_of_tets==0 || nr_of_verts==0)
+  {
+    THROW_ALGORITHM_INPUT_ERROR(" Number of resulting tetrahedral nodes or elements is 0. If you disabled padding enable it and execute again. ");
+  }
+
   FieldInformation fi("TetVolMesh",0,"double");   ///create output field
   
   output = CreateField(fi);
   auto omesh = output->vmesh();
   auto ofield = output->vfield();
-
-  auto nr_of_tets  = mesh->tets.size();
-  auto nr_of_verts = mesh->verts.size();
 
   omesh->node_reserve(nr_of_verts);
   omesh->elem_reserve(nr_of_tets);
