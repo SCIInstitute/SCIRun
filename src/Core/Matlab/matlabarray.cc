@@ -37,72 +37,12 @@
  * DATE: 16 MAY 2005
  */
 
-#include <Core/Matlab/fieldtomatlab.h>
+#include <Core/Matlab/matlabarray.h>
+#include <boost/algorithm/string/predicate.hpp>
+#include <iostream>
+#include <sstream>
 
 using namespace SCIRun::MatlabIO;
-
-// matlabarray management functions
-// constructor/destructor
-// assignment/copy constructor
-// clear
-
-// constructor
-// creates on the place holder for the matlabarray
-matlabarray::matlabarray()
-  : m_(0)
-{ 
-}   
-    
-// destructor
-matlabarray::~matlabarray()	
-{
-  if (m_ != 0) 
-  {	// delete the attached structure if necessary 
-    m_->ref_--;
-    if (m_->ref_ == 0) { delete m_; }
-    m_ = 0;	
-  }	
-}
-
-// copy constructor    
-matlabarray::matlabarray(const matlabarray &m)
-{    
-	m_ = 0;
-
-	// reference the same structure as the matlabarray we are copying
-  if (m.m_ != 0) 
-  {
-    m_ = m.m_; 
-    m_->ref_++;
-  } 
-}
-
-
-
-// assignment	
-matlabarray& matlabarray::operator= (const matlabarray &m) 
-{ // the same construction as the previous function is used
-  // to create a copy
-	
-	// if m = m we have to do nothing
-  if (this != &m)
-  {
-    if (m_ != 0)
-    {	// delete the attached structure if necessary 
-      m_->ref_--;
-      if (m_->ref_ == 0) { delete m_; }
-      m_ = 0;	
-    }
-    
-    if (m.m_ != 0) 
-    {
-      m_ = m.m_;
-      m_->ref_++;
-    }  
-  }
-   
-	return *this;	
-}
 
 // clear and empty
 
@@ -113,34 +53,26 @@ matlabarray& matlabarray::operator= (const matlabarray &m)
 
 void matlabarray::clear()
 {
-		
-  if (m_ != 0) 
-  {	// delete the attached structure if necessary 
-      
-    m_->ref_--;
-    if (m_->ref_ == 0) { delete m_; }
-    m_ = 0;	
-  }	
+	m_.reset();
 }
 	
 // This function can be used to test whether the matrix contains any data
 // If not do not try to access the matrix components. This will result in
 // an internal_error exception
 	      
-bool matlabarray::isempty()
+bool matlabarray::isempty() const
 {
   if (m_ == 0) return(true);
   if (!issparse()) if (getnumelements() == 0) return(true);
   return(false);
 }
 
-matlabarray matlabarray::clone()
+matlabarray matlabarray::clone() const
 {
 	matlabarray ma;
 	if (isempty()) return(ma);
 	
-	ma.m_ = new mxarray;
-	ma.m_->ref_ = 1;
+	ma.m_.reset(new mxarray);
 	ma.m_->class_ = m_->class_;
 	ma.m_->type_ = m_->type_;
 	ma.m_->flags_ = m_->flags_;
@@ -174,13 +106,13 @@ matlabarray matlabarray::clone()
 // If an internal_error is thrown it means that the emptiness
 // is not checked before calling these functions
 
-matlabarray::mlclass matlabarray::getclass()
+matlabarray::mlclass matlabarray::getclass() const
 {
   if (m_ == 0) return(mlUNKNOWN); 
   return(m_->class_);
 }
           
-matlabarray::mitype matlabarray::gettype()
+matlabarray::mitype matlabarray::gettype() const
 {
   if (m_ == 0)
   {
@@ -191,7 +123,7 @@ matlabarray::mitype matlabarray::gettype()
 }
           
           
-std::string matlabarray::getclassname()
+std::string matlabarray::getclassname() const
 {
   if (m_ == 0)
   {
@@ -201,7 +133,7 @@ std::string matlabarray::getclassname()
   return(m_->classname_);
 }
 
-void matlabarray::setclassname(std::string classname)
+void matlabarray::setclassname(const std::string& classname)
 {
   if (m_ == 0) 
   {
@@ -211,7 +143,7 @@ void matlabarray::setclassname(std::string classname)
   m_->classname_ = classname;
 }
    
-std::string matlabarray::getname()
+std::string matlabarray::getname() const
 {
   if (m_ == 0) 
   {
@@ -222,7 +154,7 @@ std::string matlabarray::getname()
 }
       
 
-void matlabarray::setname(std::string name)
+void matlabarray::setname(const std::string& name)
 {
   if (m_ == 0) 
   {
@@ -232,7 +164,7 @@ void matlabarray::setname(std::string name)
   m_->name_ = name;
 }	  
 	  
-void matlabarray::setdims(std::vector<int> &dims)
+void matlabarray::setdims(const std::vector<int> &dims)
 {
   if (m_ == 0) 
   {
@@ -266,7 +198,7 @@ void matlabarray::settype(matlabarray::mitype type)
   m_->type_ = type;
 }
            
-std::vector<int> matlabarray::getdims()
+std::vector<int> matlabarray::getdims() const
 {
   if (m_ == 0) 
   {
@@ -276,7 +208,7 @@ std::vector<int> matlabarray::getdims()
   return(m_->dims_);
 }
 
-int matlabarray::getnumdims()
+int matlabarray::getnumdims() const
 {
   if (m_ == 0)
   {
@@ -288,7 +220,7 @@ int matlabarray::getnumdims()
 
 
 
-int matlabarray::getnumelements()
+int matlabarray::getnumelements() const
 {
   if (m_ == 0) return(0);
 	if ((m_->class_ == mlSTRUCT)||(m_->class_ == mlOBJECT))
@@ -308,13 +240,13 @@ int matlabarray::getnumelements()
   }
 }
 
-int matlabarray::getm()
+int matlabarray::getm() const
 {
   if (m_ == 0) return(0);
   return(m_->dims_[0]);
 }
 
-int matlabarray::getn()
+int matlabarray::getn() const
 {
   if (m_ == 0) return(0);
   return(m_->dims_[1]);
@@ -325,7 +257,7 @@ int matlabarray::getn()
 // No attempt is made in this to transpose matrices at 
 // this point.
 
-int matlabarray::sub2index(std::vector<int> &vec)
+int matlabarray::sub2index(const std::vector<int> &vec) const
 {
   if (m_ == 0)
   {
@@ -344,7 +276,7 @@ int matlabarray::sub2index(std::vector<int> &vec)
   return(index);
 }
 
-std::vector<int> matlabarray::index2sub(int index)
+std::vector<int> matlabarray::index2sub(int index) const
 {
   if (m_ == 0)
   {
@@ -372,7 +304,7 @@ std::vector<int> matlabarray::index2sub(int index)
 
 // cell specific functions
 
-matlabarray matlabarray::getcell(int index)
+matlabarray matlabarray::getcell(int index) const
 {
   if (m_ == 0)
   {
@@ -385,12 +317,12 @@ matlabarray matlabarray::getcell(int index)
   return(m_->subarray_[index]);	
 }
    
-matlabarray matlabarray::getcell(std::vector<int> &indexvec)
+matlabarray matlabarray::getcell(const std::vector<int> &indexvec) const
 {
   return(getcell(sub2index(indexvec)));
 } 
 
-void matlabarray::setcell(int index,matlabarray m)
+void matlabarray::setcell(int index, const matlabarray& m)
 {
   if (m_ == 0)
   {
@@ -402,7 +334,7 @@ void matlabarray::setcell(int index,matlabarray m)
   m_->subarray_[index] = m;	
 }    
     
-void matlabarray::setcell(std::vector<int> &indexvec,matlabarray m)
+void matlabarray::setcell(const std::vector<int> &indexvec, const matlabarray& m)
 {
   setcell(sub2index(indexvec),m);
 }
@@ -411,7 +343,7 @@ void matlabarray::setcell(std::vector<int> &indexvec,matlabarray m)
 
 // struct specific functions
 
-std::vector<std::string> matlabarray::getfieldnames()
+std::vector<std::string> matlabarray::getfieldnames() const
 {
   if (m_ == 0)
   {
@@ -423,7 +355,7 @@ std::vector<std::string> matlabarray::getfieldnames()
 	return(m_->fieldnames_);
 }
 
-int matlabarray::getnumfields()
+int matlabarray::getnumfields() const
 {
   if (m_ == 0) 
   {
@@ -433,7 +365,7 @@ int matlabarray::getnumfields()
   return(static_cast<int>(m_->fieldnames_.size()));
 }
     
-std::string matlabarray::getfieldname(int index)
+std::string matlabarray::getfieldname(int index) const
 {
   if (m_ == 0) 
   {
@@ -445,7 +377,7 @@ std::string matlabarray::getfieldname(int index)
   return(m_->fieldnames_[index]);
 }
 
-int matlabarray::getfieldnameindex(std::string fieldname)
+int matlabarray::getfieldnameindex(const std::string& fieldname) const
 {
   if (m_ == 0)
   {
@@ -458,7 +390,7 @@ int matlabarray::getfieldnameindex(std::string fieldname)
   return(index);
 }
 
-int matlabarray::getfieldnameindexCI(std::string fieldname)
+int matlabarray::getfieldnameindexCI(const std::string& fieldname) const
 {
   if (m_ == 0) 
   {
@@ -467,11 +399,11 @@ int matlabarray::getfieldnameindexCI(std::string fieldname)
   }
   if ((m_->class_ != mlSTRUCT)&&(m_->class_ != mlOBJECT)) throw internal_error();	
   int index = -1;
-  for (int p = 0;p< static_cast<int>(m_->fieldnames_.size());p++) { if ( cmp_nocase(m_->fieldnames_[p],fieldname) == 0) { index = p; break;} }
+  for (int p = 0;p< static_cast<int>(m_->fieldnames_.size());p++) { if ( boost::iequals(m_->fieldnames_[p],fieldname)) { index = p; break;} }
   return(index);
 }
 
-void matlabarray::setfieldname(int index,std::string fieldname)
+void matlabarray::setfieldname(int index,const std::string& fieldname)
 {
   if (m_ == 0)
   {
@@ -483,7 +415,7 @@ void matlabarray::setfieldname(int index,std::string fieldname)
   m_->fieldnames_[index] = fieldname;
 }
 
-matlabarray matlabarray::getfield(int index,int fieldnameindex)
+matlabarray matlabarray::getfield(int index,int fieldnameindex) const
 {
   if (m_ == 0) 
   {
@@ -502,33 +434,32 @@ matlabarray matlabarray::getfield(int index,int fieldnameindex)
   return(getcell(index));
 }
 
-matlabarray matlabarray::getfield(int index,std::string fieldname)
+matlabarray matlabarray::getfield(int index,const std::string& fieldname) const
 {
   return(getfield(index,getfieldnameindex(fieldname)));
 }
 
-matlabarray matlabarray::getfield(std::vector<int> &indexvec,std::string fieldname)
+matlabarray matlabarray::getfield(const std::vector<int> &indexvec,const std::string& fieldname) const
 {
   return(getfield(sub2index(indexvec),getfieldnameindex(fieldname)));
 }
 
-matlabarray matlabarray::getfieldCI(int index,std::string fieldname)
+matlabarray matlabarray::getfieldCI(int index,const std::string& fieldname) const
 {
   return(getfield(index,getfieldnameindexCI(fieldname)));
 }
 
-matlabarray matlabarray::getfieldCI(std::vector<int> &indexvec,std::string fieldname)
+matlabarray matlabarray::getfieldCI(const std::vector<int> &indexvec,const std::string& fieldname) const
 {
   return(getfield(sub2index(indexvec),getfieldnameindexCI(fieldname)));
 }
 
-
-matlabarray matlabarray::getfield(std::vector<int> &indexvec,int fieldnameindex)
+matlabarray matlabarray::getfield(const std::vector<int> &indexvec,int fieldnameindex) const
 {
   return(getfield(sub2index(indexvec),fieldnameindex));
 }
 
-void matlabarray::setfield(int index,int fieldnameindex,matlabarray m)
+void matlabarray::setfield(int index,int fieldnameindex,const matlabarray& m)
 {
   if (m_ == 0) 
   {
@@ -546,7 +477,7 @@ void matlabarray::setfield(int index,int fieldnameindex,matlabarray m)
   setcell(index,m);
 }
 
-void matlabarray::setfield(int index,std::string fieldname,matlabarray m)
+void matlabarray::setfield(int index,const std::string& fieldname,const matlabarray& m)
 {
   int fieldindex = getfieldnameindex(fieldname);
 	if (fieldindex == -1)
@@ -556,7 +487,7 @@ void matlabarray::setfield(int index,std::string fieldname,matlabarray m)
 	setfield(index,fieldindex,m);
 }
 
-void matlabarray::setfield(std::vector<int> &indexvec,std::string fieldname,matlabarray m)
+void matlabarray::setfield(const std::vector<int> &indexvec,const std::string& fieldname,const matlabarray& m)
 {
   int fieldindex = getfieldnameindex(fieldname);
 	if (fieldindex == -1)
@@ -566,13 +497,13 @@ void matlabarray::setfield(std::vector<int> &indexvec,std::string fieldname,matl
   setfield(sub2index(indexvec),fieldindex,m);
 }
 
-void matlabarray::setfield(std::vector<int> &indexvec,int fieldnameindex,matlabarray m)
+void matlabarray::setfield(const std::vector<int> &indexvec,int fieldnameindex,const matlabarray& m)
 {
   setfield(sub2index(indexvec),fieldnameindex,m);
 }
 
 
-int matlabarray::addfieldname(std::string fieldname)
+int matlabarray::addfieldname(const std::string& fieldname)
 {
   if (m_ == 0) 
   {
@@ -643,7 +574,7 @@ void matlabarray::removefieldname(int fieldnameindex)
   m_->subarray_ = subarray;	
 }
 
-void matlabarray::removefieldname(std::string fieldname)
+void matlabarray::removefieldname(const std::string& fieldname)
 {
 	removefieldname(getfieldnameindex(fieldname));	
 }
@@ -652,7 +583,7 @@ void matlabarray::removefieldname(std::string fieldname)
 // The user can alter the contents of a
 // string array any time
 
-std::string matlabarray::getstring()
+std::string matlabarray::getstring() const
 {
   if (m_ == 0) 
   {
@@ -662,7 +593,7 @@ std::string matlabarray::getstring()
   return(m_->string_);
 }
     
-void matlabarray::setstring(std::string str)
+void matlabarray::setstring(const std::string& str)
 {
   if (m_ == 0)
   { 
@@ -684,14 +615,14 @@ void matlabarray::createdoublescalar(double value)
 	setnumericarray(&value,1);
 }
 
-void matlabarray::createdoublevector(std::vector<double> &values)
+void matlabarray::createdoublevector(const std::vector<double> &values)
 {
 	std::vector<int> dims(2); dims[0] = 1; dims[1] = static_cast<int>(values.size());
 	createdensearray(dims,miDOUBLE);
 	setnumericarray(values);
 }
 
-void matlabarray::createdoublevector(int n, double *values)
+void matlabarray::createdoublevector(int n, const double *values)
 {
 	std::vector<int> dims(2); dims[0] = 1; dims[1] = n;
 	createdensearray(dims,miDOUBLE);
@@ -699,14 +630,14 @@ void matlabarray::createdoublevector(int n, double *values)
 }
 
 
-void matlabarray::createdoublematrix(std::vector<double> &values, std::vector<int> &dims)
+void matlabarray::createdoublematrix(const std::vector<double> &values, const std::vector<int> &dims)
 {
 	createdensearray(dims,miDOUBLE);
 	setnumericarray(values);
 }
 
 
-void matlabarray::createdoublematrix(int m,int n, double *values)
+void matlabarray::createdoublematrix(int m,int n, const double *values)
 {
 	std::vector<int> dims(2); dims[0] = m; dims[1] = n;
 	createdensearray(dims,miDOUBLE);
@@ -721,14 +652,14 @@ void matlabarray::createintscalar(int value)
 	setnumericarray(&value,1);
 }
 
-void matlabarray::createintvector(std::vector<int> &values)
+void matlabarray::createintvector(const std::vector<int> &values)
 {
 	std::vector<int> dims(2); dims[0] = 1; dims[1] = static_cast<int>(values.size());
 	createdensearray(dims,miINT32);
 	setnumericarray(values);
 }
 
-void matlabarray::createintvector(int n, int *values)
+void matlabarray::createintvector(int n, const int *values)
 {
 	std::vector<int> dims(2); dims[0] = 1; dims[1] = n;
 	createdensearray(dims,miINT32);
@@ -736,33 +667,30 @@ void matlabarray::createintvector(int n, int *values)
 }
 
 
-void matlabarray::createintmatrix(std::vector<int> &values, std::vector<int> &dims)
+void matlabarray::createintmatrix(const std::vector<int> &values, const std::vector<int> &dims)
 {
 	createdensearray(dims,miINT32);
 	setnumericarray(values);
 }
 
 
-void matlabarray::createintmatrix(int m,int n, int *values)
+void matlabarray::createintmatrix(int m,int n, const int *values)
 {
 	std::vector<int> dims(2); dims[0] = m; dims[1] = n;
 	createdensearray(dims,miINT32);
 	setnumericarray(values,m*n);
 }
 
-
-
 // creation functions
 
-void matlabarray::createdensearray(std::vector<int> &dims,mitype type)
+void matlabarray::createdensearray(const std::vector<int> &dims,mitype type)
 {
   // function only works for numeric types
   
   clear(); // make sure there is no data
   
-  m_ = new mxarray;
+  m_.reset(new mxarray);
 
-  m_->ref_ = 1;
   m_->class_ = mlDENSE;
   m_->type_ = type; 
   m_->flags_ = 0;
@@ -779,9 +707,8 @@ void matlabarray::createdensearray(int m,int n,mitype type)
   
   clear(); // make sure there is no data
   
-  m_ = new mxarray;
+  m_.reset(new mxarray);
 
-  m_->ref_ = 1;
   m_->class_ = mlDENSE;
   m_->type_ = type; 
   m_->flags_ = 0;
@@ -791,12 +718,11 @@ void matlabarray::createdensearray(int m,int n,mitype type)
   // the numeric data can be inserted later
 }   
    
-void matlabarray::createsparsearray(std::vector<int> &dims,mitype type)
+void matlabarray::createsparsearray(const std::vector<int> &dims,mitype type)
 {
   clear(); // make sure there is no data
   
-  m_ = new mxarray;
-  m_->ref_ = 1;
+  m_.reset(new mxarray);
   m_->class_ = mlSPARSE;
   m_->type_ = type;  // need to add some type checking here
   m_->flags_ = 0;
@@ -812,8 +738,7 @@ void matlabarray::createsparsearray(int m,int n,mitype type)
 	
   clear(); // make sure there is no data
   
-  m_ = new mxarray;
-  m_->ref_ = 1;
+  m_.reset(new mxarray);
   m_->class_ = mlSPARSE;
   m_->type_ = type;  // need to add some type checking here
   m_->flags_ = 0;
@@ -824,13 +749,12 @@ void matlabarray::createsparsearray(int m,int n,mitype type)
 }
 	
 
-void matlabarray::createcellarray(std::vector<int> &dims)
+void matlabarray::createcellarray(const std::vector<int> &dims)
 {
   clear(); // make sure there is no data
 
-  m_ = new mxarray;
+  m_.reset(new mxarray);
 
-  m_->ref_ = 1;
   m_->class_ = mlCELL;
   m_->type_ = miMATRIX;  // need to add some type checking here
   m_->flags_ = 0;
@@ -841,7 +765,7 @@ void matlabarray::createcellarray(std::vector<int> &dims)
   m_->subarray_.resize(getnumelements());
 }
 
-void matlabarray::createstructarray(std::vector<std::string> &fieldnames)
+void matlabarray::createstructarray(const std::vector<std::string> &fieldnames)
 {
 	std::vector<int> dims(2);
 	dims[0] = 1;
@@ -849,12 +773,11 @@ void matlabarray::createstructarray(std::vector<std::string> &fieldnames)
 	createstructarray(dims,fieldnames);  
 }
 
-void matlabarray::createstructarray(std::vector<int> &dims,std::vector<std::string> &fieldnames)
+void matlabarray::createstructarray(const std::vector<int> &dims, const std::vector<std::string> &fieldnames)
 {
   clear(); // make sure there is no data
 
-  m_ = new mxarray;
-	m_->ref_ = 1;
+  m_.reset(new mxarray);
   m_->class_ = mlSTRUCT;
   m_->type_ = miMATRIX;  // need to add some type checking here
   m_->flags_ = 0;
@@ -869,8 +792,7 @@ void matlabarray::createstructarray()
 {
   clear(); // make sure there is no data
 
-  m_ = new mxarray;
-	m_->ref_ = 1;
+  m_.reset(new mxarray);
   m_->class_ = mlSTRUCT;
   m_->type_ = miMATRIX;  // need to add some type checking here
   m_->flags_ = 0;
@@ -885,7 +807,7 @@ void matlabarray::createstructarray()
   m_->subarray_.resize(0);
 }
     
-void matlabarray::createclassarray(std::vector<std::string> &fieldnames,std::string classname)
+void matlabarray::createclassarray(const std::vector<std::string> &fieldnames,const std::string& classname)
 {
   std::vector<int> dims(2);
   dims[0] = 1;
@@ -894,12 +816,11 @@ void matlabarray::createclassarray(std::vector<std::string> &fieldnames,std::str
 }
 
 	
-void matlabarray::createclassarray(std::vector<int> &dims,std::vector<std::string> &fieldnames,std::string classname)
+void matlabarray::createclassarray(const std::vector<int> &dims,const std::vector<std::string> &fieldnames,const std::string& classname)
 {
   clear(); // make sure there is no data
 
-  m_ = new mxarray;
-  m_->ref_ = 1;
+  m_.reset(new mxarray);
   m_->class_ = mlOBJECT;
   m_->type_ = miMATRIX;  // need to add some type checking here
   m_->flags_ = 0;
@@ -916,12 +837,11 @@ void matlabarray::createstringarray()
   createstringarray(str);
 }
     
-void matlabarray::createstringarray(std::string str)
+void matlabarray::createstringarray(const std::string& str)
 {
   clear(); // make sure there is no data
   
-  m_ = new mxarray;
-  m_->ref_ = 1;
+  m_.reset(new mxarray);
   m_->class_ = mlSTRING; 
   m_->type_ = miUINT8;
   m_->flags_ = 0;
@@ -932,7 +852,7 @@ void matlabarray::createstringarray(std::string str)
             
 // sparse functions
 
-int matlabarray::getnnz()
+int matlabarray::getnnz() const
 {
   if (m_ == 0) 
   {
@@ -948,7 +868,7 @@ int matlabarray::getnnz()
 
 // Raw access to data    
     
-matfiledata matlabarray::getpreal()
+matfiledata matlabarray::getpreal() 
 {
   if (m_ == 0) 
   {
@@ -958,7 +878,7 @@ matfiledata matlabarray::getpreal()
   return( m_->preal_);
 }
 
-matfiledata matlabarray::getpimag()
+matfiledata matlabarray::getpimag() 
 {
   if (m_ == 0)
   {
@@ -968,7 +888,7 @@ matfiledata matlabarray::getpimag()
   return( m_->pimag_);
 }
 
-matfiledata matlabarray::getprows()
+matfiledata matlabarray::getprows() 
 {
   if (m_ == 0)
   {
@@ -978,7 +898,7 @@ matfiledata matlabarray::getprows()
   return( m_->prows_);
 }
 
-matfiledata matlabarray::getpcols()   
+matfiledata matlabarray::getpcols() 
 {
   if (m_ == 0)
   {
@@ -988,12 +908,12 @@ matfiledata matlabarray::getpcols()
   return( m_->pcols_);
 }
 
-std::string matlabarray::getinfotext()
+std::string matlabarray::getinfotext() const
 {
 	return(getinfotext(""));
 }
 
-std::string matlabarray::getinfotext(std::string name)
+std::string matlabarray::getinfotext(const std::string& name) const
 {
   if (m_ == 0) return(std::string("[EMPTY MATRIX]"));
 
@@ -1090,95 +1010,94 @@ void matlabarray::setglobal(bool val)
 	if (val) m_->flags_ |= 0x04;
 }
 
-bool matlabarray::iscomplex()
+bool matlabarray::iscomplex() const
 {
 	if (m_ == 0) return(false);
-	return(m_->flags_ & 0x01);
+  return(m_->flags_ & 0x01) != 0;
 }
 	
-bool matlabarray::islogical()
+bool matlabarray::islogical() const
 {
 	if (m_ == 0) return(false);
-	return(m_->flags_ & 0x02);
+	return(m_->flags_ & 0x02) != 0;
 }
 
-bool matlabarray::isglobal()
+bool matlabarray::isglobal() const
 {
 	if (m_ == 0) return(false);
-	return(m_->flags_ & 0x04);
+	return(m_->flags_ & 0x04) != 0;
 }
 
-
-bool matlabarray::isnumeric()
+bool matlabarray::isnumeric() const
 {
 	if (m_ == 0) return(false);
 	return(((m_->class_ == mlSPARSE)||(m_->class_ == mlDENSE)));
 }
 
-bool matlabarray::isstruct()
+bool matlabarray::isstruct() const
 {
 	if (m_ == 0) return(false);
 	return(((m_->class_ == mlSTRUCT)||(m_->class_ == mlOBJECT)));
 }
 
-bool matlabarray::iscell()
+bool matlabarray::iscell() const
 {
 	if (m_ == 0) return(false);
 	return((m_->class_ == mlCELL));
 }
 
-bool matlabarray::isclass()
+bool matlabarray::isclass() const
 {
 	if (m_ == 0) return(false);
 	return((m_->class_ == mlOBJECT));
 }
 
-bool matlabarray::isstring()
+bool matlabarray::isstring() const
 {
 	if (m_ == 0) return(false);
 	return((m_->class_ == mlSTRING));
 }
 
-bool matlabarray::isdense()
+bool matlabarray::isdense() const
 {
 	if (m_ == 0) return(false);
 	return((m_->class_ == mlDENSE));
 }
 
-bool matlabarray::issparse()
+bool matlabarray::issparse() const
 {
 	if (m_ == 0) return(false);
 	return((m_->class_ == mlSPARSE));
 }	
 
-bool matlabarray::isfield(std::string fieldname)
+bool matlabarray::isfield(const std::string& fieldname) const
 {
 	return(getfieldnameindex(fieldname) != -1);
 }
 
-bool matlabarray::isfieldCI(std::string fieldname)
+bool matlabarray::isfieldCI(const std::string& fieldname) const
 {
 	return(getfieldnameindexCI(fieldname) != -1);
 }
 
 
 // Private functions
+//
+//int matlabarray::cmp_nocase(const std::string &s1,const std::string &s2)
+//{
+//	std::string::const_iterator p1 = s1.begin();
+//	std::string::const_iterator p2 = s2.begin();
+//	
+//	while (p1!=s1.end() && p2 != s2.end())
+//	{
+//		if (toupper(*p1) != toupper(*p2)) return (toupper(*p1) < toupper(*p2)) ? -1 : 1;
+//		p1++; p2++;
+//	}
+//	
+//	return((s2.size()==s1.size()) ? 0 : (s1.size() < s2.size()) ? -1 :  1);
+//}
 
-int matlabarray::cmp_nocase(const std::string &s1,const std::string &s2)
-{
-	std::string::const_iterator p1 = s1.begin();
-	std::string::const_iterator p2 = s2.begin();
-	
-	while (p1!=s1.end() && p2 != s2.end())
-	{
-		if (toupper(*p1) != toupper(*p2)) return (toupper(*p1) < toupper(*p2)) ? -1 : 1;
-		p1++; p2++;
-	}
-	
-	return((s2.size()==s1.size()) ? 0 : (s1.size() < s2.size()) ? -1 :  1);
-}
-
-void matlabarray::permute(std::vector<int> permorder)
+void matlabarray::permute(const std::vector<int>& permorder)
 {
 	if (m_ == 0) 
   {
@@ -1249,7 +1168,7 @@ void matlabarray::transpose()
 	m_->dims_ = dims;
 }
 
-void matlabarray::reorder_permute(std::vector<int> &newindices,std::vector<int> permorder)
+void matlabarray::reorder_permute(std::vector<int> &newindices, const std::vector<int>& permorder)
 {
 	// check whether we can permute this matrix
 	if (m_ == 0)
@@ -1313,18 +1232,15 @@ void matlabarray::reorder_permute(std::vector<int> &newindices,std::vector<int> 
 	
 }
 
-bool matlabarray::compare(std::string str)
+bool matlabarray::compare(const std::string& str) const
 {
 	if (m_ == 0) return(false);
 	if (str == m_->string_) return(true);
 	return(false);
 }
 
-bool matlabarray::compareCI(std::string str)
+bool matlabarray::compareCI(const std::string& str) const
 {
 	if (m_ == 0) return(false);
-	if ( cmp_nocase(str,m_->string_) == 0) return(true);
-	return(false);
+	return boost::iequals(str,m_->string_);
 }
-
-} // end of the namespace

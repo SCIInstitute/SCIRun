@@ -86,6 +86,7 @@
 #ifndef CORE_MATLABIO_MATLABARRAY_H
 #define CORE_MATLABIO_MATLABARRAY_H 1
 
+#include <boost/shared_ptr.hpp>
 #include <Core/Matlab/matfile.h>
 #include <Core/Matlab/share.h>
 
@@ -100,18 +101,6 @@ private:
   
   class mxarray {
   public:
-    int  ref_; // reference counter: matlabarray is just a pointer to
-                // this structure. By keeping the data and the pointer
-                // separate a pointer (matlabarray class) can be
-                // created to a subarray without having to copy this
-                // subclass. Since there can be multiple pointers to
-                // the subclasses the reference counter counts how
-                // many instances of a matlabarray class point to this
-                // one. Creating a new matlabarray class this counter
-                // is increased and deleting the matlabarray class
-                // will decrease the pointer. When ref_ hits zero the
-                // structure is deleted.
-                        
     // matrix class information
                             
     mlclass class_;      // type of the array                    
@@ -153,7 +142,7 @@ private:
   // delete them all. This behavior is circumvented by only storing a
   // pointer to the real object.
   
-  mxarray* m_; 
+  boost::shared_ptr<mxarray> m_; 
   
   // raw access for friend classes to the data containers. These
   // functions make a copy of the container handle and will allow
@@ -174,38 +163,32 @@ public:
   
   // Currently this function only sets the dimension
   // vector and does not resize any of the data fields
-  void setdims(std::vector<int> &dims);
+  void setdims(const std::vector<int> &dims);
   
   // Set the type of the data in the Matlab array
   void settype(mitype type);
-  
-  // function to create, copy, and destroy the object
-  matlabarray();  // constructor of an empty matrix
-  ~matlabarray();  // destructor
-  matlabarray(const matlabarray &m); // copy constructor
-  matlabarray& operator= (const matlabarray &m); // assignment
   
   // functions to maintain the matlabarray
   
   // clear and empty
   void clear();    // empty matrix (no data stored at all)
-  bool isempty();    // check emptiness
+  bool isempty() const;    // check emptiness
   
   // Clone the whole structure
-  matlabarray clone();
+  matlabarray clone() const;
   
   // use isempty() to check whether you can perform any of the next
   // operations if the matrix is empty (no data stored) and you try to
   // access some data fields the class will throw an internal_error.
   
-  mlclass getclass();
-  mitype  gettype();
+  mlclass getclass() const;
+  mitype  gettype() const;
   
   // name is the matrix name. In Matlab only the top level matrix
   // names are used any submatrix can have a name, but it is not used
   // in the current versions of Matlab
     
-  std::string getname();
+  std::string getname() const;
   void setname(const std::string& name);
   
   // matrix flags complex indicates a matrix is complex logical
@@ -216,14 +199,14 @@ public:
   void setcomplex(bool val);
   void setlogical(bool val);
   void setglobal(bool val);
-  bool iscomplex();
-  bool islogical();
-  bool isglobal();
+  bool iscomplex() const;
+  bool islogical() const;
+  bool isglobal() const;
   
   // classname is the name of the object class. Matlab uses this
   // classname to link it to its class "functions".
   
-  std::string getclassname();
+  std::string getclassname() const;
   void setclassname(const std::string& classname);
   
   // Everything in Matlab has dimensions. The minimum amount of
@@ -231,13 +214,13 @@ public:
   // two. The dimensions are laid out as follows first the "fast"
   // dimensions and than the slower ones.
   
-  std::vector<int> getdims();
-  int getnumdims();  // get the number of dimensions
-  int getm();    // get the first dimension
-  int getn();    // get the second dimension
+  std::vector<int> getdims() const;
+  int getnumdims() const;  // get the number of dimensions
+  int getm() const;    // get the first dimension
+  int getn() const;    // get the second dimension
   
   // number of elements is the product of all the dimensions
-  int getnumelements();
+  int getnumelements() const;
   
   // Some functions for indexing. A subindex is a multidimensional
   // vector pointing to the element in a multidimensional sense. A
@@ -245,8 +228,8 @@ public:
   // multidimensional array as one big vector in memory.  The latter
   // method is faster in addressing and is more low level
   
-  int sub2index(std::vector<int> &indexvec);
-  std::vector<int> index2sub(int index);
+  int sub2index(const std::vector<int> &indexvec) const;
+  std::vector<int> index2sub(int index) const;
   
   // cell specific functions
   // A matrix of the cell class contains subarrays as elements. 
@@ -266,10 +249,10 @@ public:
   // to link matrices in a loop as that would cause some unintended
   // effects.
   
-  matlabarray getcell(int index);
-  matlabarray getcell(std::vector<int> &indexvec); 
-  void setcell(int index,matlabarray m);
-  void setcell(std::vector<int> &indexvec,matlabarray m);
+  matlabarray getcell(int index) const;
+  matlabarray getcell(const std::vector<int> &indexvec) const; 
+  void setcell(int index, const matlabarray& m);
+  void setcell(const std::vector<int> &indexvec,const matlabarray& m);
   
   // struct specific functions
   //
@@ -281,39 +264,39 @@ public:
   // have similar addressing modes with a single or a vector of
   // indices.
   
-  matlabarray getfield(int index,const std::string& fieldname);
-  matlabarray getfield(std::vector<int> &indexvec,const std::string& fieldname);  
-  matlabarray getfieldCI(int index,const std::string& fieldname);   // Case Insensitive version
-  matlabarray getfieldCI(std::vector<int> &indexvec,const std::string& fieldname); // Case Insensitive version
+  matlabarray getfield(int index,const std::string& fieldname) const;
+  matlabarray getfield(const std::vector<int> &indexvec,const std::string& fieldname) const;  
+  matlabarray getfieldCI(int index,const std::string& fieldname) const;   // Case Insensitive version
+  matlabarray getfieldCI(const std::vector<int> &indexvec,const std::string& fieldname) const; // Case Insensitive version
   
-  void setfield(int index,const std::string& fieldname,matlabarray m);
-  void setfield(std::vector<int> &indexvec,const std::string& fieldname,matlabarray m);
-  matlabarray getfield(int index,int fieldnameindex);
-  matlabarray getfield(std::vector<int> &indexvec,int fieldnameindex);
-  void setfield(int index,int fieldnameindex,matlabarray m);
-  void setfield(std::vector<int> &index,int fieldnameindex,matlabarray m);
+  void setfield(int index,const std::string& fieldname,const matlabarray& m);
+  void setfield(const std::vector<int> &indexvec,const std::string& fieldname,const matlabarray& m);
+  matlabarray getfield(int index,int fieldnameindex) const;
+  matlabarray getfield(const std::vector<int> &indexvec,int fieldnameindex) const;
+  void setfield(int index,int fieldnameindex,const matlabarray& m);
+  void setfield(const std::vector<int> &index,int fieldnameindex,const matlabarray& m);
   
   
   // Get the names of all the fieldnames
-  std::vector<std::string> getfieldnames();
+  std::vector<std::string> getfieldnames() const;
   
   // Get the number of fields
-  int getnumfields();
+  int getnumfields() const;
   
   // Get the fieldname from the index
-  std::string getfieldname(int fieldnameindex);
+  std::string getfieldname(int fieldnameindex) const;
   
   // Get the index of a fieldname
   // Two version case sensitive and case insensitive
-  int getfieldnameindex(const std::string& fieldname);
-  int getfieldnameindexCI(const std::string& fieldname);    // Case Insensitive version
+  int getfieldnameindex(const std::string& fieldname) const;
+  int getfieldnameindexCI(const std::string& fieldname) const;    // Case Insensitive version
   
   // Change a certain fieldname
   void setfieldname(int fieldnameindex,const std::string&);
   
   // Check whether a certain fieldname exists
-  bool isfield(const std::string& fieldname);
-  bool isfieldCI(const std::string& fieldname);  // Case Insensitive Version
+  bool isfield(const std::string& fieldname) const;
+  bool isfieldCI(const std::string& fieldname) const;  // Case Insensitive Version
   
   // Add and remove entries
   // This will internally reorder matrix
@@ -322,10 +305,10 @@ public:
   void removefieldname(int fieldnameindex);
   
   // string specific functions
-  std::string getstring();
+  std::string getstring() const;
   void setstring(const std::string& string);
-  bool compare(const std::string& str);
-  bool compareCI(const std::string& str);
+  bool compare(const std::string& str) const;
+  bool compareCI(const std::string& str) const;
   
   
   // creation functions
@@ -337,33 +320,33 @@ public:
   //   Class matrices     - based on the struct matrix with an extra field of the classname
   //   String matrices    - A character array that needs to interpreted as a string
   
-  void createdensearray(std::vector<int> &dims,mitype type);  
-  void createsparsearray(std::vector<int> &dims,mitype type); 
+  void createdensearray(const std::vector<int> &dims,mitype type);  
+  void createsparsearray(const std::vector<int> &dims,mitype type); 
   void createdensearray(int m, int n,mitype type);  
   void createsparsearray(int m, int n,mitype type); 
     
-  void createcellarray(std::vector<int> &dims); 
+  void createcellarray(const std::vector<int> &dims); 
   void createstructarray();
-  void createstructarray(std::vector<std::string> &fieldnames); 
-  void createstructarray(std::vector<int> &dims,std::vector<std::string> &fieldnames);   
-  void createclassarray(std::vector<std::string> &fieldnames,const std::string& classname);
-  void createclassarray(std::vector<int> &dims,std::vector<std::string> &fieldnames,const std::string& classname);
+  void createstructarray(const std::vector<std::string> &fieldnames); 
+  void createstructarray(const std::vector<int> &dims,const std::vector<std::string> &fieldnames);   
+  void createclassarray(const std::vector<std::string> &fieldnames,const std::string& classname);
+  void createclassarray(const std::vector<int> &dims,const std::vector<std::string> &fieldnames,const std::string& classname);
   
-  // A shortway to create some basic matrices/vectors/scalars.  These
+  // A short way to create some basic matrices/vectors/scalars.  These
   // functions use STL vectors or the C-style pointer to a memory
   // block.
   
   void createdoublescalar(double value);
-  void createdoublevector(std::vector<double> &values);
-  void createdoublevector(int n, double *values);
-  void createdoublematrix(std::vector<double> &values, std::vector<int> &dims);  
-  void createdoublematrix(int m,int n, double *values);
+  void createdoublevector(const std::vector<double> &values);
+  void createdoublevector(int n, const double *values);
+  void createdoublematrix(const std::vector<double> &values, const std::vector<int> &dims);  
+  void createdoublematrix(int m,int n, const double *values);
   
   void createintscalar(int value);
-  void createintvector(std::vector<int> &values);
-  void createintvector(int n, int *values);
-  void createintmatrix(std::vector<int> &values, std::vector<int> &dims);  
-  void createintmatrix(int m,int n, int *values);
+  void createintvector(const std::vector<int> &values);
+  void createintvector(int n, const int *values);
+  void createintmatrix(const std::vector<int> &values, const std::vector<int> &dims);  
+  void createintmatrix(int m,int n, const int *values);
   
   // string arrays in this implementation will allow changing the size 
   void createstringarray(); 
@@ -371,26 +354,26 @@ public:
   
   // check type of an array
   
-  bool isnumeric();
-  bool isstruct();
-  bool iscell();
-  bool isclass();
-  bool isstring();
-  bool isdense();
-  bool issparse();    
+  bool isnumeric() const;
+  bool isstruct() const;
+  bool iscell() const;
+  bool isclass() const;
+  bool isstring() const;
+  bool isdense() const;
+  bool issparse() const;    
   
   // data collection/insertion functions
   
   // C-style access to the data. Specify the address of the databuffer
   // and the number of elements it can hold and the data will be
   // copied and casted to the right format.
-  template<class T> void getnumericarray(T *data,int size);
-  template<class T> void getimagnumericarray(T *data,int size);
+  template<class T> void getnumericarray(const T *data,int size);
+  template<class T> void getimagnumericarray(const T *data,int size);
   
-  template<class T> void getnumericarray(T **data,int dim1, int dim2);
-  template<class T> void getimagnumericarray(T **data,int dim1, int dim2);
-  template<class T> void getnumericarray(T ***data,int dim1, int dim2, int dim3);
-  template<class T> void getimagnumericarray(T ***data,int dim1, int dim2, int dim3);
+  template<class T> void getnumericarray(const T **data,int dim1, int dim2);
+  template<class T> void getimagnumericarray(const T **data,int dim1, int dim2);
+  template<class T> void getnumericarray(const T ***data,int dim1, int dim2, int dim3);
+  template<class T> void getimagnumericarray(const T ***data,int dim1, int dim2, int dim3);
   
   
   template<class T> void getnumericarray(std::vector<T> &vec);
@@ -403,52 +386,52 @@ public:
   // createsparsearray().  Note Submatrices cannot be enterred this
   // way, use the setcell()/getcell() functions
   
-  template<class T> void setnumericarray(T *data,int size);
-  template<class T> void setnumericarray(T *data,int size,mitype type);
-  template<class T> void setimagnumericarray(T *data,int size);
-  template<class T> void setimagnumericarray(T *data,int size,mitype type);
+  template<class T> void setnumericarray(const T *data,int size);
+  template<class T> void setnumericarray(const T *data,int size,mitype type);
+  template<class T> void setimagnumericarray(const T *data,int size);
+  template<class T> void setimagnumericarray(const T *data,int size,mitype type);
   
-  template<class T> void setnumericarray(T **data,int dim1, int dim2);
-  template<class T> void setnumericarray(T **data,int dim1, int dim2 ,mitype type);
-  template<class T> void setimagnumericarray(T **data,int dim1, int dim2);
-  template<class T> void setimagnumericarray(T **data,int dim1, int dim2 ,mitype type);
+  template<class T> void setnumericarray(const T **data,int dim1, int dim2);
+  template<class T> void setnumericarray(const T **data,int dim1, int dim2 ,mitype type);
+  template<class T> void setimagnumericarray(const T **data,int dim1, int dim2);
+  template<class T> void setimagnumericarray(const T **data,int dim1, int dim2 ,mitype type);
   
-  template<class T> void setnumericarray(T ***data,int dim1, int dim2, int dim3);
-  template<class T> void setnumericarray(T ***data,int dim1, int dim2, int dim3 ,mitype type);
-  template<class T> void setimagnumericarray(T ***data,int dim1, int dim2, int dim3);
-  template<class T> void setimagnumericarray(T ***data,int dim1, int dim2 , int dim3, mitype type);
+  template<class T> void setnumericarray(const T ***data,int dim1, int dim2, int dim3);
+  template<class T> void setnumericarray(const T ***data,int dim1, int dim2, int dim3 ,mitype type);
+  template<class T> void setimagnumericarray(const T ***data,int dim1, int dim2, int dim3);
+  template<class T> void setimagnumericarray(const T ***data,int dim1, int dim2 , int dim3, mitype type);
   
-  template<class T> void setnumericarray(T *data,int size,std::vector<int> &dims);
-  template<class T> void setnumericarray(T *data,int size,std::vector<int> &dims, mitype type);
-  template<class T> void setimagnumericarray(T *data,int size,std::vector<int> &dims);
-  template<class T> void setimagnumericarray(T *data,int size,std::vector<int> &dims, mitype type);
+  template<class T> void setnumericarray(const T *data,int size,const std::vector<int> &dims);
+  template<class T> void setnumericarray(const T *data,int size,const std::vector<int> &dims, mitype type);
+  template<class T> void setimagnumericarray(const T *data,int size,const std::vector<int> &dims);
+  template<class T> void setimagnumericarray(const T *data,int size,const std::vector<int> &dims, mitype type);
   
-  template<class T> void setnumericarray(std::vector<T> &vec);
-  template<class T> void setnumericarray(std::vector<T> &vec,mitype type);
-  template<class T> void setimagnumericarray(std::vector<T> &vec);
-  template<class T> void setimagnumericarray(std::vector<T> &vec,mitype type);
+  template<class T> void setnumericarray(const std::vector<T> &vec);
+  template<class T> void setnumericarray(const std::vector<T> &vec,mitype type);
+  template<class T> void setimagnumericarray(const std::vector<T> &vec);
+  template<class T> void setimagnumericarray(const std::vector<T> &vec,mitype type);
   
-  template<class T> void setnumericarray(std::vector<T> &vec,std::vector<int> &dims);
-  template<class T> void setnumericarray(std::vector<T> &vec,std::vector<int> &dims, mitype type);
-  template<class T> void setimagnumericarray(std::vector<T> &vec,std::vector<int> &dims);
-  template<class T> void setimagnumericarray(std::vector<T> &vec,std::vector<int> &dims, mitype type);
+  template<class T> void setnumericarray(const std::vector<T> &vec,const std::vector<int> &dims);
+  template<class T> void setnumericarray(const std::vector<T> &vec,const std::vector<int> &dims, mitype type);
+  template<class T> void setimagnumericarray(const std::vector<T> &vec,const std::vector<int> &dims);
+  template<class T> void setimagnumericarray(const std::vector<T> &vec,const std::vector<int> &dims, mitype type);
   
   // sparse functions
-  int getnnz();
+  int getnnz() const;
   template<class T> void getrowsarray(T *rows,int size);
   template<class T> void setrowsarray(T *rows,int size);
   template<class T> void getcolsarray(T *cols,int size);
   template<class T> void setcolsarray(T *cols,int size);
   
-  std::string getinfotext();
-  std::string getinfotext(const std::string& name);
+  std::string getinfotext() const;
+  std::string getinfotext(const std::string& name) const;
   
   // reordering functions (for DENSE matrices only)
   // Useful as Matlab uses Fortran ordering of matrices and
   // C++ uses the C-style ordering.
   
   void transpose();   // matrix must be 2D
-  void permute(std::vector<int> permorder);  // N dimensional equivalent for transpose
+  void permute(const std::vector<int>& permorder);  // N dimensional equivalent for transpose
   
   // Conversion tools to mitype
   
@@ -467,7 +450,7 @@ private:
   // helper functions:
   
   // case insensitive comparison between strings
-  int cmp_nocase(const std::string &s1,const std::string &s2);
+  //int cmp_nocase(const std::string &s1,const std::string &s2);
   
   // multi dimensional scheme for computing the new order of the
   // elements in case of switching certain dimensions.  e.g. for a 2D
@@ -480,37 +463,37 @@ private:
 };
   
   
-template<class T> inline void matlabarray::getnumericarray(T *data,int size)
+template<class T> inline void matlabarray::getnumericarray(const T *data,int size)
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->preal_.getandcast(data,size);
 }
 
-template<class T> inline void matlabarray::getimagnumericarray(T *data,int size)
+template<class T> inline void matlabarray::getimagnumericarray(const T *data,int size)
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->pimag_.getandcast(data,size);
 }
 
-template<class T> inline void matlabarray::getnumericarray(T **data,int dim1,int dim2)
+template<class T> inline void matlabarray::getnumericarray(const T **data,int dim1,int dim2)
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->preal_.getandcast(data,dim1,dim2);
 }
 
-template<class T> inline void matlabarray::getimagnumericarray(T **data,int dim1,int dim2)
+template<class T> inline void matlabarray::getimagnumericarray(const T **data,int dim1,int dim2)
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->pimag_.getandcast(data,dim1,dim2);
 }
 
-template<class T> inline void matlabarray::getnumericarray(T ***data,int dim1,int dim2,int dim3)
+template<class T> inline void matlabarray::getnumericarray(const T ***data,int dim1,int dim2,int dim3)
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->preal_.getandcast(data,dim1,dim2,dim3);
 }
 
-template<class T> inline void matlabarray::getimagnumericarray(T ***data,int dim1,int dim2,int dim3)
+template<class T> inline void matlabarray::getimagnumericarray(const T ***data,int dim1,int dim2,int dim3)
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->pimag_.getandcast(data,dim1,dim2,dim3);
@@ -531,7 +514,7 @@ template<class T> inline void matlabarray::getimagnumericarray(std::vector<T> &v
 }
 
 
-template<class T> inline void matlabarray::setnumericarray(T *data,int size,std::vector<int> &dims)
+template<class T> inline void matlabarray::setnumericarray(const T *data,int size,const std::vector<int> &dims)
 {
   if(m_ == 0) 
   {
@@ -547,7 +530,7 @@ template<class T> inline void matlabarray::setnumericarray(T *data,int size,std:
   m_->preal_.putandcast(data,size,m_->type_);
 }
 
-template<class T> inline void matlabarray::setnumericarray(T *data,int size,std::vector<int> &dims,mitype type)
+template<class T> inline void matlabarray::setnumericarray(const T *data,int size,const std::vector<int> &dims,mitype type)
 {
   if(m_ == 0) 
   {
@@ -565,7 +548,7 @@ template<class T> inline void matlabarray::setnumericarray(T *data,int size,std:
 }
 
 
-template<class T> inline void matlabarray::setnumericarray(T *data,int size)
+template<class T> inline void matlabarray::setnumericarray(const T *data,int size)
 {
   if(m_ == 0)
   {
@@ -581,7 +564,7 @@ template<class T> inline void matlabarray::setnumericarray(T *data,int size)
   m_->preal_.putandcast(data,size,m_->type_);
 }  
 
-template<class T> inline void matlabarray::setnumericarray(T *data,int size,mitype type)
+template<class T> inline void matlabarray::setnumericarray(const T *data,int size,mitype type)
 {
   if(m_ == 0) 
   {
@@ -596,7 +579,7 @@ template<class T> inline void matlabarray::setnumericarray(T *data,int size,mity
   m_->preal_.putandcast(data,size,type);
 }
 
-template<class T> inline void matlabarray::setimagnumericarray(T *data,int size,std::vector<int> &dims)
+template<class T> inline void matlabarray::setimagnumericarray(const T *data,int size,const std::vector<int> &dims)
 {
   if(m_ == 0) 
   {
@@ -612,7 +595,7 @@ template<class T> inline void matlabarray::setimagnumericarray(T *data,int size,
   m_->pimag_.putandcast(data,size,m_->type_);
 }
 
-template<class T> inline void matlabarray::setimagnumericarray(T *data,int size,std::vector<int> &dims,mitype type)
+template<class T> inline void matlabarray::setimagnumericarray(const T *data,int size,const std::vector<int> &dims,mitype type)
 {
   if(m_ == 0) 
   {
@@ -631,7 +614,7 @@ template<class T> inline void matlabarray::setimagnumericarray(T *data,int size,
 
 
 
-template<class T> inline void matlabarray::setnumericarray(T **data,int dim1, int dim2)
+template<class T> inline void matlabarray::setnumericarray(const T **data,int dim1, int dim2)
 {
   if(m_ == 0) 
   {
@@ -647,7 +630,7 @@ template<class T> inline void matlabarray::setnumericarray(T **data,int dim1, in
   m_->preal_.putandcast(data,dim1,dim2,m_->type_);
 }  
 
-template<class T> inline void matlabarray::setnumericarray(T **data,int dim1, int dim2 ,mitype type)
+template<class T> inline void matlabarray::setnumericarray(const T **data,int dim1, int dim2 ,mitype type)
 {
   if(m_ == 0) 
   { 
@@ -663,7 +646,7 @@ template<class T> inline void matlabarray::setnumericarray(T **data,int dim1, in
   m_->preal_.putandcast(data,dim1,dim2,type);
 }
 
-template<class T> inline void matlabarray::setimagnumericarray(T **data,int dim1, int dim2)
+template<class T> inline void matlabarray::setimagnumericarray(const T **data,int dim1, int dim2)
 {
   if(m_ == 0)
   {
@@ -679,7 +662,7 @@ template<class T> inline void matlabarray::setimagnumericarray(T **data,int dim1
   m_->pimag_.putandcast(data,dim1,dim2,m_->type_);
 }  
 
-template<class T> inline void matlabarray::setimagnumericarray(T **data,int dim1, int dim2 ,mitype type)
+template<class T> inline void matlabarray::setimagnumericarray(const T **data,int dim1, int dim2 ,mitype type)
 {
   if(m_ == 0)
   {
@@ -696,7 +679,7 @@ template<class T> inline void matlabarray::setimagnumericarray(T **data,int dim1
 }
 
 
-template<class T> inline void matlabarray::setnumericarray(T ***data,int dim1, int dim2, int dim3)
+template<class T> inline void matlabarray::setnumericarray(const T ***data,int dim1, int dim2, int dim3)
 {
   if(m_ == 0)
   {
@@ -712,7 +695,7 @@ template<class T> inline void matlabarray::setnumericarray(T ***data,int dim1, i
   m_->preal_.putandcast(data,dim1,dim2,dim3,m_->type_);
 }  
 
-template<class T> inline void matlabarray::setnumericarray(T ***data,int dim1, int dim2, int dim3 ,mitype type)
+template<class T> inline void matlabarray::setnumericarray(const T ***data,int dim1, int dim2, int dim3 ,mitype type)
 {
   if(m_ == 0)
   {
@@ -728,7 +711,7 @@ template<class T> inline void matlabarray::setnumericarray(T ***data,int dim1, i
   m_->preal_.putandcast(data,dim1,dim2,dim3,type);
 }
 
-template<class T> inline void matlabarray::setimagnumericarray(T ***data,int dim1, int dim2, int dim3)
+template<class T> inline void matlabarray::setimagnumericarray(const T ***data,int dim1, int dim2, int dim3)
 {
   if(m_ == 0)
   {
@@ -744,7 +727,7 @@ template<class T> inline void matlabarray::setimagnumericarray(T ***data,int dim
   m_->pimag_.putandcast(data,dim1,dim2,dim3,m_->type_);
 }  
 
-template<class T> inline void matlabarray::setimagnumericarray(T ***data,int dim1, int dim2, int dim3 ,mitype type)
+template<class T> inline void matlabarray::setimagnumericarray(const T ***data,int dim1, int dim2, int dim3 ,mitype type)
 {
   if(m_ == 0) 
   {
@@ -763,7 +746,7 @@ template<class T> inline void matlabarray::setimagnumericarray(T ***data,int dim
 
 
 
-template<class T> inline void matlabarray::setimagnumericarray(T *data,int size)
+template<class T> inline void matlabarray::setimagnumericarray(const T *data,int size)
 {
   if(m_ == 0) 
   {
@@ -779,7 +762,7 @@ template<class T> inline void matlabarray::setimagnumericarray(T *data,int size)
   m_->pimag_.putandcast(data,size,m_->type_);
 }  
 
-template<class T> inline void matlabarray::setimagnumericarray(T *data,int size,mitype type)
+template<class T> inline void matlabarray::setimagnumericarray(const T *data,int size,mitype type)
 {
   if(m_ == 0)
   {
@@ -797,7 +780,7 @@ template<class T> inline void matlabarray::setimagnumericarray(T *data,int size,
 
 
 
-template<class T> inline void matlabarray::setnumericarray(std::vector<T> &vec,std::vector<int> &dims)
+template<class T> inline void matlabarray::setnumericarray(const std::vector<T> &vec,const std::vector<int> &dims)
 {
   if(m_ == 0)
   {
@@ -815,7 +798,7 @@ template<class T> inline void matlabarray::setnumericarray(std::vector<T> &vec,s
   m_->preal_.putandcastvector(vec,m_->type_);
 }
 
-template<class T> inline void matlabarray::setnumericarray(std::vector<T> &vec,std::vector<int> &dims,mitype type)
+template<class T> inline void matlabarray::setnumericarray(const std::vector<T> &vec,const std::vector<int> &dims,mitype type)
 {
   if(m_ == 0)
   {
@@ -833,7 +816,7 @@ template<class T> inline void matlabarray::setnumericarray(std::vector<T> &vec,s
 }
 
 
-template<class T> inline void matlabarray::setnumericarray(std::vector<T> &vec)
+template<class T> inline void matlabarray::setnumericarray(const std::vector<T> &vec)
 {
   if(m_ == 0)
   {
@@ -850,7 +833,7 @@ template<class T> inline void matlabarray::setnumericarray(std::vector<T> &vec)
   m_->preal_.putandcastvector(vec,m_->type_);
 }  
 
-template<class T> inline void matlabarray::setnumericarray(std::vector<T> &vec,mitype type)
+template<class T> inline void matlabarray::setnumericarray(const std::vector<T> &vec,mitype type)
 {
   if(m_ == 0)
   {
@@ -866,7 +849,7 @@ template<class T> inline void matlabarray::setnumericarray(std::vector<T> &vec,m
   m_->preal_.putandcastvector(vec,type);
 }
 
-template<class T> inline void matlabarray::setimagnumericarray(std::vector<T> &vec,std::vector<int> &dims)
+template<class T> inline void matlabarray::setimagnumericarray(const std::vector<T> &vec,const std::vector<int> &dims)
 {
   if(m_ == 0)
   {
@@ -884,7 +867,7 @@ template<class T> inline void matlabarray::setimagnumericarray(std::vector<T> &v
   m_->pimag_.putandcastvector(vec,m_->type_);
 }
 
-template<class T> inline void matlabarray::setimagnumericarray(std::vector<T> &vec,std::vector<int> &dims,mitype type)
+template<class T> inline void matlabarray::setimagnumericarray(const std::vector<T> &vec, const std::vector<int> &dims,mitype type)
 {
   if(m_ == 0)
   {
@@ -902,7 +885,7 @@ template<class T> inline void matlabarray::setimagnumericarray(std::vector<T> &v
   m_->pimag_.putandcastvector(vec,type);
 }
 
-template<class T> inline void matlabarray::setimagnumericarray(std::vector<T> &vec)
+template<class T> inline void matlabarray::setimagnumericarray(const std::vector<T> &vec)
 {
   if(m_ == 0)
   {
@@ -918,7 +901,7 @@ template<class T> inline void matlabarray::setimagnumericarray(std::vector<T> &v
   m_->pimag_.putandcastvector(vec,m_->type_);
 }
 
-template<class T> inline void matlabarray::setimagnumericarray(std::vector<T> &vec,mitype type)
+template<class T> inline void matlabarray::setimagnumericarray(const std::vector<T> &vec,mitype type)
 {
   if(m_ == 0)
   {

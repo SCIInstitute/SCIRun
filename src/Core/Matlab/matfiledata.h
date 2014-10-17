@@ -184,7 +184,7 @@ namespace SCIRun
       // there is no need to do memory management
 
       template<class T> void getandcastvector(std::vector<T> &vec);
-      template<class T> void putandcastvector(std::vector<T> &vec,mitype type);
+      template<class T> void putandcastvector(const std::vector<T> &vec,mitype type);
 
       template<class ITERATOR> void putandcast(ITERATOR is,ITERATOR ie,mitype type);
 
@@ -201,9 +201,9 @@ namespace SCIRun
       // functions.
 
       std::string		 getstring();
-      void 			 putstring(std::string str);
+      void 			 putstring(const std::string& str);
       std::vector<std::string> getstringarray(int strlength);
-      int 			 putstringarray(std::vector<std::string>);
+      int 			 putstringarray(const std::vector<std::string>&);
 
       // reorder will reorder the data in the datafield according to the indices
       // specified.
@@ -750,7 +750,7 @@ namespace SCIRun
     }
 
 
-    template<class T> void matfiledata::putandcastvector(std::vector<T> &vec,mitype type)
+    template<class T> void matfiledata::putandcastvector(const std::vector<T> &vec,mitype type)
     {
       clear();
 
