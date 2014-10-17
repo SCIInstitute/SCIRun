@@ -38,6 +38,8 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Core/Matlab/matlabfile.h>
+#include <Core/Matlab/matlabarray.h>
+#include <iostream>
 
 using namespace SCIRun::MatlabIO;
 
