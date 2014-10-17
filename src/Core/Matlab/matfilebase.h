@@ -37,8 +37,8 @@
  * DATE: 16 MAY 2005
  */
  
-#ifndef JGS_MATLABIO_MATFILEBASE_H
-#define JGS_MATLABIO_MATFILEBASE_H 1
+#ifndef CORE_MATLABIO_MATFILEBASE_H
+#define CORE_MATLABIO_MATFILEBASE_H 1
  
 /*
  * matfilebase class includes error handling and definition of
@@ -50,12 +50,11 @@
  *
  */
 
-#include <sys/types.h>
 #include <string>
-#include "matfiledefs.h"
+#include <Core/Matlab/matfiledefs.h>
+#include <Core/Matlab/share.h>
 
-#include "share.h"
-
+namespace SCIRun {
 namespace MatlabIO {
 
 class SCISHARE matfilebase {

@@ -33,8 +33,8 @@
  * DATE: 18 MAR 2004
  */
  
-#ifndef JGS_MATLABIO_MATLABCONVERTER_H
-#define JGS_MATLABIO_MATLABCONVERTER_H 1
+#ifndef CORE_MATLABIO_MATLABCONVERTER_H
+#define CORE_MATLABIO_MATLABCONVERTER_H 1
 
 /*
  *  This class converts matlab matrices into SCIRun objects and vice versa.
@@ -56,45 +56,7 @@
  * a large number of class definitions......
  */
 
-#include <math.h> 
-
-#include <vector>
-#include <string>
-
-
-// String class files
-#include <Core/Datatypes/String.h>
-
-// Matrix class files
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-
-// Field class files
-#include <Core/Datatypes/Field.h>
-
-// Colormap class file
-#include <Core/Datatypes/ColorMap.h>
-
-// Geometry files
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/Tensor.h>
-
-// Bundle class files
-#include <Core/Datatypes/Bundle.h>
-
-#include <Core/Util/ProgressReporter.h>
-#include <Core/Containers/Handle.h>
-
-// Class for reading matlab files
-#include <Core/Matlab/matlabfile.h>
-#include <Core/Matlab/matlabarray.h>
-
-// Field conversion algorithms
-#include <Core/Matlab/matlabtofield.h>
-#include <Core/Matlab/fieldtomatlab.h>
-
+#include <Core/Matlab/matfilebase.h>
 #include <Core/Matlab/share.h>
 
 /*
@@ -120,10 +82,11 @@
  *
  */ 
 
+namespace SCIRun {
 namespace MatlabIO {
-
-
-class SCISHARE matlabconverter : public matfilebase {
+  
+class SCISHARE matlabconverter : public matfilebase 
+{
 
   public:
 
@@ -169,7 +132,6 @@ class SCISHARE matlabconverter : public matfilebase {
     // Nrrd key value pairs:
     // These key value pairs are not supported yet, like in the rest of SCIRun
 
-    // Constructor
     matlabconverter();
     matlabconverter(SCIRun::ProgressReporter* pr);
 
@@ -348,6 +310,6 @@ inline void matlabconverter::prefersciobjects()
   prefer_bundles = false;
 }
 
-} // end namespace
+}} // end namespace
 
 #endif

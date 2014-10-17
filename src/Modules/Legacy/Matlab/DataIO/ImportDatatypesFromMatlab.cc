@@ -40,6 +40,7 @@ using namespace SCIRun::Modules::Matlab::DataIO;
 //using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::MatlabIO;
 
 const ModuleLookupInfo ImportDatatypesFromMatlab::staticInfo_("ImportDatatypesFromMatlab", "DataIO", "Matlab");
 

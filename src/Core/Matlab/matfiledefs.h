@@ -35,36 +35,37 @@
 /*
  * FILE: matfiledefs.h
  * AUTH: Jeroen G Stinstra
- * DATE: 16 MAY 2005
- */
- 
-#ifndef CORE_MATLABIO_MATFILEDEFS_H
-#define CORE_MATLABIO_MATFILEDEFS_H 1
- 
-/*
- * Definitions for compiling the code
- */
-
-// uncomment definitions to include or exclude options
-
-#define JGS_MATLABIO_USE_64INTS		1
-
-// define 64 bit integers
-
-#ifdef JGS_MATLABIO_USE_64INTS
-
-#ifdef _WIN32
-	typedef signed __int64 int64;
-	typedef unsigned __int64 uint64;
-  typedef unsigned int uint32_t;
-  typedef unsigned int u_int32_t;
-  typedef signed int int32_t;
-#else
-	typedef signed long long int64;
-	typedef unsigned long long uint64;
-#endif
-
-#endif
-
-
-#endif
+// * DATE: 16 MAY 2005
+// */
+// 
+//#ifndef CORE_MATLABIO_MATFILEDEFS_H
+//#define CORE_MATLABIO_MATFILEDEFS_H 1
+// 
+///*
+// * Definitions for compiling the code
+// */
+//
+//// uncomment definitions to include or exclude options
+//
+//#define JGS_MATLABIO_USE_64INTS		1
+//
+//// define 64 bit integers
+//
+//#ifdef JGS_MATLABIO_USE_64INTS
+//
+//#ifdef _WIN32
+//	typedef signed __int64 int64;
+//	typedef unsigned __int64 uint64;
+//  typedef unsigned int uint32_t;
+//  typedef unsigned int u_int32_t;
+//  typedef signed int int32_t;
+//#else
+//	typedef signed long long int64;
+//	typedef unsigned long long uint64;
+//#endif
+//
+//#endif
+//
+//
+//#endif
+//

@@ -49,32 +49,16 @@
 // CANNOT INSTANTIATE EVERY PIECE, ALTHOUGH NEWER COMPILERS LIKE GCC4, WILL CHECK
 // THE CODE EVEN IF IT IS NOT USED.....
 
-#include <math.h>
-
-// STL STUFF
-
-#include <vector>
-#include <string>
-
-
-// Class for reading matlab files
-#include <Core/Matlab/matlabfile.h>
-#include <Core/Matlab/matlabarray.h>
-
-// Field class files
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
-
 /*
  * FILE: matlabconverter_fieldtomatlab.h
  * AUTH: Jeroen G Stinstra
  * DATE: 18 MAR 2004
  */
  
-#ifndef JGS_MATLABIO_MATLABCONVERTER_FIELDTOMATLAB_H
-#define JGS_MATLABIO_MATLABCONVERTER_FIELDTOMATLAB_H 1
+#ifndef CORE_MATLABIO_MATLABCONVERTER_FIELDTOMATLAB_H
+#define CORE_MATLABIO_MATLABCONVERTER_FIELDTOMATLAB_H 1
 
+#include <Core/Matlab/matfilebase.h>
 #include <Core/Matlab/share.h>
 
 namespace MatlabIO {
