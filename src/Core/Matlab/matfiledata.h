@@ -37,8 +37,8 @@ DEALINGS IN THE SOFTWARE.
 * DATE: 16 MAY 2005
 */
 
-#ifndef JGS_MATLABIO_MATFILEDATA_H
-#define JGS_MATLABIO_MATFILEDATA_H 1
+#ifndef CORE_MATLABIO_MATFILEDATA_H
+#define CORE_MATLABIO_MATFILEDATA_H 1
 
 /*
 * The matfiledata class is a small support class for the matfile class
@@ -78,6 +78,7 @@ DEALINGS IN THE SOFTWARE.
 *
 */
 
+#include <vector>
 #include <Core/Matlab/matfilebase.h>
 #include <Core/Matlab/share.h>
 

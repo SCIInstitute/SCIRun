@@ -49,30 +49,9 @@
 // CANNOT INSTANTIATE EVERY PIECE, ALTHOUGH NEWER COMPILERS LIKE GCC4, WILL CHECK
 // THE CODE EVEN IF IT IS NOT USED.....
 
-
-// STL STUFF
-
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <cctype>
-
-
 // Class for reading matlab files
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
-
-// FData classes
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/Tensor.h>
-
-
-// MeshClasses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/VField.h>
-
 #include <Core/Matlab/share.h>
 
 /*
@@ -81,9 +60,10 @@
  * DATE: 18 MAR 2004
  */
  
-#ifndef JGS_MATLABIO_MATLABCONVERTER_MATLABTOFIELD_H
-#define JGS_MATLABIO_MATLABCONVERTER_MATLABTOFIELD_H 1
+#ifndef CORE_MATLABIO_MATLABCONVERTER_MATLABTOFIELD_H
+#define CORE_MATLABIO_MATLABCONVERTER_MATLABTOFIELD_H 1
 
+namespace SCIRun {
 namespace MatlabIO {
 
 class SCISHARE MatlabToFieldAlgo : public matfilebase
@@ -244,9 +224,7 @@ inline void MatlabToFieldAlgo::uncompressedtensor(std::vector<double> &fielddata
 }
 
 
-} // end namespace
+}}
 
 
 #endif
-
-
