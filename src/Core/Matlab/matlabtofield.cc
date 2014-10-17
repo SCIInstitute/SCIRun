@@ -37,17 +37,15 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Logging/LoggerInterface.h>
 
 using namespace SCIRun;
 using namespace SCIRun::MatlabIO;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Geometry;
 
-MatlabToFieldAlgo::~MatlabToFieldAlgo()
-{
-}
 
-bool MatlabToFieldAlgo::execute(FieldHandle& field, matlabarray& /*mlarray*/)
+bool MatlabToFieldAlgo::execute(FieldHandle& field)
 {
   FieldInformation fi(meshtype,meshbasis,fieldbasis,fieldtype);
 
@@ -196,7 +194,7 @@ bool MatlabToFieldAlgo::execute(FieldHandle& field, matlabarray& /*mlarray*/)
 
     field = 0;
     MeshHandle handle = CreateMesh(fi,static_cast<unsigned int>(dims[0]),static_cast<unsigned int>(dims[1]),static_cast<unsigned int>(dims[2]),PointO,PointP);
-    if (handle.get_rep() == 0) 
+    if (!handle)
     {
       error("MatlabToField: Could not allocate output field");
       return (false);
@@ -380,7 +378,7 @@ bool MatlabToFieldAlgo::execute(FieldHandle& field, matlabarray& /*mlarray*/)
 }
 
 
-int MatlabToFieldAlgo::analyze_iscompatible(matlabarray mlarray, std::string& infotext, bool postremark)
+int MatlabToFieldAlgo::analyze_iscompatible(const matlabarray& mlarray, std::string& infotext, bool postremark)
 {
   infotext = "";
   
@@ -421,7 +419,7 @@ int MatlabToFieldAlgo::analyze_iscompatible(matlabarray mlarray, std::string& in
   return (ret);
 }
 
-int MatlabToFieldAlgo::analyze_fieldtype(matlabarray mlarray, std::string& fielddesc)
+int MatlabToFieldAlgo::analyze_fieldtype(const matlabarray& mlarray, std::string& fielddesc)
 {
   fielddesc = "";
   
@@ -442,11 +440,11 @@ int MatlabToFieldAlgo::analyze_fieldtype(matlabarray mlarray, std::string& field
   return(1);
 }
 
-matlabarray MatlabToFieldAlgo::findfield(matlabarray mlarray,const std::string& fieldnames)
+matlabarray MatlabToFieldAlgo::findfield(const matlabarray& mlarray,const std::string& fieldnamesIn)
 {
   matlabarray subarray;
-  
-  while (1)
+  std::string fieldnames(fieldnamesIn);
+  while (true)
   {
     size_t loc = fieldnames.find(';');
     if (loc > fieldnames.size()) break;
@@ -546,7 +544,7 @@ int MatlabToFieldAlgo::mlanalyze(matlabarray mlarray, bool postremark)
     }
 
     // If the matrix is dense, we score less as we could translate it into a
-    // matrix as well. This help for bundle convertions, by which we can 
+    // matrix as well. This help for bundle conversions, by which we can 
     // automatically determine how to translate objects.
     ret = 0;
   }
@@ -3102,8 +3100,7 @@ bool MatlabToFieldAlgo::addfield(VField* field)
   return(true);
 }
 
-MatlabToFieldAlgo::MatlabToFieldAlgo() :
-ref_cnt(0), pr_(0)
+MatlabToFieldAlgo::MatlabToFieldAlgo()
 {
 }
 
@@ -3112,17 +3109,17 @@ void MatlabToFieldAlgo::setreporter(LoggerHandle pr)
   pr_ = pr;
 }
 
-void MatlabToFieldAlgo::error(std::string error)
+void MatlabToFieldAlgo::error(const std::string& error)
 {
   if(pr_) pr_->error(error);
 }
 
-void MatlabToFieldAlgo::warning(std::string warning)
+void MatlabToFieldAlgo::warning(const std::string& warning)
 {
   if(pr_) pr_->warning(warning);
 }
 
-void MatlabToFieldAlgo::remark(std::string remark)
+void MatlabToFieldAlgo::remark(const std::string& remark)
 {
   if(pr_) pr_->remark(remark);
 }

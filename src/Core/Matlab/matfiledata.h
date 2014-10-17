@@ -146,51 +146,51 @@ namespace SCIRun
       // clone the current object
       // i.e create a new databuffer and copy the actual data
       //     the normal assignment operator only copies the pointer
-      matfiledata clone();
+      matfiledata clone() const;
 
       // get/set type information
       // setting type information using type()
       // will not result in casting the data
       // contained in the databuffer
 
-      void 	type(mitype type);
-      mitype 	type();  
+      void 	setType(mitype type);
+      mitype 	type() const;  
 
       // get size information.
-      int size();			// size in elements
-      int bytesize();		// size in bytes
-      int elsize();			// size of the elements in the array
-      int elsize(mitype type); // element size of a type
+      int size() const;			// size in elements
+      int bytesize() const;		// size in bytes
+      int elsize() const;			// size of the elements in the array
+      int elsize(mitype type) const; // element size of a type
 
       // Direct access to data
-      void getdata(void *dataptr,int bytesize);
-      void putdata(void *dataptr,int bytesize,mitype type);
+      void getdata(void *dataptr,int bytesize) const;
+      void putdata(const void *dataptr,int bytesize,mitype type);
 
       // copying and casting templates	
 
       // copy and cast the data in a user defined memory space
       // dataptr and size specify the data block and the number of elements
       // that can be stored in this data block.
-      template<class T> void getandcast(T *dataptr,int size);
-      template<class T> void getandcast(T **dataptr,int dim1, int dim2);
-      template<class T> void getandcast(T ***dataptr,int dim1, int dim2, int dim3);
-      template<class T> void putandcast(T *dataptr,int size,mitype type);
-      template<class T> void putandcast(T **dataptr,int dim1, int dim2, mitype type);
-      template<class T> void putandcast(T ***dataptr,int dim1, int dim2, int dim3, mitype type);
+      template<class T> void getandcast(T *dataptr,int size) const;
+      template<class T> void getandcast(T **dataptr,int dim1, int dim2) const;
+      template<class T> void getandcast(T ***dataptr,int dim1, int dim2, int dim3) const;
+      template<class T> void putandcast(const T *dataptr,int size,mitype type);
+      template<class T> void putandcast(const T **dataptr,int dim1, int dim2, mitype type);
+      template<class T> void putandcast(const T ***dataptr,int dim1, int dim2, int dim3, mitype type);
 
 
       // For smaller arrays use the STL and put the data in a vector. These
       // vectors are copied and hence are less efficient. However using STL
       // there is no need to do memory management
 
-      template<class T> void getandcastvector(std::vector<T> &vec);
+      template<class T> void getandcastvector(std::vector<T> &vec) const;
       template<class T> void putandcastvector(const std::vector<T> &vec,mitype type);
 
       template<class ITERATOR> void putandcast(ITERATOR is,ITERATOR ie,mitype type);
 
 
       // Access functions per element. 
-      template<class T> T getandcastvalue(int index);
+      template<class T> T getandcastvalue(int index) const;
       template<class T> void putandcastvalue(T value,int index);
 
       // string functions	
@@ -231,7 +231,7 @@ namespace SCIRun
     ////////////////////////////////////////
 
 
-    template<class T> void matfiledata::getandcast(T *dataptr,int dsize)
+    template<class T> void matfiledata::getandcast(T *dataptr,int dsize) const
     {
       // This function copies and casts the data in the matfilebuffer into
       // a new buffer specified by dataptr (address of this new buffer) with
@@ -291,7 +291,7 @@ namespace SCIRun
     }
 
 
-    template<class T> void matfiledata::getandcast(T **dataptr,int dim1, int dim2)
+    template<class T> void matfiledata::getandcast(T **dataptr,int dim1, int dim2) const
     {
       // This function copies and casts the data in the matfilebuffer into
       // a new buffer specified by dataptr (address of this new buffer) with
@@ -366,7 +366,7 @@ namespace SCIRun
     }
 
 
-    template<class T> void matfiledata::getandcast(T ***dataptr,int dim1, int dim2, int dim3)
+    template<class T> void matfiledata::getandcast(T ***dataptr,int dim1, int dim2, int dim3) const
     {
       // This function copies and casts the data in the matfilebuffer into
       // a new buffer specified by dataptr (address of this new buffer) with
@@ -444,7 +444,7 @@ namespace SCIRun
     }
 
 
-    template<class T> void matfiledata::getandcastvector(std::vector<T> &vec)
+    template<class T> void matfiledata::getandcastvector(std::vector<T> &vec) const
     {
 
       // This function copies and casts the data into a vector container
@@ -503,7 +503,7 @@ namespace SCIRun
     }
 
 
-    template<class T> T matfiledata::getandcastvalue(int index)
+    template<class T> T matfiledata::getandcastvalue(int index) const
     {
       // direct access to the data
 
@@ -554,7 +554,7 @@ namespace SCIRun
     // functions inserting data
 
 
-    template<class T> void matfiledata::putandcast(T *dataptr,int dsize,mitype dtype)
+    template<class T> void matfiledata::putandcast(const T *dataptr,int dsize,mitype dtype)
     {
       // This function copies and casts the data in the matfilebuffer into
       // a new buffer specified by dataptr (address of this new buffer) with
@@ -613,7 +613,7 @@ namespace SCIRun
     }
 
 
-    template<class T> void matfiledata::putandcast(T **dataptr,int dim1, int dim2 ,mitype dtype)
+    template<class T> void matfiledata::putandcast(const T **dataptr,int dim1, int dim2 ,mitype dtype)
     {
       // This function copies and casts the data in the matfilebuffer into
       // a new buffer specified by dataptr (address of this new buffer) with
@@ -681,7 +681,7 @@ namespace SCIRun
       }
     }
 
-    template<class T> void matfiledata::putandcast(T ***dataptr,int dim1, int dim2, int dim3 ,mitype dtype)
+    template<class T> void matfiledata::putandcast(const T ***dataptr,int dim1, int dim2, int dim3 ,mitype dtype)
     {
       // This function copies and casts the data in the matfilebuffer into
       // a new buffer specified by dataptr (address of this new buffer) with

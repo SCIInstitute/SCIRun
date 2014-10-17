@@ -68,9 +68,9 @@ public:
   Nrrd*& getNrrd() { return nrrd_; }
   const Nrrd* getNrrd() const { return nrrd_; }
 
-//   void set_filename( const std::string &f )
-//   { nrrd_fname_ = f; embed_object_ = false; }
-//   const std::string get_filename() const { return nrrd_fname_; }
+   void set_filename( const std::string &f )
+   { nrrd_fname_ = f; embed_object_ = false; }
+   const std::string get_filename() const { return nrrd_fname_; }
 
   // As parts of TEEM are by design not thread safe we need to enforce thread-safety
   // on certain functionality by forcing it to run single threaded.

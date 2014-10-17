@@ -33,9 +33,21 @@
  */
 
 #include <Core/Matlab/matlabconverter.h>
+#include <Core/Matlab/fieldtomatlab.h>
+#include <Core/Matlab/matlabtofield.h>
+#include <Core/Logging/LoggerInterface.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::MatlabIO;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Datatypes;
 
 
 // Currently the property converter only manages strings
@@ -145,7 +157,7 @@ matlabarray::mitype matlabconverter::convertnrrdtype(int type)
 // rules that Matlab allows. Otherwise we could save the file, but Matlab 
 // would complain it could not read the file.
 
-bool matlabconverter::isvalidmatrixname(std::string name)
+bool matlabconverter::isvalidmatrixname(const std::string& name)
 {
   const std::string validchar("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
   const std::string validstartchar("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
@@ -177,7 +189,7 @@ bool matlabconverter::isvalidmatrixname(std::string name)
   return(valid);
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void matlabconverter::mlPropertyTOsciProperty(matlabarray &ma,PropertyManager *handle)
 {
   int numfields;
@@ -380,12 +392,12 @@ int matlabconverter::sciColorMapCompatible(matlabarray &ma, std::string &infotex
   if (postremark) remark(std::string("Matrix '" + ma.getname() + "' cannot be translated into a SCIRun ColorMap (matrix is not a dense array)."));
   return (0);
 }
-
+#endif
 // The next function checks whether
 // the program knows how to convert 
 // the matlabarray into a scirun matrix
 
-int matlabconverter::sciMatrixCompatible(matlabarray &ma, std::string &infotext, bool postremark)
+int matlabconverter::sciMatrixCompatible(const matlabarray &ma, std::string &infotext, bool postremark)
 {
   infotext = "";
   if (ma.isempty())
@@ -507,8 +519,8 @@ int matlabconverter::sciMatrixCompatible(matlabarray &ma, std::string &infotext,
 }
                 
 
-
-int matlabconverter::sciStringCompatible(matlabarray &ma, std::string &infotext, bool postremark)
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+int matlabconverter::sciStringCompatible(const matlabarray &ma, std::string &infotext, bool postremark)
 {
   infotext = "";
   if (ma.isempty()) return(0);
@@ -532,7 +544,7 @@ int matlabconverter::sciStringCompatible(matlabarray &ma, std::string &infotext,
   return (0);
 }
 
-void matlabconverter::mlArrayTOsciString(matlabarray &ma, StringHandle &handle)
+void matlabconverter::mlArrayTOsciString(const matlabarray &ma, StringHandle &handle)
 {
   matlabarray::mlclass mclass = ma.getclass();
         
@@ -551,13 +563,14 @@ void matlabconverter::mlArrayTOsciString(matlabarray &ma, StringHandle &handle)
   }
 }
 
-void matlabconverter::sciStringTOmlArray(StringHandle &scistr,matlabarray &mlmat)
+void matlabconverter::sciStringTOmlArray(StringHandle scistr,matlabarray &mlmat)
 {
   mlmat.createstringarray(scistr->get());
 }
+#endif
 
-
-void matlabconverter::mlArrayTOsciColorMap(matlabarray &ma,ColorMapHandle &handle)
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+void matlabconverter::mlArrayTOsciColorMap(const matlabarray &ma,ColorMapHandle &handle)
 {
   int m,n;
   m = static_cast<int>(ma.getm());
@@ -591,9 +604,9 @@ void matlabconverter::mlArrayTOsciColorMap(matlabarray &ma,ColorMapHandle &handl
   
   handle = dynamic_cast<SCIRun::ColorMap *>(new SCIRun::ColorMap(rgb,rgbT,alph,rgbT,static_cast<unsigned int>(n)));
 }
+#endif
 
-
-void matlabconverter::mlArrayTOsciMatrix(matlabarray &ma,MatrixHandle &handle)
+void matlabconverter::mlArrayTOsciMatrix(const matlabarray &ma,MatrixHandle &handle)
 {
   matlabarray::mlclass mclass = ma.getclass();
         
@@ -606,24 +619,24 @@ void matlabconverter::mlArrayTOsciMatrix(matlabarray &ma,MatrixHandle &handle)
 
         if (disable_transpose_)
         {
-          DenseMatrixHandle dmptr = new DenseMatrix(n,m);  
+          DenseMatrixHandle dmptr(new DenseMatrix(n,m));
           // copy and cast elements:
           // getnumericarray is a templated function that casts the data to the supplied pointer
           // type. It needs the dimensions of the memory block (in elements) to make sure
           // everything is still OK. 
-          ma.getnumericarray(dmptr->get_data_pointer(), dmptr->get_data_size());
+          ma.getnumericarray(dmptr->data(), dmptr->size());
                       
           handle = dmptr; 
         }
         else
         {
           DenseMatrix dm(n,m);  
-          ma.getnumericarray(dm.get_data_pointer(), dm.get_data_size());
+          ma.getnumericarray(dm.data(), dm.size());
                       
           // There is no transpose function to operate on the same memory block
           // Hence, it is a little memory inefficient.
                       
-          handle = dm.make_transpose(); // SCIRun has a C++-style matrix and Matlab a FORTRAN-style matrix;
+          handle = boost::make_shared<DenseMatrix>(dm.transpose()); // SCIRun has a C++-style matrix and Matlab a FORTRAN-style matrix;
         }
       }
       break;
@@ -640,26 +653,25 @@ void matlabconverter::mlArrayTOsciMatrix(matlabarray &ma,MatrixHandle &handle)
         size_type nnz = static_cast<size_type>(ma.getnnz());
         size_type m = static_cast<size_type>(ma.getm());
         size_type n = static_cast<size_type>(ma.getn()); 
-
-        SparseRowMatrix::Data data(n + 1, nnz);
-        const SparseRowMatrix::Rows& rows = data.rows();
-        const SparseRowMatrix::Columns& cols = data.columns();
-        const SparseRowMatrix::Storage& values = data.data();
+        SparseRowMatrixHandle sparse(new SparseRowMatrix(n, m));
+        //SparseRowMatrix::Data data(n + 1, nnz);
+        //const SparseRowMatrix::Rows& rows = data.rows();
+        //const SparseRowMatrix::Columns& cols = data.columns();
+        //const SparseRowMatrix::Storage& values = data.data();
 
         // NOTE: this was flipped around in the old code: the arrays rows/cols were passed as cols/rows into the SparseRowMatrix ctor.  Hence the screwy order here, and the transpose call below.
         // REASON: SCIRun uses Row sparse matrices and Matlab Column sparse matrices.
-        ma.getnumericarray(values.get(), nnz);
-        ma.getrowsarray(cols.get(), nnz);
-        ma.getcolsarray(rows.get(), (n+1));
+        ma.getnumericarray(sparse->valuePtr(), nnz);
+        ma.getrowsarray(sparse->get_cols(), nnz);
+        ma.getcolsarray(sparse->get_rows(), (n+1));
 
         if (disable_transpose_)
         {
-          handle = new SparseRowMatrix(n, m, data, nnz);
+          handle = sparse;
         }
         else
         {
-          SparseRowMatrix sm(n, m, data, nnz);
-          handle = sm.make_transpose(); 
+          handle = boost::make_shared<SparseRowMatrix>(sparse->transpose());
         }
       }
       break;
@@ -690,10 +702,12 @@ void matlabconverter::mlArrayTOsciMatrix(matlabarray &ma,MatrixHandle &handle)
         subarray = ma.getfield(0,dataindex);
         mlArrayTOsciMatrix(subarray,handle);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
         if (propertyindex != -1)
         {
           mlPropertyTOsciProperty(ma,static_cast<PropertyManager *>(handle.get_rep()));
         }
+#endif
 
       }
       break;
@@ -704,8 +718,7 @@ void matlabconverter::mlArrayTOsciMatrix(matlabarray &ma,MatrixHandle &handle)
   }
 }
 
-
-void matlabconverter::sciMatrixTOmlMatrix(MatrixHandle &scimat,matlabarray &mlmat)
+void matlabconverter::sciMatrixTOmlMatrix(MatrixHandle scimat, matlabarray &mlmat)
 {
   // Get the format for exporting data
   matlabarray::mitype dataformat = datatype_;
@@ -715,51 +728,39 @@ void matlabconverter::sciMatrixTOmlMatrix(MatrixHandle &scimat,matlabarray &mlma
         
   if (matrix_is::dense(scimat))
   {
-    DenseMatrix* dmatrix = matrix_cast::as_dense(scimat);
-    DenseMatrixHandle tmatrix = dmatrix->make_transpose();
+    DenseMatrix tmatrix = matrix_cast::as_dense(scimat)->transpose();
               
     std::vector<int> dims(2);
-    dims[1] = tmatrix->nrows();
-    dims[0] = tmatrix->ncols();
+    dims[1] = tmatrix.nrows();
+    dims[0] = tmatrix.ncols();
     mlmat.createdensearray(dims,dataformat);
-    mlmat.setnumericarray(tmatrix->get_data_pointer(),mlmat.getnumelements());
+    mlmat.setnumericarray(tmatrix.data(),mlmat.getnumelements());
   }
-  if (matrix_is::dense_col_maj(scimat))
-  {
-    DenseColMajMatrix* tmatrix = matrix_cast::as_dense_col_maj(scimat);
-              
-    std::vector<int> dims(2);
-    dims[0] = scimat->nrows();
-    dims[1] = scimat->ncols();
-    mlmat.createdensearray(dims,dataformat);
-    mlmat.setnumericarray(scimat->get_data_pointer(),mlmat.getnumelements());
-  }
-  if (matrix_is::column(scimat))
+  else if (matrix_is::column(scimat))
   {
     std::vector<int> dims(2);
-    ColumnMatrix* cmatrix = matrix_cast::as_column(scimat);
+    DenseColumnMatrixHandle cmatrix = matrix_cast::as_column(scimat);
     dims[0] = cmatrix->nrows();
     dims[1] = cmatrix->ncols();
     mlmat.createdensearray(dims,dataformat);
-    mlmat.setnumericarray(cmatrix->get_data_pointer(),mlmat.getnumelements());
+    mlmat.setnumericarray(cmatrix->data(),mlmat.getnumelements());
   }
-  if (matrix_is::sparse(scimat))
+  else if (matrix_is::sparse(scimat))
   {
-    SparseRowMatrix* smatrix = matrix_cast::as_sparse(scimat);
-    SparseRowMatrixHandle tmatrix = smatrix->make_transpose();
+    SparseRowMatrix tmatrix = matrix_cast::as_sparse(scimat)->transpose();
               
     std::vector<int> dims(2);
-    dims[1] = tmatrix->nrows();
-    dims[0] = tmatrix->ncols();
+    dims[1] = tmatrix.nrows();
+    dims[0] = tmatrix.ncols();
     mlmat.createsparsearray(dims,dataformat);
-    mlmat.setnumericarray(tmatrix->get_vals(),tmatrix->get_nnz());
-    mlmat.setrowsarray(tmatrix->get_cols(),tmatrix->get_nnz());
-    mlmat.setcolsarray(tmatrix->get_rows(),tmatrix->nrows()+1);
+    mlmat.setnumericarray(tmatrix.valuePtr(),tmatrix.nonZeros());
+    mlmat.setrowsarray(tmatrix.get_cols(),tmatrix.nonZeros());
+    mlmat.setcolsarray(tmatrix.get_rows(),tmatrix.nrows()+1);
   }
 }
 
 
-void matlabconverter::sciMatrixTOmlArray(MatrixHandle &scimat,matlabarray &mlmat)
+void matlabconverter::sciMatrixTOmlArray(MatrixHandle scimat,matlabarray &mlmat)
 {
   if (numericarray_)
   {
@@ -771,7 +772,9 @@ void matlabconverter::sciMatrixTOmlArray(MatrixHandle &scimat,matlabarray &mlmat
     mlmat.createstructarray();
     sciMatrixTOmlMatrix(scimat,dataarray);
     mlmat.setfield(0,"data",dataarray);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     sciPropertyTOmlProperty(static_cast<PropertyManager *>(scimat.get_rep()),mlmat);
+#endif
   }
 }
 
@@ -786,7 +789,7 @@ void matlabconverter::sciMatrixTOmlArray(MatrixHandle &scimat,matlabarray &mlmat
 // in case it is compatible return a positive value and write
 // out an infostring with a summary of the contents of the matrix
 
-int matlabconverter::sciNrrdDataCompatible(matlabarray &mlarray, std::string &infostring, bool postremark)
+int matlabconverter::sciNrrdDataCompatible(const matlabarray &mlarray, std::string &infostring, bool postremark)
 {
   infostring = "";
   if (mlarray.isempty()) return(0);
@@ -910,7 +913,7 @@ int matlabconverter::sciNrrdDataCompatible(matlabarray &mlarray, std::string &in
   return(2);    
 }
 
-void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &scinrrd)
+void matlabconverter::mlArrayTOsciNrrdData(const matlabarray &mlarray,NrrdDataHandle &scinrrd)
 {
   // Depending on the matlabclass there are several converters
   // for converting the data from Matlab into a SCIRun Nrrd object
@@ -921,10 +924,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
   // In case no converter is found return 0 
   // Hence initialise scinrrd as a NULL ptr
         
-  scinrrd = 0; 
-        
-  // Pointer to a new SCIRun Nrrd Data object
-  NrrdData* nrrddataptr = 0;
+  scinrrd.reset();
                                         
   switch(mclass)
   {
@@ -935,8 +935,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
         try
         {
           // new nrrd data handle
-          nrrddataptr = new NrrdData(); // nrrd is owned by the object
-          nrrddataptr->nrrd_ = nrrdNew();
+          scinrrd.reset(new NrrdData()); // nrrd is owned by the object
                   
           // obtain the type of the new nrrd
           // we want to keep the nrrd type the same
@@ -953,39 +952,39 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
           ASSERT(nrrddim <= NRRD_DIM_MAX);
           for (int p=0;p<nrrddim;p++) nrrddims[p] = dims[p];
                               
-          nrrdAlloc_nva(nrrddataptr->nrrd_,nrrdtype,nrrddim,nrrddims);
+          nrrdAlloc_nva(scinrrd->getNrrd(),nrrdtype,nrrddim,nrrddims);
                                       
           switch (nrrdtype)
           {
             case nrrdTypeChar:
-              mlarray.getnumericarray(static_cast<signed char *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<signed char *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             case nrrdTypeUChar:
-              mlarray.getnumericarray(static_cast<unsigned char *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<unsigned char *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             case nrrdTypeShort:
-              mlarray.getnumericarray(static_cast<signed short *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<signed short *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             case nrrdTypeUShort:
-              mlarray.getnumericarray(static_cast<unsigned short *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<unsigned short *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             case nrrdTypeInt:
-              mlarray.getnumericarray(static_cast<signed int *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<signed int *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             case nrrdTypeUInt:
-              mlarray.getnumericarray(static_cast<unsigned int *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<unsigned int *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             case nrrdTypeLLong:
-              mlarray.getnumericarray(static_cast<int64_t *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<int64_t *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             case nrrdTypeULLong:
-              mlarray.getnumericarray(static_cast<uint64_t *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<uint64_t *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             case nrrdTypeFloat:
-              mlarray.getnumericarray(static_cast<float *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<float *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             case nrrdTypeDouble:
-              mlarray.getnumericarray(static_cast<double *>(nrrddataptr->nrrd_->data),static_cast<int>(nrrdElementNumber(nrrddataptr->nrrd_)));
+              mlarray.getnumericarray(static_cast<double *>(scinrrd->getNrrd()->data),static_cast<int>(nrrdElementNumber(scinrrd->getNrrd())));
               break;
             default:
               throw matlabconverter_error();
@@ -1014,7 +1013,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
             // nrrd
           }
                                       
-          nrrdAxisInfoSet_nva(nrrddataptr->nrrd_,nrrdAxisInfoLabel,labelptr);
+          nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoLabel,labelptr);
            
           double spacing[NRRD_DIM_MAX];
           for (int p=0;p<NRRD_DIM_MAX;p++)
@@ -1022,7 +1021,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
             spacing[p] = 1.0;
           }
                           
-          nrrdAxisInfoSet_nva(nrrddataptr->nrrd_,nrrdAxisInfoSpacing,spacing);
+          nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoSpacing,spacing);
           
           double mindata[NRRD_DIM_MAX];
           for (int p=0;p<NRRD_DIM_MAX;p++)
@@ -1030,7 +1029,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
             mindata[p] = 0.0;
           }
                           
-          nrrdAxisInfoSet_nva(nrrddataptr->nrrd_,nrrdAxisInfoMin,mindata);            
+          nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoMin,mindata);            
           
           double maxdata[NRRD_DIM_MAX];
           for (int p=0;p<NRRD_DIM_MAX;p++)
@@ -1039,7 +1038,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
             else maxdata[p] = 1.0;
           }
                           
-          nrrdAxisInfoSet_nva(nrrddataptr->nrrd_,nrrdAxisInfoMax,maxdata); 
+          nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoMax,maxdata); 
           
           int centerdata[NRRD_DIM_MAX];
           for (int p=0;p<NRRD_DIM_MAX;p++)
@@ -1048,9 +1047,9 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
           }
           
                           
-          nrrdAxisInfoSet_nva(nrrddataptr->nrrd_,nrrdAxisInfoCenter,centerdata); 
+          nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoCenter,centerdata); 
                                            
-          scinrrd = nrrddataptr;
+          scinrrd = scinrrd;
         }
         catch (...)
         {
@@ -1058,8 +1057,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
           // release the datablock attached to
           // the nrrdhandle ... NRRD ....
                       
-          delete nrrddataptr;
-          scinrrd = 0;                      
+          scinrrd.reset();               
           throw;
         }
       }
@@ -1172,7 +1170,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
                 } 
               }
                       
-              nrrdAxisInfoSet_nva(scinrrd->nrrd_,nrrdAxisInfoLabel,clabels);
+              nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoLabel,clabels);
             }
 
                                             
@@ -1207,7 +1205,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
                     }
                 }
                       
-              nrrdAxisInfoSet_nva(scinrrd->nrrd_,nrrdAxisInfoUnits,cunits);
+              nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoUnits,cunits);
             }
                         
                 // insert spacing information
@@ -1236,7 +1234,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
                           }
                       }
                             
-                    nrrdAxisInfoSet_nva(scinrrd->nrrd_,nrrdAxisInfoSpacing,spacing);
+                    nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoSpacing,spacing);
                   }
 
                 // insert minimum information
@@ -1265,7 +1263,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
                           }
                       }
                             
-                    nrrdAxisInfoSet_nva(scinrrd->nrrd_,nrrdAxisInfoMin,mindata);
+                    nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoMin,mindata);
                   }
                         
                         
@@ -1295,7 +1293,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
                     }
                   }
                           
-                  nrrdAxisInfoSet_nva(scinrrd->nrrd_,nrrdAxisInfoMax,maxdata);
+                  nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoMax,maxdata);
                 }
                     
                 // insert centering information
@@ -1323,7 +1321,7 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
                     }
                   }
                           
-                  nrrdAxisInfoSet_nva(scinrrd->nrrd_,nrrdAxisInfoCenter,centerdata);
+                  nrrdAxisInfoSet_nva(scinrrd->getNrrd(),nrrdAxisInfoCenter,centerdata);
                 }
               }
         }
@@ -1333,7 +1331,9 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
                                 
         if (propertyindex != -1)
         {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
           mlPropertyTOsciProperty(mlarray,static_cast<PropertyManager *>(scinrrd.get_rep()));
+#endif
         }
 
         if (mlarray.isfieldCI("name"))
@@ -1366,8 +1366,8 @@ void matlabconverter::mlArrayTOsciNrrdData(matlabarray &mlarray,NrrdDataHandle &
     }
 }
 
-
-void matlabconverter::sciNrrdDataTOmlMatrix(NrrdDataHandle &scinrrd, matlabarray &mlarray)
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+void matlabconverter::sciNrrdDataTOmlMatrix(NrrdDataHandle scinrrd, matlabarray &mlarray)
 {
 
   Nrrd *nrrdptr;
@@ -1377,7 +1377,7 @@ void matlabconverter::sciNrrdDataTOmlMatrix(NrrdDataHandle &scinrrd, matlabarray
 
   // first determine the size of a nrrd
   std::vector<int> dims;
-  nrrdptr = scinrrd->nrrd_;
+  nrrdptr = scinrrd->getNrrd();
   
   if (!nrrdptr)
   {
@@ -1431,7 +1431,7 @@ void matlabconverter::sciNrrdDataTOmlMatrix(NrrdDataHandle &scinrrd, matlabarray
 }
 
 
-void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle &scinrrd, matlabarray &mlarray)
+void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle scinrrd, matlabarray &mlarray)
 {
 
   if (numericarray_ == true)
@@ -1457,7 +1457,7 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle &scinrrd, matlabarray 
   axisfieldnames[6] = "unit";
         
   Nrrd  *nrrdptr;
-  nrrdptr = scinrrd->nrrd_;
+  nrrdptr = scinrrd->getNrrd();
                                 
   matlabarray axisma;
   std::vector<int> dims(2);
@@ -1516,9 +1516,11 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle &scinrrd, matlabarray 
   }
      
   mlarray.setfield(0,"axis",axisma);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   sciPropertyTOmlProperty(static_cast<PropertyManager *>(scinrrd.get_rep()),mlarray);
+#endif
 }
-
+#endif
 
 // Routine for discovering which kind of mesh is being supplied
 // It reads the matlabarray and looks for certain fields to see whether
@@ -1541,35 +1543,29 @@ void matlabconverter::sciNrrdDataTOmlArray(NrrdDataHandle &scinrrd, matlabarray 
 //   LatVolMesh
 //   any suggestions for other types that need support ??
 
-int matlabconverter::sciFieldCompatible(matlabarray mlarray,std::string &infostring, bool postremark)
+int matlabconverter::sciFieldCompatible(const matlabarray& mlarray,std::string &infostring, bool postremark)
 {
   MatlabToFieldAlgo algo;
   algo.setreporter(pr_);
   return(algo.analyze_iscompatible(mlarray,infostring,postremark));
 }
 
-void matlabconverter::mlArrayTOsciField(matlabarray mlarray,FieldHandle &scifield)
+void matlabconverter::mlArrayTOsciField(const matlabarray& mlarray,FieldHandle &scifield)
 {
-  scifield = 0;
+  scifield.reset();
   
-  Handle<MatlabToFieldAlgo> algo = new MatlabToFieldAlgo();  
-  
-  if (algo.get_rep() == 0)
-  {
-    error("matlabconverter: Could not allocate conversion algorithm");  
-    throw matlabconverter_error();
-  }
+  MatlabToFieldAlgo algo;
 
-  algo->setreporter(pr_);
+  algo.setreporter(pr_);
   
   std::string fielddesc;
-  if(!(algo->analyze_fieldtype(mlarray,fielddesc)))
+  if(!(algo.analyze_fieldtype(mlarray,fielddesc)))
   {
     error("matlabconverter: Could not determine the output field type");
     throw matlabconverter_error();
   }
   
-  if (!(algo->execute(scifield,mlarray)))
+  if (!(algo.execute(scifield)))
   {
     // The algorithm has an builtin sanity check. If a specific converter cannot be built
     // it will create an algorithm that returns a false. Hence instead of failing at the
@@ -1578,7 +1574,7 @@ void matlabconverter::mlArrayTOsciField(matlabarray mlarray,FieldHandle &scifiel
     throw matlabconverter_error();
   }
 
-  if (scifield.get_rep() == 0)
+  if (!scifield)
   {
     error("mlArrayTOsciField: The dynamically compiled matlabconverter does not function properly\n");
     throw matlabconverter_error();
@@ -1591,9 +1587,11 @@ void matlabconverter::mlArrayTOsciField(matlabarray mlarray,FieldHandle &scifiel
       matlabarray mlproperty = mlarray.getfieldCI(0,"property");
       if (mlproperty.isstruct())
       {
-        if (scifield.get_rep() != 0)
+        if (scifield)
         {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
           mlPropertyTOsciProperty(mlarray,static_cast<PropertyManager *>(scifield.get_rep()));
+#endif
         }
       }
     }
@@ -1603,32 +1601,32 @@ void matlabconverter::mlArrayTOsciField(matlabarray mlarray,FieldHandle &scifiel
       matlabarray mlname = mlarray.getfieldCI(0,"name");
       if (mlname.isstring())
       {
-        if (scifield.get_rep() != 0)
+        if (scifield)
         {
-          scifield->set_property("name",mlname.getstring(),false);
+          scifield->properties().set_property("name",mlname.getstring(),false);
         }
       }
     }
     else
     {
-      if (scifield.get_rep() != 0)
+      if (scifield)
       {
-        scifield->set_property("name",mlarray.getname(),false);
+        scifield->properties().set_property("name",mlarray.getname(),false);
       }
     }
   }
   else
   {
-    if (scifield.get_rep() != 0)
+    if (scifield)
     {
-      scifield->set_property("name",mlarray.getname(),false);
+      scifield->properties().set_property("name",mlarray.getname(),false);
     }
   }  
   
   return;
 }
    
-void matlabconverter::sciFieldTOmlArray(FieldHandle &scifield,matlabarray &mlarray)
+void matlabconverter::sciFieldTOmlArray(FieldHandle scifield,matlabarray &mlarray)
 {
   FieldToMatlabAlgo algo ;
   // Do the magic, internally algo will now refer to the proper dynamic class, which will be
@@ -1665,7 +1663,7 @@ void matlabconverter::sciFieldTOmlArray(FieldHandle &scifield,matlabarray &mlarr
   // This code is not the most efficient one: we first create the complete structured one and then
   // strip out one field. But it seems to be the easiest one.
         
-  if (numericarray_ == true)
+  if (numericarray_)
   {
     if (mlarray.isfield("field"))
     {
@@ -1681,22 +1679,25 @@ void matlabconverter::sciFieldTOmlArray(FieldHandle &scifield,matlabarray &mlarr
   }
         
   // add the properties
-  if (scifield != 0)
+  if (scifield)
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     sciPropertyTOmlProperty(static_cast<PropertyManager *>(scifield.get_rep()),mlarray);
+#endif
   }
         
   // Parse the namefield separately
-  if (scifield->is_property("name"))
+  if (scifield->properties().is_property("name"))
   {
     std::string name;
     matlabarray namearray;
-    scifield->get_property("name",name);
+    scifield->properties().get_property("name",name);
     namearray.createstringarray(name);
     mlarray.setfield(0,"name",namearray);
   }        
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 int matlabconverter::sciBundleCompatible(matlabarray &mlarray, std::string &infostring, bool postremark)
 {
   infostring = "";
@@ -1922,6 +1923,7 @@ void matlabconverter::sciBundleTOmlArray(BundleHandle &scibundle, matlabarray &m
     }
   }
 }
+#endif
 
 void matlabconverter::error(const std::string& error)
 {

@@ -367,17 +367,17 @@ public:
   // C-style access to the data. Specify the address of the databuffer
   // and the number of elements it can hold and the data will be
   // copied and casted to the right format.
-  template<class T> void getnumericarray(const T *data,int size);
-  template<class T> void getimagnumericarray(const T *data,int size);
+  template<class T> void getnumericarray(T *data,int size) const;
+  template<class T> void getimagnumericarray(T *data,int size) const;
   
-  template<class T> void getnumericarray(const T **data,int dim1, int dim2);
-  template<class T> void getimagnumericarray(const T **data,int dim1, int dim2);
-  template<class T> void getnumericarray(const T ***data,int dim1, int dim2, int dim3);
-  template<class T> void getimagnumericarray(const T ***data,int dim1, int dim2, int dim3);
+  template<class T> void getnumericarray(T **data,int dim1, int dim2) const;
+  template<class T> void getimagnumericarray(T **data,int dim1, int dim2) const;
+  template<class T> void getnumericarray(T ***data,int dim1, int dim2, int dim3) const;
+  template<class T> void getimagnumericarray(T ***data,int dim1, int dim2, int dim3) const;
   
   
-  template<class T> void getnumericarray(std::vector<T> &vec);
-  template<class T> void getimagnumericarray(std::vector<T> &vec);
+  template<class T> void getnumericarray(std::vector<T> &vec) const;
+  template<class T> void getimagnumericarray(std::vector<T> &vec) const;
   
   // C-style write access. The data will be copied out of the
   // databuffer and casted to the format of the Matlab file. If a type
@@ -418,9 +418,9 @@ public:
   
   // sparse functions
   int getnnz() const;
-  template<class T> void getrowsarray(T *rows,int size);
+  template<class T> void getrowsarray(T *rows,int size) const;
   template<class T> void setrowsarray(T *rows,int size);
-  template<class T> void getcolsarray(T *cols,int size);
+  template<class T> void getcolsarray(T *cols,int size) const;
   template<class T> void setcolsarray(T *cols,int size);
   
   std::string getinfotext() const;
@@ -463,37 +463,37 @@ private:
 };
   
   
-template<class T> inline void matlabarray::getnumericarray(const T *data,int size)
+template<class T> inline void matlabarray::getnumericarray(T *data,int size) const
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->preal_.getandcast(data,size);
 }
 
-template<class T> inline void matlabarray::getimagnumericarray(const T *data,int size)
+template<class T> inline void matlabarray::getimagnumericarray(T *data,int size) const
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->pimag_.getandcast(data,size);
 }
 
-template<class T> inline void matlabarray::getnumericarray(const T **data,int dim1,int dim2)
+template<class T> inline void matlabarray::getnumericarray(T **data,int dim1,int dim2) const
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->preal_.getandcast(data,dim1,dim2);
 }
 
-template<class T> inline void matlabarray::getimagnumericarray(const T **data,int dim1,int dim2)
+template<class T> inline void matlabarray::getimagnumericarray(T **data,int dim1,int dim2) const
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->pimag_.getandcast(data,dim1,dim2);
 }
 
-template<class T> inline void matlabarray::getnumericarray(const T ***data,int dim1,int dim2,int dim3)
+template<class T> inline void matlabarray::getnumericarray(T ***data,int dim1,int dim2,int dim3) const
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->preal_.getandcast(data,dim1,dim2,dim3);
 }
 
-template<class T> inline void matlabarray::getimagnumericarray(const T ***data,int dim1,int dim2,int dim3)
+template<class T> inline void matlabarray::getimagnumericarray(T ***data,int dim1,int dim2,int dim3) const
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->pimag_.getandcast(data,dim1,dim2,dim3);
@@ -501,13 +501,13 @@ template<class T> inline void matlabarray::getimagnumericarray(const T ***data,i
 
 
 
-template<class T> inline void matlabarray::getnumericarray(std::vector<T> &vec)
+template<class T> inline void matlabarray::getnumericarray(std::vector<T> &vec) const
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->preal_.getandcastvector(vec);
 }
 
-template<class T> inline void matlabarray::getimagnumericarray(std::vector<T> &vec)
+template<class T> inline void matlabarray::getimagnumericarray(std::vector<T> &vec) const
 {
   if(m_ == 0) throw empty_matlabarray();
   m_->pimag_.getandcastvector(vec);
@@ -917,7 +917,7 @@ template<class T> inline void matlabarray::setimagnumericarray(const std::vector
   m_->pimag_.putandcastvector(vec,type);
 }
 
-template<class T> inline void matlabarray::getrowsarray(T *rows,int size)
+template<class T> inline void matlabarray::getrowsarray(T *rows,int size) const
 {
   if (m_ == 0) 
   {
@@ -939,7 +939,7 @@ template<class T> inline void matlabarray::setrowsarray(T *rows,int size)
   m_->prows_.putandcast(rows,size,miINT32);
 }
 
-template<class T>  inline void matlabarray::getcolsarray(T *cols,int size)
+template<class T>  inline void matlabarray::getcolsarray(T *cols,int size) const
 {
   if (m_ == 0)
   {

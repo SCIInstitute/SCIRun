@@ -211,7 +211,7 @@ class SCISHARE matlabconverter : public matfilebase
     void remark(const std::string& remark);
 
     // FUNCTION FOR TRANSLATING THE CONTENTS OF A MATRIX (THE NUMERIC PART OF THE DATA)
-    void sciMatrixTOmlMatrix(SCIRun::Core::Datatypes::MatrixHandle &scimat,matlabarray &mlmat);
+    void sciMatrixTOmlMatrix(SCIRun::Core::Datatypes::MatrixHandle scimat,matlabarray &mlmat);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // FUNCTIONS FOR TRANSLATING THE PROPERTY MANAGER

@@ -73,23 +73,20 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
 {
   public:
     MatlabToFieldAlgo();
-    virtual ~MatlabToFieldAlgo();
 
-    //////// DYNAMIC ALGO ENTRY POINT /////////////////////
-
-    virtual bool execute(SCIRun::FieldHandle& fieldhandle, matlabarray& mlarray);
+    virtual bool execute(SCIRun::FieldHandle& fieldhandle);
 
     //////// ANALYZE INPUT FUNCTIONS //////////////////////
 
-    int analyze_iscompatible(matlabarray mlarray, std::string& infotext, bool postremark = true);
-    int analyze_fieldtype(matlabarray mlarray, std::string& fielddesc);
+    int analyze_iscompatible(const matlabarray& mlarray, std::string& infotext, bool postremark = true);
+    int analyze_fieldtype(const matlabarray& mlarray, std::string& fielddesc);
 
     void setreporter(SCIRun::Core::Logging::LoggerHandle pr);
     
   protected:
 
     int mlanalyze(matlabarray mlarray, bool postremark);  
-    matlabarray findfield(matlabarray mlarray,const std::string& fieldnames);
+    matlabarray findfield(const matlabarray& mlarray,const std::string& fieldnames);
   
     matlabarray mlnode; 
     matlabarray mledge;

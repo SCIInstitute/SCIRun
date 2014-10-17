@@ -158,7 +158,7 @@ void matfiledata::newdatabuffer(int bytesize,mitype type)
 }
 
 
-matfiledata matfiledata::clone()
+matfiledata matfiledata::clone() const
 {
 	matfiledata mfd;
 	
@@ -168,7 +168,7 @@ matfiledata matfiledata::clone()
 	return(mfd);
 }
 
-void *matfiledata::databuffer()
+void *matfiledata::databuffer() const
 { 
   if (m_ == 0)
   {
@@ -179,7 +179,7 @@ void *matfiledata::databuffer()
 	return(m_->dataptr_); 
 }
 
-void matfiledata::type(mitype type)
+void matfiledata::setType(mitype type)
 { 
   if (m_ == 0) 
   {
@@ -189,7 +189,7 @@ void matfiledata::type(mitype type)
   m_->type_ = type; 
 }
 
-int matfiledata::bytesize()
+int matfiledata::bytesize() const
 { 
   if (m_ == 0) 
   {
@@ -200,7 +200,7 @@ int matfiledata::bytesize()
   return(m_->bytesize_); 
 }
 
-matfiledata::mitype matfiledata::type()
+matfiledata::mitype matfiledata::type() const
 { 
   if (m_ == 0)
   {
@@ -210,7 +210,7 @@ matfiledata::mitype matfiledata::type()
   return(m_->type_); 
 }
 
-int matfiledata::elsize(matfiledata::mitype type)
+int matfiledata::elsize(matfiledata::mitype type) const
 {
   int elsize = 1;
    switch (type)
@@ -229,7 +229,7 @@ int matfiledata::elsize(matfiledata::mitype type)
    return(elsize);
 }
 
-int matfiledata::elsize()
+int matfiledata::elsize() const
 {
 	if (m_ == 0)
   {
@@ -239,7 +239,7 @@ int matfiledata::elsize()
   return(elsize(m_->type_));
 }   		
 
-int matfiledata::size()
+int matfiledata::size() const
 { 
   if (m_ == 0) 
   {
@@ -250,7 +250,7 @@ int matfiledata::size()
 }
 
 
-std::string matfiledata::getstring()
+std::string matfiledata::getstring() const
 {
   std::string str;
 
