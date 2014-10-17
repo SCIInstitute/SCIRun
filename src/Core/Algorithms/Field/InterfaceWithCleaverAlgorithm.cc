@@ -80,7 +80,6 @@ InterfaceWithCleaverAlgorithm::InterfaceWithCleaverAlgorithm()
 
 boost::shared_ptr<Cleaver::ScalarField> InterfaceWithCleaverAlgorithm::makeCleaverFieldFromLatVol(FieldHandle field )
 {
-  //TODO: this function assumes input is completely valid, may want to move various checks from run() function here.
   VMesh*  vmesh   = field->vmesh();
   VField* vfield = field->vfield();
   VMesh::dimension_type dims;
@@ -89,8 +88,6 @@ boost::shared_ptr<Cleaver::ScalarField> InterfaceWithCleaverAlgorithm::makeCleav
   float* ptr = static_cast<float*>(vfield->fdata_pointer());
   
   auto cleaverField = boost::make_shared<Cleaver::FloatField>(dims[0], dims[1], dims[2], ptr);  
-    
-  cleaverField->setCenter(Cleaver::FloatField::CellCentered);
     
   BBox bbox=vmesh->get_bounding_box();
   Point bmin, bmax;
@@ -110,13 +107,6 @@ boost::shared_ptr<Cleaver::ScalarField> InterfaceWithCleaverAlgorithm::makeCleav
   
   cleaverField->setScale(Cleaver::vec3(x_spacing,y_spacing,z_spacing));
   
-  //TODO: Cleaver FloatField needs more setup (constructor is not sufficient)
-  // 1.
-  // setBounds(BoundingBox). Convert vmesh->get_bounding_box() to Cleaver BoundingBox.
-  // 2.
-  // setScale(vec3). Need to figure out which vmesh function to call, and convert to Cleaver::vec3.
-  // 3. unit test heavily.
-
   return cleaverField;
 }
 
@@ -182,9 +172,9 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
       }    
 
       //0 = constant, 1 = linear
-       if (0 != vfield1->basis_order())
+       if (1 != vfield1->basis_order())
        {
-        THROW_ALGORITHM_INPUT_ERROR("Input data need to be defined on elements. You can use the module MapFieldDataFromNodeToElem to do that.");
+        THROW_ALGORITHM_INPUT_ERROR("Input data need to be defined on input mesh nodes.");
        } 
       
       if (vfield1->is_float())
@@ -209,11 +199,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   }
 
   boost::shared_ptr<Cleaver::Volume> volume(new Cleaver::Volume(toVectorOfRawPointers(fields)));
-/*
-  Cleaver::BoundingBox m_bounds=fields[0]->bounds();
-  std::cout << "bsize: " << m_bounds.size.x << " " << m_bounds.size.y << " " <<  m_bounds.size.z << std::endl;
-  std::cout << "borin: " << m_bounds.origin.x << " " << m_bounds.origin.y << " " << m_bounds.origin.z << std::endl;
-  */ 
+
   const double xScale = get(VolumeScalingX).toDouble();
   const double yScale = get(VolumeScalingY).toDouble();
   const double zScale = get(VolumeScalingZ).toDouble();
