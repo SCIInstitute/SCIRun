@@ -55,13 +55,13 @@ class OutputPortWidget;
 class PositionProvider;
 class NetworkEditor;
 class PortWidgetManager;
-class DialogErrorControl; 
+class DialogErrorControl;
 
-class ModuleWidget : public QFrame, 
+class ModuleWidget : public QFrame,
   public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module, public HasNotes
 {
 	Q_OBJECT
-	
+
 public:
   ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
     QWidget* parent = 0);
@@ -82,7 +82,7 @@ public:
   //TODO: initialize in a new class
   static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
-  
+
   void setColorSelected();
   void setColorUnselected();
 
@@ -131,6 +131,7 @@ Q_SIGNALS:
   void dynamicPortChanged();
   void noteChanged();
   void moduleStateUpdated(int state);
+  void moduleSelected(bool selected);
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
@@ -157,7 +158,7 @@ private:
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
-	boost::shared_ptr<DialogErrorControl> dialogErrorControl_; 
+	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
 
   void addPortLayouts();
   void addInputPortsToLayout();
