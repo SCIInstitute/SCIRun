@@ -54,6 +54,7 @@
  */
  
 #include <Core/Matlab/matfile.h>
+#include <cstring>
 #include <zlib.h>
 
 using namespace SCIRun::MatlabIO;
@@ -138,7 +139,7 @@ void matfile::mfread(void *buffer,int elsize,int size)
 	else
 	{   // Read from the decompressed buffer instead of the file
 		if ((m_->fcmpcount_) + (size*elsize) > m_->fcmpsize_) throw io_error();
-		memcpy(buffer,static_cast<void *>((m_->fcmpbuffer_)+m_->fcmpcount_),(size*elsize));
+		std::memcpy(buffer,static_cast<void *>((m_->fcmpbuffer_)+m_->fcmpcount_),(size*elsize));
 		m_->fcmpcount_ += (size*elsize);
 		if (m_->byteswap_) mfswapbytes(buffer,elsize,size);		
 	}
@@ -163,7 +164,7 @@ void matfile::mfread(void *buffer,int elsize,int size,int offset)
 		
 		m_->fcmpcount_ = offset-(m_->fcmpalignoffset_);
 		if ((m_->fcmpcount_) + (size*elsize) > m_->fcmpsize_)	throw io_error();
-		memcpy(buffer,static_cast<void *>((m_->fcmpbuffer_)+m_->fcmpcount_),(size*elsize));
+		std::memcpy(buffer,static_cast<void *>((m_->fcmpbuffer_)+m_->fcmpcount_),(size*elsize));
 		m_->fcmpcount_ += (size*elsize);
 		if (m_->byteswap_) mfswapbytes(buffer,elsize,size);	
 	}

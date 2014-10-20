@@ -54,6 +54,7 @@
 
 #include <Core/Matlab/matfiledata.h>
 #include <iostream>
+#include <cstring>
 #include <cstdint>
 
 using namespace SCIRun::MatlabIO;
@@ -108,7 +109,7 @@ matfiledata matfiledata::clone() const
 	matfiledata mfd;
 	
 	mfd.newdatabuffer(bytesize(),type());
-	memcpy(mfd.databuffer(),databuffer(),bytesize());
+	std::memcpy(mfd.databuffer(),databuffer(),bytesize());
 	mfd.ptr_ = ptr_;
 	return(mfd);
 }
@@ -292,7 +293,7 @@ void matfiledata::getdata(void *dataptr,int dbytesize) const
 	if (dbytesize == 0) return;
 	if (size() == 0) return;
   if (dbytesize > bytesize()) dbytesize = bytesize();	// limit casting and copying to amount of data we have		
-	memcpy(dataptr,databuffer(),dbytesize);
+	std::memcpy(dataptr,databuffer(),dbytesize);
 }
 
 
@@ -303,7 +304,7 @@ void matfiledata::putdata(const void *dataptr,int dbytesize,mitype type)
 	
 	newdatabuffer(dbytesize,type);
 	if (dbytesize > bytesize()) dbytesize = bytesize();
-	memcpy(databuffer(),dataptr,dbytesize);
+	std::memcpy(databuffer(),dataptr,dbytesize);
 }
 
 
@@ -313,7 +314,7 @@ void matfiledata::putdata(const void *dataptr,int dbytesize,mitype type)
 // apply this to the data. This way the computation of the
 // reordering scheme itself is separated from the actual
 // reordering in memory. It has a certain memory overhead
-// on the otherhand it should be more flexible
+// on the other hand it should be more flexible
 
 matfiledata matfiledata::reorder(const std::vector<int> &newindices)
 {
