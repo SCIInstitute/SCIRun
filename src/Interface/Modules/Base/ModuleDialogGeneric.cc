@@ -38,7 +38,8 @@ using namespace SCIRun::Core::Algorithms;
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
   pulling_(false),
-  executeAction_(0)
+  executeAction_(0),
+  dock_(0)
 {
   setModal(false);
 
@@ -54,6 +55,13 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
 {
+}
+
+void ModuleDialogGeneric::updateWindowTitle(const QString& title)
+{
+  setWindowTitle(title);
+  if (dock_)
+    dock_->setWindowTitle(title);
 }
 
 void ModuleDialogGeneric::fixSize()
@@ -74,7 +82,7 @@ void ModuleDialogGeneric::createExecuteAction()
   connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
 }
 
-void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e) 
+void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e)
 {
   QMenu menu(this);
   menu.addAction(executeAction_);
@@ -93,6 +101,21 @@ void ModuleDialogGeneric::pull_newVersionToReplaceOld()
   Pulling p(this);
   BOOST_FOREACH(WidgetSlotManagerPtr wsm, slotManagers_)
     wsm->pull();
+}
+
+void ModuleDialogGeneric::moduleSelected(bool selected)
+{
+  if (selected)
+  {
+    windowTitle_ = windowTitle();
+    updateWindowTitle("* " + windowTitle_ + " *");
+    //setWindowOpacity(0.5);
+  }
+  else
+  {
+    updateWindowTitle(windowTitle_);
+    //setWindowOpacity(1);
+  }
 }
 
 class ComboBoxSlotManager : public WidgetSlotManager

@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
 #  in all copies or substantial portions of the Software.
-# 
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -34,10 +34,11 @@ SET(Core_IEPlugin_SRCS
   #EcgsimFileToMatrix_Plugin.cc
   #EcgsimFileToTriSurf_Plugin.cc
   #HexVolField_Plugin.cc
+  IEPluginInit.cc
   #MRC_Plugin.cc
   #MTextFileToTriSurf_Plugin.cc
   #MatlabFiles_Plugin.cc
-  #NrrdField_Plugin.cc
+  NrrdField_Plugin.cc
   #NrrdToMatrix_Plugin.cc
   ObjToField_Plugin.cc
   #PointCloudField_Plugin.cc
@@ -64,7 +65,7 @@ SET(Core_IEPlugin_HEADERS
   #MRC_Plugin.h
   #MTextFileToTriSurf_Plugin.h
   #MatlabFiles_Plugin.h
-  #NrrdField_Plugin.h
+  NrrdField_Plugin.h
   #NrrdToMatrix_Plugin.h
   ObjToField_Plugin.h
   #PointCloudField_Plugin.h
@@ -84,18 +85,19 @@ SCIRUN_ADD_LIBRARY(Core_IEPlugin
 )
 
 TARGET_LINK_LIBRARIES(Core_IEPlugin
-  Core_Persistent 
-  #Core_Exceptions 
-  #Core_Thread 
-  #Core_Geometry 
-  #Core_Math 
+  Core_Persistent
+  #Core_Exceptions
+  #Core_Thread
+  #Core_Geometry
+  #Core_Math
   #Core_Util
-  #Core_Matlab 
+  #Core_Matlab
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_ImportExport
   Core_Algorithms_Legacy_DataIO
-  #Core_Algorithms_Converter 
+  Core_Algorithms_Legacy_Converter
+  #Core_Algorithms_Converter
   #Core_Algorithms_Util
 )
 

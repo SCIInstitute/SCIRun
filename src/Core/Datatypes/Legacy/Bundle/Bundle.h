@@ -216,8 +216,6 @@ class SCISHARE Bundle : public Datatype
   std::map<std::string, Core::Datatypes::DatatypeHandle> bundle_;
 };
 
-typedef boost::shared_ptr<Bundle> BundleHandle;
-
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline void Bundle::transposeNrrd(bool transpose)
 {

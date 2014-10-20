@@ -240,10 +240,9 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   }
 
   auto data = port->getData();
-  //if (!inputsChanged_)
   {
     LOG_DEBUG(id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value.");
-    inputsChanged_ = port->hasChanged();
+    inputsChanged_ = inputsChanged_ || port->hasChanged();
     LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
   }
   return data;
@@ -260,6 +259,11 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   std::vector<DatatypeHandleOption> options;
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
+  {
+    LOG_DEBUG(id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value.");
+    inputsChanged_ = inputsChanged_ || std::any_of(portsWithName.begin(), portsWithName.end(), [](InputPortHandle input) { return input->hasChanged(); });
+    LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
+  }
   return options;
 }
 

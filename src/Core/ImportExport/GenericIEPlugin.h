@@ -245,11 +245,11 @@ IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
     }
     if (*(*loc).second == *this)
     {
-      std::cerr << "WARNING: FieldIEPlugin '" << tmppname << "' duplicated.\n";
+      std::cerr << "WARNING: IEPlugin '" << tmppname << "' duplicated.\n";
       break;
     }
 
-    std::cout << "WARNING: Multiple FieldIEPlugins with '" << pluginname_ << "' name.\n";
+    std::cout << "WARNING: Multiple IEPlugins with '" << pluginname_ << "' name.\n";
     tmppname = pluginname_ + "(" + boost::lexical_cast<std::string>(counter) + ")";
     counter++;
   }
@@ -263,7 +263,7 @@ IEPluginLegacyAdapter<Data>::~IEPluginLegacyAdapter()
   auto iter = GenericIEPluginManager<Data>::getMap().find(pluginname_);
   if (iter == GenericIEPluginManager<Data>::getMap().end())
   {
-    std::cerr << "WARNING: FieldIEPlugin " << pluginname_ << " not found in database for removal.\n";
+    std::cerr << "WARNING: IEPlugin " << pluginname_ << " not found in database for removal.\n";
   }
   else
   {
@@ -330,11 +330,11 @@ std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>&
     types << ";;" << name;
     if (!pl->fileExtension().empty())
     {
-      types << " (*." << pl->fileExtension() << ")";
+      types << " (" << pl->fileExtension() << ")";
     }
     else
     {
-      types << " (.*)";
+      types << " (*.*)";
     }
   }
 

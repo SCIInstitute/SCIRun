@@ -71,6 +71,7 @@
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
 #include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
+#include <Interface/Modules/Matlab/ImportDatatypesFromMatlabDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 #include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
@@ -141,6 +142,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
     ADD_MODULE_DIALOG(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionDialog)
     ADD_MODULE_DIALOG(ClipFieldByFunction, ClipFieldByFunctionDialog)
+    ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
   ;
 }
 
