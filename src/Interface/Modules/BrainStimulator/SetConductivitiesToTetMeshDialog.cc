@@ -54,15 +54,8 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   addDoubleSpinBoxManager(InternalAir_, InternalAir);
 }
 
-void SetConductivitiesToTetMeshDialog::push()
-{
-  
-}
-
 void SetConductivitiesToTetMeshDialog::pull()
 {
-  Pulling p(this);
-  
-  //keepTypeCheckBox_->setChecked(state_->getValue(SetFieldDataAlgo::keepTypeCheckBox).getBool());
+  pull_newVersionToReplaceOld();
 }
 
