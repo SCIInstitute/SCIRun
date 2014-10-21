@@ -50,7 +50,9 @@ class PortManager : boost::noncopyable
 {
 private:
   typedef std::map<PortId, T> PortMap;
+  typedef std::map<std::string, bool> DynamicMap;
   PortMap ports_;
+  DynamicMap isDynamic_;
   ModuleInterface* module_;
   
 public:
@@ -58,7 +60,7 @@ public:
   size_t size() const;
   size_t add(const T& item);
   void remove(const PortId& id);
-  T operator[](const PortId& id) const;
+  T operator[](const PortId& id);
   std::vector<T> operator[](const std::string& name) const;
   bool hasPort(const PortId& id) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
@@ -85,6 +87,7 @@ size_t
 PortManager<T>::add(const T& item)
 { 
   ports_[item->id()] = item;
+  isDynamic_[item->id().name] = item->isDynamic();
   /// @todo: who should manage port indexes?
   //item->setIndex(size() - 1);
   auto index = size() - 1;
@@ -110,19 +113,35 @@ PortManager<T>::remove(const PortId& id)
 
 template<class T>
 T
-PortManager<T>::operator[](const PortId& id) const
+PortManager<T>::operator[](const PortId& id)
 {
   auto it = ports_.find(id);
   if (it == ports_.end())
   {
+    if (isDynamic_[id.name])
+    {
+      auto byName = this->operator[](id.name);
+      if (byName.empty())
+      {
+        std::ostringstream ostr;
+        ostr << "PortManager tried to access a port that does not exist: " << id;
+        BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
+      }
+      auto newPort = byName[0]->clone();
+      newPort->setId(id);
+      add(newPort);
+      return newPort;
+    }
+
+
     /// @todo: need a way to detect and create arbitrary dynamic ports from serialized files.
     //if (id.dynamic)
     //  std::cout << "DYNAMIC PORT NEEDS TO INSERT ITSELF HERE SOMEHOW" << std::endl;
     //else
     //  std::cout << "NOT SETTING PORT FLAGS CORRECT" << std::endl;
-    std::ostringstream ostr;
-    ostr << "PortManager tried to access a port that does not exist: " << id;
-    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
+    //std::ostringstream ostr;
+    //ostr << "PortManager tried to access a port that does not exist: " << id;
+    //BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
   }
   return it->second;
 }
