@@ -32,12 +32,33 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
+#include <Core/Matlab/matlabfile.h>
+#include <Core/Matlab/matlabarray.h>
+#include <Core/Matlab/matlabconverter.h>
+
 using namespace SCIRun::Modules::Matlab::DataIO;
 //using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::MatlabIO;
+using namespace SCIRun::Core::Logging;
 
 const ModuleLookupInfo ImportDatatypesFromMatlab::staticInfo_("ImportDatatypesFromMatlab", "DataIO", "Matlab");
+
+namespace detail
+{
+  class ImportDatatypesFromMatlabImpl
+  {
+  public:
+    explicit ImportDatatypesFromMatlabImpl(LoggerHandle logger);
+    void indexmatlabfile(bool postmsg);
+    void displayerror(const std::string& str) const;
+
+    std::string guimatrixinfotextslist_, guimatrixnameslist_, guimatrixname_, guifilename_;
+  private:
+    LoggerHandle logger_;
+  };
+}
 
 ImportDatatypesFromMatlab::ImportDatatypesFromMatlab() : Module(staticInfo_)
 {
@@ -75,10 +96,6 @@ void ImportDatatypesFromMatlab::execute()
 #include <Dataflow/Network/Ports/NrrdPort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Ports/StringPort.h>
-
-#include <Core/Matlab/matlabfile.h>
-#include <Core/Matlab/matlabarray.h>
-#include <Core/Matlab/matlabconverter.h>
 
 #include <Dataflow/GuiInterface/GuiVar.h>
 
@@ -120,7 +137,7 @@ class ImportDatatypesFromMatlab : public Module
     void		indexmatlabfile(bool postmsg);
     
     // readmatlabarray():
-    //   This function reads the in the gui selected matlab array. It
+    //   This function reads the in the gui selected Matlab array. It
     //   retrieves the current filename and the matrix selected in this
     //   file and returns an object containing the full matrix
     
@@ -280,7 +297,7 @@ void ImportDatatypesFromMatlab::execute()
   }
   catch (matlabfile::empty_matlabarray)
   {
-    error("ImportDatatypesFromMatlab: Empty matlab array");
+    error("ImportDatatypesFromMatlab: Empty Matlab array");
   }
   catch (matlabfile::matfileerror) 
   {
@@ -360,37 +377,38 @@ matlabarray ImportDatatypesFromMatlab::readmatlabarray(int p)
   return(marray);
 }
 
+#endif
 
-
-void ImportDatatypesFromMatlab::indexmatlabfile(bool postmsg)
+namespace detail
 {
-	
-  std::string filename = "";
+
+void ImportDatatypesFromMatlabImpl::indexmatlabfile(bool postmsg)
+{
+	const int NUMPORTS = 9;
   std::string matrixinfotexts[NUMPORTS];
   std::string matrixnames[NUMPORTS];
-  std::string matrixinfotextslist = "";
-  std::string matrixnameslist = "";
-  std::string newmatrixname = "";
-  std::string matrixname = "";
+  std::string matrixinfotextslist;
+  std::string matrixnameslist;
+  std::string newmatrixname;
   
-  guimatrixinfotextslist_.set(matrixinfotextslist);
-  guimatrixnameslist_.set(matrixnameslist);
+  guimatrixinfotextslist_ = matrixinfotextslist;
+  guimatrixnameslist_ = matrixnameslist;
   
-  SCIRun::ProgressReporter* pr = 0;
-  if (postmsg) pr = dynamic_cast<SCIRun::ProgressReporter* >(this);
-  matlabconverter translate(pr);
+//   SCIRun::ProgressReporter* pr = 0;
+//   if (postmsg) pr = dynamic_cast<SCIRun::ProgressReporter* >(this);
+  matlabconverter translate(logger_);
   
-  filename = guifilename_.get();	
+  std::string filename = guifilename_;
 
-  if (filename == "") 
+  if (filename.empty()) 
   {
-          // No file has been loaded, so reset the
-          // matrix name variable
-          guimatrixname_.set(newmatrixname);
-          return;
+    // No file has been loaded, so reset the
+    // matrix name variable
+    guimatrixname_ = newmatrixname;
+    return;
   }
-  
-  matrixname = guimatrixname_.get();
+
+  std::string matrixname = guimatrixname_;
   
   std::vector<std::string> matrixnamelist(NUMPORTS);
   bool foundmatrixname[NUMPORTS];
@@ -402,7 +420,7 @@ void ImportDatatypesFromMatlab::indexmatlabfile(bool postmsg)
     // TCL Dependent code
     std::ostringstream oss;
     oss << "lindex { " << matrixname << " } " << p;
-    TCLInterface::eval(oss.str(),matrixnamelist[p]);
+    std::cout << oss.str() <<matrixnamelist[p] << std::endl;
     foundmatrixname[p] = false;
   }
 
@@ -411,13 +429,13 @@ void ImportDatatypesFromMatlab::indexmatlabfile(bool postmsg)
     matlabfile mfile;
     // Open the .mat file
     // This function also scans through the file and makes
-    // sure it is amat file and counts the number of arrays
+    // sure it is a mat file and counts the number of arrays
     
     mfile.open(filename,"r");
     
-    // all matlab data is stored in a matlabarray object
+    // all Matlab data is stored in a matlabarray object
     matlabarray ma;
-    int cindex = 0;		// compability index, which matlab array fits the SCIRun matrix best? 
+    int cindex = 0;		// compatibility index, which Matlab array fits the SCIRun matrix best? 
     int maxindex = 0;		// highest index found so far
             
     // Scan the file and see which matrices are compatible
@@ -486,53 +504,48 @@ void ImportDatatypesFromMatlab::indexmatlabfile(bool postmsg)
     
     
     // Update TCL on the contents of this matrix
-    guimatrixname_.set(matrixname);
-    guimatrixinfotextslist_.set(matrixinfotextslist);
-    guimatrixnameslist_.set(matrixnameslist);
+    guimatrixname_ = matrixname;
+    guimatrixinfotextslist_ = matrixinfotextslist;
+    guimatrixnameslist_ = matrixnameslist;
   }
   
   // in case something went wrong
   // close the file and then dermine the problem
 
-  catch (matlabfile::could_not_open_file)
+  catch (matlabfile::could_not_open_file&)
   {
     displayerror("ImportDatatypesFromMatlab: Could not open file");
   }
-  catch (matlabfile::invalid_file_format)
+  catch (matlabfile::invalid_file_format&)
   {
     displayerror("ImportDatatypesFromMatlab: Invalid file format");
   }
-  catch (matlabfile::io_error)
+  catch (matlabfile::io_error&)
   {
     displayerror("ImportDatatypesFromMatlab: IO error");
   }
-  catch (matlabfile::out_of_range)
+  catch (matlabfile::out_of_range&)
   {
     displayerror("ImportDatatypesFromMatlab: Out of range");
   }
-  catch (matlabfile::invalid_file_access)
+  catch (matlabfile::invalid_file_access&)
   {
     displayerror("ImportDatatypesFromMatlab: Invalid file access");
   }
-  catch (matlabfile::empty_matlabarray)
+  catch (matlabfile::empty_matlabarray&)
   {
-    displayerror("ImportDatatypesFromMatlab: Empty matlab array");
+    displayerror("ImportDatatypesFromMatlab: Empty Matlab array");
   }
-  catch (matlabfile::matfileerror) 
+  catch (matlabfile::matfileerror&) 
   {
     displayerror("ImportDatatypesFromMatlab: Internal error in reader");
   }
   return;
 }
 
-
-void ImportDatatypesFromMatlab::displayerror(std::string str)
+void ImportDatatypesFromMatlabImpl::displayerror(const std::string& str) const
 {
-  // Explicit call to TCL
-  TCLInterface::execute("tk_messageBox -icon error -type ok -title {ERROR} -message {" + str + "}");
+  std::cout << "tk_messageBox -icon error -type ok -title {ERROR} -message {" << str << "}" << std::endl;
 }
 
-
-} // End namespace MatlabIO
-
-#endif
+}

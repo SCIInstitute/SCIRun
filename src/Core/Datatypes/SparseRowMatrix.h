@@ -104,6 +104,9 @@ namespace Datatypes {
 
     const index_type* get_rows() const { return this->outerIndexPtr(); }
     const index_type* get_cols() const { return this->innerIndexPtr(); }
+    index_type* get_rows() { return this->outerIndexPtr(); }
+    index_type* get_cols() { return this->innerIndexPtr(); }
+
 
     virtual void accept(MatrixVisitorGeneric<T>& visitor)
     {

@@ -42,7 +42,7 @@
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
-  
+
   class SCISHARE Variable
   {
   public:
@@ -60,9 +60,11 @@ namespace Algorithms {
     Variable() {}
     Variable(const Name& name, const Value& value);
     Variable(const Name& name, const Datatypes::DatatypeHandle& data) : name_(name), data_(data) {}
+    virtual ~Variable() {}
 
     const Name& name() const { return name_; }
     const Value& value() const { return value_; }
+    //TODO: remove virtual on this class
     virtual void setValue(const Value& val);
 
     int toInt() const;
@@ -88,9 +90,9 @@ namespace Algorithms {
   SCISHARE bool operator==(const Variable& lhs, const Variable& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   SCISHARE Variable makeVariable(const std::string& name, const Variable::Value& value);
-  
+
   typedef Variable AlgorithmParameter;
-  
+
   typedef boost::shared_ptr<Variable> VariableHandle;
 
 }

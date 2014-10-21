@@ -26,49 +26,48 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# CMakeLists.txt for Packages/MatlabInterface/Dataflow/Modules/DataIO
+# CMakeLists.txt for Core/Matlab
 
-SET(Modules_Legacy_Matlab_DataIO_SRCS
-  ImportDatatypesFromMatlab.cc
-  #ExportDatatypesToMatlab.cc
+SET(Core_Matlab_SRCS
+  fieldtomatlab.cc
+  matfile.cc
+  matfiledata.cc
+  matlabarray.cc
+  matlabconverter.cc
+  matlabfile.cc
+  matlabtofield.cc
 )
 
-SET(Modules_Legacy_Matlab_DataIO_HEADERS
-  ImportDatatypesFromMatlab.h
-  #ExportDatatypesToMatlab.h
+SET(Core_Matlab_HEADERS
+  fieldtomatlab.h
+  matfile.h
+  matfilebase.h
+  matfiledata.h
+  matfiletemplate.h
+  matlabarray.h
+  matlabconverter.h
+  matlabfile.h
+  MatlabIO.h
+  matlabtofield.h
   share.h
 )
 
-ADD_LIBRARY(Modules_Legacy_Matlab_DataIO 
-  ${Modules_Legacy_Matlab_DataIO_SRCS}
-  ${Modules_Legacy_Matlab_DataIO_HEADERS}
-)
+ADD_LIBRARY(Core_Matlab ${Core_Matlab_SRCS} ${Core_Matlab_HEADERS})
 
-TARGET_LINK_LIBRARIES(Modules_Legacy_Matlab_DataIO
-  #Core_Persistent
-  #Core_Util
+TARGET_LINK_LIBRARIES(Core_Matlab
+  Core_Datatypes
+  Core_Datatypes_Legacy_Field
+  Core_Datatypes_Legacy_Nrrd
   #Core_Exceptions
   #Core_Thread
-  #Dataflow_GuiInterface
-  Core_Datatypes
-  #Core_Geometry
-  #Core_GeomInterface
-  #Dataflow_TkExtensions
-  Dataflow_Network
-  #Core_XMLUtil
-  Core_Matlab
-  #Core_Services
-  #Core_ICom
-  #Core_SystemCall
-  #${SCI_TEEM_LIBRARY}
-  #${SCI_ZLIB_LIBRARY}
-  #${M_LIBRARY}
-  #${TK_LIBRARY}
-  #${GL_LIBRARY}
+  Core_Geometry_Primitives
+  #Core_Util
+  Core_Math
+  Core_Logging
+  ${SCI_ZLIB_LIBRARY}
+  ${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Matlab_DataIO)
+  ADD_DEFINITIONS(-DBUILD_Core_Matlab)
 ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
-#define INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
+#undef SCISHARE
 
-#include <QDir>
-#include <Interface/Modules/Base/share.h>
-
-namespace SCIRun {
-namespace Gui {
-
-  class SCISHARE RemembersFileDialogDirectory
-  {
-  public:
-    static void setStartingDir(const QString& dir);
-  protected:
-    QString dialogDirectory() const
-    {
-      return currentDirectory_;
-    }
-    void updateRecentFile(const QString& recentFile)
-    {
-      currentDirectory_ = QDir(recentFile).absolutePath();
-    }
-    QString selectedFilter_;
-  private:
-    static QString currentDirectory_;
-  };
-
-}}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_Matlab
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

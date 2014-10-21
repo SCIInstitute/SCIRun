@@ -166,7 +166,7 @@ FieldInformation::FieldInformation(Field* field)
 }
 
 std::string
-FieldInformation::get_field_type()
+FieldInformation::get_field_type() const
 {
   return(field_type);
 }
@@ -178,7 +178,7 @@ FieldInformation::set_field_type(const std::string& type)
 }
 
 std::string
-FieldInformation::get_mesh_type()
+FieldInformation::get_mesh_type() const
 {
   return(mesh_type);
 }
@@ -470,7 +470,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
 
 
 std::string
-FieldInformation::get_mesh_basis_type()
+FieldInformation::get_mesh_basis_type() const
 {
   return(mesh_basis_type);
 }
@@ -496,7 +496,7 @@ FieldInformation::set_mesh_basis_type(const std::string& type)
 }
 
 std::string
-FieldInformation::get_point_type()
+FieldInformation::get_point_type() const
 {
   return(point_type);
 }
@@ -509,7 +509,7 @@ FieldInformation::set_point_type(const std::string& type)
 
 
 std::string
-FieldInformation::get_basis_type()
+FieldInformation::get_basis_type() const
 {
   return(basis_type);
 }
@@ -544,7 +544,7 @@ FieldInformation::set_basis_type(const std::string& type)
 
 
 std::string
-FieldInformation::get_data_type()
+FieldInformation::get_data_type() const
 {
   return(data_type);
 }
@@ -591,7 +591,7 @@ FieldInformation::set_data_type(data_info_type type)
 
 
 std::string
-FieldInformation::get_container_type()
+FieldInformation::get_container_type() const
 {
   return(container_type);
 }
@@ -604,7 +604,7 @@ FieldInformation::set_container_type(const std::string& type)
 
 
 std::string
-FieldInformation::get_field_name()
+FieldInformation::get_field_name() const
 {
   // Deal with some SCIRun design flaw
   std::string meshptr = "";
@@ -620,7 +620,7 @@ FieldInformation::get_field_name()
 }
 
 std::string
-FieldInformation::get_field_type_id()
+FieldInformation::get_field_type_id() const
 {
   // Deal with some SCIRun design flaw
   std::string meshptr = "";
@@ -639,7 +639,7 @@ FieldInformation::get_field_type_id()
 
 
 std::string
-FieldInformation::get_mesh_type_id()
+FieldInformation::get_mesh_type_id() const
 {
   std::string mesh_template =  mesh_type + "<" + mesh_basis_type + "<" + point_type + ">" + ">";
   
@@ -650,63 +650,63 @@ FieldInformation::get_mesh_type_id()
 
 
 bool
-FieldTypeInformation::is_isomorphic()
+FieldTypeInformation::is_isomorphic() const
 {
   return((mesh_basis_type == basis_type));
 }
 
 bool
-FieldTypeInformation::is_nonlinear()
+FieldTypeInformation::is_nonlinear() const
 {
   return((is_nonlineardata())||(is_nonlinearmesh()));
 }
 
 bool
-FieldTypeInformation::is_linear()
+FieldTypeInformation::is_linear() const
 {
   return((is_lineardata())&&(is_linearmesh()));
 }
 
 bool
-FieldTypeInformation::is_nodata()
+FieldTypeInformation::is_nodata() const
 {
   return((basis_type == "NoDataBasis"));
 }
 
 bool
-FieldTypeInformation::is_constantdata()
+FieldTypeInformation::is_constantdata() const
 {
   return((basis_type == "ConstantBasis"));
 }
 
 bool
-FieldTypeInformation::is_lineardata()
+FieldTypeInformation::is_lineardata() const
 {
   return((basis_type.find("inear") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_nonlineardata()
+FieldTypeInformation::is_nonlineardata() const
 {
   return( (basis_type.find("uadratic") != std::string::npos)||
           (basis_type.find("ubicHmt") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_quadraticdata()
+FieldTypeInformation::is_quadraticdata() const
 {
   return ((basis_type.find("uadratic") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_cubicdata()
+FieldTypeInformation::is_cubicdata() const
 {
   return ((basis_type.find("ubicHmt") != std::string::npos));
 }
 
 /// @todo: an enum would be good for keeping track of basis order...
 int
-FieldTypeInformation::field_basis_order()
+FieldTypeInformation::field_basis_order() const
 {
   if (is_nodata()) return (-1);
   if (is_constantdata()) return (0);
@@ -718,38 +718,38 @@ FieldTypeInformation::field_basis_order()
 
 
 bool
-FieldTypeInformation::is_constantmesh()
+FieldTypeInformation::is_constantmesh() const
 {
   return((mesh_basis_type == "ConstantBasis"));
 }
 
 bool
-FieldTypeInformation::is_linearmesh()
+FieldTypeInformation::is_linearmesh() const
 {
   return((mesh_basis_type.find("inear") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_nonlinearmesh()
+FieldTypeInformation::is_nonlinearmesh() const
 {
   return( (mesh_basis_type.find("uadratic") != std::string::npos)||
           (mesh_basis_type.find("ubicHmt") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_quadraticmesh()
+FieldTypeInformation::is_quadraticmesh() const
 {
   return ((mesh_basis_type.find("uadratic") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_cubicmesh()
+FieldTypeInformation::is_cubicmesh() const
 {
   return ((mesh_basis_type.find("ubicHmt") != std::string::npos));
 }
 
 int
-FieldTypeInformation::mesh_basis_order()
+FieldTypeInformation::mesh_basis_order() const
 {
   if (is_constantmesh()) return (0);
   if (is_linearmesh()) return (1);
@@ -759,25 +759,25 @@ FieldTypeInformation::mesh_basis_order()
 }
 
 bool
-FieldTypeInformation::is_tensor()
+FieldTypeInformation::is_tensor() const
 {
   return ((data_type == "Tensor"));
 }
 
 bool
-FieldTypeInformation::is_vector()
+FieldTypeInformation::is_vector() const
 {
   return ((data_type == "Vector"));
 }
 
 bool
-FieldTypeInformation::is_scalar()
+FieldTypeInformation::is_scalar() const
 {
   return((!is_tensor())&&(!is_vector())&&(data_type!=""));
 }
 
 bool
-FieldTypeInformation::is_integer()
+FieldTypeInformation::is_integer() const
 {
   return(is_char()||is_short()||is_int()||is_long()||is_longlong()
       ||is_unsigned_char()||is_unsigned_short()
@@ -786,92 +786,92 @@ FieldTypeInformation::is_integer()
 }
 
 bool
-FieldTypeInformation::is_double()
+FieldTypeInformation::is_double() const
 {
   return((data_type == "double"));
 }
 
 bool
-FieldTypeInformation::is_float()
+FieldTypeInformation::is_float() const
 {
   return((data_type == "float"));
 }
 
 bool
-FieldTypeInformation::is_longlong()
+FieldTypeInformation::is_longlong() const
 {
   return((data_type == "long_long")||(data_type == "signed_long_long"));
 }
 
 bool
-FieldTypeInformation::is_long()
+FieldTypeInformation::is_long() const
 {
   return((data_type == "long")||(data_type == "signed_long"));
 }
 
 bool
-FieldTypeInformation::is_int()
+FieldTypeInformation::is_int() const
 {
   return((data_type == "int")||(data_type == "signed_int"));
 }
 
 bool
-FieldTypeInformation::is_short()
+FieldTypeInformation::is_short() const
 {
   return((data_type == "short")||(data_type == "signed_short"));
 }
 
 bool
-FieldTypeInformation::is_char()
+FieldTypeInformation::is_char() const
 {
   return((data_type == "char")||(data_type == "signed_char"));
 }
 
 bool
-FieldTypeInformation::is_unsigned_longlong()
+FieldTypeInformation::is_unsigned_longlong() const
 {
   return(data_type == "unsigned_long_long");
 }
 
 bool
-FieldTypeInformation::is_unsigned_long()
+FieldTypeInformation::is_unsigned_long() const
 {
   return(data_type == "unsigned_long");
 }
 
 bool
-FieldTypeInformation::is_unsigned_int()
+FieldTypeInformation::is_unsigned_int() const
 {
   return(data_type == "unsigned_int");
 }
 
 bool
-FieldTypeInformation::is_unsigned_short()
+FieldTypeInformation::is_unsigned_short() const
 {
   return(data_type == "unsigned_short");
 }
 
 bool
-FieldTypeInformation::is_unsigned_char()
+FieldTypeInformation::is_unsigned_char() const
 {
   return(data_type == "unsigned_char");
 }
 
 bool
-FieldTypeInformation::is_dvt()
+FieldTypeInformation::is_dvt() const
 {
   return(is_double()||is_vector()||is_tensor());
 }
 
 bool
-FieldTypeInformation::is_svt()
+FieldTypeInformation::is_svt() const
 {
   return(is_scalar()||is_vector()||is_tensor());
 }
 
 
 bool
-FieldTypeInformation::is_structuredmesh()
+FieldTypeInformation::is_structuredmesh() const
 {
   return((mesh_type.find("Struct")!=std::string::npos) ||
 	 (mesh_type=="ScanlineMesh")||
@@ -880,7 +880,7 @@ FieldTypeInformation::is_structuredmesh()
 }
 
 bool
-FieldTypeInformation::is_regularmesh()
+FieldTypeInformation::is_regularmesh() const
 {
   return((mesh_type=="ScanlineMesh")||
 	 (mesh_type=="ImageMesh")||
@@ -888,25 +888,25 @@ FieldTypeInformation::is_regularmesh()
 }
 
 bool
-FieldTypeInformation::is_irregularmesh()
+FieldTypeInformation::is_irregularmesh() const
 {
   return(!is_regularmesh());
 }
 
 bool
-FieldTypeInformation::is_unstructuredmesh()
+FieldTypeInformation::is_unstructuredmesh() const
 {
   return(!is_structuredmesh());
 }
 
 bool
-FieldTypeInformation::is_pnt_element()
+FieldTypeInformation::is_pnt_element() const
 {
   return((mesh_type=="PointCloud"));
 }
 
 bool
-FieldTypeInformation::is_crv_element()
+FieldTypeInformation::is_crv_element() const
 {
   return((mesh_type=="CurveMesh")||
 	 (mesh_type=="StructCurveMesh")||
@@ -914,13 +914,13 @@ FieldTypeInformation::is_crv_element()
 }
 
 bool
-FieldTypeInformation::is_tri_element()
+FieldTypeInformation::is_tri_element() const
 {
   return((mesh_type=="TriSurfMesh"));
 }
 
 bool
-FieldTypeInformation::is_quad_element()
+FieldTypeInformation::is_quad_element() const
 {
   return((mesh_type=="QuadSurfMesh")||
 	 (mesh_type=="ImageMesh")||
@@ -928,19 +928,19 @@ FieldTypeInformation::is_quad_element()
 }
 
 bool
-FieldTypeInformation::is_tet_element()
+FieldTypeInformation::is_tet_element() const
 {
   return((mesh_type=="TetVolMesh"));
 }
 
 bool
-FieldTypeInformation::is_prism_element()
+FieldTypeInformation::is_prism_element() const
 {
   return((mesh_type=="PrismVolMesh"));
 }
 
 bool
-FieldTypeInformation::is_hex_element()
+FieldTypeInformation::is_hex_element() const
 {
   return((mesh_type=="HexVolMesh")||
 	 (mesh_type=="StructHexVolMesh")||
@@ -949,91 +949,91 @@ FieldTypeInformation::is_hex_element()
 }
 
 bool
-FieldTypeInformation::is_pointcloudmesh()
+FieldTypeInformation::is_pointcloudmesh() const
 {
   if (mesh_type == "PointCloudMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_scanlinemesh()
+FieldTypeInformation::is_scanlinemesh() const
 {
   if (mesh_type == "ScanlineMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_imagemesh()
+FieldTypeInformation::is_imagemesh() const
 {
   if (mesh_type == "ImageMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_latvolmesh()
+FieldTypeInformation::is_latvolmesh() const
 {
   if (mesh_type == "LatVolMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_curvemesh()
+FieldTypeInformation::is_curvemesh() const
 {
   if (mesh_type == "CurveMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_trisurfmesh()
+FieldTypeInformation::is_trisurfmesh() const
 {
   if (mesh_type == "TriSurfMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_quadsurfmesh()
+FieldTypeInformation::is_quadsurfmesh() const
 {
   if (mesh_type == "QuadSurfMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_tetvolmesh()
+FieldTypeInformation::is_tetvolmesh() const
 {
   if (mesh_type == "TetVolMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_prismvolmesh()
+FieldTypeInformation::is_prismvolmesh() const
 {
   if (mesh_type == "PrismVolMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_hexvolmesh()
+FieldTypeInformation::is_hexvolmesh() const
 {
   if (mesh_type == "HexVolMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_structcurvemesh()
+FieldTypeInformation::is_structcurvemesh() const
 {
   if (mesh_type == "StructCurveMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_structquadsurfmesh()
+FieldTypeInformation::is_structquadsurfmesh() const
 {
   if (mesh_type == "StructQuadSurfMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_structhexvolmesh()
+FieldTypeInformation::is_structhexvolmesh() const
 {
   if (mesh_type == "StructHexVolMesh") return (true);
   return false;
@@ -1041,14 +1041,14 @@ FieldTypeInformation::is_structhexvolmesh()
 
 
 bool
-FieldTypeInformation::is_point()
+FieldTypeInformation::is_point() const
 {
   if (mesh_type == "PointCloudMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_line()
+FieldTypeInformation::is_line() const
 {
   if ((mesh_type == "CurveMesh")||
       (mesh_type == "ScanlineMesh")||
@@ -1057,7 +1057,7 @@ FieldTypeInformation::is_line()
 }
 
 bool
-FieldTypeInformation::is_surface()
+FieldTypeInformation::is_surface() const
 {
   if ((mesh_type == "TriSurfMesh")||
       (mesh_type == "QuadSurfMesh")||
@@ -1067,7 +1067,7 @@ FieldTypeInformation::is_surface()
 }
 
 bool
-FieldTypeInformation::is_volume()
+FieldTypeInformation::is_volume() const
 {
   if ((mesh_type == "TetVolMesh")||(mesh_type == "PrismVolMesh")||
       (mesh_type == "HexVolMesh")||(mesh_type == "LatVolMesh")||

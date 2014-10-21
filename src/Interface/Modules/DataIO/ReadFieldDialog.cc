@@ -67,11 +67,11 @@ void ReadFieldDialog::pushFileNameToState()
 void ReadFieldDialog::openFile()
 {
   auto types = Modules::DataIO::ReadFieldModule::fileTypeList();
-  QString selectedFilter;
-  auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter);
+  QString typesQ(QString::fromStdString(types));
+  auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), typesQ, &selectedFilter_);
   if (file.length() > 0)
   {
-    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter.toStdString());
+    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter_.toStdString());
     state_->setValue(Variables::FileTypeName, typeName);
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);

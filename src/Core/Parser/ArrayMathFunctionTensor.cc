@@ -26,10 +26,10 @@
 //  DEALINGS IN THE SOFTWARE.
 //  
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <teem/air.h>
 #include <teem/ten.h>
-#endif
+
 
 #include <Core/Parser/ArrayMathFunctionCatalog.h>
 #include <Core/Math/MiscMath.h>
@@ -290,9 +290,9 @@ bool eigvec1_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
     data0[0] = evec[0];
     data0[1] = evec[1];
     data0[2] = evec[2];
@@ -317,9 +317,9 @@ bool eigvec2_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
     data0[0] = evec[3];
     data0[1] = evec[4];
     data0[2] = evec[5];
@@ -344,9 +344,9 @@ bool eigvec3_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = evec[6];
     data0[1] = evec[7];
@@ -372,9 +372,9 @@ bool eigval1_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = eval[0];
     
@@ -398,9 +398,9 @@ bool eigval2_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = eval[1];
     
@@ -424,9 +424,9 @@ bool eigval3_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = eval[2];
     
@@ -467,9 +467,9 @@ bool trace_t(SCIRun::ArrayMathProgramCode& pc)
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
   
     data0[0] = eval[0]+eval[1]+eval[2];
   
@@ -493,9 +493,9 @@ bool det_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = eval[0]*eval[1]*eval[2];
     
@@ -520,9 +520,9 @@ bool B_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = eval[0]*eval[1]+eval[0]*eval[2]+eval[2]*eval[1];
     
@@ -546,9 +546,9 @@ bool S_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = eval[0]*eval[0]+eval[1]*eval[1]+eval[2]*eval[2];
     
@@ -572,9 +572,9 @@ bool quality_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = ((eval[0]*eval[0]+eval[1]*eval[1]+eval[2]*eval[2]) - 
       (eval[0]*eval[1]+eval[0]*eval[2]+eval[2]*eval[1]))/9.0;
@@ -599,9 +599,9 @@ bool frobenius_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = ::sqrt(eval[0]*eval[0]+eval[1]*eval[1]+eval[2]*eval[2]);
     
@@ -625,9 +625,9 @@ bool frobenius2_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     data0[0] = eval[0]*eval[0]+eval[1]*eval[1]+eval[2]*eval[2];
     
@@ -652,9 +652,9 @@ bool fracanisotropy_t(SCIRun::ArrayMathProgramCode& pc)
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     tenEigensolve_d(eval, evec, ten);
-#endif
+
 
     double S = eval[0]*eval[0]+eval[1]*eval[1]+eval[2]*eval[2];
     double B = eval[0]*eval[1]+eval[0]*eval[2]+eval[2]*eval[1];

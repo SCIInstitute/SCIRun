@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
-#define INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
 
-#include <QDir>
-#include <Interface/Modules/Base/share.h>
+// NOTE: This MatlabIO file is used in different projects as well. Please, do not
+// make it depend on other scirun code. This way it is easier to maintain matlabIO 
+// code among different projects. Thank you.
 
-namespace SCIRun {
-namespace Gui {
+/*
+ * FILE: MatlabIO.h
+ * AUTH: Jeroen G Stinstra
+ * DATE: 16 MAY 2005
+ */
 
-  class SCISHARE RemembersFileDialogDirectory
-  {
-  public:
-    static void setStartingDir(const QString& dir);
-  protected:
-    QString dialogDirectory() const
-    {
-      return currentDirectory_;
-    }
-    void updateRecentFile(const QString& recentFile)
-    {
-      currentDirectory_ = QDir(recentFile).absolutePath();
-    }
-    QString selectedFilter_;
-  private:
-    static QString currentDirectory_;
-  };
+// This will include as well all the other include files
+#include <Packages/MatlabInterface/Core/Datatypes/matlabfile.h>
 
-}}
-
-#endif
