@@ -89,6 +89,7 @@ namespace Networks {
     virtual ~OutputPortInterface();
     virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
     virtual bool hasData() const = 0;
+    virtual OutputPortInterface* clone() const { return 0; } // TODO
   };
 
   class SCISHARE PortConnectionDeterminer

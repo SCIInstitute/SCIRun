@@ -70,6 +70,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_CONST_METHOD0(clone, InputPortInterface*());
           MOCK_CONST_METHOD0(id, PortId());
+          MOCK_METHOD1(setId, void(const PortId&));
           MOCK_CONST_METHOD0(hasChanged, bool());
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_METHOD1(connectDataOnPortHasChanged, boost::signals2::connection(const DataOnPortHasChangedSignalType::slot_type&));
@@ -92,6 +93,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_CONST_METHOD0(id, PortId());
+          MOCK_METHOD1(setId, void(const PortId&));
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_CONST_METHOD0(hasData, bool());
         };
