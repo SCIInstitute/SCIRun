@@ -136,6 +136,7 @@ private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
+  void clearOptionsButton();
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;

@@ -670,6 +670,7 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->setAutoFillBackground(true);
       SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
       dockable_->hide();
+      connect(dockable_, SIGNAL(closed()), this, SLOT(clearOptionsButton()));
     }
   }
 }
@@ -691,10 +692,19 @@ void ModuleWidget::toggleOptionsDialog()
       {
         dockable_->setFloating(true);
       }
+      optionsButton_->setStyleSheet("background-color: rgb(0,0,200); color: white;");
     }
     else
+    {
       hideUI();
+      clearOptionsButton();
+    }
   }
+}
+
+void ModuleWidget::clearOptionsButton()
+{
+  optionsButton_->setStyleSheet("");
 }
 
 void ModuleWidget::updateProgressBar(double percent)
