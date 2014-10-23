@@ -31,6 +31,8 @@
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
+#include <Core/Application/Application.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Connection.h>
@@ -51,6 +53,7 @@
 
 #include <Dataflow/Network/Module.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
@@ -81,7 +84,7 @@ namespace Gui {
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
-        << disabled(new QAction("Replace With->(TODO)", parent))
+        << new QAction("Replace With", parent)
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
@@ -352,6 +355,13 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
   moduleActionButton_->setMenu(actionsMenu_->getMenu());
+
+  auto replaceWith = actionsMenu_->getAction("Replace With");
+  auto menu = new QMenu(this);
+  fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
+    [](const ModuleDescription&) { return true; },
+    [](QAction*) {});
+  replaceWith->setMenu(menu);
 }
 
 void ModuleWidget::addPortLayouts()
@@ -555,7 +565,7 @@ ModuleWidget::~ModuleWidget()
   //GuiLogger::Instance().log("Module deleted.");
 
   theModule_->setLogger(LoggerHandle());
-  
+
 
   if (deletedFromGui_)
   {

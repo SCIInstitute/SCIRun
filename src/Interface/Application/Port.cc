@@ -58,12 +58,12 @@ namespace SCIRun {
     {
       const std::string& portTypeToMatch = parent->get_typename();
       bool isInput = parent->isInput();
-      fillMenu(menu, moduleMap,
+      fillMenuWithFilteredModuleActions(menu, moduleMap,
         [=](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
         [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); });
     }
 
-    void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup)
+    void fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup)
     {
       BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
       {
