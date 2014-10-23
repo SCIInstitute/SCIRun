@@ -541,6 +541,11 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
+  removeWidgetFromExecutionDisableList(executePushButton_);
+  removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
+  if (dialog_)
+    removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());
+
   //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
   //disconnect()
   deleting_ = true;
@@ -550,7 +555,7 @@ ModuleWidget::~ModuleWidget()
   //GuiLogger::Instance().log("Module deleted.");
 
   theModule_->setLogger(LoggerHandle());
-
+  
 
   if (deletedFromGui_)
   {

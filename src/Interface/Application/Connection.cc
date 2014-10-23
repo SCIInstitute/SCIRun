@@ -185,12 +185,18 @@ namespace SCIRun
     public:
       ConnectionMenu(QWidget* parent = 0) : QMenu(parent)
       {
-        addWidgetToExecutionDisableList(addAction(deleteAction));
+        deleteAction_ = addAction(deleteAction);
+        addWidgetToExecutionDisableList(deleteAction_);
         addAction(insertModuleAction)->setDisabled(true);
         addAction(disableEnableAction)->setDisabled(true);
         notesAction_ = addAction(editNotesAction);
       }
+      ~ConnectionMenu()
+      {
+        removeWidgetFromExecutionDisableList(deleteAction_);
+      }
       QAction* notesAction_;
+      QAction* deleteAction_;
     };
   }
 }
