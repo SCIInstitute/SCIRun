@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <vector>
 
 using namespace SCIRun::Modules::BrainStimulator;
@@ -63,7 +64,8 @@ void SetupRHSforTDCSandTMSModule::execute()
   auto mesh = getRequiredInput(MESH);
   auto scalp_tri_surf = getRequiredInput(SCALP_TRI_SURF_MESH);
   auto elc_tri_surf = getRequiredInput(ELECTRODE_TRI_SURF_MESH);
-  auto elc_sponge_location = getRequiredInput(ELECTRODE_SPONGE_LOCATION_AVR);
+    
+  DenseMatrixHandle elc_sponge_location = matrix_convert::to_dense(getRequiredInput(ELECTRODE_SPONGE_LOCATION_AVR));
   
   // obtaining electrode values from state map
   auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).getList();
@@ -72,6 +74,12 @@ void SetupRHSforTDCSandTMSModule::execute()
   if (needToExecute())
   {
     algo().set(SetupRHSforTDCSandTMSAlgorithm::refnode(), get_state()->getValue(SetupRHSforTDCSandTMSAlgorithm::refnode()).toInt());
+    int nr_elec=elc_sponge_location->nrows();
+    if (!elc_sponge_location && nr_elec>=2)
+    {
+     algo().set(SetupRHSforTDCSandTMSAlgorithm::number_of_electrodes(), nr_elec);
+    }
+    
     auto output = algo().run_generic(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT_TYPE, output);

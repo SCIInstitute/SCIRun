@@ -56,6 +56,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodeTableValues);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ELECTRODE_VALUES);
 
 AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::refnode() { return AlgorithmParameterName("refnode"); }
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::number_of_electrodes() { return AlgorithmParameterName("number_of_electrodes"); }
 
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::MESH("MESH");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::SCALP_TRI_SURF_MESH("SCALP_TRI_SURF_MESH");
@@ -74,6 +75,7 @@ SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
   addParameter(Parameters::ELECTRODE_VALUES, 0); // just a default value, will be replaced with vector
   addParameter(refnode(), 0);
+  addParameter(number_of_electrodes(), 128);
 }
 
 AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput& input) const
@@ -102,9 +104,9 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   {
    THROW_ALGORITHM_PROCESSING_ERROR("Electrode sponges matrix (center locations) is not allocated."); 
   }
-  if (elc_sponge_location->ncols()!=3 || elc_sponge_location->nrows()<2)
+  if (elc_sponge_location->ncols()!=4 || elc_sponge_location->nrows()<2)
   {
-   THROW_ALGORITHM_PROCESSING_ERROR("Electrode sponges matrix needs to have dimension #sponges x 3 (#sponges>=2)"); 
+   THROW_ALGORITHM_PROCESSING_ERROR("Electrode sponges matrix needs to have dimension #sponges x 4 (#sponges>=2)"); 
   }
 
   int num_of_elc = elc_sponge_location->nrows();
@@ -458,7 +460,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   DenseMatrixHandle rhs=create_rhs(mesh, elcs, num_of_elc);
   
   DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp;
-  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp) = create_lhs(mesh, scalp_tri_surf, elc_tri_surf, elc_sponge_location); 
+  //boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp) = create_lhs(mesh, scalp_tri_surf, elc_tri_surf, elc_sponge_location); 
   
   return boost::make_tuple(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs);
 }

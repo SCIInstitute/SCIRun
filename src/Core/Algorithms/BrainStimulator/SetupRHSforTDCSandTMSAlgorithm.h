@@ -60,6 +60,8 @@ namespace BrainStimulator {
     boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle> run(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
     
     static AlgorithmParameterName refnode();
+    static AlgorithmParameterName number_of_electrodes();
+    
     static AlgorithmInputName MESH;
     static AlgorithmInputName SCALP_TRI_SURF_MESH;
     static AlgorithmInputName ELECTRODE_TRI_SURF_MESH;
