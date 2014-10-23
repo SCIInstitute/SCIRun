@@ -91,10 +91,10 @@ namespace
     void operator()( T* widget ) const
     {
       //TODO: investigate this Mac Qt bug in more detail. A better workaround probably exists. (Or just wait until Qt 5)
-#ifdef WIN32
+//#ifdef WIN32
       if (widget)
         widget->setDisabled(flag_);
-#endif
+//#endif
     }
     bool flag_;
   };
