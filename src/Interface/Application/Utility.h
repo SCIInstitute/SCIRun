@@ -62,6 +62,10 @@ namespace Gui
   {
     return o << "[" << p.x() << "," << p.y() << "]";
   }
+
+  typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
+  typedef boost::function<void(QAction*)> QActionHookup;
+  void fillMenu(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
 }
 
 }
