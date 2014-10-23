@@ -105,7 +105,7 @@ OutputPortHandle Module::getOutputPort(const PortId& id) const
   return oports_[id];
 }
 
-InputPortHandle Module::getInputPort(const PortId& id) const
+InputPortHandle Module::getInputPort(const PortId& id)
 {
   return iports_[id];
 }
