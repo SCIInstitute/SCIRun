@@ -371,12 +371,19 @@ void ModuleWidget::fillReplaceWithMenu()
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
   fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
     [this](const ModuleDescription& md) { return canReplaceWith(this->theModule_, md); },
-    [](QAction*) {});
+    [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); });
 }
 
 QMenu* ModuleWidget::getReplaceWithMenu()
 {
   return actionsMenu_->getAction("Replace With")->menu();
+}
+
+void ModuleWidget::replaceModuleWith()
+{
+  QAction* action = qobject_cast<QAction*>(sender());
+  QString moduleToReplace = action->text();
+  Q_EMIT replaceModuleWith(theModule_, moduleToReplace.toStdString());
 }
 
 void ModuleWidget::addPortLayouts()

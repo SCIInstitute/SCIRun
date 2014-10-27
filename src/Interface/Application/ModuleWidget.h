@@ -127,6 +127,7 @@ Q_SIGNALS:
   void noteUpdated(const Note& note);
   void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+  void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged();
   void noteChanged();
@@ -138,6 +139,7 @@ private Q_SLOTS:
   void executeButtonPushed();
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
+  void replaceModuleWith();
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
