@@ -137,6 +137,7 @@ private Q_SLOTS:
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
   void colorOptionsButton(bool visible);
+  void fillReplaceWithMenu();
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
@@ -154,6 +155,7 @@ private:
   void makeOptionsDialog();
   void setupModuleActions();
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  QMenu* getReplaceWithMenu();
 
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;

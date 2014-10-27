@@ -638,3 +638,44 @@ ModuleReexecutionStrategyHandle DynamicReexecutionStrategyFactory::create(const 
     boost::make_shared<StateChangedCheckerImpl>(module),
     boost::make_shared<OutputPortsCachedCheckerImpl>(module));
 }
+
+bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const ModuleDescription& potentialReplacement)
+{
+  if (module->get_module_name() == potentialReplacement.lookupInfo_.module_name_)
+    return false;
+
+  {
+    auto inputs = module->inputPorts();
+    for (size_t i = 0; i < inputs.size(); ++i)
+    {
+      auto toMatch = inputs[i];
+      if (toMatch->nconnections() > 0)
+      {
+        if (i >= potentialReplacement.input_ports_.size())
+          return false;
+
+        const InputPortDescription& input = potentialReplacement.input_ports_[i];
+        if (input.datatype != toMatch->get_typename())
+          return false;
+      }
+    }
+  }
+  {
+    auto outputs = module->outputPorts();
+    for (size_t i = 0; i < outputs.size(); ++i)
+    {
+      auto toMatch = outputs[i];
+      if (toMatch->nconnections() > 0)
+      {
+        if (i >= potentialReplacement.output_ports_.size())
+          return false;
+
+        const OutputPortDescription& output = potentialReplacement.output_ports_[i];
+        if (output.datatype != toMatch->get_typename())
+          return false;
+      }
+    }
+  }
+  LOG_DEBUG("\tFound replacement: " << potentialReplacement.lookupInfo_.module_name_ << std::endl);
+  return true;
+}

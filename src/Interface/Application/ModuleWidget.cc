@@ -358,10 +358,25 @@ void ModuleWidget::setupModuleActions()
 
   auto replaceWith = actionsMenu_->getAction("Replace With");
   auto menu = new QMenu(this);
-  fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
-    [](const ModuleDescription&) { return true; },
-    [](QAction*) {});
   replaceWith->setMenu(menu);
+  fillReplaceWithMenu();
+  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
+  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+}
+
+void ModuleWidget::fillReplaceWithMenu()
+{
+  auto menu = getReplaceWithMenu();
+  menu->clear();
+  LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
+  fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
+    [this](const ModuleDescription& md) { return canReplaceWith(this->theModule_, md); },
+    [](QAction*) {});
+}
+
+QMenu* ModuleWidget::getReplaceWithMenu()
+{
+  return actionsMenu_->getAction("Replace With")->menu();
 }
 
 void ModuleWidget::addPortLayouts()
