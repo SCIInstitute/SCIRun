@@ -109,6 +109,7 @@ private:
   void setupInputWidgets();
   void parseStyleXML();
   void printStyleSheet() const;
+  void hideNonfunctioningWidgets();
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;

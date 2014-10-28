@@ -236,6 +236,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
 
+  provenanceWindow_->hide();
+
+  hideNonfunctioningWidgets();
+
   //parseStyleXML();
 }
 
@@ -1128,4 +1132,18 @@ void SCIRunMainWindow::resetWindowLayout()
   addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
 
   std::cout << "TODO: toolbars" << std::endl;
+}
+
+void SCIRunMainWindow::hideNonfunctioningWidgets() 
+{
+  QList<QAction*> nonfunctioningActions;
+  nonfunctioningActions << 
+    actionInsert_ <<
+    actionCreate_Module_Skeleton_ <<
+    actionCut_ <<
+    actionCopy_ <<
+    actionPaste_;
+
+  Q_FOREACH(QAction* a, nonfunctioningActions)
+    a->setVisible(false);
 }
