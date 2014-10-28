@@ -15,7 +15,11 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QTextEdit" name="networkNotesTextEdit_"/>
+    <widget class="QTextEdit" name="networkNotesTextEdit_">
+     <property name="autoFormatting">
+      <set>QTextEdit::AutoAll</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
