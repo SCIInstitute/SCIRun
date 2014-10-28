@@ -45,6 +45,7 @@
 #include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/Math/GetMatrixSliceDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
+#include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
@@ -107,6 +108,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(AppendMatrix, AppendMatrixDialog)
     ADD_MODULE_DIALOG(CreateMatrix, CreateMatrixDialog)
     ADD_MODULE_DIALOG(CreateString, CreateStringDialog)
+		ADD_MODULE_DIALOG(NetworkNotes, NetworkNotesDialog)
     ADD_MODULE_DIALOG(PrintDatatype, PrintDatatypeDialog)
     ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
     ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
