@@ -161,6 +161,7 @@ private:
 
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
+  Qt::DockWidgetArea allowedArea_;
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;

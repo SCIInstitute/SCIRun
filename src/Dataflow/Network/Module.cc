@@ -132,6 +132,7 @@ bool Module::do_execute() throw()
 
   try
   {
+    //TODO: could we call needToExecute() here?
     execute();
     returnCode = true;
   }
@@ -590,7 +591,7 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(const Module& module) : modul
 {
 }
 
-bool InputsChangedCheckerImpl::inputsChanged() const 
+bool InputsChangedCheckerImpl::inputsChanged() const
 {
   auto ret = module_.inputsChanged();
   LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << ret);
@@ -601,7 +602,7 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_
 {
 }
 
-bool StateChangedCheckerImpl::newStatePresent() const 
+bool StateChangedCheckerImpl::newStatePresent() const
 {
   auto ret = module_.newStatePresent();
   LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << ret);
@@ -612,7 +613,7 @@ OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module)
 {
 }
 
-bool OutputPortsCachedCheckerImpl::outputPortsCached() const 
+bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
   auto outputs = module_.outputPorts();
   auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out->hasData(); });

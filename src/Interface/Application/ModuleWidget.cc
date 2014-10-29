@@ -235,6 +235,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   moduleId_(theModule->get_id()),
   dialog_(0),
   dockable_(0),
+  allowedArea_(Qt::RightDockWidgetArea),
   dialogErrorControl_(dialogErrorControl),
   inputPortLayout_(0),
   outputPortLayout_(0),
@@ -703,9 +704,9 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->setWidget(dialog_);
       dialog_->setDockable(dockable_);
       dockable_->setMinimumSize(dialog_->minimumSize());
-      dockable_->setAllowedAreas(Qt::RightDockWidgetArea);
+      dockable_->setAllowedAreas(allowedArea_);
       dockable_->setAutoFillBackground(true);
-      SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
+      SCIRunMainWindow::Instance()->addDockWidget(allowedArea_, dockable_);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
     }
