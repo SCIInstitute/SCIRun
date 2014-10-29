@@ -354,7 +354,7 @@ void NetworkEditor::del()
     }
   }
   qDeleteAll(items);
-  viewport()->update();
+  updateViewport();
   Q_EMIT modified();
 }
 
@@ -513,6 +513,11 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
+}
+
+void NetworkEditor::updateViewport()
+{
+  viewport()->update();
 }
 
 void NetworkEditor::mouseMoveEvent(QMouseEvent *event)

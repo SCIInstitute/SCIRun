@@ -663,6 +663,7 @@ void SCIRunMainWindow::setupProvenanceWindow()
   actionRedo_->setEnabled(false);
   connect(provenanceWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
   connect(provenanceWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
+  connect(provenanceWindow_, SIGNAL(networkModified()), networkEditor_, SLOT(updateViewport()));
 
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
 
@@ -1134,16 +1135,23 @@ void SCIRunMainWindow::resetWindowLayout()
   std::cout << "TODO: toolbars" << std::endl;
 }
 
-void SCIRunMainWindow::hideNonfunctioningWidgets() 
+void SCIRunMainWindow::hideNonfunctioningWidgets()
 {
   QList<QAction*> nonfunctioningActions;
-  nonfunctioningActions << 
+  nonfunctioningActions <<
     actionInsert_ <<
     actionCreate_Module_Skeleton_ <<
     actionCut_ <<
     actionCopy_ <<
     actionPaste_;
+  QList<QMenu*> nonfunctioningMenus;
+  nonfunctioningMenus <<
+    menuSubnets_ <<
+    menuToolkits_;
 
   Q_FOREACH(QAction* a, nonfunctioningActions)
     a->setVisible(false);
+  Q_FOREACH(QMenu* m, nonfunctioningMenus)
+    m->menuAction()->setVisible(false);
+
 }
