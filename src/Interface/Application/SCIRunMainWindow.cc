@@ -213,6 +213,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
+  connect(dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
+
   makeFilterButtonMenu();
 
   connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
@@ -1165,4 +1167,10 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     m->menuAction()->setVisible(false);
   Q_FOREACH(QWidget* w, nonfunctioningWidgets)
     w->setVisible(false);
+}
+
+void SCIRunMainWindow::adjustModuleDock(int state)
+{
+  bool dockable = dockableModulesCheckBox_->isChecked();
+  Preferences::Instance().modulesAreDockable.setValue(dockable);
 }

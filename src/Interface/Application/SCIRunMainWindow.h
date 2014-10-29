@@ -87,7 +87,7 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
-  
+
 private:
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
@@ -118,7 +118,7 @@ private:
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
-  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_; 
+  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
@@ -155,6 +155,7 @@ private Q_SLOTS:
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void resetWindowLayout();
+  void adjustModuleDock(int state);
   void exitApplication(int code);
 };
 
