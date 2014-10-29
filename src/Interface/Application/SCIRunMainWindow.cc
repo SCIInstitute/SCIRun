@@ -1172,5 +1172,6 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
 void SCIRunMainWindow::adjustModuleDock(int state)
 {
   bool dockable = dockableModulesCheckBox_->isChecked();
+  actionPinAllModuleUIs_->setEnabled(dockable);
   Preferences::Instance().modulesAreDockable.setValue(dockable);
 }
