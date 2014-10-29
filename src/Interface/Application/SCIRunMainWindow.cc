@@ -1148,10 +1148,21 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
   nonfunctioningMenus <<
     menuSubnets_ <<
     menuToolkits_;
+  QList<QWidget*> nonfunctioningWidgets;
+  nonfunctioningWidgets <<
+    scirunNetsLabel_ <<
+    scirunNetsLineEdit_ <<
+    scirunNetsPushButton_ <<
+    userDataLabel_ <<
+    userDataLineEdit_ <<
+    userDataPushButton_ <<
+    dataSetGroupBox_ <<
+    optionsGroupBox_;
 
   Q_FOREACH(QAction* a, nonfunctioningActions)
     a->setVisible(false);
   Q_FOREACH(QMenu* m, nonfunctioningMenus)
     m->menuAction()->setVisible(false);
-
+  Q_FOREACH(QWidget* w, nonfunctioningWidgets)
+    w->setVisible(false);
 }
