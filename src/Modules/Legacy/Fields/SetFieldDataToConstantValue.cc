@@ -61,6 +61,8 @@ const ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToC
 SetFieldDataToConstantValue::SetFieldDataToConstantValue() :
   Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
 }
 
 void SetFieldDataToConstantValue::setStateDefaults()
