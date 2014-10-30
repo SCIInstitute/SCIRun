@@ -41,6 +41,10 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 using namespace SCIRun::Core::Datatypes;
 
+ALGORITHM_PARAMETER_DEF(Fields, BasisOrder);
+ALGORITHM_PARAMETER_DEF(Fields, DataType);
+ALGORITHM_PARAMETER_DEF(Fields, Value);
+
 SetFieldDataToConstantValueAlgo::SetFieldDataToConstantValueAlgo()
 {
   //! keep scalar type defines whether we convert to double or not
@@ -52,11 +56,11 @@ SetFieldDataToConstantValueAlgo::SetFieldDataToConstantValueAlgo()
 bool 
 SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
-  algo_start("SetFieldDataToConstantValue");
+  ScopedAlgorithmStatusReporter asr(this, "SetFieldDataToConstantValue");
   if (!(input.get_rep()))
   {
     error("No input field was provided");
-    algo_end(); return (false);  
+    return (false);  
   }
 
   FieldInformation fi(input);
@@ -82,7 +86,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
   if (output.get_rep() == 0)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);
+    return (false);
   }
 
   double new_value = get_scalar("value");
@@ -90,6 +94,5 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
   output->vfield()->resize_values();
   output->vfield()->set_all_values(new_value);
   
-  algo_end();
   return (true);
 }
