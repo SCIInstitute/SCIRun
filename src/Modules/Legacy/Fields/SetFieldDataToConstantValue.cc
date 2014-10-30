@@ -79,9 +79,10 @@ SetFieldDataToConstantValue::execute()
   {
     update_state(Executing);
 
-    algo_.set_option("data_type",gui_data_type_.get());
-    algo_.set_option("basis_order",gui_basis_order_.get());
-    algo_.set_scalar("value",gui_value_.get());
+    setAlgoDoubleFromState(Parameters::Value);
+    setAlgoOptionFromState(Parameters::DataType);
+    setAlgoOptionFromState(Parameters::BasisOrder);
+
     if(!(algo_.run(input,output))) return;
     
     send_output_handle("Field",output,true);
