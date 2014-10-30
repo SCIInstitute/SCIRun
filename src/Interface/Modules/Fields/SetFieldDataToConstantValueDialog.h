@@ -26,23 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SETFIELD_DATA_H
-#define INTERFACE_MODULES_SETFIELD_DATA_H
+#ifndef INTERFACE_MODULES_SETFIELDDATATOCONSTANTVALUE_H
+#define INTERFACE_MODULES_SETFIELDDATATOCONSTANTVALUE_H
 
-#include "Interface/Modules/Fields/ui_SetFieldDataDialog.h"
+#include "Interface/Modules/Fields/ui_SetFieldDataToConstantValue.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE SetFieldDataDialog : public ModuleDialogGeneric, 
-  public Ui::SetFieldDataDialog
+class SCISHARE SetFieldDataToConstantValueDialog : public ModuleDialogGeneric, 
+  public Ui::SetFieldDataToConstantValue
 {
 	Q_OBJECT
 	
 public:
-  SetFieldDataDialog(const std::string& name, 
+  SetFieldDataToConstantValueDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
