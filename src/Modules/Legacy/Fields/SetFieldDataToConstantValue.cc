@@ -35,6 +35,7 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 const ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToConstantValue", "ChangeFieldData", "SCIRun");
 
@@ -59,15 +60,14 @@ const ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToC
 
 SetFieldDataToConstantValue::SetFieldDataToConstantValue() :
   Module(staticInfo_)
-//     gui_data_type_(ctx->subVar("data-type"),"same as input"),
-//     gui_basis_order_(ctx->subVar("basis-order"),"same as input"),
-//     gui_value_(ctx->subVar("value"),0.0)
 {
 }
 
 void SetFieldDataToConstantValue::setStateDefaults()
 {
-  //TODO
+  setStateDoubleFromAlgo(Parameters::Value);
+  setStateStringFromAlgoOption(Parameters::DataType);
+  setStateStringFromAlgoOption(Parameters::BasisOrder);
 }
 
 void
