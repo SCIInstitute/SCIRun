@@ -26,15 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/SetFieldDataDialog.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-SetFieldDataDialog::SetFieldDataDialog(const std::string& name, ModuleStateHandle state,
+SetFieldDataToConstantValueDialog::SetFieldDataToConstantValueDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -44,7 +43,7 @@ SetFieldDataDialog::SetFieldDataDialog(const std::string& name, ModuleStateHandl
   addCheckBoxManager(keepTypeCheckBox_, SetFieldDataAlgo::keepTypeCheckBox);
 }
 
-void SetFieldDataDialog::pull()
+void SetFieldDataToConstantValueDialog::pull()
 {
   pull_newVersionToReplaceOld();
 }
