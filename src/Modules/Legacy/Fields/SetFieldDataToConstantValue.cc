@@ -73,11 +73,7 @@ void SetFieldDataToConstantValue::setStateDefaults()
 void
 SetFieldDataToConstantValue::execute()
 {
-  //TODO
-#if 0
-  FieldHandle input, output;
-  
-  get_input_handle("Field",input,true);
+  auto input = getRequiredInput(InputField);
   
   if ( inputs_changed_ || gui_data_type_.changed() || 
        gui_basis_order_.changed() || gui_value_.changed() ||
@@ -92,5 +88,4 @@ SetFieldDataToConstantValue::execute()
     
     send_output_handle("Field",output,true);
   }
-#endif
 }
