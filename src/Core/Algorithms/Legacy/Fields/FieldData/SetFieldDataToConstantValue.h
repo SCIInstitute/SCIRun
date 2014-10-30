@@ -30,21 +30,15 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SetFieldDataToConstantValue_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SetFieldDataToConstantValue_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/NrrdData.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
 class SCISHARE SetFieldDataToConstantValueAlgo : public AlgoBase
 {
@@ -61,7 +55,7 @@ class SCISHARE SetFieldDataToConstantValueAlgo : public AlgoBase
     bool run(FieldHandle input, FieldHandle& output);
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif
 
