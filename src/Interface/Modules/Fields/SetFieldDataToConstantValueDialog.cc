@@ -41,9 +41,9 @@ SetFieldDataToConstantValueDialog::SetFieldDataToConstantValueDialog(const std::
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addComboBoxManager(basisOrderComboBox_, SetFieldDataToConstantValueAlgo::BasisOrder);
-  addComboBoxManager(fieldDataTypeComboBox_, SetFieldDataToConstantValueAlgo::DataType);
-  addDoubleSpinBoxManager(valueSpinBox_, SetFieldDataToConstantValueAlgo::Value); 
+  addComboBoxManager(basisOrderComboBox_, Parameters::BasisOrder);
+  addComboBoxManager(fieldDataTypeComboBox_, Parameters::DataType);
+  addDoubleSpinBoxManager(valueSpinBox_, Parameters::Value); 
 }
 
 void SetFieldDataToConstantValueDialog::pull()

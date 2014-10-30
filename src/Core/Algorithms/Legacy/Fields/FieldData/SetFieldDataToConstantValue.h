@@ -40,6 +40,10 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
+        ALGORITHM_PARAMETER_DECL(BasisOrder);
+        ALGORITHM_PARAMETER_DECL(DataType);
+        ALGORITHM_PARAMETER_DECL(Value);
+
         class SCISHARE SetFieldDataToConstantValueAlgo : public AlgorithmBase
         {
         public:
