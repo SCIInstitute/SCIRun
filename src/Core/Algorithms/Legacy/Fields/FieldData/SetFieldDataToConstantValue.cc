@@ -65,7 +65,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
 
   FieldInformation fi(input);
 
-  std::string data_type = get_option("data_type");
+  std::string data_type = get_option(DataType);
   if (data_type != "same as input")
   {
     fi.set_data_type(data_type);
@@ -75,7 +75,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
     fi.make_double();
   }
 
-  std::string basis_order = get_option("basis_order");
+  std::string basis_order = get_option(BasisOrder);
   if (basis_order != "same as input")
   {
     fi.set_basis_type(basis_order);
@@ -89,7 +89,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
     return (false);
   }
 
-  double new_value = get_scalar("value");
+  double new_value = get(Value).toDouble();
   
   output->vfield()->resize_values();
   output->vfield()->set_all_values(new_value);
