@@ -75,9 +75,7 @@ SetFieldDataToConstantValue::execute()
 {
   auto input = getRequiredInput(InputField);
   
-  if ( inputs_changed_ || gui_data_type_.changed() || 
-       gui_basis_order_.changed() || gui_value_.changed() ||
-      !oport_cached("Field"))
+  if (needToExecute())
   {
     update_state(Executing);
 
