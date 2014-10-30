@@ -40,7 +40,10 @@ SetFieldDataToConstantValueDialog::SetFieldDataToConstantValueDialog(const std::
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  addCheckBoxManager(keepTypeCheckBox_, SetFieldDataAlgo::keepTypeCheckBox);
+
+  addComboBoxManager(basisOrderComboBox_, SetFieldDataToConstantValueAlgo::BasisOrder);
+  addComboBoxManager(fieldDataTypeComboBox_, SetFieldDataToConstantValueAlgo::DataType);
+  addDoubleSpinBoxManager(valueSpinBox_, SetFieldDataToConstantValueAlgo::Value); 
 }
 
 void SetFieldDataToConstantValueDialog::pull()
