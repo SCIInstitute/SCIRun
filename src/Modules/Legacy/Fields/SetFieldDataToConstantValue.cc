@@ -36,7 +36,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToConstantValue", "ChangeFieldData", "SCIRun");
+const ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToConstantValue", "ChangeFieldData", "SCIRun");
 
 /// @class SetFieldDataToConstantValue
 /// @brief Sets field data to a given scalar value on a new output field based
@@ -57,13 +57,12 @@ ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToConstan
 //    SCIRunAlgo::SetFieldDataToConstantValueAlgo algo_;
 //};
 
-SetFieldDataToConstantValue::SetFieldDataToConstantValue(GuiContext* ctx) :
-  Module("SetFieldDataToConstantValue", ctx, Source, "ChangeFieldData", "SCIRun"),
-    gui_data_type_(ctx->subVar("data-type"),"same as input"),
-    gui_basis_order_(ctx->subVar("basis-order"),"same as input"),
-    gui_value_(ctx->subVar("value"),0.0)
+SetFieldDataToConstantValue::SetFieldDataToConstantValue() :
+  Module(staticInfo_)
+//     gui_data_type_(ctx->subVar("data-type"),"same as input"),
+//     gui_basis_order_(ctx->subVar("basis-order"),"same as input"),
+//     gui_value_(ctx->subVar("value"),0.0)
 {
-  algo_.set_progress_reporter(this);
 }
 
 void
