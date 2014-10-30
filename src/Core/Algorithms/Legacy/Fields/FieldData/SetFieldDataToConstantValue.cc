@@ -48,10 +48,6 @@ SetFieldDataToConstantValueAlgo()
   add_scalar("value",0.0);
 }
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
 bool 
 SetFieldDataToConstantValueAlgo::
 run(FieldHandle input, FieldHandle& output)
@@ -97,6 +93,3 @@ run(FieldHandle input, FieldHandle& output)
   algo_end();
   return (true);
 }
-
-} // namespace SCIRunAlgo
-
