@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 
-SetFieldDataToConstantValueAlgo()
+SetFieldDataToConstantValueAlgo::SetFieldDataToConstantValueAlgo()
 {
   //! keep scalar type defines whether we convert to double or not
   add_option("data_type","same as input","char|unsigned char|short|unsigned short|int|unsigned int|float|double|same as input");
@@ -49,8 +49,7 @@ SetFieldDataToConstantValueAlgo()
 }
 
 bool 
-SetFieldDataToConstantValueAlgo::
-run(FieldHandle input, FieldHandle& output)
+SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   algo_start("SetFieldDataToConstantValue");
   if (!(input.get_rep()))
