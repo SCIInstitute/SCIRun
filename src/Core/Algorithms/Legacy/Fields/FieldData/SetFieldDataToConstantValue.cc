@@ -26,34 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
+#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Fields/FieldData/SetFieldDataToConstantValue.h>
 
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/FieldInformation.h>
 
-using namespace SCIRunAlgo;
+namespace SCIRunAlgo {
+
 using namespace SCIRun;
-using namespace SCIRun::Core::Algorithms;
-
-
-AlgorithmParameterName SetFieldDataToConstantValueAlgo::Value("value");
-AlgorithmParameterName SetFieldDataToConstantValueAlgo::DataType("data_type");
-AlgorithmParameterName SetFieldDataToConstantValueAlgo::BasisOrder("basis_order");
 
 bool 
-SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
+SetFieldDataToConstantValueAlgo::
+run(FieldHandle input, FieldHandle& output)
 {
-  ScopedAlgorithmStatusReporter asr(this, "SetFieldDataToConstantValue");
-  if (!input)
+  algo_start("SetFieldDataToConstantValue");
+  if (!(input.get_rep()))
   {
     error("No input field was provided");
-    return (false);  
+    algo_end(); return (false);  
   }
 
   FieldInformation fi(input);
 
-  std::string data_type = get(DataType).toString();
+  std::string data_type = get_option("data_type");
   if (data_type != "same as input")
   {
     fi.set_data_type(data_type);
@@ -63,7 +58,7 @@ SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
     fi.make_double();
   }
 
-  std::string basis_order = get(BasisOrder).toString();
+  std::string basis_order = get_option("basis_order");
   if (basis_order != "same as input")
   {
     fi.set_basis_type(basis_order);
@@ -71,16 +66,20 @@ SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
 
   output = CreateField(fi,input->mesh());
   
-  if (!output)
+  if (output.get_rep() == 0)
   {
     error("Could not allocate output field");
-    return (false);
+    algo_end(); return (false);
   }
 
-  double new_value = get(Value).toDouble();
+  double new_value = get_scalar("value");
   
   output->vfield()->resize_values();
   output->vfield()->set_all_values(new_value);
   
+  algo_end();
   return (true);
 }
+
+} // namespace SCIRunAlgo
+

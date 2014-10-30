@@ -30,38 +30,38 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SetFieldDataToConstantValue_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SetFieldDataToConstantValue_H 1
 
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+//! Datatypes that the algorithm uses
+#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/NrrdData.h>
 
-#include <Core/Algorithms/Legacy/Fields/share.h>
+//! Base class for algorithm
+#include <Core/Algorithms/Util/AlgoBase.h>
+
+//! for Windows support
+#include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
 
-class SCISHARE SetFieldDataToConstantValueAlgo : public SCIRun::Core::Algorithms::AlgorithmBase
+using namespace SCIRun;
+
+class SCISHARE SetFieldDataToConstantValueAlgo : public AlgoBase
 {
   public:
+    //! Set defaults
     SetFieldDataToConstantValueAlgo()
     {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-      /// keep scalar type defines whether we convert to double or not
+      //! keep scalar type defines whether we convert to double or not
       add_option("data_type","same as input","char|unsigned char|short|unsigned short|int|unsigned int|float|double|same as input");
       add_option("basis_order","same as input","nodata|constant|linear|quadratic|same as input");
       add_scalar("value",0.0);
-#endif
-      /// @todo
-      addParameter(Value, SCIRun::Core::Algorithms::AlgorithmParameter::Value(0.0));
-      addParameter(DataType, SCIRun::Core::Algorithms::AlgorithmParameter::Value("double"));
-      addParameter(BasisOrder, SCIRun::Core::Algorithms::AlgorithmParameter::Value("constant"));
     }
   
-    static SCIRun::Core::Algorithms::AlgorithmParameterName Value;
-    static SCIRun::Core::Algorithms::AlgorithmParameterName DataType;
-    static SCIRun::Core::Algorithms::AlgorithmParameterName BasisOrder;
-
-    bool run(SCIRun::FieldHandle input, SCIRun::FieldHandle& output);
+    bool run(FieldHandle input, FieldHandle& output);
 };
 
-}
+} // end namespace SCIRunAlgo
 
 #endif
 
