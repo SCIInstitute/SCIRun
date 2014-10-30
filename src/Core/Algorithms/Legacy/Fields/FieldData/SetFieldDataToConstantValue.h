@@ -42,10 +42,12 @@ namespace SCIRun {
 
 class SCISHARE SetFieldDataToConstantValueAlgo : public AlgorithmBase
 {
-  public:
-    SetFieldDataToConstantValueAlgo();
-  
-    bool run(FieldHandle input, FieldHandle& output);
+public:
+  SetFieldDataToConstantValueAlgo();
+
+
+
+  bool run(FieldHandle input, FieldHandle& output);
 };
 
 }}}}
