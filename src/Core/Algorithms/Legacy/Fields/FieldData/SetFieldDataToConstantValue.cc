@@ -96,3 +96,16 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
   
   return (true);
 }
+
+AlgorithmOutput SetFieldDataToConstantValueAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Variables::InputField);
+
+  FieldHandle outputField;
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
+}
