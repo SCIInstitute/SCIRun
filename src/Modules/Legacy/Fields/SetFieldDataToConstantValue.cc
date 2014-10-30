@@ -65,9 +65,16 @@ SetFieldDataToConstantValue::SetFieldDataToConstantValue() :
 {
 }
 
+void SetFieldDataToConstantValue::setStateDefaults()
+{
+  //TODO
+}
+
 void
 SetFieldDataToConstantValue::execute()
 {
+  //TODO
+#if 0
   FieldHandle input, output;
   
   get_input_handle("Field",input,true);
@@ -85,5 +92,5 @@ SetFieldDataToConstantValue::execute()
     
     send_output_handle("Field",output,true);
   }
-
+#endif
 }
