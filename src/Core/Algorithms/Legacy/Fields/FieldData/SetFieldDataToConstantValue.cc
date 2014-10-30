@@ -38,14 +38,15 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 using namespace SCIRun::Core::Datatypes;
 
 SetFieldDataToConstantValueAlgo::SetFieldDataToConstantValueAlgo()
 {
   //! keep scalar type defines whether we convert to double or not
-  add_option("data_type","same as input","char|unsigned char|short|unsigned short|int|unsigned int|float|double|same as input");
-  add_option("basis_order","same as input","nodata|constant|linear|quadratic|same as input");
-  add_scalar("value",0.0);
+  add_option(DataType, "same as input", "char|unsigned char|short|unsigned short|int|unsigned int|float|double|same as input");
+  add_option(BasisOrder, "same as input", "nodata|constant|linear|quadratic|same as input");
+  addParameter(Value, 0.0);
 }
 
 bool 
