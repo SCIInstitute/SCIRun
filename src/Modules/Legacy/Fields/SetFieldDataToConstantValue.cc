@@ -28,8 +28,14 @@
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+
+ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToConstantValue", "ChangeFieldData", "SCIRun");
 
 namespace SCIRun {
 
