@@ -26,10 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Algorithms/Fields/FieldData/SetFieldDataToConstantValue.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 SetFieldDataToConstantValueAlgo()
 {
