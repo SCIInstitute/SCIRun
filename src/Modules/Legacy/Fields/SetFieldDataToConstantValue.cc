@@ -31,37 +31,31 @@
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
 ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToConstantValue", "ChangeFieldData", "SCIRun");
 
-namespace SCIRun {
-
-using namespace SCIRun;
-
 /// @class SetFieldDataToConstantValue
 /// @brief Sets field data to a given scalar value on a new output field based
 /// on the input field geometry. 
-
-class SetFieldDataToConstantValue : public Module {
-  public:
-    SetFieldDataToConstantValue(GuiContext*);
-    virtual ~SetFieldDataToConstantValue() {}
-
-    virtual void execute();
-
-  private:
-    GuiString gui_data_type_;
-    GuiString gui_basis_order_;
-    GuiDouble gui_value_;
-    
-    SCIRunAlgo::SetFieldDataToConstantValueAlgo algo_;
-};
-
-
-DECLARE_MAKER(SetFieldDataToConstantValue)
+//
+//class SetFieldDataToConstantValue : public Module {
+//  public:
+//    SetFieldDataToConstantValue(GuiContext*);
+//    virtual ~SetFieldDataToConstantValue() {}
+//
+//    virtual void execute();
+//
+//  private:
+//    GuiString gui_data_type_;
+//    GuiString gui_basis_order_;
+//    GuiDouble gui_value_;
+//    
+//    SCIRunAlgo::SetFieldDataToConstantValueAlgo algo_;
+//};
 
 SetFieldDataToConstantValue::SetFieldDataToConstantValue(GuiContext* ctx) :
   Module("SetFieldDataToConstantValue", ctx, Source, "ChangeFieldData", "SCIRun"),
@@ -94,7 +88,3 @@ SetFieldDataToConstantValue::execute()
   }
 
 }
-
-} // End namespace SCIRun
-
-
