@@ -83,8 +83,8 @@ SetFieldDataToConstantValue::execute()
     setAlgoOptionFromState(Parameters::DataType);
     setAlgoOptionFromState(Parameters::BasisOrder);
 
-    if(!(algo_.run(input,output))) return;
-    
+    auto output = algo().run(withInputData((InputField, input)));
+
     send_output_handle("Field",output,true);
   }
 }
