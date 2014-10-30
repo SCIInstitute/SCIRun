@@ -85,6 +85,6 @@ SetFieldDataToConstantValue::execute()
 
     auto output = algo().run(withInputData((InputField, input)));
 
-    send_output_handle("Field",output,true);
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
