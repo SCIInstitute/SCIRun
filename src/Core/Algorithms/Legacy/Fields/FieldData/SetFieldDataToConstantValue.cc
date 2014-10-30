@@ -57,7 +57,7 @@ bool
 SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "SetFieldDataToConstantValue");
-  if (!(input.get_rep()))
+  if (!input)
   {
     error("No input field was provided");
     return (false);  
@@ -83,7 +83,7 @@ SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output)
 
   output = CreateField(fi,input->mesh());
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not allocate output field");
     return (false);
