@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
 
 using namespace SCIRun::Modules::Basic;
@@ -40,6 +41,8 @@ NeedToExecuteTester::NeedToExecuteTester() : Module(staticInfo_, false), expensi
 {
   INITIALIZE_PORT(TestMatrixIn);
   INITIALIZE_PORT(TestMatrixOut);
+  INITIALIZE_PORT(TestFieldIn);
+  INITIALIZE_PORT(TestFieldOut);
 }
 
 void NeedToExecuteTester::setStateDefaults()
@@ -53,13 +56,17 @@ void NeedToExecuteTester::execute()
   executeCalled_ = true;
   //std::cout << "NTET::execute() executeCalled true" << std::endl;
 
-  auto in = getRequiredInput(TestMatrixIn);
+  auto in0 = getOptionalInput(TestMatrixIn);
+  auto in1 = getOptionalInput(TestFieldIn);
   //std::cout << "NTET::execute() getInput" << std::endl;
   if (needToExecute())
   {
     //std::cout << "NTET::execute() needToExecute is true" << std::endl;
     expensiveComputationDone_ = true;
-    sendOutput(TestMatrixOut, in);
+    if (in0)
+      sendOutput(TestMatrixOut, *in0);
+    if (in1)
+      sendOutput(TestFieldOut, *in1);
   }
 }
 

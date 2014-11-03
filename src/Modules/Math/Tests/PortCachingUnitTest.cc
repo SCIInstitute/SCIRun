@@ -814,7 +814,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
     EXPECT_EQ(2, network->nconnections());
 
     //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
-      
+
     evalModule->resetFlags();
     EXPECT_TRUE(send->do_execute());
     EXPECT_TRUE(process->do_execute());
@@ -836,4 +836,58 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
     EXPECT_TRUE(evalModule->executeCalled_);
     EXPECT_TRUE(evalModule->expensiveComputationDone_);
   }
+}
+
+TEST(PortCachingFunctionalTest, TestSourceSinkInputsChanged)
+{
+  ReexecuteStrategyFactoryHandle re(new DynamicReexecutionStrategyFactory(std::string()));
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, re);
+
+  auto network = controller.getNetwork();
+
+  ModuleHandle send = controller.addModule("CreateLatVol");
+  ModuleHandle process = controller.addModule("NeedToExecuteTester");
+  ModuleHandle receive = controller.addModule("ReportFieldInfo");
+
+  EXPECT_EQ(3, network->nmodules());
+
+  network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 1));
+  EXPECT_EQ(1, network->nconnections());
+  network->connect(ConnectionOutputPort(process, 1), ConnectionInputPort(receive, 0));
+  EXPECT_EQ(2, network->nconnections());
+
+  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  ASSERT_TRUE(evalModule != nullptr);
+
+  EXPECT_FALSE(evalModule->executeCalled_);
+  EXPECT_FALSE(evalModule->expensiveComputationDone_);
+
+  send->do_execute();
+  process->do_execute();
+  receive->do_execute();
+
+  EXPECT_TRUE(evalModule->executeCalled_);
+  EXPECT_TRUE(evalModule->expensiveComputationDone_);
+
+  evalModule->resetFlags();
+
+  send->do_execute();
+  process->do_execute();
+  receive->do_execute();
+
+  EXPECT_TRUE(evalModule->executeCalled_);
+  EXPECT_FALSE(evalModule->expensiveComputationDone_);
+
+  evalModule->resetFlags();
+
+  send->do_execute();
+  process->do_execute();
+  receive->do_execute();
+
+  EXPECT_TRUE(evalModule->executeCalled_);
+  EXPECT_FALSE(evalModule->expensiveComputationDone_);
+
 }
