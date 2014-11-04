@@ -42,7 +42,9 @@ namespace SCIRun
   {
     namespace Networks
     {
-      typedef boost::function<SCIRun::Core::Datatypes::DatatypeHandle()> DataProvider;
+      //typedef boost::function<SCIRun::Core::Datatypes::DatatypeHandle()> DataProvider;
+
+      typedef boost::weak_ptr<Core::Datatypes::DatatypeHandle::element_type> WeakDatatypeHandle;
 
       class SCISHARE SimpleSink : public DatatypeSinkInterface
       {
@@ -51,11 +53,9 @@ namespace SCIRun
         ~SimpleSink();
         virtual void waitForData();
         virtual SCIRun::Core::Datatypes::DatatypeHandleOption receive();
-        //virtual bool hasData() const { return hasData_; }
-        //virtual void setHasData(bool dataPresent);
         virtual DatatypeSinkInterface* clone() const;
         virtual bool hasChanged() const;
-        void setData(DataProvider dataProvider);
+        void setData(Core::Datatypes::DatatypeHandle data);
         virtual void invalidateProvider();
         virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber);
 
@@ -63,9 +63,11 @@ namespace SCIRun
         static void setGlobalPortCachingFlag(bool value);
 
       private:
-        DataProvider dataProvider_;
-        mutable SCIRun::Core::Datatypes::Datatype::id_type previousId_;
-        boost::optional<SCIRun::Core::Datatypes::Datatype::id_type> currentId_;
+        WeakDatatypeHandle weakData_;
+        mutable bool hasChanged_;
+        //DataProvider dataProvider_;
+        //mutable SCIRun::Core::Datatypes::Datatype::id_type previousId_;
+        //boost::optional<SCIRun::Core::Datatypes::Datatype::id_type> currentId_;
         DataHasChangedSignalType dataHasChanged_;
         bool checkForNewDataOnSetting_;
         static bool globalPortCaching_;

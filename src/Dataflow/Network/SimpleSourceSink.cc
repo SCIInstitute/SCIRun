@@ -45,7 +45,10 @@ namespace
   };
 }
 
-SimpleSink::SimpleSink() : previousId_(UNSET), checkForNewDataOnSetting_(false)
+SimpleSink::SimpleSink() : 
+  hasChanged_(true),
+  //previousId_(UNSET), 
+  checkForNewDataOnSetting_(false)
 {
   instances_.insert(this);
 }
@@ -84,46 +87,55 @@ void SimpleSink::invalidateAll()
 
 DatatypeHandleOption SimpleSink::receive()
 {
-  if (dataProvider_)
+  if (DatatypeHandle strong = weakData_.lock())
   {
-    auto data = dataProvider_();
-
-    if (!globalPortCachingFlag())
-      invalidateProvider();
-
-    currentId_ = data->id();
-    return data;
+    return strong;
+//     auto data = dataProvider_();
+// 
+//     if (!globalPortCachingFlag())
+//       invalidateProvider();
+// 
+//     currentId_ = data->id();
+//     return data;
   }
   return DatatypeHandleOption();
 }
 
-void SimpleSink::setData(DataProvider dataProvider)
+void SimpleSink::setData(DatatypeHandle data)
 {
-  if (dataProvider_)
+  if (DatatypeHandle strong = weakData_.lock())
   {
-    if (currentId_)
+    if (data)
     {
-      previousId_ = *currentId_;
-      LOG_DEBUG("SS::setData: previousId set to " << previousId_);
+      hasChanged_ = strong->id() != data->id();
     }
   }
-
-  dataProvider_ = dataProvider;
-
-  if (dataProvider_)
-  {
-    currentId_ = dataProvider_()->id();
-    if (UNSET == previousId_)
-    {
-      previousId_ = SET_ONCE;
-      if (checkForNewDataOnSetting_)
-        dataHasChanged_(dataProvider_());
-    }
-    else
-      if (checkForNewDataOnSetting_ && hasChanged())
-        dataHasChanged_(dataProvider_());
-    LOG_DEBUG("SS::setData: currentId set to " << *currentId_);
-  }
+  weakData_ = data;
+//   if (dataProvider_)
+//   {
+//     if (currentId_)
+//     {
+//       previousId_ = *currentId_;
+//       LOG_DEBUG("SS::setData: previousId set to " << previousId_);
+//     }
+//   }
+// 
+//   dataProvider_ = dataProvider;
+// 
+//   if (dataProvider_)
+//   {
+//     currentId_ = dataProvider_()->id();
+//     if (UNSET == previousId_)
+//     {
+//       previousId_ = SET_ONCE;
+//       if (checkForNewDataOnSetting_)
+//         dataHasChanged_(dataProvider_());
+//     }
+//     else
+//       if (checkForNewDataOnSetting_ && hasChanged())
+//         dataHasChanged_(dataProvider_());
+//     LOG_DEBUG("SS::setData: currentId set to " << *currentId_);
+//   }
 }
 
 DatatypeSinkInterface* SimpleSink::clone() const
@@ -133,33 +145,36 @@ DatatypeSinkInterface* SimpleSink::clone() const
 
 bool SimpleSink::hasChanged() const
 {
-  std::cout << "SS::hasChanged ids prev = " << previousId_ << " curr = " << currentId_.get_value_or(-1000) <<
-    ", dataProvider is " << (dataProvider_ ? "not null" : "null") << std::endl;
+  bool val = hasChanged_;
+  hasChanged_ = false;
+  return val;
+  //std::cout << "SS::hasChanged ids prev = " << previousId_ << " curr = " << currentId_.get_value_or(-1000) <<
+  //  ", dataProvider is " << (dataProvider_ ? "not null" : "null") << std::endl;
 
-  if (!dataProvider_)
-  {
-    std::cout << "SS::hasChanged returns false, dataProvider is null" << std::endl;
-    return false;
-  }
+  //if (!dataProvider_)
+  //{
+  //  std::cout << "SS::hasChanged returns false, dataProvider is null" << std::endl;
+  //  return false;
+  //}
 
-  if (previousId_ == UNSET)
-  {
-    std::cout << "SS::hasChanged returns false, previousId is UNSET" << std::endl;
-    return false;
-  }
-  if (previousId_ == SET_ONCE)
-  {
-    std::cout << "SS::hasChanged returns true, previousId is SET_ONCE, but changed to current" << std::endl;
-    previousId_ = *currentId_;
-    return true;
-  }
-  std::cout << "SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_ << std::endl;
-  return previousId_ != *currentId_;
+  //if (previousId_ == UNSET)
+  //{
+  //  std::cout << "SS::hasChanged returns false, previousId is UNSET" << std::endl;
+  //  return false;
+  //}
+  //if (previousId_ == SET_ONCE)
+  //{
+  //  std::cout << "SS::hasChanged returns true, previousId is SET_ONCE, but changed to current" << std::endl;
+  //  previousId_ = *currentId_;
+  //  return true;
+  //}
+  //std::cout << "SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_ << std::endl;
+  //return previousId_ != *currentId_;
 }
 
 void SimpleSink::invalidateProvider()
 {
-  dataProvider_ = 0;
+  //dataProvider_ = 0;
 }
 
 boost::signals2::connection SimpleSink::connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber)
@@ -179,7 +194,7 @@ void SimpleSource::send(DatatypeSinkInterfaceHandle receiver) const
   if (!sink)
     THROW_INVALID_ARGUMENT("SimpleSource can only send to SimpleSinks");
 
-  sink->setData([this]() { return data_; });
+  sink->setData(data_);
   //addDeleteListener(sink);
 }
 
