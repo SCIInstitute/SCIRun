@@ -46,7 +46,7 @@ namespace
 }
 
 SimpleSink::SimpleSink() : 
-  hasChanged_(true),
+  hasChanged_(false),
   //previousId_(UNSET), 
   checkForNewDataOnSetting_(false)
 {
@@ -89,6 +89,7 @@ DatatypeHandleOption SimpleSink::receive()
 {
   if (DatatypeHandle strong = weakData_.lock())
   {
+    std::cout << "\tweak pointer converted to strong in Sink.receive" << std::endl;
     return strong;
 //     auto data = dataProvider_();
 // 
@@ -108,8 +109,12 @@ void SimpleSink::setData(DatatypeHandle data)
     if (data)
     {
       hasChanged_ = strong->id() != data->id();
+      std::cout << "\tSink.setData hasChanged set to " << hasChanged_ << std::endl;
     }
   }
+  else if (data)
+    hasChanged_ = true;
+
   weakData_ = data;
 //   if (dataProvider_)
 //   {
@@ -147,6 +152,7 @@ bool SimpleSink::hasChanged() const
 {
   bool val = hasChanged_;
   hasChanged_ = false;
+  std::cout << "\tSink.hasChanged() returns " << val << ", hasChanged set to " << hasChanged_ << std::endl;
   return val;
   //std::cout << "SS::hasChanged ids prev = " << previousId_ << " curr = " << currentId_.get_value_or(-1000) <<
   //  ", dataProvider is " << (dataProvider_ ? "not null" : "null") << std::endl;
