@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 /// @todo Documentation Dataflow/Network/SimpleSourceSink.cc
 
+#include <iostream>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <boost/foreach.hpp>
 #include <Core/Logging/Log.h>
@@ -65,9 +66,9 @@ bool SimpleSink::globalPortCaching_(true); /// @todo: configurable on a port-by-
 
 bool SimpleSink::globalPortCachingFlag() { return globalPortCaching_; }
 
-void SimpleSink::setGlobalPortCachingFlag(bool value) 
-{ 
-  globalPortCaching_ = value; 
+void SimpleSink::setGlobalPortCachingFlag(bool value)
+{
+  globalPortCaching_ = value;
   if (!globalPortCaching_)
   {
     SimpleSource::clearAllSources();
@@ -86,7 +87,7 @@ DatatypeHandleOption SimpleSink::receive()
   if (dataProvider_)
   {
     auto data = dataProvider_();
-    
+
     if (!globalPortCachingFlag())
       invalidateProvider();
 
@@ -132,24 +133,27 @@ DatatypeSinkInterface* SimpleSink::clone() const
 
 bool SimpleSink::hasChanged() const
 {
+  std::cout << "SS::hasChanged ids prev = " << previousId_ << " curr = " << currentId_.get_value_or(-1000) <<
+    ", dataProvider is " << (dataProvider_ ? "not null" : "null") << std::endl;
+
   if (!dataProvider_)
   {
-    LOG_DEBUG("SS::hasChanged returns false, dataProvider is null");
+    std::cout << "SS::hasChanged returns false, dataProvider is null" << std::endl;
     return false;
   }
 
   if (previousId_ == UNSET)
   {
-    LOG_DEBUG("SS::hasChanged returns false, previousId is UNSET");
+    std::cout << "SS::hasChanged returns false, previousId is UNSET" << std::endl;
     return false;
   }
   if (previousId_ == SET_ONCE)
   {
-    LOG_DEBUG("SS::hasChanged returns true, previousId is SET_ONCE, but changed to current");
+    std::cout << "SS::hasChanged returns true, previousId is SET_ONCE, but changed to current" << std::endl;
     previousId_ = *currentId_;
     return true;
   }
-  LOG_DEBUG("SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_);
+  std::cout << "SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_ << std::endl;
   return previousId_ != *currentId_;
 }
 

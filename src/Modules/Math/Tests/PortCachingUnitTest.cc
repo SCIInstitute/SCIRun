@@ -865,6 +865,7 @@ TEST(PortCachingFunctionalTest, TestSourceSinkInputsChanged)
   EXPECT_FALSE(evalModule->executeCalled_);
   EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
+std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1" << std::endl;
   send->do_execute();
   process->do_execute();
   receive->do_execute();
@@ -874,6 +875,7 @@ TEST(PortCachingFunctionalTest, TestSourceSinkInputsChanged)
 
   evalModule->resetFlags();
 
+std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2" << std::endl;
   send->do_execute();
   process->do_execute();
   receive->do_execute();
@@ -883,6 +885,7 @@ TEST(PortCachingFunctionalTest, TestSourceSinkInputsChanged)
 
   evalModule->resetFlags();
 
+  std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
   send->do_execute();
   process->do_execute();
   receive->do_execute();
