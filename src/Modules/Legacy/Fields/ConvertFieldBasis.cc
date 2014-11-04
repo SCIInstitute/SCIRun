@@ -27,7 +27,7 @@
 */
 
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisAlgo.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
@@ -41,11 +41,12 @@ using namespace SCIRun;
 /// @brief ConvertFieldBasis can modify the location of data in the input field.
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-namespace SCIRun {
+//namespace SCIRun {
 
 class ConvertFieldBasis : public Module {
   public:
-    ConvertFieldBasis(GuiContext* ctx);
+
+		ConvertFieldBasis(GuiContext* ctx);
     virtual ~ConvertFieldBasis();
     virtual void execute();
     
@@ -60,7 +61,7 @@ class ConvertFieldBasis : public Module {
 };
 #endif
 
-ModuleLookupInfo ConvertFieldBasis::staticInfo_("ConvertFieldBasis", "ChangeFieldData", "SCIRun");
+const ModuleLookupInfo ConvertFieldBasis::staticInfo_("ConvertFieldBasis", "ChangeFieldData", "SCIRun");
 
 ConvertFieldBasis::ConvertFieldBasis()
   : Module(staticInfo_)
@@ -75,7 +76,7 @@ ConvertFieldBasis::ConvertFieldBasis()
 
 void ConvertFieldBasis::setStateDefaults()
 {
-
+		setStateStringFromAlgoOption(Parameters::OutputBasis); 
 }
 
 void

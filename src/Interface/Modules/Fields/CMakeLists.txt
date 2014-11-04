@@ -49,6 +49,7 @@ SET(Interface_Modules_Fields_FORMS
   MapFieldDataOntoElems.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
+  ConvertFieldBasis.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -73,6 +74,7 @@ SET(Interface_Modules_Fields_HEADERS
   MapFieldDataOntoElemsDialog.h
   MapFieldDataOntoNodesDialog.h
   ClipFieldByFunctionDialog.h
+  ConvertFieldBasisDialog.h
   share.h
 )
 
@@ -80,6 +82,7 @@ SET(Interface_Modules_Fields_SOURCES
   CreateLatVolDialog.cc
   CreateFieldDataDialog.cc
   CalculateFieldDataDialog.cc
+  ConvertFieldBasisDialog.cc
   GetDomainBoundaryDialog.cc
   JoinFieldsDialog.cc
   FairMeshDialog.cc

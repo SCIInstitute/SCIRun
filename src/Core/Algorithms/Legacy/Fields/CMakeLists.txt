@@ -27,6 +27,7 @@
 #
 
 SET(Core_Algorithms_Legacy_Fields_HEADERS
+  FieldData/ConvertFieldBasisAlgo.h
   ClipMesh/ClipMeshBySelection.h
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
@@ -88,6 +89,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
+  
   DistanceField/CalculateDistanceField.cc
   #DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
@@ -101,8 +103,11 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   FieldData/CalculateVectorMagnitudesAlgo.cc
   #FieldData/CalculateFieldDataMetric.cc
-  #FieldData/ConvertFieldDataType.cc
+#FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
+
+  FieldData/ConvertFieldBasisAlgo.cc  
+
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc

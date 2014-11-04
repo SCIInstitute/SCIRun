@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_CONVERTFIELDBASIS_H__
-#define MODULES_LEGACY_FIELDS_CONVERTFIELDBASIS_H__
+#ifndef INTERFACE_MODULES_CONVERT_FIELD_BASIS_DIALOG_H
+#define INTERFACE_MODULES_CONVERT_FIELD_BASIS_DIALOG_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+#include "Interface/Modules/Fields/ui_ConvertFieldBasis.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace Gui {
+  
+class SCISHARE ConvertFieldBasisDialog : public ModuleDialogGeneric, 
+  public Ui::ConvertFieldBasis
+{
+	Q_OBJECT
+	
+public:
+  ConvertFieldBasisDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
 
-      class SCISHARE ConvertFieldBasis : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
-      {
-      public:
-        ConvertFieldBasis();
+private Q_SLOTS:
+  //void push();
+private:
+  std::string getDataAtLocation() const;
+};
 
-        virtual void execute();
-        virtual void setStateDefaults();
-
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
-        OUTPUT_PORT(1, Mapping, Matrix);
-
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-    }
-  }
+}
 }
 
 #endif
