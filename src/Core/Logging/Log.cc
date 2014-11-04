@@ -478,7 +478,9 @@ std::string ApplicationHelper::applicationName()
 
 ApplicationHelper::ApplicationHelper()
 {
-  //boost::filesystem::path::imbue( std::locale( "" ) );
+#if WIN32
+  boost::filesystem::path::imbue( std::locale( "" ) );
+#endif
   boost::filesystem::path dummy("boost bug workaround");
   if (dummy.string().empty())
     std::cout << dummy.string() << std::endl;
