@@ -213,7 +213,7 @@ void Log::init()
   *this << DEBUG_LOG << "Logging to file: " << impl_->file_.string() << std::endl;
 }
 
-boost::filesystem::path Log::directory_(ApplicationHelper::configDirectory());
+boost::filesystem::path Log::directory_(ApplicationHelper().configDirectory());
 
 boost::filesystem::path Log::logDirectory() { return directory_; }
 void Log::setLogDirectory(const boost::filesystem::path& dir) 
@@ -474,4 +474,12 @@ boost::filesystem::path ApplicationHelper::configDirectory()
 std::string ApplicationHelper::applicationName() 
 {
   return "SCIRun";
+}
+
+ApplicationHelper::ApplicationHelper()
+{
+  boost::filesystem::path::imbue( std::locale( "" ) );
+  boost::filesystem::path dummy("boost bug workaround");
+  if (dummy.string().empty())
+    std::cout << dummy.string() << std::endl;
 }
