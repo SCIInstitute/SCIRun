@@ -31,14 +31,20 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h> 
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields::Parameters; 
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
 ALGORITHM_PARAMETER_DEF(Fields, BasisType)
+ALGORITHM_PARAMETER_DEF(Fields, InputType)
+ALGORITHM_PARAMETER_DEF(Fields, OutputType)
 
 ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 {
@@ -458,14 +464,14 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 
 AlgorithmOutput ConvertFieldBasisTypeAlgo::run_generic(const AlgorithmInput& input) const
 {
-  throw "todo";
-  //auto field = input.get<Field>(Variables::InputField);
+ // throw "todo";
+  auto field = input.get<Field>(Variables::InputField);
 
-  //FieldHandle outputField;
-  //if (!runImpl(field, outputField))
-  //  THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  FieldHandle outputField;
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
-  //AlgorithmOutput output;
-  //output[Variables::OutputField] = outputField;
-  //return output;
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
 }

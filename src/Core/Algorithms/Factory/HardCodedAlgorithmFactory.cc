@@ -43,7 +43,6 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisAlgo.h> 
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
@@ -142,7 +141,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(ResampleRegularMesh, ResampleRegularMeshAlgo)
       ADD_MODULE_ALGORITHM(FairMesh, FairMeshAlgo)
       ADD_MODULE_ALGORITHM(ScaleFieldMeshAndData, ScaleFieldMeshAndDataAlgo)
-      ADD_MODULE_ALGORITHM(ConvertFieldBasis, ConvertFieldBasisTypeAlgo)
+      ADD_MODULE_ALGORITHM(ConvertFieldBasis, ConvertFieldBasisType)
       ADD_MODULE_ALGORITHM(ProjectPointsOntoMesh, ProjectPointsOntoMeshAlgo)
       ADD_MODULE_ALGORITHM(CalculateDistanceToField, CalculateDistanceFieldAlgo)
       ADD_MODULE_ALGORITHM(CalculateDistanceToFieldBoundary, CalculateDistanceFieldAlgo)
@@ -152,7 +151,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationAlgo)
       ADD_MODULE_ALGORITHM(SimulateForwardMagneticField, SimulateForwardMagneticFieldAlgo)
       ADD_MODULE_ALGORITHM(BuildFEVolRHS, BuildFEVolRHSAlgo)
-			ADD_MODULE_ALGORITHM(ConvertFieldBasis, ConvertFieldBasisAlgo) 
+			//ADD_MODULE_ALGORITHM(ConvertFieldBasis, ConvertFieldBasisAlgo) 
     ;
   }
 }

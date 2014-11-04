@@ -1,4 +1,4 @@
-/*
+*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
@@ -32,6 +32,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Core/Datatypes/DatatypeFwd.h> 
 
 namespace SCIRun {
   namespace Core {
@@ -39,6 +40,8 @@ namespace SCIRun {
       namespace Fields {
 
         ALGORITHM_PARAMETER_DECL(BasisType);
+				ALGORITHM_PARAMETER_DECL(InputType);
+				ALGORITHM_PARAMETER_DECL(OutputType);
 
         class SCISHARE ConvertFieldBasisTypeAlgo : public AlgorithmBase
         {

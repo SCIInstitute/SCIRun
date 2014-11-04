@@ -27,13 +27,13 @@
 */
 
 #include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-//typedef SCIRun::Modules::Fields::ConvertFieldBasis ConvertFieldBasisModule;
+typedef SCIRun::Modules::Fields::ConvertFieldBasis ConvertFieldBasisModule;
 
 ConvertFieldBasisDialog::ConvertFieldBasisDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -43,9 +43,9 @@ ConvertFieldBasisDialog::ConvertFieldBasisDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-	addLineEditManager(basisLineEdit_, Parameters::InputBasis);
-	addLineEditManager(nameLineEdit_,  Parameters::InputName);
-	addComboBoxManager(basisComboBox_, Parameters::OutputBasis); 
+	addLineEditManager(basisLineEdit_, Parameters::BasisType);
+	addLineEditManager(nameLineEdit_,  Parameters::InputType);
+	addComboBoxManager(basisComboBox_, Parameters::OutputType); 
 }
 
 void ConvertFieldBasisDialog::pull()

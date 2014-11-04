@@ -27,7 +27,7 @@
 */
 #include <Core/Datatypes/Legacy/Field/Field.h> 
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
