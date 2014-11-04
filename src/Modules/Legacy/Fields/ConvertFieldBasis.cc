@@ -111,8 +111,7 @@ ConvertFieldBasis::execute()
 */
 
     // Set the method to use
-		//std::string basistype = Parameters::OutputBasis; 
-  //  this->set
+		//std::string basistype = 
   //  // For backwards compatibility
   //  if (basistype == "None") basistype = "nodata";
   //  algo_.set_option("basistype",basistype);
