@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+#include <Core/Datatypes/Legacy/Field/Field.h> 
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisAlgo.h>
 
@@ -76,58 +76,63 @@ ConvertFieldBasis::ConvertFieldBasis()
 
 void ConvertFieldBasis::setStateDefaults()
 {
-		setStateStringFromAlgoOption(Parameters::OutputBasis); 
+		setStateStringFromAlgoOption(Parameters::OutputBasis);
 }
 
 void
 ConvertFieldBasis::execute()
 {
-#if 0
   /// Get the input field handle from the port.
-  FieldHandle input_field_handle;
-  get_input_handle( "Input",  input_field_handle, true );
+  //FieldHandle input_field_handle;
+  //get_input_handle( "Input",  input_field_handle, true );
+		auto input = getRequiredInput(InputField);
 
-  bool need_mapping = oport_connected("Mapping");
+  //bool need_mapping = oport_connected("Mapping");
 
   // Only do work if needed:
-  if (inputs_changed_ || outputbasis_.changed() || 
-      !oport_cached("Output") ||
-      (need_mapping & !oport_cached("Mapping")))
+  if (needToExecute())
   {
     update_state(Executing);
-    /// Relay some information to user
-    std::string name = input_field_handle->get_name();
-    if (name == "") name = "--- no name ---";
-    fldname_.set(name);
 
-    if (input_field_handle->vfield()->is_nodata()) inputbasis_.set("NoData");
+		//setAlgoOptionFromState(Parameters::InputName); 
+		//setAlgoOptionFromState(Parameters::InputBasis); 
+		setAlgoOptionFromState(Parameters::OutputBasis); 
+
+    /// Relay some information to user
+   // std::string name = input_field_handle->get_name();
+   // if (name == "") name = "--- no name ---";
+   // fldname_.set(name);
+
+    /*if (input_field_handle->vfield()->is_nodata()) inputbasis_.set("NoData");
     if (input_field_handle->vfield()->is_constantdata()) inputbasis_.set("ConstantData");
     if (input_field_handle->vfield()->is_lineardata()) inputbasis_.set("LinearData");
     if (input_field_handle->vfield()->is_quadraticdata()) inputbasis_.set("QuadraticData");
     if (input_field_handle->vfield()->is_cubicdata()) inputbasis_.set("CubicData");
-
+*/
 
     // Set the method to use
-    std::string basistype = outputbasis_.get();
-    
-    // For backwards compatibility
-    if (basistype == "None") basistype = "nodata";
-    algo_.set_option("basistype",basistype);
+		//std::string basistype = Parameters::OutputBasis; 
+  //  this->set
+  //  // For backwards compatibility
+  //  if (basistype == "None") basistype = "nodata";
+  //  algo_.set_option("basistype",basistype);
 
-    FieldHandle output_field_handle;
-    MatrixHandle mapping_matrix_handle;
+   // FieldHandle output_field_handle;
+   // MatrixHandle mapping_matrix_handle;
 
-    if (need_mapping)
+    /*if (need_mapping)
     {
       if (!(algo_.run(input_field_handle,output_field_handle,mapping_matrix_handle))) return;
     }
     else
     {
       if (!(algo_.run(input_field_handle,output_field_handle))) return;    
-    }
+    }*/
+		auto output = algo().run(withInputData((InputField, input))); 
+		sendOutputFromAlgorithm(OutputField, output); 
+
     /// send data downstream:
-    send_output_handle("Output", output_field_handle);    
-    send_output_handle("Mapping", mapping_matrix_handle);    
+   /* send_output_handle("Output", output_field_handle);    
+    send_output_handle("Mapping", mapping_matrix_handle); */   
   }
-#endif
 }
