@@ -45,9 +45,8 @@ namespace
   };
 }
 
-SimpleSink::SimpleSink() : 
+SimpleSink::SimpleSink() :
   hasChanged_(false),
-  //previousId_(UNSET), 
   checkForNewDataOnSetting_(false)
 {
   instances_.insert(this);
@@ -89,15 +88,8 @@ DatatypeHandleOption SimpleSink::receive()
 {
   if (DatatypeHandle strong = weakData_.lock())
   {
-    std::cout << "\tweak pointer converted to strong in Sink.receive" << std::endl;
+    //std::cout << "\tweak pointer converted to strong in Sink.receive" << std::endl;
     return strong;
-//     auto data = dataProvider_();
-// 
-//     if (!globalPortCachingFlag())
-//       invalidateProvider();
-// 
-//     currentId_ = data->id();
-//     return data;
   }
   return DatatypeHandleOption();
 }
@@ -108,39 +100,21 @@ void SimpleSink::setData(DatatypeHandle data)
   {
     if (data)
     {
+      //std::cout << "\tSink.setData hasChanged is " << hasChanged_ << std::endl;
+      //std::cout << "\tSink.setData old id is " << strong->id() << " new id is " << data->id() << std::endl;
       hasChanged_ = strong->id() != data->id();
-      std::cout << "\tSink.setData hasChanged set to " << hasChanged_ << std::endl;
+      //std::cout << "\tSink.setData hasChanged set to " << hasChanged_ << std::endl;
     }
   }
   else if (data)
+  {
     hasChanged_ = true;
+    //std::cout << "\tSink.setData: no previous weakData, hasChanged set to " << hasChanged_ << std::endl;
+  }
 
   weakData_ = data;
-//   if (dataProvider_)
-//   {
-//     if (currentId_)
-//     {
-//       previousId_ = *currentId_;
-//       LOG_DEBUG("SS::setData: previousId set to " << previousId_);
-//     }
-//   }
-// 
-//   dataProvider_ = dataProvider;
-// 
-//   if (dataProvider_)
-//   {
-//     currentId_ = dataProvider_()->id();
-//     if (UNSET == previousId_)
-//     {
-//       previousId_ = SET_ONCE;
-//       if (checkForNewDataOnSetting_)
-//         dataHasChanged_(dataProvider_());
-//     }
-//     else
-//       if (checkForNewDataOnSetting_ && hasChanged())
-//         dataHasChanged_(dataProvider_());
-//     LOG_DEBUG("SS::setData: currentId set to " << *currentId_);
-//   }
+  if (data && hasChanged_ && checkForNewDataOnSetting_)
+    dataHasChanged_(data);
 }
 
 DatatypeSinkInterface* SimpleSink::clone() const
@@ -152,35 +126,8 @@ bool SimpleSink::hasChanged() const
 {
   bool val = hasChanged_;
   hasChanged_ = false;
-  std::cout << "\tSink.hasChanged() returns " << val << ", hasChanged set to " << hasChanged_ << std::endl;
+  //std::cout << "\tSink.hasChanged() returns " << val << ", hasChanged set to " << hasChanged_ << std::endl;
   return val;
-  //std::cout << "SS::hasChanged ids prev = " << previousId_ << " curr = " << currentId_.get_value_or(-1000) <<
-  //  ", dataProvider is " << (dataProvider_ ? "not null" : "null") << std::endl;
-
-  //if (!dataProvider_)
-  //{
-  //  std::cout << "SS::hasChanged returns false, dataProvider is null" << std::endl;
-  //  return false;
-  //}
-
-  //if (previousId_ == UNSET)
-  //{
-  //  std::cout << "SS::hasChanged returns false, previousId is UNSET" << std::endl;
-  //  return false;
-  //}
-  //if (previousId_ == SET_ONCE)
-  //{
-  //  std::cout << "SS::hasChanged returns true, previousId is SET_ONCE, but changed to current" << std::endl;
-  //  previousId_ = *currentId_;
-  //  return true;
-  //}
-  //std::cout << "SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_ << std::endl;
-  //return previousId_ != *currentId_;
-}
-
-void SimpleSink::invalidateProvider()
-{
-  //dataProvider_ = 0;
 }
 
 boost::signals2::connection SimpleSink::connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber)
@@ -201,7 +148,6 @@ void SimpleSource::send(DatatypeSinkInterfaceHandle receiver) const
     THROW_INVALID_ARGUMENT("SimpleSource can only send to SimpleSinks");
 
   sink->setData(data_);
-  //addDeleteListener(sink);
 }
 
 bool SimpleSource::hasData() const

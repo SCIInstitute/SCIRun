@@ -56,12 +56,14 @@ void NeedToExecuteTester::execute()
   executeCalled_ = true;
   //std::cout << "NTET::execute() executeCalled true" << std::endl;
 
+  std::cout << "\t\tNTET::execute: getInput Matrix" << std::endl;
   auto in0 = getOptionalInput(TestMatrixIn);
+  std::cout << "\t\tNTET::execute: getInput Field" << std::endl;
   auto in1 = getOptionalInput(TestFieldIn);
   //std::cout << "NTET::execute() getInput" << std::endl;
   if (needToExecute())
   {
-    //std::cout << "NTET::execute() needToExecute is true" << std::endl;
+    std::cout << "!!!\t\tNTET::execute() needToExecute is true" << std::endl;
     expensiveComputationDone_ = true;
     if (in0)
       sendOutput(TestMatrixOut, *in0);
