@@ -26,48 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef UTILITY_H
-#define UTILITY_H
+/// @todo Documentation Modules/String/CreatString.h
 
-#include <sstream>
+#ifndef MODULES_STRING_NETWORK_NOTES_H
+#define MODULES_STRING_NETWORK_NOTES_H
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/String/share.h>
 
 namespace SCIRun {
-
-template <class Point>
-std::string to_string(const Point& p)
-{
-  std::ostringstream ostr;
-  ostr << "QPoint(" << p.x() << "," << p.y() << ")";
-  return ostr.str();
-}
-
-namespace Gui
-{
-  QColor to_color(const std::string& str, int alpha = 255);
-
-  inline QAction* separatorAction(QWidget* parent)
+namespace Modules {
+namespace StringProcessing {
+  
+  class SCISHARE NetworkNotesModule : public SCIRun::Dataflow::Networks::Module,
+    public Has1OutputPort<StringPortTag>,
+    public HasNoInputPorts
   {
-    auto sep = new QAction(parent);
-    sep->setSeparator(true);
-    return sep;
-  }
+  public:
+    NetworkNotesModule();
+    virtual void execute();
+    virtual void setStateDefaults();
+    OUTPUT_PORT(0, NewString, String);
+    static Core::Algorithms::AlgorithmParameterName InputString;
+  private:
+    std::string stringValue_;
+  };
 
-  inline QAction* disabled(QAction* action)
-  {
-    action->setEnabled(false);
-    return action;
-  }
-
-  inline std::ostream& operator<<(std::ostream& o, const QPointF& p)
-  {
-    return o << "[" << p.x() << "," << p.y() << "]";
-  }
-
-  typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
-  typedef boost::function<void(QAction*)> QActionHookup;
-  void fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
-}
-
-}
+}}}
 
 #endif

@@ -26,48 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef UTILITY_H
-#define UTILITY_H
+#ifndef INTERFACE_MODULES_SETFIELDDATATOCONSTANTVALUE_H
+#define INTERFACE_MODULES_SETFIELDDATATOCONSTANTVALUE_H
 
-#include <sstream>
+#include "Interface/Modules/Fields/ui_SetFieldDataToConstantValue.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-
-template <class Point>
-std::string to_string(const Point& p)
+namespace Gui {
+  
+class SCISHARE SetFieldDataToConstantValueDialog : public ModuleDialogGeneric, 
+  public Ui::SetFieldDataToConstantValue
 {
-  std::ostringstream ostr;
-  ostr << "QPoint(" << p.x() << "," << p.y() << ")";
-  return ostr.str();
+	Q_OBJECT
+	
+public:
+  SetFieldDataToConstantValueDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
+
 }
-
-namespace Gui
-{
-  QColor to_color(const std::string& str, int alpha = 255);
-
-  inline QAction* separatorAction(QWidget* parent)
-  {
-    auto sep = new QAction(parent);
-    sep->setSeparator(true);
-    return sep;
-  }
-
-  inline QAction* disabled(QAction* action)
-  {
-    action->setEnabled(false);
-    return action;
-  }
-
-  inline std::ostream& operator<<(std::ostream& o, const QPointF& p)
-  {
-    return o << "[" << p.x() << "," << p.y() << "]";
-  }
-
-  typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
-  typedef boost::function<void(QAction*)> QActionHookup;
-  void fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
-}
-
 }
 
 #endif

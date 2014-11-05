@@ -102,6 +102,17 @@ private:
   
   class mxarray {
   public:
+    int  ref_; // reference counter: matlabarray is just a pointer to
+    // this structure. By keeping the data and the pointer
+    // separate a pointer (matlabarray class) can be
+    // created to a subarray without having to copy this
+    // subclass. Since there can be multiple pointers to
+    // the subclasses the reference counter counts how
+    // many instances of a matlabarray class point to this
+    // one. Creating a new matlabarray class this counter
+    // is increased and deleting the matlabarray class
+    // will decrease the pointer. When ref_ hits zero the
+    // structure is deleted.
     // matrix class information
                             
     mlclass class_;      // type of the array                    
@@ -143,7 +154,7 @@ private:
   // delete them all. This behavior is circumvented by only storing a
   // pointer to the real object.
   
-  boost::shared_ptr<mxarray> m_; 
+  mxarray* m_; 
   
   // raw access for friend classes to the data containers. These
   // functions make a copy of the container handle and will allow
@@ -169,7 +180,11 @@ public:
   // Set the type of the data in the Matlab array
   void settype(mitype type);
   
-  // functions to maintain the matlabarray
+  // function to create, copy, and destroy the object
+  matlabarray();  // constructor of an empty matrix
+  ~matlabarray();  // destructor
+  matlabarray(const matlabarray &m); // copy constructor
+  matlabarray& operator= (const matlabarray &m); // assignment
   
   // clear and empty
   void clear();    // empty matrix (no data stored at all)

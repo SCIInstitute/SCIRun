@@ -28,10 +28,12 @@
 
 SET(Modules_String_SRCS
   CreateString.cc
+  NetworkNotes.cc
 )
 
 SET(Modules_String_HEADERS
   CreateString.h
+  NetworkNotes.h
   share.h
 )
 

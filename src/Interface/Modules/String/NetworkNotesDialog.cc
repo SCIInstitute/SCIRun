@@ -26,48 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef UTILITY_H
-#define UTILITY_H
+#include <Interface/Modules/String/NetworkNotesDialog.h>
+#include <Modules/String/NetworkNotes.h>
 
-#include <sstream>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::StringProcessing;
 
-namespace SCIRun {
-
-template <class Point>
-std::string to_string(const Point& p)
+NetworkNotesDialog::NetworkNotesDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  std::ostringstream ostr;
-  ostr << "QPoint(" << p.x() << "," << p.y() << ")";
-  return ostr.str();
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  
+	addTextEditManager(networkNotesTextEdit_, NetworkNotesModule::InputString);
 }
 
-namespace Gui
+void NetworkNotesDialog::pull()
 {
-  QColor to_color(const std::string& str, int alpha = 255);
-
-  inline QAction* separatorAction(QWidget* parent)
-  {
-    auto sep = new QAction(parent);
-    sep->setSeparator(true);
-    return sep;
-  }
-
-  inline QAction* disabled(QAction* action)
-  {
-    action->setEnabled(false);
-    return action;
-  }
-
-  inline std::ostream& operator<<(std::ostream& o, const QPointF& p)
-  {
-    return o << "[" << p.x() << "," << p.y() << "]";
-  }
-
-  typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
-  typedef boost::function<void(QAction*)> QActionHookup;
-  void fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
+  pull_newVersionToReplaceOld();
 }
-
-}
-
-#endif

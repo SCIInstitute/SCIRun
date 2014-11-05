@@ -108,7 +108,7 @@ void ModuleDialogGeneric::moduleSelected(bool selected)
   if (selected)
   {
     windowTitle_ = windowTitle();
-    updateWindowTitle("* " + windowTitle_ + " *");
+    updateWindowTitle(">>> " + windowTitle_ + " <<<");
     //setWindowOpacity(0.5);
   }
   else

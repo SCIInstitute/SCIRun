@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,48 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef UTILITY_H
-#define UTILITY_H
+#ifndef MODULES_LEGACY_FIELDS_SETFIELDDATATOCONSTANTVALUE_H__
+#define MODULES_LEGACY_FIELDS_SETFIELDDATATOCONSTANTVALUE_H__
 
-#include <sstream>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-template <class Point>
-std::string to_string(const Point& p)
-{
-  std::ostringstream ostr;
-  ostr << "QPoint(" << p.x() << "," << p.y() << ")";
-  return ostr.str();
-}
+      class SCISHARE SetFieldDataToConstantValue : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        SetFieldDataToConstantValue();
 
-namespace Gui
-{
-  QColor to_color(const std::string& str, int alpha = 255);
+        virtual void execute();
+        virtual void setStateDefaults();
 
-  inline QAction* separatorAction(QWidget* parent)
-  {
-    auto sep = new QAction(parent);
-    sep->setSeparator(true);
-    return sep;
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+
+    }
   }
-
-  inline QAction* disabled(QAction* action)
-  {
-    action->setEnabled(false);
-    return action;
-  }
-
-  inline std::ostream& operator<<(std::ostream& o, const QPointF& p)
-  {
-    return o << "[" << p.x() << "," << p.y() << "]";
-  }
-
-  typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
-  typedef boost::function<void(QAction*)> QActionHookup;
-  void fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
-}
-
 }
 
 #endif

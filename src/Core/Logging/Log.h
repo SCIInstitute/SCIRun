@@ -121,12 +121,13 @@ namespace SCIRun
       class SCISHARE ApplicationHelper
       {
       public:
-        static boost::filesystem::path configDirectory();
-        static std::string applicationName();
-        static bool get_user_directory( boost::filesystem::path& user_dir, bool config_path);
-        static bool get_config_directory( boost::filesystem::path& config_dir );
-        static bool get_user_desktop_directory( boost::filesystem::path& user_desktop_dir );
-        static bool get_user_name( std::string& user_name );
+        ApplicationHelper();
+        boost::filesystem::path configDirectory();
+        std::string applicationName();
+        bool get_user_directory( boost::filesystem::path& user_dir, bool config_path);
+        bool get_config_directory( boost::filesystem::path& config_dir );
+        bool get_user_desktop_directory( boost::filesystem::path& user_desktop_dir );
+        bool get_user_name( std::string& user_name );
       };
     }
   }

@@ -26,48 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef UTILITY_H
-#define UTILITY_H
+/// @todo Documentation Modules/String/CreateString.cc
 
-#include <sstream>
+#include <iostream>
+#include <Modules/String/NetworkNotes.h>
+#include <Core/Datatypes/String.h>
 
-namespace SCIRun {
+using namespace SCIRun::Modules::StringProcessing;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-template <class Point>
-std::string to_string(const Point& p)
+AlgorithmParameterName NetworkNotesModule::InputString("InputString");
+
+NetworkNotesModule::NetworkNotesModule() : Module(ModuleLookupInfo("NetworkNotes", "String", "SCIRun")) 
 {
-  std::ostringstream ostr;
-  ostr << "QPoint(" << p.x() << "," << p.y() << ")";
-  return ostr.str();
+  INITIALIZE_PORT(NewString);
 }
 
-namespace Gui
+void NetworkNotesModule::setStateDefaults()
 {
-  QColor to_color(const std::string& str, int alpha = 255);
-
-  inline QAction* separatorAction(QWidget* parent)
-  {
-    auto sep = new QAction(parent);
-    sep->setSeparator(true);
-    return sep;
-  }
-
-  inline QAction* disabled(QAction* action)
-  {
-    action->setEnabled(false);
-    return action;
-  }
-
-  inline std::ostream& operator<<(std::ostream& o, const QPointF& p)
-  {
-    return o << "[" << p.x() << "," << p.y() << "]";
-  }
-
-  typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
-  typedef boost::function<void(QAction*)> QActionHookup;
-  void fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
+  auto state = get_state();
+  state->setValue(InputString, std::string());
 }
 
-}
+void NetworkNotesModule::execute()
+{
+  stringValue_ = get_state()->getValue(InputString).toString();
 
-#endif
+  sendOutput(NewString, boost::make_shared<String>(stringValue_));
+}
