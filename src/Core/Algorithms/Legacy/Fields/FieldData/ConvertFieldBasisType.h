@@ -42,6 +42,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(InputFieldName);
 				ALGORITHM_PARAMETER_DECL(InputType);
 				ALGORITHM_PARAMETER_DECL(OutputType);
+        ALGORITHM_PARAMETER_DECL(BuildBasisMapping);
 
         class SCISHARE ConvertFieldBasisTypeAlgo : public AlgorithmBase
         {

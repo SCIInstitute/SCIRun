@@ -45,6 +45,7 @@ using namespace SCIRun::Core::Algorithms;
 ALGORITHM_PARAMETER_DEF(Fields, InputFieldName)
 ALGORITHM_PARAMETER_DEF(Fields, InputType)
 ALGORITHM_PARAMETER_DEF(Fields, OutputType)
+ALGORITHM_PARAMETER_DEF(Fields, BuildBasisMapping)
 
 ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 {
@@ -65,12 +66,15 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
   FieldInformation fo(input);
   
   const std::string basistype = get_option(Parameters::OutputType);
+  const bool buildBasisMapping = get(Parameters::BuildBasisMapping).toBool();
   
   int basis_order = input->vfield()->basis_order();
   
   if (basistype == "None")
   {
-    mapping = 0;
+    if (buildBasisMapping)
+      mapping = 0;
+
     warning("Could not generate a mapping matrix for field with no data");
     if (basis_order == -1)
     {
@@ -96,7 +100,8 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     if (basis_order == -1)
     {
       warning("Could not generate a mapping matrix for field with no data");
-      mapping = 0;
+      if (buildBasisMapping)
+        mapping = 0;
     }
 
     VMesh* mesh    = input->vmesh();
@@ -107,7 +112,8 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       // Field already has no data, so copy it through
       output = input;
-      mapping = SparseRowMatrix::Identity(num_values);
+      if (buildBasisMapping)
+        mapping = SparseRowMatrix::Identity(num_values);
       return (true);
     }
 
@@ -125,93 +131,99 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     
     if (basis_order == 1)
     {
-      SparseRowMatrix::Data outputData(num_elems+1, num_elems*num_nodes_per_elem);
-
-      if (!outputData.allocated())
+      if (buildBasisMapping)
       {
-        error("Could not allocate memory for mapping");
-        return (false);     
-      }
-      const SparseRowMatrix::Rows& rows = outputData.rows();
-      const SparseRowMatrix::Columns& columns = outputData.columns();
-      const SparseRowMatrix::Storage& values = outputData.data();
+        SparseRowMatrix::Data outputData(num_elems+1, num_elems*num_nodes_per_elem);
 
-      std::vector<double> weights;
-      mesh->get_weights(center,weights,1);
-      VMesh::Node::array_type nodes;
-      
-      index_type k=0, m=0;  
-      for(VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
-      {
-        mesh->get_nodes(nodes,idx);
-        m = k;
-        for(size_type j=0; j<num_nodes_per_elem; j++)
+        if (!outputData.allocated())
         {
-          columns[k] = nodes[j];
-          values[k]  = weights[j]; 
-          k++;
+          error("Could not allocate memory for mapping");
+          return (false);     
         }
-        rows[idx] = idx*num_nodes_per_elem;
-        ofield->copy_weighted_value(ifield,&(columns[m]),&(values[m]),k-m,idx);
-      }
-      
-      rows[num_elems] = num_elems*num_nodes_per_elem;
+        const SparseRowMatrix::Rows& rows = outputData.rows();
+        const SparseRowMatrix::Columns& columns = outputData.columns();
+        const SparseRowMatrix::Storage& values = outputData.data();
 
-      mapping = new SparseRowMatrix(num_elems,num_nodes,outputData,num_nodes,true);
+        std::vector<double> weights;
+        mesh->get_weights(center,weights,1);
+        VMesh::Node::array_type nodes;
+
+        index_type k=0, m=0;  
+        for(VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
+        {
+          mesh->get_nodes(nodes,idx);
+          m = k;
+          for(size_type j=0; j<num_nodes_per_elem; j++)
+          {
+            columns[k] = nodes[j];
+            values[k]  = weights[j]; 
+            k++;
+          }
+          rows[idx] = idx*num_nodes_per_elem;
+          ofield->copy_weighted_value(ifield,&(columns[m]),&(values[m]),k-m,idx);
+        }
+
+        rows[num_elems] = num_elems*num_nodes_per_elem;
+
+        mapping = new SparseRowMatrix(num_elems,num_nodes,outputData,num_nodes,true);
+      }
       return (true);
     }
 
     if (basis_order == 2)
     {
-      mesh->synchronize(Mesh::EDGES_E);
-      VMesh::size_type num_edges = mesh->num_edges();
-      VMesh::size_type num_edges_per_elem = mesh->num_edges_per_elem();
-
-      SparseRowMatrix::Data outputData(num_elems+1, num_elems*(num_nodes_per_elem+num_edges_per_elem));
-
-      if (!outputData.allocated())
+      if (buildBasisMapping)
       {
-        error("Could not allocate memory for mapping");
-        return (false);     
-      }
-      const SparseRowMatrix::Rows& rows = outputData.rows();
-      const SparseRowMatrix::Columns& columns = outputData.columns();
-      const SparseRowMatrix::Storage& values = outputData.data();
-        
-      std::vector<double> weights;
-      mesh->get_weights(center,weights,2);
-      VMesh::Node::array_type nodes;
-      VMesh::Edge::array_type edges;
-                
-      index_type k=0, m=0, n=0;  
-      for(VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
-      {
-        mesh->get_nodes(nodes,idx);
-        mesh->get_edges(edges,idx);
-        m = k;
-        for(size_type j=0; j<num_nodes_per_elem; j++)
+        mesh->synchronize(Mesh::EDGES_E);
+        VMesh::size_type num_edges = mesh->num_edges();
+        VMesh::size_type num_edges_per_elem = mesh->num_edges_per_elem();
+
+        SparseRowMatrix::Data outputData(num_elems+1, num_elems*(num_nodes_per_elem+num_edges_per_elem));
+
+        if (!outputData.allocated())
         {
-          columns[k] = nodes[j];
-          values[k]  = weights[j]; 
-          k++;
+          error("Could not allocate memory for mapping");
+          return (false);     
         }
+        const SparseRowMatrix::Rows& rows = outputData.rows();
+        const SparseRowMatrix::Columns& columns = outputData.columns();
+        const SparseRowMatrix::Storage& values = outputData.data();
 
-        n = k;
-        for(size_type j=0; j<num_edges_per_elem; j++)
+        std::vector<double> weights;
+        mesh->get_weights(center,weights,2);
+        VMesh::Node::array_type nodes;
+        VMesh::Edge::array_type edges;
+
+        index_type k=0, m=0, n=0;  
+        for(VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
         {
-          columns[k] = edges[j]+num_nodes;
-          values[k]  = weights[j+num_nodes_per_elem]; 
-          k++;
+          mesh->get_nodes(nodes,idx);
+          mesh->get_edges(edges,idx);
+          m = k;
+          for(size_type j=0; j<num_nodes_per_elem; j++)
+          {
+            columns[k] = nodes[j];
+            values[k]  = weights[j]; 
+            k++;
+          }
+
+          n = k;
+          for(size_type j=0; j<num_edges_per_elem; j++)
+          {
+            columns[k] = edges[j]+num_nodes;
+            values[k]  = weights[j+num_nodes_per_elem]; 
+            k++;
+          }
+
+          ofield->copy_weighted_value(ifield,&(columns[m]),&(values[m]),n-m,idx);
+          ofield->copy_weighted_evalue(ifield,&(columns[n]),&(values[n]),k-n,idx);
+
+          rows[idx] = idx*(num_nodes_per_elem+num_edges_per_elem);
         }
+        rows[num_values] = num_elems*(num_nodes_per_elem+num_edges_per_elem);
 
-        ofield->copy_weighted_value(ifield,&(columns[m]),&(values[m]),n-m,idx);
-        ofield->copy_weighted_evalue(ifield,&(columns[n]),&(values[n]),k-n,idx);
-
-        rows[idx] = idx*(num_nodes_per_elem+num_edges_per_elem);
+        mapping = new SparseRowMatrix(num_elems,num_nodes+num_edges,outputData,num_nodes+num_edges,true);
       }
-      rows[num_values] = num_elems*(num_nodes_per_elem+num_edges_per_elem);
-
-      mapping = new SparseRowMatrix(num_elems,num_nodes+num_edges,outputData,num_nodes+num_edges,true);
       return (true);
     }  
   }
@@ -233,7 +245,8 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       // Field already has no data, so copy it through
       output = input;
-      mapping = SparseRowMatrix::Identity(num_values);
+      if (buildBasisMapping)
+        mapping = SparseRowMatrix::Identity(num_values);
       return (true);
     }
 
@@ -242,83 +255,86 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     
     VField* ofield = output->vfield();
     
-    VMesh::coords_type center;
-    mesh->get_element_center(center);
-    
     VMesh::size_type num_elems = mesh->num_elems();
     VMesh::size_type num_nodes = mesh->num_nodes();
     
     if (basis_order == 0)
     {
-      SparseRowMatrix::Builder mappingData;
-      const SparseRowMatrix::Rows& rows = mappingData.allocate_rows(num_nodes+1);
-      std::vector<index_type> cols;
-
-      if (!rows)
+      if (buildBasisMapping)
       {
-        error("Could not allocate memory for mapping");
-        return (false);
-      }
-    
-      VMesh::Elem::array_type elems;
-      
-      mesh->synchronize(Mesh::NODE_NEIGHBORS_E);
-      
-      index_type k=0; 
-      rows[0] = 0; 
-      for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
-      {
-        mesh->get_elems(elems,idx);
-        for(size_t j=0; j<elems.size(); j++) { cols.push_back(elems[j]); k++; }
-        rows[idx+1] = rows[idx]+elems.size();  
-      }
+        SparseRowMatrix::Builder mappingData;
+        const SparseRowMatrix::Rows& rows = mappingData.allocate_rows(num_nodes+1);
+        std::vector<index_type> cols;
 
-      const SparseRowMatrix::Columns& columns = mappingData.allocate_columns(cols.size());
-      const SparseRowMatrix::Storage& values = mappingData.allocate_data(cols.size());
-
-      for(VMesh::index_type j=0; j<num_nodes; j++)
-      {
-        for(VMesh::index_type r=rows[j]; r < rows[j+1]; r++)
+        if (!rows)
         {
-          double weight = 1.0/static_cast<double>(rows[j+1]-rows[j]);
-          columns[r] = cols[r];
-          values[r] = weight;
+          error("Could not allocate memory for mapping");
+          return (false);
         }
-        ofield->copy_weighted_value(ifield,&(columns[rows[j]]),&(values[rows[j]]),rows[j+1]-rows[j],j);
+
+        VMesh::Elem::array_type elems;
+
+        mesh->synchronize(Mesh::NODE_NEIGHBORS_E);
+
+        index_type k=0; 
+        rows[0] = 0; 
+        for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
+        {
+          mesh->get_elems(elems,idx);
+          for(size_t j=0; j<elems.size(); j++) { cols.push_back(elems[j]); k++; }
+          rows[idx+1] = rows[idx]+elems.size();  
+        }
+
+        const SparseRowMatrix::Columns& columns = mappingData.allocate_columns(cols.size());
+        const SparseRowMatrix::Storage& values = mappingData.allocate_data(cols.size());
+
+        for(VMesh::index_type j=0; j<num_nodes; j++)
+        {
+          for(VMesh::index_type r=rows[j]; r < rows[j+1]; r++)
+          {
+            double weight = 1.0/static_cast<double>(rows[j+1]-rows[j]);
+            columns[r] = cols[r];
+            values[r] = weight;
+          }
+          ofield->copy_weighted_value(ifield,&(columns[rows[j]]),&(values[rows[j]]),rows[j+1]-rows[j],j);
+        }
+
+        mapping = new SparseRowMatrix(num_nodes,num_elems,mappingData.build(),num_elems,true);
       }
-      
-      mapping = new SparseRowMatrix(num_nodes,num_elems,mappingData.build(),num_elems,true);
       return (true);
     }
 
     if (basis_order == 2)
     {
-      mesh->synchronize(Mesh::EDGES_E);
-      VMesh::size_type num_edges = mesh->num_edges();
-
-      SparseRowMatrix::Data mappingData(num_nodes+1, num_nodes);
-
-      if (!mappingData.allocated())
+      if (buildBasisMapping)
       {
-        error("Could not allocate memory for mapping");
-        return (false);   
-      }
+        mesh->synchronize(Mesh::EDGES_E);
+        VMesh::size_type num_edges = mesh->num_edges();
 
-      const SparseRowMatrix::Rows& rows = mappingData.rows();
-      const SparseRowMatrix::Columns& columns = mappingData.columns();
-      const SparseRowMatrix::Storage& values = mappingData.data();
-                        
-      for(VMesh::index_type idx=0; idx<num_nodes; idx++)
-      {
-        columns[idx] = idx;
-        values[idx]  = 1.0; 
-        rows[idx] = idx;
-        ofield->copy_value(ifield,idx,idx);
-      }
-      rows[num_nodes] = num_nodes;
+        SparseRowMatrix::Data mappingData(num_nodes+1, num_nodes);
 
-      mapping = new SparseRowMatrix(num_nodes,num_nodes+num_edges,mappingData,
-                                num_nodes+num_edges,true);
+        if (!mappingData.allocated())
+        {
+          error("Could not allocate memory for mapping");
+          return (false);   
+        }
+
+        const SparseRowMatrix::Rows& rows = mappingData.rows();
+        const SparseRowMatrix::Columns& columns = mappingData.columns();
+        const SparseRowMatrix::Storage& values = mappingData.data();
+
+        for(VMesh::index_type idx=0; idx<num_nodes; idx++)
+        {
+          columns[idx] = idx;
+          values[idx]  = 1.0; 
+          rows[idx] = idx;
+          ofield->copy_value(ifield,idx,idx);
+        }
+        rows[num_nodes] = num_nodes;
+
+        mapping = new SparseRowMatrix(num_nodes,num_nodes+num_edges,mappingData,
+          num_nodes+num_edges,true);
+      }
       return (true);
     }  
   }
@@ -339,7 +355,8 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
      // Field already has no data, so copy it through
       output = input;
-      mapping = SparseRowMatrix::identity(num_values);
+      if (buildBasisMapping)
+        mapping = SparseRowMatrix::identity(num_values);
       return (true);
     }
 
@@ -348,104 +365,104 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     
     VField* ofield = output->vfield();
     
-    VMesh::coords_type center;
-    mesh->get_element_center(center);
-    
-    mesh->synchronize(Mesh::EDGES_E);
-
-    VMesh::size_type num_elems = mesh->num_elems();
-    VMesh::size_type num_nodes = mesh->num_nodes();
-    VMesh::size_type num_edges = mesh->num_edges();
-    
-    if (basis_order == 0)
+    if (buildBasisMapping)
     {
-      SparseRowMatrix::Builder mappingData;
-      const SparseRowMatrix::Rows& rows = mappingData.allocate_rows(num_nodes+num_edges+1);
-      std::vector<index_type> cols;
+      mesh->synchronize(Mesh::EDGES_E);
 
-      if (!rows)
-      {
-        error("Could not allocate memory for mapping");
-        return (false);
-      }
-    
-      VMesh::Elem::array_type elems;
-      
-      mesh->synchronize(Mesh::NODE_NEIGHBORS_E);
-      
-      index_type k=0;
-      rows[0] = 0; 
-      for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
-      {
-        mesh->get_elems(elems,idx);
-        for(size_t j=0; j<elems.size(); j++) { cols.push_back(elems[j]); k++; }
-        rows[idx+1] = rows[idx]+elems.size();  
-      }
+      VMesh::size_type num_elems = mesh->num_elems();
+      VMesh::size_type num_nodes = mesh->num_nodes();
+      VMesh::size_type num_edges = mesh->num_edges();
 
-      for(VMesh::Edge::index_type idx=0; idx<num_edges; idx++)
+      if (basis_order == 0)
       {
-        mesh->get_elems(elems,idx);
-        for(size_t j=0; j<elems.size(); j++) { cols.push_back(elems[j]); k++; }
-        rows[num_nodes+idx+1] = rows[num_nodes+idx]+elems.size();  
-      }
+        SparseRowMatrix::Builder mappingData;
+        const SparseRowMatrix::Rows& rows = mappingData.allocate_rows(num_nodes+num_edges+1);
+        std::vector<index_type> cols;
 
-      const SparseRowMatrix::Columns& columns = mappingData.allocate_columns(cols.size());
-      const SparseRowMatrix::Storage& values = mappingData.allocate_data(cols.size());
-
-      for(VMesh::index_type j=0; j<num_nodes; j++)
-      {
-        for(VMesh::index_type r=rows[j]; r < rows[j+1]; r++)
+        if (!rows)
         {
-          double weight = 1.0/static_cast<double>(rows[j+1]-rows[j]);
-          columns[r] = cols[r];
-          values[r] = weight;
+          error("Could not allocate memory for mapping");
+          return (false);
         }
-        ofield->copy_weighted_value(ifield,&(columns[rows[j]]),&(values[rows[j]]),rows[j+1]-rows[j],j);
-      }
-      
-      mapping = new SparseRowMatrix(num_nodes+num_edges,num_elems,mappingData.build(),num_elems,true);
-      return (true);
-    }
 
-    if (basis_order == 1)
-    {
-      SparseRowMatrix::Data mappingData(num_nodes+num_edges+1, num_nodes+2*num_edges);
+        VMesh::Elem::array_type elems;
 
-      if (!mappingData.allocated())
-      {
-        error("Could not allocate memory for mapping");
-        return (false);    
-      }
-      const SparseRowMatrix::Rows& rows = mappingData.rows();
-      const SparseRowMatrix::Columns& columns = mappingData.columns();
-      const SparseRowMatrix::Storage& values = mappingData.data();
-        
-      for(VMesh::index_type idx=0; idx<num_nodes; idx++)
-      {
-        columns[idx] = idx;
-        values[idx]  = 1.0; 
-        rows[idx] = idx;
-        ofield->copy_value(ifield,idx,idx);
-      }
-      rows[num_nodes] = num_nodes;
-        
-      VMesh::Node::array_type nodes;   
-        
-      for(VMesh::Edge::index_type idx=0; idx<num_edges; idx++)
-      {
-        mesh->get_nodes(nodes,idx);
-        columns[2*idx+num_nodes] = nodes[0];
-        columns[2*idx+num_nodes+1] = nodes[1];
-        values[2*idx+num_nodes+1]  = 0.5; 
-        rows[idx+num_nodes] = 2*idx+num_nodes;
-        /// @todo: Need to make this work
-        ofield->copy_weighted_value(ifield,&(columns[2*idx+num_nodes]),&(values[2*idx+num_nodes] ),2,idx);
-      }
-      rows[num_nodes+num_edges] = num_nodes+2*num_edges;
+        mesh->synchronize(Mesh::NODE_NEIGHBORS_E);
 
-      mapping = new SparseRowMatrix(num_nodes+num_edges,num_nodes,mappingData,num_nodes,true);
-      return (true);
-    }  
+        index_type k=0;
+        rows[0] = 0; 
+        for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
+        {
+          mesh->get_elems(elems,idx);
+          for(size_t j=0; j<elems.size(); j++) { cols.push_back(elems[j]); k++; }
+          rows[idx+1] = rows[idx]+elems.size();  
+        }
+
+        for(VMesh::Edge::index_type idx=0; idx<num_edges; idx++)
+        {
+          mesh->get_elems(elems,idx);
+          for(size_t j=0; j<elems.size(); j++) { cols.push_back(elems[j]); k++; }
+          rows[num_nodes+idx+1] = rows[num_nodes+idx]+elems.size();  
+        }
+
+        const SparseRowMatrix::Columns& columns = mappingData.allocate_columns(cols.size());
+        const SparseRowMatrix::Storage& values = mappingData.allocate_data(cols.size());
+
+        for(VMesh::index_type j=0; j<num_nodes; j++)
+        {
+          for(VMesh::index_type r=rows[j]; r < rows[j+1]; r++)
+          {
+            double weight = 1.0/static_cast<double>(rows[j+1]-rows[j]);
+            columns[r] = cols[r];
+            values[r] = weight;
+          }
+          ofield->copy_weighted_value(ifield,&(columns[rows[j]]),&(values[rows[j]]),rows[j+1]-rows[j],j);
+        }
+
+        mapping = new SparseRowMatrix(num_nodes+num_edges,num_elems,mappingData.build(),num_elems,true);
+        return (true);
+      }
+
+      if (basis_order == 1)
+      {
+        SparseRowMatrix::Data mappingData(num_nodes+num_edges+1, num_nodes+2*num_edges);
+
+        if (!mappingData.allocated())
+        {
+          error("Could not allocate memory for mapping");
+          return (false);    
+        }
+        const SparseRowMatrix::Rows& rows = mappingData.rows();
+        const SparseRowMatrix::Columns& columns = mappingData.columns();
+        const SparseRowMatrix::Storage& values = mappingData.data();
+
+        for(VMesh::index_type idx=0; idx<num_nodes; idx++)
+        {
+          columns[idx] = idx;
+          values[idx]  = 1.0; 
+          rows[idx] = idx;
+          ofield->copy_value(ifield,idx,idx);
+        }
+        rows[num_nodes] = num_nodes;
+
+        VMesh::Node::array_type nodes;   
+
+        for(VMesh::Edge::index_type idx=0; idx<num_edges; idx++)
+        {
+          mesh->get_nodes(nodes,idx);
+          columns[2*idx+num_nodes] = nodes[0];
+          columns[2*idx+num_nodes+1] = nodes[1];
+          values[2*idx+num_nodes+1]  = 0.5; 
+          rows[idx+num_nodes] = 2*idx+num_nodes;
+          /// @todo: Need to make this work
+          ofield->copy_weighted_value(ifield,&(columns[2*idx+num_nodes]),&(values[2*idx+num_nodes] ),2,idx);
+        }
+        rows[num_nodes+num_edges] = num_nodes+2*num_edges;
+
+        mapping = new SparseRowMatrix(num_nodes+num_edges,num_nodes,mappingData,num_nodes,true);
+        return (true);
+      } 
+    } 
   }
   return (true);
 }
