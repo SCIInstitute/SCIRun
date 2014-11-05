@@ -54,9 +54,8 @@ ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 bool
 ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const
 {
-  return false;
   ScopedAlgorithmStatusReporter r(this, "ConvertFieldBasis");
-#if 0 // yucky sparse matrix code below
+
   if (!input)
   {
     error("No input field");
@@ -65,8 +64,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
   
   FieldInformation fo(input);
   
-  std::string basistype;
-  get_option(Parameters::BasisType,basistype);
+  const std::string basistype = get_option(Parameters::OutputType);
   
   int basis_order = input->vfield()->basis_order();
   
@@ -92,8 +90,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     
     return (true);
   }
-
-
+  
   if (basistype == "Constant")
   {
     if (basis_order == -1)
@@ -450,7 +447,6 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       return (true);
     }  
   }
-#endif
   return (true);
 }
 
