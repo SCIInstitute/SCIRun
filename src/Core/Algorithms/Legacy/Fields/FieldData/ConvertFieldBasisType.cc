@@ -48,7 +48,6 @@ ALGORITHM_PARAMETER_DEF(Fields, OutputType)
 
 ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 {
-  /// The output type
   add_option(Parameters::OutputType, "Linear", "None|Constant|Linear|Quadratic");
 }
 
@@ -63,7 +62,6 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     return (false);
   }
   
-  /// Get the information of the input field
   FieldInformation fo(input);
   
   std::string basistype;
@@ -77,7 +75,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     warning("Could not generate a mapping matrix for field with no data");
     if (basis_order == -1)
     {
-      // Field is already no data
+      // Field already has no data, so copy it through
       output = input;
       return (true);
     }
@@ -109,7 +107,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
     if (basis_order == 0)
     {
-      // Field is already no data
+      // Field already has no data, so copy it through
       output = input;
       mapping = SparseRowMatrix::Identity(num_values);
       return (true);
@@ -235,7 +233,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
     if (basis_order == 1)
     {
-      // Field is already no data
+      // Field already has no data, so copy it through
       output = input;
       mapping = SparseRowMatrix::Identity(num_values);
       return (true);
@@ -341,7 +339,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
     if (basis_order == 2)
     {
-      // Field is already no data
+     // Field already has no data, so copy it through
       output = input;
       mapping = SparseRowMatrix::identity(num_values);
       return (true);
@@ -464,7 +462,6 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 
 AlgorithmOutput ConvertFieldBasisTypeAlgo::run_generic(const AlgorithmInput& input) const
 {
- // throw "todo";
   auto field = input.get<Field>(Variables::InputField);
 
   FieldHandle outputField;
