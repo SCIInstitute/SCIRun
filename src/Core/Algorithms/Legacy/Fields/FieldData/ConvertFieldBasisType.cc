@@ -54,6 +54,7 @@ ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 bool
 ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const
 {
+  return false;
   ScopedAlgorithmStatusReporter r(this, "ConvertFieldBasis");
 #if 0 // yucky sparse matrix code below
   if (!input)
