@@ -43,34 +43,10 @@ using namespace SCIRun;
 /// @class ConvertFieldBasis
 /// @brief ConvertFieldBasis can modify the location of data in the input field.
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-//namespace SCIRun {
-
-class ConvertFieldBasis : public Module {
-  public:
-
-		ConvertFieldBasis(GuiContext* ctx);
-    virtual ~ConvertFieldBasis();
-    virtual void execute();
-    
-  private:
-    SCIRunAlgo::ConvertFieldBasisTypeAlgo algo_;    
-    
-  private:  
-    GuiString outputbasis_;    // the out data at
-    GuiString inputbasis_;     // the in data at
-    GuiString fldname_;         // the field name
-
-};
-#endif
-
 const ModuleLookupInfo ConvertFieldBasis::staticInfo_("ConvertFieldBasis", "ChangeFieldData", "SCIRun");
 
 ConvertFieldBasis::ConvertFieldBasis()
   : Module(staticInfo_)
-    //outputbasis_(get_ctx()->subVar("output-basis"), "Linear"),
-    //inputbasis_(get_ctx()->subVar("inputdataat", false), "---"),
-    //fldname_(get_ctx()->subVar("fldname", false), "---")
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
@@ -87,7 +63,6 @@ ConvertFieldBasis::execute()
 {
   /// Get the input field handle from the port.
   //FieldHandle input_field_handle;
-  //get_input_handle( "Input",  input_field_handle, true );
   auto input = getRequiredInput(InputField);
 
   //bool need_mapping = oport_connected("Mapping");
@@ -97,31 +72,24 @@ ConvertFieldBasis::execute()
   {
     update_state(Executing);
 
-    //setAlgoOptionFromState(Parameters::InputName); 
-    //setAlgoOptionFromState(Parameters::InputBasis); 
-   
     auto state = get_state();
-    /// Relay some information to user
-    std::string name = input->properties().get_name();
-    if (name.empty()) 
-      name = "--- no name ---";
-    state->setValue(Parameters::InputFieldName, name);
 
-    std::string inputbasis;
-    if (input->vfield()->is_nodata()) inputbasis = "NoData";
-    if (input->vfield()->is_constantdata()) inputbasis = "ConstantData";
-    if (input->vfield()->is_lineardata()) inputbasis = "LinearData";
-    if (input->vfield()->is_quadraticdata()) inputbasis = "QuadraticData";
-    if (input->vfield()->is_cubicdata()) inputbasis = "CubicData";
-    state->setValue(Parameters::InputType, inputbasis);
+    {
+      /// Relay some information to user
+      std::string name = input->properties().get_name();
+      if (name.empty()) 
+        name = "--- no name ---";
+      state->setValue(Parameters::InputFieldName, name);
 
-    // Set the method to use
-    //std::string basistype = 
-    //  // For backwards compatibility
-    //  if (basistype == "None") basistype = "nodata";
-    //  algo_.set_option("basistype",basistype);
+      std::string inputbasis;
+      if (input->vfield()->is_nodata()) inputbasis = "NoData";
+      if (input->vfield()->is_constantdata()) inputbasis = "ConstantData";
+      if (input->vfield()->is_lineardata()) inputbasis = "LinearData";
+      if (input->vfield()->is_quadraticdata()) inputbasis = "QuadraticData";
+      if (input->vfield()->is_cubicdata()) inputbasis = "CubicData";
+      state->setValue(Parameters::InputType, inputbasis);
+    }
 
-    // FieldHandle output_field_handle;
     // MatrixHandle mapping_matrix_handle;
 
     setAlgoOptionFromState(Parameters::OutputType); 
@@ -137,8 +105,7 @@ ConvertFieldBasis::execute()
     auto output = algo().run(withInputData((InputField, input))); 
     sendOutputFromAlgorithm(OutputField, output); 
 
-    /// send data downstream:
-    /* send_output_handle("Output", output_field_handle);    
+    /* 
     send_output_handle("Mapping", mapping_matrix_handle); */   
   }
 }
