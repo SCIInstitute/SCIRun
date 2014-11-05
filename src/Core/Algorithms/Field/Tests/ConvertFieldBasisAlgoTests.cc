@@ -43,10 +43,16 @@ TEST(ConvertFieldBasisAlgoTest, TetMeshOnNodeVectorMat)
 {
   ConvertFieldBasisTypeAlgo algo;
 
-  FieldHandle tetmesh = LoadTet();
+  FieldHandle tetmesh = LoadTetWithData();
 
   const int givenBasis = 1;
   EXPECT_EQ(givenBasis, tetmesh->vfield()->basis_order());
+  EXPECT_EQ(7, tetmesh->vfield()->num_values());
+  EXPECT_EQ(0, tetmesh->vfield()->num_evalues());
+  double min, max;
+  tetmesh->vfield()->minmax(min,max);
+  EXPECT_NEAR(338.38, min, 1e-3);
+  EXPECT_NEAR(340.657, max, 1e-4);
 
   algo.set_option(Parameters::OutputType, "Constant");
   algo.set(Parameters::BuildBasisMapping, false);
@@ -56,200 +62,14 @@ TEST(ConvertFieldBasisAlgoTest, TetMeshOnNodeVectorMat)
 
   const int expectedBasis = 0;
   EXPECT_EQ(expectedBasis, result->vfield()->basis_order());
+  EXPECT_EQ(3, result->vfield()->num_values());
+  EXPECT_EQ(0, result->vfield()->num_evalues());
+  result->vfield()->minmax(min,max);
+  //TODO: get cell data--this is coming back with 0, which is unexpected based on the v4 GUI, but correct based on the wiki doc.
+  //EXPECT_NEAR(339.275, min, 1e-4);
+  //EXPECT_NEAR(339.844, max, 1e-4);
 }
 
-/*
-TEST(SetFieldDataTest, TetMeshOnNodeScalarMat)
-{
-  SetFieldDataAlgo algo;
+//TODO BEN: generate unit tests for each combination of input/output bases.
 
-  FieldHandle tetmesh = LoadTet();
-
-  DenseMatrixHandle matrix = TetMeshOnNodeScalarMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-TEST(SetFieldDataTest, DISABLED_TetMeshOnNodeTensorMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTet();
-
-  DenseMatrixHandle matrix = TetMeshOnNodeTensorMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-
-TEST(SetFieldDataTest, TetMeshOnElemScalarMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTet();
-
-  DenseMatrixHandle matrix = TetMeshOnElemScalarMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-TEST(SetFieldDataTest, TetMeshOnElemVectorMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTet();
-
-  DenseMatrixHandle matrix = TetMeshOnElemVectorMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-
-TEST(SetFieldDataTest, DISABLED_TetMeshOnElemTensorMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTet();
-
-  DenseMatrixHandle matrix = TetMeshOnElemTensorMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-
-TEST(SetFieldDataTest, TriSurfOnNodeVectorMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTri();
-
-  DenseMatrixHandle matrix = TriSurfOnNodeVectorMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-
-TEST(SetFieldDataTest, TriSurfOnNodeScalarMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTri();
-
-  DenseMatrixHandle matrix = TriSurfOnNodeScalarMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-TEST(SetFieldDataTest, DISABLED_TriSurfOnNodeTensorMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTri();
-
-  DenseMatrixHandle matrix = TriSurfOnNodeTensorMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-TEST(SetFieldDataTest, TriSurfOnElemVectorMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTri();
-
-  DenseMatrixHandle matrix = TriSurfOnElemVectorMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-
-TEST(SetFieldDataTest, TriSurfOnElemScalarMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTri();
-
-  DenseMatrixHandle matrix = TriSurfOnElemScalarMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-TEST(SetFieldDataTest, DISABLED_TriSurfOnElemTensorMat)
-{
-  SetFieldDataAlgo algo;
-
-  FieldHandle tetmesh = LoadTri();
-
-  DenseMatrixHandle matrix = TriSurfOnNodeTensorMat();
-
-  FieldHandle result = algo.run(tetmesh, matrix);
-
-  GetFieldDataAlgo algo1;
-
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-
-  EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
-}
-
-
-*/
+//TODO: Test mapping matrix output. Not used much, so disable for now.
