@@ -76,7 +76,7 @@ ConvertFieldBasis::ConvertFieldBasis()
 
 void ConvertFieldBasis::setStateDefaults()
 {
-		setStateStringFromAlgoOption(Parameters::OutputBasis);
+		setStateStringFromAlgoOption(Parameters::OutputType);
 }
 
 void
@@ -96,7 +96,7 @@ ConvertFieldBasis::execute()
 
 		//setAlgoOptionFromState(Parameters::InputName); 
 		//setAlgoOptionFromState(Parameters::InputBasis); 
-		setAlgoOptionFromState(Parameters::OutputBasis); 
+		setAlgoOptionFromState(Parameters::OutputType); 
 
     /// Relay some information to user
    // std::string name = input_field_handle->get_name();

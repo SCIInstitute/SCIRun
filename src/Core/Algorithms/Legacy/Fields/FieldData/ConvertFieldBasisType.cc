@@ -49,7 +49,7 @@ ALGORITHM_PARAMETER_DEF(Fields, OutputType)
 ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 {
   /// The output type
-  add_option(Parameters::BasisType, "linear", "nodata|constant|linear|quadratic|cubic");
+  add_option(Parameters::OutputType, "linear", "nodata|constant|linear|quadratic|cubic");
 }
 
 bool
