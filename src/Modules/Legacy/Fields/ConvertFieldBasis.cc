@@ -72,23 +72,7 @@ ConvertFieldBasis::execute()
   {
     update_state(Executing);
 
-    auto state = get_state();
-
-    {
-      /// Relay some information to user
-      std::string name = input->properties().get_name();
-      if (name.empty()) 
-        name = "--- no name ---";
-      state->setValue(Parameters::InputFieldName, name);
-
-      std::string inputbasis;
-      if (input->vfield()->is_nodata()) inputbasis = "NoData";
-      if (input->vfield()->is_constantdata()) inputbasis = "ConstantData";
-      if (input->vfield()->is_lineardata()) inputbasis = "LinearData";
-      if (input->vfield()->is_quadraticdata()) inputbasis = "QuadraticData";
-      if (input->vfield()->is_cubicdata()) inputbasis = "CubicData";
-      state->setValue(Parameters::InputType, inputbasis);
-    }
+    pushInputFieldInfo(input);
 
     // MatrixHandle mapping_matrix_handle;
 
@@ -108,4 +92,21 @@ ConvertFieldBasis::execute()
     /* 
     send_output_handle("Mapping", mapping_matrix_handle); */   
   }
+}
+
+void ConvertFieldBasis::pushInputFieldInfo(FieldHandle input) const
+{
+  auto state = get_state();
+  std::string name = input->properties().get_name();
+  if (name.empty()) 
+    name = "--- no name ---";
+  state->setValue(Parameters::InputFieldName, name);
+
+  std::string inputbasis;
+  if (input->vfield()->is_nodata()) inputbasis = "NoData";
+  if (input->vfield()->is_constantdata()) inputbasis = "ConstantData";
+  if (input->vfield()->is_lineardata()) inputbasis = "LinearData";
+  if (input->vfield()->is_quadraticdata()) inputbasis = "QuadraticData";
+  if (input->vfield()->is_cubicdata()) inputbasis = "CubicData";
+  state->setValue(Parameters::InputType, inputbasis);
 }
