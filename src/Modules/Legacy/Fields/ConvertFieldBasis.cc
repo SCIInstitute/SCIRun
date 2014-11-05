@@ -25,8 +25,11 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#include <Core/Datatypes/Legacy/Field/Field.h> 
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 
 using namespace SCIRun::Modules::Fields;
@@ -96,19 +99,21 @@ ConvertFieldBasis::execute()
 
     //setAlgoOptionFromState(Parameters::InputName); 
     //setAlgoOptionFromState(Parameters::InputBasis); 
-    setAlgoOptionFromState(Parameters::OutputType); 
-
+   
+    auto state = get_state();
     /// Relay some information to user
-    std::string name = input_field_handle->get_name();
-    if (name == "") 
+    std::string name = input->properties().get_name();
+    if (name.empty()) 
       name = "--- no name ---";
-    fldname_.set(name);
+    state->setValue(Parameters::InputFieldName, name);
 
-    if (input_field_handle->vfield()->is_nodata()) inputbasis_.set("NoData");
-    if (input_field_handle->vfield()->is_constantdata()) inputbasis_.set("ConstantData");
-    if (input_field_handle->vfield()->is_lineardata()) inputbasis_.set("LinearData");
-    if (input_field_handle->vfield()->is_quadraticdata()) inputbasis_.set("QuadraticData");
-    if (input_field_handle->vfield()->is_cubicdata()) inputbasis_.set("CubicData");
+    std::string inputbasis;
+    if (input->vfield()->is_nodata()) inputbasis = "NoData";
+    if (input->vfield()->is_constantdata()) inputbasis = "ConstantData";
+    if (input->vfield()->is_lineardata()) inputbasis = "LinearData";
+    if (input->vfield()->is_quadraticdata()) inputbasis = "QuadraticData";
+    if (input->vfield()->is_cubicdata()) inputbasis = "CubicData";
+    state->setValue(Parameters::InputType, inputbasis);
 
     // Set the method to use
     //std::string basistype = 
@@ -118,6 +123,8 @@ ConvertFieldBasis::execute()
 
     // FieldHandle output_field_handle;
     // MatrixHandle mapping_matrix_handle;
+
+    setAlgoOptionFromState(Parameters::OutputType); 
 
     /*if (need_mapping)
     {

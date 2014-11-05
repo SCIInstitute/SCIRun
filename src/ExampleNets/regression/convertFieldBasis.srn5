@@ -16,15 +16,39 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>OutputType</name>
+									<name>InputFieldName</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>OutputType</name>
+									<name>InputFieldName</name>
 									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>--- no name ---</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputType</name>
+								</first>
+								<second>
+									<name>InputType</name>
+									<value>
+										<which>2</which>
+										<value>LinearData</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputType</name>
+								</first>
+								<second>
+									<name>OutputType</name>
+									<value>
 										<which>2</which>
 										<value>Constant</value>
 									</value>

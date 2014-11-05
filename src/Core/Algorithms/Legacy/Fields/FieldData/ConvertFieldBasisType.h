@@ -39,7 +39,7 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-        ALGORITHM_PARAMETER_DECL(BasisType);
+        ALGORITHM_PARAMETER_DECL(InputFieldName);
 				ALGORITHM_PARAMETER_DECL(InputType);
 				ALGORITHM_PARAMETER_DECL(OutputType);
 

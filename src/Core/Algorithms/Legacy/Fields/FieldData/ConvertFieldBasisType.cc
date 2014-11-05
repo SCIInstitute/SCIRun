@@ -42,7 +42,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
-ALGORITHM_PARAMETER_DEF(Fields, BasisType)
+ALGORITHM_PARAMETER_DEF(Fields, InputFieldName)
 ALGORITHM_PARAMETER_DEF(Fields, InputType)
 ALGORITHM_PARAMETER_DEF(Fields, OutputType)
 
