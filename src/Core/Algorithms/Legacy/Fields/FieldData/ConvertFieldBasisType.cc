@@ -49,7 +49,7 @@ ALGORITHM_PARAMETER_DEF(Fields, OutputType)
 ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 {
   /// The output type
-  add_option(Parameters::OutputType, "linear", "nodata|constant|linear|quadratic|cubic");
+  add_option(Parameters::OutputType, "Linear", "None|Constant|Linear|Quadratic");
 }
 
 bool
@@ -71,7 +71,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
   
   int basis_order = input->vfield()->basis_order();
   
-  if (basistype == "nodata")
+  if (basistype == "None")
   {
     mapping = 0;
     warning("Could not generate a mapping matrix for field with no data");
@@ -95,7 +95,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
   }
 
 
-  if (basistype == "constant")
+  if (basistype == "Constant")
   {
     if (basis_order == -1)
     {
@@ -221,7 +221,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
   }
 
 
-  if (basistype == "linear")
+  if (basistype == "Linear")
   {
     if (basis_order == -1)
     {
@@ -327,7 +327,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     }  
   }
 
-  if (basistype == "quadratic")
+  if (basistype == "Quadratic")
   {
     if (basis_order == -1)
     {
