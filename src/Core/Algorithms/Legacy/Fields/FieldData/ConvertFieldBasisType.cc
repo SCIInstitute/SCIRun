@@ -50,6 +50,7 @@ ALGORITHM_PARAMETER_DEF(Fields, BuildBasisMapping)
 ConvertFieldBasisTypeAlgo::ConvertFieldBasisTypeAlgo()
 {
   add_option(Parameters::OutputType, "Linear", "None|Constant|Linear|Quadratic");
+  addParameter(Parameters::BuildBasisMapping, false);
 }
 
 bool
@@ -73,7 +74,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
   if (basistype == "None")
   {
     if (buildBasisMapping)
-      mapping = 0;
+      mapping.reset();
 
     warning("Could not generate a mapping matrix for field with no data");
     if (basis_order == -1)
@@ -101,7 +102,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       warning("Could not generate a mapping matrix for field with no data");
       if (buildBasisMapping)
-        mapping = 0;
+        mapping.reset();
     }
 
     VMesh* mesh    = input->vmesh();
@@ -113,7 +114,11 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       // Field already has no data, so copy it through
       output = input;
       if (buildBasisMapping)
+      {
+#if 0
         mapping = SparseRowMatrix::Identity(num_values);
+#endif
+      }
       return (true);
     }
 
@@ -133,6 +138,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       if (buildBasisMapping)
       {
+#if 0
         SparseRowMatrix::Data outputData(num_elems+1, num_elems*num_nodes_per_elem);
 
         if (!outputData.allocated())
@@ -166,6 +172,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         rows[num_elems] = num_elems*num_nodes_per_elem;
 
         mapping = new SparseRowMatrix(num_elems,num_nodes,outputData,num_nodes,true);
+#endif
       }
       return (true);
     }
@@ -174,6 +181,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       if (buildBasisMapping)
       {
+#if 0
         mesh->synchronize(Mesh::EDGES_E);
         VMesh::size_type num_edges = mesh->num_edges();
         VMesh::size_type num_edges_per_elem = mesh->num_edges_per_elem();
@@ -223,6 +231,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         rows[num_values] = num_elems*(num_nodes_per_elem+num_edges_per_elem);
 
         mapping = new SparseRowMatrix(num_elems,num_nodes+num_edges,outputData,num_nodes+num_edges,true);
+#endif
       }
       return (true);
     }  
@@ -234,7 +243,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     if (basis_order == -1)
     {
       warning("Could not generate a mapping matrix for field with no data");
-      mapping = 0;
+      mapping.reset();
     }
 
     VMesh* mesh    = input->vmesh();
@@ -246,7 +255,11 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       // Field already has no data, so copy it through
       output = input;
       if (buildBasisMapping)
+      {
+#if 0
         mapping = SparseRowMatrix::Identity(num_values);
+#endif
+      }
       return (true);
     }
 
@@ -262,6 +275,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       if (buildBasisMapping)
       {
+#if 0
         SparseRowMatrix::Builder mappingData;
         const SparseRowMatrix::Rows& rows = mappingData.allocate_rows(num_nodes+1);
         std::vector<index_type> cols;
@@ -300,6 +314,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         }
 
         mapping = new SparseRowMatrix(num_nodes,num_elems,mappingData.build(),num_elems,true);
+#endif
       }
       return (true);
     }
@@ -308,6 +323,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       if (buildBasisMapping)
       {
+#if 0
         mesh->synchronize(Mesh::EDGES_E);
         VMesh::size_type num_edges = mesh->num_edges();
 
@@ -334,6 +350,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
         mapping = new SparseRowMatrix(num_nodes,num_nodes+num_edges,mappingData,
           num_nodes+num_edges,true);
+#endif
       }
       return (true);
     }  
@@ -344,7 +361,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     if (basis_order == -1)
     {
       warning("Could not generate a mapping matrix for field with no data");
-      mapping = 0;
+      mapping.reset();
     }
 
     VMesh* mesh    = input->vmesh();
@@ -356,7 +373,11 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
      // Field already has no data, so copy it through
       output = input;
       if (buildBasisMapping)
+      {
+#if 0
         mapping = SparseRowMatrix::identity(num_values);
+#endif
+      }
       return (true);
     }
 
@@ -367,6 +388,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     
     if (buildBasisMapping)
     {
+#if 0
       mesh->synchronize(Mesh::EDGES_E);
 
       VMesh::size_type num_elems = mesh->num_elems();
@@ -462,6 +484,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         mapping = new SparseRowMatrix(num_nodes+num_edges,num_nodes,mappingData,num_nodes,true);
         return (true);
       } 
+#endif
     } 
   }
   return (true);
