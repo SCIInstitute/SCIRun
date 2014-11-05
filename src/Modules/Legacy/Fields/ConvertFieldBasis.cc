@@ -50,7 +50,7 @@ ConvertFieldBasis::ConvertFieldBasis()
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
-  INITIALIZE_PORT(Mapping);
+  //INITIALIZE_PORT(Mapping);
 }
 
 void ConvertFieldBasis::setStateDefaults()
@@ -63,7 +63,9 @@ ConvertFieldBasis::execute()
 {
   auto input = getRequiredInput(InputField);
 
-  //bool need_mapping = oport_connected("Mapping");
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  bool need_mapping = oport_connected("Mapping");
+#endif
 
   if (needToExecute())
   {
@@ -71,23 +73,25 @@ ConvertFieldBasis::execute()
 
     pushInputFieldInfo(input);
 
-    // MatrixHandle mapping_matrix_handle;
-
     setAlgoOptionFromState(Parameters::OutputType); 
 
-    /*if (need_mapping)
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    if (need_mapping)
     {
     if (!(algo_.run(input_field_handle,output_field_handle,mapping_matrix_handle))) return;
     }
     else
     {
     if (!(algo_.run(input_field_handle,output_field_handle))) return;    
-    }*/
-    auto output = algo().run(withInputData((InputField, input))); 
+    }
+#endif
+    remark("Mapping matrix port implementation is not enabled yet--please contact a developer");
+    auto output = algo().run(withInputData((InputField, input)));
     sendOutputFromAlgorithm(OutputField, output); 
 
-    /* 
-    send_output_handle("Mapping", mapping_matrix_handle); */   
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    send_output_handle("Mapping", mapping_matrix_handle);
+#endif
   }
 }
 

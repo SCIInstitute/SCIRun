@@ -115,7 +115,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       output = input;
       if (buildBasisMapping)
       {
-#if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         mapping = SparseRowMatrix::Identity(num_values);
 #endif
       }
@@ -138,7 +138,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       if (buildBasisMapping)
       {
-#if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         SparseRowMatrix::Data outputData(num_elems+1, num_elems*num_nodes_per_elem);
 
         if (!outputData.allocated())
@@ -181,7 +181,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       if (buildBasisMapping)
       {
-#if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         mesh->synchronize(Mesh::EDGES_E);
         VMesh::size_type num_edges = mesh->num_edges();
         VMesh::size_type num_edges_per_elem = mesh->num_edges_per_elem();
@@ -256,7 +256,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       output = input;
       if (buildBasisMapping)
       {
-#if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         mapping = SparseRowMatrix::Identity(num_values);
 #endif
       }
@@ -275,7 +275,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       if (buildBasisMapping)
       {
-#if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         SparseRowMatrix::Builder mappingData;
         const SparseRowMatrix::Rows& rows = mappingData.allocate_rows(num_nodes+1);
         std::vector<index_type> cols;
@@ -323,7 +323,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     {
       if (buildBasisMapping)
       {
-#if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         mesh->synchronize(Mesh::EDGES_E);
         VMesh::size_type num_edges = mesh->num_edges();
 
@@ -374,7 +374,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       output = input;
       if (buildBasisMapping)
       {
-#if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         mapping = SparseRowMatrix::identity(num_values);
 #endif
       }
@@ -388,7 +388,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     
     if (buildBasisMapping)
     {
-#if 0
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
       mesh->synchronize(Mesh::EDGES_E);
 
       VMesh::size_type num_elems = mesh->num_elems();
