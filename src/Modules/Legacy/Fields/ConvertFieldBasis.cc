@@ -61,13 +61,10 @@ void ConvertFieldBasis::setStateDefaults()
 void
 ConvertFieldBasis::execute()
 {
-  /// Get the input field handle from the port.
-  //FieldHandle input_field_handle;
   auto input = getRequiredInput(InputField);
 
   //bool need_mapping = oport_connected("Mapping");
 
-  // Only do work if needed:
   if (needToExecute())
   {
     update_state(Executing);
