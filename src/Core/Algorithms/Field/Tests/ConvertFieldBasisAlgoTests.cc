@@ -39,7 +39,39 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-TEST(ConvertFieldBasisAlgoTest, TetMeshOnNodeVectorMat)
+TEST(ConvertFieldBasisAlgoTest, TetMeshOnNodeVectorMatLinear)
+{
+  ConvertFieldBasisTypeAlgo algo;
+
+  FieldHandle tetmesh = LoadTetWithData();
+
+  const int givenBasis = 1;
+  EXPECT_EQ(givenBasis, tetmesh->vfield()->basis_order());
+  EXPECT_EQ(7, tetmesh->vfield()->num_values());
+  EXPECT_EQ(0, tetmesh->vfield()->num_evalues());
+  double min, max;
+  tetmesh->vfield()->minmax(min,max);
+  EXPECT_NEAR(338.38, min, 1e-3);
+  EXPECT_NEAR(340.657, max, 1e-4);
+
+  algo.set_option(Parameters::OutputType, "Linear");
+  algo.set(Parameters::BuildBasisMapping, false);
+
+  FieldHandle result;
+  ASSERT_TRUE(algo.runImpl(tetmesh, result));
+
+  const int expectedBasis = 1;
+  EXPECT_EQ(expectedBasis, result->vfield()->basis_order());
+  EXPECT_EQ(7, result->vfield()->num_values());
+  EXPECT_EQ(0, result->vfield()->num_evalues());
+  result->vfield()->minmax(min,max);
+  //TODO: get cell data--this is coming back with 0, which is unexpected based on the v4 GUI, but correct based on the wiki doc.
+  //EXPECT_NEAR(339.275, min, 1e-4);
+  //EXPECT_NEAR(339.844, max, 1e-4);
+}
+
+//TODO BEN: generate unit tests for each combination of input/output bases.
+TEST(ConvertFieldBasisAlgoTest, TetMeshOnNodeVectorMatConstant)
 {
   ConvertFieldBasisTypeAlgo algo;
 
@@ -69,7 +101,34 @@ TEST(ConvertFieldBasisAlgoTest, TetMeshOnNodeVectorMat)
   //EXPECT_NEAR(339.275, min, 1e-4);
   //EXPECT_NEAR(339.844, max, 1e-4);
 }
+TEST(ConvertFieldBasisAlgoTest, TetMeshOnNodeVectorMatNone)
+{
+  ConvertFieldBasisTypeAlgo algo;
 
-//TODO BEN: generate unit tests for each combination of input/output bases.
+  FieldHandle tetmesh = LoadTetWithData();
 
+  const int givenBasis = 1;
+  EXPECT_EQ(givenBasis, tetmesh->vfield()->basis_order());
+  EXPECT_EQ(7, tetmesh->vfield()->num_values());
+  EXPECT_EQ(0, tetmesh->vfield()->num_evalues());
+  double min, max;
+  tetmesh->vfield()->minmax(min,max);
+  EXPECT_NEAR(338.38, min, 1e-3);
+  EXPECT_NEAR(340.657, max, 1e-4);
+
+  algo.set_option(Parameters::OutputType, "None");
+  algo.set(Parameters::BuildBasisMapping, false);
+
+  FieldHandle result;
+  ASSERT_TRUE(algo.runImpl(tetmesh, result));
+
+  const int expectedBasis = -1;
+  EXPECT_EQ(expectedBasis, result->vfield()->basis_order());
+  EXPECT_EQ(0, result->vfield()->num_values());
+  EXPECT_EQ(0, result->vfield()->num_evalues());
+  result->vfield()->minmax(min,max);
+  //TODO: get cell data--this is coming back with 0, which is unexpected based on the v4 GUI, but correct based on the wiki doc.
+  //EXPECT_NEAR(339.275, min, 1e-4);
+  //EXPECT_NEAR(339.844, max, 1e-4);
+}
 //TODO: Test mapping matrix output. Not used much, so disable for now.
