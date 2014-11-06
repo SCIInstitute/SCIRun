@@ -44,7 +44,7 @@ SET(Core_Algorithms_Legacy_Converter_HEADERS
   FieldToNrrd.h
 )
 
-ADD_LIBRARY(Core_Algorithms_Legacy_Converter
+SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Converter
   ${Core_Algorithms_Legacy_Converter_SRCS}
   ${Core_Algorithms_Legacy_Converter_HEADERS})
 

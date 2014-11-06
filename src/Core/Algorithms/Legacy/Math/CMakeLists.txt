@@ -62,7 +62,10 @@ SET(Core_Algorithms_Legacy_Math_SRCS
   #SortMatrix/SortMatrix.cc
 )
 
-ADD_LIBRARY(Core_Algorithms_Legacy_Math ${Core_Algorithms_Legacy_Math_SRCS})
+SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Math 
+  ${Core_Algorithms_Legacy_Math_SRCS}
+  ${Core_Algorithms_Legacy_Math_HEADERS}
+  )
 
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Math
   Core_Datatypes

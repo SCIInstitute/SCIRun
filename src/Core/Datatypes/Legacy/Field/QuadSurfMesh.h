@@ -1661,7 +1661,7 @@ protected:
             "QuadSurfMesh: Must call synchronize EDGES_E on QuadSurfMesh first");
 
     array.clear();
-    //array.reserve(4);
+    array.resize(4);
     index_type he;
     int i = 0;
     he = static_cast<typename ARRAY::value_type>(halfedge_to_edge_[idx * 4 ]);
