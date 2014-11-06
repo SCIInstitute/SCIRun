@@ -39,7 +39,7 @@ SET(Modules_Legacy_Matlab_DataIO_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Modules_Legacy_Matlab_DataIO 
+SCIRUN_ADD_LIBRARY(Modules_Legacy_Matlab_DataIO 
   ${Modules_Legacy_Matlab_DataIO_SRCS}
   ${Modules_Legacy_Matlab_DataIO_HEADERS}
 )
