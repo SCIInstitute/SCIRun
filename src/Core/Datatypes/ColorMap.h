@@ -50,8 +50,6 @@ namespace Datatypes {
     boost::shared_ptr<class ColorMapImpl> impl_;
   };
 
-  typedef boost::shared_ptr<ColorMap> ColorMapHandle;
-
   class SCISHARE StandardColorMapFactory : boost::noncopyable
   {
   public:

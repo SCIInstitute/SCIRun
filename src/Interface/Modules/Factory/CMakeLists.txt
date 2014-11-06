@@ -57,6 +57,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_BrainStimulator
   Interface_Modules_Render
   Interface_Modules_String
+  Interface_Modules_Matlab
   Interface_Modules_Testing
   Interface_Modules_Visualization
   ${SCI_BOOST_LIBRARY}

@@ -34,7 +34,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
-void TextEditAppender::log(const QString& message) const 
+void TextEditAppender::log(const QString& message) const
 {
   text_->append(message);
 }
@@ -77,4 +77,57 @@ bool TreeViewModuleGetter::isModule() const
 NotePosition ComboBoxDefaultNotePositionGetter::position() const
 {
   return NotePosition(combo_.currentIndex() + 1);
+}
+
+CORE_SINGLETON_IMPLEMENTATION( WidgetDisablingService )
+
+namespace
+{
+  class SetDisableFlag : public boost::static_visitor<>
+  {
+  public:
+    explicit SetDisableFlag(bool flag) : flag_(flag) {}
+    template <typename T>
+    void operator()( T* widget ) const
+    {
+      //TODO: investigate this Mac Qt bug in more detail. A better workaround probably exists. (Or just wait until Qt 5)
+//#ifdef WIN32
+      if (widget)
+        widget->setDisabled(flag_);
+//#endif
+    }
+    bool flag_;
+  };
+
+  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets, bool flag)
+  {
+    std::for_each(widgets.begin(), widgets.end(), [=](InputWidget& v) { boost::apply_visitor(SetDisableFlag(flag), v); });
+  }
+}
+
+void WidgetDisablingService::addNetworkEditor(NetworkEditor* ne)
+{
+  ne_ = ne;
+}
+
+void WidgetDisablingService::addWidget(const InputWidget& w)
+{
+  inputWidgets_.push_back(w);
+}
+
+void WidgetDisablingService::removeWidget(const InputWidget& w)
+{
+  inputWidgets_.erase(std::remove(inputWidgets_.begin(), inputWidgets_.end(), w));
+}
+
+void WidgetDisablingService::disableInputWidgets()
+{
+  ne_->disableInputWidgets();
+  setWidgetsDisableFlag(inputWidgets_, true);
+}
+
+void WidgetDisablingService::enableInputWidgets()
+{
+  ne_->enableInputWidgets();
+  setWidgetsDisableFlag(inputWidgets_, false);
 }

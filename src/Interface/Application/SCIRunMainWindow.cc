@@ -213,6 +213,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
+  connect(dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
+
   makeFilterButtonMenu();
 
   connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
@@ -236,6 +238,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
 
+  provenanceWindow_->hide();
+
+  hideNonfunctioningWidgets();
+
   //parseStyleXML();
 }
 
@@ -252,8 +258,9 @@ void SCIRunMainWindow::postConstructionSignalHookup()
 {
   connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
 
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
+  WidgetDisablingService::Instance().addNetworkEditor(networkEditor_);
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), &WidgetDisablingService::Instance(), SLOT(disableInputWidgets()));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), &WidgetDisablingService::Instance(), SLOT(enableInputWidgets()));
 
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
@@ -293,8 +300,10 @@ void SCIRunMainWindow::setTipsAndWhatsThis()
 
 void SCIRunMainWindow::setupInputWidgets()
 {
+  // will be slicker in C++11
   using namespace boost::assign;
-  inputWidgets_ += actionExecute_All_,
+  std::vector<InputWidget> widgets;
+  widgets += actionExecute_All_,
     actionSave_,
     actionLoad_,
     actionSave_As_,
@@ -302,11 +311,12 @@ void SCIRunMainWindow::setupInputWidgets()
     actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
-  std::copy(recentFileActions_.begin(), recentFileActions_.end(), std::back_inserter(inputWidgets_));
-
 #ifdef BUILD_WITH_PYTHON
-  inputWidgets_ += pythonConsole_;
+  widgets += pythonConsole_;
 #endif
+
+  WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
+  WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
 }
 
 SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
@@ -617,38 +627,6 @@ void SCIRunMainWindow::makePipesManhattan()
   networkEditor_->setConnectionPipelineType(MANHATTAN);
 }
 
-namespace
-{
-  class SetDisableFlag : public boost::static_visitor<>
-  {
-  public:
-    explicit SetDisableFlag(bool flag) : flag_(flag) {}
-    template <typename T>
-    void operator()( T* widget ) const
-    {
-      widget->setDisabled(flag_);
-    }
-    bool flag_;
-  };
-
-  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets, bool flag)
-  {
-    std::for_each(widgets.begin(), widgets.end(), [=](InputWidget& v) { boost::apply_visitor(SetDisableFlag(flag), v); });
-  }
-}
-
-void SCIRunMainWindow::disableInputWidgets()
-{
-  networkEditor_->disableInputWidgets();
-  setWidgetsDisableFlag(inputWidgets_, true);
-}
-
-void SCIRunMainWindow::enableInputWidgets()
-{
-  networkEditor_->enableInputWidgets();
-  setWidgetsDisableFlag(inputWidgets_, false);
-}
-
 void SCIRunMainWindow::chooseBackgroundColor()
 {
   auto brush = networkEditor_->background();
@@ -687,6 +665,7 @@ void SCIRunMainWindow::setupProvenanceWindow()
   actionRedo_->setEnabled(false);
   connect(provenanceWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
   connect(provenanceWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
+  connect(provenanceWindow_, SIGNAL(networkModified()), networkEditor_, SLOT(updateViewport()));
 
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
 
@@ -1156,4 +1135,43 @@ void SCIRunMainWindow::resetWindowLayout()
   addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
 
   std::cout << "TODO: toolbars" << std::endl;
+}
+
+void SCIRunMainWindow::hideNonfunctioningWidgets()
+{
+  QList<QAction*> nonfunctioningActions;
+  nonfunctioningActions <<
+    actionInsert_ <<
+    actionCreate_Module_Skeleton_ <<
+    actionCut_ <<
+    actionCopy_ <<
+    actionPaste_;
+  QList<QMenu*> nonfunctioningMenus;
+  nonfunctioningMenus <<
+    menuSubnets_ <<
+    menuToolkits_;
+  QList<QWidget*> nonfunctioningWidgets;
+  nonfunctioningWidgets <<
+    scirunNetsLabel_ <<
+    scirunNetsLineEdit_ <<
+    scirunNetsPushButton_ <<
+    userDataLabel_ <<
+    userDataLineEdit_ <<
+    userDataPushButton_ <<
+    dataSetGroupBox_ <<
+    optionsGroupBox_;
+
+  Q_FOREACH(QAction* a, nonfunctioningActions)
+    a->setVisible(false);
+  Q_FOREACH(QMenu* m, nonfunctioningMenus)
+    m->menuAction()->setVisible(false);
+  Q_FOREACH(QWidget* w, nonfunctioningWidgets)
+    w->setVisible(false);
+}
+
+void SCIRunMainWindow::adjustModuleDock(int state)
+{
+  bool dockable = dockableModulesCheckBox_->isChecked();
+  actionPinAllModuleUIs_->setEnabled(dockable);
+  Preferences::Instance().modulesAreDockable.setValue(dockable);
 }

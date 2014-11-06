@@ -53,22 +53,25 @@ void CreateMatrixModule::setStateDefaults()
 
 void CreateMatrixModule::execute()
 {
-  DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>());
-  try
+  if (needToExecute())
   {
-	  std::string matrixString = get_state()->getValue(TextEntry).toString();
-	
-    if (!matrixString.empty())
+    DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>());
+    try
     {
-      matrixString += "\n";
-      std::istringstream reader(matrixString);
+      std::string matrixString = get_state()->getValue(TextEntry).toString();
 
-      reader >> *matrix;
+      if (!matrixString.empty())
+      {
+        matrixString += "\n";
+        std::istringstream reader(matrixString);
+
+        reader >> *matrix;
+      }
     }
+    catch (...)
+    {
+      THROW_ALGORITHM_INPUT_ERROR("Matrix parsing failed.");
+    }
+    sendOutput(EnteredMatrix, matrix);
   }
-  catch (...)
-  {
-  	THROW_ALGORITHM_INPUT_ERROR("Matrix parsing failed.");
-  }
-  sendOutput(EnteredMatrix, matrix);
 }

@@ -67,6 +67,7 @@ namespace Networks {
     virtual void detach(Connection* conn) = 0;
     virtual const Connection* connection(size_t) const = 0;
     virtual void setIndex(size_t index) = 0;
+    virtual void setId(const PortId& id) = 0;
   };
   
   typedef boost::signals2::signal<void(const PortId&, SCIRun::Core::Datatypes::DatatypeHandle)> DataOnPortHasChangedSignalType;
@@ -88,6 +89,7 @@ namespace Networks {
     virtual ~OutputPortInterface();
     virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
     virtual bool hasData() const = 0;
+    virtual OutputPortInterface* clone() const { return 0; } // TODO
   };
 
   class SCISHARE PortConnectionDeterminer

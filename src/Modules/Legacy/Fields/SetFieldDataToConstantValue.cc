@@ -28,67 +28,65 @@
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 
-#include <Dataflow/Network/Module.h>
-
-
-namespace SCIRun {
+#include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+const ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToConstantValue", "ChangeFieldData", "SCIRun");
 
 /// @class SetFieldDataToConstantValue
 /// @brief Sets field data to a given scalar value on a new output field based
 /// on the input field geometry. 
+//
+//class SetFieldDataToConstantValue : public Module {
+//  public:
+//    SetFieldDataToConstantValue(GuiContext*);
+//    virtual ~SetFieldDataToConstantValue() {}
+//
+//    virtual void execute();
+//
+//  private:
+//    GuiString gui_data_type_;
+//    GuiString gui_basis_order_;
+//    GuiDouble gui_value_;
+//    
+//    SCIRunAlgo::SetFieldDataToConstantValueAlgo algo_;
+//};
 
-class SetFieldDataToConstantValue : public Module {
-  public:
-    SetFieldDataToConstantValue(GuiContext*);
-    virtual ~SetFieldDataToConstantValue() {}
-
-    virtual void execute();
-
-  private:
-    GuiString gui_data_type_;
-    GuiString gui_basis_order_;
-    GuiDouble gui_value_;
-    
-    SCIRunAlgo::SetFieldDataToConstantValueAlgo algo_;
-};
-
-
-DECLARE_MAKER(SetFieldDataToConstantValue)
-
-SetFieldDataToConstantValue::SetFieldDataToConstantValue(GuiContext* ctx) :
-  Module("SetFieldDataToConstantValue", ctx, Source, "ChangeFieldData", "SCIRun"),
-    gui_data_type_(ctx->subVar("data-type"),"same as input"),
-    gui_basis_order_(ctx->subVar("basis-order"),"same as input"),
-    gui_value_(ctx->subVar("value"),0.0)
+SetFieldDataToConstantValue::SetFieldDataToConstantValue() :
+  Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
+
+void SetFieldDataToConstantValue::setStateDefaults()
+{
+  setStateDoubleFromAlgo(Parameters::Value);
+  setStateStringFromAlgoOption(Parameters::DataType);
+  setStateStringFromAlgoOption(Parameters::BasisOrder);
 }
 
 void
 SetFieldDataToConstantValue::execute()
 {
-  FieldHandle input, output;
+  auto input = getRequiredInput(InputField);
   
-  get_input_handle("Field",input,true);
-  
-  if ( inputs_changed_ || gui_data_type_.changed() || 
-       gui_basis_order_.changed() || gui_value_.changed() ||
-      !oport_cached("Field"))
+  if (needToExecute())
   {
     update_state(Executing);
 
-    algo_.set_option("data_type",gui_data_type_.get());
-    algo_.set_option("basis_order",gui_basis_order_.get());
-    algo_.set_scalar("value",gui_value_.get());
-    if(!(algo_.run(input,output))) return;
-    
-    send_output_handle("Field",output,true);
+    setAlgoDoubleFromState(Parameters::Value);
+    setAlgoOptionFromState(Parameters::DataType);
+    setAlgoOptionFromState(Parameters::BasisOrder);
+
+    auto output = algo().run(withInputData((InputField, input)));
+
+    sendOutputFromAlgorithm(OutputField, output);
   }
-
 }
-
-} // End namespace SCIRun
-
-

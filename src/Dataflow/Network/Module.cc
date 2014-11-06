@@ -105,7 +105,7 @@ OutputPortHandle Module::getOutputPort(const PortId& id) const
   return oports_[id];
 }
 
-InputPortHandle Module::getInputPort(const PortId& id) const
+InputPortHandle Module::getInputPort(const PortId& id)
 {
   return iports_[id];
 }
@@ -132,6 +132,7 @@ bool Module::do_execute() throw()
 
   try
   {
+    //TODO: could we call needToExecute() here?
     execute();
     returnCode = true;
   }
@@ -240,10 +241,9 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   }
 
   auto data = port->getData();
-  //if (!inputsChanged_)
   {
     LOG_DEBUG(id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value.");
-    inputsChanged_ = port->hasChanged();
+    inputsChanged_ = inputsChanged_ || port->hasChanged();
     LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
   }
   return data;
@@ -260,6 +260,11 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   std::vector<DatatypeHandleOption> options;
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
+  {
+    LOG_DEBUG(id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value.");
+    inputsChanged_ = inputsChanged_ || std::any_of(portsWithName.begin(), portsWithName.end(), [](InputPortHandle input) { return input->hasChanged(); });
+    LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
+  }
   return options;
 }
 
@@ -586,7 +591,7 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(const Module& module) : modul
 {
 }
 
-bool InputsChangedCheckerImpl::inputsChanged() const 
+bool InputsChangedCheckerImpl::inputsChanged() const
 {
   auto ret = module_.inputsChanged();
   LOG_DEBUG(module_.get_id() << " InputsChangedCheckerImpl returns " << ret);
@@ -597,7 +602,7 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_
 {
 }
 
-bool StateChangedCheckerImpl::newStatePresent() const 
+bool StateChangedCheckerImpl::newStatePresent() const
 {
   auto ret = module_.newStatePresent();
   LOG_DEBUG(module_.get_id() << " StateChangedCheckerImpl returns " << ret);
@@ -608,7 +613,7 @@ OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module)
 {
 }
 
-bool OutputPortsCachedCheckerImpl::outputPortsCached() const 
+bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
   auto outputs = module_.outputPorts();
   auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out->hasData(); });
@@ -633,4 +638,45 @@ ModuleReexecutionStrategyHandle DynamicReexecutionStrategyFactory::create(const 
     boost::make_shared<InputsChangedCheckerImpl>(module),
     boost::make_shared<StateChangedCheckerImpl>(module),
     boost::make_shared<OutputPortsCachedCheckerImpl>(module));
+}
+
+bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const ModuleDescription& potentialReplacement)
+{
+  if (module->get_module_name() == potentialReplacement.lookupInfo_.module_name_)
+    return false;
+
+  {
+    auto inputs = module->inputPorts();
+    for (size_t i = 0; i < inputs.size(); ++i)
+    {
+      auto toMatch = inputs[i];
+      if (toMatch->nconnections() > 0)
+      {
+        if (i >= potentialReplacement.input_ports_.size())
+          return false;
+
+        const InputPortDescription& input = potentialReplacement.input_ports_[i];
+        if (input.datatype != toMatch->get_typename())
+          return false;
+      }
+    }
+  }
+  {
+    auto outputs = module->outputPorts();
+    for (size_t i = 0; i < outputs.size(); ++i)
+    {
+      auto toMatch = outputs[i];
+      if (toMatch->nconnections() > 0)
+      {
+        if (i >= potentialReplacement.output_ports_.size())
+          return false;
+
+        const OutputPortDescription& output = potentialReplacement.output_ports_[i];
+        if (output.datatype != toMatch->get_typename())
+          return false;
+      }
+    }
+  }
+  LOG_DEBUG("\tFound replacement: " << potentialReplacement.lookupInfo_.module_name_ << std::endl);
+  return true;
 }

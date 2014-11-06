@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1117</width>
-         <height>516</height>
+         <width>1114</width>
+         <height>477</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -388,15 +388,15 @@
          <string>Display options for the network editor.</string>
         </property>
         <attribute name="title">
-         <string>Network Editor*</string>
+         <string>Network Editor</string>
         </attribute>
         <widget class="QGroupBox" name="layoutOptionsGroupBox_">
          <property name="geometry">
           <rect>
-           <x>9</x>
-           <y>9</y>
-           <width>461</width>
-           <height>211</height>
+           <x>10</x>
+           <y>0</y>
+           <width>531</width>
+           <height>231</height>
           </rect>
          </property>
          <property name="title">
@@ -628,6 +628,16 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="dockableModulesCheckBox_">
+            <property name="text">
+             <string>Enable Module Dock</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </widget>
@@ -639,7 +649,7 @@
          <string>Stored paths available for use in module I/O.</string>
         </property>
         <attribute name="title">
-         <string>Options*</string>
+         <string>Options</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
@@ -650,7 +660,7 @@
               <bool>true</bool>
              </property>
              <property name="title">
-              <string>SCIRun Path Settings*</string>
+              <string>SCIRun Path Settings</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>

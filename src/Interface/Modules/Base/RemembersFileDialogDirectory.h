@@ -48,6 +48,7 @@ namespace Gui {
     {
       currentDirectory_ = QDir(recentFile).absolutePath();
     }
+    QString selectedFilter_;
   private:
     static QString currentDirectory_;
   };

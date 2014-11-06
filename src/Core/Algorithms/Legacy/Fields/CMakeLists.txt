@@ -39,11 +39,10 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/CalculateVectorMagnitudesAlgo.h
   #FieldData/ConvertMappingMatrixToFieldData.h
   #FieldData/ConvertFieldDataType.h             
-  #FieldData/ConvertFieldBasisType.h            
   #FieldData/CalculateLatVolGradientsAtNodes.h  
   #FieldData/GetFieldData.h
   FieldData/SetFieldData.h
-  #FieldData/SetFieldDataToConstantValue.h
+  FieldData/SetFieldDataToConstantValue.h
   #FieldData/SmoothVecFieldMedian.h
   Mapping/BuildMappingMatrixAlgo.h
   DomainFields/GetDomainBoundaryAlgo.h

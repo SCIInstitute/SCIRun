@@ -7,7 +7,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,148 +27,118 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/DataIO/DataIOAlgo.h>
-#include <Core/Algorithms/Converter/ConverterAlgo.h>
-#include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/Algorithms/Legacy/DataIO/DataIOAlgo.h>
+#include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
+#include <Core/IEPlugin/NrrdField_Plugin.h>
 
-// This file contains readers for nrrds as fields. We currently have 5 variations
-// depending on whether data is defined on the nodes or the elements and what the
-// parity of the data is.
-// 
-// Although these properties are defined in the nrrd file format, most nrrds are
-// annotated improperly and hence corrections have to made.
+using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-
-// Default reader use the definitions in the nrrd
-FieldHandle  NrrdToField_reader(ProgressReporter *pr, const char *filename);
-// Override the location settings and force data on the nodes
-FieldHandle  Nodal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
-// Override the location settings and force data on the elements
-FieldHandle  Modal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
-// Override the location settings and force data on the nodes and invert space parity
-FieldHandle  IPNodal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
-// Override the location settings and force data on the elements and invert space parity
-FieldHandle  IPModal_NrrdToField_reader(ProgressReporter *pr, const char *filename);
-
-// Default writer
-bool FieldToNrrd_writer(ProgressReporter *pr, FieldHandle fh, const char *filename);
-
-FieldHandle NrrdToField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::NrrdToField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle field = 0;
-  NrrdDataHandle nrrd = 0;
-  
-  SCIRunAlgo::DataIOAlgo dalgo(pr);
-  SCIRunAlgo::ConverterAlgo calgo(pr);
+  FieldHandle field;
+  NrrdDataHandle nrrd;
+
+  DataIOAlgo dalgo(pr);
+  ConverterAlgo calgo(pr);
 
   std::string fn(filename);
-  
-  if (dalgo.ReadNrrd(fn,nrrd))
+
+  if (dalgo.readNrrd(fn,nrrd))
   {
-    calgo.NrrdToField(nrrd,field);
+    calgo.nrrdToField(nrrd,field);
   }
-  
+
   return (field);
 }
 
 bool
-FieldToNrrd_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
-{ 
-  FieldHandle field = 0;
-  NrrdDataHandle nrrd = 0;
-  
-  SCIRunAlgo::DataIOAlgo dalgo(pr);
-  SCIRunAlgo::ConverterAlgo calgo(pr);
+SCIRun::FieldToNrrd_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
+{
+  FieldHandle field;
+  NrrdDataHandle nrrd;
 
-  if (calgo.FieldToNrrd(fh,nrrd))
+  DataIOAlgo dalgo(pr);
+  ConverterAlgo calgo(pr);
+
+  if (calgo.fieldToNrrd(fh,nrrd))
   {
     std::string fn(filename);
-    return(dalgo.WriteNrrd(fn,nrrd));
+    return dalgo.writeNrrd(fn,nrrd);
   }
-  
+
   return (false);
 }
 
-
-FieldHandle Nodal_NrrdToField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::Nodal_NrrdToField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle field = 0;
-  NrrdDataHandle nrrd = 0;
-  
-  SCIRunAlgo::DataIOAlgo dalgo(pr);
-  SCIRunAlgo::ConverterAlgo calgo(pr);
+  FieldHandle field;
+  NrrdDataHandle nrrd;
+
+  DataIOAlgo dalgo(pr);
+  ConverterAlgo calgo(pr);
 
   std::string fn(filename);
-  
-  if (dalgo.ReadNrrd(fn,nrrd))
+
+  if (dalgo.readNrrd(fn,nrrd))
   {
-    calgo.NrrdToField(nrrd,field,"Node");
+    calgo.nrrdToField(nrrd,field,"Node");
   }
-  
+
   return (field);
 }
 
-FieldHandle Modal_NrrdToField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::Modal_NrrdToField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle field = 0;
-  NrrdDataHandle nrrd = 0;
-  
-  SCIRunAlgo::DataIOAlgo dalgo(pr);
-  SCIRunAlgo::ConverterAlgo calgo(pr);
+  FieldHandle field;
+  NrrdDataHandle nrrd;
+
+  DataIOAlgo dalgo(pr);
+  ConverterAlgo calgo(pr);
 
   std::string fn(filename);
-  
-  if (dalgo.ReadNrrd(fn,nrrd))
+
+  if (dalgo.readNrrd(fn,nrrd))
   {
-    calgo.NrrdToField(nrrd,field,"Element");
+    calgo.nrrdToField(nrrd,field,"Element");
   }
-  
+
   return (field);
 }
 
-FieldHandle IPNodal_NrrdToField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::IPNodal_NrrdToField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle field = 0;
-  NrrdDataHandle nrrd = 0;
-  
-  SCIRunAlgo::DataIOAlgo dalgo(pr);
-  SCIRunAlgo::ConverterAlgo calgo(pr);
+  FieldHandle field;
+  NrrdDataHandle nrrd;
+
+  DataIOAlgo dalgo(pr);
+  ConverterAlgo calgo(pr);
 
   std::string fn(filename);
-  
-  if (dalgo.ReadNrrd(fn,nrrd))
+
+  if (dalgo.readNrrd(fn,nrrd))
   {
-    calgo.NrrdToField(nrrd,field,"Node","Auto","Invert");
+    calgo.nrrdToField(nrrd,field,"Node","Auto","Invert");
   }
-  
+
   return (field);
 }
 
-FieldHandle IPModal_NrrdToField_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::IPModal_NrrdToField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle field = 0;
-  NrrdDataHandle nrrd = 0;
-  
-  SCIRunAlgo::DataIOAlgo dalgo(pr);
-  SCIRunAlgo::ConverterAlgo calgo(pr);
+  FieldHandle field;
+  NrrdDataHandle nrrd;
+
+  DataIOAlgo dalgo(pr);
+  ConverterAlgo calgo(pr);
 
   std::string fn(filename);
-  
-  if (dalgo.ReadNrrd(fn,nrrd))
+
+  if (dalgo.readNrrd(fn,nrrd))
   {
-    calgo.NrrdToField(nrrd,field,"Element","Auto","Invert");
+    calgo.nrrdToField(nrrd,field,"Element","Auto","Invert");
   }
-  
+
   return (field);
-}
-
-
-static FieldIEPlugin  NrrdToField_plugin("NrrdFile","{.nhdr} {.nrrd}", "*.nrrd", NrrdToField_reader, FieldToNrrd_writer);
-static FieldIEPlugin  NodalNrrdToField_plugin("NrrdFile[DataOnNodes]","{.nhdr} {.nrrd}", "", Nodal_NrrdToField_reader, 0);
-static FieldIEPlugin  ModalNrrdToField_plugin("NrrdFile[DataOnElements]","{.nhdr} {.nrrd}", "", Modal_NrrdToField_reader, 0);
-static FieldIEPlugin  IPNodalNrrdToField_plugin("NrrdFile[DataOnNodes,InvertParity]","{.nhdr} {.nrrd}", "", IPNodal_NrrdToField_reader, 0);
-static FieldIEPlugin  IPModalNrrdToField_plugin("NrrdFile[DataOnElements,InvertParity]","{.nhdr} {.nrrd}", "", IPModal_NrrdToField_reader, 0);
-
-
 }

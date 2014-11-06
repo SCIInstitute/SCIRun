@@ -51,8 +51,6 @@ class DeveloperConsole;
 class PreferencesWindow;
 class PythonConsoleWidget;
 
-typedef boost::variant<QAction*, QWidget*> InputWidget;
-
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
 	Q_OBJECT
@@ -89,7 +87,7 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
-  
+
 private:
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
@@ -111,6 +109,7 @@ private:
   void setupInputWidgets();
   void parseStyleXML();
   void printStyleSheet() const;
+  void hideNonfunctioningWidgets();
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
@@ -119,11 +118,10 @@ private:
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
-  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_; 
+  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
-  std::vector<InputWidget> inputWidgets_;
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
@@ -139,8 +137,6 @@ private Q_SLOTS:
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
-  void disableInputWidgets(); 
-  void enableInputWidgets();
   void chooseBackgroundColor();
   void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
@@ -159,6 +155,7 @@ private Q_SLOTS:
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void resetWindowLayout();
+  void adjustModuleDock(int state);
   void exitApplication(int code);
 };
 

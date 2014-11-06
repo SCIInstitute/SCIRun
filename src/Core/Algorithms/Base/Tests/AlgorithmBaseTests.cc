@@ -91,3 +91,24 @@ TEST(FilenameVariableTests, PreservesPathIfNoPlaceholder)
   auto pathFromState = fileParameter.toFilename().string();
   EXPECT_EQ("E:\\scirun\\aneurysm\\aneurysm-mra.lvs.fld", pathFromState);
 }
+
+TEST(NaNVaribleTests, CanHandleNaNValues)
+{
+  AlgorithmParameter nan1(Name("nan"), std::numeric_limits<double>::quiet_NaN());
+  double value = nan1.toDouble();
+  EXPECT_NE(value, value);
+  std::string str = nan1.toString();
+  EXPECT_EQ("NaN", str);
+
+  nan1.setValue(1.0);
+  value = nan1.toDouble();
+  EXPECT_EQ(1.0, value);
+  str = nan1.toString();
+  EXPECT_EQ("", str);
+
+  nan1.setValue(std::numeric_limits<double>::quiet_NaN());
+  value = nan1.toDouble();
+  EXPECT_NE(value, value);
+  str = nan1.toString();
+  EXPECT_EQ("NaN", str);
+}

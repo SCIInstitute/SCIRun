@@ -45,7 +45,9 @@
 #include <Core/Algorithms/Base/AlgorithmFactory.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
@@ -60,6 +62,14 @@ Name::Name(const std::string& name) : name_(name)
 }
 
 AlgorithmBase::~AlgorithmBase() {}
+
+namespace
+{
+  // Note: boost::serialization has trouble with NaN values, in addition to the platform differences. 
+  // Workaround will be to store a string in place of the actual double nan value.
+  // TODO: investigate if this is a problem with infinities too. No modules store them at the moment.
+  const std::string nanString = "NaN";
+}
 
 Variable::Variable(const Name& name, const Value& value) : name_(name)
 {
@@ -76,6 +86,17 @@ void Variable::setValue(const Value& val)
       auto stringPath = toString();
       if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDir().string(), AlgorithmParameterHelper::dataDirPlaceholder()))
         value_ = stringPath;
+      return;
+    }
+  }
+
+  {
+    if (boost::get<double>(&val))
+    {
+      auto doubleVal = toDouble();
+      if (IsNan(doubleVal))
+        value_ = nanString;
+      return;
     }
   }
 }
@@ -88,6 +109,10 @@ int AlgorithmParameter::toInt() const
 
 double AlgorithmParameter::toDouble() const
 {
+  auto stringValue = toString();
+  if (nanString == stringValue)
+    return std::numeric_limits<double>::quiet_NaN();
+
   const double* v = boost::get<double>(&value_);
   return v ? *v : toInt();
 }
