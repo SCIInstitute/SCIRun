@@ -93,8 +93,8 @@ boost::shared_ptr<Cleaver::ScalarField> InterfaceWithCleaverAlgorithm::makeCleav
   Point bmin, bmax;
   if (bbox.valid())
   {
-   bmin = bbox.min();
-   bmax = bbox.max();
+   bmin = bbox.get_min();
+   bmax = bbox.get_max();
   }
   Cleaver::BoundingBox  bb = Cleaver::BoundingBox(Cleaver::vec3::zero, Cleaver::vec3(dims[0],dims[1],dims[2]));
   cleaverField->setBounds(bb);
