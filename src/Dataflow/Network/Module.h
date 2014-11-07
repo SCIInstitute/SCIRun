@@ -80,7 +80,7 @@ namespace Networks {
 
     virtual bool hasInputPort(const PortId& id) const;
     virtual bool hasOutputPort(const PortId& id) const;
-    virtual InputPortHandle getInputPort(const PortId& id) const;
+    virtual InputPortHandle getInputPort(const PortId& id);
     virtual OutputPortHandle getOutputPort(const PortId& id) const;
     virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const;
     virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const;

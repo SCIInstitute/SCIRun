@@ -36,11 +36,11 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace State {
-  
+
   class SCISHARE SimpleMapModuleState : public SCIRun::Dataflow::Networks::ModuleStateInterface
   {
   public:
-    SimpleMapModuleState();
+    explicit SimpleMapModuleState(const std::string& name = "<dflt>");
     SimpleMapModuleState(SimpleMapModuleState&& rhs);
     SimpleMapModuleState(const SimpleMapModuleState& rhs);
     SimpleMapModuleState& operator=(const SimpleMapModuleState& rhs);
@@ -61,6 +61,9 @@ namespace State {
     typedef std::map<std::string, TransientValue> TransientStateMap;
     TransientStateMap transientStateMap_;
     state_changed_sig_t stateChangedSignal_;
+    std::string name_;
+  private:
+    void print() const;
   };
 
   class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Dataflow::Networks::ModuleStateInterfaceFactory

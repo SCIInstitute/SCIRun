@@ -66,11 +66,10 @@ void WriteFieldDialog::pushFileNameToState()
 void WriteFieldDialog::saveFile()
 {
   auto types = state_->getValue(Variables::FileTypeList).toString();
-  QString selectedFilter;
-  auto file = QFileDialog::getSaveFileName(this, "Save Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter);
+  auto file = QFileDialog::getSaveFileName(this, "Save Field File", dialogDirectory(), QString::fromStdString(types), &selectedFilter_);
   if (file.length() > 0)
   {
-    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter.toStdString());
+    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter_.toStdString());
     state_->setValue(Variables::FileTypeName, typeName);
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);

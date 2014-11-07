@@ -83,6 +83,7 @@ protected Q_SLOTS:
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;
   virtual void showEvent(QShowEvent* event) override;
+  virtual void contextMenuEvent(QContextMenuEvent* e) override {}
 private:
   void addToolBar();
   void addMouseMenu();

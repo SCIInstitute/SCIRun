@@ -177,6 +177,15 @@ void NetworkEditor::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHan
   controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
 }
 
+void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName)
+{
+  std::cout << "TODO: replace module: " << moduleToReplace->get_module_name() << " with " << newModuleName << std::endl;
+  //auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
+  //QPointF increment(0, portToConnect->isInput() ? -110 : 110);
+  //lastModulePosition_ = widget->scenePos() + increment;
+
+  //controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
+}
 
 namespace
 {
@@ -203,6 +212,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)),
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
+  connect(module, SIGNAL(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)),
+    this, SLOT(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)));
 
   if (module->hasDynamicPorts())
   {
@@ -343,7 +354,7 @@ void NetworkEditor::del()
     }
   }
   qDeleteAll(items);
-  viewport()->update();
+  updateViewport();
   Q_EMIT modified();
 }
 
@@ -502,6 +513,11 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
+}
+
+void NetworkEditor::updateViewport()
+{
+  viewport()->update();
 }
 
 void NetworkEditor::mouseMoveEvent(QMouseEvent *event)

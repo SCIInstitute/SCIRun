@@ -77,7 +77,11 @@ public:
     path.moveTo(start);
     auto mid = (to - start) / 2 + start;
 
-    QPointF qDir(-(to-start).y() / ((double)(to-start).x()) , 1);
+    double qDirXNum = -(to-start).y();
+    double qDirXDenom = ((double)(to-start).x());
+    if (0 == qDirXDenom)
+      qDirXDenom = -0.0001;
+    QPointF qDir(qDirXNum / qDirXDenom , 1);
     double qFactor = std::min(std::abs(100.0 / qDir.x()), 80.0);
     //TODO: scale down when start close to end. need a unit test at this point.
     //qFactor /= (end-start).manhattanDistance()
@@ -185,12 +189,18 @@ namespace SCIRun
     public:
       ConnectionMenu(QWidget* parent = 0) : QMenu(parent)
       {
-        addWidgetToExecutionDisableList(addAction(deleteAction));
+        deleteAction_ = addAction(deleteAction);
+        addWidgetToExecutionDisableList(deleteAction_);
         addAction(insertModuleAction)->setDisabled(true);
         addAction(disableEnableAction)->setDisabled(true);
         notesAction_ = addAction(editNotesAction);
       }
+      ~ConnectionMenu()
+      {
+        removeWidgetFromExecutionDisableList(deleteAction_);
+      }
       QAction* notesAction_;
+      QAction* deleteAction_;
     };
   }
 }

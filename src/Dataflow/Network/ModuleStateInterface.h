@@ -29,7 +29,7 @@
 /// @todo Documentation Dataflow/Network/ModuleStateInterface.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H
-#define DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H 
+#define DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H
 
 #include <string>
 #include <iostream>
@@ -50,7 +50,7 @@ namespace Networks {
   {
   public:
     virtual ~ModuleStateInterface();
-    
+
     typedef std::vector<SCIRun::Core::Algorithms::AlgorithmParameterName> Keys;
     typedef SCIRun::Core::Algorithms::AlgorithmParameterName Name;
     typedef SCIRun::Core::Algorithms::AlgorithmParameter Value;

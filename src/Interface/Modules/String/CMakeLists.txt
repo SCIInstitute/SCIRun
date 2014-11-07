@@ -30,17 +30,20 @@
 SET(Interface_Modules_String_FORMS
   CreateString.ui
   PrintDatatypeDialog.ui
+  NetworkNotes.ui
 )
 
 SET(Interface_Modules_String_HEADERS
   share.h
   CreateStringDialog.h
   PrintDatatypeDialog.h
+  NetworkNotesDialog.h
 )
 
 SET(Interface_Modules_String_SOURCES 
   CreateStringDialog.cc
   PrintDatatypeDialog.cc
+  NetworkNotesDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_String_FORMS_HEADERS ${Interface_Modules_String_FORMS})
