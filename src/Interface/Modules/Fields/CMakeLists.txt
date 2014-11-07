@@ -49,6 +49,7 @@ SET(Interface_Modules_Fields_FORMS
   MapFieldDataOntoElems.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
+  RefineMesh.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -73,6 +74,7 @@ SET(Interface_Modules_Fields_HEADERS
   MapFieldDataOntoElemsDialog.h
   MapFieldDataOntoNodesDialog.h
   ClipFieldByFunctionDialog.h
+  RefineMeshDialog.h
   share.h
 )
 
@@ -98,6 +100,7 @@ SET(Interface_Modules_Fields_SOURCES
   MapFieldDataOntoElemsDialog.cc
   MapFieldDataOntoNodesDialog.cc
   ClipFieldByFunctionDialog.cc
+  RefineMeshDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

@@ -29,6 +29,7 @@
 # CMakeLists.txt for Dataflow/Modules/Fields
 
 SET(Modules_Legacy_Fields_HEADERS
+	RefineMesh.h
   CreateLatVol.h
   GetFieldBoundary.h
   BuildMappingMatrix.h
@@ -129,7 +130,7 @@ SET(Modules_Legacy_Fields_SRCS
   #InsertHexVolSheetAlongSurface.cc
   #MergeTriSurfs.cc
   #ClipVolumeByIsovalue.cc
-  #RefineMesh.cc
+  RefineMesh.cc
   #SwapFieldDataWithMatrixEntries.cc
   #SwapNodeLocationsWithMatrixEntries.cc
   #ConvertLatVolDataFromElemToNode.cc
