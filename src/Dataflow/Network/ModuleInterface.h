@@ -68,7 +68,7 @@ namespace Networks {
     virtual std::vector<OutputPortHandle> outputPorts() const = 0;
 
     virtual bool hasInputPort(const PortId& id) const = 0;
-    virtual InputPortHandle getInputPort(const PortId& id) const = 0;
+    virtual InputPortHandle getInputPort(const PortId& id) = 0;
     virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const = 0;
     virtual size_t num_input_ports() const = 0;
     virtual std::vector<InputPortHandle> inputPorts() const = 0;

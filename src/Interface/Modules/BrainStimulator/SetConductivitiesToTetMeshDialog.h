@@ -48,7 +48,6 @@ public:
     QWidget* parent = 0);
   
   private Q_SLOTS:
-  void push();
   void pull();  
 };
 

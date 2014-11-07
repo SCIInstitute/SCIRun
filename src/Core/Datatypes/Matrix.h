@@ -32,6 +32,7 @@
 
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
 #include <iosfwd>
 #include <Core/Datatypes/share.h>
 
@@ -65,7 +66,7 @@ namespace Datatypes {
   };
 
   template <typename T>
-  class MatrixBase : public MatrixIOBase
+  class MatrixBase : public MatrixIOBase, public Core::Datatypes::HasPropertyManager
   {
   public:
     virtual size_t nrows() const = 0;

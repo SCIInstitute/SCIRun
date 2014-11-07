@@ -45,92 +45,92 @@ class SCISHARE FieldTypeInformation
 
   public:
 
-    bool        is_isomorphic();
-    bool        is_nonlinear();
-    bool        is_linear();
+    bool        is_isomorphic() const;
+    bool        is_nonlinear() const;
+    bool        is_linear() const;
     
-    bool        is_nodata();
-    bool        is_constantdata();
-    bool        is_lineardata();
-    bool        is_nonlineardata();
-    bool        is_quadraticdata();
-    bool        is_cubicdata();
-    int         field_basis_order();
+    bool        is_nodata() const;
+    bool        is_constantdata() const;
+    bool        is_lineardata() const;
+    bool        is_nonlineardata() const;
+    bool        is_quadraticdata() const;
+    bool        is_cubicdata() const;
+    int         field_basis_order() const;
     
-    bool        is_constantmesh();
-    bool        is_linearmesh();
-    bool        is_nonlinearmesh();
-    bool        is_quadraticmesh();
-    bool        is_cubicmesh();
-    int         mesh_basis_order();
+    bool        is_constantmesh() const;
+    bool        is_linearmesh() const;
+    bool        is_nonlinearmesh() const;
+    bool        is_quadraticmesh() const;
+    bool        is_cubicmesh() const;
+    int         mesh_basis_order() const;
   
-    bool        is_tensor();
-    bool        is_vector();
-    bool        is_scalar();
-    bool        is_integer();
-    bool        is_double();
-    bool        is_float();
-    bool        is_longlong();
-    bool        is_long();
-    bool        is_int();
-    bool        is_short();
-    bool        is_char();
-    bool        is_unsigned_longlong();
-    bool        is_unsigned_long();
-    bool        is_unsigned_int();
-    bool        is_unsigned_short();
-    bool        is_unsigned_char();
-    bool        is_dvt(); // double vector tensor
-    bool        is_svt(); // scalar vector tensor
+    bool        is_tensor() const;
+    bool        is_vector() const;
+    bool        is_scalar() const;
+    bool        is_integer() const;
+    bool        is_double() const;
+    bool        is_float() const;
+    bool        is_longlong() const;
+    bool        is_long() const;
+    bool        is_int() const;
+    bool        is_short() const;
+    bool        is_char() const;
+    bool        is_unsigned_longlong() const;
+    bool        is_unsigned_long() const;
+    bool        is_unsigned_int() const;
+    bool        is_unsigned_short() const;
+    bool        is_unsigned_char() const;
+    bool        is_dvt() const; // double vector tensor
+    bool        is_svt() const; // scalar vector tensor
     
-    bool        is_regularmesh();
-    bool        is_irregularmesh();
-    bool        is_structuredmesh();
-    bool        is_unstructuredmesh();
+    bool        is_regularmesh() const;
+    bool        is_irregularmesh() const;
+    bool        is_structuredmesh() const;
+    bool        is_unstructuredmesh() const;
     
     // These should go...
-    inline bool is_pointcloud() { return(is_pointcloudmesh()); }
-    inline bool is_scanline() { return(is_scanlinemesh()); }
-    inline bool is_image() { return(is_imagemesh()); }
-    inline bool is_latvol() { return(is_latvolmesh()); }
-    inline bool is_curve() { return(is_curvemesh()); }
-    inline bool is_trisurf() { return(is_trisurfmesh()); }
-    inline bool is_quadsurf() { return(is_quadsurfmesh()); }
-    inline bool is_tetvol() { return(is_tetvolmesh()); }
-    inline bool is_prismvol() { return(is_prismvolmesh()); }
-    inline bool is_hexvol() { return(is_hexvolmesh()); }
-    inline bool is_structcurve() { return(is_structcurvemesh()); }    
-    inline bool is_structquadsurf() { return(is_structquadsurfmesh()); }    
-    inline bool is_structhexvol() { return(is_structhexvolmesh()); }
+    inline bool is_pointcloud() const { return(is_pointcloudmesh()); }
+    inline bool is_scanline() const { return(is_scanlinemesh()); }
+    inline bool is_image() const { return(is_imagemesh()); }
+    inline bool is_latvol() const { return(is_latvolmesh()); }
+    inline bool is_curve() const { return(is_curvemesh()); }
+    inline bool is_trisurf() const { return(is_trisurfmesh()); }
+    inline bool is_quadsurf() const { return(is_quadsurfmesh()); }
+    inline bool is_tetvol() const { return(is_tetvolmesh()); }
+    inline bool is_prismvol() const { return(is_prismvolmesh()); }
+    inline bool is_hexvol() const { return(is_hexvolmesh()); }
+    inline bool is_structcurve() const { return(is_structcurvemesh()); }    
+    inline bool is_structquadsurf() const { return(is_structquadsurfmesh()); }    
+    inline bool is_structhexvol() const { return(is_structhexvolmesh()); }
 
     // Naming that is more systematic
-    bool        is_pointcloudmesh();
-    bool        is_scanlinemesh();
-    bool        is_imagemesh();
-    bool        is_latvolmesh();
-    bool        is_curvemesh();
-    bool        is_trisurfmesh();
-    bool        is_quadsurfmesh();
-    bool        is_tetvolmesh();
-    bool        is_prismvolmesh();
-    bool        is_hexvolmesh();
-    bool        is_structcurvemesh();    
-    bool        is_structquadsurfmesh();    
-    bool        is_structhexvolmesh();
+    bool        is_pointcloudmesh() const;
+    bool        is_scanlinemesh() const;
+    bool        is_imagemesh() const;
+    bool        is_latvolmesh() const;
+    bool        is_curvemesh() const;
+    bool        is_trisurfmesh() const;
+    bool        is_quadsurfmesh() const;
+    bool        is_tetvolmesh() const;
+    bool        is_prismvolmesh() const;
+    bool        is_hexvolmesh() const;
+    bool        is_structcurvemesh() const;    
+    bool        is_structquadsurfmesh() const;    
+    bool        is_structhexvolmesh() const;
 
     
-    bool        is_point();
-    bool        is_line();
-    bool        is_surface();
-    bool        is_volume();
+    bool        is_point() const;
+    bool        is_line() const;
+    bool        is_surface() const;
+    bool        is_volume() const;
     
-    bool        is_pnt_element();
-    bool        is_crv_element();
-    bool        is_tri_element();
-    bool        is_quad_element();
-    bool        is_tet_element();
-    bool        is_prism_element();
-    bool        is_hex_element();
+    bool        is_pnt_element() const;
+    bool        is_crv_element() const;
+    bool        is_tri_element() const;
+    bool        is_quad_element() const;
+    bool        is_tet_element() const;
+    bool        is_prism_element() const;
+    bool        is_hex_element() const;
 
     void insert_field_type_information(Field* field);
   protected:
@@ -163,44 +163,44 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     FieldInformation(mesh_info_type mesh,databasis_info_type databasis, 
                      data_info_type data);
  
-    FieldInformation(FieldHandle handle);
-    FieldInformation(Field* field);
+    explicit FieldInformation(FieldHandle handle);
+    explicit FieldInformation(Field* field);
     
   
-    std::string get_field_type();
+    std::string get_field_type() const;
     void        set_field_type(const std::string&);
 
-    std::string get_mesh_type();
-    std::string get_mesh_type_id();
+    std::string get_mesh_type() const;
+    std::string get_mesh_type_id() const;
     void        set_mesh_type(const std::string&);
     void        set_mesh_type(mesh_info_type);
     
-    std::string get_mesh_basis_type();
+    std::string get_mesh_basis_type() const;
     void        set_mesh_basis_type(const std::string&);
     void        set_mesh_basis_type(int);
 
-    std::string get_point_type();
+    std::string get_point_type() const;
     void        set_point_type(const std::string&);
 
-    std::string get_basis_type();
+    std::string get_basis_type() const;
     void        set_basis_type(const std::string&);
     void        set_basis_type(int);
 
     // alternative way of setting data_basis
-    std::string get_data_basis_type() { return (get_basis_type()); }
+    std::string get_data_basis_type() const { return (get_basis_type()); }
     void        set_data_basis_type(const std::string& s) { set_basis_type(s); }
     void        set_data_basis_type(int s) { set_basis_type(s); }
 
-    std::string get_data_type();
+    std::string get_data_type() const;
     void        set_data_type(const std::string&);
     void        set_data_type(data_info_type);
 
-    std::string get_container_type();
+    std::string get_container_type() const;
     void        set_container_type(const std::string&);
 
-    std::string get_field_name();
-    std::string get_field_type_id();
-    std::string get_field_filename();
+    std::string get_field_name() const;
+    std::string get_field_type_id() const;
+    std::string get_field_filename() const;
       
     bool        make_nodata();
     bool        make_constantdata();
@@ -251,21 +251,21 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     
     // testing for the data type
 
-    inline bool is_data_typeT(char* )               { return (is_char()); }
-    inline bool is_data_typeT(unsigned char* )      { return (is_unsigned_char()); }
-    inline bool is_data_typeT(short* )              { return (is_short()); }
-    inline bool is_data_typeT(unsigned short* )     { return (is_unsigned_short()); }
-    inline bool is_data_typeT(int* )                { return (is_int()); }
-    inline bool is_data_typeT(unsigned int* )       { return (is_unsigned_int()); }
-    inline bool is_data_typeT(long* )               { return (is_long()); }
-    inline bool is_data_typeT(unsigned long* )      { return (is_unsigned_long()); }
-    inline bool is_data_typeT(long long* )          { return (is_longlong()); }
-    inline bool is_data_typeT(unsigned long long* ) { return (is_unsigned_longlong()); }
-    inline bool is_data_typeT(double* )             { return (is_double()); }
-    inline bool is_data_typeT(float* )              { return (is_float()); }
-    inline bool is_data_typeT(Core::Geometry::Vector* )             { return (is_vector()); }
-    inline bool is_data_typeT(Core::Geometry::Tensor* )             { return (is_tensor()); }
-    template<class T> bool is_data_typeT(T*)        { return (false); }
+    inline bool is_data_typeT(char* ) const               { return (is_char()); }
+    inline bool is_data_typeT(unsigned char* ) const      { return (is_unsigned_char()); }
+    inline bool is_data_typeT(short* ) const              { return (is_short()); }
+    inline bool is_data_typeT(unsigned short* ) const     { return (is_unsigned_short()); }
+    inline bool is_data_typeT(int* ) const                { return (is_int()); }
+    inline bool is_data_typeT(unsigned int* ) const       { return (is_unsigned_int()); }
+    inline bool is_data_typeT(long* ) const               { return (is_long()); }
+    inline bool is_data_typeT(unsigned long* ) const      { return (is_unsigned_long()); }
+    inline bool is_data_typeT(long long* ) const          { return (is_longlong()); }
+    inline bool is_data_typeT(unsigned long long* ) const { return (is_unsigned_longlong()); }
+    inline bool is_data_typeT(double* ) const             { return (is_double()); }
+    inline bool is_data_typeT(float* ) const              { return (is_float()); }
+    inline bool is_data_typeT(Core::Geometry::Vector* ) const             { return (is_vector()); }
+    inline bool is_data_typeT(Core::Geometry::Tensor* ) const             { return (is_tensor()); }
+    template<class T> bool is_data_typeT(T*) const        { return (false); }
 
     inline void set_data_typeT(char*) { make_char(); }
     inline void set_data_typeT(unsigned char*) { make_unsigned_char(); }

@@ -34,7 +34,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
-void TextEditAppender::log(const QString& message) const 
+void TextEditAppender::log(const QString& message) const
 {
   text_->append(message);
 }
@@ -90,7 +90,11 @@ namespace
     template <typename T>
     void operator()( T* widget ) const
     {
-      widget->setDisabled(flag_);
+      //TODO: investigate this Mac Qt bug in more detail. A better workaround probably exists. (Or just wait until Qt 5)
+//#ifdef WIN32
+      if (widget)
+        widget->setDisabled(flag_);
+//#endif
     }
     bool flag_;
   };
@@ -101,7 +105,7 @@ namespace
   }
 }
 
-void WidgetDisablingService::addNetworkEditor(NetworkEditor* ne) 
+void WidgetDisablingService::addNetworkEditor(NetworkEditor* ne)
 {
   ne_ = ne;
 }
@@ -109,6 +113,11 @@ void WidgetDisablingService::addNetworkEditor(NetworkEditor* ne)
 void WidgetDisablingService::addWidget(const InputWidget& w)
 {
   inputWidgets_.push_back(w);
+}
+
+void WidgetDisablingService::removeWidget(const InputWidget& w)
+{
+  inputWidgets_.erase(std::remove(inputWidgets_.begin(), inputWidgets_.end(), w));
 }
 
 void WidgetDisablingService::disableInputWidgets()

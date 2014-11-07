@@ -33,7 +33,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
-#include <boost/any.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Datatypes/share.h>
 
@@ -59,6 +58,8 @@ namespace Datatypes {
 
   typedef boost::shared_ptr<String> StringHandle;
   typedef boost::shared_ptr<GeometryObject> GeometryHandle;
+  typedef boost::shared_ptr<ColorMap> ColorMapHandle;
+  typedef boost::shared_ptr<Bundle> BundleHandle;
 }}
 
   class Field;
@@ -66,6 +67,9 @@ namespace Datatypes {
   typedef boost::shared_ptr<Field> FieldHandle;
   typedef boost::shared_ptr<Mesh> MeshHandle;
   typedef std::vector<FieldHandle> FieldList;
+
+  class NrrdData;
+  typedef boost::shared_ptr<NrrdData> NrrdDataHandle;
 }
 
 

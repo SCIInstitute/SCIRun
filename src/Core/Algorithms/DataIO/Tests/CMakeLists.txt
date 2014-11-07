@@ -30,6 +30,7 @@ SET(Algorithms_DataIO_Tests_SRCS
   ReadMatrixTests.cc
   WriteMatrixTests.cc
   ReadTriSurfTests.cc
+  ReadWriteNrrdTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_DataIO_Tests
@@ -40,6 +41,7 @@ TARGET_LINK_LIBRARIES(Algorithms_DataIO_Tests
   Algorithms_DataIO
   Core_Datatypes
   Testing_Utils
+  Core_IEPlugin
   gtest_main
   gtest
   gmock

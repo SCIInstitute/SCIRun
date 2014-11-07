@@ -6,7 +6,7 @@
    Copyright (c) 2011 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 
 
 ///
-///@file  ReadField.cc 
+///@file  ReadField.cc
 ///@brief Read a persistent field from a file
 ///
 ///@author
@@ -56,19 +56,21 @@ class ReadField : public GenericReader<FieldHandle> {
 #endif
 
 ReadFieldModule::ReadFieldModule()
-  : my_base("ReadField", "DataIO", "SCIRun", "Field")    
+  : my_base("ReadField", "DataIO", "SCIRun", "Field")
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
     //gui_delay_(get_ctx()->subVar("delay"), 0)
 {
   INITIALIZE_PORT(Field);
-
-  FieldIEPluginManager mgr;
-  auto types = makeGuiTypesListForImport(mgr);
-  get_state()->setValue(Variables::FileTypeList, types);
 }
 
-bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fHandle) 
+std::string ReadFieldModule::fileTypeList()
+{
+  FieldIEPluginManager mgr;
+  return makeGuiTypesListForImport(mgr);
+}
+
+bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fHandle)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
@@ -83,14 +85,14 @@ bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fH
 
 void
 ReadFieldModule::execute()
-{     
+{
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
+  if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true;
 #endif
   my_base::execute();
 }
 
-bool ReadFieldModule::useCustomImporter(const std::string& filename) const 
+bool ReadFieldModule::useCustomImporter(const std::string& filename) const
 {
   return boost::filesystem::extension(filename) != ".fld";
 }

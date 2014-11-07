@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 /// @todo Documentation Dataflow/Network/SimpleSourceSink.cc
 
+#include <iostream>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <boost/foreach.hpp>
 #include <Core/Logging/Log.h>
@@ -44,7 +45,9 @@ namespace
   };
 }
 
-SimpleSink::SimpleSink() : previousId_(UNSET), checkForNewDataOnSetting_(false)
+SimpleSink::SimpleSink() :
+  hasChanged_(false),
+  checkForNewDataOnSetting_(false)
 {
   instances_.insert(this);
 }
@@ -65,9 +68,9 @@ bool SimpleSink::globalPortCaching_(true); /// @todo: configurable on a port-by-
 
 bool SimpleSink::globalPortCachingFlag() { return globalPortCaching_; }
 
-void SimpleSink::setGlobalPortCachingFlag(bool value) 
-{ 
-  globalPortCaching_ = value; 
+void SimpleSink::setGlobalPortCachingFlag(bool value)
+{
+  globalPortCaching_ = value;
   if (!globalPortCaching_)
   {
     SimpleSource::clearAllSources();
@@ -83,46 +86,35 @@ void SimpleSink::invalidateAll()
 
 DatatypeHandleOption SimpleSink::receive()
 {
-  if (dataProvider_)
+  if (DatatypeHandle strong = weakData_.lock())
   {
-    auto data = dataProvider_();
-    
-    if (!globalPortCachingFlag())
-      invalidateProvider();
-
-    currentId_ = data->id();
-    return data;
+    //std::cout << "\tweak pointer converted to strong in Sink.receive" << std::endl;
+    return strong;
   }
   return DatatypeHandleOption();
 }
 
-void SimpleSink::setData(DataProvider dataProvider)
+void SimpleSink::setData(DatatypeHandle data)
 {
-  if (dataProvider_)
+  if (DatatypeHandle strong = weakData_.lock())
   {
-    if (currentId_)
+    if (data)
     {
-      previousId_ = *currentId_;
-      LOG_DEBUG("SS::setData: previousId set to " << previousId_);
+      //std::cout << "\tSink.setData hasChanged is " << hasChanged_ << std::endl;
+      //std::cout << "\tSink.setData old id is " << strong->id() << " new id is " << data->id() << std::endl;
+      hasChanged_ = strong->id() != data->id();
+      //std::cout << "\tSink.setData hasChanged set to " << hasChanged_ << std::endl;
     }
   }
-
-  dataProvider_ = dataProvider;
-
-  if (dataProvider_)
+  else if (data)
   {
-    currentId_ = dataProvider_()->id();
-    if (UNSET == previousId_)
-    {
-      previousId_ = SET_ONCE;
-      if (checkForNewDataOnSetting_)
-        dataHasChanged_(dataProvider_());
-    }
-    else
-      if (checkForNewDataOnSetting_ && hasChanged())
-        dataHasChanged_(dataProvider_());
-    LOG_DEBUG("SS::setData: currentId set to " << *currentId_);
+    hasChanged_ = true;
+    //std::cout << "\tSink.setData: no previous weakData, hasChanged set to " << hasChanged_ << std::endl;
   }
+
+  weakData_ = data;
+  if (data && hasChanged_ && checkForNewDataOnSetting_)
+    dataHasChanged_(data);
 }
 
 DatatypeSinkInterface* SimpleSink::clone() const
@@ -132,30 +124,10 @@ DatatypeSinkInterface* SimpleSink::clone() const
 
 bool SimpleSink::hasChanged() const
 {
-  if (!dataProvider_)
-  {
-    LOG_DEBUG("SS::hasChanged returns false, dataProvider is null");
-    return false;
-  }
-
-  if (previousId_ == UNSET)
-  {
-    LOG_DEBUG("SS::hasChanged returns false, previousId is UNSET");
-    return false;
-  }
-  if (previousId_ == SET_ONCE)
-  {
-    LOG_DEBUG("SS::hasChanged returns true, previousId is SET_ONCE, but changed to current");
-    previousId_ = *currentId_;
-    return true;
-  }
-  LOG_DEBUG("SS::hasChanged ids: previous = " << previousId_ << " current = " << *currentId_);
-  return previousId_ != *currentId_;
-}
-
-void SimpleSink::invalidateProvider()
-{
-  dataProvider_ = 0;
+  bool val = hasChanged_;
+  hasChanged_ = false;
+  //std::cout << "\tSink.hasChanged() returns " << val << ", hasChanged set to " << hasChanged_ << std::endl;
+  return val;
 }
 
 boost::signals2::connection SimpleSink::connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber)
@@ -175,8 +147,7 @@ void SimpleSource::send(DatatypeSinkInterfaceHandle receiver) const
   if (!sink)
     THROW_INVALID_ARGUMENT("SimpleSource can only send to SimpleSinks");
 
-  sink->setData([this]() { return data_; });
-  //addDeleteListener(sink);
+  sink->setData(data_);
 }
 
 bool SimpleSource::hasData() const

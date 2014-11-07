@@ -38,21 +38,26 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
-SimpleMapModuleState::SimpleMapModuleState() 
+SimpleMapModuleState::SimpleMapModuleState(const std::string& name) : name_(name)
 {
+  //std::cout << "SMMS ctor " << name_ << std::endl;
 }
 
 SimpleMapModuleState::SimpleMapModuleState(SimpleMapModuleState&& rhs)
-  : stateMap_(std::move(rhs.stateMap_)), 
-  transientStateMap_(std::move(rhs.transientStateMap_))
+  : stateMap_(std::move(rhs.stateMap_)),
+  transientStateMap_(std::move(rhs.transientStateMap_)),
+  name_(std::move(rhs.name_))
 {
+  //std::cout << "SMMS move ctor " << name_ << std::endl;
   stateChangedSignal_.swap(rhs.stateChangedSignal_);
 }
 
 SimpleMapModuleState::SimpleMapModuleState(const SimpleMapModuleState& rhs)
-  : stateMap_(rhs.stateMap_), 
-  transientStateMap_(rhs.transientStateMap_) /// @todo: I think this is wrong, transient shouldn't be copied
+  : stateMap_(rhs.stateMap_),
+  transientStateMap_(rhs.transientStateMap_), /// @todo: I think this is wrong, transient shouldn't be copied
+  name_(rhs.name_)
 {
+  //std::cout << "SMMS copy ctor " << name_ << std::endl;
 }
 
 SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState& rhs)
@@ -61,6 +66,8 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
   {
     stateMap_ = rhs.stateMap_;
     transientStateMap_ = rhs.transientStateMap_;  /// @todo: I think this is wrong, transient shouldn't be copied
+    name_ = rhs.name_;
+    //std::cout << "SMMS copy assign " << name_<< std::endl;
     /// @todo??
     //stateChangedSignal_.disconnect_all_slots();
   }
@@ -69,6 +76,7 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
 
 ModuleStateHandle SimpleMapModuleState::clone() const
 {
+  //std::cout << "SMMS clone " << name_ << std::endl;
   return boost::make_shared<SimpleMapModuleState>(*this);
 }
 
@@ -89,7 +97,7 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value() == value);
 
   stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
-  
+
   if (newValue)
   {
     LOG_DEBUG("----signaling from state map: (" << parameterName.name_ << ", " << SCIRun::Core::to_string(value) << "), num_slots = " << stateChangedSignal_.num_slots() << std::endl);
@@ -112,15 +120,27 @@ ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
   return keys;
 }
 
+void SimpleMapModuleState::print() const
+{
+  std::cout << "Printing transient map: " << this << " name: " << name_ << std::endl;
+  for (auto q = transientStateMap_.begin(); q != transientStateMap_.end(); ++q)
+  {
+    std::cout << "\t" << q->first << " : " << "any"  << std::endl;
+  }
+  std::cout << "Done" << std::endl;
+}
+
 SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientValue(const Name& name) const
 {
-  TransientStateMap::const_iterator i = transientStateMap_.find(name.name());
+  //print();
+  auto i = transientStateMap_.find(name.name());
   return i != transientStateMap_.end() ? boost::make_optional(i->second) : TransientValueOption();
 }
 
 void SimpleMapModuleState::setTransientValue(const Name& name, const TransientValue& value, bool fireSignal)
 {
   transientStateMap_[name.name()] = value;
+  //print();
 
   if (fireSignal)
     fireTransientStateChangeSignal();
@@ -133,5 +153,5 @@ void SimpleMapModuleState::fireTransientStateChangeSignal()
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const
 {
-  return new SimpleMapModuleState;
+  return new SimpleMapModuleState(name);
 }

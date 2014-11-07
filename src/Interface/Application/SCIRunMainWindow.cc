@@ -213,6 +213,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
+  connect(dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
+
   makeFilterButtonMenu();
 
   connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
@@ -235,6 +237,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionConfiguration_->setChecked(!configurationDockWidget_->isHidden());
   actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
+
+  provenanceWindow_->hide();
+
+  hideNonfunctioningWidgets();
 
   //parseStyleXML();
 }
@@ -659,6 +665,7 @@ void SCIRunMainWindow::setupProvenanceWindow()
   actionRedo_->setEnabled(false);
   connect(provenanceWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
   connect(provenanceWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
+  connect(provenanceWindow_, SIGNAL(networkModified()), networkEditor_, SLOT(updateViewport()));
 
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
 
@@ -1128,4 +1135,43 @@ void SCIRunMainWindow::resetWindowLayout()
   addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
 
   std::cout << "TODO: toolbars" << std::endl;
+}
+
+void SCIRunMainWindow::hideNonfunctioningWidgets()
+{
+  QList<QAction*> nonfunctioningActions;
+  nonfunctioningActions <<
+    actionInsert_ <<
+    actionCreate_Module_Skeleton_ <<
+    actionCut_ <<
+    actionCopy_ <<
+    actionPaste_;
+  QList<QMenu*> nonfunctioningMenus;
+  nonfunctioningMenus <<
+    menuSubnets_ <<
+    menuToolkits_;
+  QList<QWidget*> nonfunctioningWidgets;
+  nonfunctioningWidgets <<
+    scirunNetsLabel_ <<
+    scirunNetsLineEdit_ <<
+    scirunNetsPushButton_ <<
+    userDataLabel_ <<
+    userDataLineEdit_ <<
+    userDataPushButton_ <<
+    dataSetGroupBox_ <<
+    optionsGroupBox_;
+
+  Q_FOREACH(QAction* a, nonfunctioningActions)
+    a->setVisible(false);
+  Q_FOREACH(QMenu* m, nonfunctioningMenus)
+    m->menuAction()->setVisible(false);
+  Q_FOREACH(QWidget* w, nonfunctioningWidgets)
+    w->setVisible(false);
+}
+
+void SCIRunMainWindow::adjustModuleDock(int state)
+{
+  bool dockable = dockableModulesCheckBox_->isChecked();
+  actionPinAllModuleUIs_->setEnabled(dockable);
+  Preferences::Instance().modulesAreDockable.setValue(dockable);
 }

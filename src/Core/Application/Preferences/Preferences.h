@@ -51,7 +51,7 @@ namespace SCIRun
       TrackedVariable(const std::string& name, const typename Var::value_type& value) : Var(name, value) {}
 
       virtual void setValue(const typename Var::Value& val) override
-      { 
+      {
         Var::setValue(val);
         valueChanged_(this->val());
       }
@@ -68,7 +68,7 @@ namespace SCIRun
 
     private:
 	    Preferences();
-	
+
     public:
       /// @todo: reuse Seg3D state vars
 
@@ -76,15 +76,16 @@ namespace SCIRun
       BooleanVariable saveBeforeExecute;
       BooleanVariable useNewViewSceneMouseControls;
       BooleanVariable modulesSnapToGrid;
+      BooleanVariable modulesAreDockable;
       StringVariable networkBackgroundColor;
-    
+
       std::string dataDirectoryPlaceholder() const;
 
       boost::filesystem::path dataDirectory() const;
       void setDataDirectory(const boost::filesystem::path& path);
-	
+
 	    //void save_state();
-	
+
     private:
 	    //void initialize_states();
 	    boost::filesystem::path dataDir_;
@@ -93,4 +94,3 @@ namespace SCIRun
 }}
 
 #endif
-

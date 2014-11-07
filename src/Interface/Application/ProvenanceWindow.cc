@@ -77,9 +77,9 @@ Key thing: when undoing/redoing, since we're loading from scratch, need to scope
 class ProvenanceWindowListItem : public QListWidgetItem
 {
 public:
-  ProvenanceWindowListItem(ProvenanceItemHandle info, QListWidget* parent = 0) : 
+  ProvenanceWindowListItem(ProvenanceItemHandle info, QListWidget* parent = 0) :
     QListWidgetItem(QString::fromStdString(info->name()), parent),
-    info_(info) 
+    info_(info)
   {
     auto xml = info_->memento();
     if (xml)
@@ -105,7 +105,7 @@ public:
     setFont(f);
     setBackgroundColor(Qt::lightGray);
   }
-  QString xmlText() const 
+  QString xmlText() const
   {
     return xmlText_;
   }
@@ -173,11 +173,12 @@ void ProvenanceWindow::undo()
   {
     auto provenanceItem = dynamic_cast<ProvenanceWindowListItem*>(item);
     provenanceItem->setAsRedo();
-    
+
     {
       Q_EMIT modifyingNetwork(true);
       auto undone = provenanceManager_->undo();
       Q_EMIT modifyingNetwork(false);
+      Q_EMIT networkModified();
       if (undone->name() != provenanceItem->name())
         std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
     }
@@ -205,6 +206,7 @@ void ProvenanceWindow::redo()
       Q_EMIT modifyingNetwork(true);
       auto redone = provenanceManager_->redo();
       Q_EMIT modifyingNetwork(false);
+      Q_EMIT networkModified();
       if (redone->name() != provenanceItem->name())
         std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
     }
@@ -232,6 +234,7 @@ void ProvenanceWindow::undoAll()
   Q_EMIT modifyingNetwork(true);
   provenanceManager_->undoAll();
   Q_EMIT modifyingNetwork(false);
+  Q_EMIT networkModified();
   setUndoEnabled(false);
   setRedoEnabled(true);
 }
@@ -248,6 +251,7 @@ void ProvenanceWindow::redoAll()
   Q_EMIT modifyingNetwork(true);
   provenanceManager_->redoAll();
   Q_EMIT modifyingNetwork(false);
+  Q_EMIT networkModified();
   setUndoEnabled(true);
   setRedoEnabled(false);
 }
@@ -255,7 +259,7 @@ void ProvenanceWindow::redoAll()
 //----------------------------------------------------------
 //TODO: separate out
 
-GuiActionProvenanceConverter::GuiActionProvenanceConverter(NetworkEditor* editor) : 
+GuiActionProvenanceConverter::GuiActionProvenanceConverter(NetworkEditor* editor) :
   editor_(editor),
   provenanceManagerModifyingNetwork_(false)
 {}
