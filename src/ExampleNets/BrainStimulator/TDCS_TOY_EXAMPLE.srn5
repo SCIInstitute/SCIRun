@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>35</count>
+			<count>37</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AlignMeshBoundingBoxes:31</first>
@@ -543,118 +543,6 @@
 				</second>
 			</item>
 			<item>
-				<first>GetDomainBoundary:63</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>NewField</category_name_>
-						<module_name_>GetDomainBoundary</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>8</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>AddOuterBoundary</name>
-								</first>
-								<second>
-									<name>AddOuterBoundary</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DisconnectBoundaries</name>
-								</first>
-								<second>
-									<name>DisconnectBoundaries</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Domain</name>
-								</first>
-								<second>
-									<name>Domain</name>
-									<value>
-										<which>0</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>InnerBoundaryOnly</name>
-								</first>
-								<second>
-									<name>InnerBoundaryOnly</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>MaxRange</name>
-								</first>
-								<second>
-									<name>MaxRange</name>
-									<value>
-										<which>0</which>
-										<value>255</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>MinRange</name>
-								</first>
-								<second>
-									<name>MinRange</name>
-									<value>
-										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NoInnerBoundary</name>
-								</first>
-								<second>
-									<name>NoInnerBoundary</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>UseRange</name>
-								</first>
-								<second>
-									<name>UseRange</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
 				<first>GetFieldBoundary:15</first>
 				<second>
 					<module>
@@ -736,6 +624,22 @@
 			</item>
 			<item>
 				<first>GetFieldBoundary:26</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GetFieldBoundary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetFieldBoundary:35</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -1043,23 +947,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo:34</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>SetupRHSforTDCSandTMS:33</first>
+				<first>SetupRHSforTDCSandTMS:36</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -1068,7 +956,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1079,7 +967,7 @@
 									<value>
 										<which>5</which>
 										<value class_id="12" tracking_level="0" version="0">
-											<count>128</count>
+											<count>6</count>
 											<item_version>0</item_version>
 											<item>
 												<name>elc0</name>
@@ -1123,861 +1011,100 @@
 													<value>0</value>
 												</value>
 											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ImpedanceTableValues</name>
+								</first>
+								<second>
+									<name>ImpedanceTableValues</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>6</count>
+											<item_version>0</item_version>
 											<item>
-												<name>elc6</name>
+												<name>imp_elc0</name>
 												<value>
 													<which>1</which>
-													<value>0</value>
+													<value>1</value>
 												</value>
 											</item>
 											<item>
-												<name>elc7</name>
+												<name>imp_elc1</name>
 												<value>
 													<which>1</which>
-													<value>0</value>
+													<value>1</value>
 												</value>
 											</item>
 											<item>
-												<name>elc8</name>
+												<name>imp_elc2</name>
 												<value>
 													<which>1</which>
-													<value>0</value>
+													<value>1</value>
 												</value>
 											</item>
 											<item>
-												<name>elc9</name>
+												<name>imp_elc3</name>
 												<value>
 													<which>1</which>
-													<value>0</value>
+													<value>1</value>
 												</value>
 											</item>
 											<item>
-												<name>elc10</name>
+												<name>imp_elc4</name>
 												<value>
 													<which>1</which>
-													<value>0</value>
+													<value>1</value>
 												</value>
 											</item>
 											<item>
-												<name>elc11</name>
+												<name>imp_elc5</name>
 												<value>
 													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc12</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc13</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc14</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc15</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc16</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc17</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc18</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc19</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc20</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc21</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc22</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc23</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc24</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc25</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc26</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc27</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc28</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc29</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc30</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc31</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc32</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc33</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc34</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc35</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc36</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc37</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc38</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc39</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc40</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc41</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc42</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc43</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc44</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc45</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc46</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc47</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc48</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc49</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc50</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc51</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc52</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc53</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc54</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc55</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc56</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc57</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc58</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc59</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc60</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc61</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc62</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc63</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc64</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc65</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc66</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc67</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc68</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc69</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc70</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc71</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc72</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc73</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc74</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc75</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc76</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc77</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc78</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc79</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc80</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc81</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc82</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc83</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc84</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc85</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc86</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc87</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc88</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc89</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc90</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc91</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc92</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc93</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc94</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc95</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc96</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc97</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc98</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc99</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc100</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc101</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc102</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc103</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc104</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc105</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc106</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc107</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc108</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc109</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc110</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc111</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc112</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc113</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc114</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc115</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc116</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc117</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc118</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc119</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc120</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc121</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc122</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc123</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc124</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc125</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc126</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
-												</value>
-											</item>
-											<item>
-												<name>elc127</name>
-												<value>
-													<which>1</which>
-													<value>0</value>
+													<value>1</value>
 												</value>
 											</item>
 										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>normal_dot_product_bound</name>
+								</first>
+								<second>
+									<name>normal_dot_product_bound</name>
+									<value>
+										<which>1</which>
+										<value>-1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>number_of_electrodes</name>
+								</first>
+								<second>
+									<name>number_of_electrodes</name>
+									<value>
+										<which>0</which>
+										<value>6</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>pointdistancebound</name>
+								</first>
+								<second>
+									<name>pointdistancebound</name>
+									<value>
+										<which>1</which>
+										<value>-1</value>
 									</value>
 								</second>
 							</item>
@@ -1989,6 +1116,106 @@
 									<name>refnode</name>
 									<value>
 										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowField:44</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>7</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(255,255,255)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
 										<value>0</value>
 									</value>
 								</second>
@@ -2077,9 +1304,77 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ViewScene:45</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>ViewScene</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>WriteField:36</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>DataIO</category_name_>
+						<module_name_>WriteField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeList</name>
+								</first>
+								<second>
+									<name>FileTypeList</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld);;NrrdFile (*.nhdr *.nrrd);;ObjToField (*.obj)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Field Binary</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>/Users/moritz/Desktop/tmp_fff.fld</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>54</count>
+			<count>56</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>AlignMeshBoundingBoxes:31</moduleId1_>
@@ -2358,18 +1653,6 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GetDomainBoundary:63</moduleId1_>
-				<port1_>
-					<name>BoundaryField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:33</moduleId2_>
-				<port2_>
-					<name>SCALP_TRI_SURF_MESH</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
 				<moduleId1_>GetFieldBoundary:15</moduleId1_>
 				<port1_>
 					<name>BoundaryField</name>
@@ -2442,14 +1725,26 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>GetFieldBoundary:35</moduleId1_>
+				<port1_>
+					<name>BoundaryField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetupRHSforTDCSandTMS:36</moduleId2_>
+				<port2_>
+					<name>ELECTRODE_TRI_SURF_MESH</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>GetFieldBoundary:37</moduleId1_>
 				<port1_>
 					<name>BoundaryField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:33</moduleId2_>
+				<moduleId2_>SetupRHSforTDCSandTMS:36</moduleId2_>
 				<port2_>
-					<name>ELECTRODE_TRI_SURF_MESH</name>
+					<name>SCALP_TRI_SURF_MESH</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2483,7 +1778,7 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:33</moduleId2_>
+				<moduleId2_>SetupRHSforTDCSandTMS:36</moduleId2_>
 				<port2_>
 					<name>MESH</name>
 					<id>0</id>
@@ -2531,21 +1826,45 @@
 					<name>MatrixLoaded</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:33</moduleId2_>
+				<moduleId2_>SetupRHSforTDCSandTMS:36</moduleId2_>
 				<port2_>
 					<name>ELECTRODE_SPONGE_LOCATION_AVR</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:33</moduleId1_>
+				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
 				<port1_>
-					<name>RHS</name>
+					<name>ELECTRODE_SPONGE_SURF</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportMatrixInfo:34</moduleId2_>
+				<moduleId2_>ShowField:44</moduleId2_>
 				<port2_>
-					<name>InputMatrix</name>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<port1_>
+					<name>ELECTRODE_SPONGE_SURF</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>WriteField:36</moduleId2_>
+				<port2_>
+					<name>FieldToWrite</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:44</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:45</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2639,7 +1958,7 @@
 					<name>Field2</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>GetDomainBoundary:63</moduleId2_>
+				<moduleId2_>GetFieldBoundary:35</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -2732,7 +2051,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>35</count>
+		<count>37</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>AlignMeshBoundingBoxes:31</first>
@@ -2854,13 +2173,6 @@
 			</second>
 		</item>
 		<item>
-			<first>GetDomainBoundary:63</first>
-			<second>
-				<first>-1672</first>
-				<second>152</second>
-			</second>
-		</item>
-		<item>
 			<first>GetFieldBoundary:15</first>
 			<second>
 				<first>-2052</first>
@@ -2903,10 +2215,17 @@
 			</second>
 		</item>
 		<item>
+			<first>GetFieldBoundary:35</first>
+			<second>
+				<first>-1292</first>
+				<second>152</second>
+			</second>
+		</item>
+		<item>
 			<first>GetFieldBoundary:37</first>
 			<second>
-				<first>-1298</first>
-				<second>148</second>
+				<first>-1672</first>
+				<second>152</second>
 			</second>
 		</item>
 		<item>
@@ -2940,7 +2259,7 @@
 		<item>
 			<first>ReadMatrix:33</first>
 			<second>
-				<first>-2052</first>
+				<first>-1368</first>
 				<second>-76</second>
 			</second>
 		</item>
@@ -2952,17 +2271,17 @@
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:34</first>
+			<first>SetupRHSforTDCSandTMS:36</first>
 			<second>
-				<first>-1748</first>
-				<second>456</second>
+				<first>-1672</first>
+				<second>304</second>
 			</second>
 		</item>
 		<item>
-			<first>SetupRHSforTDCSandTMS:33</first>
+			<first>ShowField:44</first>
 			<second>
-				<first>-1748</first>
-				<second>304</second>
+				<first>-1672</first>
+				<second>456</second>
 			</second>
 		</item>
 		<item>
@@ -2977,6 +2296,20 @@
 			<second>
 				<first>-1748</first>
 				<second>0</second>
+			</second>
+		</item>
+		<item>
+			<first>ViewScene:45</first>
+			<second>
+				<first>-1672</first>
+				<second>608</second>
+			</second>
+		</item>
+		<item>
+			<first>WriteField:36</first>
+			<second>
+				<first>-1292</first>
+				<second>456</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -2998,14 +2331,14 @@ FUNCTION LATTICE</noteText>
 			</second>
 		</item>
 		<item>
-			<first>GetDomainBoundary:63</first>
+			<first>GetFieldBoundary:35</first>
 			<second>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;ELECTRODE&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
-				<noteText>ELECTRODE</noteText>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;ELECTRODES&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>ELECTRODES</noteText>
 				<position>3</position>
 				<fontSize>13</fontSize>
 			</second>

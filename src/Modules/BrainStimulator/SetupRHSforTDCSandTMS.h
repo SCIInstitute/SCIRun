@@ -51,7 +51,7 @@ namespace SCIRun {
 
 class SCISHARE SetupRHSforTDCSandTMSModule : public SCIRun::Dataflow::Networks::Module,
   public Has4InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, MatrixPortTag>,
-  public Has6OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>
+  public Has7OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, FieldPortTag>
 {
   public:
     SetupRHSforTDCSandTMSModule();
@@ -70,6 +70,7 @@ class SCISHARE SetupRHSforTDCSandTMSModule : public SCIRun::Dataflow::Networks::
     OUTPUT_PORT(3, ELECTRODE_ELEMENT_DEFINITION, Matrix);
     OUTPUT_PORT(4, ELECTRODE_CONTACT_IMPEDANCE, Matrix);
     OUTPUT_PORT(5, RHS, Matrix);
+    OUTPUT_PORT(6, ELECTRODE_SPONGE_SURF, LegacyField);
 };
 
 }}}

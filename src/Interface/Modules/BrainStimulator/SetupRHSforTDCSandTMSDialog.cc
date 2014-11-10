@@ -43,13 +43,17 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
+  
+  addSpinBoxManager(refnode_, Parameters::refnode); 
+  addDoubleSpinBoxManager(pointdistancebound_, Parameters::pointdistancebound);
+  addDoubleSpinBoxManager(normal_dot_product_bound_, Parameters::normal_dot_product_bound);
+  
   //electrode_tableWidget = new QTableWidget(this);
   electrode_tableWidget->setRowCount(128);
   electrode_tableWidget->setColumnCount(3);
 
   QStringList tableHeader;
-  tableHeader<<"Electrode"<<"Current intensity [mA]"<<"Impedance [Ohm*m^2]";
+  tableHeader<<"Electrode"<<"Current intensity [mA]"<<"real Impedance [Ohm*m^2]";
   electrode_tableWidget->setHorizontalHeaderLabels(tableHeader);
 
   for (int i=0; i<128; i++)
@@ -59,16 +63,24 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
     
     // seting the inital values of the electrodes
     if (i == 0)
+    {
       electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(1.0)));
+      electrode_tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(1.0)));
+    }
     else if (i == 1)
+     {
       electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(-1.0)));
+      electrode_tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(1.0)));
+     }
     else if (i > 1)
-      electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(0.0)));
+      {
+       electrode_tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(0.0)));
+       electrode_tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(1.0)));
+      }
   }
   
   // connecting all table cell positions (int = row, int = col)
   connect(electrode_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
-  addSpinBoxManager(refnode, SetupRHSforTDCSandTMSAlgorithm::refnode());
 }
 
 void SetupRHSforTDCSandTMSDialog::push()
@@ -78,12 +90,16 @@ void SetupRHSforTDCSandTMSDialog::push()
     // updating electrode values (from table) into vector then attaching them to state map
     int rows = electrode_tableWidget->rowCount();
     std::vector<AlgorithmParameter> elc_vals_in_table;
+    std::vector<AlgorithmParameter> imp_elc_vals_in_table;
     for (int i=0; i<rows; i++)
     {
       AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), electrode_tableWidget->item(i,1)->text().toDouble());
       elc_vals_in_table.push_back(elc_i);
+      AlgorithmParameter imp_elc_i(Name("imp_elc" + boost::lexical_cast<std::string>(i)), electrode_tableWidget->item(i,2)->text().toDouble());
+      imp_elc_vals_in_table.push_back(imp_elc_i);
     }
     state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
+    state_->setValue(Parameters::ImpedanceTableValues, imp_elc_vals_in_table);
   }
 }
 
@@ -91,15 +107,29 @@ void SetupRHSforTDCSandTMSDialog::pull()
 {
   Pulling p(this); // prevents from re-entering if statement when next line executes
 
+  int nr_elc=(state_->getValue(Parameters::number_of_electrodes)).toInt();
+  int rows=-1;
+  if (nr_elc!=-1)
+  {
+    electrode_tableWidget->setRowCount(static_cast<int>(nr_elc));
+    rows = nr_elc;
+  } else
+  { 
+    rows = electrode_tableWidget->rowCount();
+  }
+   
   // obtaining initial values, pulling hasn't been set
-  std::vector<AlgorithmParameter> elc_vals_in_table;
-  int rows = electrode_tableWidget->rowCount();
+  std::vector<AlgorithmParameter> elc_vals_in_table; //electrical electrode charges
+  std::vector<AlgorithmParameter> imp_elc_vals_in_table; //electrode impedances
   for (int i=0; i<rows; i++)
   {
     AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), electrode_tableWidget->item(i,1)->text().toDouble());
     elc_vals_in_table.push_back(elc_i);
+    AlgorithmParameter imp_elc_i(Name("imp_elc" + boost::lexical_cast<std::string>(i)), electrode_tableWidget->item(i,2)->text().toDouble());
+    imp_elc_vals_in_table.push_back(imp_elc_i);
   }
   state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
- 
+  state_->setValue(Parameters::ImpedanceTableValues, imp_elc_vals_in_table);
+  //pull_newVersionToReplaceOld();
 }
 

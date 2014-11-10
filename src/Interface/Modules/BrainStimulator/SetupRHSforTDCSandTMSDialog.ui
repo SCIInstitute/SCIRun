@@ -87,7 +87,7 @@
     <string>Reference node number (its potential will be set to 0):</string>
    </property>
   </widget>
-  <widget class="QSpinBox" name="refnode">
+  <widget class="QSpinBox" name="refnode_">
    <property name="geometry">
     <rect>
      <x>360</x>
@@ -103,20 +103,20 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>10</x>
      <y>380</y>
      <width>201</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>Minimal point distance bound:</string>
+    <string>Min. point distance bound:</string>
    </property>
   </widget>
-  <widget class="QDoubleSpinBox" name="pointdistancebound">
+  <widget class="QDoubleSpinBox" name="pointdistancebound_">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>180</x>
      <y>380</y>
      <width>91</width>
      <height>24</height>
@@ -129,13 +129,45 @@
     <number>6</number>
    </property>
    <property name="maximum">
-    <double>1.000000000000000</double>
+    <double>1000000000.000000000000000</double>
    </property>
    <property name="singleStep">
     <double>0.100000000000000</double>
    </property>
    <property name="value">
     <double>0.000001000000000</double>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>380</y>
+     <width>151</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>elec. surf shrink (-1..1):</string>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="normal_dot_product_bound_">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>380</y>
+     <width>61</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <double>1.000000000000000</double>
+   </property>
+   <property name="singleStep">
+    <double>0.100000000000000</double>
+   </property>
+   <property name="value">
+    <double>0.700000000000000</double>
    </property>
   </widget>
  </widget>

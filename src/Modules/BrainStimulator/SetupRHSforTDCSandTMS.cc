@@ -52,11 +52,16 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
  INITIALIZE_PORT(ELECTRODE_ELEMENT_DEFINITION);
  INITIALIZE_PORT(ELECTRODE_CONTACT_IMPEDANCE);
  INITIALIZE_PORT(RHS);
+ INITIALIZE_PORT(ELECTRODE_SPONGE_SURF);
 }
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
-  setStateIntFromAlgo(SetupRHSforTDCSandTMSAlgorithm::refnode());
+  auto state = get_state();
+  setStateIntFromAlgo(Parameters::refnode);
+  setStateDoubleFromAlgo(Parameters::normal_dot_product_bound);
+  setStateDoubleFromAlgo(Parameters::pointdistancebound);
+  setStateIntFromAlgo(Parameters::number_of_electrodes);
 }
 
 void SetupRHSforTDCSandTMSModule::execute()
@@ -70,21 +75,32 @@ void SetupRHSforTDCSandTMSModule::execute()
   // obtaining electrode values from state map
   auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).getList();
   algo().set(Parameters::ELECTRODE_VALUES, elc_vals_from_state);
+  
+  auto imp_vals_from_state = get_state()->getValue(Parameters::ImpedanceTableValues).getList();
+  algo().set(Parameters::IMPEDANCE_VALUES, imp_vals_from_state);
  
   if (needToExecute())
   {
-    algo().set(SetupRHSforTDCSandTMSAlgorithm::refnode(), get_state()->getValue(SetupRHSforTDCSandTMSAlgorithm::refnode()).toInt());
+    update_state(Executing);
+    auto state = get_state();
+    state->setValue(Parameters::refnode, get_state()->getValue(Parameters::refnode).toInt());
+    state->setValue(Parameters::normal_dot_product_bound, get_state()->getValue(Parameters::normal_dot_product_bound).toDouble());
+    state->setValue(Parameters::pointdistancebound, get_state()->getValue(Parameters::pointdistancebound).toDouble());
+        
     int nr_elec=elc_sponge_location->nrows();
-    if (!elc_sponge_location && nr_elec>=2)
+    if (elc_sponge_location && nr_elec>=2)
     {
-     algo().set(SetupRHSforTDCSandTMSAlgorithm::number_of_electrodes(), nr_elec);
+     //algo().set(Parameters::number_of_electrodes, nr_elec);
+     state->setValue(Parameters::number_of_electrodes, nr_elec);
     }
     
     auto output = algo().run_generic(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
+    sendOutputFromAlgorithm(LHS_KNOWNS, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT_TYPE, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT_DEFINITION, output);
     sendOutputFromAlgorithm(ELECTRODE_CONTACT_IMPEDANCE, output);
     sendOutputFromAlgorithm(RHS, output);
+    sendOutputFromAlgorithm(ELECTRODE_SPONGE_SURF, output);
   }
 }

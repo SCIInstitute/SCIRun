@@ -47,20 +47,24 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
-
+  ALGORITHM_PARAMETER_DECL(ImpedanceTableValues);
   ALGORITHM_PARAMETER_DECL(ElectrodeTableValues);
   ALGORITHM_PARAMETER_DECL(ELECTRODE_VALUES);
-
+  ALGORITHM_PARAMETER_DECL(IMPEDANCE_VALUES);
+  ALGORITHM_PARAMETER_DECL(refnode);
+  ALGORITHM_PARAMETER_DECL(normal_dot_product_bound);
+  ALGORITHM_PARAMETER_DECL(pointdistancebound);
+  ALGORITHM_PARAMETER_DECL(number_of_electrodes);
+  
   class SCISHARE SetupRHSforTDCSandTMSAlgorithm : public AlgorithmBase
   {
   public:
     SetupRHSforTDCSandTMSAlgorithm();
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle> run(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
+    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle> run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc,int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
     
-    static AlgorithmParameterName refnode();
-    static AlgorithmParameterName number_of_electrodes();
+    //static AlgorithmParameterName number_of_electrodes();
     
     static AlgorithmInputName MESH;
     static AlgorithmInputName SCALP_TRI_SURF_MESH;
@@ -72,13 +76,14 @@ namespace BrainStimulator {
     static AlgorithmOutputName ELECTRODE_CONTACT_IMPEDANCE;
     static AlgorithmOutputName LHS_KNOWNS;
     static AlgorithmOutputName RHS;
+    static AlgorithmOutputName ELECTRODE_SPONGE_SURF;
     
     static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
-  
+    static Core::Algorithms::AlgorithmParameterName ElecrodeImpedanceParameterName(int i);
   private:  
-    const double identical_node_location_differce = 1e-10; /// should be a bit bigger than machine precision 
+    const int special_label = -4321;
     SCIRun::Core::Datatypes::DenseMatrixHandle create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const;
-    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle> create_lhs(FieldHandle mesh, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
+    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle> create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
   };
 
 }}}}

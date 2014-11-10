@@ -44,6 +44,7 @@
 #include <Core/Datatypes/MatrixComparison.h>
 #include <boost/lexical_cast.hpp>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
@@ -53,10 +54,18 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodeTableValues);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, ImpedanceTableValues);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ELECTRODE_VALUES);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, IMPEDANCE_VALUES);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, refnode);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, normal_dot_product_bound);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, pointdistancebound);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, number_of_electrodes);
 
-AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::refnode() { return AlgorithmParameterName("refnode"); }
-AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::number_of_electrodes() { return AlgorithmParameterName("number_of_electrodes"); }
+//AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::refnode() { return AlgorithmParameterName("refnode"); }
+//AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::number_of_electrodes() { return AlgorithmParameterName("number_of_electrodes"); }
+//AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::normal_dot_product_bound() { return AlgorithmParameterName("normal_dot_product_bound"); }
+//AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::pointdistancebound() {return AlgorithmParameterName("pointdistancebound");}
 
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::MESH("MESH");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::SCALP_TRI_SURF_MESH("SCALP_TRI_SURF_MESH");
@@ -68,22 +77,33 @@ AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_ELEMENT_DEFINITION
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_CONTACT_IMPEDANCE("ELECTRODE_CONTACT_IMPEDANCE");
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
 AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::LHS_KNOWNS("LHS_KNOWNS");
+AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_SPONGE_SURF("ELECTRODE_SPONGE_SURF");
 
 AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
+AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeImpedanceParameterName(int i) { return AlgorithmParameterName(Name("imp_elc"+boost::lexical_cast<std::string>(i)));}
 
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
   addParameter(Parameters::ELECTRODE_VALUES, 0); // just a default value, will be replaced with vector
-  addParameter(refnode(), 0);
-  addParameter(number_of_electrodes(), 128);
+  addParameter(Parameters::IMPEDANCE_VALUES, 0);
+  addParameter(Parameters::number_of_electrodes, 128);
+  addParameter(Parameters::refnode, 0);  
+  addParameter(Parameters::normal_dot_product_bound, 0.7);
+  addParameter(Parameters::pointdistancebound, 0.0001);
+  //std::cout << "nb:" << Parameters::normal_dot_product_bound << std::endl;
 }
 
 AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   auto mesh = input.get<Field>(MESH);
-  
   // obtaining electrode values from the state
   auto all_elc_values = get(Parameters::ELECTRODE_VALUES).getList();
+  auto all_imp_elc_values = get(Parameters::IMPEDANCE_VALUES).getList();
+  
+  if (all_elc_values.size()!=all_imp_elc_values.size())
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR("Internal Error: electrode information could not retrieved from GUI.");
+  }
   
   // consistency check:
   for (int i=0; i<all_elc_values.size(); i++)
@@ -93,10 +113,25 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
     auto expectedElecName = SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(i); // ElecrodeParameterName(i);
     if(elecName.name_.compare(expectedElecName.name_) != 0) // if so, electrodes are being stored out of order.
       THROW_ALGORITHM_PROCESSING_ERROR("Values are being stored out of order!");
+      
+    auto impelecName = all_imp_elc_values[i].nameForXml(); 
+    auto expectedImpElecName = SetupRHSforTDCSandTMSAlgorithm::ElecrodeImpedanceParameterName(i);
+    if(elecName.name_.compare(expectedElecName.name_) != 0) // if so, electrodes are being stored out of order.
+      THROW_ALGORITHM_PROCESSING_ERROR("Impedance values are being stored out of order!");
   }
   
   auto scalp_tri_surf = input.get<Field>(SCALP_TRI_SURF_MESH);
   auto elc_tri_surf = input.get<Field>(ELECTRODE_TRI_SURF_MESH);
+  
+  if(!elc_tri_surf)
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR("Input Error: electrode triangle surface is not allocated.");   
+  }
+  
+  if(!scalp_tri_surf)
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR("Input Error: Scalp triangle surface is not allocated.");   
+  }  
   
   // obtaining number of electrodes
   DenseMatrixHandle elc_sponge_location = matrix_convert::to_dense(input.get<Matrix>(ELECTRODE_SPONGE_LOCATION_AVR));
@@ -114,41 +149,44 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   AlgorithmOutput output; 
   
   DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs;
-  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs) = run(mesh, all_elc_values, num_of_elc, scalp_tri_surf, elc_tri_surf, elc_sponge_location);
-
+  FieldHandle elec_sponge_surf;
+  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs, elec_sponge_surf) = run(mesh, all_elc_values, all_imp_elc_values, num_of_elc, scalp_tri_surf, elc_tri_surf, elc_sponge_location);
+  
   output[LHS_KNOWNS] = lhs_knowns;
   output[ELECTRODE_ELEMENT] = elc_element;
   output[ELECTRODE_ELEMENT_TYPE] = elc_element_typ;
   output[ELECTRODE_ELEMENT_DEFINITION] = elc_element_def;
   output[ELECTRODE_CONTACT_IMPEDANCE] = elc_contact_imp;
   output[RHS] = rhs;
+  output[ELECTRODE_SPONGE_SURF] = elec_sponge_surf;
+  
   return output;
 }
 
 /// replace this code with calls to splitfieldbyconnectedregion, clipfieldby* if available for SCIRun5 
-boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle> SetupRHSforTDCSandTMSAlgorithm::create_lhs(FieldHandle mesh, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
+boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle> SetupRHSforTDCSandTMSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
  VMesh::size_type mesh_num_nodes = mesh->vmesh()->num_nodes();
  DenseMatrixHandle lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
- 
- index_type refnode_number = get(refnode()).toInt();
- if ( refnode_number > mesh_num_nodes && refnode_number>0)
+
+ index_type refnode_number = get(Parameters::refnode).toInt();
+ double normal_dot_product_bound_ = get(Parameters::normal_dot_product_bound).toDouble();
+ double identical_node_location_differce = get(Parameters::pointdistancebound).toDouble();
+/*
+ std::cout << "n:"  << normal_dot_product_bound_ << std::endl;
+ std::cout << "p:"  << get(Parameters::pointdistancebound).toDouble() << std::endl;
+ std::cout << "r:"  << refnode_number << std::endl;
+ std::cout << "d:"  << identical_node_location_differce << std::endl;
+  */
+ if (identical_node_location_differce<=0 || refnode_number<0 || normal_dot_product_bound_<0)
  {
-    THROW_ALGORITHM_PROCESSING_ERROR(" Reference node exceeds number of FEM nodes. ");
+  THROW_ALGORITHM_PROCESSING_ERROR(" Gui values (refnode, point dis., surf shrink) should be > 0. ");
  }
- 
- /// prepare LHS_KNOWNS which is the an input to addknownstolinearsystem (called x) besides the stiffness matrix
- lhs_knows=boost::make_shared<DenseMatrix>(mesh_num_nodes,1);
- for(VMesh::Node::index_type idx=0; idx<mesh_num_nodes; idx++)
- {
-   (*lhs_knows)(idx,1)=std::numeric_limits<double>::quiet_NaN();
- }
- (*lhs_knows)(refnode_number,1)=0;
- 
+  
  SplitFieldByConnectedRegionAlgo algo;
  algo.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), false);
  algo.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
- std::vector<FieldHandle> result = algo.run(mesh);
+ std::vector<FieldHandle> result = algo.run(elc_tri_surf);
  
  if (result.size()<=0)
  {
@@ -165,13 +203,32 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
    THROW_ALGORITHM_PROCESSING_ERROR(" The number of electrode sponges (4th module input) does not match number of a splitted electrode surfaces (3rd module input).");
  }
  
-  /// map the electrode sponge center (CreateElectrodeCoil) to generated tDCS electrode geometry (Cleaver), 
-  /// this mapping is meant to map the GUI inputs to actual electrode geometry by having a lookup table
- DenseMatrixHandle lookup(new DenseMatrix(elc_sponge_location->nrows(), 1));
- DenseMatrixHandle distances(new DenseMatrix(elc_sponge_location->nrows(), 1));
+ if ( refnode_number > mesh_num_nodes || refnode_number<0)
+ {
+    THROW_ALGORITHM_PROCESSING_ERROR(" Reference node exceeds number of FEM nodes. ");
+ }
+ 
+ /// prepare LHS_KNOWNS which is the an input to addknownstolinearsystem (called x) besides the stiffness matrix
+ lhs_knows=boost::make_shared<DenseMatrix>(mesh_num_nodes,1);
+ for(VMesh::Node::index_type idx=0; idx<mesh_num_nodes; idx++)
+ {
+   (*lhs_knows)(idx,0)=std::numeric_limits<double>::quiet_NaN();
+ }
+ (*lhs_knows)(refnode_number,0)=0;
+ 
+ FieldInformation fieldinfo("TriSurfMesh", CONSTANTDATA_E, "int");
+ FieldHandle elc_sponge_surf = CreateField(fieldinfo);      
+ VMesh* elc_sponge_surf_vmesh = elc_sponge_surf->vmesh();  
+ VField* elc_sponge_surf_vfld  = elc_sponge_surf->vfield();
+ std::vector<double> field_values, impedances;
+ /// map the electrode sponge center (CreateElectrodeCoil) to generated tDCS electrode geometry (Cleaver), 
+ /// this mapping is meant to map the GUI inputs to actual electrode geometry by having a lookup table
+ int electrode_sponges=elc_sponge_location->nrows();
+ DenseMatrixHandle lookup(new DenseMatrix(electrode_sponges, 1));
+ DenseMatrixHandle distances(new DenseMatrix(electrode_sponges, 1));
  VMesh::Node::index_type didx;
  double distance=0; 
- for (long i=0;i<elc_sponge_location->nrows();i++)
+ for (long i=0;i<electrode_sponges;i++)
  {
   Point elc((*elc_sponge_location)(i,0),(*elc_sponge_location)(i,1),(*elc_sponge_location)(i,2)),r;
   double min_dis=std::numeric_limits<double>::infinity();
@@ -192,7 +249,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   (*distances)(i,0)=min_dis;
  }
  
- /// throw error if the geometry is too far away from predicted location (based on input)
+ /// throw error if the geometry is too far away from predicted location - further away than sponge thickness
  for (long i=0;i<elc_sponge_location->nrows();i++)
  {
    if ((*distances)(i,0)>(*elc_sponge_location)(i,3))
@@ -201,208 +258,267 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     ostr1 << " distance to electrode " << i << " sponge  = " <<  (*distances)(i,0) << " exceeds defined limit of " << (*elc_sponge_location)(i,3) << std::endl;
     THROW_ALGORITHM_PROCESSING_ERROR(ostr1.str());
    }
- }
- 
+ } 
+
  /// determine intersection of electrode sponge and scalp (replace with a mesh intersection function later); as well as center of electrode sponge/scalp surface
  FieldInformation fi("PointCloudMesh",0,"double");
- FieldHandle intersection_points=CreateField(fi);
- VMesh* mesh_intersection_points = intersection_points->vmesh();
- VField* field_intersection_points = intersection_points->vfield();
+ FieldHandle sponge_geometry_centers=CreateField(fi);
+ VMesh* mesh_sponge_geometry_centers = sponge_geometry_centers->vmesh();
+ 
  VMesh* mesh_scalp_tri_surf  = scalp_tri_surf->vmesh(); 
- Point p; Vector norm; 
- std::vector<VMesh::Node::index_type> node_ind;
- std::vector<double> dist; 
+ Point p,q; Vector norm; 
+ VMesh::Node::index_type node_ind;
  distance=std::numeric_limits<double>::infinity(); 
- DenseMatrixHandle elctrode_sponge_geometry_location_avr(new DenseMatrix(result.size(), 3));
+ DenseMatrixHandle sponge_center_pojected_onto_scalp_index(new DenseMatrix(result.size(), 1));
+ DenseMatrixHandle sponge_center_pojected_onto_scalp_normal(new DenseMatrix(result.size(), 3));
  DenseMatrixHandle sponge_center_pojected_onto_scalp(new DenseMatrix(result.size(), 3));
+ 
+ mesh_scalp_tri_surf->synchronize(Mesh::NODE_LOCATE_E);
+
  for(long i=0;i<result.size();i++)
  {
   VMesh*  tmp_mesh = result[i]->vmesh();
   tmp_mesh->synchronize(Mesh::NODE_LOCATE_E);
-  double x=0,y=0,z=0,count=0;
+  double avr_x=0,avr_y=0,avr_z=0;
   long number_electrode_nodes=tmp_mesh->num_nodes();
+  
+  FieldInformation fi2("PointCloudMesh",0,"double");
+  FieldHandle tmp_field=CreateField(fi2);
+  VMesh* tmp_field_mesh = tmp_field->vmesh();
+ 
   for (VMesh::Node::index_type idx=0; idx<number_electrode_nodes; idx++)
   {
-    tmp_mesh->get_center(p,idx);
-    if (mesh_scalp_tri_surf->find_closest_nodes(dist, node_ind, p, identical_node_location_differce))
+    tmp_mesh->get_center(p,idx); 
+    avr_x+=p.x();
+    avr_y+=p.y();
+    avr_z+=p.z();
+    if(mesh_scalp_tri_surf->find_closest_node(distance,q,node_ind,p))
     {
-     if(node_ind.size()==1)
-      {
-       mesh_intersection_points->add_point(p);
-       tmp_mesh->get_normal(norm,idx);
-       field_intersection_points->set_value(norm,idx);
-       x+=p.x(); 
-       y+=p.y(); 
-       z+=p.z();
-       count++;
-      } else
-      {
-       THROW_ALGORITHM_PROCESSING_ERROR(" Found multiple points. Decrease minimum distance bound. ");
-      }
+     if (distance<identical_node_location_differce)
+     {  
+      tmp_field_mesh->add_point(q);
+     } 
     }
   }
-  Point r(x/count,y/count,z/count);
-  (*elctrode_sponge_geometry_location_avr)(i,0)=r.x();
-  (*elctrode_sponge_geometry_location_avr)(i,1)=r.y();
-  (*elctrode_sponge_geometry_location_avr)(i,2)=r.z();
-   mesh_intersection_points->find_closest_node(distance,p,didx,r);
-  (*sponge_center_pojected_onto_scalp)(i,0)=p.x();
-  (*sponge_center_pojected_onto_scalp)(i,1)=p.y();
-  (*sponge_center_pojected_onto_scalp)(i,2)=p.z();
   
-  ///move from the center of the electrode sponge to the top by going in the opposite direction of sponge_center_pojected_onto_scalp using the normal
-  /// first decide what the opposite direction is
+  avr_x/=(number_electrode_nodes);
+  avr_y/=(number_electrode_nodes);
+  avr_z/=(number_electrode_nodes);
   
+  Point avr_sponge_geometry(avr_x,avr_y,avr_z);
+  mesh_sponge_geometry_centers->add_point(avr_sponge_geometry);
+  tmp_field_mesh->synchronize(Mesh::NODE_LOCATE_E);
+  tmp_field_mesh->find_closest_node(distance,q,node_ind,avr_sponge_geometry);
+    
+  (*sponge_center_pojected_onto_scalp)(i,0)=q.x();
+  (*sponge_center_pojected_onto_scalp)(i,1)=q.y();
+  (*sponge_center_pojected_onto_scalp)(i,2)=q.z();
   
+  mesh_scalp_tri_surf->find_closest_node(distance,p,node_ind,q);
+  (*sponge_center_pojected_onto_scalp_index)(i,0)=node_ind;
  }
  
- /// find center of scalp-elc intersection
-
+ mesh_scalp_tri_surf->synchronize(Mesh::NORMALS_E);
+ VMesh::Elem::array_type ca;
+ for(long j=0;j<result.size();j++)
+ { 
+  VMesh::Node::index_type ii((*sponge_center_pojected_onto_scalp_index)(j,0));
+  mesh_scalp_tri_surf->get_normal(norm,ii);
+  double x=norm.x(),y=norm.y(),z=norm.z();
+  
+  double normal_mag=sqrt(x*x+y*y+z*z); /// normalize vector normal 
+  x/=normal_mag;
+  y/=normal_mag;
+  z/=normal_mag;
+  
+  (*sponge_center_pojected_onto_scalp_normal)(j,0)=x;
+  (*sponge_center_pojected_onto_scalp_normal)(j,1)=y;
+  (*sponge_center_pojected_onto_scalp_normal)(j,2)=z;
+ }
  
-  //FieldInformation fi(result[i]);
-  //FieldHandle tmp_field=CreateField(fi); /// create intersection surface to be plugged into "intersection_elcsponge_scalp"   
-  //VField* ofield = tmp_field->vfield();
-  //ofield->resize_values(); 
-  //VMesh::Node::index_type nodeindex = clipped->add_point(np);
-  //clipped->add_elem(nnodes);
+ VMesh* mesh_elc_tri_surf = scalp_tri_surf->vmesh();
+ mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E); 
+  
+ int nr_elc_sponge_triangles=0;
+ /// test if normal goes outwards 
  
- 
-/*
- VMesh*   elc_mesh = elc_tri_surf->vmesh();
- Point p,r;
- double distance;
- VMesh::Node::index_type didx;
- DenseMatrixHandle elc_scalp_tri_surf_locations = DenseMatrixHandle(new DenseMatrix(num_nodes, 3));
- DenseMatrixHandle remaining_elc_scalp_tri_surf_locations = DenseMatrixHandle(new DenseMatrix(num_nodes, 3));
- 
- VMesh*  scalp_mesh = scalp_tri_surf->vmesh();
- scalp_mesh->synchronize(Mesh::NODE_LOCATE_E);
- 
- long elc_scalp_tri_surf_locations_count=0, remaining_elc_scalp_tri_surf_locations_count=0;
- /// find the intersections of scalp-electrode sponges meshes and mark those for further exclusion
- for(VMesh::Node::index_type idx=0; idx<num_nodes; idx++)
- {
-  elc_mesh->get_center(p,idx);
-  scalp_mesh->find_closest_node(distance,r,didx,p);
-  if (distance<=identical_node_location_differce) 
+ for(int k=0;k<sponge_center_pojected_onto_scalp_normal->nrows();k++)
+ { 
+  bool normal_traveling_direction_needs_to_be_positive=true;
+  double elc_thickness=0;
+  bool found=false;
+  
+  for (long j=0;j<lookup->nrows();j++)
   {
-    (*elc_scalp_tri_surf_locations)(elc_scalp_tri_surf_locations_count,0)=p.x();    
-    (*elc_scalp_tri_surf_locations)(elc_scalp_tri_surf_locations_count,1)=p.y(); 
-    (*elc_scalp_tri_surf_locations)(elc_scalp_tri_surf_locations_count,2)=p.z(); 
-    elc_scalp_tri_surf_locations_count++;
+    if ((*lookup)(j,0)==k) 
+      {
+        elc_thickness=(*elc_sponge_location)((*lookup)(j,0),3);
+        found=true; 
+      }      
+  }
+
+  if (!found)
+  {
+   THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Lookup of mesh defined electrode (first input) and definition (fourth input) do not match - check your inputs!");  
+  } 
+  
+  Point o1((*sponge_center_pojected_onto_scalp)(k,0)+(*sponge_center_pojected_onto_scalp_normal)(k,0)*elc_thickness/2,(*sponge_center_pojected_onto_scalp)(k,1)+(*sponge_center_pojected_onto_scalp_normal)(k,1)*elc_thickness/2,(*sponge_center_pojected_onto_scalp)(k,2)+(*sponge_center_pojected_onto_scalp_normal)(k,2)*elc_thickness/2);
+  Point o2((*sponge_center_pojected_onto_scalp)(k,0)-(*sponge_center_pojected_onto_scalp_normal)(k,0)*elc_thickness/2,(*sponge_center_pojected_onto_scalp)(k,1)-(*sponge_center_pojected_onto_scalp_normal)(k,1)*elc_thickness/2,(*sponge_center_pojected_onto_scalp)(k,2)-(*sponge_center_pojected_onto_scalp_normal)(k,2)*elc_thickness/2); 
+  
+  mesh_sponge_geometry_centers->synchronize(Mesh::NODE_LOCATE_E);
+  mesh_sponge_geometry_centers->get_center(p,(VMesh::Node::index_type)k);
+ 
+  std::cout << "p:" << p.x() << " " << p.y() << " " << p.z() << std::endl;
+  std::cout << "o1:" << o1.x() << " " << o1.y() << " " << o1.z() << std::endl;
+  std::cout << "o2:" << o2.x() << " " << o2.y() << " " << o2.z() << std::endl;
+  std::cout << "n:" << (*sponge_center_pojected_onto_scalp_normal)(k,0) << " " << (*sponge_center_pojected_onto_scalp_normal)(k,1) << " " << (*sponge_center_pojected_onto_scalp_normal)(k,2) << std::endl;
+  
+  double d1=sqrt((p.x()-o1.x())*(p.x()-o1.x())+(p.y()-o1.y())*(p.y()-o1.y())+(p.z()-o1.z())*(p.z()-o1.z()));
+  double d2=sqrt((p.x()-o2.x())*(p.x()-o2.x())+(p.y()-o2.y())*(p.y()-o2.y())+(p.z()-o2.z())*(p.z()-o2.z()));
+ /*
+  VMesh::Node::index_type node_ind1,node_ind2;
+  tmp_mesh->find_closest_node(distance,q,node_ind1,o1);
+  double d1=distance;
+  tmp_mesh->find_closest_node(distance,q,node_ind2,o2);
+  double d2=distance; 	
+  */
+  
+  normal_traveling_direction_needs_to_be_positive=true;
+  std::cout << "d:" << d1 << " " << d2 << std::endl;
+  if (d1==d2)
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Criteria to find sponge top and bottom failed!");
+  } else
+  if (d1>d2)
+  { 
+    normal_traveling_direction_needs_to_be_positive=false;
   } else
   {
-    (*remaining_elc_scalp_tri_surf_locations)(remaining_elc_scalp_tri_surf_locations_count,0)=r.x();
-    (*remaining_elc_scalp_tri_surf_locations)(remaining_elc_scalp_tri_surf_locations_count,1)=r.y();
-    (*remaining_elc_scalp_tri_surf_locations)(remaining_elc_scalp_tri_surf_locations_count,2)=r.z();
-    remaining_elc_scalp_tri_surf_locations_count++;
-  }
- }
- /// find the location on electrode sponge surface and project it to the top surface based on scalp-sponge normal if needed
- for (long i=0; i<elc_sponge_location->ncols(); i++)
- {
-  double x=(*elc_sponge_location)(i,0), y=(*elc_sponge_location)(i,1), z=(*elc_sponge_location)(i,2);
-  double min_dist_sponge=std::numeric_limits<double>::max(), min_dist_scalp=std::numeric_limits<double>::max();
-  double x1=0,y1=0,z1=0;
-  long index_sponge=-1;
-  for (long j=0; j<elc_scalp_tri_surf_locations_count; j++)
-  {
-    x1=(*elc_scalp_tri_surf_locations)(j,0);
-    y1=(*elc_scalp_tri_surf_locations)(j,1);
-    z1=(*elc_scalp_tri_surf_locations)(j,2);
-    distance = sqrt((x-x1)*(x-x1)+(y-y1)*(y-y1)+(z-z1)*(z-z1));
-    if (min_dist_sponge>distance)
-    {
-     index_sponge=j;
-     min_dist_sponge=distance;
-    }
+    normal_traveling_direction_needs_to_be_positive=true;
   }
   
-  if (distance>(*elc_sponge_location)(i,4))
+  VMesh*  tmp_mesh = result[k]->vmesh(); 
+  VField* tmp_fld = result[k]->vfield();
+  tmp_mesh->synchronize(Mesh::NORMALS_E);
+  
+  Vector sponge_outwards_normal;
+  if (normal_traveling_direction_needs_to_be_positive) /// force normals to point towards electrode
+  {
+   sponge_outwards_normal.x((*sponge_center_pojected_onto_scalp_normal)(k,0));
+   sponge_outwards_normal.y((*sponge_center_pojected_onto_scalp_normal)(k,1));
+   sponge_outwards_normal.z((*sponge_center_pojected_onto_scalp_normal)(k,2));
+   std::cout << "NNNNN++++++" << std::endl;
+  } else
+  {
+   sponge_outwards_normal.x(-(*sponge_center_pojected_onto_scalp_normal)(k,0));
+   sponge_outwards_normal.y(-(*sponge_center_pojected_onto_scalp_normal)(k,1));
+   sponge_outwards_normal.z(-(*sponge_center_pojected_onto_scalp_normal)(k,2));  
+   std::cout << "NNNNNN------" << std::endl;
+  }  
+ 
+  VMesh::coords_type center;
+  VMesh::Face::size_type nrows;
+  tmp_mesh->size(nrows);
+  for(VMesh::Face::index_type idx=0; idx<nrows; idx++)
+  {
+   tmp_mesh->get_element_center(center);
+   tmp_mesh->get_normal(norm,center,VMesh::Elem::index_type(idx));
+   double dot_product=Dot(norm, sponge_outwards_normal);
+      
+   if (dot_product>=normal_dot_product_bound_)
    {
-    THROW_ALGORITHM_PROCESSING_ERROR("Averaged electrode sponge location seems to be outside of the electrode sponge");   
+    tmp_fld->set_value(static_cast<int>(special_label), idx);  
    } else
    {
-    /// is it projected on the sponge surface or on the scalp or the sides of the sponge -> test it!
-    /// 1) test if it is on scalp or sponge sides
-    long index_elc_scalp_interface=-1;
-    for (long j=0; j<elc_scalp_tri_surf_locations_count; j++)
-    { 
-     x1=(*elc_scalp_tri_surf_locations)(j,0);
-     y1=(*elc_scalp_tri_surf_locations)(j,1);
-     z1=(*elc_scalp_tri_surf_locations)(j,2);
-     distance = sqrt((x-x1)*(x-x1)+(y-y1)*(y-y1)+(z-z1)*(z-z1));
-     if (min_dist_scalp>distance)
-     {
-      index_elc_scalp_interface=j;
-      min_dist_scalp=distance;
-     }
-    }
+    tmp_fld->set_value(static_cast<int>(0), idx); 
    }
- } 
- */
- /*
- scalp_mesh->synchronize(Mesh::NODE_LOCATE_E); 
- std::vector<double> distances;
- std::vector<VMesh::Node::index_type> nodes;
- const Point q;
- double maxdist = std::numeric_limits<double>::max();
- /// map the input electrode locations on the scalp-electrode interface
- for (long i=0; i<elc_sponge_location->nrows(); i++)
+  }
+  VMesh::Elem::index_type c_ind=0;
+  SplitFieldByDomainAlgo algo2;
+  FieldList output;  
+  algo2.set(SplitFieldByDomainAlgo::SortBySize, true);
+  algo2.set(SplitFieldByDomainAlgo::SortAscending, false);
+  algo2.runImpl(result[k], output);
+  
+  for(long o=0;o<output.size();o++)
+  {
+   VField* tmp_splitbydomain_tri_mesh = output[o]->vfield();
+   int tmp_val=0;
+   tmp_splitbydomain_tri_mesh->get_value(tmp_val,c_ind);
+   if ( tmp_val == special_label )
+   {
+    SplitFieldByConnectedRegionAlgo algo3;
+    algo3.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
+    algo3.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+    std::vector<FieldHandle> result3 = algo3.run(output[o]);
+    if (result3.size()>1)
+    {
+     remark(" This module found two electrode sponge surfaces that are not connected and took the one that has more elements. Visualize the 7th (Field) output to make sure otherwise the simulation would be wrong!");    
+    }
+    if (result3.size()==0)
+    {
+       THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Cannot find any electrode sponge surface. ");
+    }
+    FieldHandle tri_mesh = result3[0];
+    VMesh* tri_mesh_vmesh = tri_mesh->vmesh();
+    VMesh::Node::array_type onodes(3);
+    for (VMesh::Node::index_type l=0; l<tri_mesh_vmesh->num_nodes(); l++)
+    {
+      Point point;
+      tri_mesh_vmesh->get_center(p,l);
+      elc_sponge_surf_vmesh->add_point(p); 
+    }
+    
+    for (VMesh::Elem::index_type l=0; l<tri_mesh_vmesh->num_elems(); l++) 
+    {
+     VMesh::Node::array_type onodes(3); 
+     tri_mesh_vmesh->get_nodes(onodes, l);
+     onodes[0]+=nr_elc_sponge_triangles;
+     onodes[1]+=nr_elc_sponge_triangles;
+     onodes[2]+=nr_elc_sponge_triangles;
+     elc_sponge_surf_vmesh->add_elem(onodes);
+     field_values.push_back(k);
+     impedances.push_back(impelc[k].toDouble());
+    }  
+    nr_elc_sponge_triangles+=tri_mesh_vmesh->num_nodes();
+     
+   }
+  }
+  
+ }
+
+ elc_sponge_surf_vfld->resize_values();
+ elc_sponge_surf_vfld->set_values(field_values);
+ 
+ elc_elem = boost::make_shared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(),1));
+ elc_elem_def = boost::make_shared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(),4));
+ elc_elem_typ = boost::make_shared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(),1));
+ elc_con_imp = boost::make_shared<DenseMatrix>(DenseMatrix::Zero(elc_sponge_surf_vmesh->num_elems(),1));
+ 
+ if (impedances.size() != elc_sponge_surf_vmesh->num_elems())
  {
-  p=Point((*elc_sponge_location)(i,0),(*elc_sponge_location)(i,1),(*elc_sponge_location)(i,2));
-  scalp_mesh-> find_closest_nodes(distances, nodes, q,  maxdist);
-  for (int j=0; j<distances.size(); j++)
-    std::cout << "j: " << j << distances[j] << std::endl;
- }*/
- 
- /*
- VMesh*  imesh  = mesh->vmesh();
- double min=std::numeric_limits<double>::max();
- 
- /// 2) identify the intersection using the scalp mesh
- for(VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
- {
-  imesh->get_center(p,idx);
-  distance = sqrt((x1-p.x())*(x1-p.x())+(y1-p.y())*(y1-p.y())+(z1-p.z())*(z1-p.z()));
- 
+    THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Number of impedances and electrode contact surface elements do not match up. ");
  }
  
+ if (elc_sponge_surf_vmesh->num_elems()!=field_values.size())
+ {
+   THROW_ALGORITHM_PROCESSING_ERROR("Internal error: internal field definition is "); 
+ }
  
-   Vector norm;
-  for (VMesh::Node::index_type i=0; i<num_nodes; ++i)
-  {
-    vmesh->get_normal(norm,i);
-    dataptr[k] = norm.x();
-    dataptr[k+1] = norm.y();
-    dataptr[k+2] = norm.z();
- 
- */
- 
-/*
- VMesh::size_type numnodes = imesh->num_nodes();    
-    VMesh::index_type count = 0;    
-    for (VMesh::Node::index_type i=0; i< numnodes; i++)
-    {
-      Point p;
-      imesh->get_center(p,i);
-      VMesh::Elem::index_type eidx;
-      if (objmesh->locate(eidx,p))
-      {
-        // it is inside the volume
-        omesh->add_point(p);
-      }
-      else
-      {
-        Point r;
-        smesh->find_closest_elem(r,eidx,p);
-        omesh->add_point(r);
-      }
-      count++; if (count == 100) { update_progress(i,numnodes); count=0; }
-    }*/
-
-
- return boost::make_tuple(lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp);
+ for(VMesh::Elem::index_type l=0; l<elc_sponge_surf_vmesh->num_elems(); l++)
+ {
+  (*elc_elem_typ)(l,0)=2; //define triangles to incject currents in TDCS simulations
+  VMesh::Node::array_type onodes(3); 
+  elc_sponge_surf_vmesh->get_nodes(onodes, l);
+  (*elc_elem_def)(l,0)=onodes[0];
+  (*elc_elem_def)(l,1)=onodes[1];
+  (*elc_elem_def)(l,2)=onodes[2];
+  (*elc_elem_def)(l,3)=0; 
+  (*elc_elem)(l,0)=field_values[l]; 
+  (*elc_con_imp)(l,0)=impedances[l];
+ }
+  
+ return boost::make_tuple(lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp,elc_sponge_surf);
 }
 
 DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const
@@ -447,10 +563,10 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, c
   return output;
 }
 
-boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle> SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
+boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle> SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
   if (num_of_elc > 128) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes given exceeds what is possible ");}
-  else if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
+  if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
   
   if (!mesh) THROW_ALGORITHM_INPUT_ERROR("Input field (mesh) was not allocated "); 
   if (!scalp_tri_surf) THROW_ALGORITHM_INPUT_ERROR("Input field (scalp triangle surface) was not allocated ");
@@ -460,7 +576,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   DenseMatrixHandle rhs=create_rhs(mesh, elcs, num_of_elc);
   
   DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp;
-  //boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp) = create_lhs(mesh, scalp_tri_surf, elc_tri_surf, elc_sponge_location); 
+  FieldHandle elec_sponge_surf;
+  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, elec_sponge_surf) = create_lhs(mesh, impelc,scalp_tri_surf, elc_tri_surf, elc_sponge_location); 
   
-  return boost::make_tuple(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs);
+  return boost::make_tuple(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs, elec_sponge_surf);
 }
