@@ -52,7 +52,7 @@ SET(Core_Matlab_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Matlab ${Core_Matlab_SRCS} ${Core_Matlab_HEADERS})
+SCIRUN_ADD_LIBRARY(Core_Matlab ${Core_Matlab_SRCS} ${Core_Matlab_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_Matlab
   Core_Datatypes

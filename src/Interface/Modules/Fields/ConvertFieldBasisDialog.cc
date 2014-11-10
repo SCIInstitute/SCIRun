@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,39 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_CONVERTFIELDBASIS_H__
-#define MODULES_LEGACY_FIELDS_CONVERTFIELDBASIS_H__
+#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+//typedef SCIRun::Modules::Fields::ConvertFieldBasis ConvertFieldBasisModule;
 
-      //TODO: 2nd output port computes a mapping matrix, but it's not used in important networks. Disable for now.
-
-      class SCISHARE ConvertFieldBasis : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        //public Has2OutputPorts<FieldPortTag, MatrixPortTag>
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        ConvertFieldBasis();
-
-        virtual void execute();
-        virtual void setStateDefaults();
-
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
-        //OUTPUT_PORT(1, Mapping, Matrix);
-
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      private:
-        void pushInputFieldInfo(FieldHandle input) const;
-      };
-    }
-  }
+ConvertFieldBasisDialog::ConvertFieldBasisDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  
+	addLineEditManager(nameLineEdit_, Parameters::InputFieldName);
+	addLineEditManager(basisLineEdit_,  Parameters::InputType);
+	addComboBoxManager(basisComboBox_, Parameters::OutputType); 
 }
 
-#endif
+void ConvertFieldBasisDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}
