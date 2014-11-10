@@ -4,18 +4,66 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>37</count>
+			<count>49</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>AlignMeshBoundingBoxes:31</first>
+				<first>AddKnownsToLinearSystem:58</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>AddKnownsToLinearSystem</module_name_>
+					</module>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>AlignMeshBoundingBoxes:31</first>
+				<second>
+					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>ChangeMesh</category_name_>
 						<module_name_>AlignMeshBoundingBoxes</module_name_>
 					</module>
-					<state class_id="6" tracking_level="0" version="0">
-						<stateMap class_id="7" tracking_level="0" version="0">
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>BuildFEMatrix:57</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>FiniteElements</category_name_>
+						<module_name_>BuildFEMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>BuildTDCSMatrix:59</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>FiniteElements</category_name_>
+						<module_name_>BuildTDCSMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
 							<count>0</count>
 							<item_version>0</item_version>
 						</stateMap>
@@ -543,6 +591,34 @@
 				</second>
 			</item>
 			<item>
+				<first>CreateStandardColorMap:74</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
+										<which>2</which>
+										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>GetFieldBoundary:15</first>
 				<second>
 					<module>
@@ -672,6 +748,22 @@
 			</item>
 			<item>
 				<first>GetFieldBoundary:44</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GetFieldBoundary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetFieldBoundary:71</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -863,6 +955,86 @@
 				</second>
 			</item>
 			<item>
+				<first>MapFieldDataFromElemToNode:56</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>MapFieldDataFromElemToNode</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>Method</name>
+								</first>
+								<second>
+									<name>Method</name>
+									<value>
+										<which>2</which>
+										<value>Interpolation</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>MapFieldDataFromSourceToDestination:72</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>MapFieldDataFromSourceToDestination</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultValue</name>
+								</first>
+								<second>
+									<name>DefaultValue</name>
+									<value>
+										<which>1</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MappingMethod</name>
+								</first>
+								<second>
+									<name>MappingMethod</name>
+									<value>
+										<which>2</which>
+										<value>closestdata</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxDistance</name>
+								</first>
+								<second>
+									<name>MaxDistance</name>
+									<value>
+										<which>1</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ReadField:19</first>
 				<second>
 					<module>
@@ -931,17 +1103,229 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportFieldInfo:34</first>
+				<first>SelectSubMatrix:66</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>MiscField</category_name_>
-						<module_name_>ReportFieldInfo</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>SelectSubMatrix</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>6</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>columnCheckBox</name>
+								</first>
+								<second>
+									<name>columnCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>columnEndSpinBox</name>
+								</first>
+								<second>
+									<name>columnEndSpinBox</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>columnStartSpinBox</name>
+								</first>
+								<second>
+									<name>columnStartSpinBox</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>rowCheckBox</name>
+								</first>
+								<second>
+									<name>rowCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>rowEndSpinBox</name>
+								</first>
+								<second>
+									<name>rowEndSpinBox</name>
+									<value>
+										<which>0</which>
+										<value>33706</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>rowStartSpinBox</name>
+								</first>
+								<second>
+									<name>rowStartSpinBox</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>SetConductivitiesToTetMesh:56</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>BrainStimulator</category_name_>
+						<module_name_>SetConductivitiesToTetMesh</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>8</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CSF</name>
+								</first>
+								<second>
+									<name>CSF</name>
+									<value>
+										<which>1</which>
+										<value>4</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Electrode</name>
+								</first>
+								<second>
+									<name>Electrode</name>
+									<value>
+										<which>1</which>
+										<value>7</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>GM</name>
+								</first>
+								<second>
+									<name>GM</name>
+									<value>
+										<which>1</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>HardBone</name>
+								</first>
+								<second>
+									<name>HardBone</name>
+									<value>
+										<which>1</which>
+										<value>3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InternalAir</name>
+								</first>
+								<second>
+									<name>InternalAir</name>
+									<value>
+										<which>1</which>
+										<value>8</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Skin</name>
+								</first>
+								<second>
+									<name>Skin</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SoftBone</name>
+								</first>
+								<second>
+									<name>SoftBone</name>
+									<value>
+										<which>1</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>WM</name>
+								</first>
+								<second>
+									<name>WM</name>
+									<value>
+										<which>1</which>
+										<value>6</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>SetFieldData:69</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>SetFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>keepTypeCheckBox</name>
+								</first>
+								<second>
+									<name>keepTypeCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -980,21 +1364,21 @@
 												<name>elc1</name>
 												<value>
 													<which>1</which>
-													<value>-1</value>
+													<value>1</value>
 												</value>
 											</item>
 											<item>
 												<name>elc2</name>
 												<value>
 													<which>1</which>
-													<value>0</value>
+													<value>-1</value>
 												</value>
 											</item>
 											<item>
 												<name>elc3</name>
 												<value>
 													<which>1</which>
-													<value>0</value>
+													<value>-1</value>
 												</value>
 											</item>
 											<item>
@@ -1116,7 +1500,7 @@
 									<name>refnode</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1144,6 +1528,106 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
+										<value>Color(255,0,27)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgeTransparency</name>
+								</first>
+								<second>
+									<name>EdgeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowFaces</name>
+								</first>
+								<second>
+									<name>ShowFaces</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowField:73</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>8</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
 										<value>Color(255,255,255)</value>
 									</value>
 								</second>
@@ -1162,6 +1646,18 @@
 							</item>
 							<item>
 								<first>
+									<name>FaceInvertNormals</name>
+								</first>
+								<second>
+									<name>FaceInvertNormals</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -1192,7 +1688,7 @@
 									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1217,6 +1713,70 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>SolveLinearSystem:61</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>SolveLinearSystem</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>MaxIterations</name>
+								</first>
+								<second>
+									<name>MaxIterations</name>
+									<value>
+										<which>0</which>
+										<value>5000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Method</name>
+								</first>
+								<second>
+									<name>Method</name>
+									<value>
+										<which>2</which>
+										<value>minres</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Preconditioner</name>
+								</first>
+								<second>
+									<name>Preconditioner</name>
+									<value>
+										<which>2</which>
+										<value>Jacobi</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TargetError</name>
+								</first>
+								<second>
+									<name>TargetError</name>
+									<value>
+										<which>1</which>
+										<value>1e-14</value>
 									</value>
 								</second>
 							</item>
@@ -1321,70 +1881,86 @@
 				</second>
 			</item>
 			<item>
-				<first>WriteField:36</first>
+				<first>ViewScene:75</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>ViewScene</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>WriteMatrix:53</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>DataIO</category_name_>
-						<module_name_>WriteField</module_name_>
+						<module_name_>WriteMatrix</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld);;NrrdFile (*.nhdr *.nrrd);;ObjToField (*.obj)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Field Binary</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/moritz/Desktop/tmp_fff.fld</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>56</count>
+			<count>76</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
-				<moduleId1_>AlignMeshBoundingBoxes:31</moduleId1_>
+				<moduleId1_>AddKnownsToLinearSystem:58</moduleId1_>
 				<port1_ class_id="15" tracking_level="0" version="0">
+					<name>OutPutLHSMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildTDCSMatrix:59</moduleId2_>
+				<port2_>
+					<name>FEM_Stiffness_Matrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>AlignMeshBoundingBoxes:31</moduleId1_>
+				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>CalculateFieldData:30</moduleId2_>
 				<port2_>
 					<name>InputFields</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>BuildFEMatrix:57</moduleId1_>
+				<port1_>
+					<name>Stiffness_Matrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AddKnownsToLinearSystem:58</moduleId2_>
+				<port2_>
+					<name>LHS_Matrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>BuildTDCSMatrix:59</moduleId1_>
+				<port1_>
+					<name>TDCSMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SolveLinearSystem:61</moduleId2_>
+				<port2_>
+					<name>LHS</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1653,6 +2229,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>CreateStandardColorMap:74</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:73</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>GetFieldBoundary:15</moduleId1_>
 				<port1_>
 					<name>BoundaryField</name>
@@ -1761,12 +2349,36 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>GetFieldBoundary:71</moduleId1_>
+				<port1_>
+					<name>BoundaryField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>MapFieldDataFromSourceToDestination:72</moduleId2_>
+				<port2_>
+					<name>Destination</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>InterfaceWithCleaver:27</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>SplitFieldByDomain:62</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>JoinFields:36</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetConductivitiesToTetMesh:56</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -1785,14 +2397,26 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadField:19</moduleId1_>
+				<moduleId1_>MapFieldDataFromElemToNode:56</moduleId1_>
 				<port1_>
-					<name>Field</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>AlignMeshBoundingBoxes:31</moduleId2_>
+				<moduleId2_>ShowField:73</moduleId2_>
 				<port2_>
-					<name>AlignmentField</name>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>MapFieldDataFromSourceToDestination:72</moduleId1_>
+				<port1_>
+					<name>Remapped_Destination</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>MapFieldDataFromElemToNode:56</moduleId2_>
+				<port2_>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1802,9 +2426,9 @@
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportFieldInfo:34</moduleId2_>
+				<moduleId2_>AlignMeshBoundingBoxes:31</moduleId2_>
 				<port2_>
-					<name>InputField</name>
+					<name>AlignmentField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1833,6 +2457,114 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>SelectSubMatrix:66</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetFieldData:69</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetConductivitiesToTetMesh:56</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildFEMatrix:57</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetConductivitiesToTetMesh:56</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildTDCSMatrix:59</moduleId2_>
+				<port2_>
+					<name>FEM_Mesh</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetConductivitiesToTetMesh:56</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SetFieldData:69</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetFieldData:69</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>MapFieldDataFromSourceToDestination:72</moduleId2_>
+				<port2_>
+					<name>Source</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<port1_>
+					<name>ELECTRODE_CONTACT_IMPEDANCE</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildTDCSMatrix:59</moduleId2_>
+				<port2_>
+					<name>Contact_Impedance</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<port1_>
+					<name>ELECTRODE_ELEMENT</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildTDCSMatrix:59</moduleId2_>
+				<port2_>
+					<name>Electrode_Element</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<port1_>
+					<name>ELECTRODE_ELEMENT_DEFINITION</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildTDCSMatrix:59</moduleId2_>
+				<port2_>
+					<name>Electrode_Element_Definition</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<port1_>
+					<name>ELECTRODE_ELEMENT_TYPE</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildTDCSMatrix:59</moduleId2_>
+				<port2_>
+					<name>Electrode_Element_Type</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_SPONGE_SURF</name>
@@ -1847,12 +2579,24 @@
 			<item>
 				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
 				<port1_>
-					<name>ELECTRODE_SPONGE_SURF</name>
+					<name>LHS_KNOWNS</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteField:36</moduleId2_>
+				<moduleId2_>AddKnownsToLinearSystem:58</moduleId2_>
 				<port2_>
-					<name>FieldToWrite</name>
+					<name>X_Vector</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<port1_>
+					<name>RHS</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SolveLinearSystem:61</moduleId2_>
+				<port2_>
+					<name>RHS</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1865,6 +2609,30 @@
 				<moduleId2_>ViewScene:45</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:73</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:75</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SolveLinearSystem:61</moduleId1_>
+				<port1_>
+					<name>Solution</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SelectSubMatrix:66</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1994,6 +2762,18 @@
 					<name>Field3</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>GetFieldBoundary:71</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SplitFieldByDomain:62</moduleId1_>
+				<port1_>
+					<name>Field3</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>JoinFields:36</moduleId2_>
 				<port2_>
 					<name>InputFields</name>
@@ -2051,13 +2831,34 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>37</count>
+		<count>49</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
-			<first>AlignMeshBoundingBoxes:31</first>
+			<first>AddKnownsToLinearSystem:58</first>
 			<second class_id="18" tracking_level="0" version="0">
+				<first>-2052</first>
+				<second>608</second>
+			</second>
+		</item>
+		<item>
+			<first>AlignMeshBoundingBoxes:31</first>
+			<second>
 				<first>-1064</first>
 				<second>-1064</second>
+			</second>
+		</item>
+		<item>
+			<first>BuildFEMatrix:57</first>
+			<second>
+				<first>-2052</first>
+				<second>456</second>
+			</second>
+		</item>
+		<item>
+			<first>BuildTDCSMatrix:59</first>
+			<second>
+				<first>-1672</first>
+				<second>760</second>
 			</second>
 		</item>
 		<item>
@@ -2173,6 +2974,13 @@
 			</second>
 		</item>
 		<item>
+			<first>CreateStandardColorMap:74</first>
+			<second>
+				<first>-1292</first>
+				<second>1368</second>
+			</second>
+		</item>
+		<item>
 			<first>GetFieldBoundary:15</first>
 			<second>
 				<first>-2052</first>
@@ -2236,6 +3044,13 @@
 			</second>
 		</item>
 		<item>
+			<first>GetFieldBoundary:71</first>
+			<second>
+				<first>-1520</first>
+				<second>1216</second>
+			</second>
+		</item>
+		<item>
 			<first>InterfaceWithCleaver:27</first>
 			<second>
 				<first>-1748</first>
@@ -2247,6 +3062,20 @@
 			<second>
 				<first>-1976</first>
 				<second>152</second>
+			</second>
+		</item>
+		<item>
+			<first>MapFieldDataFromElemToNode:56</first>
+			<second>
+				<first>-1824</first>
+				<second>1520</second>
+			</second>
+		</item>
+		<item>
+			<first>MapFieldDataFromSourceToDestination:72</first>
+			<second>
+				<first>-1774</first>
+				<second>1357</second>
 			</second>
 		</item>
 		<item>
@@ -2264,24 +3093,52 @@
 			</second>
 		</item>
 		<item>
-			<first>ReportFieldInfo:34</first>
+			<first>SelectSubMatrix:66</first>
 			<second>
-				<first>-1596</first>
-				<second>-1368</second>
+				<first>-1824</first>
+				<second>1064</second>
+			</second>
+		</item>
+		<item>
+			<first>SetConductivitiesToTetMesh:56</first>
+			<second>
+				<first>-2056</first>
+				<second>322</second>
+			</second>
+		</item>
+		<item>
+			<first>SetFieldData:69</first>
+			<second>
+				<first>-1900</first>
+				<second>1216</second>
 			</second>
 		</item>
 		<item>
 			<first>SetupRHSforTDCSandTMS:36</first>
 			<second>
-				<first>-1672</first>
-				<second>304</second>
+				<first>-1604</first>
+				<second>312</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:44</first>
 			<second>
-				<first>-1672</first>
+				<first>-1368</first>
 				<second>456</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:73</first>
+			<second>
+				<first>-1672</first>
+				<second>1672</second>
+			</second>
+		</item>
+		<item>
+			<first>SolveLinearSystem:61</first>
+			<second>
+				<first>-1756</first>
+				<second>920</second>
 			</second>
 		</item>
 		<item>
@@ -2301,15 +3158,22 @@
 		<item>
 			<first>ViewScene:45</first>
 			<second>
-				<first>-1672</first>
+				<first>-1368</first>
 				<second>608</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteField:36</first>
+			<first>ViewScene:75</first>
 			<second>
-				<first>-1292</first>
-				<second>456</second>
+				<first>-1748</first>
+				<second>1824</second>
+			</second>
+		</item>
+		<item>
+			<first>WriteMatrix:53</first>
+			<second>
+				<first>2052</first>
+				<second>9272</second>
 			</second>
 		</item>
 	</modulePositions>

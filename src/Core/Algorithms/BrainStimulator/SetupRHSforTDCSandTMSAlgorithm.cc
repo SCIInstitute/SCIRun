@@ -166,7 +166,8 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
 /// replace this code with calls to splitfieldbyconnectedregion, clipfieldby* if available for SCIRun5 
 boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle> SetupRHSforTDCSandTMSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
- VMesh::size_type mesh_num_nodes = mesh->vmesh()->num_nodes();
+ VMesh*  mesh_vmesh = mesh->vmesh();
+ VMesh::size_type mesh_num_nodes = mesh_vmesh->num_nodes();
  DenseMatrixHandle lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
 
  index_type refnode_number = get(Parameters::refnode).toInt();
@@ -384,7 +385,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   */
   
   normal_traveling_direction_needs_to_be_positive=true;
-  std::cout << "d:" << d1 << " " << d2 << std::endl;
+  //std::cout << "d:" << d1 << " " << d2 << std::endl;
   if (d1==d2)
   {
     THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Criteria to find sponge top and bottom failed!");
@@ -505,14 +506,26 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
    THROW_ALGORITHM_PROCESSING_ERROR("Internal error: internal field definition is "); 
  }
  
+ mesh_vmesh->synchronize(Mesh::NODE_LOCATE_E);
+ 
  for(VMesh::Elem::index_type l=0; l<elc_sponge_surf_vmesh->num_elems(); l++)
  {
   (*elc_elem_typ)(l,0)=2; //define triangles to incject currents in TDCS simulations
   VMesh::Node::array_type onodes(3); 
   elc_sponge_surf_vmesh->get_nodes(onodes, l);
-  (*elc_elem_def)(l,0)=onodes[0];
-  (*elc_elem_def)(l,1)=onodes[1];
-  (*elc_elem_def)(l,2)=onodes[2];
+  
+  elc_sponge_surf_vmesh->get_center(p,onodes[0]);
+  mesh_vmesh->find_closest_node(distance,q,node_ind,p);
+  (*elc_elem_def)(l,0)=node_ind;
+  
+  elc_sponge_surf_vmesh->get_center(p,onodes[1]);
+  mesh_vmesh->find_closest_node(distance,q,node_ind,p); 
+  (*elc_elem_def)(l,1)=node_ind;
+  
+  elc_sponge_surf_vmesh->get_center(p,onodes[2]);
+  mesh_vmesh->find_closest_node(distance,q,node_ind,p);
+  (*elc_elem_def)(l,2)=node_ind;
+  
   (*elc_elem_def)(l,3)=0; 
   (*elc_elem)(l,0)=field_values[l]; 
   (*elc_con_imp)(l,0)=impedances[l];
