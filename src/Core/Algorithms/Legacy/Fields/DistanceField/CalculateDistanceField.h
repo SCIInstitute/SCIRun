@@ -38,6 +38,7 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
+        ALGORITHM_PARAMETER_DECL(BasisType);
         ALGORITHM_PARAMETER_DECL(Truncate);
         ALGORITHM_PARAMETER_DECL(TruncateDistance);
         ALGORITHM_PARAMETER_DECL(OutputFieldDatatype);
