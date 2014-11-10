@@ -62,11 +62,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, normal_dot_product_bound);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, pointdistancebound);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, number_of_electrodes);
 
-//AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::refnode() { return AlgorithmParameterName("refnode"); }
-//AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::number_of_electrodes() { return AlgorithmParameterName("number_of_electrodes"); }
-//AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::normal_dot_product_bound() { return AlgorithmParameterName("normal_dot_product_bound"); }
-//AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::pointdistancebound() {return AlgorithmParameterName("pointdistancebound");}
-
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::MESH("MESH");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::SCALP_TRI_SURF_MESH("SCALP_TRI_SURF_MESH");
 AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_TRI_SURF_MESH("ELECTRODE_TRI_SURF_MESH");
@@ -90,7 +85,6 @@ SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
   addParameter(Parameters::refnode, 0);  
   addParameter(Parameters::normal_dot_product_bound, 0.7);
   addParameter(Parameters::pointdistancebound, 0.0001);
-  //std::cout << "nb:" << Parameters::normal_dot_product_bound << std::endl;
 }
 
 AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput& input) const
@@ -173,12 +167,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  index_type refnode_number = get(Parameters::refnode).toInt();
  double normal_dot_product_bound_ = get(Parameters::normal_dot_product_bound).toDouble();
  double identical_node_location_differce = get(Parameters::pointdistancebound).toDouble();
-/*
- std::cout << "n:"  << normal_dot_product_bound_ << std::endl;
- std::cout << "p:"  << get(Parameters::pointdistancebound).toDouble() << std::endl;
- std::cout << "r:"  << refnode_number << std::endl;
- std::cout << "d:"  << identical_node_location_differce << std::endl;
-  */
+
  if (identical_node_location_differce<=0 || refnode_number<0 || normal_dot_product_bound_<0)
  {
   THROW_ALGORITHM_PROCESSING_ERROR(" Gui values (refnode, point dis., surf shrink) should be > 0. ");
@@ -369,23 +358,11 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   mesh_sponge_geometry_centers->synchronize(Mesh::NODE_LOCATE_E);
   mesh_sponge_geometry_centers->get_center(p,(VMesh::Node::index_type)k);
  
-  std::cout << "p:" << p.x() << " " << p.y() << " " << p.z() << std::endl;
-  std::cout << "o1:" << o1.x() << " " << o1.y() << " " << o1.z() << std::endl;
-  std::cout << "o2:" << o2.x() << " " << o2.y() << " " << o2.z() << std::endl;
-  std::cout << "n:" << (*sponge_center_pojected_onto_scalp_normal)(k,0) << " " << (*sponge_center_pojected_onto_scalp_normal)(k,1) << " " << (*sponge_center_pojected_onto_scalp_normal)(k,2) << std::endl;
-  
   double d1=sqrt((p.x()-o1.x())*(p.x()-o1.x())+(p.y()-o1.y())*(p.y()-o1.y())+(p.z()-o1.z())*(p.z()-o1.z()));
   double d2=sqrt((p.x()-o2.x())*(p.x()-o2.x())+(p.y()-o2.y())*(p.y()-o2.y())+(p.z()-o2.z())*(p.z()-o2.z()));
- /*
-  VMesh::Node::index_type node_ind1,node_ind2;
-  tmp_mesh->find_closest_node(distance,q,node_ind1,o1);
-  double d1=distance;
-  tmp_mesh->find_closest_node(distance,q,node_ind2,o2);
-  double d2=distance; 	
-  */
-  
+   
   normal_traveling_direction_needs_to_be_positive=true;
-  //std::cout << "d:" << d1 << " " << d2 << std::endl;
+  
   if (d1==d2)
   {
     THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Criteria to find sponge top and bottom failed!");
@@ -408,13 +385,11 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
    sponge_outwards_normal.x((*sponge_center_pojected_onto_scalp_normal)(k,0));
    sponge_outwards_normal.y((*sponge_center_pojected_onto_scalp_normal)(k,1));
    sponge_outwards_normal.z((*sponge_center_pojected_onto_scalp_normal)(k,2));
-   std::cout << "NNNNN++++++" << std::endl;
   } else
   {
    sponge_outwards_normal.x(-(*sponge_center_pojected_onto_scalp_normal)(k,0));
    sponge_outwards_normal.y(-(*sponge_center_pojected_onto_scalp_normal)(k,1));
    sponge_outwards_normal.z(-(*sponge_center_pojected_onto_scalp_normal)(k,2));  
-   std::cout << "NNNNNN------" << std::endl;
   }  
  
   VMesh::coords_type center;
