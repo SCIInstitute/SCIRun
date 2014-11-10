@@ -40,17 +40,25 @@ namespace SCIRun {
 	/// @brief Convert a QuadSurfField into a TriSurfField. 
 
       class SCISHARE RefineMesh : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
+				public Has2InputPorts<FieldPortTag, ScalarPortTag>,
         public Has1OutputPort<FieldPortTag>
+				//public Has2OutputPorts<FieldPortTag, MatrixMappingPortTag> 
       {
       public:
         RefineMesh();
 
         virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void setStateDefaults(); 
 
-        INPUT_PORT(0, QuadSurf, LegacyField);
-        OUTPUT_PORT(0, TriSurf, LegacyField);
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+				INPUT_PORT(1, IsoValue, Double);
+				//OUTPUT_PORT(1, , );
+
+				static const Dataflow::Networks::ModuleLookupInfo staticInfo_; 
+
+			private:
+					void pushInputMeshFieldInfo(FieldHandle input) const; 
       };
 
     }

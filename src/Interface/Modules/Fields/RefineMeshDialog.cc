@@ -27,7 +27,8 @@
 */
 
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
-//#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
+#include <Dataflow/Network/ModuleStateInterface.h> 
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -42,11 +43,28 @@ RefineMeshDialog::RefineMeshDialog(const std::string& name, ModuleStateHandle st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  addTextEditManager(expressionTextEdit_, ClipFieldDataModule::FunctionString);
-  addComboBoxManager(clippingLocationComboBox_, Parameters::ClipMethod);
+	connect(refinementComboBox_, SIGNAL(clicked()), this, SLOT(push())); 
+		
+	addComboBoxManager(constraintComboBox_, Parameters::RefineMethod);
+	addDoubleSpinBoxManager(isoValueSpinBox_, Parameters::AddConstraints);
+	addComboBoxManager(refinementComboBox_, Parameters::IsoValue);
+}
+
+void RefineMeshDialog::push()
+{
+		if(!pulling_)//is there a better way to check which radio button is selected? 
+				if(refinementComboBox_->itemData(refinementComboBox_->currentIndex()) != 0)
+				{
+						using namespace Parameters;
+						state_->setValue(IsoValue, !isoValueSpinBox_->isEnabled());
+				}
 }
 
 void RefineMeshDialog::pull()
 {
-  pull_newVersionToReplaceOld();
+		Pulling p(this); 
+		using namespace Parameters;
+		refinementComboBox_->setCurrentIndex(state_->getValue(IsoValue).toBool()); 
+
+    pull_newVersionToReplaceOld();
 }

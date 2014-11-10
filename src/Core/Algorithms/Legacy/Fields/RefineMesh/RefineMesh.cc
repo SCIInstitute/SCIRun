@@ -27,22 +27,28 @@
 */
 
 
-#include <Core/Algorithms/Fields/RefineMesh/RefineMesh.h>
-
-/// For mapping matrices
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h> 
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Matrix.h>
+// For mapping matrices
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPrecondition.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-/// STL classes needed
+//STL classes needed
 #include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
 
-namespace SCIRunAlgo {
+ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
+ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
+ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
 
 
-///////////////////////////////////////////////////////
-// Refine elements for a TetVol 
+/////////////////////////////////////////////////////
+// Refine elements for a TetVol
 
 bool  
 RefineMeshTetVolAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
@@ -3569,4 +3575,3 @@ RefineMeshAlgo::run(FieldHandle input, FieldHandle& output)
   algo_end(); return (false);
 }                           
      
-} // namespace    

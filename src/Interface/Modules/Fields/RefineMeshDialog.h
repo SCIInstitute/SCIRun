@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_REFINE_MESH_H
-#define INTERFACE_MODULES_REFINE_MESH_H
+#ifndef INTERFACE_MODULES_FIELDS_REFINE_MESH_DIALOG_H
+#define INTERFACE_MODULES_FIELDS_REFINE_MESH_DIALOG_H
 
 #include "Interface/Modules/Fields/ui_RefineMesh.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -47,7 +47,8 @@ public:
     QWidget* parent = 0);
   virtual void pull();
 private Q_SLOTS:
-  void setGuassianWidgetsEnabled(const QString& label);
+  void push();
+private:
 };
 
 }
