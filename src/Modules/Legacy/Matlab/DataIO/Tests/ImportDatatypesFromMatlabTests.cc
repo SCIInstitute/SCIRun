@@ -47,7 +47,7 @@ class ImportDatatypesFromMatlabModuleTest : public ModuleTest
 
 };
 
-TEST_F(ImportDatatypesFromMatlabModuleTest, ThrowsForNullInput)
+TEST_F(ImportDatatypesFromMatlabModuleTest, DISABLED_ThrowsForNullInput)
 {
   auto csdf = makeModule("ImportDatatypesFromMatlab");
   StringHandle nullField;

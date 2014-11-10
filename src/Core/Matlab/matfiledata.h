@@ -109,26 +109,29 @@ namespace SCIRun
 
       // structure definitions
     private:
-      struct mxdata
+      struct mxdata 
       {
-        mxdata() : dataptr_(0), owndata_(false), bytesize_(0), type_(miUNKNOWN) {}
-        //TODO DAN: fix this bad warning
-        ~mxdata() { if (owndata_) delete[] dataptr_; }
         void	*dataptr_;	// Store the data to put in the matfile
         bool	owndata_;   // Do we own the data
         int	bytesize_;	// Size of the data in bytes
         mitype	type_;		// The type of the data
-      };
+        int	ref_;		// reference counter
+      };  
 
       // data objects
-    private:
-      boost::shared_ptr<mxdata> m_;
+      mxdata *m_;
       void *ptr_;
+      void clearptr();
 
-      // functions
+      // functions  
     public:
       matfiledata();
+      ~matfiledata();
+
       explicit matfiledata(mitype type);
+
+      matfiledata(const matfiledata &m); // copy constructor
+      matfiledata& operator= (const matfiledata &m); // assignment
 
       // clear() will remove any databuffer and empty the object
       // After calling this function a new buffer can be created

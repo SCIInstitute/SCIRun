@@ -113,6 +113,15 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString(prefs.modulesSnapToGrid ? "true" : "false"));
   }
 
+  const QString dockable = qname(prefs.modulesAreDockable);
+  if (settings.contains(dockable))
+  {
+    auto value = settings.value(dockable).toBool();
+    prefs.modulesAreDockable.setValue(value);
+    dockableModulesCheckBox_->setChecked(value);
+    GuiLogger::Instance().log("Setting read: modules are dockable = " + QString::number(prefs.modulesAreDockable));
+  }
+
   const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
   if (settings.contains(disableModuleErrorDialogsKey))
   {
@@ -169,6 +178,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
   settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
   settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
+  settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());

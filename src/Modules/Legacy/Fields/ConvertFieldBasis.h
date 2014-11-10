@@ -36,9 +36,12 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+      //TODO: 2nd output port computes a mapping matrix, but it's not used in important networks. Disable for now.
+
       class SCISHARE ConvertFieldBasis : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
-        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
+        //public Has2OutputPorts<FieldPortTag, MatrixPortTag>
+        public Has1OutputPort<FieldPortTag>
       {
       public:
         ConvertFieldBasis();
@@ -48,9 +51,11 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
-        OUTPUT_PORT(1, Mapping, Matrix);
+        //OUTPUT_PORT(1, Mapping, Matrix);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        void pushInputFieldInfo(FieldHandle input) const;
       };
     }
   }

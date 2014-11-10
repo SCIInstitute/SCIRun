@@ -42,7 +42,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/CalculateLatVolGradientsAtNodes.h  
   #FieldData/GetFieldData.h
   FieldData/SetFieldData.h
-  #FieldData/SetFieldDataToConstantValue.h
+  FieldData/SetFieldDataToConstantValue.h
   #FieldData/SmoothVecFieldMedian.h
   Mapping/BuildMappingMatrixAlgo.h
   DomainFields/GetDomainBoundaryAlgo.h
@@ -88,6 +88,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
+  
   DistanceField/CalculateDistanceField.cc
   #DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
@@ -101,8 +102,9 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   FieldData/CalculateVectorMagnitudesAlgo.cc
   #FieldData/CalculateFieldDataMetric.cc
-  #FieldData/ConvertFieldDataType.cc
+#FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
+
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc

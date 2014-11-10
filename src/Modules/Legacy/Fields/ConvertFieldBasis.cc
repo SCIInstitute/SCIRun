@@ -25,8 +25,11 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 
 using namespace SCIRun::Modules::Fields;
@@ -40,93 +43,71 @@ using namespace SCIRun;
 /// @class ConvertFieldBasis
 /// @brief ConvertFieldBasis can modify the location of data in the input field.
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-namespace SCIRun {
-
-class ConvertFieldBasis : public Module {
-  public:
-    ConvertFieldBasis(GuiContext* ctx);
-    virtual ~ConvertFieldBasis();
-    virtual void execute();
-    
-  private:
-    SCIRunAlgo::ConvertFieldBasisTypeAlgo algo_;    
-    
-  private:  
-    GuiString outputbasis_;    // the out data at
-    GuiString inputbasis_;     // the in data at
-    GuiString fldname_;         // the field name
-
-};
-#endif
-
-ModuleLookupInfo ConvertFieldBasis::staticInfo_("ConvertFieldBasis", "ChangeFieldData", "SCIRun");
+const ModuleLookupInfo ConvertFieldBasis::staticInfo_("ConvertFieldBasis", "ChangeFieldData", "SCIRun");
 
 ConvertFieldBasis::ConvertFieldBasis()
   : Module(staticInfo_)
-    //outputbasis_(get_ctx()->subVar("output-basis"), "Linear"),
-    //inputbasis_(get_ctx()->subVar("inputdataat", false), "---"),
-    //fldname_(get_ctx()->subVar("fldname", false), "---")
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
-  INITIALIZE_PORT(Mapping);
+  //INITIALIZE_PORT(Mapping);
 }
 
 void ConvertFieldBasis::setStateDefaults()
 {
-
+  setStateStringFromAlgoOption(Parameters::OutputType);
 }
 
 void
 ConvertFieldBasis::execute()
 {
-#if 0
-  /// Get the input field handle from the port.
-  FieldHandle input_field_handle;
-  get_input_handle( "Input",  input_field_handle, true );
+  auto input = getRequiredInput(InputField);
 
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
   bool need_mapping = oport_connected("Mapping");
+#endif
 
-  // Only do work if needed:
-  if (inputs_changed_ || outputbasis_.changed() || 
-      !oport_cached("Output") ||
-      (need_mapping & !oport_cached("Mapping")))
+  if (needToExecute())
   {
     update_state(Executing);
-    /// Relay some information to user
-    std::string name = input_field_handle->get_name();
-    if (name == "") name = "--- no name ---";
-    fldname_.set(name);
 
-    if (input_field_handle->vfield()->is_nodata()) inputbasis_.set("NoData");
-    if (input_field_handle->vfield()->is_constantdata()) inputbasis_.set("ConstantData");
-    if (input_field_handle->vfield()->is_lineardata()) inputbasis_.set("LinearData");
-    if (input_field_handle->vfield()->is_quadraticdata()) inputbasis_.set("QuadraticData");
-    if (input_field_handle->vfield()->is_cubicdata()) inputbasis_.set("CubicData");
+    pushInputFieldInfo(input);
 
+    setAlgoOptionFromState(Parameters::OutputType); 
 
-    // Set the method to use
-    std::string basistype = outputbasis_.get();
-    
-    // For backwards compatibility
-    if (basistype == "None") basistype = "nodata";
-    algo_.set_option("basistype",basistype);
-
-    FieldHandle output_field_handle;
-    MatrixHandle mapping_matrix_handle;
-
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (need_mapping)
     {
-      if (!(algo_.run(input_field_handle,output_field_handle,mapping_matrix_handle))) return;
+    if (!(algo_.run(input_field_handle,output_field_handle,mapping_matrix_handle))) return;
     }
     else
     {
-      if (!(algo_.run(input_field_handle,output_field_handle))) return;    
+    if (!(algo_.run(input_field_handle,output_field_handle))) return;    
     }
-    /// send data downstream:
-    send_output_handle("Output", output_field_handle);    
-    send_output_handle("Mapping", mapping_matrix_handle);    
-  }
 #endif
+    remark("Mapping matrix port implementation is not enabled yet--please contact a developer");
+    auto output = algo().run(withInputData((InputField, input)));
+    sendOutputFromAlgorithm(OutputField, output); 
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    send_output_handle("Mapping", mapping_matrix_handle);
+#endif
+  }
+}
+
+void ConvertFieldBasis::pushInputFieldInfo(FieldHandle input) const
+{
+  auto state = get_state();
+  std::string name = input->properties().get_name();
+  if (name.empty()) 
+    name = "--- no name ---";
+  state->setValue(Parameters::InputFieldName, name);
+
+  std::string inputbasis;
+  if (input->vfield()->is_nodata()) inputbasis = "NoData";
+  if (input->vfield()->is_constantdata()) inputbasis = "ConstantData";
+  if (input->vfield()->is_lineardata()) inputbasis = "LinearData";
+  if (input->vfield()->is_quadraticdata()) inputbasis = "QuadraticData";
+  if (input->vfield()->is_cubicdata()) inputbasis = "CubicData";
+  state->setValue(Parameters::InputType, inputbasis);
 }
