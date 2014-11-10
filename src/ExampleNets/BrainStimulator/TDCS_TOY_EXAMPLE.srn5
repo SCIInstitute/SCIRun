@@ -1364,21 +1364,21 @@
 												<name>elc1</name>
 												<value>
 													<which>1</which>
-													<value>1</value>
+													<value>-1</value>
 												</value>
 											</item>
 											<item>
 												<name>elc2</name>
 												<value>
 													<which>1</which>
-													<value>-1</value>
+													<value>0</value>
 												</value>
 											</item>
 											<item>
 												<name>elc3</name>
 												<value>
 													<which>1</which>
-													<value>-1</value>
+													<value>0</value>
 												</value>
 											</item>
 											<item>
