@@ -856,7 +856,6 @@ void ShowFieldModule::addFaceGeom(
 
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
-        writeVBOScalarValue(scols[1]);
         if (!doubleSided) {writeVBOScalarValue(scols[1]);}
         else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
