@@ -62,7 +62,7 @@ namespace BrainStimulator {
     SetupRHSforTDCSandTMSAlgorithm();
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle> run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc,int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
+    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle, Datatypes::DenseMatrixHandle> run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc,int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
     
     //static AlgorithmParameterName number_of_electrodes();
     
@@ -76,12 +76,14 @@ namespace BrainStimulator {
     static AlgorithmOutputName ELECTRODE_CONTACT_IMPEDANCE;
     static AlgorithmOutputName LHS_KNOWNS;
     static AlgorithmOutputName RHS;
+    static AlgorithmOutputName SELECTMATRIXINDECES;
     static AlgorithmOutputName ELECTRODE_SPONGE_SURF;
     
     static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
     static Core::Algorithms::AlgorithmParameterName ElecrodeImpedanceParameterName(int i);
   private:  
     const int special_label = -4321;
+    const double electode_current_summation_bound = 1e-6;
     SCIRun::Core::Datatypes::DenseMatrixHandle create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const;
     boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle> create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
   };

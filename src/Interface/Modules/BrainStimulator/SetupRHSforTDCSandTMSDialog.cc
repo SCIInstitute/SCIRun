@@ -130,6 +130,6 @@ void SetupRHSforTDCSandTMSDialog::pull()
   }
   state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
   state_->setValue(Parameters::ImpedanceTableValues, imp_elc_vals_in_table);
-  //pull_newVersionToReplaceOld();
+
 }
 

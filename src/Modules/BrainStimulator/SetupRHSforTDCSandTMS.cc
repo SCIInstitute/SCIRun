@@ -53,6 +53,7 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
  INITIALIZE_PORT(ELECTRODE_CONTACT_IMPEDANCE);
  INITIALIZE_PORT(RHS);
  INITIALIZE_PORT(ELECTRODE_SPONGE_SURF);
+ INITIALIZE_PORT(SELECTMATRIXINDECES);
 }
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
@@ -87,10 +88,9 @@ void SetupRHSforTDCSandTMSModule::execute()
     state->setValue(Parameters::normal_dot_product_bound, get_state()->getValue(Parameters::normal_dot_product_bound).toDouble());
     state->setValue(Parameters::pointdistancebound, get_state()->getValue(Parameters::pointdistancebound).toDouble());
         
-    int nr_elec=elc_sponge_location->nrows();
+    int nr_elec=elc_sponge_location->nrows(); /// get the number of electrodes in the first execution to update the GUI
     if (elc_sponge_location && nr_elec>=2)
     {
-     //algo().set(Parameters::number_of_electrodes, nr_elec);
      state->setValue(Parameters::number_of_electrodes, nr_elec);
     }
     
@@ -102,5 +102,6 @@ void SetupRHSforTDCSandTMSModule::execute()
     sendOutputFromAlgorithm(ELECTRODE_CONTACT_IMPEDANCE, output);
     sendOutputFromAlgorithm(RHS, output);
     sendOutputFromAlgorithm(ELECTRODE_SPONGE_SURF, output);
+    sendOutputFromAlgorithm(SELECTMATRIXINDECES, output);
   }
 }

@@ -54,7 +54,7 @@
          </size>
         </property>
         <attribute name="horizontalHeaderVisible">
-         <bool>true</bool>
+         <bool>false</bool>
         </attribute>
         <attribute name="horizontalHeaderCascadingSectionResizes">
          <bool>false</bool>
@@ -141,14 +141,14 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>280</x>
      <y>380</y>
-     <width>151</width>
+     <width>171</width>
      <height>21</height>
     </rect>
    </property>
    <property name="text">
-    <string>elec. surf shrink (-1..1):</string>
+    <string>elc. normal criteria (-1..1):</string>
    </property>
   </widget>
   <widget class="QDoubleSpinBox" name="normal_dot_product_bound_">

@@ -1158,7 +1158,7 @@
 									<name>rowCheckBox</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1170,7 +1170,7 @@
 									<name>rowEndSpinBox</name>
 									<value>
 										<which>0</which>
-										<value>33706</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1331,7 +1331,7 @@
 				</second>
 			</item>
 			<item>
-				<first>SetupRHSforTDCSandTMS:36</first>
+				<first>SetupRHSforTDCSandTMS:48</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -1464,7 +1464,7 @@
 									<name>normal_dot_product_bound</name>
 									<value>
 										<which>1</which>
-										<value>-1</value>
+										<value>0.69999999999999996</value>
 									</value>
 								</second>
 							</item>
@@ -1488,7 +1488,7 @@
 									<name>pointdistancebound</name>
 									<value>
 										<which>1</which>
-										<value>-1</value>
+										<value>0.0001</value>
 									</value>
 								</second>
 							</item>
@@ -1500,7 +1500,7 @@
 									<name>refnode</name>
 									<value>
 										<which>0</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1914,7 +1914,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>76</count>
+			<count>77</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>AddKnownsToLinearSystem:58</moduleId1_>
@@ -2318,7 +2318,7 @@
 					<name>BoundaryField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:36</moduleId2_>
+				<moduleId2_>SetupRHSforTDCSandTMS:48</moduleId2_>
 				<port2_>
 					<name>ELECTRODE_TRI_SURF_MESH</name>
 					<id>0</id>
@@ -2330,7 +2330,7 @@
 					<name>BoundaryField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:36</moduleId2_>
+				<moduleId2_>SetupRHSforTDCSandTMS:48</moduleId2_>
 				<port2_>
 					<name>SCALP_TRI_SURF_MESH</name>
 					<id>0</id>
@@ -2390,7 +2390,7 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:36</moduleId2_>
+				<moduleId2_>SetupRHSforTDCSandTMS:48</moduleId2_>
 				<port2_>
 					<name>MESH</name>
 					<id>0</id>
@@ -2450,7 +2450,7 @@
 					<name>MatrixLoaded</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:36</moduleId2_>
+				<moduleId2_>SetupRHSforTDCSandTMS:48</moduleId2_>
 				<port2_>
 					<name>ELECTRODE_SPONGE_LOCATION_AVR</name>
 					<id>0</id>
@@ -2517,7 +2517,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_CONTACT_IMPEDANCE</name>
 					<id>0</id>
@@ -2529,7 +2529,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_ELEMENT</name>
 					<id>0</id>
@@ -2541,7 +2541,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_ELEMENT_DEFINITION</name>
 					<id>0</id>
@@ -2553,7 +2553,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_ELEMENT_TYPE</name>
 					<id>0</id>
@@ -2565,7 +2565,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_SPONGE_SURF</name>
 					<id>0</id>
@@ -2577,7 +2577,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
 				<port1_>
 					<name>LHS_KNOWNS</name>
 					<id>0</id>
@@ -2589,7 +2589,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:36</moduleId1_>
+				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
 				<port1_>
 					<name>RHS</name>
 					<id>0</id>
@@ -2597,6 +2597,18 @@
 				<moduleId2_>SolveLinearSystem:61</moduleId2_>
 				<port2_>
 					<name>RHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
+				<port1_>
+					<name>SELECTMATRIXINDECES</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>SelectSubMatrix:66</moduleId2_>
+				<port2_>
+					<name>RowIndicies</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3095,7 +3107,7 @@
 		<item>
 			<first>SelectSubMatrix:66</first>
 			<second>
-				<first>-1824</first>
+				<first>-1900</first>
 				<second>1064</second>
 			</second>
 		</item>
@@ -3109,15 +3121,15 @@
 		<item>
 			<first>SetFieldData:69</first>
 			<second>
-				<first>-1900</first>
+				<first>-1976</first>
 				<second>1216</second>
 			</second>
 		</item>
 		<item>
-			<first>SetupRHSforTDCSandTMS:36</first>
+			<first>SetupRHSforTDCSandTMS:48</first>
 			<second>
-				<first>-1604</first>
-				<second>312</second>
+				<first>-1520</first>
+				<second>304</second>
 			</second>
 		</item>
 		<item>
@@ -3137,8 +3149,8 @@
 		<item>
 			<first>SolveLinearSystem:61</first>
 			<second>
-				<first>-1756</first>
-				<second>920</second>
+				<first>-1824</first>
+				<second>912</second>
 			</second>
 		</item>
 		<item>
