@@ -44,13 +44,13 @@ namespace SCIRun{
 						RefineMeshDialogImpl()
 						{
 						  typedef boost::bimap<std::string, std::string>::value_type strPair; 
-					  	mappingNameLookup_.insert(strPair("Do not add constraint","noConstraint"));
-						  mappingNameLookup_.insert(strPair("Do not refine nodes/elements with values less than isovalue","lessThan"));
-						  mappingNameLookup_.insert(strPair("Do not refine nodes/elements with values unequal to isovalue","unEqual"));
-						  mappingNameLookup_.insert(strPair("Do not refine nodes/elements with values greater than isovalue","greaterThan"));
-						  mappingNameLookup_.insert(strPair("Do not refine any elements","noRefine"));
+					  	refineNameLookup_.insert(strPair("Do not add constraint","noConstraint"));
+						  refineNameLookup_.insert(strPair("Do not refine nodes/elements with values less than isovalue","lessThan"));
+						  refineNameLookup_.insert(strPair("Do not refine nodes/elements with values unequal to isovalue","unEqual"));
+						  refineNameLookup_.insert(strPair("Do not refine nodes/elements with values greater than isovalue","greaterThan"));
+						  refineNameLookup_.insert(strPair("Do not refine any elements","noRefine"));
 						}
-					boost::bimap<std::string, std::string> mappingNameLookup_;
+					boost::bimap<std::string, std::string> refineNameLookup_;
 				};
 		}}
 RefineMeshDialog::RefineMeshDialog(const std::string& name, ModuleStateHandle state,
@@ -62,28 +62,26 @@ RefineMeshDialog::RefineMeshDialog(const std::string& name, ModuleStateHandle st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 		
-	addComboBoxManager(constraintComboBox_, Parameters::RefineMethod);
-	addComboBoxManager(refinementComboBox_, Parameters::AddConstraints, impl_->mappingNameLookup_);
+	addComboBoxManager(constraintComboBox_, Parameters::AddConstraints, impl_->refineNameLookup_);
+	addComboBoxManager(refinementComboBox_, Parameters::RefineMethod);
 	addDoubleSpinBoxManager(isoValueSpinBox_, Parameters::IsoValue);
 
-	connect(refinementComboBox_, SIGNAL(clicked()), this, SLOT(push())); 
-}
-
-void RefineMeshDialog::push()
-{
-		if(!pulling_)//is there a better way to check which radio button is selected? 
-				if(refinementComboBox_->itemData(refinementComboBox_->currentIndex()) != 0)
-				{
-						using namespace Parameters;
-						state_->setValue(IsoValue, !isoValueSpinBox_->isEnabled());
-				}
+	connect(constraintComboBox_, SIGNAL(activated(int)), this, SLOT(setIsoValueEnabled())); //if combobox slected enable isovalue
 }
 
 void RefineMeshDialog::pull()
 {
-		Pulling p(this);
-		using namespace Parameters;
-		refinementComboBox_->setCurrentIndex(state_->getValue(IsoValue).toBool());
+//?
+}
 
-    pull_newVersionToReplaceOld();
+void RefineMeshDialog::setIsoValueEnabled()
+{
+		if(!pulling_) 
+		if(constraintComboBox_->currentIndex() != 0)
+		{
+				isoValueSpinBox_->setEnabled(true);
+				state_->getValue(Parameters::IsoValue).toDouble(); 
+		}
+		else 
+				isoValueSpinBox_->setEnabled(false); 
 }

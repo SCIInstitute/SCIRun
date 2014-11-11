@@ -67,6 +67,7 @@
 #include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
 #include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
+#include <Interface/Modules/Fields/RefineMeshDialog.h> 
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
@@ -143,6 +144,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionDialog)
     ADD_MODULE_DIALOG(ClipFieldByFunction, ClipFieldByFunctionDialog)
     ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
+		ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
   ;
 }
 

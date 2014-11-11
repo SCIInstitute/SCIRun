@@ -51,7 +51,7 @@
     <widget class="QComboBox" name="constraintComboBox_">
      <item>
       <property name="text">
-       <string>None</string>
+       <string>Do not add constraint</string>
       </property>
      </item>
      <item>
