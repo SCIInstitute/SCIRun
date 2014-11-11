@@ -49,6 +49,7 @@ public:
 private Q_SLOTS:
   void push();
 private:
+		boost::shared_ptr<class RefineMeshDialogImpl> impl_; 
 };
 
 }

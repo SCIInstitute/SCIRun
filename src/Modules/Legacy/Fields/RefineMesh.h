@@ -52,13 +52,13 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
-				INPUT_PORT(1, IsoValue, Double);
+				INPUT_PORT(1, IsoValueField, Double);
 				//OUTPUT_PORT(1, , );
 
 				static const Dataflow::Networks::ModuleLookupInfo staticInfo_; 
 
 			private:
-					void pushInputMeshFieldInfo(FieldHandle input) const; 
+				//	void pushInputMeshFieldInfo(FieldHandle input) const; 
       };
 
     }

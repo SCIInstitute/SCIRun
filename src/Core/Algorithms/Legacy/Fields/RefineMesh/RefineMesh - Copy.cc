@@ -30,56 +30,26 @@
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
-//#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Matrix.h>
 // For mapping matrices
-//#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrix.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPrecondition.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 //STL classes needed
-//#include <sci_hash_map.h>
+#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
-
-using namespace SCIRun;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Logging;
 
 ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
 ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
 ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
 
 
-RefineMeshAlgo::RefineMeshAlgo()
-{
-		using namespace Parameters;
-		addParameter(RefineMethod,"Default");
-		addParameter(AddConstraints,"Do not add");
-		addParameter(IsoValue, 0.0);
-}
-bool RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
-{
-		return true;
-}
-AlgorithmOutput RefineMeshAlgo::run_generic(const AlgorithmInput& input) const 
-{
-	auto field = input.get<Field>(Variables::InputField);
-  FieldHandle outputField;
-
-  if (!runImpl(field, outputField))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-	AlgorithmOutput output;
-	output[Variables::OutputField] = outputField;
-  return output;
-}
 /////////////////////////////////////////////////////
 // Refine elements for a TetVol
 
-/*
 bool  
 RefineMeshTetVolAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
                       std::string select, double isoval)
@@ -847,6 +817,7 @@ RefineMeshTetVolAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
 
 
 
+///////////////////////////////////////////////////////
 // Refine elements for a CurveMesh
 
 bool  
@@ -3602,5 +3573,5 @@ RefineMeshAlgo::run(FieldHandle input, FieldHandle& output)
 
   error("No refinement method has been implemented for this type of mesh");
   algo_end(); return (false);
-}                           */
+}                           
      

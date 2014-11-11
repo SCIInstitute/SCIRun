@@ -29,25 +29,44 @@
 #include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Dataflow/Network/ModuleStateInterface.h> 
+#include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 //typedef SCIRun::Modules::Fields::RefineMeshDialog RefineMeshDialog;
 
+namespace SCIRun{
+		namespace Gui{
+				class RefineMeshDialogImpl
+				{
+				public:
+						RefineMeshDialogImpl()
+						{
+						  typedef boost::bimap<std::string, std::string>::value_type strPair; 
+					  	mappingNameLookup_.insert(strPair("Do not add constraint","noConstraint"));
+						  mappingNameLookup_.insert(strPair("Do not refine nodes/elements with values less than isovalue","lessThan"));
+						  mappingNameLookup_.insert(strPair("Do not refine nodes/elements with values unequal to isovalue","unEqual"));
+						  mappingNameLookup_.insert(strPair("Do not refine nodes/elements with values greater than isovalue","greaterThan"));
+						  mappingNameLookup_.insert(strPair("Do not refine any elements","noRefine"));
+						}
+					boost::bimap<std::string, std::string> mappingNameLookup_;
+				};
+		}}
 RefineMeshDialog::RefineMeshDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogGeneric(state, parent),
+	impl_(new RefineMeshDialogImpl)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-	connect(refinementComboBox_, SIGNAL(clicked()), this, SLOT(push())); 
 		
 	addComboBoxManager(constraintComboBox_, Parameters::RefineMethod);
-	addDoubleSpinBoxManager(isoValueSpinBox_, Parameters::AddConstraints);
-	addComboBoxManager(refinementComboBox_, Parameters::IsoValue);
+	addComboBoxManager(refinementComboBox_, Parameters::AddConstraints, impl_->mappingNameLookup_);
+	addDoubleSpinBoxManager(isoValueSpinBox_, Parameters::IsoValue);
+
+	connect(refinementComboBox_, SIGNAL(clicked()), this, SLOT(push())); 
 }
 
 void RefineMeshDialog::push()
@@ -62,9 +81,9 @@ void RefineMeshDialog::push()
 
 void RefineMeshDialog::pull()
 {
-		Pulling p(this); 
+		Pulling p(this);
 		using namespace Parameters;
-		refinementComboBox_->setCurrentIndex(state_->getValue(IsoValue).toBool()); 
+		refinementComboBox_->setCurrentIndex(state_->getValue(IsoValue).toBool());
 
     pull_newVersionToReplaceOld();
 }

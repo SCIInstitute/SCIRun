@@ -50,13 +50,14 @@ RefineMesh::RefineMesh()
 {
 		INITIALIZE_PORT(InputField);
 		INITIALIZE_PORT(OutputField);
+		INITIALIZE_PORT(IsoValueField); 
 }
 
 void RefineMesh::setStateDefaults()
 {
 		setStateStringFromAlgoOption(Parameters::AddConstraints);
 		setStateStringFromAlgoOption(Parameters::RefineMethod);
-		setStateStringFromAlgoOption(Parameters::IsoValue);
+		setStateDoubleFromAlgo(Parameters::IsoValue);
 }
 
 void
@@ -68,7 +69,7 @@ RefineMesh::execute()
   {
     update_state(Executing);
       
-    pushInputMeshFieldInfo(input); 
+    //pushInputMeshFieldInfo(input); 
 
 		setAlgoOptionFromState(Parameters::AddConstraints);
 		setAlgoOptionFromState(Parameters::RefineMethod);
@@ -86,7 +87,7 @@ RefineMesh::execute()
 		#endif
 		remark("Mapping matrix port implementation is not enabled yet--please contact a developer");
 
-		auto output = algo().run(withInputData((InputField, input)));
+		auto output = algo().run_generic(withInputData((InputField, input)));
 		sendOutputFromAlgorithm(OutputField, output); 
 
 		#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -94,34 +95,35 @@ RefineMesh::execute()
 		#endif
   }
 }
-
-void RefineMesh::pushInputMeshFieldInfo(FieldHandle input) const
-{
-		auto state = get_state();
-		std::string name = input->properties().get_name();
-		if (name.empty())
-				name = "--- no name ---";
-		state->setValue(Parameters::RefineMethod, name);
-		std::string refMethod;
-		if (input->vfield()->is_nodata()) refMethod = "Default";
-		if (input->vfield()->is_constantdata()) refMethod = "Expand refinement volume to improve element quality";
-		state->setValue(Parameters::RefineMethod, refMethod);
-
-		/*auto state = get_state();
-		std::string name = input->properties().get_name();
-		if (name.empty())
-				name = "--- no name ---";
-		state->setValue(Parameters::AddConstraints, name);
-		std::string addCon;
-		if (input->vfield()->is_nodata()) addCon = "Do not add constraint";
-		if (input->vfield()->is_constantdata()) addCon = "Do not refine nodes/elements with values less than isovalue";
-		if (input->vfield()->is_lineardata()) addCon = "Do not refine nodes/elements with values unequal to isovalue";
-		if (input->vfield()->is_quadraticdata()) addCon = "Do not refine nodes/elements with values greater than isovalue";
-		if (input->vfield()->is_cubicdata()) addCon = "Do not refine any elements";*/
-		//state->setValue(Parameters::AddConstraints, addCon);
-
-		//state->setValue(Parameters::IsoValue, name);
-		//std::string isoval;
-		//if (input->matrix->) isoval = "0.0";
-		//state->setValue(Parameters::InputType, isoval);
-}
+//
+//void RefineMesh::pushInputMeshFieldInfo(FieldHandle input) const
+//{
+//	/*	input->
+//		auto state = get_state();
+//		std::string name = input->properties().get_name();
+//		if (name.empty())
+//				name = "--- no name ---";
+//		state->setValue(Parameters::RefineMethod, name);
+//		std::string refMethod;
+//		if (input->vfield()->is_nodata()) refMethod = "Default";
+//		if (input->vfield()->is_constantdata()) refMethod = "Expand refinement volume to improve element quality";
+//		state->setValue(Parameters::RefineMethod, refMethod);
+//*/
+//		/*auto state = get_state();
+//		std::string name = input->properties().get_name();
+//		if (name.empty())
+//				name = "--- no name ---";
+//		state->setValue(Parameters::AddConstraints, name);
+//		std::string addCon;
+//		if (input->vfield()->is_nodata()) addCon = "Do not add constraint";
+//		if (input->vfield()->is_constantdata()) addCon = "Do not refine nodes/elements with values less than isovalue";
+//		if (input->vfield()->is_lineardata()) addCon = "Do not refine nodes/elements with values unequal to isovalue";
+//		if (input->vfield()->is_quadraticdata()) addCon = "Do not refine nodes/elements with values greater than isovalue";
+//		if (input->vfield()->is_cubicdata()) addCon = "Do not refine any elements";*/
+//		//state->setValue(Parameters::AddConstraints, addCon);
+//
+//		//state->setValue(Parameters::IsoValue, name);
+//		//std::string isoval;
+//		//if (input->matrix->) isoval = "0.0";
+//		//state->setValue(Parameters::InputType, isoval);
+//}

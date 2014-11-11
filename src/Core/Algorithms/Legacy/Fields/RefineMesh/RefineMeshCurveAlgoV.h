@@ -59,7 +59,7 @@ class SCISHARE RefineMeshAlgo : public AlgorithmBase
       
       /// option only affecting hex refinement
      // add_bool("hex_convex",false);
-	//	bool runImpl(FieldHandle input, Datatypes::Double isovalue, FieldHandle& output, Datatypes::MatrixHandle& mapping) const; 
+		bool runImpl(FieldHandle input, Datatypes::Double isovalue, FieldHandle& output, Datatypes::MatrixHandle& mapping) const; 
 		bool runImpl(FieldHandle input, FieldHandle& output) const; 
 
 		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
