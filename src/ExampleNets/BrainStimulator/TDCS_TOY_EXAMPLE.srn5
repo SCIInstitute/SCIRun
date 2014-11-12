@@ -1066,7 +1066,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/mickey_mouse/mickey4tDCS.nrrd</value>
+										<value>%SCIRUNDATADIR%/Nrrd/mickey_mouse/mickey4tDCS.nrrd</value>
 									</value>
 								</second>
 							</item>
@@ -1094,7 +1094,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/mickey_mouse/scirun5/elc_points.mat</value>
+										<value>%SCIRUNDATADIR%/Matrices/mickey_mouse/elc_points.mat</value>
 									</value>
 								</second>
 							</item>
