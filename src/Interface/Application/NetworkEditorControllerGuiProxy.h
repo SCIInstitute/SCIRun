@@ -63,7 +63,7 @@ namespace Gui {
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
     boost::shared_ptr<SCIRun::Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortSwitch();
   Q_SIGNALS:
-    void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, SCIRun::Dataflow::Engine::ModuleCounter count);
+    void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
     void moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);
     void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
     void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);

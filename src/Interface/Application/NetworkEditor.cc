@@ -100,8 +100,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
   if (controller_)
   {
-    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, SCIRun::Dataflow::Engine::ModuleCounter)),
-      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, SCIRun::Dataflow::Engine::ModuleCounter)));
+    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)));
 
     disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
@@ -111,8 +111,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
   if (controller_)
   {
-    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, SCIRun::Dataflow::Engine::ModuleCounter)),
-      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, SCIRun::Dataflow::Engine::ModuleCounter)));
+    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)));
 
     connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
@@ -124,7 +124,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
   return controller_;
 }
 
-void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, SCIRun::Dataflow::Engine::ModuleCounter count)
+void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count)
 {
   std::cout << "\tNE modules done (start): " << count.count << std::endl;
   ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
@@ -779,7 +779,6 @@ ModuleEventProxy::ModuleEventProxy()
   qRegisterMetaType<SCIRun::Dataflow::Networks::ModuleId>("SCIRun::Dataflow::Networks::ModuleId");
   qRegisterMetaType<SCIRun::Dataflow::Networks::ConnectionId>("SCIRun::Dataflow::Networks::ConnectionId");
   qRegisterMetaType<SCIRun::Dataflow::Engine::ModuleCounter>("SCIRun::Dataflow::Engine::ModuleCounter");
-  //qRegisterMetaType<SCIRun::Dataflow::Engine::ModuleCounter&>("SCIRun::Dataflow::Engine::ModuleCounter&");
 }
 
 void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle module)

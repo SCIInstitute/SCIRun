@@ -49,7 +49,7 @@ namespace Engine {
     {
       count.fetch_add(rhs.count);
     }
-    boost::atomic<int> count;
+    mutable boost::atomic<int> count;
   };
 
   typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle, ModuleCounter)> ModuleAddedSignalType;
