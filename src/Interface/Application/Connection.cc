@@ -264,6 +264,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   setPositionObject(boost::make_shared<MidpointPositioner>(fromPort_->getPositionObject(), toPort_->getPositionObject()));
 
   trackNodes();
+  std::cout << "connection line made " << id.id_ << std::endl;
   GuiLogger::Instance().log("Connection made.");
 }
 
@@ -409,12 +410,12 @@ void ConnectionLine::updateNoteFromFile(const Note& note)
   updateNote(note);
 }
 
-void ConnectionLine::hoverEnterEvent(QGraphicsSceneHoverEvent*) 
+void ConnectionLine::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
   setColorAndWidth(color(), HOVERED_CONNECTION_WIDTH);
 }
 
-void ConnectionLine::hoverLeaveEvent(QGraphicsSceneHoverEvent*) 
+void ConnectionLine::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
   setColorAndWidth(color(), DEFAULT_CONNECTION_WIDTH);
 }

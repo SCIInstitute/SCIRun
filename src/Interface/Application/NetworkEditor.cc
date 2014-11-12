@@ -100,8 +100,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
   if (controller_)
   {
-    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)),
-      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, SCIRun::Dataflow::Engine::ModuleCounter)),
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, SCIRun::Dataflow::Engine::ModuleCounter)));
 
     disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
@@ -111,8 +111,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
   if (controller_)
   {
-    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)),
-      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, SCIRun::Dataflow::Engine::ModuleCounter)),
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, SCIRun::Dataflow::Engine::ModuleCounter)));
 
     connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
@@ -124,12 +124,15 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
   return controller_;
 }
 
-void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
+void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, SCIRun::Dataflow::Engine::ModuleCounter count)
 {
+  std::cout << "\tNE modules done (start): " << count.count << std::endl;
   ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
 
   setupModuleWidget(moduleWidget);
+  count.count.fetch_add(1);
+  std::cout << "\tNE modules done (end): " << count.count << std::endl;
   Q_EMIT modified();
 }
 
@@ -205,6 +208,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkEditorMouseButtonPressed()), module, SIGNAL(cancelConnectionsInProgress()));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
     module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+    std::cout << "module connectionAdded hooked up " << std::endl;
   connect(module, SIGNAL(executedManually(const SCIRun::Dataflow::Networks::ModuleHandle&)),
     this, SLOT(executeModule(const SCIRun::Dataflow::Networks::ModuleHandle&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
@@ -251,6 +255,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
 
   GuiLogger::Instance().log("Module added.");
+  std::cout << "module done " << std::endl;
 }
 
 void NetworkEditor::bringToFront()
@@ -773,6 +778,8 @@ ModuleEventProxy::ModuleEventProxy()
   qRegisterMetaType<SCIRun::Dataflow::Networks::ConnectionDescription>("SCIRun::Dataflow::Networks::ConnectionDescription");
   qRegisterMetaType<SCIRun::Dataflow::Networks::ModuleId>("SCIRun::Dataflow::Networks::ModuleId");
   qRegisterMetaType<SCIRun::Dataflow::Networks::ConnectionId>("SCIRun::Dataflow::Networks::ConnectionId");
+  qRegisterMetaType<SCIRun::Dataflow::Engine::ModuleCounter>("SCIRun::Dataflow::Engine::ModuleCounter");
+  //qRegisterMetaType<SCIRun::Dataflow::Engine::ModuleCounter&>("SCIRun::Dataflow::Engine::ModuleCounter&");
 }
 
 void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle module)

@@ -47,7 +47,7 @@ Q_DECLARE_METATYPE (std::string)
 
 namespace SCIRun {
 
-  namespace Dataflow { namespace Engine { class NetworkEditorController; struct DisableDynamicPortSwitch; }}
+  namespace Dataflow { namespace Engine { class NetworkEditorController; struct DisableDynamicPortSwitch; struct ModuleCounter; }}
 
 namespace Gui {
 
@@ -158,7 +158,7 @@ Q_SIGNALS:
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
 
   public Q_SLOTS:
-    void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
+    void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, SCIRun::Dataflow::Engine::ModuleCounter& count);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);

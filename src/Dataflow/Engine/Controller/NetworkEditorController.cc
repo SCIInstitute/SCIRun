@@ -89,7 +89,8 @@ ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
   auto realModule = addModuleImpl(info.module_name_);
   if (signalSwitch_)
   {
-    /*emit*/ moduleAdded_(info.module_name_, realModule);
+    static ModuleCounter dummy;
+    /*emit*/ moduleAdded_(info.module_name_, realModule, dummy);
   }
   printNetwork();
   return realModule;
@@ -127,7 +128,8 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   ModuleId id(module->get_id());
   auto newModule = addModuleImpl(id.name_);
   newModule->set_state(module->get_state()->clone());
-  moduleAdded_(id.name_, newModule);
+  static ModuleCounter dummy;
+  moduleAdded_(id.name_, newModule, dummy);
 
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
@@ -288,12 +290,23 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
     {
       NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
       theNetwork_ = conv.from_xml_data(xml->network);
+      ModuleCounter modulesDone;
+      std::cout << "modules done: " << modulesDone.count << std::endl;
       for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
         ModuleHandle module = theNetwork_->module(i);
-        moduleAdded_(module->get_module_name(), module);
+        moduleAdded_(module->get_module_name(), module, modulesDone);
         networkDoneLoading_(i);
+        std::cout << "module added" << std::endl;
       }
+      std::cout << "111111111 waiting for modules added to GUI" << std::endl;
+      while (modulesDone.count < theNetwork_->nmodules())
+      {
+        //std::cout << "modules done: " << modulesDone << std::endl;
+        // wait
+      }
+      std::cout << "222222222 done waiting for modules added to GUI" << std::endl;
+      //boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
       {
         auto disable(createDynamicPortSwitch());
         //this is handled by NetworkXMLConverter now--but now the logic is convoluted.
@@ -301,6 +314,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
         {
           ConnectionId id = ConnectionId::create(cd);
+          std::cout << "connection " << id.id_ << std::endl;
           connectionAdded_(cd);
         }
       }
@@ -335,7 +349,7 @@ void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
   {
     currentExecutor_ = executorFactory_->createDefault();
   }
-  
+
   ExecuteAllModules filter;
   theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
   ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);

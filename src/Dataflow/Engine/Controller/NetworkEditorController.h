@@ -41,8 +41,18 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-  
-  typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle)> ModuleAddedSignalType;
+
+  struct SCISHARE ModuleCounter
+  {
+    ModuleCounter() : count(0) {}
+    ModuleCounter(const ModuleCounter& rhs) : count(0)
+    {
+      count.fetch_add(rhs.count);
+    }
+    boost::atomic<int> count;
+  };
+
+  typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle, ModuleCounter)> ModuleAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ModuleId&)> ModuleRemovedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
@@ -53,7 +63,7 @@ namespace Engine {
 
   class DynamicPortManager;
 
-  struct SCISHARE DisableDynamicPortSwitch 
+  struct SCISHARE DisableDynamicPortSwitch
   {
     explicit DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm);
     ~DisableDynamicPortSwitch();
@@ -63,15 +73,15 @@ namespace Engine {
   };
 
   /// @todo Refactoring: split this class into two classes, NetworkEditorService and Controller.
-  //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
+  //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread
   //   This will be done in issue #231
 
   class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>, public Networks::NetworkEditorControllerInterface
   {
   public:
-    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, 
-      Networks::ModuleStateFactoryHandle sf, 
-      ExecutionStrategyFactoryHandle executorFactory, 
+    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf,
+      Networks::ModuleStateFactoryHandle sf,
+      ExecutionStrategyFactoryHandle executorFactory,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       Networks::ReexecuteStrategyFactoryHandle reexFactory,
       Networks::NetworkEditorSerializationManager* nesm = 0);
@@ -82,7 +92,7 @@ namespace Engine {
     virtual Networks::ModuleHandle addModule(const Networks::ModuleLookupInfo& info) override;
     Networks::ModuleHandle addModule(const std::string& name);
     void removeModule(const Networks::ModuleId& id);
-    
+
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 
@@ -99,7 +109,7 @@ namespace Engine {
 
     virtual void clear();
 
-    boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
+    boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber);
@@ -116,7 +126,7 @@ namespace Engine {
     virtual void disableSignals() override;
 
     virtual Networks::NetworkHandle getNetwork() const override;
-    virtual void setNetwork(Networks::NetworkHandle nh) override; 
+    virtual void setNetwork(Networks::NetworkHandle nh) override;
     Networks::NetworkGlobalSettings& getSettings();
 
     boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();

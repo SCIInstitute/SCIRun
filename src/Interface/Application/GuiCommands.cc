@@ -141,10 +141,12 @@ bool FileOpenCommand::execute()
       auto load = boost::bind(&FileOpenCommand::loadImpl, this, openedFile);
       if (Core::Application::Instance().parameters()->isRegressionMode())
       {
+        std::cout << "loading file sync" << std::endl;
         load();
       }
       else
       {
+        std::cout << "loading file async" << std::endl;
         int numModules = static_cast<int>(openedFile->network.modules.size());
         QProgressDialog progress("Loading network " + QString::fromStdString(filename_), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
         progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));

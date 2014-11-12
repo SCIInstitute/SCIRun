@@ -35,11 +35,11 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-  
+
 NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_ptr<NetworkEditorController> controller)
   : controller_(controller)
 {
-  controller_->connectModuleAdded(boost::bind(&NetworkEditorControllerGuiProxy::moduleAdded, this, _1, _2));
+  controller_->connectModuleAdded(boost::bind(&NetworkEditorControllerGuiProxy::moduleAdded, this, _1, _2, _3));
   controller_->connectModuleRemoved(boost::bind(&NetworkEditorControllerGuiProxy::moduleRemoved, this, _1));
   controller_->connectConnectionAdded(boost::bind(&NetworkEditorControllerGuiProxy::connectionAdded, this, _1));
   controller_->connectConnectionRemoved(boost::bind(&NetworkEditorControllerGuiProxy::connectionRemoved, this, _1));
@@ -48,6 +48,8 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
   controller_->connectNetworkExecutionStarts([&]() { executionStarted(); });
   controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1));
   controller_->connectNetworkDoneLoading(boost::bind(&NetworkEditorControllerGuiProxy::networkDoneLoading, this, _1));
+
+  std::cout << "nec gui proxy loaded" << std::endl;
 }
 
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
@@ -90,7 +92,7 @@ void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, 
   controller_->executeModule(module, &lookup);
 }
 
-size_t NetworkEditorControllerGuiProxy::numModules() const 
+size_t NetworkEditorControllerGuiProxy::numModules() const
 {
   return controller_->getNetwork()->nmodules();
 }
