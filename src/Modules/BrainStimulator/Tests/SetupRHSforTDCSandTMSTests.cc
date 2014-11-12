@@ -51,127 +51,70 @@ class SetupRHSforTDCSandTMSTests : public ModuleTest
 
 namespace
 {
-  FieldHandle CreateTetMeshVectorOnElem()
+  FieldHandle LoadMickeyMouseCleaverMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/cleaver_mesh.fld");
   }
-  FieldHandle CreateTetMeshVectorOnNode()
+  FieldHandle LoadMickeyMouseScalpMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/scalp_surf_mesh.fld");
   }
-  FieldHandle CreateTetMeshScalarOnElem()
+  FieldHandle LoadMickeyMouseElectrodeSpongeMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/elc_surf_mesh.fld.fld");
   }
-  FieldHandle CreateTetMeshScalarOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
-  }
-  FieldHandle CreateTriSurfVectorOnElem()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld");
-  }
-  FieldHandle CreateTriSurfVectorOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
-  }
-  FieldHandle CreateTriSurfScalarOnElem()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld");
-  }
-  FieldHandle CreateTriSurfScalarOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+  
+  DenseMatrixHandle ElectrodeSpongeLocationAndThickness()
+  { 
+   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(6,4));
+   (*m)(0,0) = 33.5;
+   (*m)(0,1) = 33.5;
+   (*m)(0,2) = 18.246;
+   (*m)(0,3) = 3.0;   
+   (*m)(1,0) = 33.5;
+   (*m)(1,1) = 18.246;
+   (*m)(1,2) = 33.5;
+   (*m)(1,3) = 3.0;   
+   (*m)(2,0) = 18.246;
+   (*m)(2,1) = 33.5;
+   (*m)(2,2) = 33.5;
+   (*m)(2,3) = 3.0;  
+   (*m)(3,0) = 48.754;
+   (*m)(3,1) = 33.5;
+   (*m)(3,2) = 33.5;
+   (*m)(3,3) = 3.0;  
+   (*m)(4,0) = 33.5;
+   (*m)(4,1) = 48.754;
+   (*m)(4,2) = 33.5;
+   (*m)(4,3) = 3.0;
+   (*m)(5,0) = 33.5;
+   (*m)(5,1) = 33.5;
+   (*m)(5,2) = 48.754;
+   (*m)(5,3) = 3.0;
+
+   return m;
   }
 }
 
-TEST_F(SetupRHSforTDCSandTMSTests, TetMeshVectorOnElem)
+TEST_F(SetupRHSforTDCSandTMSTests, Correct)
 {
   auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
-  (*m)(0,0) = 4;
-  stubPortNWithThisData(tdcs, 0, CreateTetMeshVectorOnElem());
-  stubPortNWithThisData(tdcs, 1, m);
+  stubPortNWithThisData(tdcs, 0, LoadMickeyMouseCleaverMesh());
+  stubPortNWithThisData(tdcs, 1, LoadMickeyMouseScalpMesh());
+  stubPortNWithThisData(tdcs, 2, LoadMickeyMouseElectrodeSpongeMesh());
+  stubPortNWithThisData(tdcs, 3, ElectrodeSpongeLocationAndThickness());
   EXPECT_NO_THROW(tdcs->execute());
 }
 
-TEST_F(SetupRHSforTDCSandTMSTests, TetMeshVectorOnNode)
+TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForWrongType)
 {
   auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
-  (*m)(0,0) = 4;
-  stubPortNWithThisData(tdcs, 0, CreateTetMeshVectorOnNode());
-  stubPortNWithThisData(tdcs, 1, m);
-  EXPECT_NO_THROW(tdcs->execute());
-}
 
-TEST_F(SetupRHSforTDCSandTMSTests, TetMeshScalarOnElem)
-{
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
-  (*m)(0,0) = 4;
-  stubPortNWithThisData(tdcs, 0, CreateTetMeshScalarOnElem());
-  stubPortNWithThisData(tdcs, 1, m);
-  EXPECT_NO_THROW(tdcs->execute());
-}
-
-TEST_F(SetupRHSforTDCSandTMSTests, TetMeshScalarOnNode)
-{
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
-  (*m)(0,0) = 4;
-  stubPortNWithThisData(tdcs, 0, CreateTetMeshScalarOnNode());
-  stubPortNWithThisData(tdcs, 1, m);
-  EXPECT_NO_THROW(tdcs->execute());
-}
-
-TEST_F(SetupRHSforTDCSandTMSTests, TriSurfVectorOnElem)
-{
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
-  (*m)(0,0) = 4;
-  stubPortNWithThisData(tdcs, 0, CreateTriSurfVectorOnElem());
-  stubPortNWithThisData(tdcs, 1, m);
-  EXPECT_NO_THROW(tdcs->execute());
-}
-
-TEST_F(SetupRHSforTDCSandTMSTests, TriSurfVectorOnNode)
-{
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
-  (*m)(0,0) = 4;
-  stubPortNWithThisData(tdcs, 0, CreateTriSurfVectorOnNode());
-  stubPortNWithThisData(tdcs, 1, m);
-  EXPECT_NO_THROW(tdcs->execute());
-}
-
-TEST_F(SetupRHSforTDCSandTMSTests, TriSurfScalarOnElem)
-{
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
-  (*m)(0,0) = 4;
-  stubPortNWithThisData(tdcs, 0, CreateTriSurfScalarOnElem());
-  stubPortNWithThisData(tdcs, 1, m);
-  EXPECT_NO_THROW(tdcs->execute());
-}
-
-TEST_F(SetupRHSforTDCSandTMSTests, TriSurfScalarOnNode)
-{
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
-  (*m)(0,0) = 4;
-  stubPortNWithThisData(tdcs, 0, CreateTriSurfScalarOnNode());
-  stubPortNWithThisData(tdcs, 1, m);
-  EXPECT_NO_THROW(tdcs->execute());
-}
-
-TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForMatrixInput)
-{
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  DenseMatrixHandle m(boost::make_shared<DenseMatrix>(1,1));
-  (*m)(0,0) = 40;
-  stubPortNWithThisData(tdcs, 0, m);
-  stubPortNWithThisData(tdcs, 1, m);
+  stubPortNWithThisData(tdcs, 0, ElectrodeSpongeLocationAndThickness());
+  stubPortNWithThisData(tdcs, 1, ElectrodeSpongeLocationAndThickness());
+  stubPortNWithThisData(tdcs, 2, ElectrodeSpongeLocationAndThickness());
+  stubPortNWithThisData(tdcs, 3, LoadMickeyMouseCleaverMesh());
+  
   EXPECT_THROW(tdcs->execute(), WrongDatatypeOnPortException);
 }
 
@@ -181,5 +124,8 @@ TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForNullInput)
   FieldHandle nullField;
   stubPortNWithThisData(tdcs, 0, nullField);
   stubPortNWithThisData(tdcs, 1, nullField);
+  stubPortNWithThisData(tdcs, 2, nullField);
+  stubPortNWithThisData(tdcs, 3, nullField);
   EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
 }
+

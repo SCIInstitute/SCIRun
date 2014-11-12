@@ -47,197 +47,118 @@ using namespace SCIRun::TestUtils;
 
 namespace
 {
-  FieldHandle CreateTetMeshVectorOnElem()
+  FieldHandle LoadMickeyMouseCleaverMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/cleaver_mesh.fld");
   }
-  FieldHandle CreateTetMeshVectorOnNode()
+  FieldHandle LoadMickeyMouseScalpMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/scalp_surf_mesh.fld");
   }
-  FieldHandle CreateTetMeshScalarOnElem()
+  FieldHandle LoadMickeyMouseElectrodeSpongeMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/elc_surf_mesh.fld");
   }
-  FieldHandle CreateTetMeshScalarOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
-  }
-  FieldHandle CreateTriSurfVectorOnElem()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld");
-  }
-  FieldHandle CreateTriSurfVectorOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
-  }
-  FieldHandle CreateTriSurfScalarOnElem()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld");
-  }
-  FieldHandle CreateTriSurfScalarOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+  
+  DenseMatrixHandle ElectrodeSpongeLocationAndThickness()
+  { 
+   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(6,4));
+   (*m)(0,0) = 33.5;
+   (*m)(0,1) = 33.5;
+   (*m)(0,2) = 18.246;
+   (*m)(0,3) = 3.0;   
+   (*m)(1,0) = 33.5;
+   (*m)(1,1) = 18.246;
+   (*m)(1,2) = 33.5;
+   (*m)(1,3) = 3.0;   
+   (*m)(2,0) = 18.246;
+   (*m)(2,1) = 33.5;
+   (*m)(2,2) = 33.5;
+   (*m)(2,3) = 3.0;  
+   (*m)(3,0) = 48.754;
+   (*m)(3,1) = 33.5;
+   (*m)(3,2) = 33.5;
+   (*m)(3,3) = 3.0;  
+   (*m)(4,0) = 33.5;
+   (*m)(4,1) = 48.754;
+   (*m)(4,2) = 33.5;
+   (*m)(4,3) = 3.0;
+   (*m)(5,0) = 33.5;
+   (*m)(5,1) = 33.5;
+   (*m)(5,2) = 48.754;
+   (*m)(5,3) = 3.0;
+
+   return m;
   }
 }
 
-void makeRandomValues(int m, std::vector<Variable>& elc, std::vector<double>& compare)
+TEST(SetupRHSforTDCSandTMSAlgorithm, Correct)
 {
-/*  for (int i=0; i<m; i++)
-  {
-    int temp = rand() % 100;
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), temp);
-    elc.push_back(elc_i);
-    compare.push_back((double)temp/1000); // values of temp are converted to amps, thus temp/1000
-  }*/
-}
-
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesSimple)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 10;
+  SetupRHSforTDCSandTMSAlgorithm algo;
+  int m=6;
   std::vector<Variable> elc;
+  
+  elc.push_back(AlgorithmParameter(Name("elc" + boost::lexical_cast<std::string>(0)), -1.0));
+  elc.push_back(AlgorithmParameter(Name("elc" + boost::lexical_cast<std::string>(1)),  1.0));
+  
+  for (int i=2; i<m; i++)
+  {
+    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), 0.0);   
+    elc.push_back(elc_i);
+  }
+  
+  std::vector<Variable> impelc;
   for (int i=0; i<m; i++)
   {
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), i);
-    elc.push_back(elc_i);
+     AlgorithmParameter imp_elc_i(Name("imp_elc" + boost::lexical_cast<std::string>(i)), 1.0);   
+     impelc.push_back(imp_elc_i);
   }
-  // values of i are converted to amps, thus i/1000
-  double compare [17] = {0, 0, 0, 0, 0, 0, 0, 0, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009};
-  auto o = algo.run(CreateTetMeshScalarOnElem(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));*/
+  FieldHandle mesh(LoadMickeyMouseCleaverMesh());
+  FieldHandle scalp_tri_surf(LoadMickeyMouseScalpMesh());
+  FieldHandle elc_tri_surf(LoadMickeyMouseElectrodeSpongeMesh());
+  DenseMatrixHandle elc_sponge_location(ElectrodeSpongeLocationAndThickness());
+  auto result = algo.run(mesh,elc,impelc,m,scalp_tri_surf,elc_tri_surf,elc_sponge_location);
+  DenseMatrixHandle lhs_knowns = result.get<0>();
+  DenseMatrixHandle elc_element= result.get<1>();
+  DenseMatrixHandle elc_element_typ = result.get<2>();
+  DenseMatrixHandle elc_element_def = result.get<3>();
+  DenseMatrixHandle elc_contact_imp= result.get<4>();
+  DenseMatrixHandle rhs = result.get<5>();
+  FieldHandle elec_sponge_surf = result.get<6>();
+  DenseMatrixHandle selectmatrixind = result.get<7>();
+   
+  EXPECT_EQ(lhs_knowns->nrows(),33707);
+  EXPECT_EQ(lhs_knowns->ncols(),1);
+  
+  EXPECT_EQ(elc_element->nrows(),3024);
+  EXPECT_EQ(elc_element->ncols(),1);
+  
+  EXPECT_EQ(elc_element_typ->nrows(),3024);
+  EXPECT_EQ(elc_element_typ->ncols(),1);
+  
+  EXPECT_EQ(elc_element_def->nrows(),3024);
+  EXPECT_EQ(elc_element_def->ncols(),4);
+  
+  EXPECT_EQ(elc_contact_imp->nrows(),3024);
+  EXPECT_EQ(elc_contact_imp->ncols(),1);
+     
+  for (int i=1; i<lhs_knowns->nrows(); i++)
+   EXPECT_TRUE(isnan((*lhs_knowns)(i,0)));
+   
+  EXPECT_EQ((*lhs_knowns)(0,0), 0.0); 
+  
+  for (int i=0; i<elc_element_typ->nrows(); i++)
+      EXPECT_EQ((*elc_element_typ)(i,0), 2.0);
+  
+  for (int i=0; i<elc_element_typ->nrows(); i++)
+      EXPECT_EQ((*elc_contact_imp)(i,0), 1.0);    
+   
+  for (int i=0; i<selectmatrixind->nrows(); i++) 
+      EXPECT_EQ((*selectmatrixind)(i,0), i);
+
+  VMesh* elec_sponge_surf_vmesh = elec_sponge_surf->vmesh();
+  
+  EXPECT_EQ(elec_sponge_surf_vmesh->num_nodes(),1614);
+  EXPECT_EQ(elec_sponge_surf_vmesh->num_elems(),3024);
 }
 
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnElem)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 128;
-  std::vector<double> compare(6,0); // nodes are 6 zero values
-  std::vector<Variable> elc;
-  makeRandomValues(m, elc, compare);
-  auto o = algo.run(CreateTriSurfScalarOnElem(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));*/
-}
-
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfScalarOnNode)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 128;
-  std::vector<double> compare(6,0);
-  std::vector<Variable> elc;
-  makeRandomValues(m, elc, compare);
-  auto o = algo.run(CreateTriSurfScalarOnNode(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));*/
-}
-
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfVectorOnElem)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 128;
-  std::vector<double> compare(6,0);
-  std::vector<Variable> elc;
-  makeRandomValues(m, elc, compare);
-  auto o = algo.run(CreateTriSurfVectorOnElem(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));*/
-}
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTriSurfVectorOnNode)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 128;
-  std::vector<double> compare(6,0);
-  std::vector<Variable> elc;
-  makeRandomValues(m, elc, compare);
-  auto o = algo.run(CreateTriSurfVectorOnNode(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));*/
-}
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshVectorOnNode)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 128;
-  std::vector<double> compare(7,0);
-  std::vector<Variable> elc;
-  makeRandomValues(m, elc, compare);
-  auto o = algo.run(CreateTetMeshVectorOnNode(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));*/
-}
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshVectorOnElem)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 128;
-  std::vector<double> compare(7,0);
-  std::vector<Variable> elc;
-  makeRandomValues(m, elc, compare);
-  auto o = algo.run(CreateTetMeshVectorOnElem(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));*/
-}
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshScalarOnElem)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 128;
-  std::vector<double> compare(7,0);
-  std::vector<Variable> elc;
-  makeRandomValues(m, elc, compare);
-  auto o = algo.run(CreateTetMeshScalarOnElem(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));*/
-}
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ComparingValuesTetMeshScalarOnNode)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 128;
-  std::vector<double> compare(7,0);
-  std::vector<Variable> elc;
-  makeRandomValues(m, elc, compare);
-  auto o = algo.run(CreateTetMeshScalarOnNode(), elc, m);
-  for (int i=0; i<o->nrows(); i++)
-    EXPECT_EQ(compare[i], o->coeff(i,0));*/
-}
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, NegativeNumberOfElectrodesGivenTetMeshScalarOnElem)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = -10;
-  std::vector<Variable> elc;
-  AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(0)), 1.0);
-  elc.push_back(elc_i);
-  EXPECT_THROW(algo.run(CreateTetMeshScalarOnElem(), elc, m), AlgorithmInputException);*/
-}
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, ElectrodeNumberExceedsWhatIsPossible)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  int m = 360;
-  std::vector<Variable> elc;
-  AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(0)), 1.0);
-  elc.push_back(elc_i);
-  EXPECT_THROW(algo.run(CreateTetMeshScalarOnElem(), elc, m), AlgorithmInputException); */
-}
-
-TEST(SetupRHSforTDCSandTMSAlgorithm, NullFieldGivenAsInput)
-{
-/*  SetupRHSforTDCSandTMSAlgorithm algo;
-  FieldHandle f;
-  int m = 10;
-  std::vector<Variable> elc;
-  for (int i=0; i<m; i++)
-  {
-    AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), i);
-    elc.push_back(elc_i);
-  }
-  EXPECT_THROW(algo.run(f, elc, m), AlgorithmInputException);*/
-}
