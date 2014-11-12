@@ -25,13 +25,15 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <iostream>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
@@ -52,25 +54,17 @@ ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("
 
 void ElectrodeCoilSetupModule::setStateDefaults()
 {
-  /// @todo
+  auto state = get_state();
 }
 
 void ElectrodeCoilSetupModule::execute()
 {
   auto scalp = getRequiredInput(SCALP_SURF);
+  auto locations = getRequiredInput(LOCATIONS);
   auto elc_coil_proto = getRequiredDynamicInputs(ELECTRODECOILPROTOTYPES);
-  //auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
-   // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).toInt();
-
-  //algorithm parameter
-  //algo_->set(Variables::AppendMatrixOption, param);
  
-  
-  //algorithm input and run
-  auto output = algo().run_generic(withInputData((SCALP_SURF, scalp)(ELECTRODECOILPROTOTYPES, elc_coil_proto)));
+  auto output = algo().run_generic(withInputData((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto)));
 
-  //algorithm output
   sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
   sendOutputFromAlgorithm(COILS_FIELD, output);
 }

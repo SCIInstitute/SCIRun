@@ -32,6 +32,18 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/MatrixComparison.h>
+#include <string>
+#include <boost/range/algorithm/count.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/format.hpp>
+#include <boost/assign.hpp>
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
@@ -40,18 +52,75 @@
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
-    
+using namespace boost::assign;
+
+ALGORITHM_PARAMETER_DEF(BrainStimulator, TableValues);
+
 const AlgorithmInputName ElectrodeCoilSetupAlgorithm::SCALP_SURF("SCALP_SURF");
 const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODECOILPROTOTYPES("ELECTRODECOILPROTOTYPES");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODE_SPONGE_LOCATION_AVR("ELECTRODE_SPONGE_LOCATION_AVR");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::COILS_FIELD("COILS_FIELD");
-const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::LOCATIONS("LOCATIONS");
+const AlgorithmInputName ElectrodeCoilSetupAlgorithm::LOCATIONS("LOCATIONS");
+
+VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseMatrixHandle locations, std::vector<FieldHandle> input) const
+{
+  Variable::List tmp;
+  Variable::List table;
+  if (locations->ncols()!=3)
+  {
+   THROW_ALGORITHM_PROCESSING_ERROR(" LOCATIONS needs to have dimensions such as: (#CoilsOrElectrodes) x 3 "); 
+  }
+  
+  for (int i=0;i<locations->nrows();i++)
+  {
+  
+   tmp += makeVariable("Input #", "???"), 
+     makeVariable("X", boost::str(boost::format("%.3f") % (* locations)(i,0))),
+     makeVariable("Y", boost::str(boost::format("%.3f") % (* locations)(i,1))),
+     makeVariable("Z", boost::str(boost::format("%.3f") % (* locations)(i,2))),
+     makeVariable("RX", "???"),
+     makeVariable("RY", "???"),
+     makeVariable("RZ", "???"),
+     makeVariable("thickness", "???"),
+     makeVariable("Info", "???");     
+     table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp)); 
+  }  
+ 
+  VariableHandle statistics_table(new Variable(Name("Table"), table));
+    /*    makeVariable("col4", formatCount((*output)(i,4))); //element count
+formatStatistic((*output)(i,0))
+      elc_vals_in_table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp));
+    }
+
+    VariableHandle statistics_table(new Variable(Name("Table"), elc_vals_in_table));*/
+
+}
+
 
 AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   auto scalp = input.get<Field>(SCALP_SURF);
+  auto locations = input.get<DenseMatrix>(LOCATIONS);
   auto elc_coil_proto = input.getList<Field>(ELECTRODECOILPROTOTYPES);
+  
+  if (!scalp)
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR(" SCALP_SURF (first input) field empty. ");
+  }
+  
+  if (!locations)
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR(" LOCATIONS (second input) matrix empty. ");
+  }
+  
+  if (!(elc_coil_proto.size()>=1))
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR(" At least one prototypical coil (POINTMESH) or electrode (TRISURFMESH) definition as a field input must be provided.");
+  }
+  
+  VariableHandle table = fill_table(scalp, locations, elc_coil_proto);
   
   /*auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
@@ -66,8 +135,8 @@ AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& i
   //old-style run call, just put algorithm code here
   //auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).toInt()));
   // CODE HERE
-  FieldHandle out1,out2;
-
+  DenseMatrixHandle elc_sponge_loc_avr;
+  FieldHandle coils_field;
   //Algorithm starts here:
   //VField* vfield = elc_coil_pos_and_normal->vfield();
   // VMesh*  vmesh  = pos_orient->vmesh();
@@ -82,7 +151,9 @@ AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& i
 
 
   AlgorithmOutput output;
-  //output[] = out1;
-  //output[] = out2;
+  output[ELECTRODE_SPONGE_LOCATION_AVR] = elc_sponge_loc_avr;
+  output[COILS_FIELD] = coils_field;
+  
+  output.setAdditionalAlgoOutput(table);
   return output;
 }

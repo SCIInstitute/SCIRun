@@ -35,14 +35,15 @@
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
+using namespace SCIRun::Core::Datatypes;
 
 namespace SCIRun {
   namespace Modules {
     namespace BrainStimulator {
 
 class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Module,
-  public Has2InputPorts<FieldPortTag, DynamicPortTag<FieldPortTag>>,
-  public Has2OutputPorts<Matrix, FieldPortTag>
+  public Has3InputPorts<FieldPortTag, MatrixPortTag, DynamicPortTag<FieldPortTag>>,
+  public Has2OutputPorts<MatrixPortTag, FieldPortTag>
 {
   public:
     ElectrodeCoilSetupModule();
@@ -53,7 +54,7 @@ class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Mod
     virtual bool hasDynamicPorts() const override { return true; }
     
     INPUT_PORT(0, SCALP_SURF, LegacyField);
-    INPUT_PORT(1, LOCATIONS, LegacyField);
+    INPUT_PORT(1, LOCATIONS, Matrix);
     INPUT_PORT_DYNAMIC(2, ELECTRODECOILPROTOTYPES, LegacyField);    
     OUTPUT_PORT(0, ELECTRODE_SPONGE_LOCATION_AVR, Matrix);
     OUTPUT_PORT(1, COILS_FIELD, LegacyField);

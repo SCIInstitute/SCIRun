@@ -41,6 +41,8 @@ namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
   
+  ALGORITHM_PARAMETER_DECL(TableValues);
+  
   class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
   {
   public:
@@ -52,7 +54,9 @@ namespace BrainStimulator {
     static const AlgorithmInputName ELECTRODECOILPROTOTYPES;
     static const AlgorithmOutputName ELECTRODE_SPONGE_LOCATION_AVR;
     static const AlgorithmOutputName COILS_FIELD;
-    static const AlgorithmOutputName LOCATIONS;
+    static const AlgorithmInputName LOCATIONS;
+    
+    VariableHandle fill_table(FieldHandle scalp, Datatypes::DenseMatrixHandle locations, std::vector<FieldHandle> input) const;
   private:
   
     
