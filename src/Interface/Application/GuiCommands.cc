@@ -119,7 +119,7 @@ namespace
   }
 }
 
-namespace std 
+namespace std
 {
 template <typename T1, typename T2>
 std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
@@ -138,7 +138,7 @@ bool FileOpenCommand::execute()
 
     if (openedFile)
     {
-      auto load = [&,this]() { return loadImpl(openedFile); };
+      auto load = boost::bind(&FileOpenCommand::loadImpl, this, openedFile);
       if (Core::Application::Instance().parameters()->isRegressionMode())
       {
         load();
@@ -199,7 +199,7 @@ bool SetupDataDirectoryCommandGui::execute()
 {
   auto dir = Application::Instance().parameters()->dataDirectory().get();
   LOG_DEBUG("Data dir set to: " << dir << std::endl);
-  
+
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
 
   return true;
