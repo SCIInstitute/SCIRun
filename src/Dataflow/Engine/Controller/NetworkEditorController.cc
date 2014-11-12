@@ -269,6 +269,11 @@ boost::signals2::connection NetworkEditorController::connectPortRemoved(const Po
   return dynamicPortManager_->connectPortRemoved(subscriber);
 }
 
+boost::signals2::connection NetworkEditorController::connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber)
+{
+  return networkDoneLoading_.connect(subscriber);
+}
+
 NetworkFileHandle NetworkEditorController::saveNetwork() const
 {
   NetworkToXML conv(serializationManager_);
@@ -287,6 +292,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       {
         ModuleHandle module = theNetwork_->module(i);
         moduleAdded_(module->get_module_name(), module);
+        networkDoneLoading_(i);
       }
       {
         auto disable(createDynamicPortSwitch());
@@ -306,6 +312,8 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       }
       else
         Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;
+
+      networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
     }
     catch (ExceptionBase& e)
     {

@@ -47,6 +47,7 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
   controller_->connectPortRemoved(boost::bind(&NetworkEditorControllerGuiProxy::portRemoved, this, _1, _2));
   controller_->connectNetworkExecutionStarts([&]() { executionStarted(); });
   controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1));
+  controller_->connectNetworkDoneLoading(boost::bind(&NetworkEditorControllerGuiProxy::networkDoneLoading, this, _1));
 }
 
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
@@ -76,7 +77,7 @@ NetworkFileHandle NetworkEditorControllerGuiProxy::saveNetwork() const
 
 void NetworkEditorControllerGuiProxy::loadNetwork(const NetworkFileHandle& xml)
 {
-  return controller_->loadNetwork(xml);
+  controller_->loadNetwork(xml);
 }
 
 void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)

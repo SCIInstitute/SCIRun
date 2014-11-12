@@ -61,7 +61,7 @@ public:
 
   //command access: extract an interface
   void saveNetworkFile(const QString& fileName);
-  void loadNetworkFile(const QString& filename);
+  bool loadNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);

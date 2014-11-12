@@ -433,7 +433,7 @@ void SCIRunMainWindow::loadNetwork()
   }
 }
 
-void SCIRunMainWindow::loadNetworkFile(const QString& filename)
+bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
 {
   if (!filename.isEmpty())
   {
@@ -446,6 +446,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       provenanceWindow_->clear();
       provenanceWindow_->showFile(command.openedFile_);
 			networkEditor_->viewport()->update();
+      return true;
     }
     else
     {
@@ -455,6 +456,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       // probably want to control this with a --regression flag.
     }
   }
+  return false;
 }
 
 bool SCIRunMainWindow::newNetwork()

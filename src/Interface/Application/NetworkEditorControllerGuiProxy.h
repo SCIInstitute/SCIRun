@@ -31,7 +31,6 @@
 
 #include <QObject>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
@@ -39,7 +38,7 @@ namespace SCIRun {
 
 namespace Gui {
   
-  class NetworkEditorControllerGuiProxy : public QObject//, public SCIRun::Dataflow::Networks::ConnectionMakerService
+  class NetworkEditorControllerGuiProxy : public QObject
   {
     Q_OBJECT
   public:
@@ -71,6 +70,7 @@ namespace Gui {
     void portRemoved(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
     void executionStarted();
     void executionFinished(int returnCode);
+    void networkDoneLoading(int nMod);
   private:
     boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   };

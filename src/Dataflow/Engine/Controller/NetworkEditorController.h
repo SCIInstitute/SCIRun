@@ -49,6 +49,7 @@ namespace Engine {
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
   typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortRemovedSignalType;
+  typedef boost::signals2::signal<void (int)> NetworkDoneLoadingSignalType;
 
   class DynamicPortManager;
 
@@ -109,6 +110,8 @@ namespace Engine {
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
 
+    boost::signals2::connection connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber);
+
     virtual void enableSignals() override;
     virtual void disableSignals() override;
 
@@ -142,6 +145,7 @@ namespace Engine {
     ConnectionAddedSignalType connectionAdded_;
     ConnectionRemovedSignalType connectionRemoved_;
     InvalidConnectionSignalType invalidConnection_;
+    NetworkDoneLoadingSignalType networkDoneLoading_;
 
     boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
     bool signalSwitch_;
