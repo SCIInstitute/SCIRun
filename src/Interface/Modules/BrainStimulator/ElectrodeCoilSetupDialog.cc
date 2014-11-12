@@ -81,7 +81,30 @@ void ElectrodeCoilSetupDialog::push()
 void ElectrodeCoilSetupDialog::pull()
 {
   Pulling p(this);
-  
-  
+ 
+  auto tableHandle = optional_any_cast_or_default<VariableHandle>(state_->getTransientValue(Parameters::TableValues));
+
+  if (tableHandle)
+  {
+   auto all_elc_values = tableHandle->toVector();
+   electrode_coil_tableWidget->setRowCount(static_cast<int>(all_elc_values.size()));
+   
+   for (int i=0; i<all_elc_values.size(); i++)
+   {
+     auto col = (all_elc_values[i]).toVector();
+     int j=0;
+     BOOST_FOREACH(const AlgorithmParameter& ap, col)
+     {
+      auto tmpstr = ap.toString();
+      auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
+        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+        electrode_coil_tableWidget->setItem(i, j, item);
+        ++j;
+     }
+   }
+  } else
+  {
+    // ?? log a message ? unsure.
+  }
 }
 

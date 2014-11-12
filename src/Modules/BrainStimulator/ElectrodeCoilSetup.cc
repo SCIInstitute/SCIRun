@@ -62,9 +62,13 @@ void ElectrodeCoilSetupModule::execute()
   auto scalp = getRequiredInput(SCALP_SURF);
   auto locations = getRequiredInput(LOCATIONS);
   auto elc_coil_proto = getRequiredDynamicInputs(ELECTRODECOILPROTOTYPES);
- 
+  
+  setAlgoListFromState(Parameters::TableValues);
+  
   auto output = algo().run_generic(withInputData((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto)));
-
+  auto table = output.additionalAlgoOutput();
+  get_state()->setTransientValue(Parameters::TableValues, table);
+  
   sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
   sendOutputFromAlgorithm(COILS_FIELD, output);
 }

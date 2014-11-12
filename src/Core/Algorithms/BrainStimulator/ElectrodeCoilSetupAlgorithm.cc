@@ -74,8 +74,7 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
   }
   
   for (int i=0;i<locations->nrows();i++)
-  {
-  
+  {  
    tmp += makeVariable("Input #", "???"), 
      makeVariable("X", boost::str(boost::format("%.3f") % (* locations)(i,0))),
      makeVariable("Y", boost::str(boost::format("%.3f") % (* locations)(i,1))),
@@ -88,14 +87,9 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
      table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp)); 
   }  
  
-  VariableHandle statistics_table(new Variable(Name("Table"), table));
-    /*    makeVariable("col4", formatCount((*output)(i,4))); //element count
-formatStatistic((*output)(i,0))
-      elc_vals_in_table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp));
-    }
-
-    VariableHandle statistics_table(new Variable(Name("Table"), elc_vals_in_table));*/
-
+  VariableHandle output(new Variable(Name("Table"), table));
+  
+  return output;
 }
 
 
