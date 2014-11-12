@@ -26,11 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 
 
@@ -41,10 +44,45 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  
+  electrode_coil_tableWidget->setRowCount(1);
+  electrode_coil_tableWidget->setColumnCount(8);
+  QStringList tableHeader;
+  tableHeader<<"X"<<"Y"<<"Z"<<"NX"<<"NY"<<"NZ"<<"thickness"<<"Info";
+  electrode_coil_tableWidget->setHorizontalHeaderLabels(tableHeader);
+  connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
+}
+
+void ElectrodeCoilSetupDialog::push()
+{
+  if (!pulling_)
+  {
+   std::vector<AlgorithmParameter> vals_in_table;
+   int rows = electrode_coil_tableWidget->rowCount();
+   for (int i=0; i<rows; i++)
+   {
+    std::vector<Variable> values;
+    values.push_back(Variable(Name("X"), electrode_coil_tableWidget->item(i,0)->text().toDouble()));
+    values.push_back(Variable(Name("Y"), electrode_coil_tableWidget->item(i,1)->text().toDouble()));
+    values.push_back(Variable(Name("Z"), electrode_coil_tableWidget->item(i,2)->text().toDouble()));    
+    values.push_back(Variable(Name("NX"), electrode_coil_tableWidget->item(i,3)->text().toDouble()));
+    values.push_back(Variable(Name("NY"), electrode_coil_tableWidget->item(i,4)->text().toDouble()));
+    values.push_back(Variable(Name("NZ"), electrode_coil_tableWidget->item(i,5)->text().toDouble()));    
+    values.push_back(Variable(Name("thickness"), electrode_coil_tableWidget->item(i,6)->text().toDouble()));
+    //values += makeVariable("X", electrode_coil_tableWidget->item(i,0)->text().toDouble()),
+   // makeVariable("Y", electrode_coil_tableWidget->item(i,1)->text().toDouble());
+
+    //values.push_back(electrode_coil_tableWidget->item(i,0)->text().toDouble());
+    AlgorithmParameter elc_i(Name("row" + boost::lexical_cast<std::string>(i)), values);
+   
+   }
+  }
 }
 
 void ElectrodeCoilSetupDialog::pull()
 {
-  //TODO
+  Pulling p(this);
+  
+  
 }
 

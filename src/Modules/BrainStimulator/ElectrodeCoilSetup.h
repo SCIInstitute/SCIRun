@@ -42,7 +42,7 @@ namespace SCIRun {
 
 class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Module,
   public Has2InputPorts<FieldPortTag, DynamicPortTag<FieldPortTag>>,
-  public Has2OutputPorts<FieldPortTag, FieldPortTag>
+  public Has2OutputPorts<Matrix, FieldPortTag>
 {
   public:
     ElectrodeCoilSetupModule();
@@ -53,8 +53,9 @@ class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Mod
     virtual bool hasDynamicPorts() const override { return true; }
     
     INPUT_PORT(0, SCALP_SURF, LegacyField);
-    INPUT_PORT_DYNAMIC(1, INPUTFIELDS, LegacyField);    
-    OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
+    INPUT_PORT(1, LOCATIONS, LegacyField);
+    INPUT_PORT_DYNAMIC(2, ELECTRODECOILPROTOTYPES, LegacyField);    
+    OUTPUT_PORT(0, ELECTRODE_SPONGE_LOCATION_AVR, Matrix);
     OUTPUT_PORT(1, COILS_FIELD, LegacyField);
 };
 

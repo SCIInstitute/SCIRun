@@ -43,8 +43,10 @@ using namespace SCIRun::Dataflow::Networks;
 
 ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("ElectrodeCoilSetup", "BrainStimulator", "SCIRun"))
 {
- INITIALIZE_PORT(INPUTFIELDS);
- INITIALIZE_PORT(ELECTRODES_FIELD);
+ INITIALIZE_PORT(SCALP_SURF);
+ INITIALIZE_PORT(LOCATIONS);
+ INITIALIZE_PORT(ELECTRODECOILPROTOTYPES);
+ INITIALIZE_PORT(ELECTRODE_SPONGE_LOCATION_AVR);
  INITIALIZE_PORT(COILS_FIELD);
 }
 
@@ -55,7 +57,8 @@ void ElectrodeCoilSetupModule::setStateDefaults()
 
 void ElectrodeCoilSetupModule::execute()
 {
-  auto fields = getRequiredDynamicInputs(INPUTFIELDS);
+  auto scalp = getRequiredInput(SCALP_SURF);
+  auto elc_coil_proto = getRequiredDynamicInputs(ELECTRODECOILPROTOTYPES);
   //auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
    // UI input
   //auto param = get_state()->getValue(Variables::AppendMatrixOption).toInt();
@@ -65,9 +68,9 @@ void ElectrodeCoilSetupModule::execute()
  
   
   //algorithm input and run
-  auto output = algo().run_generic(withInputData((INPUTFIELDS, fields)));
+  auto output = algo().run_generic(withInputData((SCALP_SURF, scalp)(ELECTRODECOILPROTOTYPES, elc_coil_proto)));
 
   //algorithm output
-  sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
+  sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
   sendOutputFromAlgorithm(COILS_FIELD, output);
 }

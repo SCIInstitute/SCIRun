@@ -48,10 +48,11 @@ namespace BrainStimulator {
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    static const AlgorithmInputName INPUTFIELDS;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
+    static const AlgorithmInputName SCALP_SURF; 
+    static const AlgorithmInputName ELECTRODECOILPROTOTYPES;
+    static const AlgorithmOutputName ELECTRODE_SPONGE_LOCATION_AVR;
     static const AlgorithmOutputName COILS_FIELD;
-
+    static const AlgorithmOutputName LOCATIONS;
   private:
   
     

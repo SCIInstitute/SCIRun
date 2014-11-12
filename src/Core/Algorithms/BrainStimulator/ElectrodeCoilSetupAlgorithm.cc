@@ -42,14 +42,17 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
     
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::INPUTFIELDS("INPUTFIELDS");
-const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
+const AlgorithmInputName ElectrodeCoilSetupAlgorithm::SCALP_SURF("SCALP_SURF");
+const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODECOILPROTOTYPES("ELECTRODECOILPROTOTYPES");
+const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODE_SPONGE_LOCATION_AVR("ELECTRODE_SPONGE_LOCATION_AVR");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::COILS_FIELD("COILS_FIELD");
-
+const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::LOCATIONS("LOCATIONS");
 
 AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto inputFields = input.getList<Field>(INPUTFIELDS);
+  auto scalp = input.get<Field>(SCALP_SURF);
+  auto elc_coil_proto = input.getList<Field>(ELECTRODECOILPROTOTYPES);
+  
   /*auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
   auto tri2 = input.get<Field>(ELECTRODE_TRIANGULATION2);
@@ -79,7 +82,7 @@ AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& i
 
 
   AlgorithmOutput output;
-  output[ELECTRODES_FIELD] = out1;
-  output[COILS_FIELD] = out2;
+  //output[] = out1;
+  //output[] = out2;
   return output;
 }
