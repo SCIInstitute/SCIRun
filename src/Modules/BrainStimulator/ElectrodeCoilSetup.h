@@ -41,7 +41,7 @@ namespace SCIRun {
     namespace BrainStimulator {
 
 class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Module,
-  public Has1InputPort<DynamicPortTag<FieldPortTag>>,
+  public Has2InputPorts<FieldPortTag, DynamicPortTag<FieldPortTag>>,
   public Has2OutputPorts<FieldPortTag, FieldPortTag>
 {
   public:
@@ -52,7 +52,8 @@ class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Mod
     
     virtual bool hasDynamicPorts() const override { return true; }
     
-    INPUT_PORT_DYNAMIC(0, INPUTFIELDS, LegacyField);    
+    INPUT_PORT(0, SCALP_SURF, LegacyField);
+    INPUT_PORT_DYNAMIC(1, INPUTFIELDS, LegacyField);    
     OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
     OUTPUT_PORT(1, COILS_FIELD, LegacyField);
 };
