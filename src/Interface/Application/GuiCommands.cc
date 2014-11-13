@@ -130,7 +130,8 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 
 bool FileOpenCommand::execute()
 {
-  GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
+  if (!filename_.empty())
+    GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
 
   try
   {
@@ -141,23 +142,23 @@ bool FileOpenCommand::execute()
       auto load = boost::bind(&FileOpenCommand::loadImpl, this, openedFile);
       if (Core::Application::Instance().parameters()->isRegressionMode())
       {
-        std::cout << "loading file sync" << std::endl;
         load();
       }
       else
       {
-        std::cout << "loading file async" << std::endl;
         int numModules = static_cast<int>(openedFile->network.modules.size());
         QProgressDialog progress("Loading network " + QString::fromStdString(filename_), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
         progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
         progress.setValue(0);
-        std::cout << "````````````````````QtConcurrent::run" << std::endl;
-        QFuture<int> future = QtConcurrent::run(load);
-        std::cout << "````````````````````future returned" << std::endl;
-        progress.setValue(future.result());
-        std::cout << "````````````````````future evaluated" << std::endl;
+
+        //TODO: trying to load in a separate thread exposed problems with the signal/slots related to wiring up the GUI elements, 
+        // so I'll come back to this idea when there's time to refactor that part of the code (NEC::loadNetwork)
+        //QFuture<int> future = QtConcurrent::run(load);
+        //progress.setValue(future.result());
+
+        progress.setValue(load());
       }
       openedFile_ = openedFile;
 
@@ -166,23 +167,30 @@ bool FileOpenCommand::execute()
       networkEditor_->centerOn(center);
 
       GuiLogger::Instance().log("File load done.");
-      std::cout << "`````````````````````````FileOpenCommand returning" << std::endl;
       return true;
     }
     else
-      GuiLogger::Instance().log("File load failed: null xml returned.");
+    {
+      if (!filename_.empty())
+      {
+        GuiLogger::Instance().log("File load failed: null xml returned.");
+      }
+    }
   }
   catch (ExceptionBase& e)
   {
-    GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(e.what()));
+    if (!filename_.empty())
+      GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(e.what()));
   }
   catch (std::exception& ex)
   {
-    GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(ex.what()));
+    if (!filename_.empty())
+      GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(ex.what()));
   }
   catch (...)
   {
-    GuiLogger::Instance().log("File load failed: Unknown exception in load_xml.");
+    if (!filename_.empty())
+      GuiLogger::Instance().log("File load failed: Unknown exception in load_xml.");
   }
   return false;
 }

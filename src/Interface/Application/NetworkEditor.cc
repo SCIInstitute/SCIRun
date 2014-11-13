@@ -132,19 +132,19 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count)
 {
-  std::cout << "\tNE modules done (start): " << *count.count << std::endl;
+  //std::cout << "\tNE modules done (start): " << *count.count << std::endl;
   ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
 
   setupModuleWidget(moduleWidget);
   count.increment();
-  std::cout << "\tNE modules done (end): " << *count.count << std::endl;
+  //std::cout << "\tNE modules done (end): " << *count.count << std::endl;
   Q_EMIT modified();
 }
 
 void NetworkEditor::connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
 {
-  std::cout << "Received queued connection request: " << ConnectionId::create(cd).id_ << std::endl;
+  //std::cout << "Received queued connection request: " << ConnectionId::create(cd).id_ << std::endl;
 }
 
 boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler()
@@ -219,7 +219,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkEditorMouseButtonPressed()), module, SIGNAL(cancelConnectionsInProgress()));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
     module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    std::cout << "module connectionAdded hooked up " << std::endl;
+    //std::cout << "module connectionAdded hooked up " << std::endl;
   connect(module, SIGNAL(executedManually(const SCIRun::Dataflow::Networks::ModuleHandle&)),
     this, SLOT(executeModule(const SCIRun::Dataflow::Networks::ModuleHandle&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
@@ -266,7 +266,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
 
   GuiLogger::Instance().log("Module added.");
-  std::cout << "module done " << std::endl;
+  //std::cout << "module done " << std::endl;
 }
 
 void NetworkEditor::bringToFront()

@@ -47,7 +47,7 @@ namespace Engine {
     ModuleCounter() : count(new boost::atomic<int>(0)) {}
     ModuleCounter(const ModuleCounter& rhs) : count(rhs.count)
     {
-      std::cout << "ModuleCounter copied" << std::endl;
+      //std::cout << "ModuleCounter copied" << std::endl;
     }
     void increment() const
     {
