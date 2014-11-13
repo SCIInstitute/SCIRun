@@ -153,8 +153,11 @@ bool FileOpenCommand::execute()
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
         progress.setValue(0);
+        std::cout << "````````````````````QtConcurrent::run" << std::endl;
         QFuture<int> future = QtConcurrent::run(load);
+        std::cout << "````````````````````future returned" << std::endl;
         progress.setValue(future.result());
+        std::cout << "````````````````````future evaluated" << std::endl;
       }
       openedFile_ = openedFile;
 
@@ -163,6 +166,7 @@ bool FileOpenCommand::execute()
       networkEditor_->centerOn(center);
 
       GuiLogger::Instance().log("File load done.");
+      std::cout << "`````````````````````````FileOpenCommand returning" << std::endl;
       return true;
     }
     else

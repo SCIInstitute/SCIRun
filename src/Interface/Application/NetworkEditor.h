@@ -175,6 +175,7 @@ Q_SIGNALS:
     void hideAllModuleUIs();
     void restoreAllModuleUIs();
     void updateViewport();
+    void connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);

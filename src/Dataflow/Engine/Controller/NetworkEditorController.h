@@ -44,12 +44,16 @@ namespace Engine {
 
   struct SCISHARE ModuleCounter
   {
-    ModuleCounter() : count(0) {}
-    ModuleCounter(const ModuleCounter& rhs) : count(0)
+    ModuleCounter() : count(new boost::atomic<int>(0)) {}
+    ModuleCounter(const ModuleCounter& rhs) : count(rhs.count)
     {
-      count.fetch_add(rhs.count);
+      std::cout << "ModuleCounter copied" << std::endl;
     }
-    mutable boost::atomic<int> count;
+    void increment() const
+    {
+      count->fetch_add(1);
+    }
+    mutable boost::shared_ptr<boost::atomic<int>> count;
   };
 
   typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle, ModuleCounter)> ModuleAddedSignalType;

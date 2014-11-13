@@ -53,6 +53,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Thread;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory,
   AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, NetworkEditorSerializationManager* nesm) :
@@ -228,6 +229,7 @@ void NetworkEditorController::removeConnection(const ConnectionId& id)
 
 boost::signals2::connection NetworkEditorController::connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber)
 {
+  std::cout << "connecting module added: " << &subscriber << std::endl;
   return moduleAdded_.connect(subscriber);
 }
 
@@ -284,6 +286,7 @@ NetworkFileHandle NetworkEditorController::saveNetwork() const
 
 void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
+  std::cout << "``````````````````````loadNetwork" << std::endl;
   if (xml)
   {
     try
@@ -291,7 +294,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
       theNetwork_ = conv.from_xml_data(xml->network);
       ModuleCounter modulesDone;
-      std::cout << "modules done: " << modulesDone.count << std::endl;
+      std::cout << "modules done: " << *modulesDone.count << std::endl;
       for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
         ModuleHandle module = theNetwork_->module(i);
@@ -299,10 +302,11 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         networkDoneLoading_(i);
         std::cout << "module added" << std::endl;
       }
+      std::cout << "modules done: " << *modulesDone.count << std::endl;
       std::cout << "111111111 waiting for modules added to GUI" << std::endl;
-      while (modulesDone.count < theNetwork_->nmodules())
+     // while (*modulesDone.count < theNetwork_->nmodules())
       {
-        //std::cout << "modules done: " << modulesDone << std::endl;
+        //std::cout << "modules done: " << *modulesDone.count << std::endl;
         // wait
       }
       std::cout << "222222222 done waiting for modules added to GUI" << std::endl;
@@ -318,6 +322,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
           connectionAdded_(cd);
         }
       }
+      std::cout << "``````````````````````````````````done with connections" << std::endl;
       if (serializationManager_)
       {
         serializationManager_->updateModulePositions(xml->modulePositions);
@@ -326,8 +331,9 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       }
       else
         Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;
-
+      std::cout << "`````````````````````````````````done with position update" << std::endl;
       networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
+      std::cout << "```````````````````````````````signal done loading" << std::endl;
     }
     catch (ExceptionBase& e)
     {
@@ -336,6 +342,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       throw;
     }
   }
+  std::cout << "`````````````````````````````````````````~loadNetwork" << std::endl;
 }
 
 void NetworkEditorController::clear()
