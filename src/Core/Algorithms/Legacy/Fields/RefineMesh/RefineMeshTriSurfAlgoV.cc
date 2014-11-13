@@ -28,6 +28,7 @@
 
 
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshTriSurfAlgoV.h> 
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Matrix.h>
@@ -42,24 +43,18 @@
 #include <algorithm>
 #include <set>
 
-ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
-ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
-ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
-
-
-
 ///////////////////////////////////////////////////////
-// Refine elements for a CurveMesh
+// Refine elements for a TriSurf 
 
 bool  
-RefineMeshCurveAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
+RefineMeshTriSurfAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
                        std::string select, double isoval)
 {
   /// Obtain information on what type of input field we have
   FieldInformation fi(input);
   
   /// Alter the input so it will become a QuadSurf
-  fi.make_curvemesh();
+  fi.make_trisurfmesh();
   output = CreateField(fi);
   
   if (output.get_rep() == 0)
@@ -73,7 +68,9 @@ RefineMeshCurveAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
   VMesh*  refined = output->vmesh();
   VField* rfield  = output->vfield();
 
-  VMesh::Node::array_type onodes(2);
+  VMesh::Node::array_type onodes(3);
+  
+  mesh->synchronize(Mesh::EDGES_E);
   
   // get all values, make computation easier
   VMesh::size_type num_nodes = mesh->num_nodes();
@@ -188,9 +185,9 @@ RefineMeshCurveAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
 
   std::vector<VMesh::index_type> enodes(mesh->num_edges(),0);
 
-  VMesh::Node::array_type nodes(2), nnodes(2);
+  VMesh::Node::array_type nodes(2);
   Point p0, p1,p2, p3, p;
-  VMesh::Elem::iterator be, ee;
+  VMesh::Edge::iterator be, ee;
   mesh->begin(be); mesh->end(ee);
 
   // add all additional nodes we need
@@ -203,22 +200,157 @@ RefineMeshCurveAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
       mesh->get_center(p1,nodes[1]);
     
       p = (p0.asVector() + p1.asVector()).asPoint()*0.5;
+    
       enodes[*be] = refined->add_point(p);
-
-      nnodes[0] = nodes[0];
-      nnodes[1] = enodes[*be];
-      refined->add_elem(nnodes);
-
-      nnodes[0] = enodes[*be];
-      nnodes[1] = nodes[1];
-      refined->add_elem(nnodes);
-
       if (field->basis_order() == 1) 
         ivalues.push_back(0.5*(ivalues[nodes[0]]+ivalues[nodes[1]]));
-      else if (field->basis_order() == 0) 
-	evalues.insert(evalues.end(),2,ivalues[*be]); 
     }
     ++be;
+  }
+
+
+  VMesh::Edge::array_type oedges(3);
+  VMesh::Node::array_type nnodes(3);
+
+  VMesh::Elem::iterator bi, ei;
+  mesh->begin(bi); mesh->end(ei);
+
+  unsigned int cnt = 0;
+  unsigned int loopcnt = 0;
+
+  VMesh::Elem::size_type sz; mesh->size(sz);
+
+  while (bi != ei)
+  {
+    cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; algo->update_progress(loopcnt,sz);  }
+
+    mesh->get_nodes(onodes, *bi);
+    mesh->get_edges(oedges, *bi);
+
+    VMesh::index_type i0 = onodes[0];
+    VMesh::index_type i1 = onodes[1];
+    VMesh::index_type i2 = onodes[2];
+    VMesh::index_type i3 = enodes[oedges[0]];
+    VMesh::index_type i4 = enodes[oedges[1]];
+    VMesh::index_type i5 = enodes[oedges[2]];
+
+    if (i3==0 && i4 == 0 && i5 == 0)
+    {
+      refined->add_elem(onodes);
+      if (field->basis_order() == 0) evalues.push_back(ivalues[*bi]); 
+    }
+    else if (i3 > 0 && i4 > 0 && i5 > 0)
+    {
+      nnodes[0] =i0; nnodes[1] = i3; nnodes[2] = i5;
+      refined->add_elem(nnodes);
+
+      nnodes[0] = i3; nnodes[1] = i1; nnodes[2] = i4;
+      refined->add_elem(nnodes);
+
+      nnodes[0] = i4; nnodes[1] = i2; nnodes[2] = i5;
+      refined->add_elem(nnodes);
+    
+      nnodes[0] = i3; nnodes[1] = i4; nnodes[2] = i5;
+      refined->add_elem(nnodes);
+      if (field->basis_order() == 0) evalues.insert(evalues.end(),4,ivalues[*bi]); 
+    }
+    else if (i3 == 0)
+    {
+      Point p0, p1, p4, p5; 
+      refined->get_center(p0,VMesh::Node::index_type(i0));
+      refined->get_center(p1,VMesh::Node::index_type(i1));
+      refined->get_center(p4,VMesh::Node::index_type(i4));
+      refined->get_center(p5,VMesh::Node::index_type(i5));
+
+      if ((p0-p4).length2() < (p1-p5).length2())
+      {
+        nnodes[0] =i4; nnodes[1] = i2; nnodes[2] = i5;
+        refined->add_elem(nnodes);
+
+        nnodes[0] =i4; nnodes[1] = i5; nnodes[2] = i0;
+        refined->add_elem(nnodes);
+      
+        nnodes[0] =i0; nnodes[1] = i1; nnodes[2] = i4;
+        refined->add_elem(nnodes);
+      }
+      else
+      {
+        nnodes[0] =i4; nnodes[1] = i2; nnodes[2] = i5;
+        refined->add_elem(nnodes);
+
+        nnodes[0] =i4; nnodes[1] = i5; nnodes[2] = i1;
+        refined->add_elem(nnodes);
+      
+        nnodes[0] =i0; nnodes[1] = i1; nnodes[2] = i5;
+        refined->add_elem(nnodes);      
+      }
+      if (field->basis_order() == 0) evalues.insert(evalues.end(),3,ivalues[*bi]); 
+    }
+    else if (i4 == 0)
+    {
+      Point p1, p2, p3, p5; 
+      refined->get_center(p1,VMesh::Node::index_type(i1));
+      refined->get_center(p2,VMesh::Node::index_type(i2));
+      refined->get_center(p3,VMesh::Node::index_type(i3));
+      refined->get_center(p5,VMesh::Node::index_type(i5));    
+ 
+      if ((p1-p5).length2() < (p2-p3).length2())
+      {   
+        nnodes[0] =i0; nnodes[1] = i3; nnodes[2] = i5;
+        refined->add_elem(nnodes);
+
+        nnodes[0] =i3; nnodes[1] = i1; nnodes[2] = i5;
+        refined->add_elem(nnodes);
+      
+        nnodes[0] =i1; nnodes[1] = i2; nnodes[2] = i5;
+        refined->add_elem(nnodes);
+      }
+      else
+      {
+        nnodes[0] =i0; nnodes[1] = i3; nnodes[2] = i5;
+        refined->add_elem(nnodes);
+
+        nnodes[0] =i3; nnodes[1] = i2; nnodes[2] = i5;
+        refined->add_elem(nnodes);
+      
+        nnodes[0] =i1; nnodes[1] = i2; nnodes[2] = i3;
+        refined->add_elem(nnodes);      
+      }
+      if (field->basis_order() == 0) evalues.insert(evalues.end(),3,ivalues[*bi]); 
+    }
+    else if (i5 == 0)
+    {
+      Point p2, p0, p4, p3; 
+      refined->get_center(p2,VMesh::Node::index_type(i2));
+      refined->get_center(p0,VMesh::Node::index_type(i0));
+      refined->get_center(p4,VMesh::Node::index_type(i4));
+      refined->get_center(p3,VMesh::Node::index_type(i3));    
+ 
+      if ((p2-p3).length2() < (p0-p4).length2())
+      {   
+        nnodes[0] =i1; nnodes[1] = i4; nnodes[2] = i3;
+        refined->add_elem(nnodes);
+
+        nnodes[0] =i3; nnodes[1] = i2; nnodes[2] = i0;
+        refined->add_elem(nnodes);
+      
+        nnodes[0] =i2; nnodes[1] = i3; nnodes[2] = i4;
+        refined->add_elem(nnodes);
+      }
+      else
+      {
+        nnodes[0] =i1; nnodes[1] = i4; nnodes[2] = i3;
+        refined->add_elem(nnodes);
+
+        nnodes[0] =i4; nnodes[1] = i2; nnodes[2] = i0;
+        refined->add_elem(nnodes);
+      
+        nnodes[0] =i0; nnodes[1] = i3; nnodes[2] = i4;
+        refined->add_elem(nnodes);      
+      }
+      if (field->basis_order() == 0) evalues.insert(evalues.end(),3,ivalues[*bi]); 
+    }
+    ++bi;
   }
 
   rfield->resize_values();
@@ -226,7 +358,6 @@ RefineMeshCurveAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
   if (rfield->basis_order() == 1) rfield->set_values(ivalues);
   rfield->copy_properties(field);
 
-  algo->algo_end(); return (true);
+  algo->algo_end(); 
+	return (true);
 }
-
-    

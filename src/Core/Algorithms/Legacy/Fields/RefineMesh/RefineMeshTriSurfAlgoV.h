@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHCURVEALGOV_H
-#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHCURVEALGOV_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTRISURFALGOV_H
+#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTRISURFALGOV_H 1
 
 // Datatypes that the algorithm uses
 #include <Core/Datatypes/DatatypeFwd.h> 
@@ -44,7 +44,7 @@ namespace SCIRun{
 				namespace Algorithms{
 						namespace Fields{
 
- bool  RefineMeshCurveAlgoV(FieldHandle input, FieldHandle& output, std::string select, double isoval);
+bool RefineMeshTriSurfAlgoV(FieldHandle input, FieldHandle& output, std::string select, double isoval); 
 
 								}}}}
 

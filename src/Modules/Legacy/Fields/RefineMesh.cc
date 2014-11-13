@@ -95,35 +95,3 @@ RefineMesh::execute()
 		#endif
   }
 }
-//
-//void RefineMesh::pushInputMeshFieldInfo(FieldHandle input) const
-//{
-//	/*	input->
-//		auto state = get_state();
-//		std::string name = input->properties().get_name();
-//		if (name.empty())
-//				name = "--- no name ---";
-//		state->setValue(Parameters::RefineMethod, name);
-//		std::string refMethod;
-//		if (input->vfield()->is_nodata()) refMethod = "Default";
-//		if (input->vfield()->is_constantdata()) refMethod = "Expand refinement volume to improve element quality";
-//		state->setValue(Parameters::RefineMethod, refMethod);
-//*/
-//		/*auto state = get_state();
-//		std::string name = input->properties().get_name();
-//		if (name.empty())
-//				name = "--- no name ---";
-//		state->setValue(Parameters::AddConstraints, name);
-//		std::string addCon;
-//		if (input->vfield()->is_nodata()) addCon = "Do not add constraint";
-//		if (input->vfield()->is_constantdata()) addCon = "Do not refine nodes/elements with values less than isovalue";
-//		if (input->vfield()->is_lineardata()) addCon = "Do not refine nodes/elements with values unequal to isovalue";
-//		if (input->vfield()->is_quadraticdata()) addCon = "Do not refine nodes/elements with values greater than isovalue";
-//		if (input->vfield()->is_cubicdata()) addCon = "Do not refine any elements";*/
-//		//state->setValue(Parameters::AddConstraints, addCon);
-//
-//		//state->setValue(Parameters::IsoValue, name);
-//		//std::string isoval;
-//		//if (input->matrix->) isoval = "0.0";
-//		//state->setValue(Parameters::InputType, isoval);
-//}

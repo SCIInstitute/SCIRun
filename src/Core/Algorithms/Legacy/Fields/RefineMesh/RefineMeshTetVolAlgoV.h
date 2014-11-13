@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H
-#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTETVOLALGOV_H
+#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTETVOLALGOV_H 1
 
 // Datatypes that the algorithm uses
 #include <Core/Datatypes/DatatypeFwd.h> 
@@ -43,28 +43,7 @@ namespace SCIRun{
 		namespace Core{
 				namespace Algorithms{
 						namespace Fields{
-
-ALGORITHM_PARAMETER_DECL(RefineMethod);
-ALGORITHM_PARAMETER_DECL(AddConstraints);
-ALGORITHM_PARAMETER_DECL(IsoValue);
-
-class SCISHARE RefineMeshAlgo : public AlgorithmBase
-{
-  public:  
-    /// Set defaults
-    RefineMeshAlgo();
-      /// Option for selecting which nodes to refine
-      //add_option("select","all","equal|lessthan|greaterthan|all|none");
-      //add_scalar("isoval",0.0);
-      
-      /// option only affecting hex refinement
-     // add_bool("hex_convex",false);
-		bool runImpl(FieldHandle input, Datatypes::Double isovalue, FieldHandle& output, Datatypes::MatrixHandle& mapping) const; 
-		bool runImpl(FieldHandle input, FieldHandle& output) const; 
-
-		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
-};
-
+bool RefineMeshTetVolAlgoV(FieldHandle input, FieldHandle& output, std::string select, double isoval); 
 								}}}}
 
 #endif
