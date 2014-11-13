@@ -39,6 +39,8 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   state_(state),
   pulling_(false),
   executeAction_(0),
+  shrinkAction_(0),
+  collapsed_(false),
   dock_(0)
 {
   setModal(false);
@@ -51,6 +53,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   }
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();
+  createShrinkAction();
 }
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
@@ -82,10 +85,32 @@ void ModuleDialogGeneric::createExecuteAction()
   connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
 }
 
+void ModuleDialogGeneric::createShrinkAction()
+{
+  shrinkAction_ = new QAction(this);
+  shrinkAction_->setText("Collapse");
+  //shrinkAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  connect(shrinkAction_, SIGNAL(triggered()), this, SLOT(toggleCollapse()));
+}
+
+void ModuleDialogGeneric::toggleCollapse()
+{
+  if (collapsed_)
+  {
+    shrinkAction_->setText("Collapse");
+  }
+  else
+  {
+    shrinkAction_->setText("Expand");
+  }
+  collapsed_ = !collapsed_;
+}
+
 void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e)
 {
   QMenu menu(this);
   menu.addAction(executeAction_);
+  menu.addAction(shrinkAction_);
   menu.exec(e->globalPos());
 
   QDialog::contextMenuEvent(e);
