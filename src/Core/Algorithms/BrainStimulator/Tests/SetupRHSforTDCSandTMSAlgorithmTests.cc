@@ -37,6 +37,7 @@
 #include <boost/lexical_cast.hpp>
 #include <vector>
 #include <iostream>
+#include <Core/Math/MiscMath.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -143,7 +144,7 @@ TEST(SetupRHSforTDCSandTMSAlgorithm, Correct)
   EXPECT_EQ(elc_contact_imp->ncols(),1);
      
   for (int i=1; i<lhs_knowns->nrows(); i++)
-   EXPECT_TRUE(isnan((*lhs_knowns)(i,0)));
+   EXPECT_TRUE(IsNan((*lhs_knowns)(i,0)));
    
   EXPECT_EQ((*lhs_knowns)(0,0), 0.0); 
   

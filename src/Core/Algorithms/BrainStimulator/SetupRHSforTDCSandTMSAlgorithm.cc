@@ -96,6 +96,9 @@ AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::SELECTMATRIXINDECES("SELECTM
 
 AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
 AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeImpedanceParameterName(int i) { return AlgorithmParameterName(Name("imp_elc"+boost::lexical_cast<std::string>(i)));}
+    
+const double SetupRHSforTDCSandTMSAlgorithm::electode_current_summation_bound = 1e-6;
+const double SetupRHSforTDCSandTMSAlgorithm::special_label = -4321;
 
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
 {
@@ -184,7 +187,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  VMesh*  mesh_vmesh = mesh->vmesh();
  VMesh::size_type mesh_num_nodes = mesh_vmesh->num_nodes();
  DenseMatrixHandle lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
-
+ 
  index_type refnode_number = get(Parameters::refnode).toInt();
  double normal_dot_product_bound_ = get(Parameters::normal_dot_product_bound).toDouble();
  double identical_node_location_differce = get(Parameters::pointdistancebound).toDouble();
