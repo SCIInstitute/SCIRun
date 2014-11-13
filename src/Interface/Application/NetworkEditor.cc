@@ -266,7 +266,6 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
 
   GuiLogger::Instance().log("Module added.");
-  //std::cout << "module done " << std::endl;
 }
 
 void NetworkEditor::bringToFront()

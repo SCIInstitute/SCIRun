@@ -48,8 +48,6 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
   controller_->connectNetworkExecutionStarts([&]() { executionStarted(); });
   controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1));
   controller_->connectNetworkDoneLoading(boost::bind(&NetworkEditorControllerGuiProxy::networkDoneLoading, this, _1));
-
-  //std::cout << "nec gui proxy loaded" << std::endl;
 }
 
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
