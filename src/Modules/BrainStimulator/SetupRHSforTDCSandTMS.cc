@@ -74,10 +74,10 @@ void SetupRHSforTDCSandTMSModule::execute()
   DenseMatrixHandle elc_sponge_location = matrix_convert::to_dense(getRequiredInput(ELECTRODE_SPONGE_LOCATION_AVR));
   
   // obtaining electrode values from state map
-  auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).getList();
+  auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).toVector();
   algo().set(Parameters::ELECTRODE_VALUES, elc_vals_from_state);
   
-  auto imp_vals_from_state = get_state()->getValue(Parameters::ImpedanceTableValues).getList();
+  auto imp_vals_from_state = get_state()->getValue(Parameters::ImpedanceTableValues).toVector();
   algo().set(Parameters::IMPEDANCE_VALUES, imp_vals_from_state);
  
   if (needToExecute())

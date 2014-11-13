@@ -111,8 +111,8 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
 {
   auto mesh = input.get<Field>(MESH);
 
-  auto all_elc_values = get(Parameters::ELECTRODE_VALUES).getList();
-  auto all_imp_elc_values = get(Parameters::IMPEDANCE_VALUES).getList();
+  auto all_elc_values = get(Parameters::ELECTRODE_VALUES).toVector();
+  auto all_imp_elc_values = get(Parameters::IMPEDANCE_VALUES).toVector();
   
   if (all_elc_values.size()!=all_imp_elc_values.size())
   {

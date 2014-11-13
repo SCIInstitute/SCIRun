@@ -73,7 +73,6 @@ namespace Algorithms {
     boost::filesystem::path toFilename() const;
     bool toBool() const;
     List toVector() const;
-    std::vector<Variable> getList() const;
     AlgoOption toOption() const;
 
     Datatypes::DatatypeHandle getDatatype() const;

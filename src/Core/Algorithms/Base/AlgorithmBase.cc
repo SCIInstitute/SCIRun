@@ -156,12 +156,6 @@ AlgoOption AlgorithmParameter::toOption() const
   return opt ? *opt : AlgoOption();
 }
 
-std::vector<Variable> AlgorithmParameter::getList() const
-{
-  const std::vector<Variable>* v = boost::get<std::vector<Variable>>(&value_);
-  return v ? *v : std::vector<Variable>();
-}
-
 std::vector<Variable> AlgorithmParameter::toVector() const
 {
   const std::vector<Variable>* v = boost::get<std::vector<Variable>>(&value_);
