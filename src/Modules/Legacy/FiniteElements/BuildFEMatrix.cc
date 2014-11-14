@@ -34,6 +34,7 @@
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun;
 
 BuildFEMatrix::BuildFEMatrix()
@@ -52,7 +53,6 @@ BuildFEMatrix::BuildFEMatrix()
 void BuildFEMatrix::execute()
 {
   auto field = getRequiredInput(InputField);
-
   auto conductivity = getOptionalInput(Conductivity_Table);
   
   if (needToExecute())
@@ -76,10 +76,7 @@ void BuildFEMatrix::execute()
     algo_.set_int("num_processors", num_proc);
 #endif
 
-    auto output = algo().run_generic(withInputData((InputField, field)));
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
-    (Conductivity_Table, conductivity)
-#endif
+    auto output = algo().run_generic(withInputData((InputField, field)(Conductivity_Table, optionalAlgoInput(conductivity))));
 
     sendOutputFromAlgorithm(Stiffness_Matrix, output);
   }

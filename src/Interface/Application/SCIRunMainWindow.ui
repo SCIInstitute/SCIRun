@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>852</height>
+    <height>890</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1114</width>
-         <height>477</height>
+         <width>1117</width>
+         <height>520</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -368,7 +368,7 @@
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>200</height>
+         <height>265</height>
         </size>
        </property>
        <property name="whatsThis">
@@ -398,6 +398,12 @@
            <width>531</width>
            <height>231</height>
           </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>531</width>
+           <height>231</height>
+          </size>
          </property>
          <property name="title">
           <string>Display Options</string>
