@@ -97,6 +97,7 @@ namespace Gui {
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
     void createShrinkAction();
+    void doCollapse();
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
     QAction* executeAction_;
@@ -104,6 +105,7 @@ namespace Gui {
     bool collapsed_;
     QString windowTitle_;
     QDockWidget* dock_;
+    QSize oldSize_;
   };
 
 }
