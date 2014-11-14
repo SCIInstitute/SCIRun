@@ -31,7 +31,8 @@
 
 // Datatypes that the algorithm uses
 #include <Core/Datatypes/DatatypeFwd.h> 
-
+#include <Core/Datatypes/Legacy/Field/VMesh.h> 
+#include <boost/unordered_map.hpp> 
 // Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
@@ -44,6 +45,52 @@ namespace SCIRun{
 				namespace Algorithms{
 						namespace Fields{
 
+struct edgepair_t
+		{
+      VMesh::index_type first;
+      VMesh::index_type second;
+    };
+
+struct edgepairequal
+{
+    bool operator()(const edgepair_t &a, const edgepair_t &b) const
+    {
+    return a.first == b.first && a.second == b.second;
+    }
+};
+
+struct edgepairless
+{
+    bool operator()(const edgepair_t &a, const edgepair_t &b)
+    {
+    return less(a, b);
+    }
+    static bool less(const edgepair_t &a, const edgepair_t &b)
+    {
+    return a.first < b.first || a.first == b.first && a.second < b.second;
+    }
+};
+
+struct edgepairhash
+		{
+				size_t operator()(const edgepair_t &a) const
+				{
+//#if defined(__ECC) || defined(_MSC_VER)
+						//hash_compare<unsigned int> h;
+//#else
+					  //hash<unsigned int> h;
+						//boost::hash <Key> h;  
+						//HashKey h; 
+//#endif
+				//		return h((a.first<<3) ^ a.second);
+				}
+				static const size_t bucket_size = 4;
+				static const size_t min_buckets = 8;
+				bool operator()(const edgepair_t & a, const edgepair_t & b) const
+				{
+						return edgepairless::less(a,b);
+				}
+		};
 
 class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
 {
@@ -53,32 +100,11 @@ class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
 	bool runImpl(FieldHandle input, FieldHandle& output) const; 
 	bool runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const; 
 	virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+	
+	typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
+
   private:
-	struct edgepair_t
-		{
-      VMesh::index_type first;
-      VMesh::index_type second;
-    };
 
-    struct edgepairequal
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b) const
-      {
-        return a.first == b.first && a.second == b.second;
-      }
-    };
-
-    struct edgepairless
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b)
-      {
-        return less(a, b);
-      }
-      static bool less(const edgepair_t &a, const edgepair_t &b)
-      {
-        return a.first < b.first || a.first == b.first && a.second < b.second;
-      }
-	  
 	VMesh::Node::index_type lookup(VMesh *refined,
                                  edge_hash_type &edgemap,
                                  VMesh::Node::index_type a,
@@ -103,7 +129,7 @@ class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
 							for (int i = 0; i < 4; i++)
 							{
 							  refined->get_point(p, onodes[i]);
-							  result += (p * w[i]).asVector();
+							  result += (p * w[i]);//.asVector();
 							}
 							return result;  
 						}							 
@@ -124,58 +150,16 @@ class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
 						}
 						
 						
-	void dice(VMesh *refined, edge_hash_type &emap,
+	void dice(VMesh *refined, 
+						 edge_hash_type &emap,
              VMesh::Node::array_type onodes,
              VMesh::index_type index, 
              VMesh::mask_type mask,
              VMesh::size_type maxnode,
              std::vector<double>& ivalues,
              std::vector<double>& evalues,
-			double vv,
-			int basis_order);
-			    #ifdef HAVE_HASH_MAP
-      struct edgepairhash
-      {
-        unsigned int operator()(const edgepair_t &a) const
-        {
-        #if defined(__ECC) || defined(_MSC_VER)
-          hash_compare<unsigned int> h;
-        #else
-          hash<unsigned int> h;
-        #endif
-          return h((a.first<<3) ^ a.second);
-        }
-        
-        #if defined(__ECC) || defined(_MSC_VER)
-
-        // These are particularly needed by ICC's hash stuff
-        static const size_t bucket_size = 4;
-        static const size_t min_buckets = 8;
-        
-        // This is a less than function.
-        bool operator()(const edgepair_t & a, const edgepair_t & b) const 
-        {
-          return edgepairless::less(a,b);
-        }
-        #endif // endif ifdef __ICC
-      };
-
-    #if defined(__ECC) || defined(_MSC_VER)
-      typedef hash_map<edgepair_t, 
-                       VMesh::Node::index_type, 
-                       edgepairhash> edge_hash_type;
-    #else
-      typedef hash_map<edgepair_t,
-                       VMesh::Node::index_type,
-                       edgepairhash,
-                       edgepairequal> edge_hash_type;
-    #endif
-    
-    #else
-      typedef std::map<edgepair_t,
-                  VMesh::Node::index_type,
-                  edgepairless> edge_hash_type;
-    #endif
+						 double vv,
+						 int basis_order);
 
 
   VMesh::Node::index_type lookup(VMesh *refined,

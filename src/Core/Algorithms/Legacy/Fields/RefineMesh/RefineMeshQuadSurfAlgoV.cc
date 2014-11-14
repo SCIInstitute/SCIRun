@@ -31,6 +31,7 @@
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshQuadSurfAlgoV.h> 
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h> 
 //#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
 // For mapping matrices
 //#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrix.h>
@@ -258,9 +259,16 @@ RefineMeshQuadSurfAlgoV::dice(VMesh *refined,
 
 
 bool
+		RefineMeshQuadSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output) const
+{
+		std::string select;
+		double isoval; 
+		return runImpl(input, output, select, isoval); 
+}
+bool
 RefineMeshQuadSurfAlgoV::
-runImpl(AlgoBase* algo, FieldHandle input, FieldHandle& output,
-                  std::string select, double isoval)
+runImpl(FieldHandle input, FieldHandle& output,
+                  std::string select, double isoval) const
 {
   // Obtain information on what type of input field we have
   FieldInformation fi(input);
@@ -268,10 +276,10 @@ runImpl(AlgoBase* algo, FieldHandle input, FieldHandle& output,
   fi.make_quadsurfmesh();
   output = CreateField(fi);
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
-    algo->error("Could not create an output field");
-    algo->algo_end(); return (false);
+    error("Could not create an output field");
+    return (false);
   }
 
   VField* field   = input->vfield();
@@ -333,8 +341,8 @@ runImpl(AlgoBase* algo, FieldHandle input, FieldHandle& output,
     }
     else
     {
-      algo->error("Unknown region selection method encountered");
-      algo->algo_end(); return (false);
+      error("Unknown region selection method encountered");
+      return (false);
     }
   }
   else if (field->basis_order() == 1)
@@ -368,8 +376,8 @@ runImpl(AlgoBase* algo, FieldHandle input, FieldHandle& output,
     }    
     else
     {
-      algo->error("Unknown region selection method encountered");
-      algo->algo_end(); return (false);
+      error("Unknown region selection method encountered");
+      return (false);
     }
   }
   else
@@ -440,8 +448,9 @@ runImpl(AlgoBase* algo, FieldHandle input, FieldHandle& output,
   rfield->resize_values();
   if (rfield->basis_order() == 0) rfield->set_values(evalues);
   if (rfield->basis_order() == 1) rfield->set_values(ivalues);
-  rfield->copy_properties(field);
-
-  algo->algo_end(); return (true);
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+	rfield->copy_properties(field);
+  #endif
+  return (true);
 }
 

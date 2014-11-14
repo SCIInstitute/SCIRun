@@ -245,7 +245,7 @@ RefineMeshHexVolAlgoV::dice(VMesh *refined,
 bool
 RefineMeshHexVolAlgoV::
 runImpl(FieldHandle input, FieldHandle& output,
-               std::string select, double isoval)//convex???
+               std::string select, double isoval) const//convex???
 {
   // Obtain information on what type of input field we have
   FieldInformation fi(input);

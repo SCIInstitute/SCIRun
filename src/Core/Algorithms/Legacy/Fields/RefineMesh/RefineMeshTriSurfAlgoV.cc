@@ -31,24 +31,31 @@
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshTriSurfAlgoV.h> 
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h> 
+//#include <Core/Datatypes/Legacy/Field/Matrix.h>
 // For mapping matrices
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Algorithms/Base/AlgorithmPrecondition.h>
+//#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 //STL classes needed
-#include <sci_hash_map.h>
+//#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
 
 ///////////////////////////////////////////////////////
 // Refine elements for a TriSurf 
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 
 bool  
-RefineMeshTriSurfAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
-                       std::string select, double isoval)
+RefineMeshTriSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output,
+                       std::string select, double isoval)const
 {
   /// Obtain information on what type of input field we have
   FieldInformation fi(input);
@@ -57,10 +64,10 @@ RefineMeshTriSurfAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
   fi.make_trisurfmesh();
   output = CreateField(fi);
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
-    algo->error("RefineMesh: Could not create an output field");
-    algo->algo_end(); return (false);
+    error("RefineMesh: Could not create an output field");
+    return (false);
   }
 
   VField* field   = input->vfield();
@@ -125,8 +132,8 @@ RefineMeshTriSurfAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
     }
     else
     {
-      algo->error("RefineMesh: Unknown region selection method encountered");
-      algo->algo_end(); return (false);
+      error("RefineMesh: Unknown region selection method encountered");
+      return (false);
     }
   }
   else if (field->basis_order() == 1)
@@ -160,8 +167,8 @@ RefineMeshTriSurfAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
     }    
     else
     {
-      algo->error("RefineMesh: Unknown region selection method encountered");
-      algo->algo_end(); return (false);
+     error("RefineMesh: Unknown region selection method encountered");
+     return (false);
     }
 
   }
@@ -356,8 +363,8 @@ RefineMeshTriSurfAlgoV(AlgoBase* algo, FieldHandle input, FieldHandle& output,
   rfield->resize_values();
   if (rfield->basis_order() == 0) rfield->set_values(evalues);
   if (rfield->basis_order() == 1) rfield->set_values(ivalues);
-  rfield->copy_properties(field);
-
-  algo->algo_end(); 
-	return (true);
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+	rfield->copy_properties(field);
+	#endif
+  return (true);
 }

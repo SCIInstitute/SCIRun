@@ -44,8 +44,12 @@ namespace SCIRun{
 				namespace Algorithms{
 						namespace Fields{
 
- bool  RefineMeshCurveAlgoV(FieldHandle input, FieldHandle& output, std::string select, double isoval);
-
+class RefineMeshCurveAlgoV : public AlgorithmBase
+{
+		RefineMeshCurveAlgoV(); 
+		bool  runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const; 
+		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+}
 								}}}}
 
 #endif

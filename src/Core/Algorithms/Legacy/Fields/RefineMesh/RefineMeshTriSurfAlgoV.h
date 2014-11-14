@@ -38,14 +38,19 @@
 // for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
-
 namespace SCIRun{
 		namespace Core{
 				namespace Algorithms{
 						namespace Fields{
 
-bool RefineMeshTriSurfAlgoV(FieldHandle input, FieldHandle& output, std::string select, double isoval); 
+class RefineMeshTriSurfAlgoV : public AlgorithmBase
+{
+public:
+		RefineMeshTriSurfAlgoV(); 
+		bool RefineMeshTriSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval)const; 
+		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 
+}
 								}}}}
 
 #endif

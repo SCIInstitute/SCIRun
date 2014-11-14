@@ -150,7 +150,8 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   
   if (fi.is_tet_element())
   {
-    return(RefineMeshTetVolAlgoV(input,output,addCon,isoVal));
+			RefineMeshTetVolAlgoV algo; 
+			return(algo.runImpl(input,output,addCon,isoVal));
   }
 
   error("No refinement method has been implemented for this type of mesh");
