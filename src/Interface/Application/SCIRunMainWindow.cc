@@ -217,9 +217,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   makeFilterButtonMenu();
 
-  connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
-  connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
-  connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
+  //connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
+  //connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
+  //connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   if (newInterface())
     networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
 
@@ -1161,7 +1161,9 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     userDataLineEdit_ <<
     userDataPushButton_ <<
     dataSetGroupBox_ <<
-    optionsGroupBox_;
+    optionsGroupBox_ <<
+    networkEditorMiniViewLabel_ <<
+    miniviewTextLabel_;
 
   Q_FOREACH(QAction* a, nonfunctioningActions)
     a->setVisible(false);
