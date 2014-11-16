@@ -64,9 +64,15 @@ const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODE_SPONGE_LOCATION
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::COILS_FIELD("COILS_FIELD");
 const AlgorithmInputName ElectrodeCoilSetupAlgorithm::LOCATIONS("LOCATIONS");
 
-VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseMatrixHandle locations, std::vector<FieldHandle> input) const
+ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
 {
-  Variable::List tmp;
+  using namespace Parameters;
+  addParameter(TableValues, 0);
+}
+
+
+VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseMatrixHandle locations, const std::vector<FieldHandle>& input) const
+{
   Variable::List table;
   if (locations->ncols()!=3)
   {
@@ -75,22 +81,33 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
   
   for (int i=0;i<locations->nrows();i++)
   {  
-   tmp += makeVariable("Input #", "???"), 
+   Variable::List tmp;
+   tmp += 
+     makeVariable("#Input", boost::str(boost::format("%d") % input.size())),
+     makeVariable("Type", boost::str(boost::format("%d") % 0)),
      makeVariable("X", boost::str(boost::format("%.3f") % (* locations)(i,0))),
      makeVariable("Y", boost::str(boost::format("%.3f") % (* locations)(i,1))),
      makeVariable("Z", boost::str(boost::format("%.3f") % (* locations)(i,2))),
-     makeVariable("RX", "???"),
-     makeVariable("RY", "???"),
-     makeVariable("RZ", "???"),
-     makeVariable("thickness", "???"),
-     makeVariable("Info", "???");     
-     table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp)); 
+     makeVariable("NX", boost::str(boost::format("%s") % "???")),
+     makeVariable("NY", boost::str(boost::format("%s") % "???")),
+     makeVariable("NZ", boost::str(boost::format("%s") % "???")),
+     makeVariable("thickness",boost::str(boost::format("%s") % "???")); 
+     table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp));   
   }  
- 
   VariableHandle output(new Variable(Name("Table"), table));
   
   return output;
 }
+
+boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::run(const FieldHandle scalp, const DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const
+{
+ VariableHandle table = fill_table(scalp, locations, elc_coil_proto);
+
+ DenseMatrixHandle elc_sponge_locations;
+ FieldHandle coils_field;
+ 
+ return boost::make_tuple(table, elc_sponge_locations, coils_field);
+} 
 
 
 AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& input) const
@@ -113,36 +130,11 @@ AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& i
   {
     THROW_ALGORITHM_PROCESSING_ERROR(" At least one prototypical coil (POINTMESH) or electrode (TRISURFMESH) definition as a field input must be provided.");
   }
-  
-  VariableHandle table = fill_table(scalp, locations, elc_coil_proto);
-  
-  /*auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
-  auto tri2 = input.get<Field>(ELECTRODE_TRIANGULATION2);
-  auto coil = input.get<Field>(COIL);
-  auto coil2 = input.get<Field>(COIL2);
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(pos_orient, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri2, "ELECTRODE_TRIANGULATION2 input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil, "COIL input field");
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(coil2, "COIL2 input field");*/
-  //old-style run call, just put algorithm code here
-  //auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).toInt()));
-  // CODE HERE
+ 
+  VariableHandle table;
   DenseMatrixHandle elc_sponge_loc_avr;
   FieldHandle coils_field;
-  //Algorithm starts here:
-  //VField* vfield = elc_coil_pos_and_normal->vfield();
-  // VMesh*  vmesh  = pos_orient->vmesh();
- 
-   //std::cout << "a: " << vmesh->num_nodes() << std::endl;
-   //for (int i=0;i<vmesh->num_nodes();;i++)
-   //{
-   
-   
-   //}
-  //
-
+  boost::tie(table, elc_sponge_loc_avr, coils_field) = run(scalp, locations, elc_coil_proto);
 
   AlgorithmOutput output;
   output[ELECTRODE_SPONGE_LOCATION_AVR] = elc_sponge_loc_avr;
