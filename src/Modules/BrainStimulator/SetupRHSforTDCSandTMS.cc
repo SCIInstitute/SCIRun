@@ -25,53 +25,83 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#include <iostream>
-#include <Core/Datatypes/String.h>
-#include <Core/Datatypes/Scalar.h>
+
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <vector>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
 SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookupInfo("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun"))
 {
- INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION2);
- INITIALIZE_PORT(COIL);
- INITIALIZE_PORT(COIL2);
- INITIALIZE_PORT(ELECTRODES_FIELD);
- INITIALIZE_PORT(COILS_FIELD);
+ INITIALIZE_PORT(MESH);
+ INITIALIZE_PORT(SCALP_TRI_SURF_MESH);
+ INITIALIZE_PORT(ELECTRODE_TRI_SURF_MESH);
+ INITIALIZE_PORT(ELECTRODE_SPONGE_LOCATION_AVR);
+ INITIALIZE_PORT(LHS_KNOWNS);
+ INITIALIZE_PORT(ELECTRODE_ELEMENT);
+ INITIALIZE_PORT(ELECTRODE_ELEMENT_TYPE);
+ INITIALIZE_PORT(ELECTRODE_ELEMENT_DEFINITION);
+ INITIALIZE_PORT(ELECTRODE_CONTACT_IMPEDANCE);
+ INITIALIZE_PORT(RHS);
+ INITIALIZE_PORT(ELECTRODE_SPONGE_SURF);
+ INITIALIZE_PORT(SELECTMATRIXINDECES);
 }
 
 void SetupRHSforTDCSandTMSModule::setStateDefaults()
 {
-  /// @todo
+  auto state = get_state();
+  setStateIntFromAlgo(Parameters::refnode);
+  setStateDoubleFromAlgo(Parameters::normal_dot_product_bound);
+  setStateDoubleFromAlgo(Parameters::pointdistancebound);
+  setStateIntFromAlgo(Parameters::number_of_electrodes);
 }
 
 void SetupRHSforTDCSandTMSModule::execute()
-{
-  auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
-   // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).toInt();
-
-  //algorithm parameter
-  //algo_->set(Variables::AppendMatrixOption, param);
- 
+{ 
+  auto mesh = getRequiredInput(MESH);
+  auto scalp_tri_surf = getRequiredInput(SCALP_TRI_SURF_MESH);
+  auto elc_tri_surf = getRequiredInput(ELECTRODE_TRI_SURF_MESH);
+    
+  DenseMatrixHandle elc_sponge_location = matrix_convert::to_dense(getRequiredInput(ELECTRODE_SPONGE_LOCATION_AVR));
   
-  //algorithm input and run
-  auto output = algo().run_generic(withInputData((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_TRIANGULATION, elc_tri_mesh)));
-
-  //algorithm output
-  sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
-  sendOutputFromAlgorithm(COILS_FIELD, output);
+  // obtaining electrode values from state map
+  auto elc_vals_from_state = get_state()->getValue(Parameters::ElectrodeTableValues).toVector();
+  algo().set(Parameters::ELECTRODE_VALUES, elc_vals_from_state);
+  
+  auto imp_vals_from_state = get_state()->getValue(Parameters::ImpedanceTableValues).toVector();
+  algo().set(Parameters::IMPEDANCE_VALUES, imp_vals_from_state);
+ 
+  if (needToExecute())
+  {
+    update_state(Executing);
+    auto state = get_state();
+    state->setValue(Parameters::refnode, get_state()->getValue(Parameters::refnode).toInt());
+    state->setValue(Parameters::normal_dot_product_bound, get_state()->getValue(Parameters::normal_dot_product_bound).toDouble());
+    state->setValue(Parameters::pointdistancebound, get_state()->getValue(Parameters::pointdistancebound).toDouble());
+        
+    int nr_elec=elc_sponge_location->nrows(); /// get the number of electrodes in the first execution to update the GUI
+    if (elc_sponge_location && nr_elec>=2)
+    {
+     state->setValue(Parameters::number_of_electrodes, nr_elec);
+    }
+    
+    auto output = algo().run_generic(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
+    sendOutputFromAlgorithm(LHS_KNOWNS, output);
+    sendOutputFromAlgorithm(ELECTRODE_ELEMENT, output);
+    sendOutputFromAlgorithm(ELECTRODE_ELEMENT_TYPE, output);
+    sendOutputFromAlgorithm(ELECTRODE_ELEMENT_DEFINITION, output);
+    sendOutputFromAlgorithm(ELECTRODE_CONTACT_IMPEDANCE, output);
+    sendOutputFromAlgorithm(RHS, output);
+    sendOutputFromAlgorithm(ELECTRODE_SPONGE_SURF, output);
+    sendOutputFromAlgorithm(SELECTMATRIXINDECES, output);
+  }
 }

@@ -26,37 +26,66 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@file SetupRHSforTDCSandTMSAlgorithm
+///@brief 
+/// This module sets up tDCS by providing the right hand side vector (parameterized by module GUI) and inputs for the modules: AddKnownsToLinearSystem, BuildTDCSMatrix.
+///
+///@author
+/// Moritz Dannhauer, Spencer Frisby
+///
+///@details
+/// .
+/// 
+
 #ifndef ALGORITHMS_MATH_SETUPRHSFORTDCSANDTMSALGORITHM_H
 #define ALGORITHMS_MATH_SETUPRHSFORTDCSANDTMSALGORITHM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
+  ALGORITHM_PARAMETER_DECL(ImpedanceTableValues);
+  ALGORITHM_PARAMETER_DECL(ElectrodeTableValues);
+  ALGORITHM_PARAMETER_DECL(ELECTRODE_VALUES);
+  ALGORITHM_PARAMETER_DECL(IMPEDANCE_VALUES);
+  ALGORITHM_PARAMETER_DECL(refnode);
+  ALGORITHM_PARAMETER_DECL(normal_dot_product_bound);
+  ALGORITHM_PARAMETER_DECL(pointdistancebound);
+  ALGORITHM_PARAMETER_DECL(number_of_electrodes);
   
   class SCISHARE SetupRHSforTDCSandTMSAlgorithm : public AlgorithmBase
   {
   public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
+    SetupRHSforTDCSandTMSAlgorithm();
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
-  private:
-  
+    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle, Datatypes::DenseMatrixHandle> run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc,int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
     
+    //static AlgorithmParameterName number_of_electrodes();
+    
+    static AlgorithmInputName MESH;
+    static AlgorithmInputName SCALP_TRI_SURF_MESH;
+    static AlgorithmInputName ELECTRODE_TRI_SURF_MESH;
+    static AlgorithmInputName ELECTRODE_SPONGE_LOCATION_AVR;    
+    static AlgorithmOutputName ELECTRODE_ELEMENT;
+    static AlgorithmOutputName ELECTRODE_ELEMENT_TYPE;
+    static AlgorithmOutputName ELECTRODE_ELEMENT_DEFINITION;
+    static AlgorithmOutputName ELECTRODE_CONTACT_IMPEDANCE;
+    static AlgorithmOutputName LHS_KNOWNS;
+    static AlgorithmOutputName RHS;
+    static AlgorithmOutputName SELECTMATRIXINDECES;
+    static AlgorithmOutputName ELECTRODE_SPONGE_SURF;
+    
+    static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
+    static Core::Algorithms::AlgorithmParameterName ElecrodeImpedanceParameterName(int i);
+  private:  
+    static const double special_label;
+    static const double electode_current_summation_bound;
+    SCIRun::Core::Datatypes::DenseMatrixHandle create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const;
+    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle> create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
   };
 
 }}}}
