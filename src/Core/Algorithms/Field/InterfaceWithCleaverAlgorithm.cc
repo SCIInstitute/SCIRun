@@ -191,7 +191,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
         }
       } else
       {
-       THROW_ALGORITHM_INPUT_ERROR(" Input field needs to be a structured mesh (best would be a LatVol) with float values defnied on the elements. "); 
+       THROW_ALGORITHM_INPUT_ERROR(" Input field needs to be a structured mesh (best would be a LatVol) with float values defnied on mesh nodes. "); 
       }
 
     }

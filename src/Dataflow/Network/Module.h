@@ -688,7 +688,7 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name, const std::string& port4Name, const std::string& port5Name, const std::string& port6Name, const std::string& port7Name)
     {
       auto ports = Has7OutputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2, PortTypeTag3, PortTypeTag4, PortTypeTag5, PortTypeTag6>::outputPortDescription(port0Name, port1Name, port2Name, port3Name, port4Name, port5Name, port6Name);
-      ports.push_back(Has1OutputPort<PortTypeTag6>::outputPortDescription(port7Name)[0]);
+      ports.push_back(Has1OutputPort<PortTypeTag7>::outputPortDescription(port7Name)[0]);
       return ports;
     }
   };
@@ -700,7 +700,7 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name, const std::string& port4Name, const std::string& port5Name, const std::string& port6Name, const std::string& port7Name, const std::string& port8Name)
     {
       auto ports = Has8OutputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2, PortTypeTag3, PortTypeTag4, PortTypeTag5, PortTypeTag6, PortTypeTag7>::outputPortDescription(port0Name, port1Name, port2Name, port3Name, port4Name, port5Name, port6Name, port7Name);
-      ports.push_back(Has1OutputPort<PortTypeTag6>::outputPortDescription(port8Name)[0]);
+      ports.push_back(Has1OutputPort<PortTypeTag8>::outputPortDescription(port8Name)[0]);
       return ports;
     }
   };
