@@ -34,10 +34,13 @@
 
 // Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 // for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
+using namespace SCIRun::Core::Geometry;
 
 namespace SCIRun{
 		namespace Core{
@@ -46,10 +49,11 @@ namespace SCIRun{
 
 class RefineMeshCurveAlgoV : public AlgorithmBase
 {
+public: 
 		RefineMeshCurveAlgoV(); 
 		bool  runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const; 
 		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
-}
+};
 								}}}}
 
 #endif

@@ -108,9 +108,7 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     output = input;
     return (true); 
   }
-
-  FieldInformation fi(input);
-  
+	  
   if (fi.is_pnt_element() || fi.is_prism_element())
   {
     error("This algorithm does not support point or prism meshes");
@@ -140,12 +138,14 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 
   if (fi.is_crv_element())
   {
-    return(RefineMeshCurveAlgoV(input,output,addCon,isoVal));
+			RefineMeshCurveAlgoV algo; 
+			return(algo.runImpl(input,output,addCon,isoVal));
   }
   
   if (fi.is_tri_element())
   {
-    return(RefineMeshTriSurfAlgoV(input,output,addCon,isoVal));
+			RefineMeshTriSurfAlgoV algo; 
+			return(algo.runImpl(input,output,addCon,isoVal));
   }
   
   if (fi.is_tet_element())

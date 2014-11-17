@@ -29,8 +29,8 @@
 
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshHexVolAlgoV.h> 
-#include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/GeometryPrimitives/Point.h>
 //#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
 // For mapping matrices
 //#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrix.h>
@@ -53,6 +53,286 @@ using namespace SCIRun::Core::Logging;
 ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
 ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
 ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
+
+Point RIinterpolate(VMesh *refined,
+                        VMesh::Node::array_type& onodes,
+                        const Point &coordsp)  {
+      Point result(0.0, 0.0, 0.0);
+    
+      double w[8];
+      const double x = coordsp.x(), y = coordsp.y(), z = coordsp.z();
+      w[0] = -((-1 + x)*(-1 + y)*(-1 + z));
+      w[1] = x*(-1 + y)*(-1 + z);
+      w[2] = -(x*y*(-1 + z));
+      w[3] = (-1 + x)*y*(-1 + z);
+      w[4] = (-1 + x)*(-1 + y)*z;
+      w[5] = -(x*(-1 + y)*z);
+      w[6] = x*y*z;
+      w[7] = -((-1 + x)*y*z);
+
+      Point p;
+      for (int i = 0; i < 8; i++)
+      {
+        refined->get_point(p, onodes[i]);
+        result += (p * w[i]).asVector();
+      }
+      
+      return result;
+    };
+						
+double RIinterpolateV(std::vector<double>& ivalues,
+                        VMesh::Node::array_type& onodes,
+                        const Point &coordsp)
+		{
+      double w[8];
+      const double x = coordsp.x(), y = coordsp.y(), z = coordsp.z();
+      w[0] = -((-1 + x)*(-1 + y)*(-1 + z));
+      w[1] = x*(-1 + y)*(-1 + z);
+      w[2] = -(x*y*(-1 + z));
+      w[3] = (-1 + x)*y*(-1 + z);
+      w[4] = (-1 + x)*(-1 + y)*z;
+      w[5] = -(x*(-1 + y)*z);
+      w[6] = x*y*z;
+      w[7] = -((-1 + x)*y*z);
+
+      return (w[0]*ivalues[onodes[0]] + w[1]*ivalues[onodes[1]] +
+        w[2]*ivalues[onodes[2]] + w[3]*ivalues[onodes[3]] +
+        w[4]*ivalues[onodes[4]] + w[5]*ivalues[onodes[5]] +
+        w[6]*ivalues[onodes[6]] + w[7]*ivalues[onodes[7]]);
+    };
+
+VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point(VMesh *refined,
+                                      VMesh::Node::array_type &nodes,
+                                      const int *reorder, 
+                                      unsigned int a, 
+                                      unsigned int b,
+                                      double factor,
+                                      std::vector<double>& ivalues,
+                                      int basis_order)
+    {
+      Point coordsp;
+      
+      unsigned int ra = reorder[a];
+      unsigned int rb = reorder[b];
+      coordsp = Interpolate(hcoords[ra], hcoords[rb], factor);
+      
+      const Point inbetween = RIinterpolate(refined, nodes, coordsp);
+      if (basis_order == 1) ivalues.push_back(RIinterpolateV(ivalues,nodes,coordsp));
+      return refined->add_point(inbetween);
+    };
+
+VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point_convex(VMesh *refined,
+                                      VMesh::Node::array_type &nodes,
+                                      const int *reorder, 
+                                      VMesh::index_type a, 
+                                      VMesh::index_type b,
+                                      std::vector<double>& ivalues,
+                                      int basis_order)
+    {
+      VMesh::index_type ra = reorder[a];
+      VMesh::index_type rb = reorder[b];
+      Point coordsp = Interpolate(hcoords[ra], hcoords[rb], 1.0/3.0);
+      
+      const Point inbetween = RIinterpolate(refined, nodes, coordsp);
+
+      if (basis_order == 1) ivalues.push_back(RIinterpolateV(ivalues,nodes,coordsp));
+      return refined->add_point(inbetween);
+    };
+
+
+VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point_convex(VMesh *refined,
+                                      VMesh::Node::array_type &nodes,
+                                      Point coordsp,
+                                      std::vector<double>& ivalues,
+                                      int basis_order)
+    {
+      const Point inbetween = RIinterpolate(refined, nodes, coordsp);
+      if (basis_order == 1) ivalues.push_back(RIinterpolateV(ivalues,nodes,coordsp));
+      return refined->add_point(inbetween);
+    };
+
+
+VMesh::Node::index_type RefineMeshHexVolAlgoV::lookup(VMesh *refined,
+                                   hash_map_type &edgemap,
+                                   VMesh::Node::array_type &nodes,
+                                   const int *reorder, 
+                                   VMesh::index_type a, 
+                                   VMesh::index_type b,
+                                   double factor,
+                                   std::vector<double>& ivalues,
+                                   int basis_order)
+    {
+      edgepair_t ep;
+      ep.first = nodes[reorder[a]]; 
+      ep.second = nodes[reorder[b]];
+
+			hash_map_type::iterator it, it_end; 
+			it = edgemap.begin(); 
+			it_end = edgemap.end();
+      if (it == it_end)
+      {
+        const VMesh::Node::index_type newnode = add_point(refined, nodes, reorder, a, b, factor,ivalues,basis_order);
+        edgemap[ep.first] = newnode; 
+        return newnode;
+      }
+      else
+      {
+					return (*it).second;
+      }
+    };
+
+VMesh::Node::index_type lookup_convex(VMesh *refined,
+                                   hash_map_type &edgemap,
+                                   VMesh::Node::array_type &onodes,
+                                   const int *reorder, 
+                                   VMesh::index_type a, 
+                                   VMesh::index_type b,
+                                   std::vector<double>& ivalues,
+                                   int basis_order)
+    {
+      edgepair_t ep;
+      ep.first = onodes[reorder[a]]; 
+      ep.second = onodes[reorder[b]];
+			hash_map_type::iterator it, it_end; 
+			it = edgemap.begin();
+			it_end = edgemap.end(); 
+
+      if (it == it_end)
+      {
+        const VMesh::Node::index_type newnode =
+          add_point_convex(refined, onodes, reorder, a, b,ivalues,basis_order);
+				edgemap[ep] = newnode;
+        return newnode;
+      }
+      else
+      {
+        return (*it).second;
+      }
+    };
+
+void dice(VMesh *refined, 
+              hash_map_type &emap,
+              VMesh::Node::array_type nodes,
+              VMesh::index_type index, 
+              VMesh::mask_type mask,
+              std::vector<double>& ivalues,
+              std::vector<double>& evalues,
+              double vv,
+              int basis_order);
+
+unsigned int iedge(unsigned int a, unsigned int b)
+    {
+      return (1<<(7-a)) | (1<<(7-b));
+    };
+
+    unsigned int iface(unsigned int a, unsigned int b,
+                       unsigned int c, unsigned int d)
+    {
+      return iedge(a, b) | iedge(c, d);
+    };
+
+    unsigned int iface3(unsigned int a, unsigned int b, unsigned int c)
+    {
+      return (1<<(7-a)) | (1<<(7-b)) | (1<<(7-c));
+    };
+
+    void RefineMeshHexVolAlgoV::set_table(int i, int pattern, int reorder)
+    {
+      pattern_table[i][0] = pattern;
+      pattern_table[i][1] = reorder;
+    };
+
+    void RefineMeshHexVolAlgoV::init_pattern_table()
+    {
+      for (int i = 0; i < 256; i++)
+      {
+        set_table(i, -1, 0);
+      }
+
+      set_table(0, 0, 0);
+
+      // Add corners
+      set_table(1, 1, 7);
+      set_table(2, 1, 6);
+      set_table(4, 1, 5);
+      set_table(8, 1, 4);
+      set_table(16, 1, 3);
+      set_table(32, 1, 2);
+      set_table(64, 1, 1);
+      set_table(128, 1, 0);
+
+      // Add edges
+      set_table(iedge(0, 1), 2, 0);
+      set_table(iedge(1, 2), 2, 1);
+      set_table(iedge(2, 3), 2, 2);
+      set_table(iedge(3, 0), 2, 3);
+      set_table(iedge(4, 5), 2, 5);
+      set_table(iedge(5, 6), 2, 6);
+      set_table(iedge(6, 7), 2, 7);
+      set_table(iedge(7, 4), 2, 4);
+      set_table(iedge(0, 4), 2, 8);
+      set_table(iedge(1, 5), 2, 9);
+      set_table(iedge(2, 6), 2, 10);
+      set_table(iedge(3, 7), 2, 11);
+
+      set_table(iface(0, 1, 2, 3), 4, 0);
+      set_table(iface(0, 1, 5, 4), 4, 12);
+      set_table(iface(1, 2, 6, 5), 4, 9);
+      set_table(iface(2, 3, 7, 6), 4, 13);
+      set_table(iface(3, 0, 4, 7), 4, 8);
+      set_table(iface(4, 5, 6, 7), 4, 7);
+
+      set_table(iface3(0, 1, 2), -4, 0);
+      set_table(iface3(0, 1, 3), -4, 0);
+      set_table(iface3(0, 2, 3), -4, 0);
+      set_table(iface3(1, 2, 3), -4, 0);
+      set_table(iedge(0, 2), -4, 0);
+      set_table(iedge(1, 3), -4, 0);
+
+      set_table(iface3(0, 1, 5), -4, 12);
+      set_table(iface3(0, 1, 4), -4, 12);
+      set_table(iface3(0, 5, 4), -4, 12);
+      set_table(iface3(1, 5, 4), -4, 12);
+      set_table(iedge(0, 5), -4, 0);
+      set_table(iedge(1, 4), -4, 0);
+
+      set_table(iface3(1, 2, 6), -4, 9);
+      set_table(iface3(1, 2, 5), -4, 9);
+      set_table(iface3(1, 6, 5), -4, 9);
+      set_table(iface3(2, 6, 5), -4, 9);
+      set_table(iedge(1, 6), -4, 0);
+      set_table(iedge(2, 5), -4, 0);
+
+      set_table(iface3(2, 3, 7), -4, 13);
+      set_table(iface3(2, 3, 6), -4, 13);
+      set_table(iface3(2, 7, 6), -4, 13);
+      set_table(iface3(3, 7, 6), -4, 13);
+      set_table(iedge(2, 7), -4, 0);
+      set_table(iedge(3, 6), -4, 0);
+
+      set_table(iface3(3, 0, 4), -4, 8);
+      set_table(iface3(3, 0, 7), -4, 8);
+      set_table(iface3(3, 4, 7), -4, 8);
+      set_table(iface3(0, 4, 7), -4, 8);
+      set_table(iedge(3, 4), -4, 0);
+      set_table(iedge(0, 7), -4, 0);
+
+      set_table(iface3(4, 5, 6), -4, 7);
+      set_table(iface3(4, 5, 7), -4, 7);
+      set_table(iface3(4, 6, 7), -4, 7);
+      set_table(iface3(5, 6, 7), -4, 7);
+      set_table(iedge(4, 6), -4, 0);
+      set_table(iedge(5, 7), -4, 0);
+                       
+      set_table(255, 8, 0);
+
+      for (int i = 0; i < 8; i++)
+      {
+        hcoords[i] = Point(hcoords_double[i][0],
+                           hcoords_double[i][1],
+                           hcoords_double[i][2]);
+      }
+    };
 
 int RefineMeshHexVolAlgoV::hex_reorder_table[14][8] = {
   {0, 1, 2, 3, 4, 5, 6, 7},
@@ -88,7 +368,7 @@ double RefineMeshHexVolAlgoV::hcoords_double[8][3] = {
 
 void
 RefineMeshHexVolAlgoV::dice(VMesh *refined,
-                           edge_hash_type &emap,
+                           hash_map_type &emap,
                            VMesh::Node::array_type nodes,
                            VMesh::index_type index,
                            VMesh::mask_type mask,
@@ -255,8 +535,8 @@ runImpl(FieldHandle input, FieldHandle& output,
   
   if (output.get_rep() == 0)
   {
-    algo->error("Could not create an output field");
-    algo->algo_end(); return (false);
+    error("Could not create an output field");
+    return (false);
   }
 
   VField* field   = input->vfield();
@@ -264,7 +544,7 @@ runImpl(FieldHandle input, FieldHandle& output,
   VMesh*  refined = output->vmesh();
   VField* rfield  = output->vfield();
 
-  edge_hash_type emap;
+  hash_map_type emap;
   VMesh::Node::array_type onodes(8);
   VMesh::Node::array_type nnodes(8);
   
@@ -285,7 +565,6 @@ runImpl(FieldHandle input, FieldHandle& output,
   std::vector<double> evalues;
 
   maxnode = mesh->num_nodes();
-
   init_pattern_table();
 
   // get all values, make computation easier
@@ -340,8 +619,8 @@ runImpl(FieldHandle input, FieldHandle& output,
     }
     else
     {
-      algo->error("Unknown region selection method encountered");
-      algo->algo_end(); return (false);
+      error("Unknown region selection method encountered");
+      return (false);
     }
   }
   else if (field->basis_order() == 1)
@@ -375,8 +654,8 @@ runImpl(FieldHandle input, FieldHandle& output,
     }    
     else
     {
-      algo->error("Unknown region selection method encountered");
-      algo->algo_end(); return (false);
+      error("Unknown region selection method encountered");
+      return (false);
     }
   }
   else
@@ -384,7 +663,7 @@ runImpl(FieldHandle input, FieldHandle& output,
     for (size_t j=0;j<values.size();j++) values[j] = true;
   }
 
-
+	/*
   if (convex)
   {
     int basis_order = rfield->basis_order();
@@ -1284,13 +1563,14 @@ runImpl(FieldHandle input, FieldHandle& output,
       ++bi;
     }
   }
-  
+  */
   rfield->resize_values();
   if (rfield->basis_order() == 0) rfield->set_values(evalues);
   if (rfield->basis_order() == 1) rfield->set_values(ivalues);
+	#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   rfield->copy_properties(field);
-  
-  algo->algo_end(); return (true);
+  #endif
+	return (true);
 }
 
     

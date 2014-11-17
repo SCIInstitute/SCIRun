@@ -51,9 +51,72 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
 
-void
-RefineMeshQuadSurfAlgoV::dice(VMesh *refined,
-                         edge_hash_type &emap,
+Point RIinterpolate(VMesh *refined,
+                      VMesh::Node::array_type& onodes,
+                      double coords[2])
+					    {
+							Point result(0.0, 0.0, 0.0);
+							
+							double w[4];
+							const double x = coords[0], y = coords[1];  
+							w[0] = (-1 + x) * (-1 + y);
+							w[1] = -x * (-1 + y);
+							w[2] = x * y;
+							w[3] = -(-1 + x) * y;
+
+							Point p;
+							for (int i = 0; i < 4; i++)
+							{
+							  refined->get_point(p, onodes[i]);
+							  result += (p * w[i]).asVector();
+							}
+							return result;  
+						}	
+
+Double RefineMeshQuadSurfAlgoV::RIinterpolateV(std::vector<double>& ivalues,
+                        VMesh::Node::array_type& onodes,
+                        double coords[2])
+						{
+							double w[4];
+							const double x = coords[0], y = coords[1];  
+							w[0] = (-1 + x) * (-1 + y);
+							w[1] = -x * (-1 + y);
+							w[2] = x * y;
+							w[3] = -(-1 + x) * y;
+
+							return(w[0]*ivalues[onodes[0]] + w[1]*ivalues[onodes[1]] + 
+								 w[2]*ivalues[onodes[2]] + w[3]*ivalues[onodes[3]]);
+						}
+
+ VMesh::Node::index_type RefineMeshQuadSurfAlgoV::lookup(VMesh *refined,
+                                 hash_map_type &edgemap,
+                                 VMesh::Node::index_type a,
+                                 VMesh::Node::index_type b,
+                                 double factor,
+                                 std::vector<double>& ivalues)
+  {
+    edgepair_t ep;
+    ep.first = a; ep.second = b;
+    const hash_map_type::iterator loc = edgemap.find(ep);
+    if (loc == edgemap.end())
+    {
+      Point pa, pb;
+      refined->get_point(pa, a);
+      refined->get_point(pb, b);
+      const Point inbetween = ((1.0-factor)*pa + (factor)*pb).asPoint();
+      const VMesh::Node::index_type newnode = refined->add_point(inbetween);
+      ivalues.push_back(((1.0-factor)*ivalues[a]+(factor)*ivalues[b]));
+      edgemap[ep] = newnode;
+      return newnode;
+    }
+    else
+    {
+				return (*loc).second;
+    }
+  }
+
+void RefineMeshQuadSurfAlgoV::dice(VMesh *refined,
+                         hash_map_type &emap,
                          VMesh::Node::array_type onodes,
                          VMesh::index_type index,
                          VMesh::mask_type mask,
@@ -287,7 +350,7 @@ runImpl(FieldHandle input, FieldHandle& output,
   VMesh*  refined = output->vmesh();
   VField* rfield  = output->vfield();
 
-  edge_hash_type emap;
+  hash_map_type emap;
   VMesh::Node::array_type onodes(4);
  
   // get all values, make computation easier
