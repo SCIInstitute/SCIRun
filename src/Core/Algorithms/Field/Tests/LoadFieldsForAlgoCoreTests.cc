@@ -223,6 +223,11 @@
    return loadFieldFromFile(TestResources::rootDir() / "Fields/tet.fld");
   }
 
+  FieldHandle LoadTetWithData()
+  {
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/tetWithData.fld");
+  }
+
   FieldHandle LoadTri()
   {
    return loadFieldFromFile(TestResources::rootDir() / "Fields/tri.fld");

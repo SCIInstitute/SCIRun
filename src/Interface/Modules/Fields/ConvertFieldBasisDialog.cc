@@ -26,29 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_BASE_ALGORITHMBASE_H
-#define ALGORITHMS_BASE_ALGORITHMBASE_H
+#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 
-#include <Core/Algorithms/Base/AlgorithmInterfaces.h>
-#include <Core/Algorithms/Base/AlgorithmParameterList.h>
-#include <Core/Algorithms/Base/AlgorithmLogger.h>
-#include <Core/Algorithms/Base/AlgorithmStatusReporter.h>
-#include <Core/Algorithms/Base/AlgorithmMacros.h>
-#include <Core/Algorithms/Base/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
+//typedef SCIRun::Modules::Fields::ConvertFieldBasis ConvertFieldBasisModule;
+
+ConvertFieldBasisDialog::ConvertFieldBasisDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
   
-  class SCISHARE AlgorithmBase : public AlgorithmInterface, public AlgorithmParameterList, public AlgorithmLogger, public AlgorithmStatusReporter
-  {
-  public:
-    virtual ~AlgorithmBase();
-    AlgorithmOutput run(const AlgorithmInput& input) const { return run_generic(input); }
-  protected:
-    void dumpAlgoState() const;
-  };
-  
-}}}
+	addLineEditManager(nameLineEdit_, Parameters::InputFieldName);
+	addLineEditManager(basisLineEdit_,  Parameters::InputType);
+	addComboBoxManager(basisComboBox_, Parameters::OutputType); 
+}
 
-#endif
+void ConvertFieldBasisDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

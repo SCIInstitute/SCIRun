@@ -88,6 +88,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
+  
   DistanceField/CalculateDistanceField.cc
   #DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
@@ -101,8 +102,9 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   FieldData/CalculateVectorMagnitudesAlgo.cc
   #FieldData/CalculateFieldDataMetric.cc
-  #FieldData/ConvertFieldDataType.cc
+#FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
+
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
@@ -189,6 +191,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   Core_Thread 
   #Core_Geom 
   Core_Geometry_Primitives
+  Core_Algorithms_Legacy_Fields
   #Core_Algorithms_Legacy_Converter
   #Core_Algorithms_Legacy_Math
   #Core_Algorithms_Util 

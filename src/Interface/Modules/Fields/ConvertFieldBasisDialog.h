@@ -26,29 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_BASE_ALGORITHMBASE_H
-#define ALGORITHMS_BASE_ALGORITHMBASE_H
+#ifndef INTERFACE_MODULES_CONVERT_FIELD_BASIS_DIALOG_H
+#define INTERFACE_MODULES_CONVERT_FIELD_BASIS_DIALOG_H
 
-#include <Core/Algorithms/Base/AlgorithmInterfaces.h>
-#include <Core/Algorithms/Base/AlgorithmParameterList.h>
-#include <Core/Algorithms/Base/AlgorithmLogger.h>
-#include <Core/Algorithms/Base/AlgorithmStatusReporter.h>
-#include <Core/Algorithms/Base/AlgorithmMacros.h>
-#include <Core/Algorithms/Base/share.h>
+#include "Interface/Modules/Fields/ui_ConvertFieldBasis.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
+namespace Gui {
   
-  class SCISHARE AlgorithmBase : public AlgorithmInterface, public AlgorithmParameterList, public AlgorithmLogger, public AlgorithmStatusReporter
-  {
-  public:
-    virtual ~AlgorithmBase();
-    AlgorithmOutput run(const AlgorithmInput& input) const { return run_generic(input); }
-  protected:
-    void dumpAlgoState() const;
-  };
-  
-}}}
+class SCISHARE ConvertFieldBasisDialog : public ModuleDialogGeneric, 
+  public Ui::ConvertFieldBasis
+{
+	Q_OBJECT
+	
+public:
+  ConvertFieldBasisDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+
+private Q_SLOTS:
+//  void push();
+private:
+  std::string getDataAtLocation() const;
+};
+
+}
+}
 
 #endif
