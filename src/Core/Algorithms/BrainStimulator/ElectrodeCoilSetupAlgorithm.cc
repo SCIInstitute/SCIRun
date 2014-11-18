@@ -68,7 +68,7 @@ const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODE_SPONGE_LOCATION
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::COILS_FIELD("COILS_FIELD");
 const AlgorithmInputName ElectrodeCoilSetupAlgorithm::LOCATIONS("LOCATIONS");
 
-const double ElectrodeCoilSetupAlgorithm::number_of_columns = 9;
+const double ElectrodeCoilSetupAlgorithm::number_of_columns = 10;
 
 ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
 {
@@ -96,15 +96,16 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
    if (tab_values.size()==0)
    {
    tmp += 
-     makeVariable("#Input", boost::str(boost::format("%d") % input.size())),
-     makeVariable("Type", boost::str(boost::format("%d") % 0)),
+     makeVariable("#Input", std::string("???")),
+     makeVariable("Type", std::string("???")),
      makeVariable("X", boost::str(boost::format("%.3f") % (* locations)(i,0))),
      makeVariable("Y", boost::str(boost::format("%.3f") % (* locations)(i,1))),
      makeVariable("Z", boost::str(boost::format("%.3f") % (* locations)(i,2))),
-     makeVariable("NX", boost::str(boost::format("%s") % "???")),
-     makeVariable("NY", boost::str(boost::format("%s") % "???")),
-     makeVariable("NZ", boost::str(boost::format("%s") % "???")),
-     makeVariable("thickness",boost::str(boost::format("%s") % "???")); 
+     makeVariable("Angle", std::string("???")),
+     makeVariable("NX", std::string("???")),
+     makeVariable("NY", std::string("???")),
+     makeVariable("NZ", std::string("???")),
+     makeVariable("thickness", std::string("???")); 
    } else
    {
      if (locations->nrows() != tab_values.size()) /// the input has changed -> reset GUI
@@ -129,20 +130,22 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
       std::string str7=col[6].toString();
       std::string str8=col[7].toString();
       std::string str9=col[8].toString();
+      std::string str10=col[9].toString();
       
       Variable var1=makeVariable("#Input", boost::str(boost::format("%s") % str1));
       Variable var2=makeVariable("Type",   boost::str(boost::format("%s") % str2));  
       Variable var3=makeVariable("X",      boost::str(boost::format("%s") % str3));
       Variable var4=makeVariable("Y",      boost::str(boost::format("%s") % str4));
       Variable var5=makeVariable("Z",      boost::str(boost::format("%s") % str5));
-           
+      Variable var6=makeVariable("Angle",      boost::str(boost::format("%s") % str6));  
+      
       ///if this table row was selected as tDCS -> project point to scalp surface and put its normal in table (NX,NY,NZ)
-      Variable var6=makeVariable("NX", boost::str(boost::format("%s") % str6));
-      Variable var7=makeVariable("NY", boost::str(boost::format("%s") % str7));
-      Variable var8=makeVariable("NZ", boost::str(boost::format("%s") % str8));
-      Variable var9=makeVariable("thickness",boost::str(boost::format("%s") % str9));
+      Variable var7=makeVariable("NX", boost::str(boost::format("%s") % str7));
+      Variable var8=makeVariable("NY", boost::str(boost::format("%s") % str8));
+      Variable var9=makeVariable("NZ", boost::str(boost::format("%s") % str9));
+      Variable var10=makeVariable("thickness",boost::str(boost::format("%s") % str10));
       std::cout << "ok!" << std::endl;
-      tmp += var1,var2,var3,var4,var5,var6,var7,var8,var9; 
+      tmp += var1,var2,var3,var4,var5,var6,var7,var8,var9,var10; 
      }
      
    }  

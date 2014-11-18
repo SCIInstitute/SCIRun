@@ -46,13 +46,16 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   
+  
   private Q_SLOTS:
   void pull();
   void push();
-  
+
 private:
   std::vector<QWidget*> InputPortsVector;
   std::vector<QWidget*> StimTypeVector;
+  void initialize_comboboxes(int i, std::string& tmpstr);
+  std::vector<Core::Algorithms::Variable> validate_numerical_input(int i);
 };
 
 }

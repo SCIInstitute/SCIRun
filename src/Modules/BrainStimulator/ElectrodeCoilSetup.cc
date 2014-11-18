@@ -63,6 +63,9 @@ void ElectrodeCoilSetupModule::execute()
   auto scalp = getRequiredInput(SCALP_SURF);
   auto locations = getRequiredInput(LOCATIONS);
   auto elc_coil_proto = getRequiredDynamicInputs(ELECTRODECOILPROTOTYPES);
+
+ if (needToExecute()) // newStatePresent ?
+ {
   //setAlgoListFromState(Parameters::TableValues);
 
   //auto input = withInputData((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
@@ -77,4 +80,5 @@ void ElectrodeCoilSetupModule::execute()
   
   sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
   sendOutputFromAlgorithm(COILS_FIELD, output);
+ }
 }

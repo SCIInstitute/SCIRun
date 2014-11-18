@@ -47,9 +47,9 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   fixSize();
   
   electrode_coil_tableWidget->setRowCount(1);
-  electrode_coil_tableWidget->setColumnCount(9);
+  electrode_coil_tableWidget->setColumnCount(10);
   QStringList tableHeader;
-  tableHeader<<"Input #"<<"Type"<<"X"<<"Y"<<"Z"<<"NX"<<"NY"<<"NZ"<<"thickness";
+  tableHeader<<"Input #"<<"Type"<<"X"<<"Y"<<"Z"<<"Angle"<<"NX"<<"NY"<<"NZ"<<"thickness";
   electrode_coil_tableWidget->setHorizontalHeaderLabels(tableHeader);
   
   addCheckBoxManager(ProtoTypeInputCheckbox_, Parameters::ProtoTypeInputCheckbox);
@@ -58,12 +58,105 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }
 
+std::vector<Variable> ElectrodeCoilSetupDialog::validate_numerical_input(int i)
+{
+    std::vector<Variable> values; 
+    int inputport_ind=((QComboBox *)InputPortsVector[i])->currentIndex();
+    int stimtype_ind=((QComboBox *)StimTypeVector[i])->currentIndex();
+    static const std::string unknown("???");
+    values.push_back(Variable(Name("Input #"), boost::lexical_cast<std::string>(inputport_ind)));
+    values.push_back(Variable(Name("Type"), boost::lexical_cast<std::string>(stimtype_ind)));  
+    
+    try
+    {
+     lexical_cast<double>((electrode_coil_tableWidget->item(i,2)->text()).toStdString());
+     values.push_back(Variable(Name("X"), electrode_coil_tableWidget->item(i,2)->text().toStdString()));
+    }
+    catch(bad_lexical_cast &)
+    {
+     values.push_back(Variable(Name("X"), unknown));
+    }
+    
+    try
+    {
+     lexical_cast<double>((electrode_coil_tableWidget->item(i,3)->text()).toStdString());
+     values.push_back(Variable(Name("Y"), electrode_coil_tableWidget->item(i,3)->text().toStdString()));
+    }
+    catch(bad_lexical_cast &)
+    {
+     values.push_back(Variable(Name("Y"), unknown));
+    }
+   
+    try
+    {
+     lexical_cast<double>((electrode_coil_tableWidget->item(i,4)->text()).toStdString());
+     values.push_back(Variable(Name("Z"), electrode_coil_tableWidget->item(i,4)->text().toStdString()));
+    }
+    catch(bad_lexical_cast &)
+    {
+     values.push_back(Variable(Name("Z"), unknown));
+    }
+    
+    try
+    {
+     lexical_cast<double>((electrode_coil_tableWidget->item(i,5)->text()).toStdString());
+     values.push_back(Variable(Name("Angle"), electrode_coil_tableWidget->item(i,5)->text().toStdString()));
+    }
+    catch(bad_lexical_cast &)
+    {
+     values.push_back(Variable(Name("Angle"), unknown));
+    }
+    
+    try
+    {
+     lexical_cast<double>((electrode_coil_tableWidget->item(i,6)->text()).toStdString());
+     values.push_back(Variable(Name("NX"), electrode_coil_tableWidget->item(i,6)->text().toStdString()));
+    }
+    catch(bad_lexical_cast &)
+    {
+     values.push_back(Variable(Name("NX"), unknown));
+    }
+     
+    try
+    {
+     lexical_cast<double>((electrode_coil_tableWidget->item(i,7)->text()).toStdString());
+     values.push_back(Variable(Name("NY"), electrode_coil_tableWidget->item(i,7)->text().toStdString()));
+    }
+    catch(bad_lexical_cast &)
+    {
+     values.push_back(Variable(Name("NY"), unknown));
+    }
+    
+    try
+    {
+     lexical_cast<double>((electrode_coil_tableWidget->item(i,8)->text()).toStdString());
+     values.push_back(Variable(Name("NZ"), electrode_coil_tableWidget->item(i,8)->text().toStdString()));
+    }
+    catch(bad_lexical_cast &)
+    {
+     values.push_back(Variable(Name("NZ"), unknown));
+    }
+    
+    try
+    {
+     lexical_cast<double>((electrode_coil_tableWidget->item(i,9)->text()).toStdString());
+     values.push_back(Variable(Name("thickness"), electrode_coil_tableWidget->item(i,9)->text().toStdString()));
+    }
+    catch(bad_lexical_cast &)
+    {
+     values.push_back(Variable(Name("thickness"), unknown));
+    }
+  
+  return values;
+}
+
 void ElectrodeCoilSetupDialog::push()
 { 
 
   if (!pulling_)
   {
    std::cout << "push " << std::endl;
+   
    std::vector<AlgorithmParameter> vals_in_table;
    int rows = electrode_coil_tableWidget->rowCount();
 
@@ -75,152 +168,52 @@ void ElectrodeCoilSetupDialog::push()
    std::string str;
    for (int i=0; i<rows; i++)
    {
-    std::vector<Variable> values; 
-    int inputport_ind=((QComboBox *)InputPortsVector[i])->currentIndex();
-    int stimtype_ind=((QComboBox *)StimTypeVector[i])->currentIndex();
-    
-    values.push_back(Variable(Name("Input #"), (double)inputport_ind));
-    values.push_back(Variable(Name("Type"), (double)stimtype_ind));  
-    
-    std::cout << ((electrode_coil_tableWidget->item(i,2)->text()).toStdString()) << std::endl;
-    std::cout << ((electrode_coil_tableWidget->item(i,3)->text()).toStdString()) << std::endl;
-    std::cout << ((electrode_coil_tableWidget->item(i,4)->text()).toStdString()) << std::endl;
-    std::cout << ((electrode_coil_tableWidget->item(i,5)->text()).toStdString()) << std::endl; 
-    std::cout << ((electrode_coil_tableWidget->item(i,6)->text()).toStdString()) << std::endl;
-    std::cout << ((electrode_coil_tableWidget->item(i,7)->text()).toStdString()) << std::endl;
-    std::cout << ((electrode_coil_tableWidget->item(i,8)->text()).toStdString()) << std::endl;
-      
-    bool number_conversion=false;
-    try
-    {
-      lexical_cast<double>((electrode_coil_tableWidget->item(i,2)->text()).toStdString());
-      number_conversion=true;
-    }
-    catch(bad_lexical_cast &)
-    {
-    }
-    
-    if (number_conversion)
-    {
-      values.push_back(Variable(Name("X"), electrode_coil_tableWidget->item(i,2)->text().toDouble()));
-    } else
-    {
-      values.push_back(Variable(Name("X"), "???"));
-    } 
-    number_conversion=false;
-    
-    try
-    {
-      lexical_cast<double>((electrode_coil_tableWidget->item(i,3)->text()).toStdString());
-      number_conversion=true;
-    }
-    catch(bad_lexical_cast &)
-    {
-    }
-    
-    if (number_conversion)
-    {
-      values.push_back(Variable(Name("Y"), electrode_coil_tableWidget->item(i,3)->text().toDouble()));
-    } else
-    {
-      values.push_back(Variable(Name("Y"), "???"));
-    } 
-    number_conversion=false;
-    
-    try
-    {
-      lexical_cast<double>((electrode_coil_tableWidget->item(i,4)->text()).toStdString());
-      number_conversion=true;
-    }
-    catch(bad_lexical_cast &)
-    {
-    }
-    
-    if (number_conversion)
-    {
-      values.push_back(Variable(Name("Z"), electrode_coil_tableWidget->item(i,4)->text().toDouble()));
-    } else
-    {
-      values.push_back(Variable(Name("Z"), "???"));
-    }   
-    number_conversion=false;
-    
-    try
-    {
-      lexical_cast<double>((electrode_coil_tableWidget->item(i,5)->text()).toStdString());
-      number_conversion=true;
-    }
-    catch(bad_lexical_cast &)
-    {
-    }
-    
-    if (number_conversion)
-    {
-      values.push_back(Variable(Name("NX"), electrode_coil_tableWidget->item(i,5)->text().toDouble()));
-    } else
-    {
-      values.push_back(Variable(Name("NX"), "???"));
-    }   
-    number_conversion=false;
-     
-    try
-    {
-      lexical_cast<double>((electrode_coil_tableWidget->item(i,6)->text()).toStdString());
-      number_conversion=true;
-    }
-    catch(bad_lexical_cast &)
-    {
-    }
-    
-    if (number_conversion)
-    {
-      values.push_back(Variable(Name("NY"), electrode_coil_tableWidget->item(i,6)->text().toDouble()));
-    } else
-    {
-      values.push_back(Variable(Name("NY"), "???"));
-    }  
-    number_conversion=false;
-    
-    try
-    {
-      lexical_cast<double>((electrode_coil_tableWidget->item(i,7)->text()).toStdString());
-      number_conversion=true;
-    }
-    catch(bad_lexical_cast &)
-    {
-    }
-    
-    if (number_conversion)
-    {
-      values.push_back(Variable(Name("NZ"), electrode_coil_tableWidget->item(i,7)->text().toDouble()));
-    } else
-    {
-      values.push_back(Variable(Name("NZ"), "???"));
-    }  
-    number_conversion=false;
-    
-    try
-    {
-      lexical_cast<double>((electrode_coil_tableWidget->item(i,8)->text()).toStdString());
-      number_conversion=true;
-    }
-    catch(bad_lexical_cast &)
-    {
-    }
-    
-    if (number_conversion)
-    {
-      values.push_back(Variable(Name("thickness"), electrode_coil_tableWidget->item(i,8)->text().toDouble()));
-    } else
-    {
-      values.push_back(Variable(Name("thickness"), "???"));
-    }
-     
+    std::vector<Variable> values=validate_numerical_input(i);
     AlgorithmParameter row_i(Name("row" + boost::lexical_cast<std::string>(i)), values);   
     vals_in_table.push_back(row_i);
    }
    state_->setValue(Parameters::TableValues, vals_in_table);
   }
+}
+
+void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::string& tmpstr)
+{
+  if(i<0 || !tmpstr.size()>0 )
+  { 
+    
+  }
+  
+  QStringList type_items;
+  type_items<<"???"<<"TMS"<<"tDCS";
+  QStringList inputports_items;  
+  QComboBox *InputPorts = new QComboBox();
+  QComboBox *StimType = new QComboBox();
+  inputports_items << QString::fromStdString("???");
+  int nrinput = 0;
+  try
+  {
+    nrinput = boost::lexical_cast<int>(tmpstr);
+  }
+  catch( const boost::bad_lexical_cast & )
+  {
+    //unable to convert
+  }
+
+  for (int k=0;k<nrinput;k++)
+  {
+   std::ostringstream str;
+   str << "USE_MODULE_INPUTPORT_" << std::to_string(k+3);
+   inputports_items << QString::fromStdString(str.str());  
+  }
+  InputPorts->addItems(inputports_items);
+  StimType->addItems(type_items);
+  electrode_coil_tableWidget->setCellWidget(i,0,InputPorts);
+  electrode_coil_tableWidget->setCellWidget(i,1,StimType);	 
+  InputPortsVector.push_back(InputPorts);
+  StimTypeVector.push_back(StimType);	 
+  connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));
+  connect(StimType, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));	 
+
 }
 
 void ElectrodeCoilSetupDialog::pull()
@@ -233,8 +226,6 @@ void ElectrodeCoilSetupDialog::pull()
   {
    std::cout << "pull " << std::endl;
    electrode_coil_tableWidget->setRowCount(static_cast<int>(all_elc_values.size()));
-   QStringList type_items;
-   type_items<<"???"<<"TMS"<<"tDCS";
    
    bool combo_box_is_setup = InputPortsVector.size() > 0 ? true : false;
    
@@ -245,8 +236,6 @@ void ElectrodeCoilSetupDialog::pull()
      BOOST_FOREACH(const AlgorithmParameter& ap, col)
      {
       auto tmpstr = ap.toString();
-      
-      std::cout << tmpstr << std::endl;
       
       auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
       
@@ -259,44 +248,16 @@ void ElectrodeCoilSetupDialog::pull()
 	  InputPortsVector.resize(0);
           StimTypeVector.resize(0); 
 	 }
-         QStringList inputports_items;	
-         QComboBox *InputPorts = new QComboBox();
-	 QComboBox *StimType = new QComboBox();
-	 inputports_items << QString::fromStdString("???");
-	 int nrinput = 0;
-	 try
-	 {
-	   nrinput = boost::lexical_cast<int>(tmpstr);
-	 }
-	 catch( const boost::bad_lexical_cast & )
-	 {
-	   //unable to convert
-	 }
-	
-	 for (int k=0;k<nrinput;k++)
-	 {
-	  std::ostringstream str;
-          str << "USE_MODULE_INPUTPORT_" << std::to_string(k+3);
-	  inputports_items << QString::fromStdString(str.str());  
-	 }
-         InputPorts->addItems(inputports_items);
-	 StimType->addItems(type_items);
-	 electrode_coil_tableWidget->setCellWidget(i,0,InputPorts);
-	 electrode_coil_tableWidget->setCellWidget(i,1,StimType);	
-	 InputPortsVector.push_back(InputPorts);
-	 StimTypeVector.push_back(StimType);	
-	 connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));
-	 connect(StimType, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));	
-	 //item = new QTableWidgetItem(QString::fromStdString(""));
+	 initialize_comboboxes(i, tmpstr);
         } 
        } 
-       
-      electrode_coil_tableWidget->setItem(i, j, item);	 
-      
-      if (j>4 && j<=8) 
-       electrode_coil_tableWidget->item(i,j)->setTextColor(Qt::red);
+             
+   /*   if (j>4 && j<=9) 
+       item->setTextColor(Qt::red);
 	else
-	  electrode_coil_tableWidget->item(i,j)->setTextColor(Qt::black);
+	  item->setTextColor(Qt::black);
+	    */
+       electrode_coil_tableWidget->setItem(i, j, item);	    
 	    
        ++j;
      }
