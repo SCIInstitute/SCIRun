@@ -61,7 +61,7 @@ namespace BrainStimulator {
     boost::tuple<VariableHandle, Datatypes::DenseMatrixHandle, FieldHandle> run(const FieldHandle scalp, const Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const;
     VariableHandle fill_table(FieldHandle scalp, Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& input) const;
   private:
-  
+    static const double number_of_columns;
     
   };
 

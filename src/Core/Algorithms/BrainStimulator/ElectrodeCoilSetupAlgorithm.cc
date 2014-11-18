@@ -68,6 +68,8 @@ const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODE_SPONGE_LOCATION
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::COILS_FIELD("COILS_FIELD");
 const AlgorithmInputName ElectrodeCoilSetupAlgorithm::LOCATIONS("LOCATIONS");
 
+const double ElectrodeCoilSetupAlgorithm::number_of_columns = 9;
+
 ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
 {
   addParameter(TableValues, 0);
@@ -108,7 +110,7 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
      if (locations->nrows() != tab_values.size()) /// the input has changed -> reset GUI
      {
        auto col = tab_values[i].toVector();
-     
+      std::cout << "wrong" << std::endl;
      } else
      {  /// if the number does not change we keep the GUI as it is for the user to adjust some of the values        
       
@@ -118,18 +120,29 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
        THROW_ALGORITHM_PROCESSING_ERROR("Internal error: data transfer between GUI and algorithm did not work. Number of table columns does not match.");
       }
       
-      auto tmpstr = ap.toString();
-      tmp += 
-      makeVariable("#Input", boost::str(boost::format("%d") % input.size())),
-      makeVariable("Type", boost::str(boost::format("%d") % 0)),
-      makeVariable("X", boost::str(boost::format("%.3f") % (* locations)(i,0))),
-      makeVariable("Y", boost::str(boost::format("%.3f") % (* locations)(i,1))),
-      makeVariable("Z", boost::str(boost::format("%.3f") % (* locations)(i,2))),
-      makeVariable("NX", boost::str(boost::format("%s") % "???")),
-      makeVariable("NY", boost::str(boost::format("%s") % "???")),
-      makeVariable("NZ", boost::str(boost::format("%s") % "???")),
-      makeVariable("thickness",boost::str(boost::format("%s") % "???"));
-       
+      std::string str1=col[0].toString();
+      std::string str2=col[1].toString();
+      std::string str3=col[2].toString();
+      std::string str4=col[3].toString();
+      std::string str5=col[4].toString();
+      std::string str6=col[5].toString();
+      std::string str7=col[6].toString();
+      std::string str8=col[7].toString();
+      std::string str9=col[8].toString();
+      
+      Variable var1=makeVariable("#Input", boost::str(boost::format("%s") % str1));
+      Variable var2=makeVariable("Type",   boost::str(boost::format("%s") % str2));  
+      Variable var3=makeVariable("X",      boost::str(boost::format("%s") % str3));
+      Variable var4=makeVariable("Y",      boost::str(boost::format("%s") % str4));
+      Variable var5=makeVariable("Z",      boost::str(boost::format("%s") % str5));
+           
+      ///if this table row was selected as tDCS -> project point to scalp surface and put its normal in table (NX,NY,NZ)
+      Variable var6=makeVariable("NX", boost::str(boost::format("%s") % str6));
+      Variable var7=makeVariable("NY", boost::str(boost::format("%s") % str7));
+      Variable var8=makeVariable("NZ", boost::str(boost::format("%s") % str8));
+      Variable var9=makeVariable("thickness",boost::str(boost::format("%s") % str9));
+      std::cout << "ok!" << std::endl;
+      tmp += var1,var2,var3,var4,var5,var6,var7,var8,var9; 
      }
      
    }  

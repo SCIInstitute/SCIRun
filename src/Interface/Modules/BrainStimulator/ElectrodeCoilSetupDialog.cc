@@ -82,6 +82,14 @@ void ElectrodeCoilSetupDialog::push()
     values.push_back(Variable(Name("Input #"), (double)inputport_ind));
     values.push_back(Variable(Name("Type"), (double)stimtype_ind));  
     
+    std::cout << ((electrode_coil_tableWidget->item(i,2)->text()).toStdString()) << std::endl;
+    std::cout << ((electrode_coil_tableWidget->item(i,3)->text()).toStdString()) << std::endl;
+    std::cout << ((electrode_coil_tableWidget->item(i,4)->text()).toStdString()) << std::endl;
+    std::cout << ((electrode_coil_tableWidget->item(i,5)->text()).toStdString()) << std::endl; 
+    std::cout << ((electrode_coil_tableWidget->item(i,6)->text()).toStdString()) << std::endl;
+    std::cout << ((electrode_coil_tableWidget->item(i,7)->text()).toStdString()) << std::endl;
+    std::cout << ((electrode_coil_tableWidget->item(i,8)->text()).toStdString()) << std::endl;
+      
     bool number_conversion=false;
     try
     {
@@ -202,11 +210,9 @@ void ElectrodeCoilSetupDialog::push()
     
     if (number_conversion)
     {
-      std::cout << "k:" << electrode_coil_tableWidget->item(i,8)->text().toDouble() << std::endl;
       values.push_back(Variable(Name("thickness"), electrode_coil_tableWidget->item(i,8)->text().toDouble()));
     } else
     {
-      std::cout << "???" << std::endl;
       values.push_back(Variable(Name("thickness"), "???"));
     }
      
@@ -239,6 +245,8 @@ void ElectrodeCoilSetupDialog::pull()
      BOOST_FOREACH(const AlgorithmParameter& ap, col)
      {
       auto tmpstr = ap.toString();
+      
+      std::cout << tmpstr << std::endl;
       
       auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
       
@@ -279,7 +287,7 @@ void ElectrodeCoilSetupDialog::pull()
 	 StimTypeVector.push_back(StimType);	
 	 connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));
 	 connect(StimType, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));	
-	 item = new QTableWidgetItem(QString::fromStdString(""));
+	 //item = new QTableWidgetItem(QString::fromStdString(""));
         } 
        } 
        
