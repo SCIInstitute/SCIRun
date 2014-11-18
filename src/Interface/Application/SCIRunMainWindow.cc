@@ -665,6 +665,8 @@ void SCIRunMainWindow::chooseBackgroundColor()
 
 void SCIRunMainWindow::setDragMode(bool toggle)
 {
+  if (toggle)
+    networkEditor_->setMouseAsDragMode();
   if (actionDragMode_->isChecked())
   {
     actionSelectMode_->setChecked(false);
@@ -677,6 +679,8 @@ void SCIRunMainWindow::setDragMode(bool toggle)
 
 void SCIRunMainWindow::setSelectMode(bool toggle)
 {
+  if (toggle)
+    networkEditor_->setMouseAsSelectMode();
   if (actionSelectMode_->isChecked())
   {
     actionDragMode_->setChecked(false);

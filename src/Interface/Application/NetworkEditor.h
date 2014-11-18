@@ -177,6 +177,8 @@ Q_SIGNALS:
     void restoreAllModuleUIs();
     void updateViewport();
     void connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
+    void setMouseAsDragMode();
+    void setMouseAsSelectMode();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);

@@ -90,7 +90,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   updateActions();
   ensureVisible(0,0,0,0);
 
-  //setDragMode(ScrollHandDrag);
+  setMouseAsDragMode();
 
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setExecutionContext(this);
@@ -270,6 +270,17 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
 
   GuiLogger::Instance().log("Module added.");
+}
+
+void NetworkEditor::setMouseAsDragMode()
+{
+  setDragMode(ScrollHandDrag);
+}
+
+void NetworkEditor::setMouseAsSelectMode()
+{
+  //TODO need to look up the enum name...
+  setDragMode((DragMode)2);
 }
 
 void NetworkEditor::bringToFront()
