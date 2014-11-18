@@ -34,12 +34,13 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-
+#include <vector>
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -62,11 +63,17 @@ void ElectrodeCoilSetupModule::execute()
   auto scalp = getRequiredInput(SCALP_SURF);
   auto locations = getRequiredInput(LOCATIONS);
   auto elc_coil_proto = getRequiredDynamicInputs(ELECTRODECOILPROTOTYPES);
-  setAlgoListFromState(Parameters::TableValues);
+  //setAlgoListFromState(Parameters::TableValues);
 
-  auto output = algo().run_generic(withInputData((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto)));
+  //auto input = withInputData((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
+  auto input = make_input((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
+  std::vector<AlgorithmParameter> table_handle  = (get_state()->getValue(Parameters::TableValues)).toVector();
+  algo().set(Parameters::TableValues, table_handle);
+    
+  auto output = algo().run_generic(input);
   auto table = output.additionalAlgoOutput();
-  get_state()->setTransientValue(Parameters::TableValues, table);
+  if (table)
+    get_state()->setValue(Parameters::TableValues, table->value());
   
   sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
   sendOutputFromAlgorithm(COILS_FIELD, output);

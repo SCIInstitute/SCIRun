@@ -55,8 +55,12 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 using namespace boost::assign;
+using namespace Parameters;
 
 ALGORITHM_PARAMETER_DEF(BrainStimulator, TableValues);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, ProtoTypeInputCheckbox);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, AllInputsTDCS);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, ProtoTypeInputComboBox);
 
 const AlgorithmInputName ElectrodeCoilSetupAlgorithm::SCALP_SURF("SCALP_SURF");
 const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODECOILPROTOTYPES("ELECTRODECOILPROTOTYPES");
@@ -66,8 +70,10 @@ const AlgorithmInputName ElectrodeCoilSetupAlgorithm::LOCATIONS("LOCATIONS");
 
 ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
 {
-  using namespace Parameters;
   addParameter(TableValues, 0);
+  addParameter(ProtoTypeInputCheckbox, 0);
+  addParameter(AllInputsTDCS, 0);
+  addParameter(ProtoTypeInputComboBox, 0);
 }
 
 
@@ -79,9 +85,14 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
    THROW_ALGORITHM_PROCESSING_ERROR(" LOCATIONS needs to have dimensions such as: (#CoilsOrElectrodes) x 3 "); 
   }
   
+  auto tab_values = get(Parameters::TableValues).toVector();
+  
   for (int i=0;i<locations->nrows();i++)
   {  
    Variable::List tmp;
+   
+   if (tab_values.size()==0)
+   {
    tmp += 
      makeVariable("#Input", boost::str(boost::format("%d") % input.size())),
      makeVariable("Type", boost::str(boost::format("%d") % 0)),
@@ -92,7 +103,38 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
      makeVariable("NY", boost::str(boost::format("%s") % "???")),
      makeVariable("NZ", boost::str(boost::format("%s") % "???")),
      makeVariable("thickness",boost::str(boost::format("%s") % "???")); 
-     table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp));   
+   } else
+   {
+     if (locations->nrows() != tab_values.size()) /// the input has changed -> reset GUI
+     {
+       auto col = tab_values[i].toVector();
+     
+     } else
+     {  /// if the number does not change we keep the GUI as it is for the user to adjust some of the values        
+      
+      auto col = tab_values[i].toVector();
+      if (col.size()!=number_of_columns)
+      {
+       THROW_ALGORITHM_PROCESSING_ERROR("Internal error: data transfer between GUI and algorithm did not work. Number of table columns does not match.");
+      }
+      
+      auto tmpstr = ap.toString();
+      tmp += 
+      makeVariable("#Input", boost::str(boost::format("%d") % input.size())),
+      makeVariable("Type", boost::str(boost::format("%d") % 0)),
+      makeVariable("X", boost::str(boost::format("%.3f") % (* locations)(i,0))),
+      makeVariable("Y", boost::str(boost::format("%.3f") % (* locations)(i,1))),
+      makeVariable("Z", boost::str(boost::format("%.3f") % (* locations)(i,2))),
+      makeVariable("NX", boost::str(boost::format("%s") % "???")),
+      makeVariable("NY", boost::str(boost::format("%s") % "???")),
+      makeVariable("NZ", boost::str(boost::format("%s") % "???")),
+      makeVariable("thickness",boost::str(boost::format("%s") % "???"));
+       
+     }
+     
+   }  
+  
+   table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), tmp));   
   }  
   VariableHandle output(new Variable(Name("Table"), table));
   

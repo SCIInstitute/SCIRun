@@ -42,7 +42,10 @@ namespace Algorithms {
 namespace BrainStimulator {
   
   ALGORITHM_PARAMETER_DECL(TableValues);
-  
+  ALGORITHM_PARAMETER_DECL(ProtoTypeInputCheckbox);
+  ALGORITHM_PARAMETER_DECL(AllInputsTDCS);
+  ALGORITHM_PARAMETER_DECL(ProtoTypeInputComboBox);
+
   class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
   {
   public:
@@ -50,10 +53,11 @@ namespace BrainStimulator {
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
     static const AlgorithmInputName SCALP_SURF; 
-    static const AlgorithmInputName ELECTRODECOILPROTOTYPES;
+    static const AlgorithmInputName LOCATIONS;
+    static const AlgorithmInputName ELECTRODECOILPROTOTYPES;    
     static const AlgorithmOutputName ELECTRODE_SPONGE_LOCATION_AVR;
     static const AlgorithmOutputName COILS_FIELD;
-    static const AlgorithmInputName LOCATIONS;
+        
     boost::tuple<VariableHandle, Datatypes::DenseMatrixHandle, FieldHandle> run(const FieldHandle scalp, const Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const;
     VariableHandle fill_table(FieldHandle scalp, Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& input) const;
   private:
