@@ -155,6 +155,8 @@ private Q_SLOTS:
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void resetWindowLayout();
+  void setDragMode(bool toggle);
+  void setSelectMode(bool toggle);
   void adjustModuleDock(int state);
   void exitApplication(int code);
 };

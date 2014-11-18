@@ -237,6 +237,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
 
+  connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
+  connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
+
   setupInputWidgets();
 
   readSettings();
@@ -657,6 +660,30 @@ void SCIRunMainWindow::chooseBackgroundColor()
   {
     networkEditor_->setBackground(newColor);
     GuiLogger::Instance().log("Background color set to " + newColor.name());
+  }
+}
+
+void SCIRunMainWindow::setDragMode(bool toggle)
+{
+  if (actionDragMode_->isChecked())
+  {
+    actionSelectMode_->setChecked(false);
+  }
+  else
+  {
+    actionSelectMode_->setChecked(true);
+  }
+}
+
+void SCIRunMainWindow::setSelectMode(bool toggle)
+{
+  if (actionSelectMode_->isChecked())
+  {
+    actionDragMode_->setChecked(false);
+  }
+  else
+  {
+    actionDragMode_->setChecked(true);
   }
 }
 
