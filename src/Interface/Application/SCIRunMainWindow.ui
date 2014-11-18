@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1114</width>
-         <height>467</height>
+         <width>1117</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -150,6 +150,9 @@
     <addaction name="actionPinAllModuleUIs_"/>
     <addaction name="actionHideAllModuleUIs_"/>
     <addaction name="actionRestoreAllModuleUIs_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCenter_Network_Viewer"/>
+    <addaction name="actionReset_Network_Zoom"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
@@ -1160,6 +1163,16 @@
   <action name="actionReset_Window_Layout">
    <property name="text">
     <string>Reset Window Layout</string>
+   </property>
+  </action>
+  <action name="actionCenter_Network_Viewer">
+   <property name="text">
+    <string>Center Network Viewer</string>
+   </property>
+  </action>
+  <action name="actionReset_Network_Zoom">
+   <property name="text">
+    <string>Reset Network Zoom</string>
    </property>
   </action>
  </widget>

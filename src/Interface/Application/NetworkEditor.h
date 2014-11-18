@@ -220,6 +220,7 @@ Q_SIGNALS:
     QAction* propertiesAction_;
     //QAction* executeAction_;
 		bool modulesSelectedByCL_;
+    double currentScale_;
 
     QGraphicsScene* scene_;
 

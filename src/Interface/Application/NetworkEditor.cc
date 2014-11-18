@@ -63,6 +63,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   sendToBackAction_(0),
   propertiesAction_(0),
   modulesSelectedByCL_(false),
+  currentScale_(1),
   scene_(new QGraphicsScene(parent)),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
@@ -875,19 +876,30 @@ void NetworkEditor::wheelEvent(QWheelEvent* event)
 {
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
+  const double minScale = 0.03;
+  const double maxScale = 4.0;
+
   // Scale the view / do the zoom
   const double scaleFactor = 1.15;
   if (event->delta() > 0)
   {
-    // Zoom in
-    scale(scaleFactor, scaleFactor);
+    if (currentScale_ < maxScale)
+    {
+      // Zoom in
+      scale(scaleFactor, scaleFactor);
+      currentScale_ *= scaleFactor;
+    }
   }
   else
   {
-    // Zooming out
-    scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+    if (currentScale_ > minScale)
+    {
+      // Zooming out
+      scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+      currentScale_ /= scaleFactor;
+    }
   }
-
+  //std::cout << "Current scale: " << currentScale_ << std::endl;
   // Don't call superclass handler here
   // as wheel is normally used for moving scrollbars
 }
