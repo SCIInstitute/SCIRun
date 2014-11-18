@@ -66,6 +66,7 @@ namespace Networks {
 
   struct SCISHARE ConnectionId
   {
+    ConnectionId() {}
     ConnectionId(const char* s) : id_(s) {}
     ConnectionId(const std::string& s) : id_(s) {}
     static ConnectionId create(const ConnectionDescription& desc);

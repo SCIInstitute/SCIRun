@@ -409,12 +409,12 @@ void ConnectionLine::updateNoteFromFile(const Note& note)
   updateNote(note);
 }
 
-void ConnectionLine::hoverEnterEvent(QGraphicsSceneHoverEvent*) 
+void ConnectionLine::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
   setColorAndWidth(color(), HOVERED_CONNECTION_WIDTH);
 }
 
-void ConnectionLine::hoverLeaveEvent(QGraphicsSceneHoverEvent*) 
+void ConnectionLine::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
   setColorAndWidth(color(), DEFAULT_CONNECTION_WIDTH);
 }
