@@ -90,7 +90,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   updateActions();
   ensureVisible(0,0,0,0);
 
-  setDragMode(ScrollHandDrag);
+  //setDragMode(ScrollHandDrag);
 
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setExecutionContext(this);

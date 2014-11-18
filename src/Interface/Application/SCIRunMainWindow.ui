@@ -151,8 +151,13 @@
     <addaction name="actionHideAllModuleUIs_"/>
     <addaction name="actionRestoreAllModuleUIs_"/>
     <addaction name="separator"/>
-    <addaction name="actionCenter_Network_Viewer"/>
-    <addaction name="actionReset_Network_Zoom"/>
+    <addaction name="actionCenterNetworkViewer_"/>
+    <addaction name="actionZoomIn_"/>
+    <addaction name="actionZoomOut_"/>
+    <addaction name="actionZoomBestFit_"/>
+    <addaction name="actionResetNetworkZoom_"/>
+    <addaction name="actionDragMode_"/>
+    <addaction name="actionSelectMode_"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
@@ -1165,14 +1170,48 @@
     <string>Reset Window Layout</string>
    </property>
   </action>
-  <action name="actionCenter_Network_Viewer">
+  <action name="actionCenterNetworkViewer_">
    <property name="text">
     <string>Center Network Viewer</string>
    </property>
   </action>
-  <action name="actionReset_Network_Zoom">
+  <action name="actionResetNetworkZoom_">
    <property name="text">
     <string>Reset Network Zoom</string>
+   </property>
+  </action>
+  <action name="actionDragMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Drag Mode</string>
+   </property>
+  </action>
+  <action name="actionSelectMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select Mode</string>
+   </property>
+  </action>
+  <action name="actionZoomIn_">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+  </action>
+  <action name="actionZoomOut_">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+  </action>
+  <action name="actionZoomBestFit_">
+   <property name="text">
+    <string>Zoom Best Fit</string>
    </property>
   </action>
  </widget>

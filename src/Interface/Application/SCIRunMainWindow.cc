@@ -125,9 +125,18 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   standardBar->addAction(actionSave_);
   standardBar->addAction(actionRunScript_);
   standardBar->addAction(actionEnterWhatsThisMode_);
+  standardBar->addSeparator();
   standardBar->addAction(actionPinAllModuleUIs_);
   standardBar->addAction(actionRestoreAllModuleUIs_);
   standardBar->addAction(actionHideAllModuleUIs_);
+  standardBar->addSeparator();
+  standardBar->addAction(actionCenterNetworkViewer_);
+  standardBar->addAction(actionZoomIn_);
+  standardBar->addAction(actionZoomOut_);
+  standardBar->addAction(actionZoomBestFit_);
+  standardBar->addAction(actionResetNetworkZoom_);
+  standardBar->addAction(actionDragMode_);
+  standardBar->addAction(actionSelectMode_);
   standardBar->setStyleSheet(styleSheet());
   //setUnifiedTitleAndToolBarOnMac(true);
 
@@ -296,6 +305,7 @@ void SCIRunMainWindow::setTipsAndWhatsThis()
   actionHideAllModuleUIs_->setWhatsThis("Hides all module UI windows.");
   actionRestoreAllModuleUIs_->setWhatsThis("Restores all module UI windows.");
   actionPinAllModuleUIs_->setWhatsThis("Pins all module UI windows to right side of main window.");
+  //todo: zoom actions, etc
 }
 
 void SCIRunMainWindow::setupInputWidgets()
@@ -574,12 +584,20 @@ void SCIRunMainWindow::setActionIcons()
   actionRunScript_->setIcon(QPixmap(":/general/Resources/script.png"));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-  actionUndo_->setIcon(QIcon::fromTheme("edit-undo"));
-  actionRedo_->setIcon(QIcon::fromTheme("edit-redo"));
+  actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
+  actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
   //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/hideAll.png"));
   actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/rightAll.png"));
   actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/showAll.png"));
+
+  actionCenterNetworkViewer_->setIcon(QPixmap(":/general/Resources/align_center.png"));
+  actionResetNetworkZoom_->setIcon(QPixmap(":/general/Resources/zoom_reset.png"));
+  actionZoomIn_->setIcon(QPixmap(":/general/Resources/zoom_in.png"));
+  actionZoomOut_->setIcon(QPixmap(":/general/Resources/zoom_out.png"));
+  actionZoomBestFit_->setIcon(QPixmap(":/general/Resources/zoom_fit.png"));
+  actionDragMode_->setIcon(QPixmap(":/general/Resources/cursor_hand_icon.png"));
+  actionSelectMode_->setIcon(QPixmap(":/general/Resources/select.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
