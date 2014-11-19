@@ -279,8 +279,7 @@ void NetworkEditor::setMouseAsDragMode()
 
 void NetworkEditor::setMouseAsSelectMode()
 {
-  //TODO need to look up the enum name...
-  setDragMode((DragMode)2);
+  setDragMode(RubberBandDrag);
 }
 
 void NetworkEditor::bringToFront()
