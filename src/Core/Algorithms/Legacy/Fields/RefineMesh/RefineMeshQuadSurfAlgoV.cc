@@ -29,9 +29,11 @@
 
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshQuadSurfAlgoV.h> 
+
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h> 
+#include <Core/GeometryPrimitives/Point.h>
 //#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
 // For mapping matrices
 //#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrix.h>
@@ -68,14 +70,19 @@ Point RIinterpolate(VMesh *refined,
 							for (int i = 0; i < 4; i++)
 							{
 							  refined->get_point(p, onodes[i]);
-							  result += (p * w[i]).asVector();
+							  result += (p * w[i]);
 							}
 							return result;  
 						}	
 
-Double RefineMeshQuadSurfAlgoV::RIinterpolateV(std::vector<double>& ivalues,
+RefineMeshQuadSurfAlgoV::RefineMeshQuadSurfAlgoV()
+{
+
+}
+
+double RefineMeshQuadSurfAlgoV::RIinterpolateV(std::vector<double>& ivalues,
                         VMesh::Node::array_type& onodes,
-                        double coords[2])
+                        double coords[2])const
 						{
 							double w[4];
 							const double x = coords[0], y = coords[1];  
@@ -88,25 +95,25 @@ Double RefineMeshQuadSurfAlgoV::RIinterpolateV(std::vector<double>& ivalues,
 								 w[2]*ivalues[onodes[2]] + w[3]*ivalues[onodes[3]]);
 						}
 
- VMesh::Node::index_type RefineMeshQuadSurfAlgoV::lookup(VMesh *refined,
+VMesh::Node::index_type RefineMeshQuadSurfAlgoV::lookup(VMesh *refined,
                                  hash_map_type &edgemap,
                                  VMesh::Node::index_type a,
                                  VMesh::Node::index_type b,
                                  double factor,
-                                 std::vector<double>& ivalues)
+                                 std::vector<double>& ivalues)const
   {
     edgepair_t ep;
     ep.first = a; ep.second = b;
-    const hash_map_type::iterator loc = edgemap.find(ep);
+		hash_map_type::iterator loc = edgemap.find(ep.first);
     if (loc == edgemap.end())
     {
       Point pa, pb;
       refined->get_point(pa, a);
       refined->get_point(pb, b);
-      const Point inbetween = ((1.0-factor)*pa + (factor)*pb).asPoint();
+      const Point inbetween = Point((1.0-factor)*pa + (factor)*pb);
       const VMesh::Node::index_type newnode = refined->add_point(inbetween);
       ivalues.push_back(((1.0-factor)*ivalues[a]+(factor)*ivalues[b]));
-      edgemap[ep] = newnode;
+      edgemap[ep.first] = newnode;
       return newnode;
     }
     else
@@ -124,7 +131,7 @@ void RefineMeshQuadSurfAlgoV::dice(VMesh *refined,
                          std::vector<double>& ivalues,
                          std::vector<double>& evalues,
                          double vv,
-                         int basis_order)
+                         int basis_order)const
 {
   const VMesh::index_type i0 = onodes[index];
   const VMesh::index_type i1 = onodes[(index+1)%4];
@@ -320,14 +327,6 @@ void RefineMeshQuadSurfAlgoV::dice(VMesh *refined,
   }
 }
 
-
-bool
-		RefineMeshQuadSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output) const
-{
-		std::string select;
-		double isoval; 
-		return runImpl(input, output, select, isoval); 
-}
 bool
 RefineMeshQuadSurfAlgoV::
 runImpl(FieldHandle input, FieldHandle& output,
@@ -516,4 +515,20 @@ runImpl(FieldHandle input, FieldHandle& output,
   #endif
   return (true);
 }
+bool RefineMeshQuadSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output) const 
+{
+		std::string select;
+		double isoval;
+		return runImpl(input, output, select, isoval); 
+}
+AlgorithmOutput RefineMeshQuadSurfAlgoV::run_generic(const AlgorithmInput& input) const 
+{
+	auto field = input.get<Field>(Variables::InputField);
+  FieldHandle outputField;
 
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+	AlgorithmOutput output;
+	output[Variables::OutputField] = outputField;
+  return output;
+}

@@ -51,8 +51,10 @@ class RefineMeshTriSurfAlgoV : public AlgorithmBase
 {
 public:
 		RefineMeshTriSurfAlgoV(); 
-		bool RefineMeshTriSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval)const; 
-		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+		
+		bool runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const ; 
+		bool runImpl(FieldHandle input, FieldHandle& output) const; 
+		AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 
 };
 								}}}}

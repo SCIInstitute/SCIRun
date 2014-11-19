@@ -29,6 +29,7 @@
 
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshCurveAlgoV.h> 
+
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
 //#include <Core/Datatypes/Legacy/Field/Matrix.h>
@@ -42,11 +43,11 @@
 //#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
-
-ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
-ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
-ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
-
+//
+//ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
+//ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
+//ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
+//
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -57,6 +58,9 @@ using namespace SCIRun::Core::Logging;
 
 ///////////////////////////////////////////////////////
 // Refine elements for a CurveMesh
+RefineMeshCurveAlgoV::RefineMeshCurveAlgoV()
+{
+}
 
 bool  
 RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output,
@@ -209,7 +213,7 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output,
       mesh->get_center(p0,nodes[0]);
       mesh->get_center(p1,nodes[1]);
     
-      p = (p0.asVector() + p1.asVector()).asPoint()*0.5;
+      p = Point((p0 + p1)*0.5);
       enodes[*be] = refined->add_point(p);
 
       nnodes[0] = nodes[0];
@@ -235,6 +239,23 @@ RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output,
   rfield->copy_properties(field);
 #endif
   return (true);
+}
+bool RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output) const
+{
+		std::string select;
+		double isoval;
+		return runImpl(input, output, select, isoval); 
+}
+AlgorithmOutput RefineMeshCurveAlgoV::run_generic(const AlgorithmInput& input) const 
+{
+	auto field = input.get<Field>(Variables::InputField);
+  FieldHandle outputField;
+
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+	AlgorithmOutput output;
+	output[Variables::OutputField] = outputField;
+  return output;
 }
 
     

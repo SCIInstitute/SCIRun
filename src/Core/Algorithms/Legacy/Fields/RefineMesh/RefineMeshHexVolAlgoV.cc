@@ -29,6 +29,7 @@
 
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshHexVolAlgoV.h> 
+
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/GeometryPrimitives/Point.h>
 //#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
@@ -50,9 +51,15 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
 
-ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
-ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
-ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
+//ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
+//ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
+//ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
+
+    int pattern_table[256][2];
+		SCIRun::Core::Geometry::Point hcoords[8];
+    
+    //static int hex_reorder_table[14][8];
+    //static double hcoords_double[8][3];
 
 Point RIinterpolate(VMesh *refined,
                         VMesh::Node::array_type& onodes,
@@ -74,7 +81,7 @@ Point RIinterpolate(VMesh *refined,
       for (int i = 0; i < 8; i++)
       {
         refined->get_point(p, onodes[i]);
-        result += (p * w[i]).asVector();
+        result += (p * w[i]);
       }
       
       return result;
@@ -101,148 +108,61 @@ double RIinterpolateV(std::vector<double>& ivalues,
         w[6]*ivalues[onodes[6]] + w[7]*ivalues[onodes[7]]);
     };
 
-VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point(VMesh *refined,
-                                      VMesh::Node::array_type &nodes,
-                                      const int *reorder, 
-                                      unsigned int a, 
-                                      unsigned int b,
-                                      double factor,
-                                      std::vector<double>& ivalues,
-                                      int basis_order)
-    {
-      Point coordsp;
-      
-      unsigned int ra = reorder[a];
-      unsigned int rb = reorder[b];
-      coordsp = Interpolate(hcoords[ra], hcoords[rb], factor);
-      
-      const Point inbetween = RIinterpolate(refined, nodes, coordsp);
-      if (basis_order == 1) ivalues.push_back(RIinterpolateV(ivalues,nodes,coordsp));
-      return refined->add_point(inbetween);
-    };
-
-VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point_convex(VMesh *refined,
-                                      VMesh::Node::array_type &nodes,
-                                      const int *reorder, 
-                                      VMesh::index_type a, 
-                                      VMesh::index_type b,
-                                      std::vector<double>& ivalues,
-                                      int basis_order)
-    {
-      VMesh::index_type ra = reorder[a];
-      VMesh::index_type rb = reorder[b];
-      Point coordsp = Interpolate(hcoords[ra], hcoords[rb], 1.0/3.0);
-      
-      const Point inbetween = RIinterpolate(refined, nodes, coordsp);
-
-      if (basis_order == 1) ivalues.push_back(RIinterpolateV(ivalues,nodes,coordsp));
-      return refined->add_point(inbetween);
-    };
-
-
-VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point_convex(VMesh *refined,
-                                      VMesh::Node::array_type &nodes,
-                                      Point coordsp,
-                                      std::vector<double>& ivalues,
-                                      int basis_order)
-    {
-      const Point inbetween = RIinterpolate(refined, nodes, coordsp);
-      if (basis_order == 1) ivalues.push_back(RIinterpolateV(ivalues,nodes,coordsp));
-      return refined->add_point(inbetween);
-    };
-
-
-VMesh::Node::index_type RefineMeshHexVolAlgoV::lookup(VMesh *refined,
-                                   hash_map_type &edgemap,
-                                   VMesh::Node::array_type &nodes,
-                                   const int *reorder, 
-                                   VMesh::index_type a, 
-                                   VMesh::index_type b,
-                                   double factor,
-                                   std::vector<double>& ivalues,
-                                   int basis_order)
-    {
-      edgepair_t ep;
-      ep.first = nodes[reorder[a]]; 
-      ep.second = nodes[reorder[b]];
-
-			hash_map_type::iterator it, it_end; 
-			it = edgemap.begin(); 
-			it_end = edgemap.end();
-      if (it == it_end)
-      {
-        const VMesh::Node::index_type newnode = add_point(refined, nodes, reorder, a, b, factor,ivalues,basis_order);
-        edgemap[ep.first] = newnode; 
-        return newnode;
-      }
-      else
-      {
-					return (*it).second;
-      }
-    };
-
-VMesh::Node::index_type lookup_convex(VMesh *refined,
-                                   hash_map_type &edgemap,
-                                   VMesh::Node::array_type &onodes,
-                                   const int *reorder, 
-                                   VMesh::index_type a, 
-                                   VMesh::index_type b,
-                                   std::vector<double>& ivalues,
-                                   int basis_order)
-    {
-      edgepair_t ep;
-      ep.first = onodes[reorder[a]]; 
-      ep.second = onodes[reorder[b]];
-			hash_map_type::iterator it, it_end; 
-			it = edgemap.begin();
-			it_end = edgemap.end(); 
-
-      if (it == it_end)
-      {
-        const VMesh::Node::index_type newnode =
-          add_point_convex(refined, onodes, reorder, a, b,ivalues,basis_order);
-				edgemap[ep] = newnode;
-        return newnode;
-      }
-      else
-      {
-        return (*it).second;
-      }
-    };
-
-void dice(VMesh *refined, 
-              hash_map_type &emap,
-              VMesh::Node::array_type nodes,
-              VMesh::index_type index, 
-              VMesh::mask_type mask,
-              std::vector<double>& ivalues,
-              std::vector<double>& evalues,
-              double vv,
-              int basis_order);
-
 unsigned int iedge(unsigned int a, unsigned int b)
     {
       return (1<<(7-a)) | (1<<(7-b));
     };
 
-    unsigned int iface(unsigned int a, unsigned int b,
+unsigned int iface(unsigned int a, unsigned int b,
                        unsigned int c, unsigned int d)
     {
       return iedge(a, b) | iedge(c, d);
     };
 
-    unsigned int iface3(unsigned int a, unsigned int b, unsigned int c)
+unsigned int iface3(unsigned int a, unsigned int b, unsigned int c)
     {
       return (1<<(7-a)) | (1<<(7-b)) | (1<<(7-c));
     };
 
-    void RefineMeshHexVolAlgoV::set_table(int i, int pattern, int reorder)
+int hex_reorder_table[14][8] = {
+  {0, 1, 2, 3, 4, 5, 6, 7},
+  {1, 2, 3, 0, 5, 6, 7, 4},
+  {2, 3, 0, 1, 6, 7, 4, 5},
+  {3, 0, 1, 2, 7, 4, 5, 6},
+
+  {4, 7, 6, 5, 0, 3, 2, 1},
+  {5, 4, 7, 6, 1, 0, 3, 2},
+  {6, 5, 4, 7, 2, 1, 0, 3},
+  {7, 6, 5, 4, 3, 2, 1, 0},
+
+  {4, 0, 3, 7, 5, 1, 2, 6},
+  {1, 5, 6, 2, 0, 4, 7, 3},
+  {6, 2, 1, 5, 7, 3, 0, 4},
+  {3, 7, 4, 0, 2, 6, 5, 1},
+
+  {1, 0, 4, 5, 2, 3, 7, 6},
+  {3, 2, 6, 7, 0, 1, 5, 4}
+};
+
+
+double hcoords_double[8][3] = {
+  { 0.0, 0.0, 0.0},
+  { 1.0, 0.0, 0.0},
+  { 1.0, 1.0, 0.0},
+  { 0.0, 1.0, 0.0},
+  { 0.0, 0.0, 1.0},
+  { 1.0, 0.0, 1.0},
+  { 1.0, 1.0, 1.0},
+  { 0.0, 1.0, 1.0}
+};
+
+void set_table(int i, int pattern, int reorder) 
     {
       pattern_table[i][0] = pattern;
       pattern_table[i][1] = reorder;
     };
 
-    void RefineMeshHexVolAlgoV::init_pattern_table()
+void init_pattern_table() 
     {
       for (int i = 0; i < 256; i++)
       {
@@ -334,37 +254,116 @@ unsigned int iedge(unsigned int a, unsigned int b)
       }
     };
 
-int RefineMeshHexVolAlgoV::hex_reorder_table[14][8] = {
-  {0, 1, 2, 3, 4, 5, 6, 7},
-  {1, 2, 3, 0, 5, 6, 7, 4},
-  {2, 3, 0, 1, 6, 7, 4, 5},
-  {3, 0, 1, 2, 7, 4, 5, 6},
+VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point(VMesh *refined,
+                                      VMesh::Node::array_type &nodes,
+                                      const int *reorder, 
+                                      unsigned int a, 
+                                      unsigned int b,
+                                      double factor,
+                                      std::vector<double>& ivalues,
+                                      int basis_order) const
+    {
+      Point coordsp;
+      
+      unsigned int ra = reorder[a];
+      unsigned int rb = reorder[b];
+      coordsp = Interpolate(hcoords[ra], hcoords[rb], factor);
+      
+      const Point inbetween = RIinterpolate(refined, nodes, coordsp);
+      if (basis_order == 1) ivalues.push_back(RIinterpolateV(ivalues,nodes,coordsp));
+      return refined->add_point(inbetween);
+    };
 
-  {4, 7, 6, 5, 0, 3, 2, 1},
-  {5, 4, 7, 6, 1, 0, 3, 2},
-  {6, 5, 4, 7, 2, 1, 0, 3},
-  {7, 6, 5, 4, 3, 2, 1, 0},
+VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point_convex(VMesh *refined,
+                                      VMesh::Node::array_type &nodes,
+                                      const int *reorder, 
+                                      VMesh::index_type a, 
+                                      VMesh::index_type b,
+                                      std::vector<double>& ivalues,
+                                      int basis_order) const
+    {
+      VMesh::index_type ra = reorder[a];
+      VMesh::index_type rb = reorder[b];
+      Point coordsp = Interpolate(hcoords[ra], hcoords[rb], 1.0/3.0);
+      
+      const Point inbetween = RIinterpolate(refined, nodes, coordsp);
 
-  {4, 0, 3, 7, 5, 1, 2, 6},
-  {1, 5, 6, 2, 0, 4, 7, 3},
-  {6, 2, 1, 5, 7, 3, 0, 4},
-  {3, 7, 4, 0, 2, 6, 5, 1},
-
-  {1, 0, 4, 5, 2, 3, 7, 6},
-  {3, 2, 6, 7, 0, 1, 5, 4}
-};
+      if (basis_order == 1) ivalues.push_back(RIinterpolateV(ivalues,nodes,coordsp));
+      return refined->add_point(inbetween);
+    };
 
 
-double RefineMeshHexVolAlgoV::hcoords_double[8][3] = {
-  { 0.0, 0.0, 0.0},
-  { 1.0, 0.0, 0.0},
-  { 1.0, 1.0, 0.0},
-  { 0.0, 1.0, 0.0},
-  { 0.0, 0.0, 1.0},
-  { 1.0, 0.0, 1.0},
-  { 1.0, 1.0, 1.0},
-  { 0.0, 1.0, 1.0}
-};
+VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point_convex(VMesh *refined,
+                                      VMesh::Node::array_type &nodes,
+                                      Point coordsp,
+                                      std::vector<double>& ivalues,
+                                      int basis_order) const
+    {
+      const Point inbetween = RIinterpolate(refined, nodes, coordsp);
+      if (basis_order == 1) ivalues.push_back(RIinterpolateV(ivalues,nodes,coordsp));
+      return refined->add_point(inbetween);
+    };
+
+
+VMesh::Node::index_type RefineMeshHexVolAlgoV::lookup(VMesh *refined,
+                                   hash_map_type &edgemap,
+                                   VMesh::Node::array_type &nodes,
+                                   const int *reorder, 
+                                   VMesh::index_type a, 
+                                   VMesh::index_type b,
+                                   double factor,
+                                   std::vector<double>& ivalues,
+                                   int basis_order) const
+    {
+      edgepair_t ep;
+      ep.first = nodes[reorder[a]]; 
+      ep.second = nodes[reorder[b]];
+
+			hash_map_type::iterator it, it_end; 
+			it = edgemap.begin(); 
+			it_end = edgemap.end();
+      if (it == it_end)
+      {
+        const VMesh::Node::index_type newnode = add_point(refined, nodes, reorder, a, b, factor,ivalues,basis_order);
+        edgemap[ep.first] = newnode; 
+        return newnode;
+      }
+      else
+      {
+					return (*it).second;
+      }
+    };
+
+VMesh::Node::index_type RefineMeshHexVolAlgoV::lookup_convex(VMesh *refined,
+                                   hash_map_type &edgemap,
+                                   VMesh::Node::array_type &onodes,
+                                   const int *reorder, 
+                                   VMesh::index_type a, 
+                                   VMesh::index_type b,
+                                   std::vector<double>& ivalues,
+                                   int basis_order) const
+    {
+      edgepair_t ep;
+      ep.first = onodes[reorder[a]]; 
+      ep.second = onodes[reorder[b]];
+			hash_map_type::iterator it, it_end; 
+			it = edgemap.begin();
+			it_end = edgemap.end(); 
+
+      if (it == it_end)
+      {
+        const VMesh::Node::index_type newnode =
+          add_point_convex(refined, onodes, reorder, a, b,ivalues,basis_order);
+				//edgemap.find(ep) = newnode;
+				//edgemap.insert(newnode); 
+				edgemap[ep.first] = newnode; 
+        return newnode;
+      }
+      else
+      {
+        return (*it).second;
+      }
+    };
 
 void
 RefineMeshHexVolAlgoV::dice(VMesh *refined,
@@ -375,7 +374,7 @@ RefineMeshHexVolAlgoV::dice(VMesh *refined,
                            std::vector<double>& ivalues,
                            std::vector<double>& evalues,
                            double vv,
-                           int basis_order)
+                           int basis_order)const
 {
   const int *ro = hex_reorder_table[index];
 
@@ -522,10 +521,15 @@ RefineMeshHexVolAlgoV::dice(VMesh *refined,
 
 
 
+RefineMeshHexVolAlgoV::RefineMeshHexVolAlgoV()
+{
+
+}
+
 bool
 RefineMeshHexVolAlgoV::
-runImpl(FieldHandle input, FieldHandle& output,
-               std::string select, double isoval) const//convex???
+runImpl(FieldHandle input, FieldHandle& output, bool convex, 
+               std::string select, double isoval) const
 {
   // Obtain information on what type of input field we have
   FieldInformation fi(input);
@@ -533,7 +537,7 @@ runImpl(FieldHandle input, FieldHandle& output,
   fi.make_hexvolmesh();
   output = CreateField(fi);
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create an output field");
     return (false);
@@ -564,7 +568,7 @@ runImpl(FieldHandle input, FieldHandle& output,
   std::vector<double> ivalues;
   std::vector<double> evalues;
 
-  maxnode = mesh->num_nodes();
+ // maxnode = mesh->num_nodes();
   init_pattern_table();
 
   // get all values, make computation easier
@@ -663,7 +667,7 @@ runImpl(FieldHandle input, FieldHandle& output,
     for (size_t j=0;j<values.size();j++) values[j] = true;
   }
 
-	/*
+	
   if (convex)
   {
     int basis_order = rfield->basis_order();
@@ -726,7 +730,7 @@ runImpl(FieldHandle input, FieldHandle& output,
     
     while (bi != ei)
     {
-      cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; algo->update_progress(loopcnt,sz);  }
+				cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; }//asr->update_progress_max(loopcnt,sz);  }
 
       mesh->get_nodes(onodes, *bi);
     
@@ -1519,7 +1523,7 @@ runImpl(FieldHandle input, FieldHandle& output,
 
     while (bi != ei)
     {
-      cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; algo->update_progress(loopcnt,sz);  }
+				cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0;}// algo->update_progress(loopcnt,sz);  }
 
       mesh->get_nodes(onodes, *bi);
       
@@ -1563,7 +1567,7 @@ runImpl(FieldHandle input, FieldHandle& output,
       ++bi;
     }
   }
-  */
+
   rfield->resize_values();
   if (rfield->basis_order() == 0) rfield->set_values(evalues);
   if (rfield->basis_order() == 1) rfield->set_values(ivalues);
@@ -1572,5 +1576,21 @@ runImpl(FieldHandle input, FieldHandle& output,
   #endif
 	return (true);
 }
+bool RefineMeshHexVolAlgoV::runImpl(FieldHandle input, FieldHandle& output) const
+{
+		std::string select;
+		double isoval;
+		bool convex = 0;
+		return runImpl(input, output, convex, select, isoval); 
+}
+AlgorithmOutput RefineMeshHexVolAlgoV::run_generic(const AlgorithmInput& input) const 
+{
+	auto field = input.get<Field>(Variables::InputField);
+  FieldHandle outputField;
 
-    
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+	AlgorithmOutput output;
+	output[Variables::OutputField] = outputField;
+  return output;
+}

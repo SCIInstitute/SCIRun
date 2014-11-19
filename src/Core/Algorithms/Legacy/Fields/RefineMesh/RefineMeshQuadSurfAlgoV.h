@@ -33,8 +33,9 @@
 #include <Core/Datatypes/DatatypeFwd.h> 
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <boost/unordered_map.hpp> 
-#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/EdgePairHash.h> 
+
 // Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
@@ -42,71 +43,33 @@
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 using namespace SCIRun::Core::Geometry;
-//using namespace SCIRun::Core::Algorithms::Fields; 
+//using namespace SCIRun::Core::Algorithms::Fields;
 
 namespace SCIRun{
 		namespace Core{
 				namespace Algorithms{
 						namespace Fields{
 
-//struct edgepair_t
-//		{
-//      VMesh::index_type first;
-//      VMesh::index_type second;
-//    };
-//
-//struct edgepairequal
-//{
-//    bool operator()(const edgepair_t &a, const edgepair_t &b) const
-//    {
-//    return a.first == b.first && a.second == b.second;
-//    }
-//};
-//
-//struct edgepairless
-//{
-//    bool operator()(const edgepair_t &a, const edgepair_t &b)
-//    {
-//    return less(a, b);
-//    }
-//    static bool less(const edgepair_t &a, const edgepair_t &b)
-//    {
-//    return a.first < b.first || a.first == b.first && a.second < b.second;
-//    }
-//};
-//
-//struct IndexHash {
-//  static const size_t bucket_size = 4;
-//  static const size_t min_buckets = 8;
-//  
-//  size_t operator()(const index_type &idx) const
-//    { return (static_cast<size_t>(idx)); }
-//  
-//  bool operator()(const index_type &i1, const index_type &i2) const
-//    { return (i1 < i2); }
-//};
-//
-
-typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
 
 class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
 {
   public:  
     RefineMeshQuadSurfAlgoV();
 	
-	bool runImpl(FieldHandle input, FieldHandle& output) const; 
 	bool runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const; 
-	virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+	bool runImpl(FieldHandle input, FieldHandle& output) const; 
+	AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 	
   private:
 								 
+  
 	//Point RIinterpolate(VMesh *refined,
  //                     VMesh::Node::array_type& onodes,
  //                     double coords[2]); 					 
-	//
-	Double RIinterpolateV(std::vector<double>& ivalues,
+	
+	double RIinterpolateV(std::vector<double>& ivalues,
                         VMesh::Node::array_type& onodes,
-                        double coords[2]);			
+                        double coords[2])const;			
 						
 	void dice(VMesh *refined, 
 						 hash_map_type &emap,
@@ -117,14 +80,14 @@ class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
              std::vector<double>& ivalues,
              std::vector<double>& evalues,
 						 double vv,
-						 int basis_order);
+						 int basis_order) const;
 
 	VMesh::Node::index_type lookup(VMesh *refined,
                                  hash_map_type &edgemap,
                                  VMesh::Node::index_type a,
                                  VMesh::Node::index_type b,
                                  double factor,
-                                 std::vector<double>& ivalues); 
+                                 std::vector<double>& ivalues) const; 
 };
 
 								}}}}

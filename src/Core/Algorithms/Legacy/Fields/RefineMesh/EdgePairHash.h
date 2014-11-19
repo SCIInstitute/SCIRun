@@ -26,36 +26,59 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTETVOLALGOV_H
-#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTETVOLALGOV_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H
+#define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
 
 // Datatypes that the algorithm uses
 #include <Core/Datatypes/DatatypeFwd.h> 
-
-// Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-
-// for Windows support
-#include <Core/Algorithms/Legacy/Fields/share.h>
-
-using namespace SCIRun::Core::Geometry; 
+#include <boost\unordered_map.hpp> 
 
 namespace SCIRun{
 		namespace Core{
 				namespace Algorithms{
 						namespace Fields{
 
-class SCISHARE RefineMeshTetVolAlgoV : public AlgorithmBase
+struct edgepair_t
+		{
+      VMesh::index_type first;
+      VMesh::index_type second;
+    };
+
+struct edgepairequal
 {
-		public:
-				RefineMeshTetVolAlgoV();
-				
-		bool runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const;
-		bool runImpl(FieldHandle input, FieldHandle& output) const; 
-		AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+    bool operator()(const edgepair_t &a, const edgepair_t &b) const
+    {
+    return a.first == b.first && a.second == b.second;
+    }
 };
-						}}}}
+
+struct edgepairless
+{
+    bool operator()(const edgepair_t &a, const edgepair_t &b)
+    {
+    return less(a, b);
+    }
+    static bool less(const edgepair_t &a, const edgepair_t &b)
+    {
+    return a.first < b.first || a.first == b.first && a.second < b.second;
+    }
+};
+
+struct IndexHash {
+  static const size_t bucket_size = 4;
+  static const size_t min_buckets = 8;
+  
+  size_t operator()(const index_type &idx) const
+    { return (static_cast<size_t>(idx)); }
+  
+  bool operator()(const index_type &i1, const index_type &i2) const
+    { return (i1 < i2); }
+};
+
+
+typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
+
+
+								}}}}
 
 #endif

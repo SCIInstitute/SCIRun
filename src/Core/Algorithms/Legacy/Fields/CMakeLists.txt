@@ -75,6 +75,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   RefineMesh/RefineMeshQuadSurfAlgoV.h
   RefineMesh/RefineMeshTetVolAlgoV.h
   RefineMesh/RefineMeshTriSurfAlgoV.h
+  RefineMesh/EdgePairHash.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS

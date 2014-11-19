@@ -29,9 +29,10 @@
 
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshTetVolAlgoV.h> 
+
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Matrix/Matrix.h> 
+//#include <Core/Datatypes/Legacy/Matrix/Matrix.h> 
 // For mapping matrices
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -40,7 +41,6 @@
 
 //STL classes needed
 //#include <sci_hash_map.h>
-//#include <boost\unordered_map.hpp> 
 #include <algorithm>
 #include <set>
 
@@ -52,6 +52,11 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
+
+RefineMeshTetVolAlgoV::RefineMeshTetVolAlgoV()
+{
+
+}
 
 bool  
 RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output,
@@ -203,7 +208,7 @@ RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output,
       mesh->get_center(p0,nodes[0]);
       mesh->get_center(p1,nodes[1]);
     
-      p = (p0.asVector() + p1.asVector()).asPoint()*0.5;
+      p = (p0 + p1).asPoint()*0.5;
     
       enodes[*be] = refined->add_point(p);
       if(field->basis_order() == 1)
@@ -229,7 +234,7 @@ RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output,
 
   while (bi != ei)
   {
-    cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; algo->update_progress(loopcnt,sz);  }
+			cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0;}// algo->update_progress(loopcnt,sz);  }
     mesh->get_nodes(onodes, *bi);
     mesh->get_edges(oedges, *bi);
 
@@ -813,4 +818,21 @@ RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output,
 	rfield->copy_properties(field);
 	#endif
   return (true);
+}
+bool RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output) const
+{
+		std::string select;
+		double isoval;
+		return runImpl(input, output, select, isoval); 
+}
+AlgorithmOutput RefineMeshTetVolAlgoV::run_generic(const AlgorithmInput& input) const 
+{
+	auto field = input.get<Field>(Variables::InputField);
+  FieldHandle outputField;
+
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+	AlgorithmOutput output;
+	output[Variables::OutputField] = outputField;
+  return output;
 }

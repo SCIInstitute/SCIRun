@@ -129,11 +129,12 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   
   if (fi.is_hex_element())
   {
-    bool convex; 
+		bool convex = 0; 
+		//get_option(
+		//get_option("hex_convex",convex); 
 		//get_bool("hex_convex",convex);
     RefineMeshHexVolAlgoV algo;
-    return(algo.runImpl(input,output,addCon,isoVal));
-				//return(algo.runImpl(input,output,convex,addCon,isoVal)); //what is Convex???
+		return(algo.runImpl(input,output,convex,addCon,isoVal));
   }
 
   if (fi.is_crv_element())
