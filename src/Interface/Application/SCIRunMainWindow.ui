@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1114</width>
-         <height>467</height>
+         <width>1117</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -1172,7 +1172,7 @@
   </action>
   <action name="actionCenterNetworkViewer_">
    <property name="text">
-    <string>Center Network Viewer</string>
+    <string>Center Network View</string>
    </property>
   </action>
   <action name="actionResetNetworkZoom_">

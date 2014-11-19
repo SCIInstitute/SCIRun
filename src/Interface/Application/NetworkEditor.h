@@ -184,7 +184,7 @@ Q_SIGNALS:
     void zoomIn();
     void zoomOut();
     void zoomReset();
-    //void centerView();
+    void centerView();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -220,6 +220,7 @@ Q_SIGNALS:
     void addNewModuleAtPosition(const QPoint& position);
     ConnectionLine* getSingleConnectionSelected();
     void unselectConnectionGroup();
+    void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions) const;
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;

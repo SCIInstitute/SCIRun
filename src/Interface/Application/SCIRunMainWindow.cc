@@ -247,7 +247,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
-  //actionCenterNetworkViewer_->setIcon(QPixmap(":/general/Resources/align_center.png"));
+  connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
 
   setupInputWidgets();
 
@@ -712,7 +712,6 @@ void SCIRunMainWindow::zoomNetwork()
   if (action)
   {
     const QString name = action->text();
-    //std::cout << "zoom Network sender: " << name.toStdString() << std::endl;
     if (name == "Zoom In")
     {
       networkEditor_->zoomIn();

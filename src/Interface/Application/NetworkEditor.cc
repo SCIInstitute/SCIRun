@@ -622,14 +622,26 @@ void NetworkEditor::unselectConnectionGroup()
 ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 {
   ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
+  fillModulePositionMap(*positions);
+  return positions;
+}
+
+void NetworkEditor::fillModulePositionMap(ModulePositions& positions) const
+{
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      positions->modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
+      positions.modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
     }
   }
-  return positions;
+}
+
+void NetworkEditor::centerView()
+{
+  ModulePositions positions;
+  fillModulePositionMap(positions);
+  centerOn(findCenterOfNetwork(positions));
 }
 
 ModuleNotesHandle NetworkEditor::dumpModuleNotes() const

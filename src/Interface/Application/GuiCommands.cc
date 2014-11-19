@@ -38,6 +38,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Interface/Application/Utility.h>
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
 
@@ -118,11 +119,16 @@ namespace
     return sum / num;
   }
 
-  QPointF findCenterOfNetwork(const NetworkFile& file)
+  QPointF findCenterOfNetworkFile(const NetworkFile& file)
   {
-    auto pointRange = file.modulePositions.modulePositions | boost::adaptors::map_values;
-    return centroidOfPointRange(pointRange.begin(), pointRange.end());
+    return findCenterOfNetwork(file.modulePositions);
   }
+}
+
+QPointF SCIRun::Gui::findCenterOfNetwork(const ModulePositions& positions)
+{
+  auto pointRange = positions.modulePositions | boost::adaptors::map_values;
+  return centroidOfPointRange(pointRange.begin(), pointRange.end());
 }
 
 namespace std
@@ -168,7 +174,7 @@ bool FileOpenCommand::execute()
       }
       openedFile_ = openedFile;
 
-      QPointF center = findCenterOfNetwork(*openedFile_);
+      QPointF center = findCenterOfNetworkFile(*openedFile_);
       networkEditor_->centerOn(center);
 
       GuiLogger::Instance().log("File load done.");
