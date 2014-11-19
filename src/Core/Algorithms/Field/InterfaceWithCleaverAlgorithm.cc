@@ -87,16 +87,8 @@ boost::shared_ptr<Cleaver::ScalarField> InterfaceWithCleaverAlgorithm::makeCleav
   
   float* ptr = static_cast<float*>(vfield->fdata_pointer());
   
-  auto cleaverField = boost::make_shared<Cleaver::FloatField>(dims[0], dims[1], dims[2], ptr);  
-    
-  BBox bbox=vmesh->get_bounding_box();
-  Point bmin, bmax;
-  if (bbox.valid())
-  {
-   bmin = bbox.min();
-   bmax = bbox.max();
-  }
-  Cleaver::BoundingBox  bb = Cleaver::BoundingBox(Cleaver::vec3::zero, Cleaver::vec3(dims[0],dims[1],dims[2]));
+  auto cleaverField = boost::make_shared<Cleaver::FloatField>(dims[0], dims[1], dims[2], ptr); 
+  Cleaver::BoundingBox bb(Cleaver::vec3::zero, Cleaver::vec3(dims[0],dims[1],dims[2]));
   cleaverField->setBounds(bb);
   const Transform &transform = vmesh->get_transform();
   
