@@ -122,7 +122,7 @@ namespace Datatypes {
       }
     }
 
-    m.resize(values.size(), values[0].size());
+    m.resize(values.size(), values.empty() ? 0 : values[0].size());
     m.setZero();
     for (int i = 0; i < m.rows(); ++i)
     {
