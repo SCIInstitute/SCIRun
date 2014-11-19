@@ -111,11 +111,17 @@ QTimer* ShowSplashScreenGui::splashTimer_ = 0;
 namespace
 {
   template <class PointIter>
-  QPointF findCenterOfNetwork(PointIter begin, PointIter end)
+  QPointF centroidOfPointRange(PointIter begin, PointIter end)
   {
     QPointF sum = std::accumulate(begin, end, QPointF(), [](const QPointF& acc, const typename PointIter::value_type& point) { return acc + QPointF(point.first, point.second); });
     size_t num = std::distance(begin, end);
     return sum / num;
+  }
+
+  QPointF findCenterOfNetwork(const NetworkFile& file)
+  {
+    auto pointRange = file.modulePositions.modulePositions | boost::adaptors::map_values;
+    return centroidOfPointRange(pointRange.begin(), pointRange.end());
   }
 }
 
@@ -153,7 +159,7 @@ bool FileOpenCommand::execute()
         progress.show();
         progress.setValue(0);
 
-        //TODO: trying to load in a separate thread exposed problems with the signal/slots related to wiring up the GUI elements, 
+        //TODO: trying to load in a separate thread exposed problems with the signal/slots related to wiring up the GUI elements,
         // so I'll come back to this idea when there's time to refactor that part of the code (NEC::loadNetwork)
         //QFuture<int> future = QtConcurrent::run(load);
         //progress.setValue(future.result());
@@ -162,8 +168,7 @@ bool FileOpenCommand::execute()
       }
       openedFile_ = openedFile;
 
-      auto pointRange = openedFile_->modulePositions.modulePositions | boost::adaptors::map_values;
-      QPointF center = findCenterOfNetwork(pointRange.begin(), pointRange.end());
+      QPointF center = findCenterOfNetwork(*openedFile_);
       networkEditor_->centerOn(center);
 
       GuiLogger::Instance().log("File load done.");
