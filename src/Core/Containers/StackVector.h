@@ -53,16 +53,20 @@ public:
   typedef boost::array<T, CAPACITY> base_type;
   typedef typename base_type::value_type value_type;
 
-  StackVector() {}
-  StackVector(size_t size, const value_type& v = value_type())
+  StackVector() : size_(0) {}
+  StackVector(size_t size, const value_type& v = value_type()) : size_(size)
   {
     this->fill(v);
   }
   void resize(size_t size, const value_type& val = value_type())
   {
+    size_ = size;
     //not sure what to do here. semantics is different, but SCIRun 4 probably overruns buffers all the time anyway...
   }
   void clear() {}
+  size_t size() const { return size_; }
+private:
+  size_t size_;
 };
 
 } // End namespace SCIRun

@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <memory>
+#include <numeric>
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 
@@ -242,7 +243,8 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
 
   {
     Log::get() << DEBUG_LOG << id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value." << std::endl;
-    inputsChanged_ = inputsChanged_ || port->hasChanged();
+    // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
+    inputsChanged_ = port->hasChanged() || inputsChanged_;
     Log::get() << DEBUG_LOG << id_ << ":: inputsChanged is now " << inputsChanged_ << std::endl;
   }
 
@@ -260,11 +262,11 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is static, get_input_handle must be called."));
   }
 
-
-
   {
     LOG_DEBUG(id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value.");
-    inputsChanged_ = inputsChanged_ || std::any_of(portsWithName.begin(), portsWithName.end(), [](InputPortHandle input) { return input->hasChanged(); });
+    // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
+    bool startingVal = inputsChanged_;
+    inputsChanged_ = std::accumulate(portsWithName.begin(), portsWithName.end(), startingVal, [](bool acc, InputPortHandle input) { return input->hasChanged() || acc; });
     LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
   }
 
