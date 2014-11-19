@@ -57,6 +57,8 @@ using namespace SCIRun;
 using namespace boost::assign;
 using namespace Parameters;
 
+ALGORITHM_PARAMETER_DEF(BrainStimulator, AllTDCSInputs);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, UseThisPrototype);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ComboBoxesAreSetup);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, NumberOfPrototypes);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, TableValues);
@@ -74,11 +76,13 @@ const double ElectrodeCoilSetupAlgorithm::number_of_columns = 10;
 
 ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
 {
+  addParameter(AllTDCSInputs, 0);
+  addParameter(UseThisPrototype, 0);
   addParameter(ComboBoxesAreSetup, 0);
   addParameter(NumberOfPrototypes, 0);
   addParameter(TableValues, 0);
-  addParameter(ProtoTypeInputCheckbox, 0);
-  addParameter(AllInputsTDCS, 0);
+  addParameter(ProtoTypeInputCheckbox, false);
+  addParameter(AllInputsTDCS, false);
   addParameter(ProtoTypeInputComboBox, 0);
 }
 

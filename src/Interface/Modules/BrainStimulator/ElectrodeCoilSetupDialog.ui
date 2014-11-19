@@ -64,6 +64,9 @@
    <property name="text">
     <string>All inputs are tDCS electrodes</string>
    </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QCheckBox" name="ProtoTypeInputCheckbox_">
    <property name="geometry">
@@ -76,6 +79,9 @@
    </property>
    <property name="text">
     <string>Only use this prototype input:</string>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QComboBox" name="ProtoTypeInputComboBox_">

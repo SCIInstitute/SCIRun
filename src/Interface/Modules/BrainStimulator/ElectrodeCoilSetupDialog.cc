@@ -54,8 +54,27 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   
   addCheckBoxManager(ProtoTypeInputCheckbox_, Parameters::ProtoTypeInputCheckbox);
   addCheckBoxManager(AllInputsTDCS_, Parameters::AllInputsTDCS); 
+  ProtoTypeInputCheckbox_->setChecked(false);
+  AllInputsTDCS_->setChecked(false);
   addComboBoxManager(ProtoTypeInputComboBox_, Parameters::ProtoTypeInputComboBox);
-  connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
+  connect(AllInputsTDCS_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(ProtoTypeInputCheckbox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(validateCell(int, int)));
+}
+
+void ElectrodeCoilSetupDialog::validateCell(int row, int col)
+{
+  QString text = electrode_coil_tableWidget->item(row, col)->text();
+  QDoubleValidator validator;
+  int index;
+  if (validator.validate(text, index) == QValidator::Acceptable)
+  {
+    push();
+  }
+  else
+  {
+    electrode_coil_tableWidget->item(row, col)->setText("???");
+  }
 }
 
 std::vector<Variable> ElectrodeCoilSetupDialog::validate_numerical_input(int i)
@@ -156,7 +175,25 @@ void ElectrodeCoilSetupDialog::push()
 
   if (!pulling_)
   {
-   //std::cout << "push " << std::endl;
+   if (AllInputsTDCS_->isChecked())
+   {
+     std::cout << "push: AllInputsTDCS_ true" << std::endl;
+   } else
+   {
+     std::cout << "push: AllInputsTDCS_ false" << std::endl;
+   }
+   
+   if (ProtoTypeInputCheckbox_->isChecked())
+   {
+     std::cout << "push: ProtoTypeInputCheckbox_ true" << std::endl;
+   } else
+   {
+     std::cout << "push: ProtoTypeInputCheckbox_ false" << std::endl;
+   }
+   
+   state_->setValue(Parameters::AllTDCSInputs, AllInputsTDCS_->isChecked() ? std::string("1") : std::string("0"));
+   state_->setValue(Parameters::UseThisPrototype, ProtoTypeInputCheckbox_->isChecked() ? std::string("1") : std::string("0"));
+   
    
    std::vector<AlgorithmParameter> vals_in_table;
    int rows = electrode_coil_tableWidget->rowCount();
@@ -179,10 +216,6 @@ void ElectrodeCoilSetupDialog::push()
 
 void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::string& tmpstr)
 {
-  if(i<0 || !tmpstr.size()>0 )
-  { 
-    
-  }
   QStringList type_items;
   type_items<<"???"<<"TMS"<<"tDCS";
   QStringList inputports_items;  
@@ -195,7 +228,7 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::string& tmpstr)
   for (int k=0;k<nrinput;k++)
   {
    std::ostringstream str;
-   str << "USE_MODULE_INPUTPORT_" << std::to_string(k+3);
+   str << "USE_MODULE_INPUTPORT_" << k+3;
    inputports_items << QString::fromStdString(str.str());  
   }
   InputPorts->addItems(inputports_items);
@@ -230,7 +263,32 @@ void ElectrodeCoilSetupDialog::pull()
 
   if (all_elc_values.size()>0)
   {
+   
+   if (AllInputsTDCS_->isChecked())
+   {
+     std::cout << "pull: AllInputsTDCS_ true" << std::endl;
+   } else
+   {
+     std::cout << "pull: AllInputsTDCS_ false" << std::endl;
+   }
+   
+   if (ProtoTypeInputCheckbox_->isChecked())
+   {
+     std::cout << "pull: ProtoTypeInputCheckbox_ true" << std::endl;
+   } else
+   {
+     std::cout << "pull: ProtoTypeInputCheckbox_ false" << std::endl;
+   }
    //std::cout << "pull " << std::endl;
+     
+   auto button = state_->getValue(Parameters::AllTDCSInputs).toString();
+   bool AllTDCSInputsButton("1" == button);
+   AllInputsTDCS_->setChecked(AllTDCSInputsButton);
+   
+   button = state_->getValue(Parameters::UseThisPrototype).toString();
+   bool UseThisPrototypeButton("1" == button);
+   ProtoTypeInputCheckbox_->setChecked(UseThisPrototypeButton);
+   
    electrode_coil_tableWidget->setRowCount(static_cast<int>(all_elc_values.size()));
    
    //remember the combobox settings

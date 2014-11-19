@@ -50,13 +50,12 @@ public:
   private Q_SLOTS:
   void pull();
   void push();
-
+  void validateCell(int row, int col);
 private:
   std::vector<QWidget*> InputPortsVector;
   std::vector<QWidget*> StimTypeVector;  
   std::vector<int> saved_InputPortsVector;
   std::vector<int> saved_StimTypeVector;
-  
   void initialize_comboboxes(int i, std::string& tmpstr);
   std::vector<Core::Algorithms::Variable> validate_numerical_input(int i);
 };

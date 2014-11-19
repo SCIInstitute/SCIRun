@@ -47,6 +47,8 @@ namespace BrainStimulator {
   ALGORITHM_PARAMETER_DECL(ProtoTypeInputComboBox);
   ALGORITHM_PARAMETER_DECL(NumberOfPrototypes);
   ALGORITHM_PARAMETER_DECL(ComboBoxesAreSetup);
+  ALGORITHM_PARAMETER_DECL(AllTDCSInputs);
+  ALGORITHM_PARAMETER_DECL(UseThisPrototype);
   
   class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
   {
