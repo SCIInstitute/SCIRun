@@ -74,6 +74,7 @@ public:
   ~SCIRunMainWindow();
 public Q_SLOTS:
   void executeAll();
+  void showZoomStatusMessage(int zoomLevel);
 protected:
   virtual void closeEvent(QCloseEvent* event);
 private:
@@ -155,6 +156,7 @@ private Q_SLOTS:
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void resetWindowLayout();
+  void zoomNetwork();
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
   void adjustModuleDock(int state);

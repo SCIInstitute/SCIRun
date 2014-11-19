@@ -133,6 +133,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   standardBar->addAction(actionCenterNetworkViewer_);
   standardBar->addAction(actionZoomIn_);
   standardBar->addAction(actionZoomOut_);
+  //TODO: requires some real code
+  actionZoomBestFit_->setDisabled(true);
   standardBar->addAction(actionZoomBestFit_);
   standardBar->addAction(actionResetNetworkZoom_);
   standardBar->addAction(actionDragMode_);
@@ -239,6 +241,13 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
   connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
+
+  connect(actionResetNetworkZoom_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
+  //actionCenterNetworkViewer_->setIcon(QPixmap(":/general/Resources/align_center.png"));
 
   setupInputWidgets();
 
@@ -666,7 +675,10 @@ void SCIRunMainWindow::chooseBackgroundColor()
 void SCIRunMainWindow::setDragMode(bool toggle)
 {
   if (toggle)
+  {
     networkEditor_->setMouseAsDragMode();
+    statusBar()->showMessage("Mouse in drag mode", 2000);
+  }
   if (actionDragMode_->isChecked())
   {
     actionSelectMode_->setChecked(false);
@@ -680,7 +692,10 @@ void SCIRunMainWindow::setDragMode(bool toggle)
 void SCIRunMainWindow::setSelectMode(bool toggle)
 {
   if (toggle)
+  {
     networkEditor_->setMouseAsSelectMode();
+    statusBar()->showMessage("Mouse in select mode", 2000);
+  }
   if (actionSelectMode_->isChecked())
   {
     actionDragMode_->setChecked(false);
@@ -689,6 +704,37 @@ void SCIRunMainWindow::setSelectMode(bool toggle)
   {
     actionDragMode_->setChecked(true);
   }
+}
+
+void SCIRunMainWindow::zoomNetwork()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  if (action)
+  {
+    const QString name = action->text();
+    //std::cout << "zoom Network sender: " << name.toStdString() << std::endl;
+    if (name == "Zoom In")
+    {
+      networkEditor_->zoomIn();
+    }
+    else if (name == "Zoom Out")
+    {
+      networkEditor_->zoomOut();
+    }
+    else if (name == "Reset Network Zoom")
+    {
+      networkEditor_->zoomReset();
+    }
+  }
+  else
+  {
+    std::cerr << "Sender was null or not an action" << std::endl;
+  }
+}
+
+void SCIRunMainWindow::showZoomStatusMessage(int zoomLevel)
+{
+  statusBar()->showMessage(tr("Zoom: %1%").arg(zoomLevel), 2000);
 }
 
 void SCIRunMainWindow::resetBackgroundColor()

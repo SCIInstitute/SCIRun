@@ -150,6 +150,8 @@ Q_SIGNALS:
 
     boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
+    int currentZoomPercentage() const;
+
   protected:
     virtual void dropEvent(QDropEvent* event) override;
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
@@ -179,6 +181,9 @@ Q_SIGNALS:
     void connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
     void setMouseAsDragMode();
     void setMouseAsSelectMode();
+    void zoomIn();
+    void zoomOut();
+    void zoomReset();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -191,6 +196,7 @@ Q_SIGNALS:
     void defaultNotePositionChanged(NotePosition position);
     void sceneChanged(const QList<QRectF>& region);
     void snapToModules();
+    void zoomLevelChanged(int zoom);
   private Q_SLOTS:
     void cut();
     void copy();

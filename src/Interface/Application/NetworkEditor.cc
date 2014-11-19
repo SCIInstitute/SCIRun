@@ -882,36 +882,60 @@ void NetworkEditor::restoreAllModuleUIs()
   }
 }
 
+namespace
+{
+  const double minScale = 0.03;
+  const double maxScale = 4.0;
+  const double scaleFactor = 1.15;
+}
+
 void NetworkEditor::wheelEvent(QWheelEvent* event)
 {
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-  const double minScale = 0.03;
-  const double maxScale = 4.0;
-
-  // Scale the view / do the zoom
-  const double scaleFactor = 1.15;
   if (event->delta() > 0)
   {
-    if (currentScale_ < maxScale)
-    {
-      // Zoom in
-      scale(scaleFactor, scaleFactor);
-      currentScale_ *= scaleFactor;
-    }
+    zoomIn();
   }
   else
   {
-    if (currentScale_ > minScale)
-    {
-      // Zooming out
-      scale(1.0 / scaleFactor, 1.0 / scaleFactor);
-      currentScale_ /= scaleFactor;
-    }
+    zoomOut();
   }
-  //std::cout << "Current scale: " << currentScale_ << std::endl;
   // Don't call superclass handler here
   // as wheel is normally used for moving scrollbars
+}
+
+void NetworkEditor::zoomIn()
+{
+  if (currentScale_ < maxScale)
+  {
+    double factor = std::min(scaleFactor, 4.0/currentScale_);
+    scale(factor, factor);
+    currentScale_ *= factor;
+    Q_EMIT zoomLevelChanged(currentZoomPercentage());
+  }
+}
+
+void NetworkEditor::zoomOut()
+{
+  if (currentScale_ > minScale)
+  {
+    scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+    currentScale_ /= scaleFactor;
+    Q_EMIT zoomLevelChanged(currentZoomPercentage());
+  }
+}
+
+void NetworkEditor::zoomReset()
+{
+  scale(1.0 / currentScale_, 1.0 / currentScale_);
+  currentScale_ = 1;
+  Q_EMIT zoomLevelChanged(currentZoomPercentage());
+}
+
+int NetworkEditor::currentZoomPercentage() const
+{
+  return static_cast<int>(currentScale_ * 100);
 }
 
 NetworkEditor::~NetworkEditor()
