@@ -64,6 +64,7 @@ std::vector<Variable> ElectrodeCoilSetupDialog::validate_numerical_input(int i)
     int inputport_ind=((QComboBox *)InputPortsVector[i])->currentIndex();
     int stimtype_ind=((QComboBox *)StimTypeVector[i])->currentIndex();
     static const std::string unknown("???");
+
     values.push_back(Variable(Name("Input #"), boost::lexical_cast<std::string>(inputport_ind)));
     values.push_back(Variable(Name("Type"), boost::lexical_cast<std::string>(stimtype_ind)));  
     
@@ -155,7 +156,7 @@ void ElectrodeCoilSetupDialog::push()
 
   if (!pulling_)
   {
-   std::cout << "push " << std::endl;
+   //std::cout << "push " << std::endl;
    
    std::vector<AlgorithmParameter> vals_in_table;
    int rows = electrode_coil_tableWidget->rowCount();
@@ -182,23 +183,15 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::string& tmpstr)
   { 
     
   }
-  
   QStringList type_items;
   type_items<<"???"<<"TMS"<<"tDCS";
   QStringList inputports_items;  
   QComboBox *InputPorts = new QComboBox();
   QComboBox *StimType = new QComboBox();
   inputports_items << QString::fromStdString("???");
-  int nrinput = 0;
-  try
-  {
-    nrinput = boost::lexical_cast<int>(tmpstr);
-  }
-  catch( const boost::bad_lexical_cast & )
-  {
-    //unable to convert
-  }
-
+  
+  int nrinput = (state_->getValue(Parameters::NumberOfPrototypes)).toInt();
+    
   for (int k=0;k<nrinput;k++)
   {
    std::ostringstream str;
@@ -206,14 +199,27 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::string& tmpstr)
    inputports_items << QString::fromStdString(str.str());  
   }
   InputPorts->addItems(inputports_items);
-  StimType->addItems(type_items);
+  StimType->addItems(type_items);  
+  
+  if (saved_InputPortsVector.size()>0 && i<saved_InputPortsVector.size())
+  {
+    int tmp1=saved_InputPortsVector[i];
+    int tmp2=saved_StimTypeVector[i];
+    if (tmp1 > nrinput+1)
+        tmp1=0;
+    if (tmp2 > nrinput+1)
+        tmp2=0;
+   
+    InputPorts->setCurrentIndex(tmp1);
+    StimType->setCurrentIndex(tmp2);
+  }
+  
   electrode_coil_tableWidget->setCellWidget(i,0,InputPorts);
   electrode_coil_tableWidget->setCellWidget(i,1,StimType);	 
   InputPortsVector.push_back(InputPorts);
   StimTypeVector.push_back(StimType);	 
   connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));
   connect(StimType, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));	 
-
 }
 
 void ElectrodeCoilSetupDialog::pull()
@@ -224,10 +230,28 @@ void ElectrodeCoilSetupDialog::pull()
 
   if (all_elc_values.size()>0)
   {
-   std::cout << "pull " << std::endl;
+   //std::cout << "pull " << std::endl;
    electrode_coil_tableWidget->setRowCount(static_cast<int>(all_elc_values.size()));
    
-   bool combo_box_is_setup = InputPortsVector.size() > 0 ? true : false;
+   //remember the combobox settings
+   saved_InputPortsVector.resize(0);
+   saved_StimTypeVector.resize(0);
+   if (InputPortsVector.size()!=StimTypeVector.size())
+   {
+     std::cout << "Internal error" << std::endl;
+   }
+
+   for (int i=0; i<InputPortsVector.size(); i++)
+   {
+    saved_InputPortsVector.push_back((int)((QComboBox *)InputPortsVector[i])->currentIndex());
+    saved_StimTypeVector.push_back((int)((QComboBox *)StimTypeVector[i])->currentIndex());
+   }
+
+   if ( !(state_->getValue(Parameters::ComboBoxesAreSetup)).toBool())
+   {
+    InputPortsVector.resize(0);
+    StimTypeVector.resize(0);  
+   }
    
    for (int i=0; i<all_elc_values.size(); i++)
    {
@@ -236,36 +260,32 @@ void ElectrodeCoilSetupDialog::pull()
      BOOST_FOREACH(const AlgorithmParameter& ap, col)
      {
       auto tmpstr = ap.toString();
-      
+      //std::cout << "a:" << tmpstr << std::endl;
       auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
       
        if(j==0)
        {
-        if(!combo_box_is_setup) // || all_elc_values.size()!=InputPortsVector.size()) //if combobox was not setup in earlier execution or number of input data changed -> setup table comboboxes
-	{
-	 if(i==0)
+	 if ( !(state_->getValue(Parameters::ComboBoxesAreSetup)).toBool())
 	 {
-	  InputPortsVector.resize(0);
-          StimTypeVector.resize(0); 
+	  initialize_comboboxes(i, tmpstr); 
 	 }
-	 initialize_comboboxes(i, tmpstr);
-        } 
        } 
              
-   /*   if (j>4 && j<=9) 
-       item->setTextColor(Qt::red);
-	else
-	  item->setTextColor(Qt::black);
-	    */
-       electrode_coil_tableWidget->setItem(i, j, item);	    
+       if (j>=2)
+          electrode_coil_tableWidget->setItem(i, j, item);	    
 	    
        ++j;
      }
    }
-  } else
-  {
-    // ?? log a message ? unsure.
-  }
+   
+   if ( !(state_->getValue(Parameters::ComboBoxesAreSetup)).toBool())
+   {
+    state_->setValue(Parameters::ComboBoxesAreSetup, true);
+   }
+  } 
+  
+  
+  
   pull_newVersionToReplaceOld();
 }
 

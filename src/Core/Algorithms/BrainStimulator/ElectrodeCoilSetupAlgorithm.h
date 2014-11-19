@@ -45,7 +45,9 @@ namespace BrainStimulator {
   ALGORITHM_PARAMETER_DECL(ProtoTypeInputCheckbox);
   ALGORITHM_PARAMETER_DECL(AllInputsTDCS);
   ALGORITHM_PARAMETER_DECL(ProtoTypeInputComboBox);
-
+  ALGORITHM_PARAMETER_DECL(NumberOfPrototypes);
+  ALGORITHM_PARAMETER_DECL(ComboBoxesAreSetup);
+  
   class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
   {
   public:
@@ -62,7 +64,6 @@ namespace BrainStimulator {
     VariableHandle fill_table(FieldHandle scalp, Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& input) const;
   private:
     static const double number_of_columns;
-    
   };
 
 }}}}

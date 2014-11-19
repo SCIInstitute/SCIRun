@@ -55,7 +55,8 @@ ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("
 
 void ElectrodeCoilSetupModule::setStateDefaults()
 {
-  auto state = get_state();
+  setStateIntFromAlgo(Parameters::NumberOfPrototypes);
+  setAlgoBoolFromState(Parameters::ComboBoxesAreSetup);
 }
 
 void ElectrodeCoilSetupModule::execute()
@@ -64,21 +65,29 @@ void ElectrodeCoilSetupModule::execute()
   auto locations = getRequiredInput(LOCATIONS);
   auto elc_coil_proto = getRequiredDynamicInputs(ELECTRODECOILPROTOTYPES);
 
- if (needToExecute()) // newStatePresent ?
+ if (needToExecute())  //newStatePresent
  {
-  //setAlgoListFromState(Parameters::TableValues);
-
-  //auto input = withInputData((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
-  auto input = make_input((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
-  std::vector<AlgorithmParameter> table_handle  = (get_state()->getValue(Parameters::TableValues)).toVector();
-  algo().set(Parameters::TableValues, table_handle);
-    
-  auto output = algo().run_generic(input);
-  auto table = output.additionalAlgoOutput();
-  if (table)
-    get_state()->setValue(Parameters::TableValues, table->value());
+   get_state()->setValue(Parameters::ComboBoxesAreSetup, false);
+   setAlgoBoolFromState(Parameters::ComboBoxesAreSetup);
+   
+   update_state(Executing);
+   if(elc_coil_proto.size()>0)
+    {
+     get_state()->setValue(Parameters::NumberOfPrototypes, (int)elc_coil_proto.size());
+     setAlgoIntFromState(Parameters::NumberOfPrototypes);
+    }
+   
+    //setAlgoListFromState(Parameters::TableValues);
+    auto input = make_input((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
+    std::vector<AlgorithmParameter> table_handle  = (get_state()->getValue(Parameters::TableValues)).toVector();
+    algo().set(Parameters::TableValues, table_handle);
+     
+    auto output = algo().run_generic(input);
+    auto table = output.additionalAlgoOutput();
+    if (table)
+     get_state()->setValue(Parameters::TableValues, table->value());
   
-  sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
-  sendOutputFromAlgorithm(COILS_FIELD, output);
+    sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
+    sendOutputFromAlgorithm(COILS_FIELD, output);
  }
 }
