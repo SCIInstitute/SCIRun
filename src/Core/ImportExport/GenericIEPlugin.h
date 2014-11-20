@@ -156,7 +156,6 @@ void PluginMap<Data>::createMap()
 {
   if (!pluginTable_)
   {
-    std::cout << "creating plugin map" << std::endl;
     pluginTable_ = new typename PluginMap<Data>::Map();
   }
 }
@@ -175,19 +174,15 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
 {
   if (0 == map_.numPlugins()) 
   {
-    std::cout << "pluginTable is null or empty" << std::endl;
     return;
   }
 
   Core::Thread::Guard s(map_.getLock().get());
-  std::cout << "looping through map:" << std::endl;
   BOOST_FOREACH(const typename PluginMap<Data>::Map::value_type& plugin, map_.getMap())
   {
-    std::cout << "get_import_list: " << plugin.second->pluginname() << std::endl;
     if (plugin.second->hasReader())
       results.push_back(plugin.first);
   }
-  std::cout << "done." << std::endl;
 }
 
 template <class Data>
@@ -195,7 +190,6 @@ void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& r
 {
   if (0 == map_.numPlugins()) 
   {
-    std::cout << "pluginTable is null or empty" << std::endl;
     return;
   }
 
@@ -229,7 +223,6 @@ GenericIEPluginInterface<Data>* GenericIEPluginManager<Data>::get_plugin(const s
 template <class Data>
 void PluginMap<Data>::destroyMap()
 {
-  std::cout << "destroyMap" << std::endl;
   delete pluginTable_;
   pluginTable_ = 0;
 }
@@ -259,9 +252,7 @@ IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
     if (loc == GenericIEPluginManager<Data>::getMap().getMap().end())
     {
       if (tmppname != pluginname_) { const_cast<std::string&>(pluginname_) = tmppname; }
-      std::cout << "adding plugin to map: " << pluginname_ << std::endl;
       GenericIEPluginManager<Data>::getMap().getMap()[pluginname_] = this;
-      std::cout << "map size is now " << GenericIEPluginManager<Data>::getMap().getMap().size() << std::endl;
       break;
     }
     if (*(*loc).second == *this)
@@ -361,7 +352,6 @@ std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>&
       types << " (*.*)";
     }
   }
-  std::cout << "printPlugins " << types.str() << std::endl;
   return types.str();
 }
 
