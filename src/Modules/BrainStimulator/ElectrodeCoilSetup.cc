@@ -57,6 +57,9 @@ void ElectrodeCoilSetupModule::setStateDefaults()
 {
   setStateIntFromAlgo(Parameters::NumberOfPrototypes);
   setAlgoBoolFromState(Parameters::ComboBoxesAreSetup);
+  setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
+  setStateBoolFromAlgo(Parameters::AllInputsTDCS);
+  setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
 }
 
 void ElectrodeCoilSetupModule::execute()
@@ -69,6 +72,10 @@ void ElectrodeCoilSetupModule::execute()
  {
    get_state()->setValue(Parameters::ComboBoxesAreSetup, false);
    setAlgoBoolFromState(Parameters::ComboBoxesAreSetup);
+   
+   setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
+   setStateBoolFromAlgo(Parameters::AllInputsTDCS);
+   setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
    
    update_state(Executing);
    if(elc_coil_proto.size()>0)
