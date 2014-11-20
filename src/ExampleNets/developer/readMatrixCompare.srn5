@@ -7,24 +7,36 @@
 			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ReadMatrix:1</first>
+				<first>ReadMatlabMatrix:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
 						<category_name_>DataIO</category_name_>
-						<module_name_>ReadMatrix</module_name_>
+						<module_name_>ReadMatlabMatrix</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>Filename</name>
+									<name>FileTypeName</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>Filename</name>
+									<name>FileTypeName</name>
 									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>SCIRun Matrix File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
 										<which>2</which>
 										<value>%SCIRUNDATADIR%/Matrices/mickey_mouse/elc_points.mat</value>
 									</value>
@@ -35,29 +47,17 @@
 				</second>
 			</item>
 			<item>
-				<first>ReadMatrixClassic:0</first>
+				<first>ReadMatrix:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>DataIO</category_name_>
-						<module_name_>ReadMatrixClassic</module_name_>
+						<module_name_>ReadMatrix</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>1</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix File</value>
-									</value>
-								</second>
-							</item>
 							<item>
 								<first>
 									<name>Filename</name>
@@ -111,24 +111,24 @@
 			<count>2</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ReadMatrix:1</moduleId1_>
+				<moduleId1_>ReadMatlabMatrix:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>MatrixLoaded</name>
+					<name>Matrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadMatrixClassic:0</moduleId1_>
+				<moduleId1_>ReadMatrix:1</moduleId1_>
 				<port1_>
-					<name>Matrix</name>
+					<name>MatrixLoaded</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
@@ -140,16 +140,16 @@
 		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>ReadMatrix:1</first>
+			<first>ReadMatlabMatrix:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-684</first>
+				<first>-380</first>
 				<second>-304</second>
 			</second>
 		</item>
 		<item>
-			<first>ReadMatrixClassic:0</first>
+			<first>ReadMatrix:1</first>
 			<second>
-				<first>-380</first>
+				<first>-684</first>
 				<second>-304</second>
 			</second>
 		</item>
