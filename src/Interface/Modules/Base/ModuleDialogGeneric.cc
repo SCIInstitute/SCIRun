@@ -39,6 +39,8 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   state_(state),
   pulling_(false),
   executeAction_(0),
+  shrinkAction_(0),
+  collapsed_(false),
   dock_(0)
 {
   setModal(false);
@@ -51,6 +53,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   }
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();
+  createShrinkAction();
 }
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
@@ -82,10 +85,50 @@ void ModuleDialogGeneric::createExecuteAction()
   connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
 }
 
+void ModuleDialogGeneric::createShrinkAction()
+{
+  shrinkAction_ = new QAction(this);
+  shrinkAction_->setText("Collapse");
+  //shrinkAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  connect(shrinkAction_, SIGNAL(triggered()), this, SLOT(toggleCollapse()));
+}
+
+void ModuleDialogGeneric::toggleCollapse()
+{
+  if (collapsed_)
+  {
+    shrinkAction_->setText("Collapse");
+  }
+  else
+  {
+    shrinkAction_->setText("Expand");
+  }
+  collapsed_ = !collapsed_;
+  doCollapse();
+}
+
+void ModuleDialogGeneric::doCollapse()
+{
+  if (collapsed_)
+  {
+    oldSize_ = size();
+    const int h = std::min(40, oldSize_.height());
+    const int w = std::min(400, oldSize_.width());
+    setFixedSize(w, h);
+    dock_->setFixedSize(w, h);
+  }
+  else
+  {
+    setFixedSize(oldSize_);
+    dock_->setFixedSize(oldSize_);
+  }
+}
+
 void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e)
 {
   QMenu menu(this);
   menu.addAction(executeAction_);
+  menu.addAction(shrinkAction_);
   menu.exec(e->globalPos());
 
   QDialog::contextMenuEvent(e);
