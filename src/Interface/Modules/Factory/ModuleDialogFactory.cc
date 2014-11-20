@@ -31,6 +31,7 @@
 #include <Interface/Modules/Testing/SendScalarDialog.h>
 #include <Interface/Modules/Testing/ReceiveScalarDialog.h>
 #include <Interface/Modules/DataIO/ReadMatrixDialog.h>
+#include <Interface/Modules/DataIO/ReadMatrixClassicDialog.h>
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
 #include <Interface/Modules/DataIO/ReadMeshDialog.h>
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
@@ -99,6 +100,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(SendScalar, SendScalarDialog)
     ADD_MODULE_DIALOG(ReceiveScalar, ReceiveScalarDialog)
     ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixDialog)
+    ADD_MODULE_DIALOG(ReadMatlabMatrix, ReadMatrixClassicDialog)
     ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
     ADD_MODULE_DIALOG(ReadMesh, ReadMeshDialog)
     ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)

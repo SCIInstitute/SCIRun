@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,37 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_DATAIO_READ_MATRIX_CLASSIC_H
+#define MODULES_DATAIO_READ_MATRIX_CLASSIC_H
 
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Modules/DataIO/GenericReader.h>
+#include <Modules/DataIO/share.h>
 
-/*
- *  MatrixIEPlugin:  Data structure needed to make a SCIRun MatrixIE Plugin
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   May 2004
- *
- */
+namespace SCIRun {
+namespace Modules {
+namespace DataIO {
 
-#ifndef SCI_project_MatrixIEPlugin_h
-#define SCI_project_MatrixIEPlugin_h 1
-
-#include <Core/ImportExport/GenericIEPlugin.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/ImportExport/share.h>
-
-namespace SCIRun 
-{
-
-  typedef GenericIEPluginInterface<Core::Datatypes::Matrix> MatrixIEPlugin;
-
-  typedef IEPluginLegacyAdapter<Core::Datatypes::Matrix> MatrixIEPluginLegacyAdapter;
-
-  class SCISHARE MatrixIEPluginManager : public GenericIEPluginManager<Core::Datatypes::Matrix>
+  class SCISHARE ReadMatlabMatrix : public GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag>
   {
+  public:
+    typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
+    ReadMatlabMatrix();
+    virtual void execute();
+    virtual void setStateDefaults() {}
+    virtual bool useCustomImporter(const std::string& filename) const override;
+    virtual bool call_importer(const std::string& filename, Core::Datatypes::MatrixHandle& handle) override;
+
+    OUTPUT_PORT(0, Matrix, Matrix);
+
+    static std::string fileTypeList();
   };
 
-}
+}}}
 
 #endif

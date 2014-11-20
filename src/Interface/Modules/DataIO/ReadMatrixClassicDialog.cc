@@ -26,48 +26,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/DataIO/ReadFieldDialog.h>
-#include <Modules/DataIO/ReadField.h>
+#include <Interface/Modules/DataIO/ReadMatrixClassicDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/ImportExport/GenericIEPlugin.h>
 #include <iostream>
 #include <QFileDialog>
 
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
 
-ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle state,
+ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
+  
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
+  //addLineEditManager() TODO: investigate these other signals with lineedit.
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
-  buttonBox->setVisible(false);
 }
 
-void ReadFieldDialog::pull()
+void ReadMatrixClassicDialog::pull()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
-void ReadFieldDialog::pushFileNameToState()
+void ReadMatrixClassicDialog::pushFileNameToState() 
 {
-  auto file = fileNameLineEdit_->text().trimmed().toStdString();
-  state_->setValue(Variables::Filename, file);
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
-void ReadFieldDialog::openFile()
+void ReadMatrixClassicDialog::openFile()
 {
-  auto types = Modules::DataIO::ReadFieldModule::fileTypeList();
+  auto types = Modules::DataIO::ReadMatlabMatrix::fileTypeList();
   QString typesQ(QString::fromStdString(types));
-  auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), typesQ, &selectedFilter_);
+  auto file = QFileDialog::getOpenFileName(this, "Open Matrix File", dialogDirectory(), typesQ, &selectedFilter_);
   if (file.length() > 0)
   {
     auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter_.toStdString());
