@@ -34,15 +34,12 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h> 
 #include <Core/GeometryPrimitives/Point.h>
-//#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
 // For mapping matrices
-//#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 //STL classes needed
-//#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
 

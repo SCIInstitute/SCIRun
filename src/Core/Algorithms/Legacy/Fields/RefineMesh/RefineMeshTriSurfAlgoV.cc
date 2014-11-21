@@ -33,15 +33,12 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h> 
-//#include <Core/Datatypes/Legacy/Field/Matrix.h>
 // For mapping matrices
-//#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 //STL classes needed
-//#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
 
@@ -235,7 +232,7 @@ RefineMeshTriSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output,
 
   while (bi != ei)
   {
-			cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; }//algo->update_progress(loopcnt,sz);  }
+			cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; this->update_progress_max(loopcnt,sz); }
 
     mesh->get_nodes(onodes, *bi);
     mesh->get_edges(oedges, *bi);
@@ -364,7 +361,7 @@ RefineMeshTriSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output,
       if (field->basis_order() == 0) evalues.insert(evalues.end(),3,ivalues[*bi]); 
     }
     ++bi;
-  }
+		}
 
   rfield->resize_values();
   if (rfield->basis_order() == 0) rfield->set_values(evalues);

@@ -32,15 +32,12 @@
 
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/GeometryPrimitives/Point.h>
-//#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
 // For mapping matrices
-//#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 //STL classes needed
-//#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
 
@@ -51,15 +48,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
 
-//ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
-//ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
-//ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
-
-    int pattern_table[256][2];
-		SCIRun::Core::Geometry::Point hcoords[8];
-    
-    //static int hex_reorder_table[14][8];
-    //static double hcoords_double[8][3];
+int pattern_table[256][2];
+SCIRun::Core::Geometry::Point hcoords[8];
 
 Point RIinterpolate(VMesh *refined,
                         VMesh::Node::array_type& onodes,
@@ -730,7 +720,7 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
     
     while (bi != ei)
     {
-				cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; }//asr->update_progress_max(loopcnt,sz);  }
+				cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; this->update_progress_max(loopcnt,sz);  }
 
       mesh->get_nodes(onodes, *bi);
     
@@ -1509,7 +1499,7 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
       }
       ++bi;
     }
-  }
+		}
   else
   {
 
@@ -1523,7 +1513,7 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
 
     while (bi != ei)
     {
-				cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0;}// algo->update_progress(loopcnt,sz);  }
+				cnt++; if (cnt == 100) { loopcnt +=cnt; cnt = 0; this->update_progress_max(loopcnt,sz);  }
 
       mesh->get_nodes(onodes, *bi);
       

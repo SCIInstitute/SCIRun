@@ -30,9 +30,7 @@
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
-//#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
 // For mapping matrices
-//#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -43,7 +41,6 @@
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshQuadSurfAlgoV.h>  
 
 //STL classes needed
-//#include <sci_hash_map.h> -> boost::unordered_map
 #include <algorithm>
 #include <set>
 
@@ -68,6 +65,7 @@ RefineMeshAlgo::RefineMeshAlgo()
 
 AlgorithmOutput RefineMeshAlgo::run_generic(const AlgorithmInput& input) const 
 {
+		std::cout << "runGeneric? :) " << std::endl; 
 	auto field = input.get<Field>(Variables::InputField);
   FieldHandle outputField;
 
@@ -84,7 +82,7 @@ bool
 RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
 	ScopedAlgorithmStatusReporter asr(this, "RefineMesh"); 
-
+	std::cout << "runImpl :) " << std::endl; 
   if (!input)
   {
     error("No input field");
@@ -94,63 +92,70 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 	FieldInformation fo(output); 
 
 	const std::string rMethod = get_option(Parameters::RefineMethod);
-	const double isoVal = get(Parameters::IsoValue).toDouble(); 
-	const std::string addCon = get_option(Parameters::AddConstraints); 
+	const double isoVal = get(Parameters::IsoValue).toDouble();
+	const std::string addCon = get_option(Parameters::AddConstraints);
  
   if (input->vfield()->num_values() == 0)
   {
+			std::cout<< "numV == 0" <<std::endl;
     error("Input field has no data values. The RefineMesh algorithm requires input fields to contain data."); 
     return (false);
   }
 	
   if (addCon == "Do not add constraint")
   {
+			std::cout<< "noAddCon? " << addCon <<std::endl;
     output = input;
     return (true); 
   }
 	  
   if (fi.is_pnt_element() || fi.is_prism_element())
   {
+			std::cout<< "pntElem?" <<std::endl;
     error("This algorithm does not support point or prism meshes");
     return(false);
   }
     
   if ((!(fi.is_scalar()))&&(addCon != "all"))
   {
+			std::cout<< "scarlar?" <<std::endl;
     error("Field data needs to be of scalar type");
     return (false);
   }
 
   if (fi.is_quad_element())
   {
+			std::cout <<"surf" << std::endl; 
     RefineMeshQuadSurfAlgoV algo;
     return(algo.runImpl(input,output,addCon,isoVal));
   }
   
   if (fi.is_hex_element())
   {
-		bool convex = 0; 
-		//get_option(
-		//get_option("hex_convex",convex); 
-		//get_bool("hex_convex",convex);
+			std::cout <<"convex" << std::endl; 
+		//bool convex = get_option(convex) == "hex_convex"; 
+			bool convex = 0; 
     RefineMeshHexVolAlgoV algo;
 		return(algo.runImpl(input,output,convex,addCon,isoVal));
   }
 
   if (fi.is_crv_element())
   {
+			std::cout <<"curve" << std::endl; 
 			RefineMeshCurveAlgoV algo; 
 			return(algo.runImpl(input,output,addCon,isoVal));
   }
   
   if (fi.is_tri_element())
   {
+			std::cout <<"trisurf" << std::endl; 
 			RefineMeshTriSurfAlgoV algo; 
 			return(algo.runImpl(input,output,addCon,isoVal));
   }
   
   if (fi.is_tet_element())
   {
+			std::cout <<"tet" << std::endl; 
 			RefineMeshTetVolAlgoV algo; 
 			return(algo.runImpl(input,output,addCon,isoVal));
   }

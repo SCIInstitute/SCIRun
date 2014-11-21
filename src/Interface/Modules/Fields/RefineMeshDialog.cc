@@ -34,7 +34,6 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
-//typedef SCIRun::Modules::Fields::RefineMeshDialog RefineMeshDialog;
 
 namespace SCIRun{
 		namespace Gui{

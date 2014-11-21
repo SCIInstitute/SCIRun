@@ -32,22 +32,14 @@
 
 #include <Core/Datatypes/Legacy/Field/VMesh.h> 
 #include <Core/Datatypes/Legacy/Field/VField.h>
-//#include <Core/Datatypes/Legacy/Field/Matrix.h>
 // For mapping matrices
-//#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 //STL classes needed
-//#include <sci_hash_map.h>
 #include <algorithm>
 #include <set>
-//
-//ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
-//ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
-//ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
-//
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;

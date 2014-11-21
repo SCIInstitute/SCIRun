@@ -27,14 +27,15 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/RefineMesh.cc
 
-
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h> 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Scalar.h>
 //#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
 #include <Modules/Legacy/Fields/RefineMesh.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h> 
+
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
@@ -63,17 +64,20 @@ void RefineMesh::setStateDefaults()
 void
 RefineMesh::execute()
 {
-	auto input = getRequiredInput(InputField); 
+std::cout << "execute " << std::endl; 	
+auto input = getRequiredInput(InputField);
+auto isovaluefield = getOptionalInput(IsoValueField);  
 
   if (needToExecute() )
   {
     update_state(Executing);
-      
-    //pushInputMeshFieldInfo(input); 
+      std::cout << "need Exe? " << std::endl; 
 
+		auto state = get_state(); 
+		
 		setAlgoOptionFromState(Parameters::AddConstraints);
 		setAlgoOptionFromState(Parameters::RefineMethod);
-		setAlgoOptionFromState(Parameters::IsoValue);
+		setAlgoDoubleFromState(Parameters::IsoValue);
 
 		#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 		if (need_mapping)
@@ -86,9 +90,11 @@ RefineMesh::execute()
 		}
 		#endif
 		remark("Mapping matrix port implementation is not enabled yet--please contact a developer");
+		std::cout << "moduleExecute()" << std::endl; 
 
+		//auto output = algo().run_generic(withInputData((InputField, input)));
 		auto output = algo().run_generic(withInputData((InputField, input)));
-		sendOutputFromAlgorithm(OutputField, output); 
+		sendOutputFromAlgorithm(OutputField, output);
 
 		#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 		send_output_handle("Mapping", mapping_matrix_handle);

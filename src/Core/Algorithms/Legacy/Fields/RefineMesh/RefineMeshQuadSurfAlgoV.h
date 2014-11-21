@@ -43,7 +43,6 @@
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 using namespace SCIRun::Core::Geometry;
-//using namespace SCIRun::Core::Algorithms::Fields;
 
 namespace SCIRun{
 		namespace Core{
