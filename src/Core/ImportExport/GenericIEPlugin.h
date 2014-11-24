@@ -31,7 +31,10 @@
 
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <map>
+#include <vector>
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 #include <Core/ImportExport/share.h>

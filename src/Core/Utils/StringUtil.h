@@ -106,6 +106,50 @@ private:
 
 SCISHARE bool replaceSubstring(std::string& str, const std::string& from, const std::string& to);
 
+//TODO: replace with boost::regex
+template <class T>
+bool multiple_from_string(const std::string &str, std::vector<T> &values)
+{
+  values.clear();
+
+  std::string data = str;
+  for (size_t j=0; j<data.size(); j++) 
+    if ((data[j] == '\t')||(data[j] == '\r')||(data[j] == '\n')||(data[j]=='"')) data[j] = ' ';
+
+  std::vector<std::string> nums;
+  for (size_t p=0;p<data.size();)
+  { 
+    while((data[p] == ' ')&&(p<data.size())) p++;
+    if (p >= data.size()) break;
+
+    std::string::size_type next_space = data.find(' ',p);
+    if (next_space == std::string::npos) next_space = data.size();
+    T value;
+    if (from_string(data.substr(p,next_space-p), value)) values.push_back(value);
+    p = next_space;
+
+    if (p >= data.size()) break;
+  }
+  if (values.size() > 0) return (true);
+  return (false);
+}
+
+template <class T>
+bool from_string(const std::string &str, T &value)
+{
+  std::istringstream iss(str+"  ");
+  iss.exceptions(std::ifstream::eofbit | std::ifstream::failbit | std::ifstream::badbit);
+  try
+  {
+    iss >> value;
+    return (true);
+  }
+  catch (...)
+  {
+    return (false);
+  }
+}
+
 }}
 
 namespace std
