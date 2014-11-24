@@ -376,6 +376,9 @@ std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0
 template <>
 SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr);
 
+template <>
+SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Core::Datatypes::Matrix>* mgr);
+
 template <class Data>
 std::string makeGuiTypesListForExport(const GenericIEPluginManager<Data>& mgr)
 {

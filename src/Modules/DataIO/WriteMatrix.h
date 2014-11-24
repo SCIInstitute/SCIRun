@@ -30,25 +30,39 @@
 #ifndef MODULES_DATAIO_WRITE_MATRIX_H
 #define MODULES_DATAIO_WRITE_MATRIX_H
 
-#include <Dataflow/Network/Module.h>
+#include <Modules/DataIO/GenericWriter.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Modules/DataIO/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-      class SCISHARE WriteMatrixModule : public SCIRun::Dataflow::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, StringPortTag>,
-        public HasNoOutputPorts
+      //class SCISHARE WriteMatrixModule : public SCIRun::Dataflow::Networks::Module,
+      //  public Has2InputPorts<MatrixPortTag, StringPortTag>,
+      //  public HasNoOutputPorts
+      //{
+      //public:
+      //  WriteMatrixModule();
+      //  virtual void execute();
+      //  virtual void setStateDefaults() {}
+      //  INPUT_PORT(0, MatrixToWrite, Matrix);
+      //  INPUT_PORT(1, Filename, String);
+      //private:
+      //  std::string filename_;
+      //};
+
+      class SCISHARE WriteMatrixModule : public GenericWriter<Core::Datatypes::MatrixHandle, MatrixPortTag>
       {
       public:
+        typedef GenericWriter<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
         WriteMatrixModule();
         virtual void execute();
         virtual void setStateDefaults() {}
+        virtual bool useCustomExporter(const std::string& filename) const override;
+        virtual bool call_exporter(const std::string& filename) override;
+
         INPUT_PORT(0, MatrixToWrite, Matrix);
-        INPUT_PORT(1, Filename, String);
-      private:
-        std::string filename_;
       };
 
     }}}
