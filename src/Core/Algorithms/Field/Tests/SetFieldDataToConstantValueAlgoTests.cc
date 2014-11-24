@@ -44,16 +44,39 @@ using namespace SCIRun::Core::Algorithms::Fields;
 TEST(SetFieldDataToConstantValueAlgoTest, TODO)
 {
   SetFieldDataToConstantValueAlgo algo;
-
   FieldHandle tetmesh = LoadTet();
+  GetFieldDataAlgo getData;
+  {
+    const double value = 3.14;
+    algo.set(Parameters::Value, value);
 
-  FieldHandle result;
-  ASSERT_TRUE(algo.runImpl(tetmesh, result));
+    FieldHandle result;
+    ASSERT_TRUE(algo.runImpl(tetmesh, result));
 
-  GetFieldDataAlgo algo1;
+    DenseMatrixHandle data = getData.run(result);
 
-  DenseMatrixHandle resultmatrix = algo1.run(result);
-  FAIL() << "todo: compare matrices, should be a constant value matrix";
+    ASSERT_TRUE(data != nullptr);
 
-  //EXPECT_MATRIX_EQ_TOLERANCE(*resultmatrix, *matrix, 1e-16);
+    EXPECT_EQ(1, data->ncols());
+    EXPECT_EQ(7, data->nrows());
+    for (int i = 0; i < data->nrows(); ++i)
+      EXPECT_EQ(value, (*data)(i,0));
+  }
+
+  {
+    const double value = -5.7;
+    algo.set(Parameters::Value, value);
+
+    FieldHandle result;
+    ASSERT_TRUE(algo.runImpl(tetmesh, result));
+
+    DenseMatrixHandle data = getData.run(result);
+
+    ASSERT_TRUE(data != nullptr);
+
+    EXPECT_EQ(1, data->ncols());
+    EXPECT_EQ(7, data->nrows());
+    for (int i = 0; i < data->nrows(); ++i)
+      EXPECT_EQ(value, (*data)(i,0));
+  }
 }

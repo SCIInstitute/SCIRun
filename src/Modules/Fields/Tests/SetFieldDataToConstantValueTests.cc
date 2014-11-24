@@ -69,11 +69,6 @@ namespace
   }
 }
 
-TEST_F(SetFieldDataToConstantValueModuleTests, TODO)
-{
-  FAIL() << "todo";
-}
-
 TEST_F(SetFieldDataToConstantValueModuleTests, TetMeshOnPortZero)
 {
   auto test = makeModule("SetFieldDataToConstantValue");
