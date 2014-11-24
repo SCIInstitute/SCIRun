@@ -60,6 +60,7 @@ SET(Engine_Network_NonPythonDependentLibs
   Core_Serialization_Network
   Core_Command
   Engine_Scheduler
+  Core_Thread
 )
 
 IF(BUILD_WITH_PYTHON)

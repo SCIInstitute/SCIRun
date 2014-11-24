@@ -219,7 +219,6 @@ boost::filesystem::path Log::logDirectory() { return directory_; }
 void Log::setLogDirectory(const boost::filesystem::path& dir)
 {
   directory_ = dir;
-  //std::cout << "Log dir set to " << dir << std::endl;
 }
 
 Log& Log::get()

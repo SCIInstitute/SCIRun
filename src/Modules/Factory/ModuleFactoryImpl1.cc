@@ -77,6 +77,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/DataIO/ReadMatrix.h>
+#include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/WriteField.h>
@@ -108,6 +109,7 @@ using namespace SCIRun::Modules::Render;
 void ModuleDescriptionLookup::addEssentialModules()
 {
   addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+  addModuleDesc<ReadMatlabMatrix>("ReadMatlabMatrix", "DataIO", "SCIRun", "Redo of ReadMatrix", "...");
   addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
   addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
   addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");

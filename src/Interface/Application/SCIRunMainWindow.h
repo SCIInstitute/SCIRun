@@ -61,7 +61,7 @@ public:
 
   //command access: extract an interface
   void saveNetworkFile(const QString& fileName);
-  void loadNetworkFile(const QString& filename);
+  bool loadNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
@@ -74,6 +74,7 @@ public:
   ~SCIRunMainWindow();
 public Q_SLOTS:
   void executeAll();
+  void showZoomStatusMessage(int zoomLevel);
 protected:
   virtual void closeEvent(QCloseEvent* event);
 private:
@@ -155,6 +156,9 @@ private Q_SLOTS:
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void resetWindowLayout();
+  void zoomNetwork();
+  void setDragMode(bool toggle);
+  void setSelectMode(bool toggle);
   void adjustModuleDock(int state);
   void exitApplication(int code);
 };

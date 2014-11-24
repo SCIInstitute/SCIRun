@@ -63,6 +63,7 @@ namespace Gui {
     virtual void pull() = 0;
     void pull_newVersionToReplaceOld();
     void moduleSelected(bool selected);
+    void toggleCollapse();
   Q_SIGNALS:
     void pullSignal();
     void executionTimeChanged(int time);
@@ -95,11 +96,16 @@ namespace Gui {
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
+    void createShrinkAction();
+    void doCollapse();
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
     QAction* executeAction_;
+    QAction* shrinkAction_;
+    bool collapsed_;
     QString windowTitle_;
     QDockWidget* dock_;
+    QSize oldSize_;
   };
 
 }

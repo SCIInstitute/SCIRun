@@ -27,15 +27,20 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <QtGui>
+#include <QtConcurrentRun>
+#include <numeric>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Interface/Application/Utility.h>
 #include <Core/Logging/Log.h>
+#include <boost/range/adaptors.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -45,8 +50,7 @@ using namespace SCIRun::Dataflow::Networks;
 bool LoadFileCommandGui::execute()
 {
   auto inputFile = Application::Instance().parameters()->inputFile();
-  SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile.get()));
-  return true;
+  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile.get()));
 }
 
 bool ExecuteCurrentNetworkCommandGui::execute()
@@ -105,9 +109,41 @@ void ShowSplashScreenGui::initSplashScreen()
 QSplashScreen* ShowSplashScreenGui::splash_ = 0;
 QTimer* ShowSplashScreenGui::splashTimer_ = 0;
 
+namespace
+{
+  template <class PointIter>
+  QPointF centroidOfPointRange(PointIter begin, PointIter end)
+  {
+    QPointF sum = std::accumulate(begin, end, QPointF(), [](const QPointF& acc, const typename PointIter::value_type& point) { return acc + QPointF(point.first, point.second); });
+    size_t num = std::distance(begin, end);
+    return sum / num;
+  }
+
+  QPointF findCenterOfNetworkFile(const NetworkFile& file)
+  {
+    return findCenterOfNetwork(file.modulePositions);
+  }
+}
+
+QPointF SCIRun::Gui::findCenterOfNetwork(const ModulePositions& positions)
+{
+  auto pointRange = positions.modulePositions | boost::adaptors::map_values;
+  return centroidOfPointRange(pointRange.begin(), pointRange.end());
+}
+
+namespace std
+{
+template <typename T1, typename T2>
+std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
+{
+  return o << p.first << "," << p.second;
+}
+}
+
 bool FileOpenCommand::execute()
 {
-  GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
+  if (!filename_.empty())
+    GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
 
   try
   {
@@ -115,28 +151,66 @@ bool FileOpenCommand::execute()
 
     if (openedFile)
     {
-      networkEditor_->clear();
-      networkEditor_->loadNetwork(openedFile);
+      auto load = boost::bind(&FileOpenCommand::loadImpl, this, openedFile);
+      if (Core::Application::Instance().parameters()->isRegressionMode())
+      {
+        load();
+      }
+      else
+      {
+        int numModules = static_cast<int>(openedFile->network.modules.size());
+        QProgressDialog progress("Loading network " + QString::fromStdString(filename_), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
+        progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
+        progress.setWindowModality(Qt::WindowModal);
+        progress.show();
+        progress.setValue(0);
+
+        //TODO: trying to load in a separate thread exposed problems with the signal/slots related to wiring up the GUI elements,
+        // so I'll come back to this idea when there's time to refactor that part of the code (NEC::loadNetwork)
+        //QFuture<int> future = QtConcurrent::run(load);
+        //progress.setValue(future.result());
+
+        progress.setValue(load());
+      }
       openedFile_ = openedFile;
+
+      QPointF center = findCenterOfNetworkFile(*openedFile_);
+      networkEditor_->centerOn(center);
+
       GuiLogger::Instance().log("File load done.");
       return true;
     }
     else
-      GuiLogger::Instance().log("File load failed: null xml returned.");
+    {
+      if (!filename_.empty())
+      {
+        GuiLogger::Instance().log("File load failed: null xml returned.");
+      }
+    }
   }
   catch (ExceptionBase& e)
   {
-    GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(e.what()));
+    if (!filename_.empty())
+      GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(e.what()));
   }
   catch (std::exception& ex)
   {
-    GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(ex.what()));
+    if (!filename_.empty())
+      GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(ex.what()));
   }
   catch (...)
   {
-    GuiLogger::Instance().log("File load failed: Unknown exception in load_xml.");
+    if (!filename_.empty())
+      GuiLogger::Instance().log("File load failed: Unknown exception in load_xml.");
   }
   return false;
+}
+
+int FileOpenCommand::loadImpl(const NetworkFileHandle& file)
+{
+  networkEditor_->clear();
+  networkEditor_->loadNetwork(file);
+  return static_cast<int>(file->network.modules.size()) + 1;
 }
 
 bool RunPythonScriptCommandGui::execute()
@@ -150,7 +224,7 @@ bool SetupDataDirectoryCommandGui::execute()
 {
   auto dir = Application::Instance().parameters()->dataDirectory().get();
   LOG_DEBUG("Data dir set to: " << dir << std::endl);
-  
+
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
 
   return true;
