@@ -48,6 +48,8 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   
   electrode_coil_tableWidget->setRowCount(1);
   electrode_coil_tableWidget->setColumnCount(10);
+  electrode_coil_tableWidget->setItem(0, 0, new QTableWidgetItem(QString::fromStdString(" ")));
+  electrode_coil_tableWidget->setItem(0, 1, new QTableWidgetItem(QString::fromStdString(" ")));
   QStringList tableHeader;
   tableHeader<<"Input #"<<"Type"<<"X"<<"Y"<<"Z"<<"Angle"<<"NX"<<"NY"<<"NZ"<<"thickness";
   electrode_coil_tableWidget->setHorizontalHeaderLabels(tableHeader);
@@ -57,7 +59,7 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   AllInputsTDCS_->setChecked(false); 
   
   addComboBoxManager(ProtoTypeInputComboBox_, Parameters::ProtoTypeInputComboBox);
-  connect(ProtoTypeInputComboBox_, SIGNAL(clicked()), this, SLOT(push()));  
+  connect(ProtoTypeInputComboBox_, SIGNAL(currentIndexChanged()), this, SLOT(push()));  
   connect(AllInputsTDCS_, SIGNAL(clicked()), this, SLOT(push()));
   connect(ProtoTypeInputCheckbox_, SIGNAL(clicked()), this, SLOT(push()));
   connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(validateCell(int, int)));
@@ -74,7 +76,24 @@ void ElectrodeCoilSetupDialog::validateCell(int row, int col)
   }
   else
   {
-    electrode_coil_tableWidget->item(row, col)->setText("???");
+    static const QString unknown("???");
+    electrode_coil_tableWidget->item(row, col)->setText(unknown);
+    
+    auto all_elc_values = (state_->getValue(Parameters::TableValues)).toVector();    
+    Variable::List table;
+    for (int i=0;i<all_elc_values.size();i++)
+    {
+     auto row_vector = (all_elc_values[i]).toVector();
+     if (i==row)
+     {
+       Variable new_var(row_vector[col].name(), unknown.toStdString());
+       row_vector[col]=new_var;
+     } 
+     
+     table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), row_vector));        
+    }
+    
+    state_->setValue(Parameters::TableValues, table);
   }
 }
 
@@ -97,7 +116,7 @@ std::vector<Variable> ElectrodeCoilSetupDialog::validate_numerical_input(int i)
     {
      values.push_back(Variable(Name("X"), unknown));
     }
-    
+        
     try
     {
      lexical_cast<double>((electrode_coil_tableWidget->item(i,3)->text()).toStdString());
@@ -176,9 +195,9 @@ void ElectrodeCoilSetupDialog::push()
 
   if (!pulling_)
   {
+   std::cout << "push" << std::endl;
    state_->setValue(Parameters::AllTDCSInputs, AllInputsTDCS_->isChecked() ? std::string("1") : std::string("0"));
    state_->setValue(Parameters::UseThisPrototype, ProtoTypeInputCheckbox_->isChecked() ? std::string("1") : std::string("0"));
-   
    
    std::vector<AlgorithmParameter> vals_in_table;
    int rows = electrode_coil_tableWidget->rowCount();
@@ -216,17 +235,23 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::string& tmpstr)
    inputports_items << QString::fromStdString(str.str());     
   }
   InputPorts->addItems(inputports_items);
+  
   if (i==0)
+   { 
+     ProtoTypeInputComboBox_->setMaxCount(inputports_items.size());
      ProtoTypeInputComboBox_->addItems(inputports_items);  
+   }
   ProtoTypeInputComboBox_->setCurrentIndex(1);
   StimType->addItems(type_items);  
   if (saved_InputPortsVector.size()>0 && i<saved_InputPortsVector.size())
   {
     int tmp1=saved_InputPortsVector[i];
     int tmp2=saved_StimTypeVector[i];
-    if (tmp1 > nrinput+1)
+
+    if (tmp1 > nrinput || tmp1<0)
         tmp1=0;
-    if (tmp2 > nrinput+1)
+    
+    if (tmp2 > nrinput || tmp2<0)
         tmp2=0;
    
     InputPorts->setCurrentIndex(tmp1);
@@ -235,7 +260,7 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::string& tmpstr)
   electrode_coil_tableWidget->setCellWidget(i,0,InputPorts);
   electrode_coil_tableWidget->setCellWidget(i,1,StimType);	 
   InputPortsVector.push_back(InputPorts);
-  StimTypeVector.push_back(StimType);	 
+  StimTypeVector.push_back(StimType);	
   connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));
   connect(StimType, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));  	 
 }
@@ -248,8 +273,7 @@ void ElectrodeCoilSetupDialog::pull()
 
   if (all_elc_values.size()>0)
   {
-   //std::cout << "pull " << std::endl;
-     
+   std::cout << "pull" << std::endl;
    auto button = state_->getValue(Parameters::AllTDCSInputs).toString();
    bool AllTDCSInputsButton("1" == button);
    AllInputsTDCS_->setChecked(AllTDCSInputsButton);   
@@ -261,8 +285,8 @@ void ElectrodeCoilSetupDialog::pull()
    electrode_coil_tableWidget->setRowCount(static_cast<int>(all_elc_values.size()));
    
    //remember the combobox settings
-   saved_InputPortsVector.resize(0);
-   saved_StimTypeVector.resize(0);
+   saved_InputPortsVector.resize(8);
+   saved_StimTypeVector.resize(8);
    if (InputPortsVector.size()!=StimTypeVector.size())
    {
      std::cout << "Internal error" << std::endl;
@@ -270,17 +294,18 @@ void ElectrodeCoilSetupDialog::pull()
 
    for (int i=0; i<InputPortsVector.size(); i++)
    {
-    if (!UseThisPrototypeButton)
-      saved_InputPortsVector.push_back((int)(ProtoTypeInputComboBox_)->currentIndex());
-       else
-	saved_InputPortsVector.push_back((int)((QComboBox *)InputPortsVector[i])->currentIndex());
-        
-    if (!AllTDCSInputsButton)
-      saved_StimTypeVector.push_back((int)((QComboBox *)StimTypeVector[i])->currentIndex());   
-       else
-          saved_StimTypeVector.push_back((int)(2));
+     if (UseThisPrototypeButton && (int)(ProtoTypeInputComboBox_)->currentIndex()>0)
+     {      
+       saved_InputPortsVector[i]=((int)(ProtoTypeInputComboBox_)->currentIndex()); 
+      } else
+          saved_InputPortsVector[i]=((int)((QComboBox *)InputPortsVector[i])->currentIndex());
+     
+     if (!AllTDCSInputsButton)
+       saved_StimTypeVector[i]=((int)((QComboBox *)StimTypeVector[i])->currentIndex());   
+        else
+          saved_StimTypeVector[i]=((int)(2));
    }
-
+   
    if ( !(state_->getValue(Parameters::ComboBoxesAreSetup)).toBool())
    {
     InputPortsVector.resize(0);
@@ -289,12 +314,11 @@ void ElectrodeCoilSetupDialog::pull()
    
    for (int i=0; i<all_elc_values.size(); i++)
    {
-     auto col = (all_elc_values[i]).toVector();
+     auto row = (all_elc_values[i]).toVector();
      int j=0;
-     BOOST_FOREACH(const AlgorithmParameter& ap, col)
+     BOOST_FOREACH(const AlgorithmParameter& ap, row)
      {
       auto tmpstr = ap.toString();
-      //std::cout << "a:" << tmpstr << std::endl;
       auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
       
        if(j==0)
@@ -303,6 +327,7 @@ void ElectrodeCoilSetupDialog::pull()
 	 {
 	  initialize_comboboxes(i, tmpstr); 
 	 }
+	 
        } 
              
        if (j>=2)

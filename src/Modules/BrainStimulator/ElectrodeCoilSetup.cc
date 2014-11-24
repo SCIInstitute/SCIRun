@@ -51,6 +51,7 @@ ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("
  INITIALIZE_PORT(ELECTRODECOILPROTOTYPES);
  INITIALIZE_PORT(ELECTRODE_SPONGE_LOCATION_AVR);
  INITIALIZE_PORT(COILS_FIELD);
+ INITIALIZE_PORT(ELECTRODES_FIELD);
 }
 
 void ElectrodeCoilSetupModule::setStateDefaults()
@@ -60,6 +61,7 @@ void ElectrodeCoilSetupModule::setStateDefaults()
   setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
   setStateBoolFromAlgo(Parameters::AllInputsTDCS);
   setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
+  setAlgoListFromState(Parameters::TableValues);
 }
 
 void ElectrodeCoilSetupModule::execute()
@@ -84,7 +86,7 @@ void ElectrodeCoilSetupModule::execute()
      setAlgoIntFromState(Parameters::NumberOfPrototypes);
     }
    
-    //setAlgoListFromState(Parameters::TableValues);
+    setAlgoListFromState(Parameters::TableValues);
     auto input = make_input((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
     std::vector<AlgorithmParameter> table_handle  = (get_state()->getValue(Parameters::TableValues)).toVector();
     algo().set(Parameters::TableValues, table_handle);
@@ -93,7 +95,8 @@ void ElectrodeCoilSetupModule::execute()
     auto table = output.additionalAlgoOutput();
     if (table)
      get_state()->setValue(Parameters::TableValues, table->value());
-  
+     
+    sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
     sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
     sendOutputFromAlgorithm(COILS_FIELD, output);
  }

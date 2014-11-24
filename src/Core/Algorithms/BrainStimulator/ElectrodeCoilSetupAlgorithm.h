@@ -55,14 +55,18 @@ namespace BrainStimulator {
   public:
     ElectrodeCoilSetupAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
+    static const AlgorithmOutputName ELECTRODES_FIELD;
     static const AlgorithmInputName SCALP_SURF; 
     static const AlgorithmInputName LOCATIONS;
     static const AlgorithmInputName ELECTRODECOILPROTOTYPES;    
     static const AlgorithmOutputName ELECTRODE_SPONGE_LOCATION_AVR;
     static const AlgorithmOutputName COILS_FIELD;
-        
-    boost::tuple<VariableHandle, Datatypes::DenseMatrixHandle, FieldHandle> run(const FieldHandle scalp, const Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const;
+      
+    boost::tuple<Datatypes::DenseMatrixHandle, FieldHandle> make_tdcs_electrodes(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness) const;            
+
+    FieldHandle make_tms(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& normal_x, const std::vector<double>& normal_y, const std::vector<double>& normal_z) const;        
+    
+    boost::tuple<VariableHandle, Datatypes::DenseMatrixHandle, FieldHandle, FieldHandle> run(const FieldHandle scalp, const Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const;
     VariableHandle fill_table(FieldHandle scalp, Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& input) const;
   private:
     static const double number_of_columns;
