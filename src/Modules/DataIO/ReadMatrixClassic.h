@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_READ_MATRIX_CLASSIC_H
-#define MODULES_DATAIO_READ_MATRIX_CLASSIC_H
+#ifndef MODULES_DATAIO_READ_MATRIX_H
+#define MODULES_DATAIO_READ_MATRIX_H
 
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -38,11 +38,11 @@ namespace SCIRun {
 namespace Modules {
 namespace DataIO {
 
-  class SCISHARE ReadMatlabMatrix : public GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag>
+  class SCISHARE ReadMatrix : public GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag>
   {
   public:
     typedef GenericReader<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
-    ReadMatlabMatrix();
+    ReadMatrix();
     virtual void execute();
     virtual void setStateDefaults() {}
     virtual bool useCustomImporter(const std::string& filename) const override;

@@ -64,7 +64,7 @@ void ReadMatrixClassicDialog::pushFileNameToState()
 
 void ReadMatrixClassicDialog::openFile()
 {
-  auto types = Modules::DataIO::ReadMatlabMatrix::fileTypeList();
+  auto types = Modules::DataIO::ReadMatrix::fileTypeList();
   QString typesQ(QString::fromStdString(types));
   auto file = QFileDialog::getOpenFileName(this, "Open Matrix File", dialogDirectory(), typesQ, &selectedFilter_);
   if (file.length() > 0)

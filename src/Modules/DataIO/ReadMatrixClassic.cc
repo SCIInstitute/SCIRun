@@ -44,8 +44,8 @@ class ReadField : public GenericReader<FieldHandle> {
     GuiInt    gui_delay_;
 #endif
 
-ReadMatlabMatrix::ReadMatlabMatrix()
-  : my_base("ReadMatlabMatrix", "DataIO", "SCIRun", "Matrix")
+ReadMatrix::ReadMatrix()
+  : my_base("ReadMatrix", "DataIO", "SCIRun", "Matrix")
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
     //gui_delay_(get_ctx()->subVar("delay"), 0)
@@ -53,13 +53,13 @@ ReadMatlabMatrix::ReadMatlabMatrix()
   INITIALIZE_PORT(Matrix);
 }
 
-std::string ReadMatlabMatrix::fileTypeList()
+std::string ReadMatrix::fileTypeList()
 {
   MatrixIEPluginManager mgr;
   return makeGuiTypesListForImport(mgr);
 }
 
-bool ReadMatlabMatrix::call_importer(const std::string& filename, MatrixHandle& fHandle)
+bool ReadMatrix::call_importer(const std::string& filename, MatrixHandle& fHandle)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   MatrixIEPluginManager mgr;
@@ -73,7 +73,7 @@ bool ReadMatlabMatrix::call_importer(const std::string& filename, MatrixHandle& 
 }
 
 void
-ReadMatlabMatrix::execute()
+ReadMatrix::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true;
@@ -81,7 +81,7 @@ ReadMatlabMatrix::execute()
   my_base::execute();
 }
 
-bool ReadMatlabMatrix::useCustomImporter(const std::string& filename) const
+bool ReadMatrix::useCustomImporter(const std::string& filename) const
 {
   auto filetypename = get_state()->getValue(Variables::FileTypeName).toString();
   return !(filetypename.empty() || filetypename == "SCIRun Matrix File");
