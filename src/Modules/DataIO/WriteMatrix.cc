@@ -40,38 +40,6 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::DataIO;
 
-
-//TODO: defunct the old version
-#if 0
-WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun"))
-{
-  INITIALIZE_PORT(Filename);
-  INITIALIZE_PORT(MatrixToWrite);
-}
-
-/// @todo: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
-void WriteMatrixModule::execute()
-{
-  auto matrix = getRequiredInput(MatrixToWrite);
-
-  auto fileOption = getOptionalInput(Filename);
-
-  if (fileOption && *fileOption)
-  {
-    get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
-  }
-  auto path = get_state()->getValue(Variables::Filename).toFilename();
-  filename_ = path.string();
-
-  if (needToExecute())
-  {
-    algo().set(Variables::Filename, filename_);
-    algo().run_generic(withInputData((MatrixToWrite, matrix)));
-  }
-}
-#endif
-
-
 WriteMatrixModule::WriteMatrixModule()
   : my_base("WriteMatrix", "DataIO", "SCIRun", "Filename")
   //gui_increment_(get_ctx()->subVar("increment"), 0),
