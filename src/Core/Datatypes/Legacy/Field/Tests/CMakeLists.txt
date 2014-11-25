@@ -31,6 +31,7 @@ SET(Core_Datatypes_Legacy_Field_Tests_SRCS
   LatticeVolumeMeshTests.cc
   CalculateSignedDistanceFieldAlgoTests.cc
   GetFieldBoundaryAlgoTests.cc
+  VFieldTests.cc
   #MeshFactoryTests.cc
   #TriSurfMeshTests.cc
 )
@@ -39,6 +40,7 @@ SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Legacy_Field_Tests ${Core_Datatypes_Legacy_F
 
 TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Field_Tests
   Core_Datatypes_Legacy_Field
+  Testing_Utils
   gtest_main
   gtest
   gmock

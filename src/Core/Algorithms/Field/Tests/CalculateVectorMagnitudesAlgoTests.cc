@@ -32,6 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/SCIRunFieldSamples.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun;
@@ -43,37 +44,6 @@ using namespace SCIRun::Core::Utility;
 using namespace SCIRun::TestUtils;
 
 namespace {
-  FieldHandle TetMeshWithoutFieldData()
-  {
-    FieldInformation fi("TetVolMesh", 1, "double");
-    FieldHandle singleTetField_ = CreateField(fi);
-    VMesh *vmesh = singleTetField_->vmesh();
-    VMesh::Node::array_type vdata;
-    vdata.resize(4);
-    vmesh->node_reserve(8);
-    vmesh->elem_reserve(1);
-    vmesh->add_point( Point(0.0, 0.0, 0.0) );
-    vmesh->add_point( Point(1.0, 0.0, 0.0) );
-    vmesh->add_point( Point(1.0, 1.0, 0.0) );
-    vmesh->add_point( Point(0.0, 1.0, 0.0) );
-    vmesh->add_point( Point(0.0, 0.0, 1.0) );
-    vmesh->add_point( Point(1.0, 0.0, 1.0) );
-    vmesh->add_point( Point(1.0, 1.0, 1.0) );
-    vmesh->add_point( Point(0.0, 1.0, 1.0) );
-    vdata[0]=5; vdata[1]=6;  vdata[2]=0; vdata[3]=4;
-    vmesh->add_elem(vdata);
-    vdata[0]=0; vdata[1]=7;  vdata[2]=2; vdata[3]=3;
-    vmesh->add_elem(vdata);
-    vdata[0]=2; vdata[1]=6;  vdata[2]=0; vdata[3]=1;
-    vmesh->add_elem(vdata);
-    vdata[0]=0; vdata[1]=6;  vdata[2]=5; vdata[3]=1;
-    vmesh->add_elem(vdata);
-    vdata[0]=0; vdata[1]=6;  vdata[2]=2; vdata[3]=7;
-    vmesh->add_elem(vdata);
-    vdata[0]=6; vdata[1]=7;  vdata[2]=0; vdata[3]=4;
-    vmesh->add_elem(vdata);
-    return singleTetField_;
-  }
 
   /*** TRI SURFs ***/
   FieldHandle CreateTriSurfVectorOnNode()
@@ -186,7 +156,7 @@ TEST(CalculateVectorMagnitudesAlgoTests, NullFieldHandleInput)
 
 TEST(CalculateVectorMagnitudesAlgoTests, NoFieldDataInput)
 {
-  FieldHandle in = TetMeshWithoutFieldData();
+  FieldHandle in = CubeTetVolLinearBasis();
   FieldHandle out;
   CalculateVectorMagnitudesAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
