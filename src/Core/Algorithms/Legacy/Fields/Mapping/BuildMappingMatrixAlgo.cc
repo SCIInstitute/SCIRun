@@ -33,13 +33,12 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-const AlgorithmParameterName BuildMappingMatrixAlgo::MaxDistance("MaxDistance");
-const AlgorithmParameterName BuildMappingMatrixAlgo::Method("Method");
+const AlgorithmOutputName BuildMappingMatrixAlgo::Mapping("Mapping");
 
 BuildMappingMatrixAlgo::BuildMappingMatrixAlgo()
 {
-  addParameter(MaxDistance, -1.0);
-  add_option(Method, "interpolateddata","interpolateddata|closestdata|singledestination");
+  addParameter(Parameters::MaxDistance, -1.0);
+  add_option(Parameters::MappingMethod, "interpolateddata","interpolateddata|closestdata|singledestination");
 }
 
 bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination, MatrixHandle& output) const

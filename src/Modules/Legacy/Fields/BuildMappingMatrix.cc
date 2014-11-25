@@ -37,8 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-ModuleLookupInfo BuildMappingMatrix::staticInfo_("BuildMappingMatrix", "MiscField", "SCIRun");
-const AlgorithmParameterName BuildMappingMatrix::MapSourceToSingleDestination("MapSourceToSingleDestination");
+const ModuleLookupInfo BuildMappingMatrix::staticInfo_("BuildMappingMatrix", "MiscField", "SCIRun");
 
 /// @class BuildMappingMatrix
 /// @brief Build a mapping matrix -- a matrix that says how to project the data
@@ -46,14 +45,15 @@ const AlgorithmParameterName BuildMappingMatrix::MapSourceToSingleDestination("M
 
 BuildMappingMatrix::BuildMappingMatrix() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(Source);
+  INITIALIZE_PORT(Destination);
+  INITIALIZE_PORT(Mapping);
 }
 
 void BuildMappingMatrix::setStateDefaults()
 {
-  auto state = get_state();
-  state->setValue(BuildMappingMatrixAlgo::Method, std::string("linear"));
-  state->setValue(BuildMappingMatrixAlgo::MaxDistance, -1.0);
-  state->setValue(MapSourceToSingleDestination, false);
+  setStateStringFromAlgoOption(Parameters::MappingMethod);
+  setStateDoubleFromAlgo(Parameters::MaxDistance);
 }
 
 void
@@ -64,35 +64,14 @@ BuildMappingMatrix::execute()
   
   //TODO: copy impl from rewritten MapFieldDataFromSourceToDestination
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-  //if (inputs_changed_ || interpolation_basis_.changed() ||
-  //    map_source_to_single_dest_.changed() ||
-  //    exhaustive_search_max_dist_.changed() || !oport_cached("Mapping"))
   if (needToExecute())
   {
     update_state(Executing);
-      
-    auto state = get_state();
-    std::string interpolation_basis = state->getValue(BuildMappingMatrixAlgo::Method).getString();
-    if (interpolation_basis == "linear") 
-    {
-      algo().set_option(BuildMappingMatrixAlgo::Method, "interpolateddata");
-    }
-    else
-    {
-      if (state->getValue(MapSourceToSingleDestination).getBool())
-        algo().set_option(BuildMappingMatrixAlgo::Method, "singledestination");
-      else                
-        algo().set_option(BuildMappingMatrixAlgo::Method, "closestdata");
-    }
-    
-    setAlgoDoubleFromState(BuildMappingMatrixAlgo::MaxDistance);
+
+    setAlgoOptionFromState(Parameters::MappingMethod);
+    setAlgoDoubleFromState(Parameters::MaxDistance);
 
     auto output = algo().run_generic(withInputData((Source, source)(Destination, destination)));
-   
     sendOutputFromAlgorithm(Mapping, output);
   }
-
-#endif
 }
