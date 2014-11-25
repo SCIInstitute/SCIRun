@@ -102,10 +102,18 @@ namespace Datatypes {
     virtual size_t nrows() const { return this->rows(); }
     virtual size_t ncols() const { return this->cols(); }
 
-    const index_type* get_rows() const { return this->outerIndexPtr(); }
-    const index_type* get_cols() const { return this->innerIndexPtr(); }
-    index_type* get_rows() { return this->outerIndexPtr(); }
-    index_type* get_cols() { return this->innerIndexPtr(); }
+    typedef index_type RowsData;
+    typedef index_type ColumnsData;
+    typedef RowsData* RowsPtr;
+    typedef ColumnsData* ColumnsPtr;
+    typedef const RowsData* ConstRowsPtr;
+    typedef const ColumnsData* ConstColumnsPtr;
+    typedef T* Storage;
+
+    ConstRowsPtr get_rows() const { return this->outerIndexPtr(); }
+    ConstColumnsPtr get_cols() const { return this->innerIndexPtr(); }
+    RowsPtr get_rows() { return this->outerIndexPtr(); }
+    ColumnsPtr get_cols() { return this->innerIndexPtr(); }
 
 
     virtual void accept(MatrixVisitorGeneric<T>& visitor)
