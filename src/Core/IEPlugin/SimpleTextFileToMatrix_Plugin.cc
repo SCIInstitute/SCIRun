@@ -44,7 +44,7 @@
 #include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Utils/StringUtil.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 #include <Core/Logging/LoggerInterface.h>
 
 #include <iostream>
