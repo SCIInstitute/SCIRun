@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,37 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_READ_MATRIX_CLASSIC_H
+#define INTERFACE_MODULES_READ_MATRIX_CLASSIC_H
 
+#include "Interface/Modules/DataIO/ui_ReadMatrixClassic.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/DataIO/share.h>
 
-/*
- *  MatrixIEPlugin:  Data structure needed to make a SCIRun MatrixIE Plugin
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   May 2004
- *
- */
-
-#ifndef SCI_project_MatrixIEPlugin_h
-#define SCI_project_MatrixIEPlugin_h 1
-
-#include <Core/ImportExport/GenericIEPlugin.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/ImportExport/share.h>
-
-namespace SCIRun 
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE ReadMatrixClassicDialog : public ModuleDialogGeneric, 
+  public Ui::ReadMatrixClassic, public RemembersFileDialogDirectory
 {
+	Q_OBJECT
+	
+public:
+  ReadMatrixClassicDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
 
-  typedef GenericIEPluginInterface<Core::Datatypes::Matrix> MatrixIEPlugin;
+private Q_SLOTS:
+  void pushFileNameToState();
+  void openFile();
+};
 
-  typedef IEPluginLegacyAdapter<Core::Datatypes::Matrix> MatrixIEPluginLegacyAdapter;
-
-  class SCISHARE MatrixIEPluginManager : public GenericIEPluginManager<Core::Datatypes::Matrix>
-  {
-  };
-
+}
 }
 
 #endif

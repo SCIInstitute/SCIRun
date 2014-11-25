@@ -36,12 +36,6 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
 
-namespace SCIRun
-{
-  template class GenericIEPluginManager<Field>;
-  template class GenericIEPluginManager<Core::Datatypes::Matrix>;
-}
-
 void IEPluginManager::Initialize()
 {
   static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "*.obj", "", ObjToField_reader, FieldToObj_writer);
@@ -55,6 +49,6 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter MatlabField_plugin("Matlab Field", "*.mat", "*.mat", MatlabField_reader, MatlabField_writer);   
 
   //TODO
-  //static MatrixIEPluginLegacyAdapter MatlabMatrix_plugin("Matlab Matrix",".mat", "*.mat", MatlabMatrix_reader, MatlabMatrix_writer);
+  static MatrixIEPluginLegacyAdapter MatlabMatrix_plugin("Matlab Matrix","*.mat", "*.mat", MatlabMatrix_reader, MatlabMatrix_writer);
   //static NrrdIEPluginLegacyAdapter MatlabNrrd_plugin("Matlab Matrix",".mat", "*.mat",MatlabNrrd_reader,MatlabNrrd_writer);     
 }
