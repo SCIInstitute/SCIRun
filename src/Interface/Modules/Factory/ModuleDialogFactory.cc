@@ -69,6 +69,7 @@
 #include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
 #include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
+#include <Interface/Modules/Fields/BuildMappingMatrixDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
 #include <Interface/Modules/Fields/ConvertFieldBasisDialog.h> 
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
@@ -151,6 +152,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
 		ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
+    ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
   ;
 }
 

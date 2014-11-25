@@ -29,6 +29,7 @@
 
 SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
+  BuildMappingMatrix.ui
   GetDomainBoundary.ui
   JoinFields.ui
   FairMesh.ui
@@ -54,6 +55,7 @@ SET(Interface_Modules_Fields_FORMS
 )
 
 SET(Interface_Modules_Fields_HEADERS
+  BuildMappingMatrixDialog.h
   CreateLatVolDialog.h
   CreateFieldDataDialog.h
   CalculateFieldDataDialog.h
@@ -81,6 +83,7 @@ SET(Interface_Modules_Fields_HEADERS
 )
 
 SET(Interface_Modules_Fields_SOURCES
+  BuildMappingMatrixDialog.cc
   CreateLatVolDialog.cc
   CreateFieldDataDialog.cc
   CalculateFieldDataDialog.cc
