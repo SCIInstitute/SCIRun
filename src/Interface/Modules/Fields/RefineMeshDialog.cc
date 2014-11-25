@@ -36,22 +36,22 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 namespace SCIRun{
-		namespace Gui{
-				class RefineMeshDialogImpl
-				{
-				public:
-						RefineMeshDialogImpl()
-						{
-						  typedef boost::bimap<std::string, std::string>::value_type strPair; 
-					  	refineNameLookup_.insert(strPair("Do not add constraint","noConstraint"));
-						  refineNameLookup_.insert(strPair("Do not refine nodes/elements with values less than isovalue","lessThan"));
-						  refineNameLookup_.insert(strPair("Do not refine nodes/elements with values unequal to isovalue","unEqual"));
-						  refineNameLookup_.insert(strPair("Do not refine nodes/elements with values greater than isovalue","greaterThan"));
-						  refineNameLookup_.insert(strPair("Do not refine any elements","noRefine"));
-						}
-					boost::bimap<std::string, std::string> refineNameLookup_;
-				};
-		}}
+ namespace Gui{
+ class RefineMeshDialogImpl
+ {
+ public:
+ RefineMeshDialogImpl()
+ {
+ typedef boost::bimap<std::string, std::string>::value_type strPair;
+ refineNameLookup_.insert(strPair("Do not add constraint","all"));
+ refineNameLookup_.insert(strPair("Do not refine nodes/elements with values less than isovalue","lessthan"));
+ refineNameLookup_.insert(strPair("Do not refine nodes/elements with values unequal to isovalue","unequal"));
+ refineNameLookup_.insert(strPair("Do not refine nodes/elements with values greater than isovalue","greaterthan"));
+ refineNameLookup_.insert(strPair("Do not refine any elements","none"));
+ }
+ boost::bimap<std::string, std::string> refineNameLookup_;
+ };
+ }}
 RefineMeshDialog::RefineMeshDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent),

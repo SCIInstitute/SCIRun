@@ -63,17 +63,15 @@ void RefineMesh::setStateDefaults()
 
 void
 RefineMesh::execute()
-{
-std::cout << "execute " << std::endl; 	
+{	
 auto input = getRequiredInput(InputField);
 auto isovaluefield = getOptionalInput(IsoValueField);  
 
   if (needToExecute() )
   {
     update_state(Executing);
-      std::cout << "need Exe? " << std::endl; 
-
-		auto state = get_state(); 
+		
+		//auto state = get_state(); 
 		
 		setAlgoOptionFromState(Parameters::AddConstraints);
 		setAlgoOptionFromState(Parameters::RefineMethod);
@@ -90,7 +88,6 @@ auto isovaluefield = getOptionalInput(IsoValueField);
 		}
 		#endif
 		remark("Mapping matrix port implementation is not enabled yet--please contact a developer");
-		std::cout << "moduleExecute()" << std::endl; 
 
 		//auto output = algo().run_generic(withInputData((InputField, input)));
 		auto output = algo().run_generic(withInputData((InputField, input)));

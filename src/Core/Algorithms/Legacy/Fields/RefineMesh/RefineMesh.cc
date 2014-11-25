@@ -47,25 +47,25 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
 
-ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
+
 ALGORITHM_PARAMETER_DEF(Fields, AddConstraints);
+ALGORITHM_PARAMETER_DEF(Fields, RefineMethod);
 ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
 
 RefineMeshAlgo::RefineMeshAlgo()
 {
-		add_option(Parameters::AddConstraints,"Do not add constraint","Do not add constraint|Do not refine nodes/elements with values less than isovalue|Do not refine nodes/elements with values unequal to isovalue|Do not refine nodes/elements with values greater than isovalue|Do not refine any elements");
-		add_option(Parameters::RefineMethod,"Default","Default|Expand refinement volume to improve element quality"); 
-		addParameter(Parameters::IsoValue,0.0);
+		using namespace Parameters; 
+		add_option(AddConstraints,"all","all|lessthan|unequal|greaterthan|none");
+		add_option(RefineMethod,"default","default|Expand refinement volume to improve element quality"); 
+		addParameter(IsoValue,0.0);
 }
 
 AlgorithmOutput RefineMeshAlgo::run_generic(const AlgorithmInput& input) const 
-{
-		std::cout << "runGeneric? :) " << std::endl; 
+{ 
 	auto field = input.get<Field>(Variables::InputField);
   FieldHandle outputField;
 
@@ -82,7 +82,6 @@ bool
 RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
 	ScopedAlgorithmStatusReporter asr(this, "RefineMesh"); 
-	std::cout << "runImpl :) " << std::endl; 
   if (!input)
   {
     error("No input field");

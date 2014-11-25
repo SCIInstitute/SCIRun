@@ -34,7 +34,7 @@
 
 namespace SCIRun {
   namespace Modules {
-    namespace Fields {
+				namespace Fields {
 
 	/// @class RefineMesh
 	/// @brief Convert a QuadSurfField into a TriSurfField. 
