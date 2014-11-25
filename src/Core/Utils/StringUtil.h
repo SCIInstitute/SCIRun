@@ -31,6 +31,8 @@
 #define CORE_UTILS_STRINGUTIL_H 1
 
 #include <sstream>
+#include <istream>
+#include <fstream>
 #include <vector>
 #include <iterator>
 #include <boost/shared_ptr.hpp>
