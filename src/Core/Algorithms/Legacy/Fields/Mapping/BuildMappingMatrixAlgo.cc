@@ -27,6 +27,8 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Thread/Parallel.h>
 #include <Core/Thread/Barrier.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -679,5 +681,15 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
 
 AlgorithmOutput BuildMappingMatrixAlgo::run_generic(const AlgorithmInput& input) const
 {
-  throw "not implemented";
+  auto source = input.get<Field>(Variables::Source);
+  auto destination = input.get<Field>(Variables::Destination);
+
+  MatrixHandle outputMatrix;
+  if (!runImpl(source, destination, outputMatrix))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned from legacy run call");
+
+  AlgorithmOutput output;
+  output[Mapping] = outputMatrix;
+
+  return output;
 }
