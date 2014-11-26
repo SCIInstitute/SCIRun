@@ -35,18 +35,20 @@
 namespace SCIRun {
 namespace Modules {
 namespace Basic {
-  
+
   class SCISHARE NeedToExecuteTester : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+    public Has2InputPorts<MatrixPortTag, FieldPortTag>,
+    public Has2OutputPorts<MatrixPortTag, FieldPortTag>
   {
   public:
     NeedToExecuteTester();
     virtual void execute() override;
     virtual void setStateDefaults() override;
-    
+
     INPUT_PORT(0, TestMatrixIn, DenseMatrix);
     OUTPUT_PORT(0, TestMatrixOut, DenseMatrix);
+    INPUT_PORT(1, TestFieldIn, LegacyField);
+    OUTPUT_PORT(1, TestFieldOut, LegacyField);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 

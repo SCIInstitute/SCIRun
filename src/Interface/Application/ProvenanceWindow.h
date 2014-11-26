@@ -44,13 +44,13 @@ namespace Gui {
 class ProvenanceWindow : public QDockWidget, public Ui::ProvenanceWindow
 {
 	Q_OBJECT
-	
+
 public:
   explicit ProvenanceWindow(SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager, QWidget* parent = 0);
   void showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file);
 public Q_SLOTS:
   void clear();
-  void addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle item);  
+  void addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle item);
   void undo();
   void redo();
   void undoAll();
@@ -61,11 +61,12 @@ Q_SIGNALS:
   void modifyingNetwork(bool modifying);
   void undoStateChanged(bool enabled);
   void redoStateChanged(bool enabled);
+  void networkModified();
 private:
   SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager_;
   int lastUndoRow_;
   const SCIRun::Dataflow::Engine::ProvenanceManagerHandle::element_type::IOType* networkEditor_;
-  
+
   void setUndoEnabled(bool enable);
   void setRedoEnabled(bool enable);
 };

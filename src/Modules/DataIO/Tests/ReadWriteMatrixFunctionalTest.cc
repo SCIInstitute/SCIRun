@@ -34,7 +34,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
-#include <Modules/DataIO/ReadMatrix.h>
+#include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
@@ -118,7 +118,7 @@ TEST(ReadWriteMatrixFunctionalTest, DISABLED_ManualExecution)
   WriteMatrixModule* writeModule = dynamic_cast<WriteMatrixModule*>(write.get());
   ASSERT_TRUE(writeModule != 0);
   read->get_state()->setValue(Variables::Filename, filename.string());
-  ReadMatrixModule* readModule = dynamic_cast<ReadMatrixModule*>(read.get());
+  ReadMatrix* readModule = dynamic_cast<ReadMatrix*>(read.get());
   ASSERT_TRUE(readModule != 0);
 
   //manually execute the network, in the correct order.

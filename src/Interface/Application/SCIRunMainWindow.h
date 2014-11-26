@@ -61,7 +61,7 @@ public:
 
   //command access: extract an interface
   void saveNetworkFile(const QString& fileName);
-  void loadNetworkFile(const QString& filename);
+  bool loadNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
@@ -74,6 +74,7 @@ public:
   ~SCIRunMainWindow();
 public Q_SLOTS:
   void executeAll();
+  void showZoomStatusMessage(int zoomLevel);
 protected:
   virtual void closeEvent(QCloseEvent* event);
 private:
@@ -87,7 +88,7 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
-  
+
 private:
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
@@ -109,6 +110,7 @@ private:
   void setupInputWidgets();
   void parseStyleXML();
   void printStyleSheet() const;
+  void hideNonfunctioningWidgets();
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
@@ -117,7 +119,7 @@ private:
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
-  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_; 
+  boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
@@ -154,6 +156,10 @@ private Q_SLOTS:
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void resetWindowLayout();
+  void zoomNetwork();
+  void setDragMode(bool toggle);
+  void setSelectMode(bool toggle);
+  void adjustModuleDock(int state);
   void exitApplication(int code);
 };
 

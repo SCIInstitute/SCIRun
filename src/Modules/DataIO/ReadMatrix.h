@@ -27,8 +27,8 @@
 */
 /// @todo Documentation Modules/DataIO/ReadMatrix.h
 
-#ifndef MODULES_DATAIO_READ_MATRIX_H
-#define MODULES_DATAIO_READ_MATRIX_H
+#ifndef MODULES_DATAIO_READ_MATRIX_ORIGINAL_H
+#define MODULES_DATAIO_READ_MATRIX_ORIGINAL_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/DataIO/share.h>
@@ -37,12 +37,14 @@ namespace SCIRun {
 namespace Modules {
 namespace DataIO {
   
-  class SCISHARE ReadMatrixModule : public SCIRun::Dataflow::Networks::Module,
+  //TODO: defunct this module
+
+  class SCISHARE OriginalReadMatrixModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<StringPortTag>,
     public Has2OutputPorts<MatrixPortTag, StringPortTag>
   {
   public:
-    ReadMatrixModule();
+    OriginalReadMatrixModule();
     virtual void execute();
     virtual void setStateDefaults() {}
     INPUT_PORT(0, Filename, String);

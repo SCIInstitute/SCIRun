@@ -63,6 +63,7 @@ DenseMatrixHandle PointCloudOnNodeScalarMat();
 DenseMatrixHandle PointCloudOnNodeVectorMat();
 DenseMatrixHandle PointCloudOnNodeTensorMat();
 FieldHandle LoadTet();
+FieldHandle LoadTetWithData();
 FieldHandle LoadTri();
 FieldHandle LoadPts();
 FieldHandle TriSurfOnNodeVector();

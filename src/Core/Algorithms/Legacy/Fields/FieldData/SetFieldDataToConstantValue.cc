@@ -26,23 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
-
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-using namespace SCIRunAlgo;
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields::Parameters;
+using namespace SCIRun::Core::Datatypes;
 
+ALGORITHM_PARAMETER_DEF(Fields, BasisOrder);
+ALGORITHM_PARAMETER_DEF(Fields, DataType);
+ALGORITHM_PARAMETER_DEF(Fields, Value);
 
-AlgorithmParameterName SetFieldDataToConstantValueAlgo::Value("value");
-AlgorithmParameterName SetFieldDataToConstantValueAlgo::DataType("data_type");
-AlgorithmParameterName SetFieldDataToConstantValueAlgo::BasisOrder("basis_order");
+SetFieldDataToConstantValueAlgo::SetFieldDataToConstantValueAlgo()
+{
+  //! keep scalar type defines whether we convert to double or not
+  add_option(DataType, "same as input", "char|unsigned char|short|unsigned short|int|unsigned int|float|double|same as input");
+  add_option(BasisOrder, "same as input", "nodata|constant|linear|quadratic|same as input");
+  addParameter(Value, 0.0);
+}
 
 bool 
-SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
+SetFieldDataToConstantValueAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "SetFieldDataToConstantValue");
   if (!input)
@@ -53,7 +65,7 @@ SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
 
   FieldInformation fi(input);
 
-  std::string data_type = get(DataType).toString();
+  std::string data_type = get_option(DataType);
   if (data_type != "same as input")
   {
     fi.set_data_type(data_type);
@@ -63,7 +75,7 @@ SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
     fi.make_double();
   }
 
-  std::string basis_order = get(BasisOrder).toString();
+  std::string basis_order = get_option(BasisOrder);
   if (basis_order != "same as input")
   {
     fi.set_basis_type(basis_order);
@@ -83,4 +95,17 @@ SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
   output->vfield()->set_all_values(new_value);
   
   return (true);
+}
+
+AlgorithmOutput SetFieldDataToConstantValueAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Variables::InputField);
+
+  FieldHandle outputField;
+  if (!runImpl(field, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
 }

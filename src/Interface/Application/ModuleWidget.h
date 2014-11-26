@@ -127,6 +127,7 @@ Q_SIGNALS:
   void noteUpdated(const Note& note);
   void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+  void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
   void dynamicPortChanged();
   void noteChanged();
@@ -136,6 +137,9 @@ private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
+  void colorOptionsButton(bool visible);
+  void fillReplaceWithMenu();
+  void replaceModuleWith();
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
@@ -152,7 +156,10 @@ private:
   QDockWidget* dockable_;
   void makeOptionsDialog();
   void setupModuleActions();
+  void adjustDockState(bool dockEnabled);
+  Qt::DockWidgetArea allowedDockArea() const;
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  QMenu* getReplaceWithMenu();
 
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;

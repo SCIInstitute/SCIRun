@@ -57,11 +57,11 @@ SET(Modules_Legacy_Fields_HEADERS
   GetDomainBoundary.h
   GetFieldNodes.h
   JoinFields.h
+  SetFieldDataToConstantValue.h
   SplitFieldByDomain.h
   SplitFieldByConnectedRegion.h
   CreateFieldData.h
   SplitFieldByDomain.h
-  #ApplyMappingMatrix.h
   ApplyMappingMatrix.h
   MapFieldDataFromElemToNode.h
   MapFieldDataFromNodeToElem.h
@@ -80,7 +80,7 @@ SET(Modules_Legacy_Fields_SRCS
   #GetDomainStructure.cc
   RegisterWithCorrespondences.cc
   #SmoothVecFieldMedian.cc
-  #SetFieldDataToConstantValue.cc
+  SetFieldDataToConstantValue.cc
   #RemoveUnusedNodes.cc
   MapFieldDataOntoNodes.cc
   MapFieldDataOntoElems.cc

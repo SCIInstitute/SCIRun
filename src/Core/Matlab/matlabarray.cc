@@ -44,6 +44,70 @@
 
 using namespace SCIRun::MatlabIO;
 
+
+// matlabarray management functions
+// constructor/destructor
+// assignment/copy constructor
+// clear
+
+// constructor
+// creates on the place holder for the matlabarray
+matlabarray::matlabarray()
+  : m_(0)
+{ 
+}   
+
+// destructor
+matlabarray::~matlabarray()	
+{
+  if (m_ != 0) 
+  {	// delete the attached structure if necessary 
+    m_->ref_--;
+    if (m_->ref_ == 0) { delete m_; }
+    m_ = 0;	
+  }	
+}
+
+// copy constructor    
+matlabarray::matlabarray(const matlabarray &m)
+{    
+  m_ = 0;
+
+  // reference the same structure as the matlabarray we are copying
+  if (m.m_ != 0) 
+  {
+    m_ = m.m_; 
+    m_->ref_++;
+  } 
+}
+
+
+
+// assignment	
+matlabarray& matlabarray::operator= (const matlabarray &m) 
+{ // the same construction as the previous function is used
+  // to create a copy
+
+  // if m = m we have to do nothing
+  if (this != &m)
+  {
+    if (m_ != 0)
+    {	// delete the attached structure if necessary 
+      m_->ref_--;
+      if (m_->ref_ == 0) { delete m_; }
+      m_ = 0;	
+    }
+
+    if (m.m_ != 0) 
+    {
+      m_ = m.m_;
+      m_->ref_++;
+    }  
+  }
+
+  return *this;	
+}
+
 // clear and empty
 
 // Clear: this function is for clearing the contents of the matrix and dereferencing
@@ -53,9 +117,16 @@ using namespace SCIRun::MatlabIO;
 
 void matlabarray::clear()
 {
-	m_.reset();
+
+  if (m_ != 0) 
+  {	// delete the attached structure if necessary 
+
+    m_->ref_--;
+    if (m_->ref_ == 0) { delete m_; }
+    m_ = 0;	
+  }	
 }
-	
+
 // This function can be used to test whether the matrix contains any data
 // If not do not try to access the matrix components. This will result in
 // an internal_error exception
@@ -72,7 +143,8 @@ matlabarray matlabarray::clone() const
 	matlabarray ma;
 	if (isempty()) return(ma);
 	
-	ma.m_.reset(new mxarray);
+  ma.m_ = new mxarray;
+  ma.m_->ref_ = 1;
 	ma.m_->class_ = m_->class_;
 	ma.m_->type_ = m_->type_;
 	ma.m_->flags_ = m_->flags_;
@@ -689,7 +761,8 @@ void matlabarray::createdensearray(const std::vector<int> &dims,mitype type)
   
   clear(); // make sure there is no data
   
-  m_.reset(new mxarray);
+  m_ = new mxarray;
+  m_->ref_ = 1;
 
   m_->class_ = mlDENSE;
   m_->type_ = type; 
@@ -707,7 +780,8 @@ void matlabarray::createdensearray(int m,int n,mitype type)
   
   clear(); // make sure there is no data
   
-  m_.reset(new mxarray);
+  m_ = new mxarray;
+  m_->ref_ = 1;
 
   m_->class_ = mlDENSE;
   m_->type_ = type; 
@@ -722,7 +796,8 @@ void matlabarray::createsparsearray(const std::vector<int> &dims,mitype type)
 {
   clear(); // make sure there is no data
   
-  m_.reset(new mxarray);
+  m_ = new mxarray;
+  m_->ref_ = 1;
   m_->class_ = mlSPARSE;
   m_->type_ = type;  // need to add some type checking here
   m_->flags_ = 0;
@@ -738,7 +813,8 @@ void matlabarray::createsparsearray(int m,int n,mitype type)
 	
   clear(); // make sure there is no data
   
-  m_.reset(new mxarray);
+  m_ = new mxarray;
+  m_->ref_ = 1;
   m_->class_ = mlSPARSE;
   m_->type_ = type;  // need to add some type checking here
   m_->flags_ = 0;
@@ -753,7 +829,8 @@ void matlabarray::createcellarray(const std::vector<int> &dims)
 {
   clear(); // make sure there is no data
 
-  m_.reset(new mxarray);
+  m_ = new mxarray;
+  m_->ref_ = 1;
 
   m_->class_ = mlCELL;
   m_->type_ = miMATRIX;  // need to add some type checking here
@@ -777,7 +854,8 @@ void matlabarray::createstructarray(const std::vector<int> &dims, const std::vec
 {
   clear(); // make sure there is no data
 
-  m_.reset(new mxarray);
+  m_ = new mxarray;
+  m_->ref_ = 1;
   m_->class_ = mlSTRUCT;
   m_->type_ = miMATRIX;  // need to add some type checking here
   m_->flags_ = 0;
@@ -792,7 +870,8 @@ void matlabarray::createstructarray()
 {
   clear(); // make sure there is no data
 
-  m_.reset(new mxarray);
+  m_ = new mxarray;
+  m_->ref_ = 1;
   m_->class_ = mlSTRUCT;
   m_->type_ = miMATRIX;  // need to add some type checking here
   m_->flags_ = 0;
@@ -820,7 +899,8 @@ void matlabarray::createclassarray(const std::vector<int> &dims,const std::vecto
 {
   clear(); // make sure there is no data
 
-  m_.reset(new mxarray);
+  m_ = new mxarray;
+  m_->ref_ = 1;
   m_->class_ = mlOBJECT;
   m_->type_ = miMATRIX;  // need to add some type checking here
   m_->flags_ = 0;
@@ -841,7 +921,8 @@ void matlabarray::createstringarray(const std::string& str)
 {
   clear(); // make sure there is no data
   
-  m_.reset(new mxarray);
+  m_ = new mxarray;
+  m_->ref_ = 1;
   m_->class_ = mlSTRING; 
   m_->type_ = miUINT8;
   m_->flags_ = 0;

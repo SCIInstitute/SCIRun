@@ -57,7 +57,7 @@ class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase
     static AlgorithmInputName ElemLink;
     static AlgorithmOutputName BoundaryField;
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 
     bool runImpl(FieldHandle input, Datatypes::SparseRowMatrixHandle domainlink, FieldHandle& output) const;
 };

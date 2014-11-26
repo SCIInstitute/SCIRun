@@ -103,9 +103,11 @@ void Application::shutdown()
   }
 }
 
+static ApplicationHelper applicationHelper;
+
 std::string Application::applicationName() const
 {
-  return ApplicationHelper::applicationName();
+  return applicationHelper.applicationName();
 }
 
 ApplicationParametersHandle Application::parameters() const
@@ -177,27 +179,27 @@ std::string Application::version() const
 
 boost::filesystem::path Application::configDirectory() const
 {
-  return ApplicationHelper::configDirectory();
+  return applicationHelper.configDirectory();
 }
 
 bool Application::get_user_directory( boost::filesystem::path& user_dir, bool config_path) const
 {
-  return ApplicationHelper::get_user_directory(user_dir, config_path);
+  return applicationHelper.get_user_directory(user_dir, config_path);
 }
 
 bool Application::get_user_desktop_directory( boost::filesystem::path& user_desktop_dir ) const
 {
-  return ApplicationHelper::get_user_desktop_directory(user_desktop_dir);
+  return applicationHelper.get_user_desktop_directory(user_desktop_dir);
 }
 
 bool Application::get_config_directory( boost::filesystem::path& config_dir ) const
 {
-  return ApplicationHelper::get_config_directory(config_dir);
+  return applicationHelper.get_config_directory(config_dir);
 }
 
 bool Application::get_user_name( std::string& user_name ) const
 {
-  return ApplicationHelper::get_user_name(user_name);
+  return applicationHelper.get_user_name(user_name);
 }
 
 /*

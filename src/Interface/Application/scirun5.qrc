@@ -17,5 +17,14 @@
         <file>Resources/SCIgrid-large.png</file>
         <file>Resources/SCIgrid-medium.png</file>
         <file>Resources/SCIgrid-small.png</file>
+        <file>Resources/cursor_hand_icon.png</file>
+        <file>Resources/redo.png</file>
+        <file>Resources/undo.png</file>
+        <file>Resources/select.png</file>
+        <file>Resources/zoom_fit.png</file>
+        <file>Resources/zoom_in.png</file>
+        <file>Resources/zoom_out.png</file>
+        <file>Resources/zoom_reset.png</file>
+        <file>Resources/align_center.png</file>
     </qresource>
 </RCC>
