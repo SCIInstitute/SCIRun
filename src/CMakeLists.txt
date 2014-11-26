@@ -136,14 +136,14 @@ IF(BUILD_TESTING)
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
 
-  SET(USER_UNIT_TEST_RESOURCE_DIR "../../../scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests" CACHE PATH "Root for unit testing files")
+  SET(USER_UNIT_TEST_RESOURCE_DIR "C:/testData/unitTest/sciruntests/SCIRunUnitTestData/SCIRun5/UnitTests" CACHE PATH "Root for unit testing files")
 
   IF(NOT EXISTS "${USER_UNIT_TEST_RESOURCE_DIR}")
     MESSAGE( WARNING "Unit test resource path does not exist. Please set it correctly to run all the unit tests. Try mapping this svn path: https://gforge.sci.utah.edu/gf/project/sciruntests/scmsvn/?action=browse&path=%2FSCIRunUnitTestData%2FSCIRun5%2FUnitTests%2F" )
   ENDIF()
 
   # adding a brand new path to store the github data repo location; eventually will replace above, and perhaps be another external project link.
-  SET(SCIRUN_TEST_RESOURCE_DIR "../../SCIRunTestData" CACHE PATH "Root for all github-based testing files")
+  SET(SCIRUN_TEST_RESOURCE_DIR "C:/testData/testData" CACHE PATH "Root for all github-based testing files")
 
   IF(NOT EXISTS "${SCIRUN_TEST_RESOURCE_DIR}")
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
