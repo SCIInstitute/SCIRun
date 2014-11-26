@@ -408,7 +408,13 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), 
+      portAlpha()), type, 
+      moduleId, port->id(), 
+      i, port->isDynamic(), connectionFactory_, 
+      closestPortFinder_, 
+      0,
+      this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
@@ -437,7 +443,12 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
   BOOST_FOREACH(OutputPortHandle port, moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), 
+      type, moduleId, port->id(), i, port->isDynamic(), 
+      connectionFactory_, 
+      closestPortFinder_,
+      0, 
+      this);
     hookUpGeneralPortSignals(w);
     ports_->addPort(w);
     ++i;
@@ -526,7 +537,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     InputPortHandle port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, 0, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);

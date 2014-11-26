@@ -35,6 +35,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 
@@ -250,11 +251,11 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 	  placeHoldingColor_ = fromPort_->color();
   }
 
-  setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges);
+  setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges | ItemIsFocusable);
 
   //TODO: need dynamic zValue
   setZValue(1);
-  setToolTip("Left - Highlight\nDouble-Left - Menu");
+  setToolTip("Left - Highlight\nDouble-Left - Menu\ni - Datatype info");
   setAcceptHoverEvents(true);
 
   menu_ = new ConnectionMenu();
@@ -417,6 +418,24 @@ void ConnectionLine::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 void ConnectionLine::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
   setColorAndWidth(color(), DEFAULT_CONNECTION_WIDTH);
+}
+
+namespace
+{
+  template <typename F>
+  QString eval(F f)
+  {
+    return f ? QString::fromStdString(f()) : "[null info]";
+  }
+}
+
+void ConnectionLine::keyPressEvent(QKeyEvent* event)
+{
+  //std::cout << "Connection::keyPressEvent: " << id_.id_ << std::endl;
+  auto infoFrom = eval(fromPort_->getPortDataDescriber());
+  auto infoTo = eval(toPort_->getPortDataDescriber());
+  QMessageBox::information(SCIRunMainWindow::Instance(), "Connection Data info: " + QString::fromStdString(id_.id_), 
+    "info about datatype goes here \n" + infoFrom + "\n" + infoTo);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)

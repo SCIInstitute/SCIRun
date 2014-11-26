@@ -28,6 +28,8 @@
 
 #include <iostream>
 #include <boost/foreach.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
 #include <QtGui>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
@@ -139,12 +141,15 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   const PortId& portId, size_t index,
   bool isInput, bool isDynamic,
   boost::shared_ptr<ConnectionFactory> connectionFactory,
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent /* = 0 */)
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+  PortDataDescriber portDataDescriber,
+  QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
   name_(name), moduleId_(moduleId), portId_(portId), index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(0),
   connectionFactory_(connectionFactory),
   closestPortFinder_(closestPortFinder),
-  menu_(new PortActionsMenu(this))
+  menu_(new PortActionsMenu(this)),
+  portDataDescriber_(portDataDescriber)
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
@@ -428,8 +433,9 @@ InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const
   const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
   boost::shared_ptr<ConnectionFactory> connectionFactory,
   boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+  PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
-  : PortWidget(name, color, datatype, moduleId, portId, index, true, isDynamic, connectionFactory, closestPortFinder, parent)
+  : PortWidget(name, color, datatype, moduleId, portId, index, true, isDynamic, connectionFactory, closestPortFinder, portDataDescriber, parent)
 {
 }
 
@@ -437,8 +443,9 @@ OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, con
   const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
   boost::shared_ptr<ConnectionFactory> connectionFactory,
   boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+  PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
-  : PortWidget(name, color, datatype, moduleId, portId, index, false, isDynamic, connectionFactory, closestPortFinder, parent)
+  : PortWidget(name, color, datatype, moduleId, portId, index, false, isDynamic, connectionFactory, closestPortFinder, portDataDescriber, parent)
 {
 }
 
