@@ -65,7 +65,7 @@ RefineMeshDialog::RefineMeshDialog(const std::string& name, ModuleStateHandle st
 	addComboBoxManager(refinementComboBox_, Parameters::RefineMethod);
 	addDoubleSpinBoxManager(isoValueSpinBox_, Parameters::IsoValue);
 
-	connect(constraintComboBox_, SIGNAL(activated(int)), this, SLOT(setIsoValueEnabled())); //if combobox slected enable isovalue
+	connect(constraintComboBox_, SIGNAL(activated(int)), this, SLOT(setIsoValueEnabled()));
 }
 
 void RefineMeshDialog::pull()

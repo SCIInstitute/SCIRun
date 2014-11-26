@@ -31,7 +31,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Scalar.h>
-//#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
 #include <Modules/Legacy/Fields/RefineMesh.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
@@ -70,9 +69,7 @@ auto isovaluefield = getOptionalInput(IsoValueField);
   if (needToExecute() )
   {
     update_state(Executing);
-		
-		//auto state = get_state(); 
-		
+				
 		setAlgoOptionFromState(Parameters::AddConstraints);
 		setAlgoOptionFromState(Parameters::RefineMethod);
 		setAlgoDoubleFromState(Parameters::IsoValue);
@@ -89,7 +86,6 @@ auto isovaluefield = getOptionalInput(IsoValueField);
 		#endif
 		remark("Mapping matrix port implementation is not enabled yet--please contact a developer");
 
-		//auto output = algo().run_generic(withInputData((InputField, input)));
 		auto output = algo().run_generic(withInputData((InputField, input)));
 		sendOutputFromAlgorithm(OutputField, output);
 

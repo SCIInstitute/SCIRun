@@ -51,14 +51,7 @@ ALGORITHM_PARAMETER_DECL(IsoValue);
 class SCISHARE RefineMeshAlgo : public AlgorithmBase
 {
   public:  
-    /// Set defaults
     RefineMeshAlgo();
-      /// Option for selecting which nodes to refine
-      //add_option("select","all","equal|lessthan|greaterthan|all|none");
-      //add_scalar("isoval",0.0);
-      
-      /// option only affecting hex refinement
-     // add_bool("hex_convex",false);
 		bool runImpl(FieldHandle input, Datatypes::Double isovalue, FieldHandle& output, Datatypes::MatrixHandle& mapping) const; 
 		bool runImpl(FieldHandle input, FieldHandle& output) const; 
 
