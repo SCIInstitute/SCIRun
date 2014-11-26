@@ -61,7 +61,7 @@
      </item>
      <item>
       <property name="text">
-       <string>Do not refine nodes/elements with values unequal than isovalue</string>
+       <string>Do not refine nodes/elements with values unequal to isovalue</string>
       </property>
      </item>
      <item>

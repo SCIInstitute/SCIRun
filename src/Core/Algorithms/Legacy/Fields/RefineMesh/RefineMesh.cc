@@ -60,7 +60,7 @@ RefineMeshAlgo::RefineMeshAlgo()
 {
 		using namespace Parameters; 
 		add_option(AddConstraints,"all","all|lessthan|unequal|greaterthan|none");
-		add_option(RefineMethod,"default","default|Expand refinement volume to improve element quality"); 
+		add_option(RefineMethod,"Default","Default|Expand refinement volume to improve element quality"); 
 		addParameter(IsoValue,0.0);
 }
 
@@ -132,8 +132,7 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   if (fi.is_hex_element())
   {
 			std::cout <<"convex" << std::endl; 
-		//bool convex = get_option(convex) == "hex_convex"; 
-			bool convex = 0; 
+			bool convex = get_option(Parameters::RefineMethod) == "Expand refinement volume to improve element quality"; 
     RefineMeshHexVolAlgoV algo;
 		return(algo.runImpl(input,output,convex,addCon,isoVal));
   }
