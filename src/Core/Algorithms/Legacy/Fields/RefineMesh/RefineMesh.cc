@@ -126,7 +126,8 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   
   if (fi.is_hex_element())
   {
-		bool convex = get_option(Parameters::RefineMethod) == "Expand refinement volume to improve element quality"; 
+		bool convex = false; 
+		convex = rMethod == "Expand refinement volume to improve element quality"; 
     RefineMeshHexVolAlgoV algo;
 		return(algo.runImpl(input,output,convex,addCon,isoVal));
   }
