@@ -43,6 +43,7 @@ using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
+ALGORITHM_PARAMETER_DEF(Fields, BasisType);
 ALGORITHM_PARAMETER_DEF(Fields, Truncate);
 ALGORITHM_PARAMETER_DEF(Fields, TruncateDistance);
 ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDatatype);

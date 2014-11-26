@@ -39,6 +39,7 @@ SET(Interface_Modules_Fields_FORMS
   CalculateFieldData.ui
   InterfaceWithCleaverDialog.ui
   SetFieldDataDialog.ui
+  SetFieldDataToConstantValue.ui
   MapFieldDataFromElemToNodeDialog.ui
   MapFieldDataFromNodeToElemDialog.ui
   MapFieldDataFromSourceToDestinationDialog.ui
@@ -49,6 +50,7 @@ SET(Interface_Modules_Fields_FORMS
   MapFieldDataOntoElems.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
+  ConvertFieldBasis.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -63,6 +65,7 @@ SET(Interface_Modules_Fields_HEADERS
   SplitFieldByConnectedRegionDialog.h
   InterfaceWithCleaverDialog.h
   SetFieldDataDialog.h
+  SetFieldDataToConstantValueDialog.h
   MapFieldDataFromElemToNodeDialog.h
   MapFieldDataFromNodeToElemDialog.h
   MapFieldDataFromSourceToDestinationDialog.h
@@ -73,6 +76,7 @@ SET(Interface_Modules_Fields_HEADERS
   MapFieldDataOntoElemsDialog.h
   MapFieldDataOntoNodesDialog.h
   ClipFieldByFunctionDialog.h
+  ConvertFieldBasisDialog.h
   share.h
 )
 
@@ -80,6 +84,7 @@ SET(Interface_Modules_Fields_SOURCES
   CreateLatVolDialog.cc
   CreateFieldDataDialog.cc
   CalculateFieldDataDialog.cc
+  ConvertFieldBasisDialog.cc
   GetDomainBoundaryDialog.cc
   JoinFieldsDialog.cc
   FairMeshDialog.cc
@@ -88,6 +93,7 @@ SET(Interface_Modules_Fields_SOURCES
   SplitFieldByConnectedRegionDialog.cc
   InterfaceWithCleaverDialog.cc
   SetFieldDataDialog.cc
+  SetFieldDataToConstantValueDialog.cc
   MapFieldDataFromElemToNodeDialog.cc
   MapFieldDataFromNodeToElemDialog.cc
   MapFieldDataFromSourceToDestinationDialog.cc

@@ -30,7 +30,6 @@
 #ifndef DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
 #define DATAFLOW_NETWORK_MODULE_DESCRIPTION_H 
 
-//#include <iostream>
 #include <string>
 #include <vector>
 #include <iosfwd>
@@ -126,6 +125,9 @@ namespace Networks {
     //bool last_port_dynamic_;
     //bool                              has_gui_node_;
   };
+
+  SCISHARE bool canReplaceWith(ModuleHandle module, const ModuleDescription& potentialReplacement);
+
 }}}
 
 #endif

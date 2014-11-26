@@ -32,13 +32,17 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Core/Datatypes/DatatypeFwd.h> 
 
 namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
 
-        ALGORITHM_PARAMETER_DECL(BasisType);
+        ALGORITHM_PARAMETER_DECL(InputFieldName);
+				ALGORITHM_PARAMETER_DECL(InputType);
+				ALGORITHM_PARAMETER_DECL(OutputType);
+        ALGORITHM_PARAMETER_DECL(BuildBasisMapping);
 
         class SCISHARE ConvertFieldBasisTypeAlgo : public AlgorithmBase
         {

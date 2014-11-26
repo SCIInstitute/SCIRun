@@ -125,9 +125,20 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   standardBar->addAction(actionSave_);
   standardBar->addAction(actionRunScript_);
   standardBar->addAction(actionEnterWhatsThisMode_);
+  standardBar->addSeparator();
   standardBar->addAction(actionPinAllModuleUIs_);
   standardBar->addAction(actionRestoreAllModuleUIs_);
   standardBar->addAction(actionHideAllModuleUIs_);
+  standardBar->addSeparator();
+  standardBar->addAction(actionCenterNetworkViewer_);
+  standardBar->addAction(actionZoomIn_);
+  standardBar->addAction(actionZoomOut_);
+  //TODO: requires some real code
+  actionZoomBestFit_->setDisabled(true);
+  standardBar->addAction(actionZoomBestFit_);
+  standardBar->addAction(actionResetNetworkZoom_);
+  standardBar->addAction(actionDragMode_);
+  standardBar->addAction(actionSelectMode_);
   standardBar->setStyleSheet(styleSheet());
   //setUnifiedTitleAndToolBarOnMac(true);
 
@@ -213,11 +224,13 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
+  connect(dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
+
   makeFilterButtonMenu();
 
-  connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
-  connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
-  connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
+  //connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
+  //connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
+  //connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   if (newInterface())
     networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
 
@@ -225,6 +238,16 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
+
+  connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
+  connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
+
+  connect(actionResetNetworkZoom_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
+  connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
 
   setupInputWidgets();
 
@@ -235,6 +258,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionConfiguration_->setChecked(!configurationDockWidget_->isHidden());
   actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
+
+  provenanceWindow_->hide();
+
+  hideNonfunctioningWidgets();
 
   //parseStyleXML();
 }
@@ -259,7 +286,7 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
 
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)),
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
     commandConverter_.get(), SLOT(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     commandConverter_.get(), SLOT(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)));
@@ -290,6 +317,7 @@ void SCIRunMainWindow::setTipsAndWhatsThis()
   actionHideAllModuleUIs_->setWhatsThis("Hides all module UI windows.");
   actionRestoreAllModuleUIs_->setWhatsThis("Restores all module UI windows.");
   actionPinAllModuleUIs_->setWhatsThis("Pins all module UI windows to right side of main window.");
+  //todo: zoom actions, etc
 }
 
 void SCIRunMainWindow::setupInputWidgets()
@@ -427,7 +455,7 @@ void SCIRunMainWindow::loadNetwork()
   }
 }
 
-void SCIRunMainWindow::loadNetworkFile(const QString& filename)
+bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
 {
   if (!filename.isEmpty())
   {
@@ -440,6 +468,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       provenanceWindow_->clear();
       provenanceWindow_->showFile(command.openedFile_);
 			networkEditor_->viewport()->update();
+      return true;
     }
     else
     {
@@ -449,6 +478,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       // probably want to control this with a --regression flag.
     }
   }
+  return false;
 }
 
 bool SCIRunMainWindow::newNetwork()
@@ -566,12 +596,20 @@ void SCIRunMainWindow::setActionIcons()
   actionRunScript_->setIcon(QPixmap(":/general/Resources/script.png"));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-  actionUndo_->setIcon(QIcon::fromTheme("edit-undo"));
-  actionRedo_->setIcon(QIcon::fromTheme("edit-redo"));
+  actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
+  actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
   //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/hideAll.png"));
   actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/rightAll.png"));
   actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/showAll.png"));
+
+  actionCenterNetworkViewer_->setIcon(QPixmap(":/general/Resources/align_center.png"));
+  actionResetNetworkZoom_->setIcon(QPixmap(":/general/Resources/zoom_reset.png"));
+  actionZoomIn_->setIcon(QPixmap(":/general/Resources/zoom_in.png"));
+  actionZoomOut_->setIcon(QPixmap(":/general/Resources/zoom_out.png"));
+  actionZoomBestFit_->setIcon(QPixmap(":/general/Resources/zoom_fit.png"));
+  actionDragMode_->setIcon(QPixmap(":/general/Resources/cursor_hand_icon.png"));
+  actionSelectMode_->setIcon(QPixmap(":/general/Resources/select.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
@@ -634,6 +672,70 @@ void SCIRunMainWindow::chooseBackgroundColor()
   }
 }
 
+void SCIRunMainWindow::setDragMode(bool toggle)
+{
+  if (toggle)
+  {
+    networkEditor_->setMouseAsDragMode();
+    statusBar()->showMessage("Mouse in drag mode", 2000);
+  }
+  if (actionDragMode_->isChecked())
+  {
+    actionSelectMode_->setChecked(false);
+  }
+  else
+  {
+    actionSelectMode_->setChecked(true);
+  }
+}
+
+void SCIRunMainWindow::setSelectMode(bool toggle)
+{
+  if (toggle)
+  {
+    networkEditor_->setMouseAsSelectMode();
+    statusBar()->showMessage("Mouse in select mode", 2000);
+  }
+  if (actionSelectMode_->isChecked())
+  {
+    actionDragMode_->setChecked(false);
+  }
+  else
+  {
+    actionDragMode_->setChecked(true);
+  }
+}
+
+void SCIRunMainWindow::zoomNetwork()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  if (action)
+  {
+    const QString name = action->text();
+    if (name == "Zoom In")
+    {
+      networkEditor_->zoomIn();
+    }
+    else if (name == "Zoom Out")
+    {
+      networkEditor_->zoomOut();
+    }
+    else if (name == "Reset Network Zoom")
+    {
+      networkEditor_->zoomReset();
+    }
+  }
+  else
+  {
+    std::cerr << "Sender was null or not an action" << std::endl;
+  }
+}
+
+void SCIRunMainWindow::showZoomStatusMessage(int zoomLevel)
+{
+  statusBar()->showMessage(tr("Zoom: %1%").arg(zoomLevel), 2000);
+}
+
 void SCIRunMainWindow::resetBackgroundColor()
 {
   //TODO: standardize these defaults
@@ -659,6 +761,7 @@ void SCIRunMainWindow::setupProvenanceWindow()
   actionRedo_->setEnabled(false);
   connect(provenanceWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
   connect(provenanceWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
+  connect(provenanceWindow_, SIGNAL(networkModified()), networkEditor_, SLOT(updateViewport()));
 
   commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
 
@@ -1128,4 +1231,45 @@ void SCIRunMainWindow::resetWindowLayout()
   addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
 
   std::cout << "TODO: toolbars" << std::endl;
+}
+
+void SCIRunMainWindow::hideNonfunctioningWidgets()
+{
+  QList<QAction*> nonfunctioningActions;
+  nonfunctioningActions <<
+    actionInsert_ <<
+    actionCreate_Module_Skeleton_ <<
+    actionCut_ <<
+    actionCopy_ <<
+    actionPaste_;
+  QList<QMenu*> nonfunctioningMenus;
+  nonfunctioningMenus <<
+    menuSubnets_ <<
+    menuToolkits_;
+  QList<QWidget*> nonfunctioningWidgets;
+  nonfunctioningWidgets <<
+    scirunNetsLabel_ <<
+    scirunNetsLineEdit_ <<
+    scirunNetsPushButton_ <<
+    userDataLabel_ <<
+    userDataLineEdit_ <<
+    userDataPushButton_ <<
+    dataSetGroupBox_ <<
+    optionsGroupBox_ <<
+    networkEditorMiniViewLabel_ <<
+    miniviewTextLabel_;
+
+  Q_FOREACH(QAction* a, nonfunctioningActions)
+    a->setVisible(false);
+  Q_FOREACH(QMenu* m, nonfunctioningMenus)
+    m->menuAction()->setVisible(false);
+  Q_FOREACH(QWidget* w, nonfunctioningWidgets)
+    w->setVisible(false);
+}
+
+void SCIRunMainWindow::adjustModuleDock(int state)
+{
+  bool dockable = dockableModulesCheckBox_->isChecked();
+  actionPinAllModuleUIs_->setEnabled(dockable);
+  Preferences::Instance().modulesAreDockable.setValue(dockable);
 }

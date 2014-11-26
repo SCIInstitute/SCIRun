@@ -42,13 +42,12 @@ namespace SCIRun {
     public:
       SolveLinearSystemDialogImpl()
       {
-        typedef boost::bimap<std::string, std::string>::value_type strPair;
-        solverNameLookup_.insert(strPair("Conjugate Gradient (SCI)", "cg"));
-        solverNameLookup_.insert(strPair("BiConjugate Gradient (SCI)", "bicg"));
-        solverNameLookup_.insert(strPair("Jacobi (SCI)", "jacobi"));
-        solverNameLookup_.insert(strPair("MINRES (SCI)", "minres"));
+        solverNameLookup_.insert(StringPair("Conjugate Gradient (SCI)", "cg"));
+        solverNameLookup_.insert(StringPair("BiConjugate Gradient (SCI)", "bicg"));
+        solverNameLookup_.insert(StringPair("Jacobi (SCI)", "jacobi"));
+        solverNameLookup_.insert(StringPair("MINRES (SCI)", "minres"));
       }
-      boost::bimap<std::string, std::string> solverNameLookup_;
+      GuiStringTranslationMap solverNameLookup_;
     };
   }}
 

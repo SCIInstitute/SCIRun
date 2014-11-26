@@ -31,6 +31,8 @@
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
+#include <Core/Application/Application.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Connection.h>
@@ -44,6 +46,7 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -51,6 +54,7 @@
 
 #include <Dataflow/Network/Module.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
@@ -81,7 +85,7 @@ namespace Gui {
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
-        << disabled(new QAction("Replace With->(TODO)", parent))
+        << disabled(new QAction("Replace With", parent))
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
@@ -319,6 +323,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
 
+  Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
+
   //TODO: doh, how do i destroy myself?
   //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
 
@@ -352,6 +358,35 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
   moduleActionButton_->setMenu(actionsMenu_->getMenu());
+
+  auto replaceWith = actionsMenu_->getAction("Replace With");
+  auto menu = new QMenu(this);
+  replaceWith->setMenu(menu);
+  fillReplaceWithMenu();
+  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
+  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+}
+
+void ModuleWidget::fillReplaceWithMenu()
+{
+  auto menu = getReplaceWithMenu();
+  menu->clear();
+  LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
+  fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
+    [this](const ModuleDescription& md) { return canReplaceWith(this->theModule_, md); },
+    [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); });
+}
+
+QMenu* ModuleWidget::getReplaceWithMenu()
+{
+  return actionsMenu_->getAction("Replace With")->menu();
+}
+
+void ModuleWidget::replaceModuleWith()
+{
+  QAction* action = qobject_cast<QAction*>(sender());
+  QString moduleToReplace = action->text();
+  Q_EMIT replaceModuleWith(theModule_, moduleToReplace.toStdString());
 }
 
 void ModuleWidget::addPortLayouts()
@@ -541,6 +576,11 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
+  removeWidgetFromExecutionDisableList(executePushButton_);
+  removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
+  if (dialog_)
+    removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());
+
   //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
   //disconnect()
   deleting_ = true;
@@ -666,12 +706,40 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->setWidget(dialog_);
       dialog_->setDockable(dockable_);
       dockable_->setMinimumSize(dialog_->minimumSize());
-      dockable_->setAllowedAreas(Qt::RightDockWidgetArea);
+      dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
       SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
+      dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
+      connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
     }
   }
+}
+
+Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
+{
+  return Core::Preferences::Instance().modulesAreDockable ? Qt::RightDockWidgetArea : Qt::NoDockWidgetArea;
+}
+
+void ModuleWidget::adjustDockState(bool dockEnabled)
+{
+  if (dockable_)
+  {
+    dockable_->setAllowedAreas(allowedDockArea());
+  }
+
+  if (dockEnabled)
+  {
+
+  }
+  else
+  {
+    if (dockable_)
+    {
+      dockable_->setFloating(true);
+    }
+  }
+
 }
 
 boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
@@ -691,10 +759,20 @@ void ModuleWidget::toggleOptionsDialog()
       {
         dockable_->setFloating(true);
       }
+      colorOptionsButton(true);
     }
     else
+    {
       hideUI();
+      colorOptionsButton(false);
+    }
   }
+}
+
+void ModuleWidget::colorOptionsButton(bool visible)
+{
+  QString styleSheet = visible ? "background-color: rgb(0,0,220); color: white;" : "";
+  optionsButton_->setStyleSheet(styleSheet);
 }
 
 void ModuleWidget::updateProgressBar(double percent)

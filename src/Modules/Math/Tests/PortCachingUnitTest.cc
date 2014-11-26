@@ -60,6 +60,7 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -559,8 +560,8 @@ class ReexecuteStrategySimpleUnitTest : public ::testing::Test
 public:
   ReexecuteStrategySimpleUnitTest() :
     inputsChanged_(false),
-    stateChanged_(false),
-    oportsCached_(false)
+    stateChanged_(true),
+    oportsCached_(true)
   {
     SCIRun::Core::Logging::Log::get().setVerbose(true);
   }
@@ -601,7 +602,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
   std::cout << "RealInputsChanged, stateChanged = " << stateChanged_ << " oportsCached = " << oportsCached_ << std::endl;
   InputsChangedCheckerHandle realInputsChanged(new InputsChangedCheckerImpl(*evalModule));
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
-  ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(stateChanged_));
+  ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(true));
   Testing::MockOutputPortsCachedCheckerPtr mockOutputPortsCached(new NiceMock<Testing::MockOutputPortsCachedChecker>);
   ON_CALL(*mockOutputPortsCached, outputPortsCached()).WillByDefault(Return(true));
   ModuleReexecutionStrategyHandle realNeedToExecuteWithPartialMocks(new DynamicReexecutionStrategy(realInputsChanged, mockStateChanged, mockOutputPortsCached));
@@ -625,6 +626,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
     EXPECT_EQ(evalModule->expensiveComputationDone_, initialNeedToExecute);
 
     ASSERT_TRUE(evalModule->expensiveComputationDone_);
+    ON_CALL(*mockStateChanged, newStatePresent()).WillByDefault(Return(false));
     if (evalModule->expensiveComputationDone_)
     {
       //inputs haven't changed.
@@ -739,7 +741,8 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
   }
 }
 
-TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
+//TODO: port cache switch is not exposed, need to rework this anyway
+TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
@@ -814,7 +817,7 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
     EXPECT_EQ(2, network->nconnections());
 
     //std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
-      
+
     evalModule->resetFlags();
     EXPECT_TRUE(send->do_execute());
     EXPECT_TRUE(process->do_execute());
@@ -836,4 +839,62 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustOportsCached)
     EXPECT_TRUE(evalModule->executeCalled_);
     EXPECT_TRUE(evalModule->expensiveComputationDone_);
   }
+}
+
+TEST(PortCachingFunctionalTest, TestSourceSinkInputsChanged)
+{
+  Log::get().setVerbose(true);
+  ReexecuteStrategyFactoryHandle re(new DynamicReexecutionStrategyFactory(std::string()));
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), af, re);
+
+  auto network = controller.getNetwork();
+
+  ModuleHandle send = controller.addModule("CreateLatVol");
+  ModuleHandle process = controller.addModule("NeedToExecuteTester");
+  ModuleHandle receive = controller.addModule("ReportFieldInfo");
+
+  EXPECT_EQ(3, network->nmodules());
+
+  network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 1));
+  EXPECT_EQ(1, network->nconnections());
+  network->connect(ConnectionOutputPort(process, 1), ConnectionInputPort(receive, 0));
+  EXPECT_EQ(2, network->nconnections());
+
+  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  ASSERT_TRUE(evalModule != nullptr);
+
+  EXPECT_FALSE(evalModule->executeCalled_);
+  EXPECT_FALSE(evalModule->expensiveComputationDone_);
+
+std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 1 1 1 1 1 1" << std::endl;
+  send->do_execute();
+  process->do_execute();
+  receive->do_execute();
+
+  EXPECT_TRUE(evalModule->executeCalled_);
+  EXPECT_TRUE(evalModule->expensiveComputationDone_);
+
+  evalModule->resetFlags();
+
+std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 2 2 2 2 2" << std::endl;
+  send->do_execute();
+  process->do_execute();
+  receive->do_execute();
+
+  EXPECT_TRUE(evalModule->executeCalled_);
+  EXPECT_FALSE(evalModule->expensiveComputationDone_);
+
+  evalModule->resetFlags();
+
+  std::cout << "@ @ @ @ @ @ @ @ @ @ EXECUTION 3 3 3 3 3 3 3" << std::endl;
+  send->do_execute();
+  process->do_execute();
+  receive->do_execute();
+
+  EXPECT_TRUE(evalModule->executeCalled_);
+  EXPECT_FALSE(evalModule->expensiveComputationDone_);
+
 }

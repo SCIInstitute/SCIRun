@@ -112,7 +112,7 @@ namespace
     ConnectionDescriptionXML conn;
     conn.out_.moduleId_ = ModuleId("ReadMatrix", 2);
     conn.in_.moduleId_ = ModuleId("EvaluateLinearAlgebraUnary", 1);
-    conn.out_.portId_ = PortId(0, "MatrixLoaded");
+    conn.out_.portId_ = PortId(0, "Matrix");
     conn.in_.portId_ = PortId(0, "InputMatrix");
 
     ConnectionDescriptionXML conn2;

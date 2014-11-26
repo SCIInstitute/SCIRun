@@ -53,6 +53,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Thread;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory,
   AlgorithmFactoryHandle af, ReexecuteStrategyFactoryHandle reex, NetworkEditorSerializationManager* nesm) :
@@ -89,7 +90,8 @@ ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
   auto realModule = addModuleImpl(info.module_name_);
   if (signalSwitch_)
   {
-    /*emit*/ moduleAdded_(info.module_name_, realModule);
+    static ModuleCounter dummy;
+    /*emit*/ moduleAdded_(info.module_name_, realModule, dummy);
   }
   printNetwork();
   return realModule;
@@ -127,7 +129,8 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   ModuleId id(module->get_id());
   auto newModule = addModuleImpl(id.name_);
   newModule->set_state(module->get_state()->clone());
-  moduleAdded_(id.name_, newModule);
+  static ModuleCounter dummy;
+  moduleAdded_(id.name_, newModule, dummy);
 
   /// @todo: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
@@ -269,6 +272,11 @@ boost::signals2::connection NetworkEditorController::connectPortRemoved(const Po
   return dynamicPortManager_->connectPortRemoved(subscriber);
 }
 
+boost::signals2::connection NetworkEditorController::connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber)
+{
+  return networkDoneLoading_.connect(subscriber);
+}
+
 NetworkFileHandle NetworkEditorController::saveNetwork() const
 {
   NetworkToXML conv(serializationManager_);
@@ -283,11 +291,14 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
     {
       NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, reexFactory_, this);
       theNetwork_ = conv.from_xml_data(xml->network);
+      ModuleCounter modulesDone;
       for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
         ModuleHandle module = theNetwork_->module(i);
-        moduleAdded_(module->get_module_name(), module);
+        moduleAdded_(module->get_module_name(), module, modulesDone);
+        networkDoneLoading_(i);
       }
+
       {
         auto disable(createDynamicPortSwitch());
         //this is handled by NetworkXMLConverter now--but now the logic is convoluted.
@@ -306,6 +317,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       }
       else
         Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;
+      networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
     }
     catch (ExceptionBase& e)
     {
@@ -327,7 +339,7 @@ void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
   {
     currentExecutor_ = executorFactory_->createDefault();
   }
-  
+
   ExecuteAllModules filter;
   theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
   ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);

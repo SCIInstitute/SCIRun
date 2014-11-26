@@ -60,18 +60,35 @@
 using namespace SCIRun::MatlabIO;
 
 matfiledata::matfiledata()
-    : m_(0), ptr_(0) 
+  : m_(0), ptr_(0) 
 {
-  m_.reset(new mxdata);
+  m_ = new mxdata;
+  m_->dataptr_ = 0; 
+  m_->owndata_ = false;
+  m_->bytesize_ = 0;
+  m_->type_ = miUNKNOWN;
+  m_->ref_ = 1; 
 }
- 
+
 matfiledata::matfiledata(matfiledata::mitype type)
-    : m_(0) , ptr_(0)
+  : m_(0) , ptr_(0)
 {
-  m_.reset(new mxdata);
+  m_ = new mxdata;
+  m_->dataptr_ = 0; 
+  m_->owndata_ = false;
+  m_->bytesize_ = 0;
   m_->type_ = type;
+  m_->ref_ = 1; 
+}			 
+
+matfiledata::~matfiledata()
+{
+  if (m_ != 0)
+  {
+    clearptr();
+  }
 }
-  	
+
 void matfiledata::clear()
 {
   if (m_ == 0) 
@@ -79,7 +96,44 @@ void matfiledata::clear()
     std::cerr << "internal error in clear()\n";
     throw internal_error();
   }
-  m_.reset(new mxdata);
+  if ((m_->dataptr_ != 0)&&(m_->owndata_ == true)) delete[] static_cast<char *>(m_->dataptr_);
+  m_->owndata_ = false;
+  m_->dataptr_ = 0;	
+  m_->bytesize_ = 0;	
+  m_->type_ = miUNKNOWN;
+}
+
+void matfiledata::clearptr()
+{
+  if (m_ == 0) return;
+  m_->ref_--;
+  if (m_->ref_ == 0)
+  {
+    clear();
+    delete m_;
+  }
+  m_ = 0;
+  ptr_ = 0;
+}
+
+matfiledata::matfiledata(const matfiledata &mfd)
+{
+  m_ = 0;
+  m_ = mfd.m_;
+  ptr_ = mfd.ptr_;
+  m_->ref_++;
+}
+
+matfiledata& matfiledata::operator= (const matfiledata &mfd)
+{
+  if (this != &mfd)
+  {
+    clearptr();
+    m_ = mfd.m_;
+    ptr_ = mfd.ptr_;
+    m_->ref_++;
+  }
+  return *this;
 }
 
 void matfiledata::newdatabuffer(int bytesize,mitype type)

@@ -37,7 +37,7 @@ SET(SCIRunPythonAPI_HEADERS
   share.h
 )
 
-ADD_LIBRARY(SCIRunPythonAPI 
+SCIRUN_ADD_LIBRARY(SCIRunPythonAPI 
   ${SCIRunPythonAPI_HEADERS}
   ${SCIRunPythonAPI_SRCS}
 )

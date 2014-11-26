@@ -156,6 +156,8 @@ PortManager<T>::operator[](const PortId& id)
       newPort->setIndex(add(newPort));
       return newPort;
     }
+    else
+      throwForPortNotFound(id);
   }
   return it->second;
 }

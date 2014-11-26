@@ -36,7 +36,7 @@ SET(Core_Python_HEADERS
   share.h
 )
 
-ADD_LIBRARY(Core_Python 
+SCIRUN_ADD_LIBRARY(Core_Python 
   ${Core_Python_HEADERS}
   ${Core_Python_SRCS}
 )

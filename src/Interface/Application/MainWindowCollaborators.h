@@ -31,6 +31,7 @@
 
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Singleton.h>
+#include <set>
 #include <Interface/Application/NetworkEditor.h>  //TODO
 
 class QTextEdit;
@@ -91,6 +92,7 @@ namespace Gui {
   public:
     void addNetworkEditor(NetworkEditor* ne);
     void addWidget(const InputWidget& w);
+    void removeWidget(const InputWidget& w);
 
     template <class Iter>
     void addWidgets(Iter begin, Iter end)
@@ -105,6 +107,10 @@ namespace Gui {
   inline void addWidgetToExecutionDisableList(const InputWidget& w)
   {
     WidgetDisablingService::Instance().addWidget(w);
+  }
+  inline void removeWidgetFromExecutionDisableList(const InputWidget& w)
+  {
+    WidgetDisablingService::Instance().removeWidget(w);
   }
 
 }

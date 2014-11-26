@@ -41,18 +41,33 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-  
-  typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle)> ModuleAddedSignalType;
+
+  struct SCISHARE ModuleCounter
+  {
+    ModuleCounter() : count(new boost::atomic<int>(0)) {}
+    ModuleCounter(const ModuleCounter& rhs) : count(rhs.count)
+    {
+      //std::cout << "ModuleCounter copied" << std::endl;
+    }
+    void increment() const
+    {
+      count->fetch_add(1);
+    }
+    mutable boost::shared_ptr<boost::atomic<int>> count;
+  };
+
+  typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle, ModuleCounter)> ModuleAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ModuleId&)> ModuleRemovedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
   typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortRemovedSignalType;
+  typedef boost::signals2::signal<void (int)> NetworkDoneLoadingSignalType;
 
   class DynamicPortManager;
 
-  struct SCISHARE DisableDynamicPortSwitch 
+  struct SCISHARE DisableDynamicPortSwitch
   {
     explicit DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm);
     ~DisableDynamicPortSwitch();
@@ -62,15 +77,15 @@ namespace Engine {
   };
 
   /// @todo Refactoring: split this class into two classes, NetworkEditorService and Controller.
-  //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
+  //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread
   //   This will be done in issue #231
 
   class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>, public Networks::NetworkEditorControllerInterface
   {
   public:
-    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, 
-      Networks::ModuleStateFactoryHandle sf, 
-      ExecutionStrategyFactoryHandle executorFactory, 
+    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf,
+      Networks::ModuleStateFactoryHandle sf,
+      ExecutionStrategyFactoryHandle executorFactory,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       Networks::ReexecuteStrategyFactoryHandle reexFactory,
       Networks::NetworkEditorSerializationManager* nesm = 0);
@@ -81,7 +96,7 @@ namespace Engine {
     virtual Networks::ModuleHandle addModule(const Networks::ModuleLookupInfo& info) override;
     Networks::ModuleHandle addModule(const std::string& name);
     void removeModule(const Networks::ModuleId& id);
-    
+
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 
@@ -98,7 +113,7 @@ namespace Engine {
 
     virtual void clear();
 
-    boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
+    boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber);
@@ -109,11 +124,13 @@ namespace Engine {
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
 
+    boost::signals2::connection connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber);
+
     virtual void enableSignals() override;
     virtual void disableSignals() override;
 
     virtual Networks::NetworkHandle getNetwork() const override;
-    virtual void setNetwork(Networks::NetworkHandle nh) override; 
+    virtual void setNetwork(Networks::NetworkHandle nh) override;
     Networks::NetworkGlobalSettings& getSettings();
 
     boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
@@ -142,6 +159,7 @@ namespace Engine {
     ConnectionAddedSignalType connectionAdded_;
     ConnectionRemovedSignalType connectionRemoved_;
     InvalidConnectionSignalType invalidConnection_;
+    NetworkDoneLoadingSignalType networkDoneLoading_;
 
     boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
     bool signalSwitch_;
