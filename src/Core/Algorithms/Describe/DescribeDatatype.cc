@@ -29,16 +29,46 @@
 #include <Core/Algorithms/Describe/DescribeDatatype.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
-
-#include <iostream>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Core::Algorithms::General;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 std::string DescribeDatatype::describe(const DatatypeHandle data) const
 {
-  return "blank";
+  if (!data)
+    return "[null data]";
+
+  auto str = boost::dynamic_pointer_cast<String>(data);
+  if (str)
+  {
+    auto value = str->value();
+    return "[String Data]  Contents:\n" + (!value.empty() ? value : "(empty string)");
+  }
+
+  auto mat = boost::dynamic_pointer_cast<Matrix>(data);
+  if (mat)
+  {
+    ReportMatrixInfoAlgorithm algo;
+    auto info = algo.run(mat);
+
+    return "[Matrix Data] Info:\n" + ReportMatrixInfoAlgorithm::summarize(info);
+  }
+
+  auto field = boost::dynamic_pointer_cast<Field>(data);
+  if (field)
+  {
+    ReportFieldInfoAlgorithm algo;
+    auto info = algo.run(field);
+
+    return "[Field Data] Info:\n" + ReportFieldInfoAlgorithm::summarize(info);
+  }
+
+  return "[Unknown Datatype]";
 }

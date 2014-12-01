@@ -147,3 +147,15 @@ AlgorithmOutput ReportMatrixInfoAlgorithm::run_generic(const AlgorithmInput& inp
   output.setTransient(outputs); 
   return output;
 }
+
+std::string ReportMatrixInfoAlgorithm::summarize(const Outputs& info)
+{
+  std::ostringstream ostr;
+  ostr << "Type:\t" << info.get<0>() << "\n"
+    << "# Rows:\t" << info.get<1>() << "\n"
+    << "# Columns:\t" << info.get<2>() << "\n"
+    << "# Elements:\t" << info.get<3>() << "\n"
+    << "Minimum:\t" << info.get<4>() << "\n"
+    << "Maximum:\t" << info.get<5>() << "\n";
+  return ostr.str();
+}

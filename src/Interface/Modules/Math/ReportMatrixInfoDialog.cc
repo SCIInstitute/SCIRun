@@ -48,13 +48,7 @@ ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleSt
 
 void ReportMatrixInfoDialog::pullAndDisplayInfo() 
 {
-  ReportMatrixInfoAlgorithm::Outputs info = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
-  std::ostringstream ostr;
-  ostr << "Type:\t" << info.get<0>() << "\n"
-    << "# Rows:\t" << info.get<1>() << "\n"
-    << "# Columns:\t" << info.get<2>() << "\n"
-    << "# Elements:\t" << info.get<3>() << "\n"
-    << "Minimum:\t" << info.get<4>() << "\n"
-    << "Maximum:\t" << info.get<5>() << "\n";
-  matrixInfoTextEdit_->setPlainText(QString::fromStdString(ostr.str()));
+  auto info = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
+  auto str = ReportMatrixInfoAlgorithm::summarize(info);
+  matrixInfoTextEdit_->setPlainText(QString::fromStdString(str));
 }
