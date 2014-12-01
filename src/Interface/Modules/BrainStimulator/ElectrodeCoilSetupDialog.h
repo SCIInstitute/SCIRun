@@ -58,6 +58,7 @@ private:
   std::vector<int> saved_StimTypeVector;
   void initialize_comboboxes(int i, std::string& tmpstr);
   std::vector<Core::Algorithms::Variable> validate_numerical_input(int i);
+  std::vector<Core::Algorithms::Variable> saved_all_elc_values;
 };
 
 }

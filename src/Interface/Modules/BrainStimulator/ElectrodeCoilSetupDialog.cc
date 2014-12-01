@@ -271,6 +271,7 @@ void ElectrodeCoilSetupDialog::pull()
  
   auto all_elc_values = (state_->getValue(Parameters::TableValues)).toVector();
 
+ if (all_elc_values!=saved_all_elc_values)
   if (all_elc_values.size()>0)
   {
    std::cout << "pull" << std::endl;
@@ -373,6 +374,8 @@ void ElectrodeCoilSetupDialog::pull()
 
     }
    }
+   
+   saved_all_elc_values=all_elc_values;
   } 
   
   

@@ -85,6 +85,9 @@
    </property>
   </widget>
   <widget class="QComboBox" name="ProtoTypeInputComboBox_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>610</x>
@@ -105,7 +108,7 @@
    </property>
    <property name="text">
     <string>Electrode-sponge thickness:</string>
-   </property>   
+   </property>
    <property name="checked">
     <bool>false</bool>
    </property>
@@ -135,5 +138,22 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>ProtoTypeInputCheckbox_</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>ProtoTypeInputComboBox_</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>500</x>
+     <y>339</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>665</x>
+     <y>342</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

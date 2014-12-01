@@ -453,7 +453,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::make_t
  for (int i=0; i<elc_prototyp_map.size(); i++)
  {
   std::cout << "i:" << i << std::endl;
-
+  
  
  }
 
