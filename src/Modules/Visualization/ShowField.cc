@@ -217,7 +217,18 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
   if (showEdges)
   {
+	//DEBUG
+	std::cout << "Start Render Edge. ShowField.cc line 221" << std::endl;
+	clock_t begin = clock();
+	//ENDDEBUG
+
     renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, id);
+
+	//DEBUG
+	clock_t end = clock();
+	double total_time = (end - begin) / CLOCKS_PER_SEC;
+	std::cout << total_time << " second for renderEdge." << std::endl;
+	//ENDDEBUG
   }
 
   // Set value ranges for color mapping fields. We should use uniforms for
@@ -389,12 +400,20 @@ void ShowFieldModule::renderFacesLinear(
 
   uint32_t iboIndex = 0;
   int64_t numVBOElements = 0;
+
+  //DEBUG
+  std::cout << "Entering while loop ShowField.cc line 398" << std::endl;
+  clock_t begin = clock();
+  //ENDDEBUG
+
   while (fiter != fiterEnd) 
   {
     mesh->get_nodes(nodes, *fiter);
  
     std::vector<Core::Geometry::Point> points(nodes.size());
     std::vector<Core::Geometry::Vector> normals(nodes.size());
+
+	//std::cout << "Node Size: " << nodes.size() << std::endl;
 
     for (size_t i = 0; i < nodes.size(); i++)
     {
@@ -540,6 +559,11 @@ void ShowFieldModule::renderFacesLinear(
     ++fiter;
     ++numVBOElements;
   }
+  //DEBUG
+  clock_t end = clock();
+  double total_time = double(end - begin) / CLOCKS_PER_SEC;	
+  std::cout <<total_time<<" seconds to exit loop with: "<<numVBOElements<<" VBO Elements."<< std::endl;
+  //ENDEBUG
 
   std::string uniqueNodeID = id + "face";
   std::string vboName      = uniqueNodeID + "VBO";

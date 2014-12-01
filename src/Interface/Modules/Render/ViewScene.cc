@@ -496,7 +496,7 @@ void ViewSceneItemManager::addItem(const QString& name)
   QStandardItem* item = new QStandardItem(name);
 
   item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-  item->setData(Qt::Unchecked, Qt::CheckStateRole);
+  item->setData(Qt::Checked, Qt::CheckStateRole);
   items_.push_back(item);
 
   model_->appendRow(item);
