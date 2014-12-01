@@ -49,6 +49,8 @@ namespace BrainStimulator {
   ALGORITHM_PARAMETER_DECL(ComboBoxesAreSetup);
   ALGORITHM_PARAMETER_DECL(AllTDCSInputs);
   ALGORITHM_PARAMETER_DECL(UseThisPrototype);
+  ALGORITHM_PARAMETER_DECL(ElectrodethicknessCheckBox);
+  ALGORITHM_PARAMETER_DECL(ElectrodethicknessSpinBox);
   
   class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
   {
@@ -62,14 +64,18 @@ namespace BrainStimulator {
     static const AlgorithmOutputName ELECTRODE_SPONGE_LOCATION_AVR;
     static const AlgorithmOutputName COILS_FIELD;
       
-    boost::tuple<Datatypes::DenseMatrixHandle, FieldHandle> make_tdcs_electrodes(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness) const;            
-
-    FieldHandle make_tms(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& normal_x, const std::vector<double>& normal_y, const std::vector<double>& normal_z) const;        
-    
     boost::tuple<VariableHandle, Datatypes::DenseMatrixHandle, FieldHandle, FieldHandle> run(const FieldHandle scalp, const Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const;
-    VariableHandle fill_table(FieldHandle scalp, Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& input) const;
+    static const int number_of_columns; /// number of GUI columns
   private:
-    static const double number_of_columns;
+    static const int unknown_stim_type; /// first Stimulation type
+    static const int tDCS_stim_type; /// second  ... 
+    static const int TMS_stim_type; /// third  ... 
+    
+    Datatypes::DenseMatrixHandle make_rotation_matrix_around_axis(double angle, std::vector<double>& axis_vector) const;
+    Datatypes::DenseMatrixHandle make_rotation_matrix(const double angle, const std::vector<double>& normal) const;
+    boost::tuple<Datatypes::DenseMatrixHandle, FieldHandle> make_tdcs_electrodes(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness) const;            
+    FieldHandle make_tms(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& coil_prototyp_map, const std::vector<double>& coil_x, const std::vector<double>& coil_y, const std::vector<double>& coil_z, const std::vector<double>& coil_angle_rotation, const std::vector<double>& coil_nx, const std::vector<double>& coil_ny, const std::vector<double>& coil_nz) const;        
+    VariableHandle fill_table(FieldHandle scalp, Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& input) const;
   };
 
 }}}}

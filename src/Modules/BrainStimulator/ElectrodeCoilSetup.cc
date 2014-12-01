@@ -62,6 +62,8 @@ void ElectrodeCoilSetupModule::setStateDefaults()
   setStateBoolFromAlgo(Parameters::AllInputsTDCS);
   setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
   setAlgoListFromState(Parameters::TableValues);
+  setStateDoubleFromAlgo(Parameters::ElectrodethicknessSpinBox);
+  setStateBoolFromAlgo(Parameters::ElectrodethicknessCheckBox);
 }
 
 void ElectrodeCoilSetupModule::execute()
@@ -78,6 +80,8 @@ void ElectrodeCoilSetupModule::execute()
    setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
    setStateBoolFromAlgo(Parameters::AllInputsTDCS);
    setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
+   setStateBoolFromAlgo(Parameters::ElectrodethicknessCheckBox);
+   setStateDoubleFromAlgo(Parameters::ElectrodethicknessSpinBox);
    
    update_state(Executing);
    if(elc_coil_proto.size()>0)
@@ -88,7 +92,8 @@ void ElectrodeCoilSetupModule::execute()
    
     setAlgoListFromState(Parameters::TableValues);
     auto input = make_input((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
-    std::vector<AlgorithmParameter> table_handle  = (get_state()->getValue(Parameters::TableValues)).toVector();
+    std::vector<AlgorithmParameter> table_handle = (get_state()->getValue(Parameters::TableValues)).toVector();
+	
     algo().set(Parameters::TableValues, table_handle);
      
     auto output = algo().run_generic(input);

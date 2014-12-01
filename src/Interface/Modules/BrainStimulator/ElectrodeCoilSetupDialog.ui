@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>752</width>
-    <height>369</height>
+    <height>420</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>752</width>
-    <height>369</height>
+    <height>420</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -92,6 +92,44 @@
      <width>111</width>
      <height>26</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="electrodethicknessCheckBox_">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>360</y>
+     <width>201</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Electrode-sponge thickness:</string>
+   </property>   
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="electrodethicknessSpinBox_">
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>360</y>
+     <width>69</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="decimals">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <double>1000000000.000000000000000</double>
+   </property>
+   <property name="singleStep">
+    <double>1.000000000000000</double>
+   </property>
+   <property name="value">
+    <double>1.000000000000000</double>
    </property>
   </widget>
  </widget>
