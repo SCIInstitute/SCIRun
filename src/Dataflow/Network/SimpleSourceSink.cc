@@ -36,15 +36,6 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-namespace
-{
-  enum IdSentinelValues
-  {
-    UNSET = -2,
-    SET_ONCE = -1
-  };
-}
-
 SimpleSink::SimpleSink() :
   hasChanged_(false),
   checkForNewDataOnSetting_(false)
