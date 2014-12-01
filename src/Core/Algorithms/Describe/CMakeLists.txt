@@ -26,12 +26,30 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Field)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Legacy)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(BrainStimulator)
-ADD_SUBDIRECTORY(Describe)
+SET(Algorithms_Describe_SRCS
+  DescribeDatatype.cc
+)
+
+SET(Algorithms_Describe_HEADERS
+  DescribeDatatype.h
+  share.h
+)
+
+SCIRUN_ADD_LIBRARY(Algorithms_Describe 
+  ${Algorithms_Describe_HEADERS}
+  ${Algorithms_Describe_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_Describe
+  Core_Datatypes
+  Core_Datatypes_Legacy_Field
+  Algorithms_Field
+  Algorithms_Math
+  ${SCI_BOOST_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_Describe)
+ENDIF(BUILD_SHARED_LIBS)
+
+SCIRUN_ADD_TEST_DIR(Tests)

@@ -96,6 +96,7 @@ namespace SCIRun {
           MOCK_METHOD1(setId, void(const PortId&));
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_CONST_METHOD0(hasData, bool());
+          MOCK_CONST_METHOD0(getPortDataDescriber, PortDataDescriber());
         };
 
         typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
@@ -121,6 +122,7 @@ namespace SCIRun {
           MOCK_METHOD1(cacheData, void(Core::Datatypes::DatatypeHandle));
           MOCK_CONST_METHOD1(send, void(DatatypeSinkInterfaceHandle));
           MOCK_CONST_METHOD0(hasData, bool());
+          MOCK_CONST_METHOD0(describeData, std::string());
         };
 
         typedef boost::shared_ptr<MockDatatypeSource> MockDatatypeSourcePtr;

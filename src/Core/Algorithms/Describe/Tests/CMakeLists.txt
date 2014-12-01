@@ -26,12 +26,18 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Field)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Legacy)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(BrainStimulator)
-ADD_SUBDIRECTORY(Describe)
+SET(Algorithms_Describe_Tests_SRCS
+  DescribeDatatypeTests.cc
+)
+
+SCIRUN_ADD_UNIT_TEST(Algorithms_Describe_Tests
+  ${Algorithms_Describe_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_Describe_Tests
+  Algorithms_Describe
+  Testing_Utils
+  gtest_main
+  gtest
+  gmock
+)

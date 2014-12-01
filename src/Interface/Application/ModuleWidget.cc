@@ -447,7 +447,7 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
       type, moduleId, port->id(), i, port->isDynamic(), 
       connectionFactory_, 
       closestPortFinder_,
-      0, 
+      port->getPortDataDescriber(), 
       this);
     hookUpGeneralPortSignals(w);
     ports_->addPort(w);

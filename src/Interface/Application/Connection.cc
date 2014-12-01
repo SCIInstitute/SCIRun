@@ -431,7 +431,6 @@ namespace
 
 void ConnectionLine::keyPressEvent(QKeyEvent* event)
 {
-  //std::cout << "Connection::keyPressEvent: " << id_.id_ << std::endl;
   auto infoFrom = eval(fromPort_->getPortDataDescriber());
   auto infoTo = eval(toPort_->getPortDataDescriber());
   QMessageBox::information(SCIRunMainWindow::Instance(), "Connection Data info: " + QString::fromStdString(id_.id_), 
