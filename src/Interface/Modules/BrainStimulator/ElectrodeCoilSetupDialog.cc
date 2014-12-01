@@ -61,10 +61,8 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   AllInputsTDCS_->setChecked(false); 
   electrodethicknessCheckBox_->setChecked(false); 
   addComboBoxManager(ProtoTypeInputComboBox_, Parameters::ProtoTypeInputComboBox);  
-  connect(ProtoTypeInputComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));  
+//  connect(ProtoTypeInputComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(push()));  
   connect(AllInputsTDCS_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(ProtoTypeInputCheckbox_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(electrodethicknessCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
   connect(electrode_coil_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(validateCell(int, int)));
 }
 
@@ -199,9 +197,9 @@ void ElectrodeCoilSetupDialog::push()
   if (!pulling_)
   {
    std::cout << "push" << std::endl;
-   state_->setValue(Parameters::AllTDCSInputs, AllInputsTDCS_->isChecked() ? std::string("1") : std::string("0"));
+   /*state_->setValue(Parameters::AllTDCSInputs, AllInputsTDCS_->isChecked() ? std::string("1") : std::string("0"));
    state_->setValue(Parameters::ElectrodethicknessCheckBox, electrodethicknessCheckBox_->isChecked() ? std::string("1") : std::string("0"));
-   state_->setValue(Parameters::UseThisPrototype, ProtoTypeInputCheckbox_->isChecked() ? std::string("1") : std::string("0"));
+   state_->setValue(Parameters::UseThisPrototype, ProtoTypeInputCheckbox_->isChecked() ? std::string("1") : std::string("0"));*/
 
    std::vector<AlgorithmParameter> vals_in_table;
    int rows = electrode_coil_tableWidget->rowCount();
@@ -276,18 +274,15 @@ void ElectrodeCoilSetupDialog::pull()
   if (all_elc_values.size()>0)
   {
    std::cout << "pull" << std::endl;
-   auto button = state_->getValue(Parameters::AllTDCSInputs).toString();
-   bool AllTDCSInputsButton("1" == button);
-   AllInputsTDCS_->setChecked(AllTDCSInputsButton);   
+  
+   std::string ProtoTypeInputComboBoxString = state_->getValue(Parameters::ProtoTypeInputComboBox).toString(); 
    
-   button = state_->getValue(Parameters::ElectrodethicknessCheckBox).toString();
-   bool ElectrodethicknessCheckBoxButton("1" == button);
-   electrodethicknessCheckBox_->setChecked(ElectrodethicknessCheckBoxButton);    
+   bool AllTDCSInputsButton = state_->getValue(Parameters::AllTDCSInputs).toBool(); 
    
-   button = state_->getValue(Parameters::UseThisPrototype).toString();
-   bool UseThisPrototypeButton("1" == button);
-   ProtoTypeInputCheckbox_->setChecked(UseThisPrototypeButton);
+   bool ElectrodethicknessCheckBoxButton = state_->getValue(Parameters::ElectrodethicknessCheckBox).toBool();
    
+   bool UseThisPrototypeButton = state_->getValue(Parameters::UseThisPrototype).toBool();
+    
    electrode_coil_tableWidget->setRowCount(static_cast<int>(all_elc_values.size()));
    
    /// remember the combobox settings
@@ -375,8 +370,7 @@ void ElectrodeCoilSetupDialog::pull()
      {
       electrode_coil_tableWidget->item(i, 9)->setText(text);
      }
-      
-     push();
+
     }
    }
   } 

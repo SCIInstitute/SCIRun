@@ -57,11 +57,11 @@ ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("
 void ElectrodeCoilSetupModule::setStateDefaults()
 {
   setStateIntFromAlgo(Parameters::NumberOfPrototypes);
-  setAlgoBoolFromState(Parameters::ComboBoxesAreSetup);
+  setStateBoolFromAlgo(Parameters::ComboBoxesAreSetup);
   setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
   setStateBoolFromAlgo(Parameters::AllInputsTDCS);
   setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
-  setAlgoListFromState(Parameters::TableValues);
+  setStateListFromAlgo(Parameters::TableValues);
   setStateDoubleFromAlgo(Parameters::ElectrodethicknessSpinBox);
   setStateBoolFromAlgo(Parameters::ElectrodethicknessCheckBox);
 }
@@ -77,11 +77,11 @@ void ElectrodeCoilSetupModule::execute()
    get_state()->setValue(Parameters::ComboBoxesAreSetup, false);
    setAlgoBoolFromState(Parameters::ComboBoxesAreSetup);
    
-   setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
-   setStateBoolFromAlgo(Parameters::AllInputsTDCS);
-   setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
-   setStateBoolFromAlgo(Parameters::ElectrodethicknessCheckBox);
-   setStateDoubleFromAlgo(Parameters::ElectrodethicknessSpinBox);
+   setAlgoBoolFromState(Parameters::ProtoTypeInputCheckbox);
+   setAlgoBoolFromState(Parameters::AllInputsTDCS);
+   setAlgoIntFromState(Parameters::ProtoTypeInputComboBox);
+   setAlgoBoolFromState(Parameters::ElectrodethicknessCheckBox);
+   setAlgoDoubleFromState(Parameters::ElectrodethicknessSpinBox);
    
    update_state(Executing);
    if(elc_coil_proto.size()>0)
