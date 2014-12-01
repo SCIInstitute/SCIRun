@@ -515,7 +515,6 @@ RefineMeshHexVolAlgoV::RefineMeshHexVolAlgoV()
 {
 
 }
-
 bool
 RefineMeshHexVolAlgoV::
 runImpl(FieldHandle input, FieldHandle& output, bool convex, 
@@ -558,7 +557,7 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
   std::vector<double> ivalues;
   std::vector<double> evalues;
 
- // maxnode = mesh->num_nodes();
+  //maxnode = mesh->num_nodes();
   init_pattern_table();
 
   // get all values, make computation easier

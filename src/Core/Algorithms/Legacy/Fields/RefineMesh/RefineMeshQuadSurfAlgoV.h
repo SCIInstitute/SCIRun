@@ -59,12 +59,7 @@ class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
 	bool runImpl(FieldHandle input, FieldHandle& output) const; 
 	AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 	
-  private:
-								 
-  
-	//Point RIinterpolate(VMesh *refined,
- //                     VMesh::Node::array_type& onodes,
- //                     double coords[2]); 					 
+  private:		 
 	
 	double RIinterpolateV(std::vector<double>& ivalues,
                         VMesh::Node::array_type& onodes,

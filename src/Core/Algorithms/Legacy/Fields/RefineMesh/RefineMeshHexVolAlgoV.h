@@ -43,7 +43,6 @@
 #include <boost/unordered_map.hpp> 
 
 using namespace SCIRun::Core::Geometry;
-//using namespace SCIRun::Core::Algorithms::Fields; 
 
 namespace SCIRun{
 		namespace Core{
@@ -61,12 +60,9 @@ class SCISHARE RefineMeshHexVolAlgoV : public AlgorithmBase
 		
 protected:
 		
- private:
+private:
   
-		//void RefineMeshHexVolAlgoV::set_table(int i, int pattern, int reorder) const;
-		//void RefineMeshHexVolAlgoV::init_pattern_table() const;
-		
-    VMesh::index_type maxnode;
+    //VMesh::index_type maxnode;
 
 		VMesh::Node::index_type add_point(VMesh *refined,
                                       VMesh::Node::array_type &nodes,

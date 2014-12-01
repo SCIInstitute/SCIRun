@@ -44,9 +44,9 @@ namespace SCIRun{
  {
  typedef boost::bimap<std::string, std::string>::value_type strPair;
  refineNameLookup_.insert(strPair("Do not add constraint","all"));
- refineNameLookup_.insert(strPair("Do not refine nodes/elements with values less than isovalue","lessthan"));
- refineNameLookup_.insert(strPair("Do not refine nodes/elements with values unequal to isovalue","unequal"));
- refineNameLookup_.insert(strPair("Do not refine nodes/elements with values greater than isovalue","greaterthan"));
+ refineNameLookup_.insert(strPair("Do not refine nodes/elements with values less than isovalue","greaterthan"));
+ refineNameLookup_.insert(strPair("Do not refine nodes/elements with values unequal to isovalue","equal"));
+ refineNameLookup_.insert(strPair("Do not refine nodes/elements with values greater than isovalue","lessthan"));
  refineNameLookup_.insert(strPair("Do not refine any elements","none"));
  }
  boost::bimap<std::string, std::string> refineNameLookup_;

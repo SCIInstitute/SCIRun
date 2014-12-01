@@ -59,7 +59,7 @@ ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
 RefineMeshAlgo::RefineMeshAlgo()
 {
 		using namespace Parameters; 
-		add_option(AddConstraints,"all","all|lessthan|unequal|greaterthan|none");
+		add_option(AddConstraints,"all","all|greaterthan|unequal|lessthan|none");
 		add_option(RefineMethod,"Default","Default|Expand refinement volume to improve element quality"); 
 		addParameter(IsoValue,0.0);
 }
@@ -100,7 +100,7 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     return (false);
   }
 	
-  if (addCon == "Do not add constraint")
+  if (addCon == "none")
   {
     output = input;
     return (true); 
