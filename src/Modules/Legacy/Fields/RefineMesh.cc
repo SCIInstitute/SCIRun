@@ -50,7 +50,8 @@ RefineMesh::RefineMesh()
 {
 		INITIALIZE_PORT(InputField);
 		INITIALIZE_PORT(OutputField);
-		INITIALIZE_PORT(IsoValueField); 
+		INITIALIZE_PORT(IsoValueField);
+		//INITIALIZE_PORT(Mapping); 
 }
 
 void RefineMesh::setStateDefaults()
@@ -64,6 +65,9 @@ void
 RefineMesh::execute()
 {	
 auto input = getRequiredInput(InputField);
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+bool need_mapping = oport_connected("Mapping");
+#endif
 auto isovaluefield = getOptionalInput(IsoValueField);  
 
   if (needToExecute() )
