@@ -34,8 +34,12 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <Core/Datatypes/Legacy/Matrix/MatrixTypeConverter.h>
+
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h> 
+
+#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -46,15 +50,15 @@ using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(Fields, PreserveScalar)
 
-SwapFieldDataWithMatrixEntries::SwapFieldDataWithMatrixEntries()
+SwapFieldDataWithMatrixEntriesAlgo::SwapFieldDataWithMatrixEntriesAlgo()
 {
   addParameter(PreserveScalar, false);
 }
 
 bool
-SwapFieldDataWithMatrixEntries::runImpl(FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const
+SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandle input_matrix, FieldHandle& output_field, MatrixHandle& output_matrix) const
 {
-  ScopedAlgorithmStatusReporter r(this, "ConvertFieldBasis");
+  ScopedAlgorithmStatusReporter r(this, "SwapFieldDataWithMatrixEntriesAlgo");
 
   if (!input)
   {
@@ -64,21 +68,20 @@ SwapFieldDataWithMatrixEntries::runImpl(FieldHandle input, FieldHandle& output, 
   
   FieldInformation fo(input);
   
-  const std::string basistype = get_option(Parameters::OutputType);
-  const bool buildBasisMapping = get(Parameters::BuildBasisMapping).toBool();
-  
- 
+  const bool preserve_scalar = get(Parameters::PreserveScalar).toBool();
+
   return (true);
 }
 
 bool
-SwapFieldDataWithMatrixEntries::runImpl(FieldHandle input, FieldHandle& output) const
+SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   MatrixHandle dummy;
-  return runImpl(input,output,dummy);
+	MatrixHandle dummy2; 
+  return runImpl(input, dummy, output, dummy2);
 }
 
-AlgorithmOutput SwapFieldDataWithMatrixEntries::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SwapFieldDataWithMatrixEntriesAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
 

@@ -30,16 +30,20 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SWAPFIELDDATAWITHMATRIXENTRIESALGO_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SWAPFIELDDATAWITHMATRIXENTRIESALGO_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+//// Datatypes that the algorithm uses
+//#include <Core/Datatypes/Mesh.h>
+//#include <Core/Datatypes/Field.h>
+//#include <Core/Datatypes/Matrix.h>
 
+#include <Core/Datatypes/DatatypeFwd.h> 
 // Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
 // for Windows support
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
+
+#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 
 namespace SCIRun {
   namespace Core {
@@ -53,10 +57,18 @@ class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
   public:
     SwapFieldDataWithMatrixEntriesAlgo(); 
   
-    bool runImpl(FieldHandle input, MatrixHandle mappingmatrix, FieldHandle& output, MatrixHandle& matrixoutput);
+    bool runImpl(FieldHandle input_field, 
+				Datatypes::MatrixHandle input_matrix, 
+				FieldHandle& output_field, 
+				DataTypes::MatrixHandle& output_matrix);
+
 		bool runImpl(FieldHandle input, FieldHandle& output) const; 
 
 		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+
+private:
+		GetFieldDataAlgo get_algo;
+		SetFieldDataAlgo set_algo; 
 };
 			}}}}
 

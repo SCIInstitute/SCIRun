@@ -32,8 +32,6 @@
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <Core/Datatypes/Legacy/Matrix/MatrixTypeConverter.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
-//#include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
-//#include <Core/Algorithms/Fields/FieldData/SetFieldData.h>
 
 //#include <Dataflow/Network/Module.h>
 //#include <Dataflow/Network/Ports/FieldPort.h>
@@ -46,82 +44,73 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-//class SwapFieldDataWithMatrixEntries : public Module
-//{
-//  public:
-//    SwapFieldDataWithMatrixEntries(GuiContext*);
-//    virtual ~SwapFieldDataWithMatrixEntries() {}
-//    virtual void execute();
-//
-//  private:
-//    GuiInt gui_keepscalartype_;
-//    SCIRunAlgo::GetFieldDataAlgo get_algo_;
-//    SCIRunAlgo::SetFieldDataAlgo set_algo_;
-//
-//};
 const ModuleLookupInfo SwapFieldDataWithMatrixEntries::staticInfo_("SwapFieldDataWithMatrixEntries", "ChangeFieldData","SCIRun");
 
-//DECLARE_MAKER(SwapFieldDataWithMatrixEntries)
 SwapFieldDataWithMatrixEntries::SwapFieldDataWithMatrixEntries()
   : Module(staticInfo_)
 {
 		INITIALIZE_PORT(InputField);
+		INITIALIZE_PORT(InputMatrix); 
 		INITIALIZE_PORT(OutputField); 
+		INITIALIZE_PORT(OutputMatrix); 
 }
-
+void SwapFieldDataWithMatrixEntries::setStateDefaults()
+{
+  setStateStringFromAlgoOption(Parameters::PreserveScalar);
+}
 void
 SwapFieldDataWithMatrixEntries::execute()
 {
-  FieldHandle field_input_handle;
-  MatrixHandle matrix_input_handle;
-  
-  if(!(get_input_handle("Input Field",field_input_handle,true))) return;
+	auto input_field = getRequiredInput(InputField);
+	auto input_matrix = getOptionalInput(InputMatrix); 
 
-  get_input_handle("Input Matrix",matrix_input_handle,false);
+  //FieldHandle field_input_handle;
+  //MatrixHandle matrix_input_handle;
   
-  bool need_field  = oport_connected("Output Field");
-  bool need_matrix = oport_connected("Output Matrix");
+ // if(!(get_input_handle("Input Field",field_input_handle,true))) return;
+
+  //get_input_handle("Input Matrix",matrix_input_handle,false);
   
-  if (inputs_changed_ ||
-      gui_keepscalartype_.changed() || 
-      (need_field && !oport_cached("Output Field")) ||
-      (need_matrix && !oport_cached("Output Matrix")))
+  //bool need_field  = oport_connected("Output Field");
+  //bool need_matrix = oport_connected("Output Matrix");
+  
+  if (needToExecute())
   {
     update_state(Executing);
-
+		setAlgoOptionFromState(Parameters::PreserveScalar); 
     // Get the data.
-    if( need_matrix )
+  /*  if( need_matrix )
     {
       MatrixHandle matrix_output_handle;
-      if(!(get_algo_.run(field_input_handle,matrix_output_handle))) return;
+      if(!(get_algo_.run(field_input_handle,matrix_output_handle))) 
+					return;
       send_output_handle("Output Matrix", matrix_output_handle);  
-    }
+    }*/
 
     // Set the data.
-    if( need_field )
-    {
-      FieldHandle field_output_handle;
+    //if( need_field )
+    //{
+     // FieldHandle field_output_handle;
 
-      if (matrix_input_handle.get_rep()) 
-      {
-        if (gui_keepscalartype_.get()) 
-          set_algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());    
+     // if (matrix_input_handle.get_rep()) 
+    //  {
+       // if (gui_keepscalartype_.get()) 
+          //set_algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());    
+					auto output = algo().run(withInputData((InputField, input_field)(InputMatrix, input_matrix))); 
       
-      
-        if(!(set_algo_.run(field_input_handle,matrix_input_handle,
-			       field_output_handle))) return;
+        /*if(!(set_algo_.run(field_input_handle,matrix_input_handle,
+			       field_output_handle))) return;*/
 
-        field_output_handle->copy_properties(field_input_handle.get_rep());
-      }
-      else 
-      {
-        warning("No input matrix passing the field through");
-        field_output_handle = field_input_handle;
-      }	
+       // field_output_handle->copy_properties(field_input_handle.get_rep());
+     // }
+     // else 
+    //  {
+       // warning("No input matrix passing the field through");
+      //  field_output_handle = field_input_handle;
+    //  }	
 
-      send_output_handle("Output Field", field_output_handle);
-    }
+     // send_output_handle("Output Field", field_output_handle);
+				sendOutputFromAlgorithm(OutputField, output); 
+    //}
   }
 }
-
-} // End namespace SCIRun
