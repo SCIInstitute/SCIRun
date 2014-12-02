@@ -610,6 +610,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
   }
 
   SparseRowMatrixHandle outputMatrix(new SparseRowMatrix(static_cast<int>(m+1), static_cast<int>(nnz)));
+  std::cout << "allocated Sparse matrix of size " << static_cast<int>(m+1) << " x " << static_cast<int>(nnz) << std::endl;
   outputMatrix->reserve(nnz);
 
   const SparseRowMatrix::RowsPtr& rr = outputMatrix->get_rows();
