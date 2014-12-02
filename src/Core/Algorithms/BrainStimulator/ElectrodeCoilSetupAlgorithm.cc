@@ -52,8 +52,6 @@
 #include <Core/Math/MiscMath.h>
 #include <iostream>
 
-#define PI 3.14159265
-
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
@@ -68,9 +66,6 @@ using namespace boost::assign;
 using namespace Parameters;
 using namespace  Eigen;
 
-ALGORITHM_PARAMETER_DEF(BrainStimulator, AllTDCSInputs);
-ALGORITHM_PARAMETER_DEF(BrainStimulator, UseThisPrototype);
-ALGORITHM_PARAMETER_DEF(BrainStimulator, ComboBoxesAreSetup);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, NumberOfPrototypes);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, TableValues);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ProtoTypeInputCheckbox);
@@ -86,17 +81,26 @@ const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODE_SPONGE_LOCATION
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::COILS_FIELD("COILS_FIELD");
 const AlgorithmInputName ElectrodeCoilSetupAlgorithm::LOCATIONS("LOCATIONS");
 
-const int ElectrodeCoilSetupAlgorithm::number_of_columns = 10; 
 const int ElectrodeCoilSetupAlgorithm::unknown_stim_type = 0; 
 const int ElectrodeCoilSetupAlgorithm::TMS_stim_type     = 1; 
 const int ElectrodeCoilSetupAlgorithm::tDCS_stim_type    = 2;
 
+const AlgorithmParameterName ElectrodeCoilSetupAlgorithm::columnNames[] = 
+{ Name("Input #"), 
+Name("Type"),
+Name("X"),
+Name("Y"),
+Name("Z"), 
+Name("Angle"),
+Name("NX"),
+Name("NY"), 
+Name("NZ"), 
+Name("thickness")
+};
+
 ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
 {
   addParameter(ELECTRODES_FIELD, 0);
-  addParameter(AllTDCSInputs, 0);
-  addParameter(UseThisPrototype, 0);
-  addParameter(ComboBoxesAreSetup, 0);
   addParameter(NumberOfPrototypes, 0);
   addParameter(TableValues, 0);
   addParameter(ProtoTypeInputCheckbox, false);
@@ -125,16 +129,16 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
    if (tab_values.size()<locations->nrows())
    {
    tmp += 
-     makeVariable("#Input", boost::str(boost::format("%s") % "0")),
-     makeVariable("Type", boost::str(boost::format("%s") % "0")),
-     makeVariable("X", boost::str(boost::format("%.3f") % (* locations)(i,0))),
-     makeVariable("Y", boost::str(boost::format("%.3f") % (* locations)(i,1))),
-     makeVariable("Z", boost::str(boost::format("%.3f") % (* locations)(i,2))),
-     makeVariable("Angle", boost::str(boost::format("???"))),
-     makeVariable("NX", std::string("???")),
-     makeVariable("NY", std::string("???")),
-     makeVariable("NZ", std::string("???")),
-     makeVariable("thickness", std::string("???")); 
+     Variable(columnNames[0], boost::str(boost::format("%s") % "0")),
+     Variable(columnNames[1], boost::str(boost::format("%s") % "0")),
+     Variable(columnNames[2], boost::str(boost::format("%.3f") % (* locations)(i,0))),
+     Variable(columnNames[3], boost::str(boost::format("%.3f") % (* locations)(i,1))),
+     Variable(columnNames[4], boost::str(boost::format("%.3f") % (* locations)(i,2))),
+     Variable(columnNames[5], boost::str(boost::format("???"))),
+     Variable(columnNames[6], std::string("???")),
+     Variable(columnNames[7], std::string("???")),
+     Variable(columnNames[8], std::string("???")),
+     Variable(columnNames[9], std::string("???")); 
      
    } else
    {
@@ -153,7 +157,7 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseM
       std::string str9=col[8].toString();
       std::string str10=col[9].toString();      
 
-      Variable var1=makeVariable("#Input", boost::str(boost::format("%s") % str1));
+      Variable var1=makeVariable("Input #", boost::str(boost::format("%s") % str1));
       Variable var2=makeVariable("Type",   boost::str(boost::format("%s") % str2)); 
 
       Variable var3,var4,var5;
@@ -241,7 +245,7 @@ DenseMatrixHandle ElectrodeCoilSetupAlgorithm::make_rotation_matrix_around_axis(
 {
    DenseMatrixHandle result(new DenseMatrix(3, 3));
   
-   angle = angle * PI / 180.0;
+   angle = angle * M_PI / 180.0;
    double cos_angle = cos(angle);
    double sin_angle = sin(angle);
    double ux=axis_vector[0],uy=axis_vector[1], uz=axis_vector[2];

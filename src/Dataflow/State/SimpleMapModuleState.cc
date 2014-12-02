@@ -100,7 +100,7 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
 
   if (newValue)
   {
-    LOG_DEBUG("----signaling from state map: (" << parameterName.name_ << ", " << SCIRun::Core::to_string(value) << "), num_slots = " << stateChangedSignal_.num_slots() << std::endl);
+    std::cout << "----signaling from state map: (" << parameterName.name_ << ", " << SCIRun::Core::to_string(value) << "), num_slots = " << stateChangedSignal_.num_slots() << std::endl;
     stateChangedSignal_();
   }
 }

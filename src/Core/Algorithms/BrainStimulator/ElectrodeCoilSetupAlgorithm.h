@@ -46,9 +46,6 @@ namespace BrainStimulator {
   ALGORITHM_PARAMETER_DECL(AllInputsTDCS);
   ALGORITHM_PARAMETER_DECL(ProtoTypeInputComboBox);
   ALGORITHM_PARAMETER_DECL(NumberOfPrototypes);
-  ALGORITHM_PARAMETER_DECL(ComboBoxesAreSetup);
-  ALGORITHM_PARAMETER_DECL(AllTDCSInputs);
-  ALGORITHM_PARAMETER_DECL(UseThisPrototype);
   ALGORITHM_PARAMETER_DECL(ElectrodethicknessCheckBox);
   ALGORITHM_PARAMETER_DECL(ElectrodethicknessSpinBox);
   
@@ -65,7 +62,10 @@ namespace BrainStimulator {
     static const AlgorithmOutputName COILS_FIELD;
       
     boost::tuple<VariableHandle, Datatypes::DenseMatrixHandle, FieldHandle, FieldHandle> run(const FieldHandle scalp, const Datatypes::DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const;
-    static const int number_of_columns; /// number of GUI columns
+    static const int number_of_columns = 10; /// number of GUI columns
+
+    static const AlgorithmParameterName columnNames[number_of_columns];
+
   private:
     static const int unknown_stim_type; /// first Stimulation type
     static const int tDCS_stim_type; /// second  ... 

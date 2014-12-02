@@ -96,6 +96,11 @@
      <height>26</height>
     </rect>
    </property>
+   <item>
+    <property name="text">
+     <string>???</string>
+    </property>
+   </item>
   </widget>
   <widget class="QCheckBox" name="electrodethicknessCheckBox_">
    <property name="geometry">
@@ -114,6 +119,9 @@
    </property>
   </widget>
   <widget class="QDoubleSpinBox" name="electrodethicknessSpinBox_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>230</x>
@@ -141,7 +149,7 @@
  <connections>
   <connection>
    <sender>ProtoTypeInputCheckbox_</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>ProtoTypeInputComboBox_</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
@@ -152,6 +160,22 @@
     <hint type="destinationlabel">
      <x>665</x>
      <y>342</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>electrodethicknessCheckBox_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>electrodethicknessSpinBox_</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>120</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>264</x>
+     <y>371</y>
     </hint>
    </hints>
   </connection>

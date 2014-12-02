@@ -393,6 +393,11 @@ bool SCIRun::Core::Algorithms::operator==(const Variable& lhs, const Variable& r
   return lhs.name() == rhs.name() && lhs.value() == rhs.value() && lhs.getDatatype() == rhs.getDatatype();
 }
 
+bool SCIRun::Core::Algorithms::operator!=(const Variable& lhs, const Variable& rhs)
+{
+  return !(lhs == rhs);
+}
+
 std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Variable& var)
 {
   return out << "[" << var.name() << ", " << var.value() << "]";
