@@ -25,51 +25,48 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+#include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h> 
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
+#include <Core/Datatypes/Legacy/Matrix/MatrixTypeConverter.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
+//#include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
+//#include <Core/Algorithms/Fields/FieldData/SetFieldData.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
-#include <Core/Algorithms/Fields/FieldData/SetFieldData.h>
+//#include <Dataflow/Network/Module.h>
+//#include <Dataflow/Network/Ports/FieldPort.h>
+//#include <Dataflow/Network/Ports/MatrixPort.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-namespace SCIRun {
+//class SwapFieldDataWithMatrixEntries : public Module
+//{
+//  public:
+//    SwapFieldDataWithMatrixEntries(GuiContext*);
+//    virtual ~SwapFieldDataWithMatrixEntries() {}
+//    virtual void execute();
+//
+//  private:
+//    GuiInt gui_keepscalartype_;
+//    SCIRunAlgo::GetFieldDataAlgo get_algo_;
+//    SCIRunAlgo::SetFieldDataAlgo set_algo_;
+//
+//};
+const ModuleLookupInfo SwapFieldDataWithMatrixEntries::staticInfo_("SwapFieldDataWithMatrixEntries", "ChangeFieldData","SCIRun");
 
-///
-///@class  SwapFieldDataWithMatrixEntries
-///@brief  Store/retrieve values from an input matrix to/from the data of a field.
-///
-///@author
-///   Michael Callahan,
-///   Department of Computer Science.
-///   University of Utah
-///@date   February 2001
-///
-
-class SwapFieldDataWithMatrixEntries : public Module
+//DECLARE_MAKER(SwapFieldDataWithMatrixEntries)
+SwapFieldDataWithMatrixEntries::SwapFieldDataWithMatrixEntries()
+  : Module(staticInfo_)
 {
-  public:
-    SwapFieldDataWithMatrixEntries(GuiContext*);
-    virtual ~SwapFieldDataWithMatrixEntries() {}
-    virtual void execute();
-
-  private:
-    GuiInt gui_keepscalartype_;
-    SCIRunAlgo::GetFieldDataAlgo get_algo_;
-    SCIRunAlgo::SetFieldDataAlgo set_algo_;
-
-};
-
-
-DECLARE_MAKER(SwapFieldDataWithMatrixEntries)
-SwapFieldDataWithMatrixEntries::SwapFieldDataWithMatrixEntries(GuiContext* ctx)
-  : Module("SwapFieldDataWithMatrixEntries", ctx, Source, "ChangeFieldData", "SCIRun"),
-  gui_keepscalartype_(ctx->subVar("preserve-scalar-type"), 0)
-{
-  get_algo_.set_progress_reporter(this);
-  set_algo_.set_progress_reporter(this);
+		INITIALIZE_PORT(InputField);
+		INITIALIZE_PORT(OutputField); 
 }
 
 void

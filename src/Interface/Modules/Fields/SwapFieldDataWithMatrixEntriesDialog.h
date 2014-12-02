@@ -26,23 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SPLITFIELDBYDOMAINDIALOG_H
-#define INTERFACE_MODULES_SPLITFIELDBYDOMAINDIALOG_H
+#ifndef INTERFACE_MODULES_SWAPFIELDDATAWITHMATRIXENTRIESDIALOG_H
+#define INTERFACE_MODULES_SWAPFIELDDATAWITHMATRIXENTRIESDIALOG_H
 
-#include "Interface/Modules/Fields/ui_SplitFieldByDomain.h"
+#include "Interface/Modules/Fields/ui_swapfielddatawithmatrixentriesdialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE SplitFieldByDomainDialog : public ModuleDialogGeneric, 
-  public Ui::SplitFieldByDomain
+class SCISHARE SwapFieldDataWithMatrixEntriesDialog : public ModuleDialogGeneric, 
+  public Ui::SwapFieldDataWithMatrixEntries
 {
 	Q_OBJECT
 	
 public:
-  SplitFieldByDomainDialog(const std::string& name, 
+  SwapFieldDataWithMatrixEntriesDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();

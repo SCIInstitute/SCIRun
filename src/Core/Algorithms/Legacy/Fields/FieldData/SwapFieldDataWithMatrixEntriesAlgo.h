@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,25 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntries.h>
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
+#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SWAPFIELDDATAWITHMATRIXENTRIESALGO_H
+#define CORE_ALGORITHMS_FIELDS_FIELDDATA_SWAPFIELDDATAWITHMATRIXENTRIESALGO_H 1
 
-SwapFieldDataWithMatrixEntriesDialog::SwapFieldDataWithMatrixEntriesDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+// Datatypes that the algorithm uses
+#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Matrix.h>
+
+// Base class for algorithm
+#include <Core/Algorithms/Util/AlgoBase.h>
+
+// for Windows support
+#include <Core/Algorithms/Fields/share.h>
+
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+
+		ALGORITHM_PARAMETER_DECL(PreserveScalar); 
+
+class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+  public:
+    SwapFieldDataWithMatrixEntriesAlgo(); 
   
-  addCheckBoxManager(preserveScalarFieldTypeCheckBox_, Parameters::PreserveScalar);
-}
+    bool runImpl(FieldHandle input, MatrixHandle mappingmatrix, FieldHandle& output, MatrixHandle& matrixoutput);
+		bool runImpl(FieldHandle input, FieldHandle& output) const; 
 
-void SwapFieldDataWithMatrixEntriesDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}
+		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+};
+			}}}}
+
+#endif
+
