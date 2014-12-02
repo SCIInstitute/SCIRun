@@ -68,6 +68,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/ConvertFieldBasisType.h
   TransformMesh/ScaleFieldMeshAndData.h
   TransformMesh/ProjectPointsOntoMesh.h
+  SwapNodeLocationsWithMatrixEntries.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -104,7 +105,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/CalculateFieldDataMetric.cc
 #FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
-
+  FieldData/SwapNodeLocationsWithMatrixEntries.cc
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
