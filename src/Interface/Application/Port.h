@@ -210,6 +210,12 @@ public:
     QWidget* parent = 0);
 };
 
+class DataInfoDialog
+{
+public:
+  static void show(SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber, const QString& label, const std::string& id);
+};
+
 }
 }
 

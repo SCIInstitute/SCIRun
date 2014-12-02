@@ -293,6 +293,10 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
   {
     showMenu();
   }
+  else if (button == Qt::MiddleButton && isConnected())
+  {
+    DataInfoDialog::show(getPortDataDescriber(), "Port", portId_.toString());
+  }
 }
 
 void PortWidget::makeConnection(const QPointF& pos)

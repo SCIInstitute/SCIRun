@@ -40,6 +40,7 @@
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
 class EuclideanDrawStrategy : public ConnectionDrawStrategy
 {
@@ -329,6 +330,10 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+  //TODO: this is a bit inconsistent, disabling for now
+//  if (event->button() == Qt::MiddleButton)
+//    DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
+
 	setColorAndWidth(placeHoldingColor_, placeHoldingWidth_);
 	menuOpen_ = false;
 	setZValue(0);
@@ -429,12 +434,16 @@ namespace
   }
 }
 
+void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& label, const std::string& id)
+{
+  auto info = eval(portDataDescriber);
+  QMessageBox::information(SCIRunMainWindow::Instance(), label + " Data info: " + QString::fromStdString(id), info);
+}
+
 void ConnectionLine::keyPressEvent(QKeyEvent* event)
 {
-  auto infoFrom = eval(fromPort_->getPortDataDescriber());
-  auto infoTo = eval(toPort_->getPortDataDescriber());
-  QMessageBox::information(SCIRunMainWindow::Instance(), "Connection Data info: " + QString::fromStdString(id_.id_), 
-    "info about datatype goes here \n" + infoFrom + "\n" + infoTo);
+  if (event->key() == 'i')
+    DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)

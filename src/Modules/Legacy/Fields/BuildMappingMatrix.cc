@@ -62,8 +62,6 @@ BuildMappingMatrix::execute()
   auto source = getRequiredInput(Source);
   auto destination = getRequiredInput(Destination);
   
-  //TODO: copy impl from rewritten MapFieldDataFromSourceToDestination
-
   if (needToExecute())
   {
     update_state(Executing);
