@@ -51,7 +51,7 @@ SET(Interface_Modules_Fields_FORMS
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
   ConvertFieldBasis.ui
-  swapnodelocationswithmatrixentries.ui
+  swapfielddatawithmatrixentries.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -79,7 +79,7 @@ SET(Interface_Modules_Fields_HEADERS
   ClipFieldByFunctionDialog.h
   ConvertFieldBasisDialog.h
   share.h
-  SwapNodeLocationsWithMatrixEntriesDialog.h
+  SwapFieldDataWithMatrixEntriesDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -106,7 +106,7 @@ SET(Interface_Modules_Fields_SOURCES
   MapFieldDataOntoElemsDialog.cc
   MapFieldDataOntoNodesDialog.cc
   ClipFieldByFunctionDialog.cc
-  SwapNodeLocationsWithMatrixEntries.cc
+  SwapFieldDataWithMatrixEntriesDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

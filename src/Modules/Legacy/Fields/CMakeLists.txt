@@ -67,7 +67,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
-  SwapNodeLocationsWithMatrixEntries.h
+  SwapFieldDataWithMatrixEntries.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
