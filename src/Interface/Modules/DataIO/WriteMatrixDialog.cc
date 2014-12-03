@@ -28,6 +28,7 @@
 
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/ImportExport/GenericIEPlugin.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <iostream>
 #include <QFileDialog>
@@ -62,9 +63,12 @@ void WriteMatrixDialog::pushFileNameToState()
 
 void WriteMatrixDialog::saveFile()
 {
-  auto file = QFileDialog::getSaveFileName(this, "Save Matrix Text File", dialogDirectory(), "*.txt;;*.mat");
+  auto types = state_->getValue(Variables::FileTypeList).toString();
+  auto file = QFileDialog::getSaveFileName(this, "Save Matrix File", dialogDirectory(), QString::fromStdString(types), &selectedFilter_);
   if (file.length() > 0)
   {
+    auto typeName = SCIRun::fileTypeDescriptionFromDialogBoxFilter(selectedFilter_.toStdString());
+    state_->setValue(Variables::FileTypeName, typeName);
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);
     pushFileNameToState();

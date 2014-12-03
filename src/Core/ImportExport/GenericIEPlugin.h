@@ -31,7 +31,10 @@
 
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <map>
+#include <vector>
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 #include <Core/ImportExport/share.h>
@@ -372,6 +375,9 @@ std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0
 
 template <>
 SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr);
+
+template <>
+SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Core::Datatypes::Matrix>* mgr);
 
 template <class Data>
 std::string makeGuiTypesListForExport(const GenericIEPluginManager<Data>& mgr)

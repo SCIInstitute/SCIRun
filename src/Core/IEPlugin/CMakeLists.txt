@@ -44,7 +44,7 @@ SET(Core_IEPlugin_SRCS
   #PointCloudField_Plugin.cc
   #PVWave_Plugin.cc
   #QuadSurfField_Plugin.cc
-  #SimpleTextFileToMatrix_Plugin.cc
+  SimpleTextFileToMatrix_Plugin.cc
   #StructCurveField_Plugin.cc
   #StructHexVolField_Plugin.cc
   #StructQuadSurfField_Plugin.cc
@@ -71,7 +71,7 @@ SET(Core_IEPlugin_HEADERS
   #PointCloudField_Plugin.h
   #PVWave_Plugin.h
   #QuadSurfField_Plugin.h
-  #SimpleTextFileToMatrix_Plugin.h
+  SimpleTextFileToMatrix_Plugin.h
   #StructCurveField_Plugin.h
   #StructHexVolField_Plugin.h
   #StructQuadSurfField_Plugin.h

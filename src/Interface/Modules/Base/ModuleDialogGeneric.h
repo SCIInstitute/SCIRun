@@ -42,6 +42,7 @@ namespace SCIRun {
 namespace Gui {
 
   typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
+  typedef GuiStringTranslationMap::value_type StringPair;
 
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {

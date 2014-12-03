@@ -70,6 +70,12 @@ std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Field>
   return "SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld)";
 }
 
+template <>
+std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Matrix>* mgr)
+{
+  return "SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat)";
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
 
 #include <Core/Thread/Mutex.h>
