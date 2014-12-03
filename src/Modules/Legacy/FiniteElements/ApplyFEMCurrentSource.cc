@@ -47,6 +47,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::FiniteElements;
 
@@ -74,7 +75,7 @@ class ApplyFEMCurrentSourceImpl
 };
 }
 
-ModuleLookupInfo ApplyFEMCurrentSource::staticInfo_("ApplyFEMCurrentSource", "FiniteElements", "SCIRun");
+const ModuleLookupInfo ApplyFEMCurrentSource::staticInfo_("ApplyFEMCurrentSource", "FiniteElements", "SCIRun");
 
 ApplyFEMCurrentSource::ApplyFEMCurrentSource() : Module(staticInfo_)
 //    sourceNodeTCL_(context->subVar("sourceNodeTCL")),
@@ -89,13 +90,18 @@ ApplyFEMCurrentSource::ApplyFEMCurrentSource() : Module(staticInfo_)
   INITIALIZE_PORT(Output_Weights);
 }
 
+void ApplyFEMCurrentSource::setStateDefaults()
+{
+  
+}
+
 bool
 detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
                                       FieldHandle &hSource, 
                                       MatrixHandle &rhs, 
                                       MatrixHandle &hWeights)
 {
-  if (hField.get_rep() == 0)
+  if (!hField)
   {
     error("No input field");
     return (false);
@@ -112,9 +118,9 @@ detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
   mesh->size(sz);
 
   // Create new RHS matrix
-  if (rhs.get_rep() == 0)
+  if (!rhs)
   {
-    rhs = new ColumnMatrix(nsize);
+    rhs = new DenseColumnMatrix(nsize);
     rhs->zero();
   }
   else
@@ -147,7 +153,7 @@ detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
   std::vector<double> dweights;
   std::vector<std::pair<index_type, double> > weights;
     
-  double* rhs_data = rhs->get_data_pointer();
+  double* rhs_data = rhs->data();
 
   for (VField::index_type idx=0; idx < num_svalues; idx++)
   {
@@ -241,7 +247,7 @@ detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
   
   hWeights = new SparseRowMatrix(1, 3*sz, sparseData, static_cast<size_type>(weights.size()));
 
-  return hWeights.get_rep() != 0;
+  return hWeights != nullptr;
 }
 
 
@@ -253,7 +259,7 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
                                VMesh::index_type sinkNode, 
                                MatrixHandle& rhs)
 {   
-  if (hField.get_rep() == 0)
+  if (!hField)
   {
     error("No input field");
     return (false);
@@ -263,7 +269,7 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
   VMesh::Node::size_type nsize = mesh->num_nodes(); 
 
   // Create new RHS matrix
-  if (rhs.get_rep() == 0)
+  if (!rhs)
   {
     rhs = new ColumnMatrix(nsize);
     rhs->zero();
@@ -279,7 +285,7 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
   // hCurField will be valid after this block
 
 
-  if (hMapping.get_rep() && hSource.get_rep())
+  if (hMapping && hSource)
   {
     FieldInformation fi(hSource);
     
@@ -313,9 +319,9 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
   //  nodes map to volume mesh nodes, and the Source field gives a
   // scalar quantity (current density) for each source.
 
-  double* rhs_data = rhs->get_data_pointer();
+  double* rhs_data = rhs->data();
 
-  if (!hMapping.get_rep())
+  if (!hMapping)
   {
     if (sourceNode >= nsize || sinkNode >= nsize)
     {
@@ -328,7 +334,7 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
     return (true);
   }
     
-  if (hSource.get_rep() == 0)
+  if (!hSource)
   {
     if (sourceNode < hMapping->nrows() &&
         sinkNode < hMapping->nrows())
@@ -410,7 +416,7 @@ ApplyFEMCurrentSource::execute()
       Max(sourceNodeTCL_.get(),0), Max(sinkNodeTCL_.get(),0), hRHS))) return;
   }
 
-  //! Sending result
   send_output_handle("Output RHS", hRHS);
-  if (hWeights.get_rep()) send_output_handle("Output Weights", hWeights);
+  if (hWeights)
+    send_output_handle("Output Weights", hWeights);
 }
