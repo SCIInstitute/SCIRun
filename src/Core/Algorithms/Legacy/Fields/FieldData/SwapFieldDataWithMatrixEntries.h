@@ -31,7 +31,6 @@
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SWAPFIELDDATAWITHMATRIXENTRIES_H 1
 
 // Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 

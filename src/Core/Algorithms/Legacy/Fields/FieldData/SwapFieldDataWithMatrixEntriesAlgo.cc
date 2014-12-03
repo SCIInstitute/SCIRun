@@ -29,12 +29,12 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
+//#include <Core/Datatypes/Matrix.h>
+//#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
-#include <Core/Datatypes/Legacy/Matrix/MatrixTypeConverter.h>
+//#include <Core/Datatypes/Legacy/Matrix/MatrixTypeConverter.h>
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h> 
@@ -54,7 +54,7 @@ SwapFieldDataWithMatrixEntriesAlgo::SwapFieldDataWithMatrixEntriesAlgo()
 }
 
 bool
-SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandle input_matrix, FieldHandle& output_field, MatrixHandle& output_matrix) const
+SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrixHandle input_matrix, FieldHandle& output_field, DenseMatrixHandle& output_matrix) const
 {
   ScopedAlgorithmStatusReporter r(this, "SwapFieldDataWithMatrixEntriesAlgo");
 
@@ -64,7 +64,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
     return (false);
   }
   
-  FieldInformation fo(input_field);
+  FieldInformation fi(input_field); 
   
   const bool preserve_scalar = get(Parameters::PreserveScalar).toBool();
 	if( output_matrix )
@@ -73,10 +73,15 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
       if(!(get_algo_.run(input_field))) 
 			{
 					matrix_output_handle = get_algo_.run(input_field); 
-					return;
+					return false;
 			}
-			output_matrix = matrix_output_handle; 
-      //send_output_handle("Output Matrix", matrix_output_handle);  
+			else
+			{
+					output_matrix = matrix_output_handle;
+					return true; 
+			}
+			 
+      //send_output_handle("Output Matrix", matrix_output_handle);  correct? 
     }
 
     // Set the data.
@@ -84,15 +89,15 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
     {
       FieldHandle field_output_handle;
 
-      if (input_matrix)//because smart pointers?  
+      if (input_matrix)
       {
-        if (preserve_scalar) 
-          set_algo_.set_option("scalardatatype",input_field->vfield()->get_data_type()); 
-					//set_algo_.setscalardata(field_input_handle, input_matrix,); 
-					//set_algo_.set_option("scalardatatype", input_field->vfield()); 
-        if(!(set_algo_.run(input_field, input_matrix, output_field))) return;
+					if (preserve_scalar) 
+						{
+								//set_algo_.set_option(keepTypeCheckBox, true);
+						}
+        if(!(set_algo_.run(input_field, input_matrix))) return false;
 
-        field_output_handle->copy_properties(input_field);
+				CopyProperties(*input_field, *output_field);
       }
       else 
       {
@@ -103,26 +108,28 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
       AlgorithmOutput output;
 			output[Variables::OutputField] = output_field;
     }
-  return (true);
+  return true;
 }
 
 bool
-SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input, FieldHandle& output) const
+SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input, DenseMatrixHandle input_matrix, FieldHandle& output) const
 {
-  MatrixHandle dummy;
-	MatrixHandle dummy2; 
-  return runImpl(input, dummy, output, dummy2);
+  DenseMatrixHandle dummy;
+  return runImpl(input, input_matrix, output, dummy);
 }
+
+AlgorithmInputName SwapFieldDataWithMatrixEntriesAlgo::SwapMatrix("SwapMatrix"); 
 
 AlgorithmOutput SwapFieldDataWithMatrixEntriesAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
+	auto inputmatrix = input.get<DenseMatrix>(Variables::InputMatrix);
 
-  FieldHandle outputField;
-  if (!runImpl(field, outputField))
+  FieldHandle output_field;
+  if (!runImpl(field, inputmatrix, output_field))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[Variables::OutputField] = outputField;
+  output[Variables::OutputField] = output_field;
   return output;
 }

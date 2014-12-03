@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_SWAPFIELDDATAWITHMATRIXENTRIESDIALOG_H
 #define INTERFACE_MODULES_SWAPFIELDDATAWITHMATRIXENTRIESDIALOG_H
 
-#include "Interface/Modules/Fields/ui_swapfielddatawithmatrixentriesdialog.h"
+#include "Interface/Modules/Fields/ui_swapfielddatawithmatrixentries.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/share.h>
 

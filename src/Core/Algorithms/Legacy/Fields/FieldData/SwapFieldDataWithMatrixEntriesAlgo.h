@@ -36,6 +36,7 @@
 //#include <Core/Datatypes/Matrix.h>
 
 #include <Core/Datatypes/DatatypeFwd.h> 
+#include <Core/Datatypes/DenseMatrix.h>
 // Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
@@ -55,20 +56,21 @@ namespace SCIRun {
 class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
 {
   public:
-    SwapFieldDataWithMatrixEntriesAlgo(); 
+    SwapFieldDataWithMatrixEntriesAlgo();
+		static AlgorithmInputName SwapMatrix; 
   
     bool runImpl(FieldHandle input_field, 
-				Datatypes::MatrixHandle input_matrix, 
+				Datatypes::DenseMatrixHandle input_matrix, 
 				FieldHandle& output_field, 
-				Datatypes::MatrixHandle& output_matrix)const;
+				Datatypes::DenseMatrixHandle& output_matrix)const;
 
-		bool runImpl(FieldHandle input, FieldHandle& output) const; 
+		bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle input_matrix, FieldHandle& output) const; 
 
 		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 
 private:
-		GetFieldDataAlgo get_algo_;
-		SetFieldDataAlgo set_algo_; 
+		const GetFieldDataAlgo get_algo_;
+		const SetFieldDataAlgo set_algo_; 
 };
 			}}}}
 
