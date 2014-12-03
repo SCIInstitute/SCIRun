@@ -1,40 +1,40 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
+For more information, please see: http://software.sci.utah.edu
 
-   The MIT License
+The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
-   University of Utah.
+Copyright (c) 2009 Scientific Computing and Imaging Institute,
+University of Utah.
 
-   
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 */
 
 
 /*
- *  ApplyFEMCurrentSource.cc:  Builds the RHS of the FE matrix for voltage sources
- *
- *  Written by:
- *   David Weinstein, University of Utah, May 1999
- *   Alexei Samsonov, March 2001
- *   Frank B. Sachse, February 2006
- */
+*  ApplyFEMCurrentSource.cc:  Builds the RHS of the FE matrix for voltage sources
+*
+*  Written by:
+*   David Weinstein, University of Utah, May 1999
+*   Alexei Samsonov, March 2001
+*   Frank B. Sachse, February 2006
+*/
 
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Core/Datatypes/Matrix.h>
@@ -44,43 +44,55 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::FiniteElements;
 
 
 namespace detail
 {
-class ApplyFEMCurrentSourceImpl
-{
- //   GuiInt sourceNodeTCL_;
-//  GuiInt sinkNodeTCL_;
- //   GuiString modeTCL_;
+  class ApplyFEMCurrentSourceImpl
+  {
+    //   GuiInt sourceNodeTCL_;
+    //  GuiInt sinkNodeTCL_;
+    //   GuiString modeTCL_;
+  public:
+    explicit ApplyFEMCurrentSourceImpl(LegacyLoggerInterface* log) : log_(log) {}
 
-    bool execute_dipole(FieldHandle &hField, FieldHandle &hSource, 
-                        MatrixHandle &rhs, MatrixHandle &hWeights);
+    bool execute_dipole(FieldHandle field,
+      FieldHandle source, 
+      DenseColumnMatrixHandle& rhs, 
+      SparseRowMatrixHandle& weights);
 
-    bool execute_sources_and_sinks(FieldHandle &hField, FieldHandle &hSource, 
-                          MatrixHandle &hMapping, VMesh::index_type sourceNode, 
-                          VMesh::index_type sinkNode, MatrixHandle& rhs);
-                          
+    bool execute_sources_and_sinks(FieldHandle field,
+      FieldHandle source, 
+      VMesh::index_type sourceNode, 
+      VMesh::index_type sinkNode, 
+      DenseColumnMatrixHandle& rhs, 
+      MatrixHandle mapping);
+
     static bool ud_pair_less(const std::pair<index_type, double> &a,
-                             const std::pair<index_type, double> &b)
+      const std::pair<index_type, double> &b)
     {
-        return a.first < b.first;
+      return a.first < b.first;
     }
-};
+
+  private:
+    LegacyLoggerInterface* log_;
+  };
 }
 
 const ModuleLookupInfo ApplyFEMCurrentSource::staticInfo_("ApplyFEMCurrentSource", "FiniteElements", "SCIRun");
 
 ApplyFEMCurrentSource::ApplyFEMCurrentSource() : Module(staticInfo_)
-//    sourceNodeTCL_(context->subVar("sourceNodeTCL")),
-//    sinkNodeTCL_(context->subVar("sinkNodeTCL")),
-//    modeTCL_(context->subVar("modeTCL"))
+  //    sourceNodeTCL_(context->subVar("sourceNodeTCL")),
+  //    sinkNodeTCL_(context->subVar("sinkNodeTCL")),
+  //    modeTCL_(context->subVar("modeTCL"))
 {
   INITIALIZE_PORT(Mesh);
   INITIALIZE_PORT(Sources);
@@ -92,57 +104,62 @@ ApplyFEMCurrentSource::ApplyFEMCurrentSource() : Module(staticInfo_)
 
 void ApplyFEMCurrentSource::setStateDefaults()
 {
-  
+
 }
 
-bool
-detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
-                                      FieldHandle &hSource, 
-                                      MatrixHandle &rhs, 
-                                      MatrixHandle &hWeights)
+bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
+  FieldHandle source, 
+  DenseColumnMatrixHandle& rhs, 
+  SparseRowMatrixHandle& weights)
 {
-  if (!hField)
+  if (!field)
   {
-    error("No input field");
+    log_->error("No input field");
     return (false);
   }
 
-  VMesh* mesh = hField->vmesh();
-  
+  if (!source)
+  {
+    log_->error("No source field");
+    return (false);
+  }
+
+  VMesh* mesh = field->vmesh();
+
   mesh->synchronize(Mesh::ELEM_LOCATE_E);
   VMesh::Node::size_type nsize = mesh->num_nodes(); 
   VMesh::Elem::size_type sz    = mesh->num_elems();
 
   VMesh::Node::array_type nodes;  
-  
+
   mesh->size(sz);
 
   // Create new RHS matrix
   if (!rhs)
   {
-    rhs = new DenseColumnMatrix(nsize);
-    rhs->zero();
+    rhs.reset(new DenseColumnMatrix(nsize));
+    rhs->setZero();
   }
   else
   {
-    rhs.detach();
+    rhs.reset(rhs->clone());
   } 
 
-  FieldInformation fi(hSource);
+  FieldInformation fi(source);
   if (!fi.is_vector())
   {
-    error("Source field does not contain vectors");
-    return (false);
-  }
-  
-  if (!(fi.is_constantdata()) && !(fi.is_lineardata()))
-  {
-    error("Source field needs to have vectors at the nodes or elements");
+    log_->error("Source field does not contain vectors");
     return (false);
   }
 
-  VMesh*  smesh = hSource->vmesh();
-  VField* sfield = hSource->vfield();
+  if (!(fi.is_constantdata()) && !(fi.is_lineardata()))
+  {
+    log_->error("Source field needs to have vectors at the nodes or elements");
+    return (false);
+  }
+
+  VMesh*  smesh = source->vmesh();
+  VField* sfield = source->vfield();
 
   VField::size_type num_svalues = sfield->num_values();
   VMesh::Elem::index_type loc;
@@ -151,8 +168,8 @@ detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
   double Ji[9];
   StackVector<double,3> grad;
   std::vector<double> dweights;
-  std::vector<std::pair<index_type, double> > weights;
-    
+  std::vector<std::pair<index_type, double> > weightsVec;
+
   double* rhs_data = rhs->data();
 
   for (VField::index_type idx=0; idx < num_svalues; idx++)
@@ -161,34 +178,33 @@ detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
     Point pos;
     if (sfield->basis_order() == 0) smesh->get_center(pos,VMesh::Elem::index_type(idx));
     else smesh->get_center(pos,VMesh::Node::index_type(idx));    
-  
+
     sfield->get_value(dir,idx);
-  
+
     if (mesh->locate(loc, coords, pos))
     {
-       msg_stream() << "Source pos="<<pos<<" dir="<<dir<<
-         " found in elem "<<loc<<std::endl;
+      LOG_DEBUG("Source pos=" << pos << " dir=" << dir << " found in elem " << loc <<std::endl);
 
       if (fabs(dir.x()) > 0.000001)
       {
-        weights.push_back(std::pair<index_type, double>(loc*3+0, dir.x()));
+        weightsVec.push_back(std::make_pair(loc*3+0, dir.x()));
       }
       if (fabs(dir.y()) > 0.000001)
       {
-        weights.push_back(std::pair<index_type, double>(loc*3+1, dir.y()));
+        weightsVec.push_back(std::make_pair(loc*3+1, dir.y()));
       }
       if (fabs(dir.z()) > 0.000001)
       {
-        weights.push_back(std::pair<index_type, double>(loc*3+2, dir.z()));
+        weightsVec.push_back(std::make_pair(loc*3+2, dir.z()));
       }
 
       mesh->inverse_jacobian(coords,loc,Ji);
       mesh->get_derivate_weights(coords,dweights,1);
       mesh->get_nodes(nodes,loc);
       int numnodes = nodes.size();
-    
+
       int dim = mesh->dimensionality();
-  
+
       if (dim == 3)
       {
         for(int i=0; i<numnodes; i++) 
@@ -196,7 +212,7 @@ detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
           grad[0] = dweights[i]*Ji[0]+dweights[i+numnodes]*Ji[1]+dweights[i+2*numnodes]*Ji[2];
           grad[1] = dweights[i]*Ji[3]+dweights[i+numnodes]*Ji[4]+dweights[i+2*numnodes]*Ji[5];
           grad[2] = dweights[i]*Ji[6]+dweights[i+numnodes]*Ji[7]+dweights[i+2*numnodes]*Ji[8];
-          
+
           rhs_data[nodes[i]] += grad[0]*dir.x() + grad[1]*dir.y() + grad[2]*dir.z();
         }
       }
@@ -207,7 +223,7 @@ detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
           grad[0] = dweights[i]*Ji[0]+dweights[i+numnodes]*Ji[1];
           grad[1] = dweights[i]*Ji[3]+dweights[i+numnodes]*Ji[4];
           grad[2] = dweights[i]*Ji[6]+dweights[i+numnodes]*Ji[7];
-          
+
           rhs_data[nodes[i]] += grad[0]*dir.x() + grad[1]*dir.y() + grad[2]*dir.z();
         }
       }
@@ -225,7 +241,7 @@ detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
     }
     else
     {
-      error("Dipole not located within mesh");
+      log_->error("Dipole not located within mesh");
       return (false);
     }
   }
@@ -236,47 +252,46 @@ detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle &hField,
   const SparseRowMatrix::Storage& dd = sparseData.data();
 
   rr[0] = 0; rr[1] = static_cast<index_type>(weights.size());
-  
+
   std::sort(weights.begin(), weights.end(), ud_pair_less);
-  
+
   for (size_t i=0; i < weights.size(); i++)
   {
     cc[i] = weights[i].first;
     dd[i] = weights[i].second;
   }
-  
+
   hWeights = new SparseRowMatrix(1, 3*sz, sparseData, static_cast<size_type>(weights.size()));
 
   return hWeights != nullptr;
 }
 
 
-bool
-detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField,
-                               FieldHandle &hSource, 
-                               MatrixHandle &hMapping, 
-                               VMesh::index_type sourceNode, 
-                               VMesh::index_type sinkNode, 
-                               MatrixHandle& rhs)
+bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle field,
+  FieldHandle source, 
+  VMesh::index_type sourceNode, 
+  VMesh::index_type sinkNode, 
+  DenseColumnMatrixHandle& rhs, 
+  MatrixHandle mapping)
 {   
-  if (!hField)
+  if (!field)
   {
-    error("No input field");
+    log_->error("No input field");
     return (false);
   }
 
-  VMesh* mesh = hField->vmesh();
+  VMesh* mesh = field->vmesh();
   VMesh::Node::size_type nsize = mesh->num_nodes(); 
 
   // Create new RHS matrix
   if (!rhs)
   {
-    rhs = new ColumnMatrix(nsize);
-    rhs->zero();
+    rhs.reset(new DenseColumnMatrix(nsize));
+    rhs->setZero();
   }
   else
   {
-    rhs.detach();
+    rhs.reset(rhs->clone());
   } 
 
   mesh->synchronize(Mesh::ELEM_LOCATE_E);
@@ -285,35 +300,35 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
   // hCurField will be valid after this block
 
 
-  if (hMapping && hSource)
+  if (mapping && source)
   {
-    FieldInformation fi(hSource);
-    
+    FieldInformation fi(source);
+
     if (!(fi.is_scalar()))
     {
-      error("Can only use a field with scalar values as source when using an Mapping matrix and a Source field -- this mode is for specifying current densities");
+      log_->error("Can only use a field with scalar values as source when using an Mapping matrix and a Source field -- this mode is for specifying current densities");
       return (false);
     }
-    
-    if (hSource->vfield()->num_values() != hMapping->nrows())
+
+    if (source->vfield()->num_values() != mapping->nrows())
     {
-      error("Source field and Mapping matrix size mismatch.");
+      log_->error("Source field and Mapping matrix size mismatch.");
       return (false);
     }
-    if (static_cast<unsigned int>(nsize) != static_cast<unsigned int>(hMapping->ncols()))
+    if (static_cast<unsigned int>(nsize) != static_cast<unsigned int>(mapping->ncols()))
     {
-      error("Mesh field and Mapping matrix size mismatch.");
+      log_->error("Mesh field and Mapping matrix size mismatch.");
       return (false);
     }
   }
 
   // if we have don't have a Mapping matrix, use the source/sink indices
   // directly as volume nodes
-    
+
   // if we do have a Mapping matrix, but we don't have a Source field,
   // then the source/sink indices refer to the PointCloud, so use the
   // Mapping matrix to get their corresponding volume node indices.
-    
+
   // if we have a Mapping matrix AND a Source field, then ignore the
   // source/sink indices.  The Mapping matrix defines how the PointCloud
   //  nodes map to volume mesh nodes, and the Source field gives a
@@ -321,11 +336,11 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
 
   double* rhs_data = rhs->data();
 
-  if (!hMapping)
+  if (!mapping)
   {
     if (sourceNode >= nsize || sinkNode >= nsize)
     {
-      error("SourceNode or SinkNode was out of mesh range.");
+      log_->error("SourceNode or SinkNode was out of mesh range.");
       return (false);
     }
     rhs_data[sourceNode] += -1.0;
@@ -333,24 +348,24 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
 
     return (true);
   }
-    
-  if (!hSource)
+
+  if (!source)
   {
-    if (sourceNode < hMapping->nrows() &&
-        sinkNode < hMapping->nrows())
+    if (sourceNode < mapping->nrows() &&
+      sinkNode < mapping->nrows())
     {
       index_type *cc;
       double *vv;
       index_type ccsize;
       index_type ccstride;
-      hMapping->getRowNonzerosNoCopy(sourceNode, ccsize, ccstride, cc, vv);
+      mapping->getRowNonzerosNoCopy(sourceNode, ccsize, ccstride, cc, vv);
       sourceNode = cc?cc[0]:0;
-      hMapping->getRowNonzerosNoCopy(sinkNode, ccsize, ccstride, cc, vv);
+      mapping->getRowNonzerosNoCopy(sinkNode, ccsize, ccstride, cc, vv);
       sinkNode = cc?cc[0]:0;
     }
     else
     {
-      error("SourceNode or SinkNode was out of mapping range.");
+      log_->error("SourceNode or SinkNode was out of mapping range.");
       return (false); 
     }
     rhs_data[sourceNode] += -1.0;
@@ -358,11 +373,11 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
 
     return(true);
   }
-   
-  VField* pfield = hSource->vfield();   
-  VMesh* pmesh = hSource->vmesh();
+
+  VField* pfield = source->vfield();   
+  VMesh* pmesh = source->vmesh();
   VMesh::size_type num_nodes = pmesh->num_nodes();
-  
+
   for (VMesh::index_type idx=0; idx < num_nodes; idx++)
   {
     double currentDensity;
@@ -373,50 +388,51 @@ detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle &hField
     index_type ccsize;
     index_type ccstride;
 
-    hMapping->getRowNonzerosNoCopy(idx, ccsize, ccstride, cc, vv);
+    mapping->getRowNonzerosNoCopy(idx, ccsize, ccstride, cc, vv);
 
     for (size_type j=0; j < ccsize; j++)
     {
       rhs_data[cc?cc[j*ccstride]:j] += vv[j*ccstride] * currentDensity;
     }
   }
-  
+
   return (true);
 } 
 
 
-void
-ApplyFEMCurrentSource::execute()
+void ApplyFEMCurrentSource::execute()
 { 
-  bool dipole=false;
+  auto state = get_state();
+  auto modelType = state->getValue(ModelType).toString();
+  bool dipole = (modelType == "dipole");
 
-  if (modeTCL_.get() == "dipole") dipole=true;
-  else if (modeTCL_.get() == "sources and sinks") dipole=false;
-  else
-    error("Unreachable code, bad mode.");
+  auto field = getRequiredInput(Mesh);
+  auto sourceOption = getOptionalInput(Sources);
 
-  // Get the input mesh.
-  FieldHandle hField, hSource;
-  get_input_handle("Mesh", hField,true);
-  get_input_handle("Sources", hSource, false);
-	
-  // If the user passed in a vector the right size, copy it into ours.
+  SparseRowMatrixHandle weights;
+  DenseColumnMatrixHandle RHS;
+  auto RHSoption = getOptionalInput(Input_RHS);
+  if (RHSoption)
+    RHS = *RHSoption;
 
-  MatrixHandle hMapping, hWeights, hRHS;
-  get_input_handle("Input RHS", hRHS, false);
-
+  detail::ApplyFEMCurrentSourceImpl impl(this);
   if (dipole)
   {
-    if(!(execute_dipole(hField, hSource, hRHS, hWeights))) return;
+    if (!impl.execute_dipole(field, sourceOption.get_value_or(nullptr), RHS, weights)) 
+      return;
   }
   else 
   {
-    get_input_handle("Mapping", hMapping, false);
-    if(!(execute_sources_and_sinks(hField, hSource, hMapping, 
-      Max(sourceNodeTCL_.get(),0), Max(sinkNodeTCL_.get(),0), hRHS))) return;
+    auto mapping = getOptionalInput(Mapping);
+    if(!impl.execute_sources_and_sinks(field, 
+      sourceOption.get_value_or(nullptr), 
+      state->getValue(SourceNode).toInt(),
+      state->getValue(SinkNode).toInt(),
+      RHS, mapping.get_value_or(nullptr)))
+      return;
   }
 
-  send_output_handle("Output RHS", hRHS);
-  if (hWeights)
-    send_output_handle("Output Weights", hWeights);
+  sendOutput(Output_RHS, RHS);
+  if (weights)
+    sendOutput(Output_Weights, weights);
 }

@@ -52,6 +52,10 @@ namespace SCIRun {
         OUTPUT_PORT(0, Output_RHS, Matrix);
         OUTPUT_PORT(1, Output_Weights, Matrix);
 
+        static const Core::Algorithms::AlgorithmParameterName SourceNode;
+        static const Core::Algorithms::AlgorithmParameterName SinkNode;
+        static const Core::Algorithms::AlgorithmParameterName ModelType;
+
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
