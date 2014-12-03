@@ -40,6 +40,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -50,6 +51,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::FiniteElements;
 
@@ -58,22 +60,19 @@ namespace detail
 {
   class ApplyFEMCurrentSourceImpl
   {
-    //   GuiInt sourceNodeTCL_;
-    //  GuiInt sinkNodeTCL_;
-    //   GuiString modeTCL_;
   public:
     explicit ApplyFEMCurrentSourceImpl(LegacyLoggerInterface* log) : log_(log) {}
 
     bool execute_dipole(FieldHandle field,
-      FieldHandle source, 
-      DenseColumnMatrixHandle& rhs, 
+      FieldHandle source,
+      DenseColumnMatrixHandle& rhs,
       SparseRowMatrixHandle& weights);
 
     bool execute_sources_and_sinks(FieldHandle field,
-      FieldHandle source, 
-      VMesh::index_type sourceNode, 
-      VMesh::index_type sinkNode, 
-      DenseColumnMatrixHandle& rhs, 
+      FieldHandle source,
+      VMesh::index_type sourceNode,
+      VMesh::index_type sinkNode,
+      DenseColumnMatrixHandle& rhs,
       MatrixHandle mapping);
 
     static bool ud_pair_less(const std::pair<index_type, double> &a,
@@ -88,11 +87,11 @@ namespace detail
 }
 
 const ModuleLookupInfo ApplyFEMCurrentSource::staticInfo_("ApplyFEMCurrentSource", "FiniteElements", "SCIRun");
+const AlgorithmParameterName ApplyFEMCurrentSource::SourceNode("SourceNode");
+const AlgorithmParameterName ApplyFEMCurrentSource::SinkNode("SinkNode");
+const AlgorithmParameterName ApplyFEMCurrentSource::ModelType("ModelType");
 
 ApplyFEMCurrentSource::ApplyFEMCurrentSource() : Module(staticInfo_)
-  //    sourceNodeTCL_(context->subVar("sourceNodeTCL")),
-  //    sinkNodeTCL_(context->subVar("sinkNodeTCL")),
-  //    modeTCL_(context->subVar("modeTCL"))
 {
   INITIALIZE_PORT(Mesh);
   INITIALIZE_PORT(Sources);
@@ -104,12 +103,15 @@ ApplyFEMCurrentSource::ApplyFEMCurrentSource() : Module(staticInfo_)
 
 void ApplyFEMCurrentSource::setStateDefaults()
 {
-
+  auto state = get_state();
+  state->setValue(SourceNode, 0);
+  state->setValue(SinkNode, 1);
+  state->setValue(ModelType, std::string("dipole"));
 }
 
 bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
-  FieldHandle source, 
-  DenseColumnMatrixHandle& rhs, 
+  FieldHandle source,
+  DenseColumnMatrixHandle& rhs,
   SparseRowMatrixHandle& weights)
 {
   if (!field)
@@ -127,10 +129,10 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
   VMesh* mesh = field->vmesh();
 
   mesh->synchronize(Mesh::ELEM_LOCATE_E);
-  VMesh::Node::size_type nsize = mesh->num_nodes(); 
+  VMesh::Node::size_type nsize = mesh->num_nodes();
   VMesh::Elem::size_type sz    = mesh->num_elems();
 
-  VMesh::Node::array_type nodes;  
+  VMesh::Node::array_type nodes;
 
   mesh->size(sz);
 
@@ -143,7 +145,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
   else
   {
     rhs.reset(rhs->clone());
-  } 
+  }
 
   FieldInformation fi(source);
   if (!fi.is_vector())
@@ -177,7 +179,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
     // Position of the dipole.
     Point pos;
     if (sfield->basis_order() == 0) smesh->get_center(pos,VMesh::Elem::index_type(idx));
-    else smesh->get_center(pos,VMesh::Node::index_type(idx));    
+    else smesh->get_center(pos,VMesh::Node::index_type(idx));
 
     sfield->get_value(dir,idx);
 
@@ -207,7 +209,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
 
       if (dim == 3)
       {
-        for(int i=0; i<numnodes; i++) 
+        for(int i=0; i<numnodes; i++)
         {
           grad[0] = dweights[i]*Ji[0]+dweights[i+numnodes]*Ji[1]+dweights[i+2*numnodes]*Ji[2];
           grad[1] = dweights[i]*Ji[3]+dweights[i+numnodes]*Ji[4]+dweights[i+2*numnodes]*Ji[5];
@@ -218,7 +220,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
       }
       else if (dim == 2)
       {
-        for(int i=0; i<numnodes; i++) 
+        for(int i=0; i<numnodes; i++)
         {
           grad[0] = dweights[i]*Ji[0]+dweights[i+numnodes]*Ji[1];
           grad[1] = dweights[i]*Ji[3]+dweights[i+numnodes]*Ji[4];
@@ -229,7 +231,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
       }
       else if (dim == 1)
       {
-        for(int i=0; i<numnodes; i++) 
+        for(int i=0; i<numnodes; i++)
         {
           grad[0] = dweights[i]*Ji[0];
           grad[1] = dweights[i]*Ji[3];
@@ -246,6 +248,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
     }
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   SparseRowMatrix::Data sparseData(2, weights.size());
   const SparseRowMatrix::Rows& rr = sparseData.rows();
   const SparseRowMatrix::Columns& cc = sparseData.columns();
@@ -264,16 +267,18 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
   hWeights = new SparseRowMatrix(1, 3*sz, sparseData, static_cast<size_type>(weights.size()));
 
   return hWeights != nullptr;
+#endif
+  return true;
 }
 
 
 bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle field,
-  FieldHandle source, 
-  VMesh::index_type sourceNode, 
-  VMesh::index_type sinkNode, 
-  DenseColumnMatrixHandle& rhs, 
+  FieldHandle source,
+  VMesh::index_type sourceNode,
+  VMesh::index_type sinkNode,
+  DenseColumnMatrixHandle& rhs,
   MatrixHandle mapping)
-{   
+{
   if (!field)
   {
     log_->error("No input field");
@@ -281,7 +286,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle fi
   }
 
   VMesh* mesh = field->vmesh();
-  VMesh::Node::size_type nsize = mesh->num_nodes(); 
+  VMesh::Node::size_type nsize = mesh->num_nodes();
 
   // Create new RHS matrix
   if (!rhs)
@@ -292,7 +297,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle fi
   else
   {
     rhs.reset(rhs->clone());
-  } 
+  }
 
   mesh->synchronize(Mesh::ELEM_LOCATE_E);
 
@@ -336,7 +341,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle fi
 
   double* rhs_data = rhs->data();
 
-  if (!mapping)
+  if (!mapping || !matrix_is::sparse(mapping))
   {
     if (sourceNode >= nsize || sinkNode >= nsize)
     {
@@ -349,6 +354,8 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle fi
     return (true);
   }
 
+  SparseRowMatrixHandle sparseMapping = matrix_cast::as_sparse(mapping);
+
   if (!source)
   {
     if (sourceNode < mapping->nrows() &&
@@ -357,16 +364,15 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle fi
       index_type *cc;
       double *vv;
       index_type ccsize;
-      index_type ccstride;
-      mapping->getRowNonzerosNoCopy(sourceNode, ccsize, ccstride, cc, vv);
+      sparseMapping->getRowNonzerosNoCopy(sourceNode, ccsize, cc, vv);
       sourceNode = cc?cc[0]:0;
-      mapping->getRowNonzerosNoCopy(sinkNode, ccsize, ccstride, cc, vv);
+      sparseMapping->getRowNonzerosNoCopy(sinkNode, ccsize, cc, vv);
       sinkNode = cc?cc[0]:0;
     }
     else
     {
       log_->error("SourceNode or SinkNode was out of mapping range.");
-      return (false); 
+      return (false);
     }
     rhs_data[sourceNode] += -1.0;
     rhs_data[sinkNode] += 1.0;
@@ -374,7 +380,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle fi
     return(true);
   }
 
-  VField* pfield = source->vfield();   
+  VField* pfield = source->vfield();
   VMesh* pmesh = source->vmesh();
   VMesh::size_type num_nodes = pmesh->num_nodes();
 
@@ -386,22 +392,21 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_sources_and_sinks(FieldHandle fi
     index_type *cc;
     double *vv;
     index_type ccsize;
-    index_type ccstride;
 
-    mapping->getRowNonzerosNoCopy(idx, ccsize, ccstride, cc, vv);
+    sparseMapping->getRowNonzerosNoCopy(idx, ccsize, cc, vv);
 
     for (size_type j=0; j < ccsize; j++)
     {
-      rhs_data[cc?cc[j*ccstride]:j] += vv[j*ccstride] * currentDensity;
+      rhs_data[cc?cc[j]:j] += vv[j] * currentDensity;
     }
   }
 
   return (true);
-} 
+}
 
 
 void ApplyFEMCurrentSource::execute()
-{ 
+{
   auto state = get_state();
   auto modelType = state->getValue(ModelType).toString();
   bool dipole = (modelType == "dipole");
@@ -413,19 +418,19 @@ void ApplyFEMCurrentSource::execute()
   DenseColumnMatrixHandle RHS;
   auto RHSoption = getOptionalInput(Input_RHS);
   if (RHSoption)
-    RHS = *RHSoption;
+    RHS = matrix_cast::as_column(*RHSoption);
 
   detail::ApplyFEMCurrentSourceImpl impl(this);
   if (dipole)
   {
-    if (!impl.execute_dipole(field, sourceOption.get_value_or(nullptr), RHS, weights)) 
+    if (!impl.execute_dipole(field, sourceOption.get_value_or(nullptr), RHS, weights))
       return;
   }
-  else 
+  else
   {
     auto mapping = getOptionalInput(Mapping);
-    if(!impl.execute_sources_and_sinks(field, 
-      sourceOption.get_value_or(nullptr), 
+    if(!impl.execute_sources_and_sinks(field,
+      sourceOption.get_value_or(nullptr),
       state->getValue(SourceNode).toInt(),
       state->getValue(SinkNode).toInt(),
       RHS, mapping.get_value_or(nullptr)))
@@ -433,6 +438,8 @@ void ApplyFEMCurrentSource::execute()
   }
 
   sendOutput(Output_RHS, RHS);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (weights)
     sendOutput(Output_Weights, weights);
+#endif
 }
