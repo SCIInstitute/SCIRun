@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -37,9 +38,6 @@
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h> 
-
-#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -60,16 +58,51 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, MatrixHandl
 {
   ScopedAlgorithmStatusReporter r(this, "SwapFieldDataWithMatrixEntriesAlgo");
 
-  if (!input)
+  if (!input_field)
   {
     error("No input field");
     return (false);
   }
   
-  FieldInformation fo(input);
+  FieldInformation fo(input_field);
   
   const bool preserve_scalar = get(Parameters::PreserveScalar).toBool();
+	if( output_matrix )
+    {
+      MatrixHandle matrix_output_handle;
+      if(!(get_algo_.run(input_field))) 
+			{
+					matrix_output_handle = get_algo_.run(input_field); 
+					return;
+			}
+			output_matrix = matrix_output_handle; 
+      //send_output_handle("Output Matrix", matrix_output_handle);  
+    }
 
+    // Set the data.
+    if( output_field )
+    {
+      FieldHandle field_output_handle;
+
+      if (input_matrix)//because smart pointers?  
+      {
+        if (preserve_scalar) 
+          set_algo_.set_option("scalardatatype",input_field->vfield()->get_data_type()); 
+					//set_algo_.setscalardata(field_input_handle, input_matrix,); 
+					//set_algo_.set_option("scalardatatype", input_field->vfield()); 
+        if(!(set_algo_.run(input_field, input_matrix, output_field))) return;
+
+        field_output_handle->copy_properties(input_field);
+      }
+      else 
+      {
+        warning("No input matrix passing the field through");
+        output_field = input_field;
+      }	
+
+      AlgorithmOutput output;
+			output[Variables::OutputField] = output_field;
+    }
   return (true);
 }
 

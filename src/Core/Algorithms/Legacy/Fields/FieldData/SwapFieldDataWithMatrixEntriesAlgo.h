@@ -60,15 +60,15 @@ class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
     bool runImpl(FieldHandle input_field, 
 				Datatypes::MatrixHandle input_matrix, 
 				FieldHandle& output_field, 
-				DataTypes::MatrixHandle& output_matrix);
+				Datatypes::MatrixHandle& output_matrix)const;
 
 		bool runImpl(FieldHandle input, FieldHandle& output) const; 
 
 		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 
 private:
-		GetFieldDataAlgo get_algo;
-		SetFieldDataAlgo set_algo; 
+		GetFieldDataAlgo get_algo_;
+		SetFieldDataAlgo set_algo_; 
 };
 			}}}}
 
