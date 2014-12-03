@@ -71,7 +71,8 @@
 #include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
 #include <Interface/Modules/Fields/BuildMappingMatrixDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
-#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h> 
+#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
+#include <Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
@@ -141,6 +142,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemDialog)
     ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
     ADD_MODULE_DIALOG(FairMesh, FairMeshDialog)
+    ADD_MODULE_DIALOG(ApplyFEMCurrentSource, ApplyFEMCurrentSourceDialog)
     ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
