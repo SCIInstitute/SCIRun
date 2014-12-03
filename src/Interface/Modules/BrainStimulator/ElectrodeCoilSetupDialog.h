@@ -55,11 +55,14 @@ private Q_SLOTS:
 
   void pushTable();
   void updateStimTypeColumn();
-  void updatePrototypeColumn();
-  void updateThicknessColumn();
+  void updatePrototypeColumnValues(int index);
+  void togglePrototypeColumnReadOnly(int state);
+  void toggleThicknessColumnReadOnly(int state);
+  void updateThicknessColumnValues(double value);
 
 private:
   bool comboBoxesSetup_;
+  bool pushTableFlag_;
   std::vector<QWidget*> inputPortsVector_;
   std::vector<QWidget*> stimTypeVector_;  
   std::vector<int> savedInputPortsVector_;
