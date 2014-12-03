@@ -93,7 +93,8 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
       {
 					if (preserve_scalar) 
 						{
-								//set_algo_.set_option(keepTypeCheckBox, true);
+								//set_algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());  
+								set_algo_.set_option(keepTypeCheckBox, fi.get_data_type());
 						}
         if(!(set_algo_.run(input_field, input_matrix))) return false;
 
