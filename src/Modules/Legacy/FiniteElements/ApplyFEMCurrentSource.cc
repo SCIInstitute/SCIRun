@@ -420,26 +420,29 @@ void ApplyFEMCurrentSource::execute()
   if (RHSoption)
     RHS = matrix_cast::as_column(*RHSoption);
 
-  detail::ApplyFEMCurrentSourceImpl impl(this);
-  if (dipole)
+  if (needToExecute())
   {
-    if (!impl.execute_dipole(field, sourceOption.get_value_or(nullptr), RHS, weights))
-      return;
-  }
-  else
-  {
-    auto mapping = getOptionalInput(Mapping);
-    if(!impl.execute_sources_and_sinks(field,
-      sourceOption.get_value_or(nullptr),
-      state->getValue(SourceNode).toInt(),
-      state->getValue(SinkNode).toInt(),
-      RHS, mapping.get_value_or(nullptr)))
-      return;
-  }
+    detail::ApplyFEMCurrentSourceImpl impl(this);
+    if (dipole)
+    {
+      if (!impl.execute_dipole(field, sourceOption.get_value_or(nullptr), RHS, weights))
+        return;
+    }
+    else
+    {
+      auto mapping = getOptionalInput(Mapping);
+      if(!impl.execute_sources_and_sinks(field,
+        sourceOption.get_value_or(nullptr),
+        state->getValue(SourceNode).toInt(),
+        state->getValue(SinkNode).toInt(),
+        RHS, mapping.get_value_or(nullptr)))
+        return;
+    }
 
-  sendOutput(Output_RHS, RHS);
+    sendOutput(Output_RHS, RHS);
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (weights)
-    sendOutput(Output_Weights, weights);
+    if (weights)
+      sendOutput(Output_Weights, weights);
 #endif
+  }
 }
