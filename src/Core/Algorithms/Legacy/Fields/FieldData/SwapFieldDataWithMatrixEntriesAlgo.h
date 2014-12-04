@@ -52,6 +52,7 @@ namespace SCIRun {
       namespace Fields {
 
 		ALGORITHM_PARAMETER_DECL(PreserveScalar); 
+		ALGORITHM_PARAMETER_DECL(KeepType); 
 
 class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
 {

@@ -46,10 +46,12 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(Fields, PreserveScalar)
+ALGORITHM_PARAMETER_DEF(Fields, KeepType) 
 
 SwapFieldDataWithMatrixEntriesAlgo::SwapFieldDataWithMatrixEntriesAlgo()
 {
   addParameter(PreserveScalar, false);
+	addParameter(KeepType, true); 
 }
 
 bool
@@ -90,8 +92,9 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
       {
 					if (preserve_scalar) 
 						{
-								//set_algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());  
-								set_algo_.set_option((set_algo_.keepTypeCheckBox), fi.get_data_type());
+								//set_algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());
+								//set_algo_.set_option(Parameters::KeepType, fi.get_data_type());
+								set_algo_.set_option(set_algo_.keepTypeCheckBox, fi.get_data_type()); 
 						}
         if(!(set_algo_.run(input_field, input_matrix))) return false;
 
