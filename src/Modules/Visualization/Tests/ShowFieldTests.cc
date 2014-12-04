@@ -74,6 +74,8 @@ INSTANTIATE_TEST_CASE_P(
   ConstructLatVolGeometry,
   ShowFieldScalingTest,
   Values(20, 40, 60, 80
-  //, 100, 120, 150  //too slow already
+  #ifndef WIN32   //too slow already
+  , 100, 120, 150, 200, 256
+  #endif
   )
   );
