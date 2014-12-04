@@ -80,6 +80,33 @@ namespace Datatypes {
       this->setFromTriplets(triplets.begin(), triplets.end());
     }
 
+    SparseRowMatrixGeneric(int nrows, int ncols, const index_type* rowCounter, const index_type* columnCounter, const T* data, size_t nnz) : EigenBase(nrows, ncols)
+    {
+      if (rowCounter[nrows] != nnz)
+        THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: row accumulator array does not match number of non-zero elements.");
+      std::vector<Triplet> triplets;
+      triplets.reserve(nnz);
+
+      int i = 0;
+      int j = 0;
+      while (i < nrows)
+      {
+        while (j < rowCounter[i + 1])
+        {
+          index_type column = columnCounter[j];
+          if (column >= ncols)
+            THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: column index out of bounds.");
+          triplets.push_back(Triplet(i, columnCounter[j], 0));
+          j++;
+        }
+        i++;
+      }
+      this->setFromTriplets(triplets.begin(), triplets.end());
+      this->reserve(nnz);
+      std::copy(data, data + nnz, this->valuePtr());
+      this->makeCompressed();
+    }
+
     /// This constructor allows you to construct SparseRowMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     SparseRowMatrixGeneric(const Eigen::SparseMatrixBase<OtherDerived>& other)

@@ -36,6 +36,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 
 using namespace SCIRun;
@@ -71,9 +72,9 @@ namespace detail
     VMesh*  smesh_;
     VMesh*  dmesh_;
 
-    SparseRowMatrix::RowsPtr rr_;
-    SparseRowMatrix::ColumnsPtr cc_;
-    SparseRowMatrix::Storage vv_;
+    index_type* rr_;
+    index_type* cc_;
+    double* vv_;
 
     double  maxdist_;
     const AlgorithmBase* algo_;
@@ -609,13 +610,11 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
     }
   }
 
-  SparseRowMatrixHandle outputMatrix(new SparseRowMatrix(static_cast<int>(m+1), static_cast<int>(nnz)));
-  std::cout << "allocated Sparse matrix of size " << static_cast<int>(m+1) << " x " << static_cast<int>(nnz) << std::endl;
-  outputMatrix->reserve(nnz);
+  LegacySparseDataContainer<double> legacySparseData(m+1, nnz);
 
-  const SparseRowMatrix::RowsPtr& rr = outputMatrix->get_rows();
-  const SparseRowMatrix::ColumnsPtr& cc = outputMatrix->get_cols();
-  const SparseRowMatrix::Storage& vv = outputMatrix->valuePtr();
+  const SparseRowMatrix::RowsPtr& rr = legacySparseData.rows().get();
+  const SparseRowMatrix::ColumnsPtr& cc = legacySparseData.columns().get();
+  const SparseRowMatrix::Storage& vv = legacySparseData.data().get();
 
   double maxdist = get(Parameters::MaxDistance).toDouble();
 
@@ -670,7 +669,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
     Parallel::RunTasks(task_i, Parallel::NumCores());
   }
 
-  output = outputMatrix;
+  output.reset(new SparseRowMatrix(m,n,rr,cc,vv,nnz));
   if (!output)
   {
     error("Could not create output matrix");
