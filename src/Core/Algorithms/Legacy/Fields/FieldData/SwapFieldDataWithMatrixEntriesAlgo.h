@@ -36,7 +36,7 @@
 //#include <Core/Datatypes/Matrix.h>
 
 #include <Core/Datatypes/DatatypeFwd.h> 
-#include <Core/Datatypes/DenseMatrix.h>
+//#include <Core/Datatypes/DenseMatrix.h>
 // Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
@@ -69,8 +69,8 @@ class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
 		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 
 private:
-		const GetFieldDataAlgo get_algo_;
-		const SetFieldDataAlgo set_algo_; 
+		 GetFieldDataAlgo get_algo_;
+		 SetFieldDataAlgo set_algo_; 
 };
 			}}}}
 

@@ -26,16 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h> 
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Matrix/Matrix.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
-#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
-#include <Core/Datatypes/Legacy/Matrix/MatrixTypeConverter.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+//#include <Dataflow/Network/ModuleStateInterface.h>
+//#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h> 
 
-//#include <Dataflow/Network/Module.h>
-//#include <Dataflow/Network/Ports/FieldPort.h>
-//#include <Dataflow/Network/Ports/MatrixPort.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
@@ -69,7 +67,7 @@ SwapFieldDataWithMatrixEntries::execute()
     update_state(Executing);
 		setAlgoOptionFromState(Parameters::PreserveScalar); 
   
-		auto output = algo().run(withInputData((InputField, input_field)(InputMatrix, input_matrix))); 
+		auto output = algo().run_generic(withInputData((InputField, input_field)(InputMatrix, optionalAlgoInput(input_matrix)))); 
 
 		sendOutputFromAlgorithm(OutputField, output); 
   }

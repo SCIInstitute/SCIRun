@@ -30,11 +30,11 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 //#include <Core/Datatypes/Matrix.h>
-//#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DatatypeFwd.h> 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
-#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
-//#include <Core/Datatypes/Legacy/Matrix/MatrixTypeConverter.h>
+//#include <Dataflow/Network/ModuleStateInterface.h>
+//#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h> 
@@ -42,7 +42,6 @@
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters; 
-using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
@@ -80,9 +79,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
 					output_matrix = matrix_output_handle;
 					return true; 
 			}
-			 
-      //send_output_handle("Output Matrix", matrix_output_handle);  correct? 
-    }
+	}
 
     // Set the data.
     if( output_field )
@@ -94,7 +91,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
 					if (preserve_scalar) 
 						{
 								//set_algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());  
-								set_algo_.set_option(keepTypeCheckBox, fi.get_data_type());
+								set_algo_.set_option((set_algo_.keepTypeCheckBox), fi.get_data_type());
 						}
         if(!(set_algo_.run(input_field, input_matrix))) return false;
 

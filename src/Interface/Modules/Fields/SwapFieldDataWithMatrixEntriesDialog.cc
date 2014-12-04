@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntries.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
