@@ -61,7 +61,7 @@ namespace
   }
   FieldHandle LoadMickeyMouseElectrodeSpongeMesh()
   {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/elc_surf_mesh.fld.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "Fields/mickey_mouse/elc_surf_mesh.fld");
   }
   
   DenseMatrixHandle ElectrodeSpongeLocationAndThickness()

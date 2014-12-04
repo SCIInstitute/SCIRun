@@ -29,18 +29,13 @@
 #include <Core/IEPlugin/ObjToField_Plugin.h>
 #include <Core/IEPlugin/NrrdField_Plugin.h>
 #include <Core/IEPlugin/MatlabFiles_Plugin.h>
+#include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
-
-namespace SCIRun
-{
-  template class GenericIEPluginManager<Field>;
-  template class GenericIEPluginManager<Core::Datatypes::Matrix>;
-}
 
 void IEPluginManager::Initialize()
 {
@@ -54,7 +49,9 @@ void IEPluginManager::Initialize()
   
   static FieldIEPluginLegacyAdapter MatlabField_plugin("Matlab Field", "*.mat", "*.mat", MatlabField_reader, MatlabField_writer);   
 
+  static MatrixIEPluginLegacyAdapter MatlabMatrix_plugin("Matlab Matrix","*.mat", "*.mat", MatlabMatrix_reader, MatlabMatrix_writer);
   //TODO
-  //static MatrixIEPluginLegacyAdapter MatlabMatrix_plugin("Matlab Matrix",".mat", "*.mat", MatlabMatrix_reader, MatlabMatrix_writer);
-  //static NrrdIEPluginLegacyAdapter MatlabNrrd_plugin("Matlab Matrix",".mat", "*.mat",MatlabNrrd_reader,MatlabNrrd_writer);     
+  //static NrrdIEPluginLegacyAdapter MatlabNrrd_plugin("Matlab Matrix",".mat", "*.mat",MatlabNrrd_reader,MatlabNrrd_writer);
+
+  static MatrixIEPluginLegacyAdapter SimpleTextFileMatrix_plugin("SimpleTextFile","*.*", "",SimpleTextFileMatrix_reader,SimpleTextFileMatrix_writer);
 }

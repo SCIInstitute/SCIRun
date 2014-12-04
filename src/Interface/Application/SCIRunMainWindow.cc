@@ -125,9 +125,20 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   standardBar->addAction(actionSave_);
   standardBar->addAction(actionRunScript_);
   standardBar->addAction(actionEnterWhatsThisMode_);
+  standardBar->addSeparator();
   standardBar->addAction(actionPinAllModuleUIs_);
   standardBar->addAction(actionRestoreAllModuleUIs_);
   standardBar->addAction(actionHideAllModuleUIs_);
+  standardBar->addSeparator();
+  standardBar->addAction(actionCenterNetworkViewer_);
+  standardBar->addAction(actionZoomIn_);
+  standardBar->addAction(actionZoomOut_);
+  //TODO: requires some real code
+  actionZoomBestFit_->setDisabled(true);
+  standardBar->addAction(actionZoomBestFit_);
+  standardBar->addAction(actionResetNetworkZoom_);
+  standardBar->addAction(actionDragMode_);
+  standardBar->addAction(actionSelectMode_);
   standardBar->setStyleSheet(styleSheet());
   //setUnifiedTitleAndToolBarOnMac(true);
 
@@ -217,9 +228,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   makeFilterButtonMenu();
 
-  connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
-  connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
-  connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
+  //connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
+  //connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
+  //connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   if (newInterface())
     networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
 
@@ -227,6 +238,16 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
+
+  connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
+  connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
+
+  connect(actionResetNetworkZoom_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
+  connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
+  connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
 
   setupInputWidgets();
 
@@ -296,6 +317,7 @@ void SCIRunMainWindow::setTipsAndWhatsThis()
   actionHideAllModuleUIs_->setWhatsThis("Hides all module UI windows.");
   actionRestoreAllModuleUIs_->setWhatsThis("Restores all module UI windows.");
   actionPinAllModuleUIs_->setWhatsThis("Pins all module UI windows to right side of main window.");
+  //todo: zoom actions, etc
 }
 
 void SCIRunMainWindow::setupInputWidgets()
@@ -574,12 +596,20 @@ void SCIRunMainWindow::setActionIcons()
   actionRunScript_->setIcon(QPixmap(":/general/Resources/script.png"));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-  actionUndo_->setIcon(QIcon::fromTheme("edit-undo"));
-  actionRedo_->setIcon(QIcon::fromTheme("edit-redo"));
+  actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
+  actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
   //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/hideAll.png"));
   actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/rightAll.png"));
   actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/showAll.png"));
+
+  actionCenterNetworkViewer_->setIcon(QPixmap(":/general/Resources/align_center.png"));
+  actionResetNetworkZoom_->setIcon(QPixmap(":/general/Resources/zoom_reset.png"));
+  actionZoomIn_->setIcon(QPixmap(":/general/Resources/zoom_in.png"));
+  actionZoomOut_->setIcon(QPixmap(":/general/Resources/zoom_out.png"));
+  actionZoomBestFit_->setIcon(QPixmap(":/general/Resources/zoom_fit.png"));
+  actionDragMode_->setIcon(QPixmap(":/general/Resources/cursor_hand_icon.png"));
+  actionSelectMode_->setIcon(QPixmap(":/general/Resources/select.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
@@ -640,6 +670,70 @@ void SCIRunMainWindow::chooseBackgroundColor()
     networkEditor_->setBackground(newColor);
     GuiLogger::Instance().log("Background color set to " + newColor.name());
   }
+}
+
+void SCIRunMainWindow::setDragMode(bool toggle)
+{
+  if (toggle)
+  {
+    networkEditor_->setMouseAsDragMode();
+    statusBar()->showMessage("Mouse in drag mode", 2000);
+  }
+  if (actionDragMode_->isChecked())
+  {
+    actionSelectMode_->setChecked(false);
+  }
+  else
+  {
+    actionSelectMode_->setChecked(true);
+  }
+}
+
+void SCIRunMainWindow::setSelectMode(bool toggle)
+{
+  if (toggle)
+  {
+    networkEditor_->setMouseAsSelectMode();
+    statusBar()->showMessage("Mouse in select mode", 2000);
+  }
+  if (actionSelectMode_->isChecked())
+  {
+    actionDragMode_->setChecked(false);
+  }
+  else
+  {
+    actionDragMode_->setChecked(true);
+  }
+}
+
+void SCIRunMainWindow::zoomNetwork()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  if (action)
+  {
+    const QString name = action->text();
+    if (name == "Zoom In")
+    {
+      networkEditor_->zoomIn();
+    }
+    else if (name == "Zoom Out")
+    {
+      networkEditor_->zoomOut();
+    }
+    else if (name == "Reset Network Zoom")
+    {
+      networkEditor_->zoomReset();
+    }
+  }
+  else
+  {
+    std::cerr << "Sender was null or not an action" << std::endl;
+  }
+}
+
+void SCIRunMainWindow::showZoomStatusMessage(int zoomLevel)
+{
+  statusBar()->showMessage(tr("Zoom: %1%").arg(zoomLevel), 2000);
 }
 
 void SCIRunMainWindow::resetBackgroundColor()
@@ -1161,7 +1255,9 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     userDataLineEdit_ <<
     userDataPushButton_ <<
     dataSetGroupBox_ <<
-    optionsGroupBox_;
+    optionsGroupBox_ <<
+    networkEditorMiniViewLabel_ <<
+    miniviewTextLabel_;
 
   Q_FOREACH(QAction* a, nonfunctioningActions)
     a->setVisible(false);

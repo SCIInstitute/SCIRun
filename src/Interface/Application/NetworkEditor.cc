@@ -63,6 +63,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   sendToBackAction_(0),
   propertiesAction_(0),
   modulesSelectedByCL_(false),
+  currentScale_(1),
   scene_(new QGraphicsScene(parent)),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
@@ -88,6 +89,9 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
 
   updateActions();
   ensureVisible(0,0,0,0);
+
+  setMouseAsDragMode();
+
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setExecutionContext(this);
 #endif
@@ -266,6 +270,16 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
 
   GuiLogger::Instance().log("Module added.");
+}
+
+void NetworkEditor::setMouseAsDragMode()
+{
+  setDragMode(ScrollHandDrag);
+}
+
+void NetworkEditor::setMouseAsSelectMode()
+{
+  setDragMode(RubberBandDrag);
 }
 
 void NetworkEditor::bringToFront()
@@ -608,14 +622,26 @@ void NetworkEditor::unselectConnectionGroup()
 ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 {
   ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
+  fillModulePositionMap(*positions);
+  return positions;
+}
+
+void NetworkEditor::fillModulePositionMap(ModulePositions& positions) const
+{
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      positions->modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
+      positions.modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
     }
   }
-  return positions;
+}
+
+void NetworkEditor::centerView()
+{
+  ModulePositions positions;
+  fillModulePositionMap(positions);
+  centerOn(findCenterOfNetwork(positions));
 }
 
 ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
@@ -866,6 +892,62 @@ void NetworkEditor::restoreAllModuleUIs()
     if (module)
       module->showUI();
   }
+}
+
+namespace
+{
+  const double minScale = 0.03;
+  const double maxScale = 4.0;
+  const double scaleFactor = 1.15;
+}
+
+void NetworkEditor::wheelEvent(QWheelEvent* event)
+{
+  setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+  if (event->delta() > 0)
+  {
+    zoomIn();
+  }
+  else
+  {
+    zoomOut();
+  }
+  // Don't call superclass handler here
+  // as wheel is normally used for moving scrollbars
+}
+
+void NetworkEditor::zoomIn()
+{
+  if (currentScale_ < maxScale)
+  {
+    double factor = std::min(scaleFactor, 4.0/currentScale_);
+    scale(factor, factor);
+    currentScale_ *= factor;
+    Q_EMIT zoomLevelChanged(currentZoomPercentage());
+  }
+}
+
+void NetworkEditor::zoomOut()
+{
+  if (currentScale_ > minScale)
+  {
+    scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+    currentScale_ /= scaleFactor;
+    Q_EMIT zoomLevelChanged(currentZoomPercentage());
+  }
+}
+
+void NetworkEditor::zoomReset()
+{
+  scale(1.0 / currentScale_, 1.0 / currentScale_);
+  currentScale_ = 1;
+  Q_EMIT zoomLevelChanged(currentZoomPercentage());
+}
+
+int NetworkEditor::currentZoomPercentage() const
+{
+  return static_cast<int>(currentScale_ * 100);
 }
 
 NetworkEditor::~NetworkEditor()

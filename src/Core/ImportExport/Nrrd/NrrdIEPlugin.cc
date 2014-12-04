@@ -27,10 +27,18 @@
 */
 
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <boost/regex.hpp>
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+
+namespace SCIRun
+{
+  template class GenericIEPluginManager<Field>;
+  template class GenericIEPluginManager<Core::Datatypes::Matrix>;
+}
 
 IEPluginManagerManager::IEPluginManagerManager() {}
 
@@ -51,9 +59,21 @@ std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Field>
 }
 
 template <>
+std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Matrix>* mgr)
+{
+  return "SCIRun Matrix File (*.mat)";
+}
+
+template <>
 std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr)
 {
   return "SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld)";
+}
+
+template <>
+std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Matrix>* mgr)
+{
+  return "SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat)";
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 

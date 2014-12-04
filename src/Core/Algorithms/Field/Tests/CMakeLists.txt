@@ -44,6 +44,7 @@ SET(Algorithms_Field_Tests_SRCS
   MapFieldDataFromSourceToDestinationAlgoTests.cc
   GetFieldDataAlgoTests.cc
   SetFieldDataAlgoTests.cc
+  SetFieldDataToConstantValueAlgoTests.cc
   LoadFieldsForAlgoCoreTests.cc
   LoadFieldsForAlgoCoreTests.h
   SplitByConnectedRegionTests.cc

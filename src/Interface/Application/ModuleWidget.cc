@@ -46,6 +46,7 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -84,7 +85,7 @@ namespace Gui {
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
-        << new QAction("Replace With", parent)
+        << disabled(new QAction("Replace With", parent))
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
@@ -235,7 +236,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   moduleId_(theModule->get_id()),
   dialog_(0),
   dockable_(0),
-  allowedArea_(Qt::RightDockWidgetArea),
   dialogErrorControl_(dialogErrorControl),
   inputPortLayout_(0),
   outputPortLayout_(0),
@@ -322,6 +322,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connectUpdateNote(this);
 
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
+
+  Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
   //TODO: doh, how do i destroy myself?
   //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
@@ -704,13 +706,40 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->setWidget(dialog_);
       dialog_->setDockable(dockable_);
       dockable_->setMinimumSize(dialog_->minimumSize());
-      dockable_->setAllowedAreas(allowedArea_);
+      dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
-      SCIRunMainWindow::Instance()->addDockWidget(allowedArea_, dockable_);
+      SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
+      dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
     }
   }
+}
+
+Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
+{
+  return Core::Preferences::Instance().modulesAreDockable ? Qt::RightDockWidgetArea : Qt::NoDockWidgetArea;
+}
+
+void ModuleWidget::adjustDockState(bool dockEnabled)
+{
+  if (dockable_)
+  {
+    dockable_->setAllowedAreas(allowedDockArea());
+  }
+
+  if (dockEnabled)
+  {
+
+  }
+  else
+  {
+    if (dockable_)
+    {
+      dockable_->setFloating(true);
+    }
+  }
+
 }
 
 boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;

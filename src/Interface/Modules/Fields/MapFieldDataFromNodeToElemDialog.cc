@@ -30,7 +30,6 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
-#include <boost/bimap.hpp>
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;

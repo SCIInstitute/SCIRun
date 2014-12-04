@@ -40,6 +40,7 @@ SET(Modules_Fields_Tests_SRCS
   JoinFieldsTests.cc
   GetFieldDataTests.cc
   SetFieldDataTests.cc
+  SetFieldDataToConstantValueTests.cc
   MapFieldDataFromNodeToElemTests.cc
   MapFieldDataFromElemToNodeTests.cc
   SplitFieldByConnectedRegionTests.cc
