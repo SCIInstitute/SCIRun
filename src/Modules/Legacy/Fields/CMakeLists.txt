@@ -192,7 +192,13 @@ SET(Modules_Legacy_Fields_SRCS
 
 IF(WITH_TETGEN)
   SET(Modules_Legacy_Fields_SRCS ${Modules_Legacy_Fields_SRCS}
-    InterfaceWithTetGen.cc)
+    InterfaceWithTetGen.cc
+	InterfaceWithTetGenImpl.cc
+	)
+  SET(Modules_Legacy_Fields_HEADERS ${Modules_Legacy_Fields_HEADERS}
+	InterfaceWithTetGen.h
+    InterfaceWithTetGenImpl.h
+	)
 ENDIF(WITH_TETGEN)
     
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields 

@@ -32,24 +32,22 @@
 ///    @date    Wed Mar 22 07:56:22 2006
 ///
 
+#include <Modules/Legacy/Fields/InterfaceWithTetGenImpl.h>
+
 #include <Core/Thread/Mutex.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 #define TETLIBRARY   // Required definition for use of tetgen library
 #include <tetgen.h>
 
 #include <algorithm>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
 #include <sstream>
 
 #include <sci_debug.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 namespace SCIRun {
 
@@ -58,15 +56,14 @@ Mutex TetGenMutex("Protect TetGen from running in parallel");
 /// @class InterfaceWithTetGen
 /// @brief This module interfaces with TetGen. 
 
-class InterfaceWithTetGen : public Module
+class InterfaceWithTetGenImpl
 {
   public:
     // Constructor/destructor
-    InterfaceWithTetGen(GuiContext* ctx);
-    virtual ~InterfaceWithTetGen() {}
+    InterfaceWithTetGenImplImpl();
 
     // to run the module
-    virtual void execute();
+    virtual void executeImpl();
     
   private:
     // translate the ui variables into the string with options
@@ -418,3 +415,4 @@ InterfaceWithTetGen::execute()
 
 } // end namespace SCIRun
 
+#endif

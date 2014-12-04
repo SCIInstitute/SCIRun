@@ -26,35 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
-#include <Modules/Legacy/Fields/InterfaceWithTetGenImpl.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
+#ifndef MODULES_LEGACY_FIELDS_INTERFACEWITHTETGENIMPL_H__
+#define MODULES_LEGACY_FIELDS_INTERFACEWITHTETGENIMPL_H__
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-const ModuleLookupInfo InterfaceWithTetGen::staticInfo_("InterfaceWithTetGen", "NewField", "SCIRun");
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-InterfaceWithTetGen::InterfaceWithTetGen()
-  : Module(staticInfo_)
-{
-  INITIALIZE_PORT(Main);
-  INITIALIZE_PORT(Points);
-  INITIALIZE_PORT(Region_Attribs);
-  INITIALIZE_PORT(Regions);
-  INITIALIZE_PORT(TetVol);
+      //TODO: convert to proper algo class
+      class SCISHARE InterfaceWithTetGenImpl
+      {
+
+      };
+    }
+  }
 }
 
-void InterfaceWithTetGen::setStateDefaults()
-{
-  //TODO
-}
-
-void InterfaceWithTetGen::execute()
-{
-  //TODO
-}
+#endif
