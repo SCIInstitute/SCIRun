@@ -64,6 +64,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 #include <Modules/Legacy/Fields/FairMesh.h>
+#include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
 #include <Modules/Legacy/Fields/BuildMappingMatrix.h>
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
@@ -152,6 +153,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   //addModuleDesc<ScaleFieldMeshAndData>("NOT WORKING YET--Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
   addModuleDesc<ApplyFEMCurrentSource>("Real ported module", "...");
+  addModuleDesc<InterfaceWithTetGen>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToField>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
