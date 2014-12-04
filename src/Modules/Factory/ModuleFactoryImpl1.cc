@@ -74,6 +74,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
+#include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/DataIO/ReadMatrix.h>
@@ -142,6 +143,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
+	addModuleDesc<SwapFieldDataWithMatrixEntries>("SwapFieldDataWithMatrixEntires","..."); 
   addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", "In progress: main path through code works", "Generates stiffness matrix ");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<FairMesh>("Real ported module", "...");

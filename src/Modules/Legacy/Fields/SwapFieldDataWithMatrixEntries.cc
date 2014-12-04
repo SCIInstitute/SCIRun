@@ -55,7 +55,6 @@ SwapFieldDataWithMatrixEntries::SwapFieldDataWithMatrixEntries()
 void SwapFieldDataWithMatrixEntries::setStateDefaults()
 {
   setStateStringFromAlgoOption(Parameters::PreserveScalar);
-	setStateBoolFromAlgo(Parameters::KeepType); 
 }
 void
 SwapFieldDataWithMatrixEntries::execute()
@@ -67,7 +66,6 @@ SwapFieldDataWithMatrixEntries::execute()
   {
     update_state(Executing);
 		setAlgoOptionFromState(Parameters::PreserveScalar); 
-		setAlgoBoolFromState(Parameters::KeepType); 
   
 		auto output = algo().run_generic(withInputData((InputField, input_field)(InputMatrix, optionalAlgoInput(input_matrix)))); 
 

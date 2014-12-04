@@ -36,8 +36,11 @@
 //#include <Dataflow/Network/ModuleStateInterface.h>
 //#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
+#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
+
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h> 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -46,12 +49,10 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(Fields, PreserveScalar)
-ALGORITHM_PARAMETER_DEF(Fields, KeepType) 
 
 SwapFieldDataWithMatrixEntriesAlgo::SwapFieldDataWithMatrixEntriesAlgo()
 {
   addParameter(PreserveScalar, false);
-	addParameter(KeepType, true); 
 }
 
 bool
@@ -66,11 +67,13 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
   }
   
   FieldInformation fi(input_field); 
+	GetFieldDataAlgo get_algo_;
+	SetFieldDataAlgo set_algo_; 
   
   const bool preserve_scalar = get(Parameters::PreserveScalar).toBool();
 	if( output_matrix )
     {
-      MatrixHandle matrix_output_handle;
+      DenseMatrixHandle matrix_output_handle;
       if(!(get_algo_.run(input_field))) 
 			{
 					matrix_output_handle = get_algo_.run(input_field); 
@@ -118,8 +121,6 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input, DenseMatrixHandle
   DenseMatrixHandle dummy;
   return runImpl(input, input_matrix, output, dummy);
 }
-
-AlgorithmInputName SwapFieldDataWithMatrixEntriesAlgo::SwapMatrix("SwapMatrix"); 
 
 AlgorithmOutput SwapFieldDataWithMatrixEntriesAlgo::run_generic(const AlgorithmInput& input) const
 {

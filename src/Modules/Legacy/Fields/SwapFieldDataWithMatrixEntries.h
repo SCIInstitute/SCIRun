@@ -50,9 +50,9 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, LegacyField);
-				INPUT_PORT(1, InputMatrix, Matrix);  
+				INPUT_PORT(1, InputMatrix, DenseMatrix);  
         OUTPUT_PORT(0, OutputField, LegacyField);
-				OUTPUT_PORT(1, OutputMatrix, Matrix); 
+				OUTPUT_PORT(1, OutputMatrix, DenseMatrix); 
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
@@ -60,5 +60,4 @@ namespace SCIRun {
     }
   }
 }
-
 #endif

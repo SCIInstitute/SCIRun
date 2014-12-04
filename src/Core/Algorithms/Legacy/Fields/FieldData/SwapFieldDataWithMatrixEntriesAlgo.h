@@ -43,22 +43,18 @@
 // for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
-#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-
 namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
 
 		ALGORITHM_PARAMETER_DECL(PreserveScalar); 
-		ALGORITHM_PARAMETER_DECL(KeepType); 
 
 class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
 {
   public:
     SwapFieldDataWithMatrixEntriesAlgo();
-		static AlgorithmInputName SwapMatrix; 
+		//static AlgorithmInputName SwapMatrix; 
   
     bool runImpl(FieldHandle input_field, 
 				Datatypes::DenseMatrixHandle input_matrix, 
@@ -68,10 +64,6 @@ class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
 		bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle input_matrix, FieldHandle& output) const; 
 
 		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
-
-private:
-		 GetFieldDataAlgo get_algo_;
-		 SetFieldDataAlgo set_algo_; 
 };
 			}}}}
 
