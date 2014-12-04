@@ -40,7 +40,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 #define TETLIBRARY   // Required definition for use of tetgen library
-#include <tetgen.h>
+#include <tetgen/tetgen.h>
 
 #include <algorithm>
 #include <sstream>
