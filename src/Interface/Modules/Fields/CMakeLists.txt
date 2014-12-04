@@ -39,6 +39,7 @@ SET(Interface_Modules_Fields_FORMS
   CreateFieldData.ui
   CalculateFieldData.ui
   InterfaceWithCleaverDialog.ui
+  InterfaceWithTetGen.ui
   SetFieldDataDialog.ui
   SetFieldDataToConstantValue.ui
   MapFieldDataFromElemToNodeDialog.ui
@@ -66,6 +67,7 @@ SET(Interface_Modules_Fields_HEADERS
   SplitFieldByDomainDialog.h
   SplitFieldByConnectedRegionDialog.h
   InterfaceWithCleaverDialog.h
+  InterfaceWithTetGenDialog.h
   SetFieldDataDialog.h
   SetFieldDataToConstantValueDialog.h
   MapFieldDataFromElemToNodeDialog.h
@@ -95,6 +97,7 @@ SET(Interface_Modules_Fields_SOURCES
   SplitFieldByDomainDialog.cc
   SplitFieldByConnectedRegionDialog.cc
   InterfaceWithCleaverDialog.cc
+  InterfaceWithTetGenDialog.cc
   SetFieldDataDialog.cc
   SetFieldDataToConstantValueDialog.cc
   MapFieldDataFromElemToNodeDialog.cc
