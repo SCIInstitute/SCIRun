@@ -442,7 +442,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
 
 void ConnectionLine::keyPressEvent(QKeyEvent* event)
 {
-  if (event->key() == 'i')
+  if (event->key() == Qt::Key_I)
     DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
 }
 
