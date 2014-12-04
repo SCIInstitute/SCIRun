@@ -26,7 +26,54 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Modules/Visualization/ShowField.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Utils/Exception.h>
+#include <Core/Logging/Log.h>
 
-/// @todo
+using namespace SCIRun::Testing;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core;
+using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
+using ::testing::Values;
+using ::testing::Combine;
+using ::testing::Range;
+
+class ShowFieldScalingTest : public ParameterizedModuleTest<int>
+{
+protected:
+  virtual void SetUp()
+  {
+    Log::get().setVerbose(false);
+    showField = makeModule("ShowField");
+    showField->setStateDefaults();
+    auto size = GetParam();
+    latVol = CreateEmptyLatVol(size, size, size);
+    stubPortNWithThisData(showField, 0, latVol);
+    Log::get() << INFO << "Setting up ShowField with size " << size << "^3 latvol" << std::endl;
+  }
+
+  UseRealModuleStateFactory f;
+  ModuleHandle showField;
+  FieldHandle latVol;
+};
+
+TEST_P(ShowFieldScalingTest, ConstructLatVolGeometry)
+{
+  Log::get() << INFO << "Start ShowField::execute" << std::endl;
+  showField->execute();
+  Log::get() << INFO << "End ShowField::execute" << std::endl;
+}
+
+INSTANTIATE_TEST_CASE_P(
+  ConstructLatVolGeometry,
+  ShowFieldScalingTest,
+  Values(20, 40, 60, 80
+  //, 100, 120, 150  //too slow already
+  )
+  );
