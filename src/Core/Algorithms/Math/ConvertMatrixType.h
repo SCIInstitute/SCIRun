@@ -31,7 +31,6 @@
 
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
@@ -39,15 +38,11 @@ namespace Core {
 namespace Algorithms {
 namespace Math {
   
+  ALGORITHM_PARAMETER_DECL(OutputMatrixType);
+
   class SCISHARE ConvertMatrixTypeAlgorithm : public AlgorithmBase
   {
   public:
-    static AlgorithmInputName InputMatrix;
-    static AlgorithmOutputName ResultMatrix;    
-    static AlgorithmParameterName PassThrough();
-    static AlgorithmParameterName ConvertToColumnMatrix();
-    static AlgorithmParameterName ConvertToDenseMatrix();
-    static AlgorithmParameterName ConvertToSparseRowMatrix();
     Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix) const; 
     ConvertMatrixTypeAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;

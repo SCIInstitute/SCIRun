@@ -31,6 +31,7 @@
 
 #include <gtest/gtest.h>
 #include <Core/Algorithms/Math/ConvertMatrixType.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
@@ -142,11 +143,8 @@ TEST(ConvertMatrixTests, PassInputThrough)
 {  
   
   ConvertMatrixTypeAlgorithm algo;
-  
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), false);
+
+  algo.set_option(Parameters::OutputMatrixType, "passThrough");
   
   MatrixHandle input1(CreateDenseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -190,10 +188,7 @@ TEST(ConvertMatrixTests, DenseToColumnMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), false);
+  algo.set_option(Parameters::OutputMatrixType, "column");
 
   MatrixHandle input1(CreateDenseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -213,10 +208,7 @@ TEST(ConvertMatrixTests, DenseToSparseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), true);
+  algo.set_option(Parameters::OutputMatrixType, "sparse");
 
   MatrixHandle input1(CreateDenseMatrix_2());
   MatrixHandle output_matrix1 = algo.run(input1); 
@@ -246,10 +238,7 @@ TEST(ConvertMatrixTests, ColumnToDenseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), false);
+  algo.set_option(Parameters::OutputMatrixType, "dense");
   
   MatrixHandle input1(CreateColumnMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -269,10 +258,7 @@ TEST(ConvertMatrixTests, ColumnToSparseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), true);
+  algo.set_option(Parameters::OutputMatrixType, "sparse");
   
   MatrixHandle input1(CreateColumnMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -292,10 +278,7 @@ TEST(ConvertMatrixTests, SparseToColumnMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), false);
+  algo.set_option(Parameters::OutputMatrixType, "column");
 
   MatrixHandle input1(CreateSparseMatrixWithOneColumn());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -316,10 +299,7 @@ TEST(ConvertMatrixTests, SparseToDenseMatrix)
 { 
   ConvertMatrixTypeAlgorithm algo;
   
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), false);
+  algo.set_option(Parameters::OutputMatrixType, "dense");
 
   MatrixHandle input1(CreateSparseMatrix());
   MatrixHandle output_matrix1 = algo.run(input1);
@@ -334,79 +314,5 @@ TEST(ConvertMatrixTests, SparseToDenseMatrix)
    for (int j = 0; j < out1->ncols(); j++)
         EXPECT_EQ(expected_result->coeff(i, j),out1->coeff(i, j)); 
  
-}
-
-// The priority matrix type is as follows: PassThrough, Column, Sparse, Dense
-
-TEST(ConvertMatrixTests, AllRadiosSetToTrueInputDenseMatrix)
-{
-  ConvertMatrixTypeAlgorithm algo;
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), true);
-  MatrixHandle input(CreateDenseMatrix());
-  MatrixHandle output = algo.run(input);
-  EXPECT_EQ(1,WhatMatrixTypeIsIt(output));
-}
-
-TEST(ConvertMatrixTests, AllRadiosSetToTrueInputSparseMatrix)
-{
-  ConvertMatrixTypeAlgorithm algo;
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), true);
-  MatrixHandle input(CreateSparseMatrix());
-  MatrixHandle output = algo.run(input);
-  EXPECT_EQ(3,WhatMatrixTypeIsIt(output));
-}
-
-TEST(ConvertMatrixTests, AllRadiosSetToTrueInputColumnMatrix)
-{
-  ConvertMatrixTypeAlgorithm algo;
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), true);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), true);
-  MatrixHandle input(CreateColumnMatrix());
-  MatrixHandle output = algo.run(input);
-  EXPECT_EQ(2,WhatMatrixTypeIsIt(output));
-}
-
-TEST(ConvertMatrixTests, AllRadiosSetToFalseInputSparseMatrix)
-{
-  ConvertMatrixTypeAlgorithm algo;
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), false);
-  MatrixHandle input(CreateSparseMatrix());
-  MatrixHandle output = algo.run(input);
-  EXPECT_EQ(3,WhatMatrixTypeIsIt(output));
-}
-
-TEST(ConvertMatrixTests, AllRadiosSetToFalseInputDenseMatrix)
-{
-  ConvertMatrixTypeAlgorithm algo;
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), false);
-  MatrixHandle input(CreateDenseMatrix());
-  MatrixHandle output = algo.run(input);
-  EXPECT_EQ(1,WhatMatrixTypeIsIt(output));
-}
-
-TEST(ConvertMatrixTests, AllRadiosSetToFalseInputColumnMatrix)
-{
-  ConvertMatrixTypeAlgorithm algo;
-  algo.set(ConvertMatrixTypeAlgorithm::PassThrough(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix(), false);
-  algo.set(ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix(), false);
-  MatrixHandle input(CreateColumnMatrix());
-  MatrixHandle output = algo.run(input);
-  EXPECT_EQ(2,WhatMatrixTypeIsIt(output));
 }
 

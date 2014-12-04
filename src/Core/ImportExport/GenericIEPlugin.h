@@ -31,7 +31,10 @@
 
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <map>
+#include <vector>
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 #include <Core/ImportExport/share.h>
@@ -103,39 +106,48 @@ private:
 };
 
 template <class Data>
+class PluginMap
+{ 
+public:
+  PluginMap() : lock_("IE plugin map"), pluginTable_(0) {}
+  Core::Thread::Mutex& getLock();
+  typedef std::map<std::string, GenericIEPluginInterface<Data>*> Map;
+  Map& getMap();
+  void createMap();
+  void destroyMap();
+  size_t numPlugins() const;
+private:
+  Core::Thread::Mutex lock_;
+  Map* pluginTable_;
+};
+
+template <class Data>
 class GenericIEPluginManager
 {
 public:
-  static Core::Thread::Mutex& getLock();
-  typedef std::map<std::string, GenericIEPluginInterface<Data>*> PluginMap;
-  static PluginMap& getMap();
-  static void createMap();
-  static void destroyMap();
-
-  size_t numPlugins() const;
+  size_t numPlugins() const { return map_.numPlugins(); }
   void get_importer_list(std::vector<std::string>& results) const;
   void get_exporter_list(std::vector<std::string>& results) const;
   GenericIEPluginInterface<Data>* get_plugin(const std::string& name) const;
-private:
-  static Core::Thread::Mutex lock_;
-  static PluginMap* pluginTable_;
+  static PluginMap<Data>& getMap();
+protected:
+  static PluginMap<Data> map_;
 };
 
+template <class Data>
+PluginMap<Data>& GenericIEPluginManager<Data>::getMap()
+{
+  return map_;
+}
 
 template <class Data>
-Core::Thread::Mutex GenericIEPluginManager<Data>::lock_("fieldIE");
-
-template <class Data>
-typename GenericIEPluginManager<Data>::PluginMap* GenericIEPluginManager<Data>::pluginTable_ = 0;
-
-template <class Data>
-Core::Thread::Mutex& GenericIEPluginManager<Data>::getLock()
+Core::Thread::Mutex& PluginMap<Data>::getLock()
 {
   return lock_;
 }
 
 template <class Data>
-typename GenericIEPluginManager<Data>::PluginMap& GenericIEPluginManager<Data>::getMap()
+typename PluginMap<Data>::Map& PluginMap<Data>::getMap()
 {
   if (!pluginTable_)
     createMap();
@@ -143,16 +155,19 @@ typename GenericIEPluginManager<Data>::PluginMap& GenericIEPluginManager<Data>::
 }
 
 template <class Data>
-void GenericIEPluginManager<Data>::createMap()
+void PluginMap<Data>::createMap()
 {
   if (!pluginTable_)
   {
-    pluginTable_ = new typename GenericIEPluginManager<Data>::PluginMap();
+    pluginTable_ = new typename PluginMap<Data>::Map();
   }
 }
 
 template <class Data>
-size_t GenericIEPluginManager<Data>::numPlugins() const
+PluginMap<Data> GenericIEPluginManager<Data>::map_;
+
+template <class Data>
+size_t PluginMap<Data>::numPlugins() const
 {
   return pluginTable_ ? pluginTable_->size() : 0;
 }
@@ -160,13 +175,13 @@ size_t GenericIEPluginManager<Data>::numPlugins() const
 template <class Data>
 void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& results) const
 {
-  if (!pluginTable_) 
+  if (0 == map_.numPlugins()) 
   {
     return;
   }
 
-  Core::Thread::Guard s(lock_.get());
-  BOOST_FOREACH(const typename PluginMap::value_type& plugin, *pluginTable_)
+  Core::Thread::Guard s(map_.getLock().get());
+  BOOST_FOREACH(const typename PluginMap<Data>::Map::value_type& plugin, map_.getMap())
   {
     if (plugin.second->hasReader())
       results.push_back(plugin.first);
@@ -176,13 +191,13 @@ void GenericIEPluginManager<Data>::get_importer_list(std::vector<std::string>& r
 template <class Data>
 void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& results) const
 {
-  if (!pluginTable_) 
+  if (0 == map_.numPlugins()) 
   {
     return;
   }
 
-  Core::Thread::Guard s(lock_.get());
-  BOOST_FOREACH(const typename PluginMap::value_type& plugin, *pluginTable_)
+  Core::Thread::Guard s(map_.getLock().get());
+  BOOST_FOREACH(const typename PluginMap<Data>::Map::value_type& plugin, map_.getMap())
   {
     if (plugin.second->hasWriter())
       results.push_back(plugin.first);
@@ -192,13 +207,13 @@ void GenericIEPluginManager<Data>::get_exporter_list(std::vector<std::string>& r
 template <class Data>
 GenericIEPluginInterface<Data>* GenericIEPluginManager<Data>::get_plugin(const std::string &name) const
 {
-  if (!pluginTable_)
+  if (0 == map_.numPlugins())
     return 0;
 
-  Core::Thread::Guard s(lock_.get());
+  Core::Thread::Guard s(map_.getLock().get());
   // Should check for invalid name.
-  auto loc = pluginTable_->find(name);
-  if (loc == pluginTable_->end())
+  auto loc = map_.getMap().find(name);
+  if (loc == map_.getMap().end())
   {
     return 0;
   }
@@ -209,7 +224,7 @@ GenericIEPluginInterface<Data>* GenericIEPluginManager<Data>::get_plugin(const s
 }
 
 template <class Data>
-void GenericIEPluginManager<Data>::destroyMap()
+void PluginMap<Data>::destroyMap()
 {
   delete pluginTable_;
   pluginTable_ = 0;
@@ -228,19 +243,19 @@ IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
   filereader_(freader),
   filewriter_(fwriter)
 {
-  Core::Thread::Guard s(GenericIEPluginManager<Data>::getLock().get());
+  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock().get());
 
-  GenericIEPluginManager<Data>::createMap();
+  GenericIEPluginManager<Data>::getMap().createMap();
 
   std::string tmppname = pluginname_;
   int counter = 2;
   for (;;)
   {
-    auto loc = GenericIEPluginManager<Data>::getMap().find(tmppname);
-    if (loc == GenericIEPluginManager<Data>::getMap().end())
+    auto loc = GenericIEPluginManager<Data>::getMap().getMap().find(tmppname);
+    if (loc == GenericIEPluginManager<Data>::getMap().getMap().end())
     {
       if (tmppname != pluginname_) { const_cast<std::string&>(pluginname_) = tmppname; }
-      GenericIEPluginManager<Data>::getMap()[pluginname_] = this;
+      GenericIEPluginManager<Data>::getMap().getMap()[pluginname_] = this;
       break;
     }
     if (*(*loc).second == *this)
@@ -258,21 +273,21 @@ IEPluginLegacyAdapter<Data>::IEPluginLegacyAdapter(const std::string& pname,
 template <class Data>
 IEPluginLegacyAdapter<Data>::~IEPluginLegacyAdapter()
 {
-  Core::Thread::Guard s(GenericIEPluginManager<Data>::getLock().get());
+  Core::Thread::Guard s(GenericIEPluginManager<Data>::getMap().getLock().get());
 
-  auto iter = GenericIEPluginManager<Data>::getMap().find(pluginname_);
-  if (iter == GenericIEPluginManager<Data>::getMap().end())
+  auto iter = GenericIEPluginManager<Data>::getMap().getMap().find(pluginname_);
+  if (iter == GenericIEPluginManager<Data>::getMap().getMap().end())
   {
     std::cerr << "WARNING: IEPlugin " << pluginname_ << " not found in database for removal.\n";
   }
   else
   {
-    GenericIEPluginManager<Data>::getMap().erase(iter);
+    GenericIEPluginManager<Data>::getMap().getMap().erase(iter);
   }
 
-  if (GenericIEPluginManager<Data>::getMap().empty())
+  if (GenericIEPluginManager<Data>::getMap().getMap().empty())
   {
-    GenericIEPluginManager<Data>::destroyMap();
+    GenericIEPluginManager<Data>::getMap().destroyMap();
   }
 }
 
@@ -316,6 +331,9 @@ std::string defaultImportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0
 template <>
 SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Field>* mgr);
 
+template <>
+SCISHARE std::string defaultImportTypeForFile(const GenericIEPluginManager<Core::Datatypes::Matrix>* mgr);
+
 SCISHARE std::string fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter);
 
 template <class Data>
@@ -337,7 +355,6 @@ std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>&
       types << " (*.*)";
     }
   }
-
   return types.str();
 }
 
@@ -358,6 +375,9 @@ std::string defaultExportTypeForFile(const GenericIEPluginManager<Data>* mgr = 0
 
 template <>
 SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr);
+
+template <>
+SCISHARE std::string defaultExportTypeForFile(const GenericIEPluginManager<Core::Datatypes::Matrix>* mgr);
 
 template <class Data>
 std::string makeGuiTypesListForExport(const GenericIEPluginManager<Data>& mgr)

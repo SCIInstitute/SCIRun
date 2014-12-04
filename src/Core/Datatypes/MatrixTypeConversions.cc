@@ -131,6 +131,7 @@ DenseMatrixHandle matrix_convert::to_dense(const MatrixHandle& mh)
   auto sparse = matrix_cast::as_sparse(mh);
   if (sparse)
   {
+    //warn user or log a message?
     DenseMatrixHandle dense_matrix(new DenseMatrix(sparse->nrows(),sparse->ncols(),0));
 
     for (index_type row = 0; row < sparse->outerSize(); row++)

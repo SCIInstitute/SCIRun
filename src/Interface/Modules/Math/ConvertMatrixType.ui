@@ -6,83 +6,49 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>210</width>
-    <height>147</height>
+    <width>177</width>
+    <height>61</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>210</width>
-    <height>147</height>
+    <width>177</width>
+    <height>61</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QFrame" name="frame">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Ouput Matrix Type:</string>
      </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Ouput Matrix Type:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="PassThrough_">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="text">
-         <string>Same (pass-through)</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QRadioButton" name="ConvertToColumnMatrix_">
-        <property name="text">
-         <string>ColumnMatrix</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QRadioButton" name="ConvertToDenseMatrix_">
-        <property name="text">
-         <string>DenseMatrix</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QRadioButton" name="ConvertToSparseRowMatrix_">
-        <property name="text">
-         <string>SparseRowMatrix</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="matrixTypeComboBox_">
+     <item>
+      <property name="text">
+       <string>Same (pass-through)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ColumnMatrix</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>DenseMatrix</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SparseRowMatrix</string>
+      </property>
+     </item>
     </widget>
    </item>
   </layout>

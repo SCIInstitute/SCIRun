@@ -156,12 +156,13 @@ private:
   QDockWidget* dockable_;
   void makeOptionsDialog();
   void setupModuleActions();
+  void adjustDockState(bool dockEnabled);
+  Qt::DockWidgetArea allowedDockArea() const;
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   QMenu* getReplaceWithMenu();
 
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
-  Qt::DockWidgetArea allowedArea_;
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
