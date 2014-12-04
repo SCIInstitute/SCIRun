@@ -65,9 +65,7 @@ private:
   bool pushTableFlag_;
   std::vector<QWidget*> inputPortsVector_;
   std::vector<QWidget*> stimTypeVector_;  
-  std::vector<int> savedInputPortsVector_;
-  std::vector<int> savedStimTypeVector_;
-  void initialize_comboboxes(int i, std::string& tmpstr);
+  void initialize_comboboxes(int i, std::vector<Core::Algorithms::AlgorithmParameter>&  row);
   std::vector<Core::Algorithms::Variable> validate_numerical_input(int i);
   std::vector<Core::Algorithms::Variable> saved_all_elc_values;
 };

@@ -146,7 +146,7 @@ void ElectrodeCoilSetupDialog::pushTable()
    }
 }
 
-void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::string& tmpstr)
+void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::vector<AlgorithmParameter>& row)
 {
   QStringList type_items;
   type_items<<"???"<<"TMS"<<"tDCS";
@@ -176,20 +176,39 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::string& tmpstr)
     ProtoTypeInputComboBox_->setCurrentIndex(ProtoTypeInputComboBox_->findText(value));
   }
   StimType->addItems(type_items);  
-  if (savedInputPortsVector_.size()>0 && i<savedInputPortsVector_.size())
-  {
-    int tmp1=savedInputPortsVector_[i];
-    int tmp2=savedStimTypeVector_[i];
-
-    if (tmp1 > nrinput || tmp1<0)
-      tmp1=0;
-
-    if (tmp2 > nrinput || tmp2<0)
-      tmp2=0;
-
+  
+  int tmp1=-1, tmp2=-1; 
+ 
+  if (row.size()>=2)
+   {
+    int prototype_from_state=-1;
+    try
+    {
+     prototype_from_state = lexical_cast<int>(row[0].toString());
+    } catch(bad_lexical_cast &)
+    {
+     prototype_from_state=-1;
+    }
+  
+    if (prototype_from_state>=0 && prototype_from_state<=nrinput)
+      tmp1=prototype_from_state;
+   
+    int stimtype_from_state=-1;
+    try
+    {
+     stimtype_from_state = lexical_cast<int>(row[1].toString());
+    } catch(bad_lexical_cast &)
+    {
+     stimtype_from_state=-1;
+    }
+  
+    if (stimtype_from_state>=0 && stimtype_from_state<=3)
+      tmp2=stimtype_from_state; 
+   
     InputPorts->setCurrentIndex(tmp1);
     StimType->setCurrentIndex(tmp2);
-  }
+  } 
+  
   electrode_coil_tableWidget->setCellWidget(i,0,InputPorts);
   electrode_coil_tableWidget->setCellWidget(i,1,StimType);	 
   inputPortsVector_.push_back(InputPorts);
@@ -219,29 +238,11 @@ void ElectrodeCoilSetupDialog::pull()
     if (all_elc_values.size()>0)
     {
       std::string ProtoTypeInputComboBoxString = state_->getValue(Parameters::ProtoTypeInputComboBox).toString(); 
+      
+      if (all_elc_values.size()!=electrode_coil_tableWidget->rowCount())
+         comboBoxesSetup_=false;
+      
       electrode_coil_tableWidget->setRowCount(static_cast<int>(all_elc_values.size()));
-
-      /// remember the combobox settings
-      savedInputPortsVector_.resize(inputPortsVector_.size());
-      savedStimTypeVector_.resize(inputPortsVector_.size());
-      if (inputPortsVector_.size()!=stimTypeVector_.size())
-      {
-        std::cerr << "Internal error: ComboBox representation of first and second table have different number of rows.  " << std::endl;
-      }
-
-      for (int i=0; i<inputPortsVector_.size(); i++)
-      {
-        if (UseThisPrototypeButton && (int)(ProtoTypeInputComboBox_)->currentIndex()>0)
-        {      
-          savedInputPortsVector_[i]=((int)(ProtoTypeInputComboBox_)->currentIndex()); 
-        } else
-          savedInputPortsVector_[i]=((int)((QComboBox *)inputPortsVector_[i])->currentIndex());
-
-        if (!AllTDCSInputsButton)
-          savedStimTypeVector_[i]=((int)((QComboBox *)stimTypeVector_[i])->currentIndex());   
-        else
-          savedStimTypeVector_[i]=((int)(2));
-      }
 
       if (!comboBoxesSetup_)
       {
@@ -263,7 +264,7 @@ void ElectrodeCoilSetupDialog::pull()
             if (!comboBoxesSetup_)
             {
               ///let's call first pull() so that user only sees combo box
-              initialize_comboboxes(i, tmpstr); 
+              initialize_comboboxes(i, row); 
             }
 
           } 

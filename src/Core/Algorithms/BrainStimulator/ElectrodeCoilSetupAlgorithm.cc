@@ -267,10 +267,11 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
   VMesh* tms_coils_vmesh = tms_coils_field->vmesh();  
   VField* tms_coils_vfld  = tms_coils_field->vfield();
   std::vector<Point> tms_coils_field_values;
+  
   for (int i=0; i<coil_prototyp_map.size(); i++)
-  {
+  {  
    if (coil_prototyp_map[i]<=elc_coil_proto.size() && coil_prototyp_map[i]>=0) 
-   { 
+   {    
     if( !(coil_x.size()-1>=i && coil_y.size()-1>=i && coil_z.size()-1>=i))
      {
        THROW_ALGORITHM_PROCESSING_ERROR("Internal error: definition of coil (x,y,z) seems to be empty.");  
@@ -278,78 +279,85 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
       
     /// 1) move coil to predetermined position and orientation
     FieldHandle coil_fld = elc_coil_proto[coil_prototyp_map[i]-1];
-    GetFieldDataAlgo algo_getfielddata;
-    DenseMatrixHandle fielddata;
-    try
+    if (!coil_fld)
     {
-     fielddata  = algo_getfielddata.run(coil_fld);
-    }
-    catch (...)
-    {
-       
-    }
-     
-    GetMeshNodesAlgo algo_getfieldnodes;
-    DenseMatrixHandle fieldnodes;
-    try
-    {
-     algo_getfieldnodes.run(coil_fld,fieldnodes);
-    }
-    catch (...)
-    {
-     THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from  ");
+      THROW_ALGORITHM_PROCESSING_ERROR("Internal error: coil field ."); 
     }
     
-    DenseMatrixHandle magnetic_dipoles(boost::make_shared<DenseMatrix>(fielddata->nrows(),3));
-    
-    /// subtract the mean from the coil positions to move them accourding to GUI table entries
-    double mean_loc_x=0,mean_loc_y=0,mean_loc_z=0; 
-    for(int j=0; j<fieldnodes->nrows(); j++)
-    {
-     mean_loc_x+=(*fieldnodes)(j,0);
-     mean_loc_y+=(*fieldnodes)(j,1);
-     mean_loc_z+=(*fieldnodes)(j,2);
-    }
-    mean_loc_x/=fieldnodes->nrows();
-    mean_loc_y/=fieldnodes->nrows();
-    mean_loc_z/=fieldnodes->nrows();
-    
-    for(int j=0; j<fieldnodes->nrows(); j++)
-    {
-     (*fieldnodes)(j,0)-=mean_loc_x;
-     (*fieldnodes)(j,1)-=mean_loc_y;
-     (*fieldnodes)(j,2)-=mean_loc_z;
-    }
-    
-    /// 2) create normals and rotate if needed
-    if (coil_nx.size()-1>=i && coil_ny.size()-1>=i && coil_nz.size()-1>=i && coil_angle_rotation.size()-1>=i)
-    {
-     double angle = coil_angle_rotation[i];
-     DenseMatrixHandle rotation_matrix,rotation_matrix1,rotation_matrix2;
-     // 2.1) create rotation matrices
-     std::vector<double> coil_vector;
-     coil_vector.push_back(coil_nx[i]);
-     coil_vector.push_back(coil_ny[i]);
-     coil_vector.push_back(coil_nz[i]);
-
-     rotation_matrix1 = make_rotation_matrix(angle, coil_vector);
-
-     if (angle!=0) /// test it !
+    FieldInformation fi(coil_fld);
+    if(fi.is_pointcloudmesh()) 
+    {    
+     GetFieldDataAlgo algo_getfielddata;
+     DenseMatrixHandle fielddata;
+     try
      {
-      std::vector<double> axis;
-      axis.push_back(coil_nx[i]);
-      axis.push_back(coil_ny[i]);
-      axis.push_back(coil_nz[i]);
-      rotation_matrix2 = make_rotation_matrix_around_axis(angle, axis);
-      rotation_matrix = boost::make_shared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
-     }  
+      fielddata  = algo_getfielddata.run(coil_fld);
+     }
+     catch (...)
+     {  
+     }
      
-    /// 2.2) apply rotation and move points
-    for(int j=0; j<fieldnodes->nrows(); j++)
-    {
-     if(coil_x.size()-1>=i && coil_y.size()-1>=i && coil_z.size()-1>=i)
-     { 
-       DenseMatrixHandle pos_vec (boost::make_shared<DenseMatrix>(3,1));
+     GetMeshNodesAlgo algo_getfieldnodes;
+     DenseMatrixHandle fieldnodes;
+     try
+     {
+      algo_getfieldnodes.run(coil_fld,fieldnodes);
+     }
+     catch (...)
+     {
+      THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from  ");
+     }
+    
+     DenseMatrixHandle magnetic_dipoles(boost::make_shared<DenseMatrix>(fielddata->nrows(),3));
+    
+     /// subtract the mean from the coil positions to move them accourding to GUI table entries
+     double mean_loc_x=0,mean_loc_y=0,mean_loc_z=0; 
+     for(int j=0; j<fieldnodes->nrows(); j++)
+     {
+      mean_loc_x+=(*fieldnodes)(j,0);
+      mean_loc_y+=(*fieldnodes)(j,1);
+      mean_loc_z+=(*fieldnodes)(j,2);
+     }
+     mean_loc_x/=fieldnodes->nrows();
+     mean_loc_y/=fieldnodes->nrows();
+     mean_loc_z/=fieldnodes->nrows();
+    
+     for(int j=0; j<fieldnodes->nrows(); j++)
+     {
+      (*fieldnodes)(j,0)-=mean_loc_x;
+      (*fieldnodes)(j,1)-=mean_loc_y;
+      (*fieldnodes)(j,2)-=mean_loc_z;
+     }
+    
+     /// 2) create normals and rotate if needed
+     if (coil_nx.size()-1>=i && coil_ny.size()-1>=i && coil_nz.size()-1>=i && coil_angle_rotation.size()-1>=i)
+     {
+      double angle = coil_angle_rotation[i];
+      DenseMatrixHandle rotation_matrix,rotation_matrix1,rotation_matrix2;
+      // 2.1) create rotation matrices
+      std::vector<double> coil_vector;
+      coil_vector.push_back(coil_nx[i]);
+      coil_vector.push_back(coil_ny[i]);
+      coil_vector.push_back(coil_nz[i]);
+
+      rotation_matrix1 = make_rotation_matrix(angle, coil_vector);
+
+      if (angle!=0) /// test it !
+      {
+       std::vector<double> axis;
+       axis.push_back(coil_nx[i]);
+       axis.push_back(coil_ny[i]);
+       axis.push_back(coil_nz[i]);
+       rotation_matrix2 = make_rotation_matrix_around_axis(angle, axis);
+       rotation_matrix = boost::make_shared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
+      }   
+     
+      /// 2.2) apply rotation and move points
+      for(int j=0; j<fieldnodes->nrows(); j++)
+      {
+       if(coil_x.size()-1>=i && coil_y.size()-1>=i && coil_z.size()-1>=i)
+       { 
+        DenseMatrixHandle pos_vec (boost::make_shared<DenseMatrix>(3,1));
 
        (*pos_vec)(0,0)=(*fieldnodes)(j,0);
        (*pos_vec)(1,0)=(*fieldnodes)(j,1);
@@ -362,14 +370,14 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
 	 else
 	   rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix) * (*pos_vec));
 
-      (*fieldnodes)(j,0)=(*rotated_positions)(0,0)+coil_x[i];
-      (*fieldnodes)(j,1)=(*rotated_positions)(1,0)+coil_y[i];
-      (*fieldnodes)(j,2)=(*rotated_positions)(2,0)+coil_z[i];
+       (*fieldnodes)(j,0)=(*rotated_positions)(0,0)+coil_x[i];
+       (*fieldnodes)(j,1)=(*rotated_positions)(1,0)+coil_y[i];
+       (*fieldnodes)(j,2)=(*rotated_positions)(2,0)+coil_z[i];
       
-     } else
-     {
+      } else
+      {
        THROW_ALGORITHM_PROCESSING_ERROR("Internal error: definition of coil (x,y,z) seems to be empty.");  
-     }
+      }
     }
 
    /// 2.3) use normal as magnetic dipole orientation if there are no normals defined at prototyp
@@ -426,7 +434,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
       Point vec((*magnetic_dipoles)(j,0),(*magnetic_dipoles)(j,1),(*magnetic_dipoles)(j,2));
       tms_coils_field_values.push_back(vec);
     }  
-   
+   }
   }
  }
 
@@ -448,14 +456,20 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
   
 boost::tuple<DenseMatrixHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::make_tdcs_electrodes(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness) const 
 {
- DenseMatrixHandle elc_sponge_locations;
- FieldHandle electrode_field;
-
+ int nr_elc_sponge_triangles=0, num_valid_electrode_definition=0;
+ std::vector<double> field_values;
+ std::vector<int> valid_electrode_definition;
+ FieldInformation fieldinfo("TriSurfMesh", CONSTANTDATA_E, "int");
+ FieldHandle electrode_field = CreateField(fieldinfo); 
+ VMesh* tdcs_vmesh = electrode_field->vmesh(); 
+ VField* tdcs_vfld  = electrode_field->vfield();
+ DenseMatrixHandle elc_sponge_locations;   
  std::cout << "tdcs:" << elc_prototyp_map.size() << std::endl;
  
- if (elc_x.size()== elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size() && elc_coil_proto.size()==elc_prototyp_map.size())
+ if (elc_thickness.size()==elc_prototyp_map.size() && elc_x.size()==elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size() && elc_coil_proto.size()==elc_prototyp_map.size())
  {  
-  VMesh* scalp_vmesh = scalp->vmesh();  
+  VMesh* scalp_vmesh = scalp->vmesh(); 
+  valid_electrode_definition.resize(elc_prototyp_map.size());
   for (int i=0; i<elc_prototyp_map.size(); i++)
   {
    double distance=0;
@@ -488,61 +502,101 @@ boost::tuple<DenseMatrixHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::make_t
    {
     GetMeshNodesAlgo algo_getfieldnodes;
     DenseMatrixHandle fieldnodes;
-   try
-   {
-    algo_getfieldnodes.run(prototype,fieldnodes);
-   }
-   catch (...)
-   {
-    THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from assigned prototype ");
-   }
- 
-   if (fieldnodes->nrows()<=0) // put this to tms as well
-   {
-    THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from assigned prototype ");
-   }
-   
-   ///second, subtract the mean of the prototyp positions to center it in origin
-   double mean_loc_x=0,mean_loc_y=0,mean_loc_z=0; 
-   for(int j=0; j<fieldnodes->nrows(); j++)
-   {
-    mean_loc_x+=(*fieldnodes)(j,0);
-    mean_loc_y+=(*fieldnodes)(j,1);
-    mean_loc_z+=(*fieldnodes)(j,2);
-   }
-    mean_loc_x/=fieldnodes->nrows();
-    mean_loc_y/=fieldnodes->nrows();
-    mean_loc_z/=fieldnodes->nrows();
-    
-    for(int j=0; j<fieldnodes->nrows(); j++)
+    try
     {
-     (*fieldnodes)(j,0)-=mean_loc_x;
-     (*fieldnodes)(j,1)-=mean_loc_y;
-     (*fieldnodes)(j,2)-=mean_loc_z;
+     algo_getfieldnodes.run(prototype,fieldnodes);
     }
-    
-    DenseMatrixHandle rotated_positions;
-
+    catch (...)
+    {
+     THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from assigned prototype ");
+    }
+ 
+    if (fieldnodes->nrows()<=0) // put this to tms as well
+    {
+     THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from assigned prototype ");
+    }
+   
+    ///second, subtract the mean of the prototyp positions to center it in origin
+    double mean_loc_x=0,mean_loc_y=0,mean_loc_z=0; 
     for(int j=0; j<fieldnodes->nrows(); j++)
     {
-     DenseMatrixHandle pos_vec (boost::make_shared<DenseMatrix>(3,1));
+     mean_loc_x+=(*fieldnodes)(j,0);
+     mean_loc_y+=(*fieldnodes)(j,1);
+     mean_loc_z+=(*fieldnodes)(j,2);
+    }
+     mean_loc_x/=fieldnodes->nrows();
+     mean_loc_y/=fieldnodes->nrows();
+     mean_loc_z/=fieldnodes->nrows();
+    
+     for(int j=0; j<fieldnodes->nrows(); j++)
+     {
+      (*fieldnodes)(j,0)-=mean_loc_x;
+      (*fieldnodes)(j,1)-=mean_loc_y;
+      (*fieldnodes)(j,2)-=mean_loc_z;
+     }
+    
+     DenseMatrixHandle rotated_positions;
 
-     (*pos_vec)(0,0)=(*fieldnodes)(j,0);
-     (*pos_vec)(1,0)=(*fieldnodes)(j,1);
-     (*pos_vec)(2,0)=(*fieldnodes)(j,2);
+     for(int j=0; j<fieldnodes->nrows(); j++)
+     {
+      DenseMatrixHandle pos_vec (boost::make_shared<DenseMatrix>(3,1));
+
+      (*pos_vec)(0,0)=(*fieldnodes)(j,0);
+      (*pos_vec)(1,0)=(*fieldnodes)(j,1);
+      (*pos_vec)(2,0)=(*fieldnodes)(j,2);
        
-     if (angle==0)
-      rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix1) * (*pos_vec));
-	else
+      if (angle==0)
+       rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix1) * (*pos_vec));
+	 else
 	  rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix) * (*pos_vec));
 
-     (*fieldnodes)(j,0)=(*rotated_positions)(0,0)+elc_x[i];
-     (*fieldnodes)(j,1)=(*rotated_positions)(1,0)+elc_y[i];
-     (*fieldnodes)(j,2)=(*rotated_positions)(2,0)+elc_z[i];
-    }
-    
+      (*fieldnodes)(j,0)=(*rotated_positions)(0,0)+elc_x[i];
+      (*fieldnodes)(j,1)=(*rotated_positions)(1,0)+elc_y[i];
+      (*fieldnodes)(j,2)=(*rotated_positions)(2,0)+elc_z[i];
+     }
+
+     VMesh* prototype_vmesh = prototype->vmesh();   
+     Point p;
+     for (int l=0; l<fieldnodes->nrows(); l++)
+     {
+      Point p((*fieldnodes)(l,0),(*fieldnodes)(l,1),(*fieldnodes)(l,2));
+      tdcs_vmesh->add_point(p); 
+     }
+     
+     for (VMesh::Elem::index_type l=0; l<prototype_vmesh->num_elems(); l++) 
+     {
+      VMesh::Node::array_type onodes(3); 
+      prototype_vmesh->get_nodes(onodes, l);
+      onodes[0]+=nr_elc_sponge_triangles;
+      onodes[1]+=nr_elc_sponge_triangles;
+      onodes[2]+=nr_elc_sponge_triangles;
+      tdcs_vmesh->add_elem(onodes);
+      field_values.push_back(i);
+     }  
+    nr_elc_sponge_triangles+=fieldnodes->nrows();
+    valid_electrode_definition[i]=1;
+    num_valid_electrode_definition++;
    }
-   
+  
+  tdcs_vfld->resize_values();
+  tdcs_vfld->set_values(field_values);
+  elc_sponge_locations = boost::make_shared<DenseMatrix>(DenseMatrix::Zero(num_valid_electrode_definition,4));
+  int count=0;
+  for(int j=0;j<valid_electrode_definition.size();j++)
+  {
+   if(valid_electrode_definition[j]==1)
+   {
+    if(count<elc_sponge_locations->nrows())
+    {
+     (*elc_sponge_locations)(count,0)=elc_x[i];
+     (*elc_sponge_locations)(count,1)=elc_y[i];
+     (*elc_sponge_locations)(count,2)=elc_z[i];
+     (*elc_sponge_locations)(count,3)=elc_thickness[i];
+     count++;
+    }
+   }
+  }
+  
   }
  } else
  {
