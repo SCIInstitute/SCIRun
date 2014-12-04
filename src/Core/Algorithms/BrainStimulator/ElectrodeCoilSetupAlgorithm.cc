@@ -52,9 +52,6 @@
 #include <Core/Math/MiscMath.h>
 #include <iostream>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -454,13 +451,106 @@ boost::tuple<DenseMatrixHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::make_t
  DenseMatrixHandle elc_sponge_locations;
  FieldHandle electrode_field;
 
- for (int i=0; i<elc_prototyp_map.size(); i++)
- {
-  std::cout << "i:" << i << std::endl;
-  
+ std::cout << "tdcs:" << elc_prototyp_map.size() << std::endl;
  
- }
+ if (elc_x.size()== elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size() && elc_coil_proto.size()==elc_prototyp_map.size())
+ {  
+  VMesh* scalp_vmesh = scalp->vmesh();  
+  for (int i=0; i<elc_prototyp_map.size(); i++)
+  {
+   double distance=0;
+   VMesh::Node::index_type didx;
+   Point elc(elc_x[i],elc_y[i],elc_z[i]),r;
+   scalp_vmesh->synchronize(Mesh::NODE_LOCATE_E);
+   scalp_vmesh->find_closest_node(distance,r,didx,elc);  /// project GUI (x,y,z) onto scalp and ...
+   Vector norm;
+   scalp_vmesh->synchronize(Mesh::NORMALS_E);
+   scalp_vmesh->get_normal(norm,didx); /// ... get its normal
+   
+   /// move coil prototype to projected location
+   /// first, compute the transfer matrices
+   std::vector<double> axis;
+   axis.push_back(norm[0]);
+   axis.push_back(norm[1]);
+   axis.push_back(norm[2]);
+   double angle=elc_angle_rotation[i];
+   DenseMatrixHandle rotation_matrix,rotation_matrix1,rotation_matrix2;
+   rotation_matrix1 = make_rotation_matrix(angle, axis);
+   if (elc_angle_rotation[i]!=0) 
+   {
+    rotation_matrix2 = make_rotation_matrix_around_axis(angle, axis);
+    rotation_matrix = boost::make_shared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
+   }
+       
+   FieldHandle prototype = elc_coil_proto[i];
+   FieldInformation fi(prototype);
+   if(fi.is_trisurfmesh()) // put this to tms as well but for points, remark!
+   {
+    GetMeshNodesAlgo algo_getfieldnodes;
+    DenseMatrixHandle fieldnodes;
+   try
+   {
+    algo_getfieldnodes.run(prototype,fieldnodes);
+   }
+   catch (...)
+   {
+    THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from assigned prototype ");
+   }
+ 
+   if (fieldnodes->nrows()<=0) // put this to tms as well
+   {
+    THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from assigned prototype ");
+   }
+   
+   ///second, subtract the mean of the prototyp positions to center it in origin
+   double mean_loc_x=0,mean_loc_y=0,mean_loc_z=0; 
+   for(int j=0; j<fieldnodes->nrows(); j++)
+   {
+    mean_loc_x+=(*fieldnodes)(j,0);
+    mean_loc_y+=(*fieldnodes)(j,1);
+    mean_loc_z+=(*fieldnodes)(j,2);
+   }
+    mean_loc_x/=fieldnodes->nrows();
+    mean_loc_y/=fieldnodes->nrows();
+    mean_loc_z/=fieldnodes->nrows();
+    
+    for(int j=0; j<fieldnodes->nrows(); j++)
+    {
+     (*fieldnodes)(j,0)-=mean_loc_x;
+     (*fieldnodes)(j,1)-=mean_loc_y;
+     (*fieldnodes)(j,2)-=mean_loc_z;
+    }
+    
+    DenseMatrixHandle rotated_positions;
 
+    for(int j=0; j<fieldnodes->nrows(); j++)
+    {
+     DenseMatrixHandle pos_vec (boost::make_shared<DenseMatrix>(3,1));
+
+     (*pos_vec)(0,0)=(*fieldnodes)(j,0);
+     (*pos_vec)(1,0)=(*fieldnodes)(j,1);
+     (*pos_vec)(2,0)=(*fieldnodes)(j,2);
+       
+     if (angle==0)
+      rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix1) * (*pos_vec));
+	else
+	  rotated_positions = boost::make_shared<DenseMatrix>((*rotation_matrix) * (*pos_vec));
+
+     (*fieldnodes)(j,0)=(*rotated_positions)(0,0)+elc_x[i];
+     (*fieldnodes)(j,1)=(*rotated_positions)(1,0)+elc_y[i];
+     (*fieldnodes)(j,2)=(*rotated_positions)(2,0)+elc_z[i];
+    }
+    
+   }
+   
+  }
+ } else
+ {
+  std::ostringstream ostr3;
+  ostr3 << " Internal error: tDCS electrode could not be generated. " << std::endl;
+  remark(ostr3.str());	
+ }
+ 
  return boost::make_tuple(elc_sponge_locations, electrode_field);
 }
 

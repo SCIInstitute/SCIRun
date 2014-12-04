@@ -32,9 +32,19 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
+///@file ElectrodeCoilSetupAlgorithm
+///@brief The algorithm of this module deals with the complex interaction of input data and GUI functionality.
+///  
+///
+///@author
+/// Moritz Dannhauer
+///
+///@details
+/// In the first execution all relevant input data are send to and represented by the GUI. After further GUI user input 
+/// the validity is evaluated with respect of the data provided at the input ports. Validity remarks are provided 
+/// in the info box depicted in blue color whereas data expectation violations halt the module and throw a red error box.
+/// For a single valid table row, the module generates a tDCS electrode or TMS coil using specific functions.
+/// If only TMS coils are specified the first output of the module can be expected to contain no data. 
 
 namespace SCIRun {
 namespace Core {
