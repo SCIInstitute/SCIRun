@@ -47,15 +47,26 @@ public:
     QWidget* parent = 0);
   
   
-  private Q_SLOTS:
+private Q_SLOTS:
   void pull();
   void push();
   void validateCell(int row, int col);
+  void pushComboBoxChange(int index);
+
+  void pushTable();
+  void updateStimTypeColumn();
+  void updatePrototypeColumnValues(int index);
+  void togglePrototypeColumnReadOnly(int state);
+  void toggleThicknessColumnReadOnly(int state);
+  void updateThicknessColumnValues(double value);
+
 private:
-  std::vector<QWidget*> InputPortsVector;
-  std::vector<QWidget*> StimTypeVector;  
-  std::vector<int> saved_InputPortsVector;
-  std::vector<int> saved_StimTypeVector;
+  bool comboBoxesSetup_;
+  bool pushTableFlag_;
+  std::vector<QWidget*> inputPortsVector_;
+  std::vector<QWidget*> stimTypeVector_;  
+  std::vector<int> savedInputPortsVector_;
+  std::vector<int> savedStimTypeVector_;
   void initialize_comboboxes(int i, std::string& tmpstr);
   std::vector<Core::Algorithms::Variable> validate_numerical_input(int i);
   std::vector<Core::Algorithms::Variable> saved_all_elc_values;
