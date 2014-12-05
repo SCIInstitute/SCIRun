@@ -71,48 +71,53 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
 	SetFieldDataAlgo set_algo_; 
   
   const bool preserve_scalar = get(Parameters::PreserveScalar).toBool();
-	if( output_matrix )
-    {
+	output_field = CreateField(fi); 
+
+	if( input_matrix )
+	{
       DenseMatrixHandle matrix_output_handle;
-      if(!(get_algo_.run(input_field))) 
-			{
+      //if(!(get_algo_.run(input_field))) 
+			//{
 					matrix_output_handle = get_algo_.run(input_field); 
-					return false;
-			}
+		/*	}
 			else
 			{
-					output_matrix = matrix_output_handle;
-					return true; 
-			}
+					output_matrix = matrix_output_handle; 
+		 }*/	
 	}
 
     // Set the data.
-    if( output_field )
-    {
+	//if( output_field )
+  
       FieldHandle field_output_handle;
 
-      if (input_matrix)
-      {
+			if (input_matrix)
+			{
 					if (preserve_scalar) 
-						{
-								//set_algo_.set_option("scalardatatype",field_input_handle->vfield()->get_data_type());
-								//set_algo_.set_option(Parameters::KeepType, fi.get_data_type());
-								set_algo_.set_option(set_algo_.keepTypeCheckBox, fi.get_data_type()); 
-						}
-        if(!(set_algo_.run(input_field, input_matrix))) return false;
-
-				CopyProperties(*input_field, *output_field);
-      }
-      else 
-      {
-        warning("No input matrix passing the field through");
-        output_field = input_field;
-      }	
-
+					{
+							set_algo_.set_option(set_algo_.keepTypeCheckBox, fi.get_data_type()); 
+					}
+					//if(!(set_algo_.run(input_field, input_matrix))) 
+					size_type numVal = 0; 
+					if( set_algo_.verify_input_data(input_field, input_matrix, numVal, fi))
+					{
+							output_field = set_algo_.run(input_field, input_matrix);
+					}
+					else
+					{
+							CopyProperties(*input_field, *output_field);
+					}
+			}
+			else 
+			{
+					warning("No input matrix passing the field through");
+					output_field = input_field;
+			}	
+			
       AlgorithmOutput output;
 			output[Variables::OutputField] = output_field;
-    }
-  return true;
+ 
+		return true;
 }
 
 bool

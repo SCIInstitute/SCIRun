@@ -152,7 +152,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
 		ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
-		ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEtnries, SwapFieldDataWithMatrixEntriesDialog)
+		ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
   ;
 }
 

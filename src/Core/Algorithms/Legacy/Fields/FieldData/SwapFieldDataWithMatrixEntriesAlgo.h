@@ -54,7 +54,6 @@ class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
 {
   public:
     SwapFieldDataWithMatrixEntriesAlgo();
-		//static AlgorithmInputName SwapMatrix; 
   
     bool runImpl(FieldHandle input_field, 
 				Datatypes::DenseMatrixHandle input_matrix, 
