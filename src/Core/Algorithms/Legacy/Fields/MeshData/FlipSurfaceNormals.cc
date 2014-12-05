@@ -70,9 +70,7 @@ bool FlipSurfaceNormalsAlgo::run(FieldHandle& input, FieldHandle& output)  const
 		error("This algorithm only works on surface mesh");
 		return false;
 	}
-	
-	std::cout << "Hello1!" << std::endl;
-	
+		
 	//FieldHandle output = input;
 	
 	//output.detach();
@@ -87,14 +85,9 @@ bool FlipSurfaceNormalsAlgo::run(FieldHandle& input, FieldHandle& output)  const
 	unsigned int cnt = 0;
 	mesh->size(isize);
 	
-	
-	unsigned int k = 0;
-	unsigned int z = isize;
-	
 	for(VMesh::Face::size_type i = 0; i < isize; ++i)
 	{
 		faceindex = i;
-		k = i;
 		mesh->get_nodes(inodes, faceindex);
 		numnodes = inodes.size();
 		// Without this, when the algorithm is run there is an error saying that the vector location can not be accessed.
@@ -115,7 +108,6 @@ bool FlipSurfaceNormalsAlgo::run(FieldHandle& input, FieldHandle& output)  const
 			update_progress(i/isize);
 			cnt = 0;
 		}
-		std::cout << "Progress: " << k/z << std::endl;
 	}
   
 	return true;
