@@ -75,21 +75,9 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
 
 	if( input_matrix )
 	{
-      DenseMatrixHandle matrix_output_handle;
-      //if(!(get_algo_.run(input_field))) 
-			//{
-					matrix_output_handle = get_algo_.run(input_field); 
-		/*	}
-			else
-			{
-					output_matrix = matrix_output_handle; 
-		 }*/	
+			output_matrix = get_algo_.run(input_field); 
 	}
-
-    // Set the data.
-	//if( output_field )
-  
-      FieldHandle field_output_handle;
+		FieldHandle field_output_handle;
 
 			if (input_matrix)
 			{
@@ -97,7 +85,6 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
 					{
 							set_algo_.set_option(set_algo_.keepTypeCheckBox, fi.get_data_type()); 
 					}
-					//if(!(set_algo_.run(input_field, input_matrix))) 
 					size_type numVal = 0; 
 					if( set_algo_.verify_input_data(input_field, input_matrix, numVal, fi))
 					{
@@ -105,6 +92,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
 					}
 					else
 					{
+							error("Matrix dimensions do not match any of the fields dimensions");
 							CopyProperties(*input_field, *output_field);
 					}
 			}
