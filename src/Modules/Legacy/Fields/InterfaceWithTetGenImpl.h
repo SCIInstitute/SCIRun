@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,9 +37,36 @@ namespace SCIRun {
     namespace Fields {
 
       //TODO: convert to proper algo class
+      struct SCISHARE InterfaceWithTetGenInput
+      {
+        InterfaceWithTetGenInput();
+        bool piecewiseFlag_;            // -p
+        bool assignFlag_;               // -A
+        bool setNonzeroAttributeFlag_;  // -AA
+        bool suppressSplitFlag_;        // -Y
+        bool setSplitFlag_;             // -YY
+        bool qualityFlag_;              // -q
+        bool setRatioFlag_;             // -q
+        bool volConstraintFlag_;        // -a
+        bool setMaxVolConstraintFlag_;  // -a
+        double minRadius_;
+        double maxVolConstraint_;
+        bool detectIntersectionsFlag_;  // -d
+        std::string moreSwitches_;          // additional flags
+      };
+
+      namespace detail
+      {
+        class InterfaceWithTetGenImplImpl;
+      }
+
       class SCISHARE InterfaceWithTetGenImpl
       {
-
+      public:
+        InterfaceWithTetGenImpl(Dataflow::Networks::Module* mod, const InterfaceWithTetGenInput& input);
+      private:
+        boost::shared_ptr<detail::InterfaceWithTetGenImplImpl> impl_;
+        InterfaceWithTetGenInput inputFlags_;
       };
     }
   }

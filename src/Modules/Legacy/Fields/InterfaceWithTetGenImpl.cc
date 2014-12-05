@@ -68,20 +68,6 @@ class InterfaceWithTetGenImplImpl //: public AlgorithmBase
 
     FieldHandle runImpl(const std::deque<FieldHandle>& surfaces, FieldHandle points, FieldHandle region_attribs) const;
 
-    bool piecewiseFlag_;            // -p
-    bool assignFlag_;               // -A
-    bool setNonzeroAttributeFlag_;  // -AA
-    bool suppressSplitFlag_;        // -Y
-    bool setSplitFlag_;             // -YY
-    bool qualityFlag_;              // -q
-    bool setRatioFlag_;             // -q
-    bool volConstraintFlag_;        // -a
-    bool setMaxVolConstraintFlag_;  // -a
-    double minRadius_;
-    double maxVolConstraint_;
-    bool detectIntersectionsFlag_;  // -d
-    std::string moreSwitches_;          // additional flags
-
   private:
     // translate the ui variables into the string with options
     // that TetGen uses
@@ -89,10 +75,11 @@ class InterfaceWithTetGenImplImpl //: public AlgorithmBase
     Module* module_;
     static Mutex TetGenMutex;
 };
+}
 
 Mutex detail::InterfaceWithTetGenImplImpl::TetGenMutex("Protect TetGen from running in parallel");
 
-detail::InterfaceWithTetGenImplImpl::InterfaceWithTetGenImplImpl(Module* module) :
+InterfaceWithTetGenInput::InterfaceWithTetGenInput() :
   piecewiseFlag_(true),
   assignFlag_(true),
   setNonzeroAttributeFlag_(false),
@@ -106,12 +93,12 @@ detail::InterfaceWithTetGenImplImpl::InterfaceWithTetGenImplImpl(Module* module)
   minRadius_(2.0),
   maxVolConstraint_(0.1),
   detectIntersectionsFlag_(false),
-  moreSwitches_(""),
-  module_(module)
+  moreSwitches_("")
 {
 }
 
-}
+detail::InterfaceWithTetGenImplImpl::InterfaceWithTetGenImplImpl(Module* module) : module_(module)
+{}
 
 std::string detail::InterfaceWithTetGenImplImpl::fillCommandOptions(bool addPoints) const
 {
