@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -56,5 +56,21 @@ void InterfaceWithTetGen::setStateDefaults()
 
 void InterfaceWithTetGen::execute()
 {
+  auto first_surface = getRequiredInput(Main);
+  auto rest = getOptionalDynamicInputs(Regions);
+  std::deque<FieldHandle> surfaces(rest.begin(), rest.end());
+  surfaces.push_front(first_surface);
+
+  auto points = getOptionalInput(Points);
+  auto region_attribs = getOptionalInput(Region_Attribs);
+
+
+
+
+
+
+
+
+
   //TODO
 }
