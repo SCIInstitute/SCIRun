@@ -90,6 +90,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 #include <Modules/Basic/AsyncPortTestModule.h>
 #include <Modules/Basic/NeedToExecuteTester.h>
+#include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
+#include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 //#include <Modules/Fields/@ModuleName@.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -155,6 +157,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
   addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
+  //SCIRun::Dataflow::Networks::ModuleLookupInfo arg1 = "FlipSurfaceNormals";
+  addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
+  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
 
 
