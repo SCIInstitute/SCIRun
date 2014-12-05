@@ -52,7 +52,7 @@ ALGORITHM_PARAMETER_DEF(Fields, PreserveScalar)
 
 SwapFieldDataWithMatrixEntriesAlgo::SwapFieldDataWithMatrixEntriesAlgo()
 {
-  addParameter(PreserveScalar, false);
+  addParameter(Parameters::PreserveScalar, false);
 }
 
 bool
@@ -92,7 +92,7 @@ SwapFieldDataWithMatrixEntriesAlgo::runImpl(FieldHandle input_field, DenseMatrix
 					}
 					else
 					{
-							error("Matrix dimensions do not match any of the fields dimensions");
+							THROW_ALGORITHM_INPUT_ERROR("Matrix dimensions do not match any of the fields dimensions");
 							CopyProperties(*input_field, *output_field);
 					}
 			}
