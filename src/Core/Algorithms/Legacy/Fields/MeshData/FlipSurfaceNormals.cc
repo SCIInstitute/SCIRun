@@ -71,10 +71,7 @@ bool FlipSurfaceNormalsAlgo::run(FieldHandle& input, FieldHandle& output)  const
 		return false;
 	}
 		
-	//FieldHandle output = input;
 	
-	//output.detach();
-	//output->mesh_detach();
 	VMesh* mesh = output->vmesh();
 	
 	VMesh::Node::array_type inodes;
@@ -90,13 +87,10 @@ bool FlipSurfaceNormalsAlgo::run(FieldHandle& input, FieldHandle& output)  const
 		faceindex = i;
 		mesh->get_nodes(inodes, faceindex);
 		numnodes = inodes.size();
-		// Without this, when the algorithm is run there is an error saying that the vector location can not be accessed.
-		// This just initializes the cells in the vector. Probably a better/more effective way to do this.
-		for(VMesh::Face::size_type p = 0; p < numnodes; p++)
-			onodes.push_back(0);
+		
 		for (VMesh::Face::size_type p = 0; p < numnodes; p++) 
 		{
-			onodes[numnodes-1-p] = inodes[p];
+			onodes.push_back(inodes[numnodes-1-p]);
 		}
 		// Set the reordered nodes back into the mesh through vmesh functions
 		mesh->set_nodes(onodes, faceindex);
