@@ -35,9 +35,12 @@
 #include <Modules/Legacy/Fields/InterfaceWithTetGenImpl.h>
 
 #include <Core/Thread/Mutex.h>
-
+#include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Dataflow/Network/Module.h>
 
 #define TETLIBRARY   // Required definition for use of tetgen library
 #include <tetgen/tetgen.h>
@@ -48,12 +51,12 @@
 #include <sci_debug.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Geometry;
 
 namespace detail {
-
-Mutex TetGenMutex("Protect TetGen from running in parallel");
 
 /// @class InterfaceWithTetGen
 /// @brief This module interfaces with TetGen.
@@ -61,9 +64,9 @@ Mutex TetGenMutex("Protect TetGen from running in parallel");
 class InterfaceWithTetGenImplImpl //: public AlgorithmBase
 {
   public:
-    InterfaceWithTetGenImplImpl();
+    explicit InterfaceWithTetGenImplImpl(Module* mod);
 
-    FieldHandle runImpl() const;
+    FieldHandle runImpl(const std::deque<FieldHandle>& surfaces, FieldHandle points, FieldHandle region_attribs) const;
 
     bool piecewiseFlag_;            // -p
     bool assignFlag_;               // -A
@@ -83,10 +86,13 @@ class InterfaceWithTetGenImplImpl //: public AlgorithmBase
     // translate the ui variables into the string with options
     // that TetGen uses
     std::string fillCommandOptions(bool addPoints) const;
-
+    Module* module_;
+    static Mutex TetGenMutex;
 };
 
-detail::InterfaceWithTetGenImplImpl::InterfaceWithTetGenImplImpl() :
+Mutex detail::InterfaceWithTetGenImplImpl::TetGenMutex("Protect TetGen from running in parallel");
+
+detail::InterfaceWithTetGenImplImpl::InterfaceWithTetGenImplImpl(Module* module) :
   piecewiseFlag_(true),
   assignFlag_(true),
   setNonzeroAttributeFlag_(false),
@@ -100,7 +106,8 @@ detail::InterfaceWithTetGenImplImpl::InterfaceWithTetGenImplImpl() :
   minRadius_(2.0),
   maxVolConstraint_(0.1),
   detectIntersectionsFlag_(false),
-  moreSwitches_("")
+  moreSwitches_(""),
+  module_(module)
 {
 }
 
@@ -173,25 +180,10 @@ std::string detail::InterfaceWithTetGenImplImpl::fillCommandOptions(bool addPoin
 }
 
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-void
-InterfaceWithTetGen::execute()
+FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldHandle>& surfaces,
+  FieldHandle points, FieldHandle region_attribs) const
 {
-  FieldHandle first_surface;
-  std::vector<FieldHandle> surfaces, tsurfaces;
-
-  get_input_handle("Main", first_surface, true);
-  surfaces.push_back(first_surface);
-
-  get_dynamic_input_handles("Regions", tsurfaces, false);
-  for (size_t j=0; j< tsurfaces.size(); j++) surfaces.push_back(tsurfaces[j]);
-
-  FieldHandle points;
-  get_input_handle("Points", points, false);
-
-  FieldHandle region_attribs;
-  get_input_handle( "Region Attribs", region_attribs, false);
-
+#if 0
   if (inputs_changed_ || piecewiseFlag_.changed() ||
       assignFlag_.changed() || setNonzeroAttributeFlag_.changed() ||
       suppressSplitFlag_.changed() || setSplitFlag_.changed() ||
@@ -200,14 +192,16 @@ InterfaceWithTetGen::execute()
       minRadius_.changed() || maxVolConstraint_.changed() ||
       detectIntersectionsFlag_.changed() || moreSwitches_.changed() ||
       !oport_cached("TetVol"))
-  {
+  #endif
+  //{
     // Tell SCIRun we are actually doing some work
-    update_state(Executing);
+//    update_state(Executing);
 
+  //TODO DAN: check for proper memory management with these classes.
     tetgenio in, addin, out;
 
     bool add_points = false;
-    if (points.get_rep())
+    if (points)
     {
       VMesh* mesh = points->vmesh();
       VMesh::Node::size_type num_nodes = mesh->num_nodes();
@@ -223,10 +217,10 @@ InterfaceWithTetGen::execute()
         addin.pointlist[idx * 3 + 2] = p.z();
       }
       add_points = true;
-      remark("Added extra interior points from Points port.");
+      module_->remark("Added extra interior points from Points port.");
     }
 
-    if (region_attribs.get_rep())
+    if (region_attribs)
     {
       VMesh* mesh = region_attribs->vmesh();
       VField* field = region_attribs->vfield();
@@ -324,14 +318,13 @@ InterfaceWithTetGen::execute()
       marker *= 2;
     }
 
-    update_progress(.2);
+    module_->getUpdaterFunc()(.2);
     // Save files for later debugging.
     // std::string filename = std::string(sci_getenv("SCIRUN_TMP_DIR")) + "/tgIN";
     // in.save_nodes((char*)filename.c_str());
     // in.save_poly((char*)filename.c_str());
 
-    std::string cmmd_ln;
-    fillCommandOptions(cmmd_ln, add_points);
+    std::string cmmd_ln = fillCommandOptions(add_points);
   #if DEBUG
     std::cerr << "\nTetgen command line: " << cmmd_ln << std::endl;
   #endif
@@ -344,20 +337,20 @@ InterfaceWithTetGen::execute()
 
     // Make sure only one thread accesses TetGen
     // It is not thread safe :)
-    TetGenMutex.lock();
-    try
     {
-      tetrahedralize((char*)cmmd_ln.c_str(), &in, &out, addtgio);
+      Guard g(TetGenMutex.get());
+      try
+      {
+        tetrahedralize((char*)cmmd_ln.c_str(), &in, &out, addtgio);
+      }
+      catch(...)
+      {
+        module_->error("TetGen failed to generate a mesh");
+        return nullptr;
+      }
     }
-    catch(...)
-    {
-      TetGenMutex.unlock();
-      error("TetGen failed to generate a mesh");
-      return;
-    }
-    TetGenMutex.unlock();
 
-    update_progress(.9);
+    module_->getUpdaterFunc()(.9);
     FieldInformation fi(TETVOLMESH_E,CONSTANTDATA_E,DOUBLE_E);
     FieldHandle tetvol_out = CreateField(fi);
     // Convert to a SCIRun TetVol.
@@ -382,8 +375,8 @@ InterfaceWithTetGen::execute()
       if (nodes[0] >= numnodes ||nodes[1] >= numnodes ||
           nodes[2] >= numnodes ||nodes[3] >= numnodes )
       {
-        error("TetGen failed to produce a valid tetrahedralization");
-        return;
+        module_->error("TetGen failed to produce a valid tetrahedralization");
+        return nullptr;
       }
       mesh->add_elem(nodes);
     }
@@ -401,14 +394,6 @@ InterfaceWithTetGen::execute()
       }
     }
 
-    update_progress(1.0);
-
-    // Send the output to SCIRun
-    send_output_handle("TetVol", tetvol_out);
-  }
+    module_->getUpdaterFunc()(1.0);
+    return tetvol_out;
 }
-
-
-} // end namespace SCIRun
-
-#endif
