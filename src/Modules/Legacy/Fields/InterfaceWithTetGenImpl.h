@@ -53,6 +53,8 @@ namespace SCIRun {
         double maxVolConstraint_;
         bool detectIntersectionsFlag_;  // -d
         std::string moreSwitches_;          // additional flags
+
+        std::string fillCommandOptions(bool addPoints) const;
       };
 
       namespace detail
@@ -64,6 +66,7 @@ namespace SCIRun {
       {
       public:
         InterfaceWithTetGenImpl(Dataflow::Networks::Module* mod, const InterfaceWithTetGenInput& input);
+        FieldHandle runImpl(const std::deque<FieldHandle>& surfaces, FieldHandle points, FieldHandle region_attribs) const;
       private:
         boost::shared_ptr<detail::InterfaceWithTetGenImplImpl> impl_;
         InterfaceWithTetGenInput inputFlags_;

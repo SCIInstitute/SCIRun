@@ -56,6 +56,9 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Geometry;
 
+namespace SCIRun {
+namespace Modules {
+namespace Fields {
 namespace detail {
 
 /// @class InterfaceWithTetGen
@@ -66,41 +69,23 @@ class InterfaceWithTetGenImplImpl //: public AlgorithmBase
   public:
     explicit InterfaceWithTetGenImplImpl(Module* mod);
 
-    FieldHandle runImpl(const std::deque<FieldHandle>& surfaces, FieldHandle points, FieldHandle region_attribs) const;
+    FieldHandle runImpl(const std::deque<FieldHandle>& surfaces,
+      FieldHandle points, FieldHandle region_attribs, const InterfaceWithTetGenInput& input) const;
 
   private:
     // translate the ui variables into the string with options
     // that TetGen uses
-    std::string fillCommandOptions(bool addPoints) const;
     Module* module_;
     static Mutex TetGenMutex;
 };
-}
 
 Mutex detail::InterfaceWithTetGenImplImpl::TetGenMutex("Protect TetGen from running in parallel");
-
-InterfaceWithTetGenInput::InterfaceWithTetGenInput() :
-  piecewiseFlag_(true),
-  assignFlag_(true),
-  setNonzeroAttributeFlag_(false),
-  suppressSplitFlag_(true),
-  setSplitFlag_(false),
-  qualityFlag_(true),
-  setRatioFlag_(false),
-  volConstraintFlag_(false),
-  setMaxVolConstraintFlag_(false),
-  // see TetGen documentation for "-q" switch: default is 2.0
-  minRadius_(2.0),
-  maxVolConstraint_(0.1),
-  detectIntersectionsFlag_(false),
-  moreSwitches_("")
-{
-}
+}}}}
 
 detail::InterfaceWithTetGenImplImpl::InterfaceWithTetGenImplImpl(Module* module) : module_(module)
 {}
 
-std::string detail::InterfaceWithTetGenImplImpl::fillCommandOptions(bool addPoints) const
+std::string InterfaceWithTetGenInput::fillCommandOptions(bool addPoints) const
 {
   // Collect the options in this output string stream
   std::ostringstream oss;
@@ -168,7 +153,7 @@ std::string detail::InterfaceWithTetGenImplImpl::fillCommandOptions(bool addPoin
 
 
 FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldHandle>& surfaces,
-  FieldHandle points, FieldHandle region_attribs) const
+  FieldHandle points, FieldHandle region_attribs, const InterfaceWithTetGenInput& input) const
 {
 #if 0
   if (inputs_changed_ || piecewiseFlag_.changed() ||
@@ -311,7 +296,7 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
     // in.save_nodes((char*)filename.c_str());
     // in.save_poly((char*)filename.c_str());
 
-    std::string cmmd_ln = fillCommandOptions(add_points);
+    std::string cmmd_ln = input.fillCommandOptions(add_points);
   #if DEBUG
     std::cerr << "\nTetgen command line: " << cmmd_ln << std::endl;
   #endif
@@ -383,4 +368,32 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
 
     module_->getUpdaterFunc()(1.0);
     return tetvol_out;
+}
+
+InterfaceWithTetGenInput::InterfaceWithTetGenInput() :
+piecewiseFlag_(true),
+assignFlag_(true),
+setNonzeroAttributeFlag_(false),
+suppressSplitFlag_(true),
+setSplitFlag_(false),
+qualityFlag_(true),
+setRatioFlag_(false),
+volConstraintFlag_(false),
+setMaxVolConstraintFlag_(false),
+// see TetGen documentation for "-q" switch: default is 2.0
+minRadius_(2.0),
+maxVolConstraint_(0.1),
+detectIntersectionsFlag_(false),
+moreSwitches_("")
+{
+}
+
+InterfaceWithTetGenImpl::InterfaceWithTetGenImpl(Dataflow::Networks::Module* module, const InterfaceWithTetGenInput& input) :
+  impl_(new detail::InterfaceWithTetGenImplImpl(module)),
+  inputFlags_(input)
+{}
+
+FieldHandle InterfaceWithTetGenImpl::runImpl(const std::deque<FieldHandle>& surfaces, FieldHandle points, FieldHandle region_attribs) const
+{
+  return impl_->runImpl(surfaces, points, region_attribs, inputFlags_);
 }
