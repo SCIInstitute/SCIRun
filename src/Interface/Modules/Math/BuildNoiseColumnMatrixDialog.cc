@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,48 +26,49 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Interface/Modules/Math/BuildNoiseColumnMatrixDialog.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Core/Algorithms/Math/BuildNoiseColumnMatrix.h>
+#include <QtGui>
 
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/MatrixFwd.h>
-//#include <Core/Datatypes/Legacy/Matrix/ColumnMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
-
-
-
-
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
 
 
-BuildNoiseColumnMatrix::BuildNoiseColumnMatrix() : Module(ModuleLookupInfo("BuildNoiseColumnMatrix","Math","SCIRun"))
+BuildNoiseColumnMatrixDialog::BuildNoiseColumnMatrixDialog(const std::string& name, ModuleStateHandle state,
+	QWidget* parent/* = 0*/)
+	: ModuleDialogGeneric(state, parent)
 {
-	INITIALIZE_PORT(InputMatrix);
-	INITIALIZE_PORT(ResultMatrix);
-}
-
-void  BuildNoiseColumnMatrix::setStateDefaults()
-{
-	setStateDoubleFromAlgo(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio());
-}
-
-void BuildNoiseColumnMatrix::execute()
-{
-	auto input_matrix = getRequiredInput(InputMatrix);
+	setupUi(this);
+	setWindowTitle(QString::fromStdString(name));
+	fixSize();
 	
-	if(needToExecute())
-	{
-		algo().set(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio(),get_state()->getValue(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio()).toDouble());
-		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
-		sendOutputFromAlgorithm(ResultMatrix, output);
-	}
+	addDoubleSpinBoxManager(noiseSpinBox_,SCIRun::Core::Algorithms::Math::BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio());
 
-} 
+	
+	connect(noiseSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBox()));
+	connect(noiseSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSlider()));
+}
+
+void BuildNoiseColumnMatrixDialog::pull()
+{
+	pull_newVersionToReplaceOld();
+}
+
+void BuildNoiseColumnMatrixDialog::setSlider() {
+	noiseSlider_->setValue(noiseSpinBox_->value());
+}
+
+void BuildNoiseColumnMatrixDialog::setSpinBox() {
+	// Store the decimal portion of the spin box so that it's not lost when the slider value changes.
+	double temporary = noiseSpinBox_->value() - (int)noiseSpinBox_->value();
+	noiseSpinBox_->setValue(noiseSlider_->value()+temporary);
+}
+
+
 
 
 
