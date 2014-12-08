@@ -70,8 +70,6 @@ void MapFieldDataFromSourceToDestination::execute()
   {
     update_state(Executing);
 
-    auto state = get_state();
-
     setAlgoOptionFromState(Parameters::MappingMethod);
     setAlgoDoubleFromState(Parameters::DefaultValue);
     setAlgoDoubleFromState(Parameters::MaxDistance);

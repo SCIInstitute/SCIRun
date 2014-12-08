@@ -64,6 +64,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 #include <Modules/Legacy/Fields/FairMesh.h>
+#include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
+#include <Modules/Legacy/Fields/BuildMappingMatrix.h>
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
@@ -76,6 +78,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
+#include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -149,6 +152,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   //addModuleDesc<ConvertFieldBasis>("NOT WORKING YET--Real ported module", "...");
   //addModuleDesc<ScaleFieldMeshAndData>("NOT WORKING YET--Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
+  addModuleDesc<ApplyFEMCurrentSource>("Real ported module", "...");
+  addModuleDesc<InterfaceWithTetGen>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToField>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
@@ -157,6 +162,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
   addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
+  addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
 
 

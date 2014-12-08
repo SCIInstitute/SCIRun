@@ -27,566 +27,551 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Thread/Parallel.h>
+#include <Core/Thread/Barrier.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Geometry;
 
-const AlgorithmParameterName BuildMappingMatrixAlgo::MaxDistance("MaxDistance");
-const AlgorithmParameterName BuildMappingMatrixAlgo::Method("Method");
+const AlgorithmOutputName BuildMappingMatrixAlgo::Mapping("Mapping");
 
 BuildMappingMatrixAlgo::BuildMappingMatrixAlgo()
 {
-  addParameter(MaxDistance, -1.0);
-  add_option(Method, "interpolateddata","interpolateddata|closestdata|singledestination");
+  addParameter(Parameters::MaxDistance, -1.0);
+  add_option(Parameters::MappingMethod, "interpolateddata","interpolateddata|closestdata|singledestination");
+}
+
+namespace detail
+{
+
+  //------------------------------------------------------------
+  // Algorithm - each destination has its closest source
+
+  class BuildMappingMatrixPAlgoBase
+  {
+  public:
+    BuildMappingMatrixPAlgoBase(const std::string& barrierName, int nproc) : 
+      sfield_(0), dfield_(0), smesh_(0), dmesh_(0), rr_(0), cc_(0), vv_(0),
+      maxdist_(0), algo_(0), nproc_(nproc),
+      barrier_(barrierName, nproc) {}
+    VField* sfield_;
+    VField* dfield_;
+    VMesh*  smesh_;
+    VMesh*  dmesh_;
+
+    index_type* rr_;
+    index_type* cc_;
+    double* vv_;
+
+    double  maxdist_;
+    const AlgorithmBase* algo_;
+
+  protected:
+    int nproc_;
+    Barrier  barrier_;
+  };
+
+  class BuildMappingMatrixClosestDataPAlgo : public BuildMappingMatrixPAlgoBase
+  {
+  public:
+    BuildMappingMatrixClosestDataPAlgo(int nproc) :
+        BuildMappingMatrixPAlgoBase("BuildMappingMatrixClosestDataPAlgo Barrier", nproc) {}
+
+        void parallel(int proc);
+  };
+
+  void BuildMappingMatrixClosestDataPAlgo::parallel(int proc)
+  {
+    // Determine which ones to run
+    VField::size_type num_values = dfield_->num_values();
+    VField::size_type localsize = num_values/nproc_;
+    VField::index_type start = localsize*proc;
+    VField::index_type end = localsize*(proc+1);
+    if (proc == nproc_-1) end = num_values;
+
+    barrier_.wait();
+
+    int cnt = 0;
+
+    if (dfield_->basis_order() == 0 && sfield_->basis_order() == 0)
+    {
+      Point p, r;
+      VMesh::coords_type coords;
+      VMesh::Elem::index_type didx;
+
+      for (VMesh::Elem::index_type idx=start; idx<end;idx++)
+      {
+        dmesh_->get_center(p,idx);
+        double dist;
+        if(smesh_->find_closest_elem(dist,r,coords,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+          }
+          else cc_[idx] = -1;
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+    else if (dfield_->basis_order() == 1 && sfield_->basis_order() == 0)
+    {
+      Point p, r;
+      VMesh::coords_type coords;
+      VMesh::Elem::index_type didx;
+      for (VMesh::Node::index_type idx=start; idx<end;idx++)
+      {
+        dmesh_->get_center(p,idx);
+        double dist;
+        if(smesh_->find_closest_elem(dist,r,coords,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+          }
+          else cc_[idx] = -1;
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+    else if (dfield_->basis_order() == 0 && sfield_->basis_order() == 1)
+    {
+      Point p, r;
+      VMesh::Node::index_type didx;
+      for (VMesh::Elem::index_type idx=start; idx<end;idx++)
+      {
+        dmesh_->get_center(p,idx);
+        double dist;
+        if(smesh_->find_closest_node(dist,r,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+          }
+          else cc_[idx] = -1;
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+    else if (dfield_->basis_order() == 1 && sfield_->basis_order() == 1)
+    {
+      Point p, r;
+      VMesh::Node::index_type didx;
+      for (VMesh::Node::index_type idx=start; idx<end;idx++)
+      {
+        dmesh_->get_center(p,idx);
+        double dist;
+        if(smesh_->find_closest_node(dist,r,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+          }
+          else cc_[idx] = -1;
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+
+    barrier_.wait();
+
+    if (proc == 0)
+    {
+      VField::size_type num_dvalues = dfield_->num_values();
+
+      rr_[0] = 0;
+      VMesh::index_type k = 0;
+      for (VMesh::index_type idx=0; idx<num_dvalues;idx++)
+      {
+        if (cc_[idx] >= 0)
+        {
+          cc_[k] = cc_[idx];
+          vv_[k] = 1.0;
+          k++;
+        }
+        rr_[idx+1] = k;
+      }
+    }
+  }
+
+
+
+  //------------------------------------------------------------
+  // Algorithm - each source will map to one destination
+
+  class BuildMappingMatrixSingleDestinationPAlgo : public BuildMappingMatrixPAlgoBase
+  {
+  public:
+    explicit BuildMappingMatrixSingleDestinationPAlgo(int nproc) :
+        BuildMappingMatrixPAlgoBase("BuildMappingMatrixSingleDestinationPAlgo Barrier", nproc) {}
+
+        void parallel(int proc);
+
+        std::vector<index_type> tcc_;
+  };
+
+  void
+    BuildMappingMatrixSingleDestinationPAlgo::parallel(int proc)
+  {
+    // Determine which ones to run
+    VField::size_type num_values = sfield_->num_values();
+    VField::size_type localsize = num_values/nproc_;
+    VField::index_type start = localsize*proc;
+    VField::index_type end = localsize*(proc+1);
+    if (proc == nproc_-1) end = num_values;
+
+    if (proc == 0)
+    {
+      tcc_.resize(dfield_->num_values());
+    }
+
+    barrier_.wait();
+
+    int cnt = 0;
+
+    if (sfield_->basis_order() == 0 && dfield_->basis_order() == 0)
+    {
+      Point p, r;
+      VMesh::coords_type coords;
+      VMesh::Elem::index_type didx;
+      for (VMesh::Elem::index_type idx=start; idx<end;idx++)
+      {
+        smesh_->get_center(p,idx);
+        double dist;
+        if(dmesh_->find_closest_elem(dist,r,coords,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+          }
+          else cc_[idx] = -1;
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+    else if (sfield_->basis_order() == 1 && dfield_->basis_order() == 0)
+    {
+      Point p, r;
+      VMesh::coords_type coords;
+      VMesh::Elem::index_type didx;
+      for (VMesh::Node::index_type idx=start; idx<end;idx++)
+      {
+        smesh_->get_center(p,idx);
+        double dist;
+        if(dmesh_->find_closest_elem(dist,r,coords,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+          }
+          else cc_[idx] = -1;
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+    else if (sfield_->basis_order() == 0 && dfield_->basis_order() == 1)
+    {
+      Point p, r;
+      VMesh::Node::index_type didx;
+      for (VMesh::Elem::index_type idx=start; idx<end;idx++)
+      {
+        smesh_->get_center(p,idx);
+        double dist;
+        if(dmesh_->find_closest_node(dist,r,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+          }
+          else cc_[idx] = -1;
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+    else if (sfield_->basis_order() == 1 && dfield_->basis_order() == 1)
+    {
+      Point p, r;
+      VMesh::Node::index_type didx;
+      for (VMesh::Node::index_type idx=start; idx<end;idx++)
+      {
+        smesh_->get_center(p,idx);
+        double dist;
+        if(dmesh_->find_closest_node(dist,r,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+          }
+          else cc_[idx] = -1;
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+
+    barrier_.wait();
+
+    if (proc == 0)
+    {
+      VField::size_type num_dvalues = dfield_->num_values();
+      for (VMesh::index_type idx=0; idx<num_dvalues;idx++)
+      {
+        tcc_[idx] = -1;
+      }
+      for (VMesh::index_type idx=0; idx<num_values;idx++)
+      {
+        tcc_[cc_[idx]] = idx;
+      }
+
+      rr_[0] = 0;
+      VMesh::index_type k = 0;
+      for (VMesh::index_type idx=0; idx<num_dvalues;idx++)
+      {
+        if (tcc_[idx] >= 0)
+        {
+          cc_[k] = tcc_[idx];
+          vv_[k] = 1.0;
+          k++;
+        }
+        rr_[idx+1] = k;
+      }
+    }
+
+  }
+
+
+  //------------------------------------------------------------
+  // Algorithm - get interpolated data
+
+
+  class BuildMappingMatrixInterpolatedDataPAlgo : public BuildMappingMatrixPAlgoBase
+  {
+  public:
+    explicit BuildMappingMatrixInterpolatedDataPAlgo(int nproc) :
+        BuildMappingMatrixPAlgoBase("BuildMappingMatrixInterpolatedDataPAlgo Barrier", nproc), e_(0) {}
+
+        void parallel(int proc);
+
+        size_type e_;
+  };
+
+  void BuildMappingMatrixInterpolatedDataPAlgo::parallel(int proc)
+  {
+    // Determine which ones to run
+    VField::size_type num_values = dfield_->num_values();
+    VField::size_type localsize = num_values/nproc_;
+    VField::index_type start = localsize*proc;
+    VField::index_type end = localsize*(proc+1);
+    if (proc == nproc_-1) end = num_values;
+
+    barrier_.wait();
+
+    int cnt = 0;
+
+    if (dfield_->basis_order() == 0 && sfield_->basis_order() == 0)
+    {
+      Point p, r;
+      VMesh::Elem::index_type didx;
+
+      for (VMesh::Elem::index_type idx=start; idx<end;idx++)
+      {
+        dmesh_->get_center(p,idx);
+
+        double dist;
+        if(smesh_->find_closest_elem(dist,r,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+            vv_[idx] = 1.0;
+          }
+          else 
+          {
+            cc_[idx] = -1;
+            vv_[idx] = 1.0;
+          }
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+    else if (dfield_->basis_order() == 1 && sfield_->basis_order() == 0)
+    {
+      Point p, r;
+      VMesh::Elem::index_type didx;
+      for (VMesh::Node::index_type idx=start; idx<end;idx++)
+      {
+        dmesh_->get_center(p,idx);
+        double dist;
+        if(smesh_->find_closest_elem(dist,r,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            cc_[idx] = didx;
+            vv_[idx] = 1.0;
+          }
+          else 
+          {
+            cc_[idx] = -1;
+            vv_[idx] = 1.0;
+          }
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+    else if (dfield_->basis_order() == 0 && sfield_->basis_order() == 1)
+    {
+      Point p, r;
+      VMesh::coords_type coords;
+      VMesh::Elem::index_type didx;
+      VMesh::ElemInterpolate interp;
+      for (VMesh::Elem::index_type idx=start; idx<end;idx++)
+      {
+        dmesh_->get_center(p,idx);
+        double dist;
+        if(smesh_->find_closest_elem(dist,r,coords,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            smesh_->get_interpolate_weights(coords,didx,interp,1);
+            for (index_type j=0;j<e_;j++)
+            {
+              cc_[idx*e_+j] = interp.node_index[j];
+              vv_[idx*e_+j] = interp.weights[j];
+            }
+          }
+          else
+          {
+            for (index_type j=0;j<e_;j++)
+            {
+              cc_[idx*e_+j] = -1;
+              vv_[idx*e_+j] = 0.0;          
+            }
+          }
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+    else if (dfield_->basis_order() == 1 && sfield_->basis_order() == 1)
+    {
+      Point p, r;
+      VMesh::coords_type coords;
+      VMesh::Elem::index_type didx;
+      VMesh::ElemInterpolate interp;
+      for (VMesh::Node::index_type idx=start; idx<end;idx++)
+      {
+        dmesh_->get_center(p,idx);
+        double dist;
+        if(smesh_->find_closest_elem(dist,r,coords,didx,p))
+        {
+          if (maxdist_ < 0.0 || dist < maxdist_)
+          {
+            smesh_->get_interpolate_weights(coords,didx,interp,1);
+            for (index_type j=0;j<e_;j++)
+            {
+              cc_[idx*e_+j] = interp.node_index[j];
+              vv_[idx*e_+j] = interp.weights[j];
+            }
+          }
+          else
+          {
+            for (index_type j=0;j<e_;j++)
+            {
+              cc_[idx*e_+j] = -1;
+              vv_[idx*e_+j] = 0.0;          
+            }
+          }
+        }
+        if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress_max(idx,end); } }
+      }
+    }
+
+    barrier_.wait();
+
+    if (proc == 0)
+    {
+      VField::size_type num_dvalues = dfield_->num_values();
+
+      rr_[0] = 0;
+      VMesh::index_type k = 0;
+      VMesh::index_type kk = 0;
+      for (VMesh::index_type idx=0; idx<num_dvalues;idx++)
+      {
+        for (VMesh::index_type j=0;j<e_;j++)
+        {
+          if (cc_[kk] >= 0)
+          {
+            cc_[k] = cc_[kk];
+            vv_[k] = vv_[kk];
+            k++;
+          }
+          kk++;
+        }
+        rr_[idx+1] = k;
+      }
+    }
+  }
+  
 }
 
 bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination, MatrixHandle& output) const
 {
-  throw "not implemented";
-}
+  ScopedAlgorithmStatusReporter asr(this, "BuildMappingMatrix");
 
-AlgorithmOutput BuildMappingMatrixAlgo::run_generic(const AlgorithmInput& input) const
-{
-  throw "not implemented";
-}
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/Thread/Thread.h>
-#include <Core/Thread/Barrier.h>
-
-
-
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-//------------------------------------------------------------
-// Algorithm - each destination has its closest source
-
-class BuildMappingMatrixPAlgoBase
-{
-public:
-  explicit BuildMappingMatrixPAlgoBase(const std::string& barrierName) :
-      barrier_(barrierName.c_str()) {}
-  VField* sfield_;
-  VField* dfield_;
-  VMesh*  smesh_;
-  VMesh*  dmesh_;
-
-  const SparseRowMatrix::Rows* rr_;
-  const SparseRowMatrix::Columns* cc_;
-  const SparseRowMatrix::Storage* vv_;
-
-  double  maxdist_;
-  AlgoBase* algo_;
-
-protected:
-  Barrier  barrier_;
-};
-
-class BuildMappingMatrixClosestDataPAlgo : public BuildMappingMatrixPAlgoBase
-{
-  public:
-    BuildMappingMatrixClosestDataPAlgo() :
-      BuildMappingMatrixPAlgoBase(" BuildMappingMatrixClosestDataPAlgo Barrier") {}
-      
-    void parallel(int proc, int nproc);
-};
-
-void
-BuildMappingMatrixClosestDataPAlgo::parallel(int proc, int nproc)
-{
-  // Determine which ones to run
-  VField::size_type num_values = dfield_->num_values();
-  VField::size_type localsize = num_values/nproc;
-  VField::index_type start = localsize*proc;
-  VField::index_type end = localsize*(proc+1);
-  if (proc == nproc-1) end = num_values;
-
-  barrier_.wait(nproc);
-  
-  int cnt = 0;
-  
-  if (dfield_->basis_order() == 0 && sfield_->basis_order() == 0)
-  {
-    Point p, r;
-    VMesh::coords_type coords;
-    VMesh::Elem::index_type didx;
-    
-    for (VMesh::Elem::index_type idx=start; idx<end;idx++)
-    {
-      dmesh_->get_center(p,idx);
-      double dist;
-      if(smesh_->find_closest_elem(dist,r,coords,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-        }
-        else (*cc_)[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  else if (dfield_->basis_order() == 1 && sfield_->basis_order() == 0)
-  {
-    Point p, r;
-    VMesh::coords_type coords;
-    VMesh::Elem::index_type didx;
-    for (VMesh::Node::index_type idx=start; idx<end;idx++)
-    {
-      dmesh_->get_center(p,idx);
-      double dist;
-      if(smesh_->find_closest_elem(dist,r,coords,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-        }
-        else (*cc_)[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  else if (dfield_->basis_order() == 0 && sfield_->basis_order() == 1)
-  {
-    Point p, r;
-    VMesh::Node::index_type didx;
-    for (VMesh::Elem::index_type idx=start; idx<end;idx++)
-    {
-      dmesh_->get_center(p,idx);
-      double dist;
-      if(smesh_->find_closest_node(dist,r,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-        }
-        else (*cc_)[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  else if (dfield_->basis_order() == 1 && sfield_->basis_order() == 1)
-  {
-    Point p, r;
-    VMesh::Node::index_type didx;
-    for (VMesh::Node::index_type idx=start; idx<end;idx++)
-    {
-      dmesh_->get_center(p,idx);
-      double dist;
-      if(smesh_->find_closest_node(dist,r,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-        }
-        else (*cc_)[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  
-  barrier_.wait(nproc);
-  
-  if (proc == 0)
-  {
-    VField::size_type num_dvalues = dfield_->num_values();
-
-    (*rr_)[0] = 0;
-    VMesh::index_type k = 0;
-    for (VMesh::index_type idx=0; idx<num_dvalues;idx++)
-    {
-      if ((*cc_)[idx] >= 0)
-      {
-        (*cc_)[k] = (*cc_)[idx];
-        (*vv_)[k] = 1.0;
-        k++;
-      }
-      (*rr_)[idx+1] = k;
-    }
-  }
-}
-
-
-
-//------------------------------------------------------------
-// Algorithm - each source will map to one destination
-
-class BuildMappingMatrixSingleDestinationPAlgo : public BuildMappingMatrixPAlgoBase
-{
-  public:
-    BuildMappingMatrixSingleDestinationPAlgo() :
-      BuildMappingMatrixPAlgoBase(" BuildMappingMatrixSingleDestinationPAlgo Barrier") {}
-      
-    void parallel(int proc, int nproc);
-
-    std::vector<index_type> tcc_;
-};
-
-void
-BuildMappingMatrixSingleDestinationPAlgo::parallel(int proc, int nproc)
-{
-  // Determine which ones to run
-  VField::size_type num_values = sfield_->num_values();
-  VField::size_type localsize = num_values/nproc;
-  VField::index_type start = localsize*proc;
-  VField::index_type end = localsize*(proc+1);
-  if (proc == nproc-1) end = num_values;
-
-  if (proc == 0)
-  {
-    tcc_.resize(dfield_->num_values());
-  }
-
-  barrier_.wait(nproc);
-  
-  int cnt = 0;
-  
-  if (sfield_->basis_order() == 0 && dfield_->basis_order() == 0)
-  {
-    Point p, r;
-    VMesh::coords_type coords;
-    VMesh::Elem::index_type didx;
-    for (VMesh::Elem::index_type idx=start; idx<end;idx++)
-    {
-      smesh_->get_center(p,idx);
-      double dist;
-      if(dmesh_->find_closest_elem(dist,r,coords,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-        }
-        else (*cc_)[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  else if (sfield_->basis_order() == 1 && dfield_->basis_order() == 0)
-  {
-    Point p, r;
-    VMesh::coords_type coords;
-    VMesh::Elem::index_type didx;
-    for (VMesh::Node::index_type idx=start; idx<end;idx++)
-    {
-      smesh_->get_center(p,idx);
-      double dist;
-      if(dmesh_->find_closest_elem(dist,r,coords,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-        }
-        else (*cc_)[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  else if (sfield_->basis_order() == 0 && dfield_->basis_order() == 1)
-  {
-    Point p, r;
-    VMesh::Node::index_type didx;
-    for (VMesh::Elem::index_type idx=start; idx<end;idx++)
-    {
-      smesh_->get_center(p,idx);
-      double dist;
-      if(dmesh_->find_closest_node(dist,r,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-        }
-        else (*cc_)[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  else if (sfield_->basis_order() == 1 && dfield_->basis_order() == 1)
-  {
-    Point p, r;
-    VMesh::Node::index_type didx;
-    for (VMesh::Node::index_type idx=start; idx<end;idx++)
-    {
-      smesh_->get_center(p,idx);
-      double dist;
-      if(dmesh_->find_closest_node(dist,r,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-        }
-        else (*cc_)[idx] = -1;
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  
-  barrier_.wait(nproc);
-  
-  if (proc == 0)
-  {
-    VField::size_type num_dvalues = dfield_->num_values();
-    for (VMesh::index_type idx=0; idx<num_dvalues;idx++)
-    {
-      tcc_[idx] = -1;
-    }
-    for (VMesh::index_type idx=0; idx<num_values;idx++)
-    {
-      tcc_[(*cc_)[idx]] = idx;
-    }
-
-    (*rr_)[0] = 0;
-    VMesh::index_type k = 0;
-    for (VMesh::index_type idx=0; idx<num_dvalues;idx++)
-    {
-      if (tcc_[idx] >= 0)
-      {
-        (*cc_)[k] = tcc_[idx];
-        (*vv_)[k] = 1.0;
-        k++;
-      }
-      (*rr_)[idx+1] = k;
-    }
-  }
-
-}
-
-
-//------------------------------------------------------------
-// Algorithm - get interpolated data
-
-
-class BuildMappingMatrixInterpolatedDataPAlgo : public BuildMappingMatrixPAlgoBase
-{
-  public:
-    BuildMappingMatrixInterpolatedDataPAlgo() :
-      BuildMappingMatrixPAlgoBase(" BuildMappingMatrixInterpolatedDataPAlgo Barrier") {}
-      
-    void parallel(int proc, int nproc);
-
-    size_type e_;
-};
-
-void
-BuildMappingMatrixInterpolatedDataPAlgo::parallel(int proc, int nproc)
-{
-  // Determine which ones to run
-  VField::size_type num_values = dfield_->num_values();
-  VField::size_type localsize = num_values/nproc;
-  VField::index_type start = localsize*proc;
-  VField::index_type end = localsize*(proc+1);
-  if (proc == nproc-1) end = num_values;
-
-  barrier_.wait(nproc);
-  
-  int cnt = 0;
-  
-  if (dfield_->basis_order() == 0 && sfield_->basis_order() == 0)
-  {
-    Point p, r;
-    VMesh::Elem::index_type didx;
-    
-    for (VMesh::Elem::index_type idx=start; idx<end;idx++)
-    {
-      dmesh_->get_center(p,idx);
-    
-      double dist;
-      if(smesh_->find_closest_elem(dist,r,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-          (*vv_)[idx] = 1.0;
-        }
-        else 
-        {
-          (*cc_)[idx] = -1;
-          (*vv_)[idx] = 1.0;
-        }
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  else if (dfield_->basis_order() == 1 && sfield_->basis_order() == 0)
-  {
-    Point p, r;
-    VMesh::Elem::index_type didx;
-    for (VMesh::Node::index_type idx=start; idx<end;idx++)
-    {
-      dmesh_->get_center(p,idx);
-      double dist;
-      if(smesh_->find_closest_elem(dist,r,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          (*cc_)[idx] = didx;
-          (*vv_)[idx] = 1.0;
-        }
-        else 
-        {
-          (*cc_)[idx] = -1;
-          (*vv_)[idx] = 1.0;
-        }
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  else if (dfield_->basis_order() == 0 && sfield_->basis_order() == 1)
-  {
-    Point p, r;
-    VMesh::coords_type coords;
-    VMesh::Elem::index_type didx;
-    VMesh::ElemInterpolate interp;
-    for (VMesh::Elem::index_type idx=start; idx<end;idx++)
-    {
-      dmesh_->get_center(p,idx);
-      double dist;
-      if(smesh_->find_closest_elem(dist,r,coords,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          smesh_->get_interpolate_weights(coords,didx,interp,1);
-          for (index_type j=0;j<e_;j++)
-          {
-            (*cc_)[idx*e_+j] = interp.node_index[j];
-            (*vv_)[idx*e_+j] = interp.weights[j];
-          }
-        }
-        else
-        {
-          for (index_type j=0;j<e_;j++)
-          {
-            (*cc_)[idx*e_+j] = -1;
-            (*vv_)[idx*e_+j] = 0.0;          
-          }
-        }
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  else if (dfield_->basis_order() == 1 && sfield_->basis_order() == 1)
-  {
-    Point p, r;
-    VMesh::coords_type coords;
-    VMesh::Elem::index_type didx;
-    VMesh::ElemInterpolate interp;
-    for (VMesh::Node::index_type idx=start; idx<end;idx++)
-    {
-      dmesh_->get_center(p,idx);
-      double dist;
-      if(smesh_->find_closest_elem(dist,r,coords,didx,p))
-      {
-        if (maxdist_ < 0.0 || dist < maxdist_)
-        {
-          smesh_->get_interpolate_weights(coords,didx,interp,1);
-          for (index_type j=0;j<e_;j++)
-          {
-            (*cc_)[idx*e_+j] = interp.node_index[j];
-            (*vv_)[idx*e_+j] = interp.weights[j];
-          }
-        }
-        else
-        {
-          for (index_type j=0;j<e_;j++)
-          {
-            (*cc_)[idx*e_+j] = -1;
-            (*vv_)[idx*e_+j] = 0.0;          
-          }
-        }
-      }
-      if (proc == 0) { cnt++; if (cnt == 200) {cnt = 0; algo_->update_progress(idx,end); } }
-    }
-  }
-  
-  barrier_.wait(nproc);
-  
-  if (proc == 0)
-  {
-    VField::size_type num_dvalues = dfield_->num_values();
-
-    (*rr_)[0] = 0;
-    VMesh::index_type k = 0;
-    VMesh::index_type kk = 0;
-    for (VMesh::index_type idx=0; idx<num_dvalues;idx++)
-    {
-      for (VMesh::index_type j=0;j<e_;j++)
-      {
-        if ((*cc_)[kk] >= 0)
-        {
-          (*cc_)[k] = (*cc_)[kk];
-          (*vv_)[k] = (*vv_)[kk];
-          k++;
-        }
-        kk++;
-      }
-      (*rr_)[idx+1] = k;
-    }
-  }
-}
-
-
-bool
-BuildMappingMatrixAlgo::
-run(FieldHandle source, FieldHandle destination, MatrixHandle& output)
-{
-  algo_start("BuildMappingMatrix");
-  
-  if (source.get_rep() == 0)
+  if (!source)
   {
     error("No source field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (destination.get_rep() == 0)
+  if (!destination)
   {
     error("No destination field");
-    algo_end(); return (false);
+    return (false);
   }
 
   // Determine output type
-  
+
   VMesh* smesh = source->vmesh();
   VMesh* dmesh = destination->vmesh();
   VField* sfield = source->vfield();
   VField* dfield = destination->vfield();
 
-  std::string method = get_option("method");
+  std::string method = get_option(Parameters::MappingMethod);
   int sbasis_order = sfield->basis_order();
   int dbasis_order = dfield->basis_order();
-  
+
   if (sbasis_order < 0)
   {
     error("Source field basis order needs to constant or linear");
-    algo_end(); return (false);  
+    return (false);  
   }
 
   if (dbasis_order < 0)
   {
     error("Destination field basis order needs to constant or linear");
-    algo_end(); return (false);  
+    return (false);  
   }
 
   size_type n,m,nnz,e; 
-  
+
   if (method == "closestdata")
   {
     m = dfield->num_values();
     n = sfield->num_values();
     nnz = m;
-    
+
     if (sbasis_order == 0) smesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
     else smesh->synchronize(Mesh::FIND_CLOSEST_NODE_E);
   } 
@@ -595,7 +580,7 @@ run(FieldHandle source, FieldHandle destination, MatrixHandle& output)
     m = dfield->num_values();
     n = sfield->num_values();
     nnz = n;
-    
+
     if (dbasis_order == 0) dmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
     else dmesh->synchronize(Mesh::FIND_CLOSEST_NODE_E);
   }
@@ -610,94 +595,101 @@ run(FieldHandle source, FieldHandle destination, MatrixHandle& output)
       VMesh::ElemInterpolate ei;
       smesh->get_interpolate_weights(cs,0,ei,sbasis_order);
       if (sbasis_order == 0) 
-        { nnz = m; e = 1; }
+      { nnz = m; e = 1; }
       else if (sbasis_order == 1) 
-        { nnz = m*ei.node_index.size(); e = ei.node_index.size(); }
+      { nnz = m*ei.node_index.size(); e = ei.node_index.size(); }
       else if (sbasis_order == 2) 
-        { nnz = m*(ei.node_index.size() + ei.edge_index.size());
-          e = (ei.node_index.size() + ei.edge_index.size()); }
+      { nnz = m*(ei.node_index.size() + ei.edge_index.size());
+      e = (ei.node_index.size() + ei.edge_index.size()); }
     }
     else
     {
       error("Source does not have any elements, hence one cannot interpolate data in this field");
       error("Use a closestdata interpolation scheme for this data");
-      algo_end(); return (false);
+      return (false);
     }
   }
 
-  SparseRowMatrix::Data outputData(m+1, nnz);
+  LegacySparseDataContainer<double> legacySparseData(m+1, nnz);
 
-  if (!outputData.allocated())
-  {
-    error("Could not allocate enough memory for output matrix");
-    algo_end(); return (false);     
-  }
-  const SparseRowMatrix::Rows& rr = outputData.rows();
-  const SparseRowMatrix::Columns& cc = outputData.columns();
-  const SparseRowMatrix::Storage& vv = outputData.data();
-  
-  double maxdist = get_scalar("max_distance");
-  
+  const SparseRowMatrix::RowsPtr& rr = legacySparseData.rows().get();
+  const SparseRowMatrix::ColumnsPtr& cc = legacySparseData.columns().get();
+  const SparseRowMatrix::Storage& vv = legacySparseData.data().get();
+
+  double maxdist = get(Parameters::MaxDistance).toDouble();
+
+  const int np = Parallel::NumCores();
   if (method == "closestdata")
   {
-    BuildMappingMatrixClosestDataPAlgo algo;
+    detail::BuildMappingMatrixClosestDataPAlgo algo(np);
     algo.sfield_ = sfield;
     algo.dfield_ = dfield;
     algo.smesh_ = smesh;
     algo.dmesh_ = dmesh;
-    algo.rr_ = &rr;
-    algo.cc_ = &cc;
-    algo.vv_ = &vv;
+    algo.rr_ = rr;
+    algo.cc_ = cc;
+    algo.vv_ = vv;
     algo.maxdist_ = maxdist;
     algo.algo_ = this;
-    
-    int np = Thread::numProcessors();
-    Thread::parallel(&algo,&BuildMappingMatrixClosestDataPAlgo::parallel,np,np);
+
+    auto task_i = [&algo,this](int i) { algo.parallel(i); };
+    Parallel::RunTasks(task_i, Parallel::NumCores());
   }
   else if(method == "singledestination")
   {
-    BuildMappingMatrixSingleDestinationPAlgo algo;
+    detail::BuildMappingMatrixSingleDestinationPAlgo algo(np);
     algo.sfield_ = sfield;
     algo.dfield_ = dfield;
     algo.smesh_ = smesh;
     algo.dmesh_ = dmesh;
-    algo.rr_ = &rr;
-    algo.cc_ = &cc;
-    algo.vv_ = &vv;
+    algo.rr_ = rr;
+    algo.cc_ = cc;
+    algo.vv_ = vv;
     algo.maxdist_ = maxdist;
     algo.algo_ = this;
-    
-    int np = Thread::numProcessors();
-    Thread::parallel(&algo,&BuildMappingMatrixSingleDestinationPAlgo::parallel,np,np);
+
+    auto task_i = [&algo,this](int i) { algo.parallel(i); };
+    Parallel::RunTasks(task_i, Parallel::NumCores());
   }
   else if (method == "interpolateddata")
   { 
-    BuildMappingMatrixInterpolatedDataPAlgo algo;
+    detail::BuildMappingMatrixInterpolatedDataPAlgo algo(np);
     algo.sfield_ = sfield;
     algo.dfield_ = dfield;
     algo.smesh_ = smesh;
     algo.dmesh_ = dmesh;
-    algo.rr_ = &rr;
-    algo.cc_ = &cc;
-    algo.vv_ = &vv;
+    algo.rr_ = rr;
+    algo.cc_ = cc;
+    algo.vv_ = vv;
     algo.e_ = e;
     algo.maxdist_ = maxdist;
     algo.algo_ = this;
-    
-    int np = Thread::numProcessors();
-    Thread::parallel(&algo,&BuildMappingMatrixInterpolatedDataPAlgo::parallel,np,np);  
+
+    auto task_i = [&algo,this](int i) { algo.parallel(i); };
+    Parallel::RunTasks(task_i, Parallel::NumCores());
   }
-  
-  output = new SparseRowMatrix(m,n,outputData,nnz);
-  if (output.get_rep() == 0)
+
+  output.reset(new SparseRowMatrix(m,n,rr,cc,vv,nnz));
+  if (!output)
   {
     error("Could not create output matrix");
-    algo_end(); return (false);
+    return (false);
   }
 
-  algo_end(); return (true);
+  return (true);
 }
 
+AlgorithmOutput BuildMappingMatrixAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto source = input.get<Field>(Variables::Source);
+  auto destination = input.get<Field>(Variables::Destination);
 
-} // end namespace SCIRunAlgo
-#endif
+  MatrixHandle outputMatrix;
+  if (!runImpl(source, destination, outputMatrix))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned from legacy run call");
+
+  AlgorithmOutput output;
+  output[Mapping] = outputMatrix;
+
+  return output;
+}

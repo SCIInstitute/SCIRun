@@ -35,10 +35,12 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
 class EuclideanDrawStrategy : public ConnectionDrawStrategy
 {
@@ -250,11 +252,11 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 	  placeHoldingColor_ = fromPort_->color();
   }
 
-  setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges);
+  setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges | ItemIsFocusable);
 
   //TODO: need dynamic zValue
   setZValue(1);
-  setToolTip("Left - Highlight\nDouble-Left - Menu");
+  setToolTip("Left - Highlight\nDouble-Left - Menu\ni - Datatype info");
   setAcceptHoverEvents(true);
 
   menu_ = new ConnectionMenu();
@@ -328,6 +330,10 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 
 void ConnectionLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+  //TODO: this is a bit inconsistent, disabling for now
+//  if (event->button() == Qt::MiddleButton)
+//    DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
+
 	setColorAndWidth(placeHoldingColor_, placeHoldingWidth_);
 	menuOpen_ = false;
 	setZValue(0);
@@ -419,6 +425,27 @@ void ConnectionLine::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
   setColorAndWidth(color(), DEFAULT_CONNECTION_WIDTH);
 }
 
+namespace
+{
+  template <typename F>
+  QString eval(F f)
+  {
+    return f ? QString::fromStdString(f()) : "[null info]";
+  }
+}
+
+void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& label, const std::string& id)
+{
+  auto info = eval(portDataDescriber);
+  QMessageBox::information(SCIRunMainWindow::Instance(), label + " Data info: " + QString::fromStdString(id), info);
+}
+
+void ConnectionLine::keyPressEvent(QKeyEvent* event)
+{
+  if (event->key() == Qt::Key_I)
+    DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
+}
+
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)
   : ConnectionInProgressGraphicsItem<QGraphicsLineItem>(port, drawer)
 {
@@ -466,7 +493,10 @@ QPointF MidpointPositioner::currentPosition() const
   return (p1_->currentPosition() + p2_->currentPosition()) / 2;
 }
 
-ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene),
+ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : 
+  currentType_(EUCLIDEAN), 
+  visible_(true),
+  scene_(scene),
   euclidean_(new EuclideanDrawStrategy),
   cubic_(new CubicBezierDrawStrategy),
   manhattan_(new ManhattanDrawStrategy)
@@ -506,7 +536,7 @@ void ConnectionFactory::activate(QGraphicsItem* item) const
   {
     if (scene_)
       scene_->addItem(item);
-    item->setVisible(true);
+    item->setVisible(visible_);
   }
 }
 

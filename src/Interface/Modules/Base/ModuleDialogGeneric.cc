@@ -358,7 +358,15 @@ public:
       virtual void pushImpl() override
       {
         LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
-        state_->setValue(stateKey_, boost::lexical_cast<double>(lineEdit_->text().toStdString()));
+        try 
+        {
+          auto value = boost::lexical_cast<double>(lineEdit_->text().toStdString());
+          state_->setValue(stateKey_, value);
+        }
+        catch (boost::bad_lexical_cast& e)
+        {
+          // ignore for now
+        }
       }
 private:
   AlgorithmParameterName stateKey_;
