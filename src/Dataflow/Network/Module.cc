@@ -693,6 +693,6 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
       }
     }
   }
-  LOG_DEBUG("\tFound replacement: " << potentialReplacement.lookupInfo_.module_name_ << std::endl);
+  //LOG_DEBUG("\tFound replacement: " << potentialReplacement.lookupInfo_.module_name_ << std::endl);
   return true;
 }
