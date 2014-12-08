@@ -38,7 +38,19 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-ALGORITHM_PARAMETER_DEF(Fields, PieceWiseFlag);
+ALGORITHM_PARAMETER_DEF(Fields, PiecewiseFlag);
+ALGORITHM_PARAMETER_DEF(Fields, AssignFlag);
+ALGORITHM_PARAMETER_DEF(Fields, SetNonzeroAttributeFlag);
+ALGORITHM_PARAMETER_DEF(Fields, SuppressSplitFlag);
+ALGORITHM_PARAMETER_DEF(Fields, SetSplitFlag);
+ALGORITHM_PARAMETER_DEF(Fields, QualityFlag);
+ALGORITHM_PARAMETER_DEF(Fields, SetRatioFlag);
+ALGORITHM_PARAMETER_DEF(Fields, VolConstraintFlag);
+ALGORITHM_PARAMETER_DEF(Fields, SetMaxVolConstraintFlag);
+ALGORITHM_PARAMETER_DEF(Fields, MinRadius);
+ALGORITHM_PARAMETER_DEF(Fields, MaxVolConstraint);
+ALGORITHM_PARAMETER_DEF(Fields, DetectIntersectionsFlag);
+ALGORITHM_PARAMETER_DEF(Fields, MoreSwitches);
 
 const ModuleLookupInfo InterfaceWithTetGen::staticInfo_("InterfaceWithTetGen", "NewField", "SCIRun");
 
@@ -71,8 +83,21 @@ void InterfaceWithTetGen::execute()
   {
     auto state = get_state();
     InterfaceWithTetGenInput inputs;
-    inputs.piecewiseFlag_ = state->getValue(Parameters::PieceWiseFlag).toBool();
-    //etc
+
+    inputs.piecewiseFlag_ = state->getValue(Parameters::PiecewiseFlag).toBool();
+    inputs.assignFlag_ = state->getValue(Parameters::AssignFlag).toBool();
+    inputs.setNonzeroAttributeFlag_ = state->getValue(Parameters::SetNonzeroAttributeFlag).toBool();
+    inputs.suppressSplitFlag_ = state->getValue(Parameters::SuppressSplitFlag).toBool();
+    inputs.setSplitFlag_ = state->getValue(Parameters::SetSplitFlag).toBool();
+    inputs.qualityFlag_ = state->getValue(Parameters::QualityFlag).toBool();
+    inputs.setRatioFlag_ = state->getValue(Parameters::SetRatioFlag).toBool();
+    inputs.volConstraintFlag_ = state->getValue(Parameters::VolConstraintFlag).toBool();
+    inputs.setMaxVolConstraintFlag_ = state->getValue(Parameters::SetMaxVolConstraintFlag).toBool();
+    inputs.minRadius_ = state->getValue(Parameters::MinRadius).toDouble();
+    inputs.maxVolConstraint_ = state->getValue(Parameters::MaxVolConstraint).toDouble();
+    inputs.detectIntersectionsFlag_ = state->getValue(Parameters::DetectIntersectionsFlag).toBool();
+    inputs.moreSwitches_ = state->getValue(Parameters::MoreSwitches).toString();
+
     InterfaceWithTetGenImpl impl(this, inputs);
     auto result = impl.runImpl(surfaces, points.get_value_or(nullptr), region_attribs.get_value_or(nullptr));
     sendOutput(TetVol, result);

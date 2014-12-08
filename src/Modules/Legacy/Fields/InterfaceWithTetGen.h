@@ -37,7 +37,19 @@ namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Fields {
-        ALGORITHM_PARAMETER_DECL(PieceWiseFlag);
+        ALGORITHM_PARAMETER_DECL(PiecewiseFlag);
+        ALGORITHM_PARAMETER_DECL(AssignFlag);
+        ALGORITHM_PARAMETER_DECL(SetNonzeroAttributeFlag);
+        ALGORITHM_PARAMETER_DECL(SuppressSplitFlag);
+        ALGORITHM_PARAMETER_DECL(SetSplitFlag);
+        ALGORITHM_PARAMETER_DECL(QualityFlag);
+        ALGORITHM_PARAMETER_DECL(SetRatioFlag);
+        ALGORITHM_PARAMETER_DECL(VolConstraintFlag);
+        ALGORITHM_PARAMETER_DECL(SetMaxVolConstraintFlag);
+        ALGORITHM_PARAMETER_DECL(MinRadius);
+        ALGORITHM_PARAMETER_DECL(MaxVolConstraint);
+        ALGORITHM_PARAMETER_DECL(DetectIntersectionsFlag);
+        ALGORITHM_PARAMETER_DECL(MoreSwitches);
       }}}
 
   namespace Modules {
