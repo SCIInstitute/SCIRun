@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,9 +30,16 @@
 #define MODULES_LEGACY_FIELDS_INTERFACEWITHTETGEN_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+        ALGORITHM_PARAMETER_DECL(PieceWiseFlag);
+      }}}
+
   namespace Modules {
     namespace Fields {
 

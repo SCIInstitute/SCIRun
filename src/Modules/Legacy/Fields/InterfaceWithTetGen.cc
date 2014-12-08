@@ -33,9 +33,12 @@
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
+
+ALGORITHM_PARAMETER_DEF(Fields, PieceWiseFlag);
 
 const ModuleLookupInfo InterfaceWithTetGen::staticInfo_("InterfaceWithTetGen", "NewField", "SCIRun");
 
@@ -64,13 +67,14 @@ void InterfaceWithTetGen::execute()
   auto points = getOptionalInput(Points);
   auto region_attribs = getOptionalInput(Region_Attribs);
 
-
-
-
-
-
-
-
-
-  //TODO
+  if (needToExecute())
+  {
+    auto state = get_state();
+    InterfaceWithTetGenInput inputs;
+    inputs.piecewiseFlag_ = state->getValue(Parameters::PieceWiseFlag).toBool();
+    //etc
+    InterfaceWithTetGenImpl impl(this, inputs);
+    auto result = impl.runImpl(surfaces, points.get_value_or(nullptr), region_attribs.get_value_or(nullptr));
+    sendOutput(TetVol, result);
+  }
 }
