@@ -32,7 +32,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 
 InterfaceWithTetGenDialog::InterfaceWithTetGenDialog(const std::string& name, ModuleStateHandle state,
@@ -43,16 +43,27 @@ InterfaceWithTetGenDialog::InterfaceWithTetGenDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //addDoubleSpinBoxManager(VolumeScalingSpinBox_X_, InterfaceWithTetGenAlgorithm::VolumeScalingX);
-  //addDoubleSpinBoxManager(VolumeScalingSpinBox_Y_, InterfaceWithTetGenAlgorithm::VolumeScalingY);
-  //addDoubleSpinBoxManager(VolumeScalingSpinBox_Z_, InterfaceWithTetGenAlgorithm::VolumeScalingZ);
-  //addCheckBoxManager(VerboseCheckBox_, InterfaceWithTetGenAlgorithm::Verbose);
-  //addCheckBoxManager(PaddingCheckBox_, InterfaceWithTetGenAlgorithm::Padding);
 
+  addCheckBoxManager(tetrahedralizePLCCheckBox_, Parameters::PiecewiseFlag);
+  addCheckBoxManager(assignAttributesRegionsCheckBox_, Parameters::AssignFlag);
+  addCheckBoxManager(assignNonZeroAttributesCheckBox_, Parameters::SetNonzeroAttributeFlag);
+  addCheckBoxManager(suppressBoundaryFacetSegmentCheckBox_, Parameters::SuppressSplitFlag);
+  addCheckBoxManager(suppressAllSplittingCheckBox_, Parameters::SetSplitFlag);
+  addCheckBoxManager(qualityMeshGenCheckBox_, Parameters::QualityFlag);
+  addCheckBoxManager(specifyMinRadiusEdgeCheckBox_, Parameters::SetRatioFlag);
+  addCheckBoxManager(imposeConstraintCheckBox_, Parameters::VolConstraintFlag);
+  addCheckBoxManager(specifyMaxConstraintAllCheckBox_, Parameters::SetMaxVolConstraintFlag);
+  addCheckBoxManager(detectIntersectionPLCCheckBox_, Parameters::DetectIntersectionsFlag);
+
+  addDoubleSpinBoxManager(minRadiusEdgeDoubleSpinBox_, Parameters::MinRadius);
+
+  addLineEditManager(addTetGenCommandLineEdit_, Parameters::MoreSwitches);
+
+  //addCheckBoxManager(PaddingCheckBox_, InterfaceWithTetGenAlgorithm::Padding);
   //addComboBoxManager(scalingComboBox_, InterfaceWithTetGenAlgorithm::VolumeScalingOption);
-}                         
-                          
+}
+
 void InterfaceWithTetGenDialog::pull()
 {
- pull_newVersionToReplaceOld();   
+ pull_newVersionToReplaceOld();
 }
