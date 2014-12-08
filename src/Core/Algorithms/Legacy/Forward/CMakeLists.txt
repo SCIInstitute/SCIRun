@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-#
+# 
 #  The MIT License
-#
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+# 
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
-#
-#
+# 
+#  
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-#
+# 
 #  The above copyright notice and this permission notice shall be included
 #  in all copies or substantial portions of the Software.
-#
+# 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -26,9 +26,35 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Converter)
-ADD_SUBDIRECTORY(Forward)
-#ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(FiniteElements)
+# CMakeLists.txt for Packages/BioPSE/Core/Algorithms/NumApproximation
+
+SET(Core_Algorithms_Legacy_Forward_SRCS
+  BuildBEMatrixAlgo.cc
+  #CalcTMP.cc
+)
+
+SET(Core_Algorithms_Legacy_Forward_HEADERS
+  BuildBEMatrixAlgo.h
+  #CalcTMP.h
+)
+
+SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Forward 
+  ${Core_Algorithms_Legacy_Forward_SRCS}
+  ${Core_Algorithms_Legacy_Forward_HEADERS}
+  )
+
+TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Forward
+  Algorithms_Base
+  Core_Datatypes
+  Core_Persistent
+  Core_Exceptions
+  Core_Thread
+  Core_Geometry
+  Core_Math
+  Core_Util
+  Core_Basis
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Forward)
+ENDIF(BUILD_SHARED_LIBS)
