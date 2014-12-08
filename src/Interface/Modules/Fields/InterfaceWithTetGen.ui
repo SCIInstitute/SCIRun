@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
-    <height>435</height>
+    <width>487</width>
+    <height>491</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -82,8 +82,14 @@
           </item>
           <item>
            <widget class="QCheckBox" name="numberOutputItemsCheckBox_">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>-z: Number all output items starting from zero</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
