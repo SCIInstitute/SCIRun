@@ -66,7 +66,20 @@ InterfaceWithTetGen::InterfaceWithTetGen()
 
 void InterfaceWithTetGen::setStateDefaults()
 {
-  //TODO
+  auto state = get_state();
+  state->setValue(Parameters::PiecewiseFlag, true);
+  state->setValue(Parameters::AssignFlag, true);
+  state->setValue(Parameters::SetNonzeroAttributeFlag, false);
+  state->setValue(Parameters::SuppressSplitFlag, true);
+  state->setValue(Parameters::SetSplitFlag, false);
+  state->setValue(Parameters::QualityFlag, true);
+  state->setValue(Parameters::SetRatioFlag, false);
+  state->setValue(Parameters::VolConstraintFlag, false);
+  state->setValue(Parameters::SetMaxVolConstraintFlag, false);
+  state->setValue(Parameters::MinRadius, 2.0);
+  state->setValue(Parameters::MaxVolConstraint, 0.1);
+  state->setValue(Parameters::DetectIntersectionsFlag, false);
+  state->setValue(Parameters::MoreSwitches, std::string());
 }
 
 void InterfaceWithTetGen::execute()

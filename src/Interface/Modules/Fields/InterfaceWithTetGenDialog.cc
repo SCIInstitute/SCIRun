@@ -56,11 +56,9 @@ InterfaceWithTetGenDialog::InterfaceWithTetGenDialog(const std::string& name, Mo
   addCheckBoxManager(detectIntersectionPLCCheckBox_, Parameters::DetectIntersectionsFlag);
 
   addDoubleSpinBoxManager(minRadiusEdgeDoubleSpinBox_, Parameters::MinRadius);
+  addDoubleLineEditManager(specifyMaxConstraintAllLineEdit_, Parameters::MaxVolConstraint);
 
   addLineEditManager(addTetGenCommandLineEdit_, Parameters::MoreSwitches);
-
-  //addCheckBoxManager(PaddingCheckBox_, InterfaceWithTetGenAlgorithm::Padding);
-  //addComboBoxManager(scalingComboBox_, InterfaceWithTetGenAlgorithm::VolumeScalingOption);
 }
 
 void InterfaceWithTetGenDialog::pull()

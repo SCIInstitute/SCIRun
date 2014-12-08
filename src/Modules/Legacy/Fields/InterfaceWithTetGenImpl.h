@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_FIELDS_INTERFACEWITHTETGENIMPL_H__
 
 #include <Dataflow/Network/Module.h>
+#include <deque>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
