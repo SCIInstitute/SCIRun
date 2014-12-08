@@ -493,7 +493,10 @@ QPointF MidpointPositioner::currentPosition() const
   return (p1_->currentPosition() + p2_->currentPosition()) / 2;
 }
 
-ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene),
+ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : 
+  currentType_(EUCLIDEAN), 
+  visible_(true),
+  scene_(scene),
   euclidean_(new EuclideanDrawStrategy),
   cubic_(new CubicBezierDrawStrategy),
   manhattan_(new ManhattanDrawStrategy)
@@ -533,7 +536,7 @@ void ConnectionFactory::activate(QGraphicsItem* item) const
   {
     if (scene_)
       scene_->addItem(item);
-    item->setVisible(true);
+    item->setVisible(visible_);
   }
 }
 

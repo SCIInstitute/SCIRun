@@ -152,6 +152,8 @@ Q_SIGNALS:
 
     int currentZoomPercentage() const;
 
+    void setVisibility(bool visible);
+
   protected:
     virtual void dropEvent(QDropEvent* event) override;
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
@@ -234,6 +236,7 @@ Q_SIGNALS:
 
     QGraphicsScene* scene_;
 
+    bool visibleItems_;
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
 		boost::shared_ptr<DialogErrorControl> dialogErrorControl_;

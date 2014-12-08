@@ -168,10 +168,12 @@ public:
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
   void setType(ConnectionDrawType type);
   ConnectionDrawType getType() const;
+  void setVisibility(bool visible) { visible_ = visible; }
 Q_SIGNALS:
   void typeChanged(ConnectionDrawStrategyPtr drawerMaker);
 private:
   ConnectionDrawType currentType_;
+  bool visible_;
   void activate(QGraphicsItem* item) const;
   QGraphicsScene* scene_;
   ConnectionDrawStrategyPtr euclidean_;
