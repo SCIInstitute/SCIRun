@@ -16,8 +16,164 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>0</count>
+							<count>13</count>
 							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>AssignFlag</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>AssignFlag</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DetectIntersectionsFlag</name>
+								</first>
+								<second>
+									<name>DetectIntersectionsFlag</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxVolConstraint</name>
+								</first>
+								<second>
+									<name>MaxVolConstraint</name>
+									<value>
+										<which>1</which>
+										<value>9.9999999999999995e-008</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MinRadius</name>
+								</first>
+								<second>
+									<name>MinRadius</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MoreSwitches</name>
+								</first>
+								<second>
+									<name>MoreSwitches</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PiecewiseFlag</name>
+								</first>
+								<second>
+									<name>PiecewiseFlag</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>QualityFlag</name>
+								</first>
+								<second>
+									<name>QualityFlag</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SetMaxVolConstraintFlag</name>
+								</first>
+								<second>
+									<name>SetMaxVolConstraintFlag</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SetNonzeroAttributeFlag</name>
+								</first>
+								<second>
+									<name>SetNonzeroAttributeFlag</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SetRatioFlag</name>
+								</first>
+								<second>
+									<name>SetRatioFlag</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SetSplitFlag</name>
+								</first>
+								<second>
+									<name>SetSplitFlag</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SuppressSplitFlag</name>
+								</first>
+								<second>
+									<name>SuppressSplitFlag</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>VolConstraintFlag</name>
+								</first>
+								<second>
+									<name>VolConstraintFlag</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -34,13 +190,13 @@
 						<stateMap>
 							<count>6</count>
 							<item_version>0</item_version>
-							<item class_id="8" tracking_level="0" version="0">
-								<first class_id="9" tracking_level="0" version="0">
+							<item>
+								<first>
 									<name>ForcePointCloud</name>
 								</first>
-								<second class_id="10" tracking_level="0" version="0">
+								<second>
 									<name>ForcePointCloud</name>
-									<value class_id="11" tracking_level="0" version="0">
+									<value>
 										<which>3</which>
 										<value>0</value>
 									</value>
