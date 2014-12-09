@@ -59,7 +59,6 @@ void  BuildNoiseColumnMatrix::setStateDefaults()
 void BuildNoiseColumnMatrix::execute()
 {
 	auto input_matrix = getRequiredInput(InputMatrix);
-	
 	if(needToExecute())
 	{
 		algo().set(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio(),get_state()->getValue(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio()).toDouble());
