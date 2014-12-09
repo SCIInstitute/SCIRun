@@ -41,30 +41,22 @@
  *
  */
 
-#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystem.h>
+//#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystem.h>
 
-#include <Packages/BioPSE/Core/Algorithms/NumApproximation/BuildBEMatrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Modules/Legacy/Forward/BuildBEMatrix.h>
+#include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/BlockMatrix.h>
-#include <Core/Datatypes/MatrixOperations.h>
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/TriSurfMesh.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
 
-#include <Core/Util/StringUtil.h>
-
+#include <Core/Utils/Legacy/StringUtil.h>
 #include <Core/Math/MiscMath.h>
-#include <math.h>
 
 #include <algorithm>
-#include <vector>
 #include <iostream>
 #include <sstream>
-#include <string>
 #include <fstream>
 
 #include <boost/algorithm/string.hpp>
@@ -72,13 +64,12 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
 
-namespace balgo=boost::algorithm;
-using std::vector;
-
-namespace BioPSE {
-
 using namespace SCIRun;
-using namespace SCIRunAlgo;
+using namespace SCIRun::Modules::Forward;
+
+namespace balgo=boost::algorithm;
+
+namespace detail {
 
 enum BEM_ALGO_TYPE {
   UNSUPPORTED = -1,
@@ -203,8 +194,6 @@ private:
   bemfield_vector fields_;
 };
 
-DECLARE_MAKER(BuildBEMatrix)
-
 // TODO: move into class?
 std::vector<int> field_generation_no_old, old_nesting;
 std::vector<double> old_conductivities;
@@ -225,7 +214,7 @@ BuildBEMatrix::BuildBEMatrix(GuiContext *context):
 
 // BURAK EDITS:
 void
-BuildBEMatrix::algoSurfaceToNodes()
+BuildBEMatrixImpl::algoSurfaceToNodes()
 {
   // NOTE: This is Jeroen's code that has been adapted to fit the new module structure
   //
@@ -303,7 +292,7 @@ BuildBEMatrix::algoSurfaceToNodes()
 }
 
 void
-BuildBEMatrix::algoSurfacesToSurfaces()
+BuildBEMatrixImpl::algoSurfacesToSurfaces()
 {
   // Math for surface-to-surface BEM algorithm (based on Jeroen Stinstra's BEM Matlab code that's part of SCIRun)
   // -------------------------------------------------------------------------------------------------------------
@@ -499,7 +488,7 @@ BuildBEMatrix::algoSurfacesToSurfaces()
 }
 
 int
-BuildBEMatrix::detectBEMalgo()
+BuildBEMatrixImpl::detectBEMalgo()
 {
   ///////////////////////////////////////////////////////////////////////////////////////////////////
   // Check for special case where the potentials need to be evaluated at the nodes of a lead
@@ -576,7 +565,7 @@ BuildBEMatrix::detectBEMalgo()
 }
 
 void
-BuildBEMatrix::process_field_properties(const FieldHandle& field_handle,
+BuildBEMatrixImpl::process_field_properties(const FieldHandle& field_handle,
                                         bemfield& field,
                                         std::ostringstream& inside_cond,
                                         std::ostringstream& outside_cond,
@@ -857,9 +846,9 @@ BuildBEMatrix::execute()
 }
 
 // C++ized MollerTrumbore97 Ray Triangle intersection test.
-#define EPSILON 1.0e-6
+//#define EPSILON 1.0e-6
 bool
-BuildBEMatrix::ray_triangle_intersect(double &t,
+BuildBEMatrixImpl::ray_triangle_intersect(double &t,
 				       const Point &point,
 				       const Vector &dir,
 				       const Point &p0,
@@ -909,7 +898,7 @@ BuildBEMatrix::ray_triangle_intersect(double &t,
 
 
 void
-BuildBEMatrix::compute_intersections(std::vector<std::pair<double, int> >
+BuildBEMatrixImpl::compute_intersections(std::vector<std::pair<double, int> >
               &results,
 				      const VMesh* mesh,
 				      const Point &p, const Vector &v,
@@ -944,7 +933,7 @@ pair_less(const std::pair<double, int> &a,
 
 
 int
-BuildBEMatrix::compute_parent(const std::vector<VMesh*> &meshes,
+BuildBEMatrixImpl::compute_parent(const std::vector<VMesh*> &meshes,
                               int index)
 {
   Point point;
@@ -987,7 +976,7 @@ BuildBEMatrix::compute_parent(const std::vector<VMesh*> &meshes,
 
 
 bool
-BuildBEMatrix::compute_nesting(std::vector<int> &nesting,
+BuildBEMatrixImpl::compute_nesting(std::vector<int> &nesting,
 				const std::vector<VMesh*> &meshes)
 {
   nesting.resize(meshes.size());
@@ -1000,5 +989,3 @@ BuildBEMatrix::compute_nesting(std::vector<int> &nesting,
 
   return true;
 }
-
-} // end namespace BioPSE

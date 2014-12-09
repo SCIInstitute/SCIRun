@@ -31,11 +31,11 @@
 #define MODULES_LEGACY_FORWARD_BuildBEMatrix_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/FiniteElements/share.h>
+#include <Modules/Legacy/Forward/share.h>
 
 namespace SCIRun {
   namespace Modules {
-    namespace FiniteElements {
+    namespace Forward {
 
       class SCISHARE BuildBEMatrix : public Dataflow::Networks::Module,
         public Has1InputPort<DynamicPortTag<FieldPortTag>>,
