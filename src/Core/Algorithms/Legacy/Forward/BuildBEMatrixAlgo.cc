@@ -546,8 +546,7 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
 
         for (int i=0; i<7; i++)  temp(0,i) = g_coef(0,i)*R_W(0,i);
 
-        Mult_X_trans(g_values, cruse_weights, temp);
-        g_values.scalar_multiply(area);
+        g_values = area * (cruse_weights * temp.transpose());
       } // else
 
       for (int i=0; i<3; ++i)
@@ -615,11 +614,10 @@ void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
 
       for (int i=0; i<7; i++)  temp(0,i) = g_coef(0,i)*R_W(0,i);
 
-      Mult_X_trans(g_values, cruse_weights, temp);
-      g_values.scalar_multiply(area);
+      g_values = area * (cruse_weights * temp.transpose());
 
       for (int i=0; i<3; ++i)
-        cross_G[ppi][nodes[i]]+=g_values(i,0)*mult;
+        cross_G(ppi, nodes[i])+=g_values(i,0)*mult;
     }
   }
 }
@@ -707,9 +705,10 @@ void BuildBEMatrixBase::make_auto_P(VMesh* hsurf, DenseMatrixHandle &h_PP_,
   }
 
   //! accounting for autosolid angle
+  auto sumOfRows = auto_P.rowwise().sum().eval();
   for (i=0; i<nnodes; ++i)
   {
-    auto_P(i,i) = out_cond - auto_P.sumOfRow(i);
+    auto_P(i,i) = out_cond - sumOfRows(i);
   }
 }
 

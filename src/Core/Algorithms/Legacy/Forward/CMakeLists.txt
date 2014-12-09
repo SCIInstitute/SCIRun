@@ -46,12 +46,9 @@ SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Forward
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Forward
   Algorithms_Base
   Core_Datatypes
-  Core_Persistent
-  Core_Exceptions
-  Core_Thread
-  Core_Geometry
+  Core_Datatypes_Legacy_Field
+  Core_Geometry_Primitives
   Core_Math
-  Core_Util
   Core_Basis
 )
 
