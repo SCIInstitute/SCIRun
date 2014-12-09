@@ -340,9 +340,9 @@ void BuildBEMatrixBase::bem_sing(
     WAPC(0,0)*=-1.0; WAPC(1,0)*=-1.0; WAPC(2,0)*=-1.0;
   }
 
-  g_values[one][0] = WAPB(0,0) + WAPC(0,0);
-  g_values[two][0] = WAPB(1,0) + WAPC(1,0);
-  g_values[three][0] = WAPB(2,0) + WAPC(2,0);
+  g_values(one,0) = WAPB(0,0) + WAPC(0,0);
+  g_values(two,0) = WAPB(1,0) + WAPC(1,0);
+  g_values(three,0) = WAPB(2,0) + WAPC(2,0);
 }
 
 void BuildBEMatrixBase::get_auto_g(
@@ -475,7 +475,7 @@ double BuildBEMatrixBase::do_radon_g(
   get_g_coef(p1, p2, p3, op, s, r, centroid, g_coef);
 
   double g2 = 0;
-  for (int i=0; i<7; i++)   g2 = g2 + g_coef[0][i]*R_W[0][i];
+  for (int i=0; i<7; i++)   g2 = g2 + g_coef(0,i)*R_W(0,i);
 
   Vector aV = Cross(p2 - p1, p3 - p2)*0.5;
 
@@ -486,11 +486,9 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
   double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn_)
 {
   VMesh::Node::size_type nsize; hsurf->size(nsize);
-  unsigned int nnodes = nsize;
-  DenseMatrix* tmp = new DenseMatrix(nnodes, nnodes);
-  h_GG_ = tmp;
-  DenseMatrix& auto_G = *tmp;
-  auto_G.zero();
+  auto nnodes = nsize;
+  h_GG_.reset(new DenseMatrix(nnodes, nnodes, 0.0));
+  DenseMatrix& auto_G = *h_GG_;
 
   //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
@@ -530,10 +528,6 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
     Vector p3(hsurf->get_point(nodes[2]));
 
     area = avInn_[*fi];
-    //	//START REPLACEMENT: area
-    //	Vector Ctemp=(p1 + p2 + p3) / 3.0;
-    //	Vector Ntemp=
-    //	//END REPLACEMENT: area
 
     get_cruse_weights(p1, p2, p3, s, r, area, cruse_weights);
     Vector centroid = (p1 + p2 + p3) / 3.0;
@@ -543,9 +537,6 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
       VMesh::Node::index_type ppi = *ni;
       Vector op(hsurf->get_point(ppi));
 
-      //            if (ppi == nodes[0])       get_auto_g(p1, p2, p3, 0, g_values, s, r, R_W);
-      //     else if (ppi == nodes[1])       get_auto_g(p1, p2, p3, 1, g_values, s, r, R_W);
-      //     else if (ppi == nodes[2])       get_auto_g(p1, p2, p3, 2, g_values, s, r, R_W);
       if (ppi == nodes[0])       bem_sing(p1, p2, p3, 0, g_values, s, r, R_W);
       else if (ppi == nodes[1])       bem_sing(p1, p2, p3, 1, g_values, s, r, R_W);
       else if (ppi == nodes[2])       bem_sing(p1, p2, p3, 2, g_values, s, r, R_W);
@@ -553,14 +544,14 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
       {
         get_g_coef(p1, p2, p3, op, s, r, centroid, g_coef);
 
-        for (int i=0; i<7; i++)  temp[0][i] = g_coef[0][i]*R_W[0][i];
+        for (int i=0; i<7; i++)  temp(0,i) = g_coef(0,i)*R_W(0,i);
 
         Mult_X_trans(g_values, cruse_weights, temp);
         g_values.scalar_multiply(area);
       } // else
 
       for (int i=0; i<3; ++i)
-        auto_G[ppi][nodes[i]]+=g_values[i][0]*mult;
+        auto_G(ppi, nodes[i])+=g_values(i,0)*mult;
     }
   }
 }
@@ -570,12 +561,9 @@ void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
 {
   VMesh::Node::size_type nsize1; hsurf1->size(nsize1);
   VMesh::Node::size_type nsize2; hsurf2->size(nsize2);
-  DenseMatrix* tmp = new DenseMatrix(nsize1, nsize2);
-  h_GG_ = tmp;
-  DenseMatrix& cross_G = *tmp;
-  cross_G.zero();
+  h_GG_.reset(new DenseMatrix(nsize1, nsize2, 0.0));
+  DenseMatrix& cross_G = *h_GG_;
 
-  //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
   //   out_cond and in_cond belong to hsurf2 and op_cond is the out_cond of hsurf1 for all the surfaces but the outermost surface which in op_cond=in_cond
 
@@ -625,14 +613,13 @@ void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
       Vector op(hsurf1->get_point(ppi));
       get_g_coef(p1, p2, p3, op, s, r, centroid, g_coef);
 
-      for (int i=0; i<7; i++)  temp[0][i] = g_coef[0][i]*R_W[0][i];
+      for (int i=0; i<7; i++)  temp(0,i) = g_coef(0,i)*R_W(0,i);
 
       Mult_X_trans(g_values, cruse_weights, temp);
       g_values.scalar_multiply(area);
 
       for (int i=0; i<3; ++i)
-        cross_G[ppi][nodes[i]]+=g_values[i][0]*mult;
-      //cross_G[ppi][nodes[i]]-=g_values[i][0]*mult;
+        cross_G[ppi][nodes[i]]+=g_values(i,0)*mult;
     }
   }
 }
@@ -640,13 +627,10 @@ void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
 void BuildBEMatrixBase::make_cross_P(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_PP_,
   double in_cond, double out_cond, double op_cond)
 {
-
   VMesh::Node::size_type nsize1; hsurf1->size(nsize1);
   VMesh::Node::size_type nsize2; hsurf2->size(nsize2);
-  DenseMatrix* tmp = new DenseMatrix(nsize1, nsize2);
-  h_PP_ = tmp;
-  DenseMatrix& cross_P = *tmp;
-  cross_P.zero();
+  h_PP_.reset(new DenseMatrix(nsize1, nsize2, 0.0));
+  DenseMatrix& cross_P = *h_PP_;
 
   //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
@@ -674,8 +658,7 @@ void BuildBEMatrixBase::make_cross_P(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
       getOmega(v1, v2, v3, coef);
 
       for (i=0; i<3; ++i)
-        //cross_P[ppi][nodes[i]]+=coef[0][i]*mult;
-        cross_P[ppi][nodes[i]]-=coef[0][i]*mult;
+        cross_P(ppi, nodes[i])-=coef(0,i)*mult;
 
     }
   }
@@ -684,13 +667,10 @@ void BuildBEMatrixBase::make_cross_P(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
 void BuildBEMatrixBase::make_auto_P(VMesh* hsurf, DenseMatrixHandle &h_PP_,
   double in_cond, double out_cond, double op_cond)
 {
-
   VMesh::Node::size_type nsize; hsurf->size(nsize);
-  unsigned int nnodes = nsize;
-  DenseMatrix* tmp = new DenseMatrix(nnodes, nnodes);
-  h_PP_ = tmp;
-  DenseMatrix& auto_P = *tmp;
-  auto_P.zero();
+  auto nnodes = nsize;
+  h_PP_.reset(new DenseMatrix(nnodes, nnodes, 0.0));
+  DenseMatrix& auto_P = *h_PP_;
 
   //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
@@ -721,8 +701,7 @@ void BuildBEMatrixBase::make_auto_P(VMesh* hsurf, DenseMatrixHandle &h_PP_,
         getOmega(v1, v2, v3, coef);
 
         for (i=0; i<3; ++i)
-          //auto_P[ppi][nodes[i]]+=coef[0][i]*mult;
-          auto_P[ppi][nodes[i]]-=coef[0][i]*mult;
+          auto_P(ppi, nodes[i])-=coef(0,i)*mult;
       }
     }
   }
@@ -730,7 +709,7 @@ void BuildBEMatrixBase::make_auto_P(VMesh* hsurf, DenseMatrixHandle &h_PP_,
   //! accounting for autosolid angle
   for (i=0; i<nnodes; ++i)
   {
-    auto_P[i][i] = out_cond - auto_P.sumOfRow(i);
+    auto_P(i,i) = out_cond - auto_P.sumOfRow(i);
   }
 }
 
