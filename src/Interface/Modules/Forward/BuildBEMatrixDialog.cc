@@ -28,16 +28,9 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
 //#include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
-//#include <Core/Datatypes/DenseMatrix.h>
-//#include <boost/foreach.hpp>
-//#include <boost/assign/std/vector.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::BrainStimulator;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Datatypes;
-//using namespace boost::assign;
 
 BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -49,32 +42,42 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
 
   tableWidget->resizeColumnsToContents();
 
-  //QStringList tableHeader1;  /// set default GUI parameter for upper table
-  //tableHeader1<<" ROI "<<" Avr. " << " Std. " << " Min. " << " Max. " << " # ";
-  //StatisticsOutput_tableWidget->setHorizontalHeaderLabels(tableHeader1);
-  //StatisticsOutput_tableWidget->setItem(0, 0, 0);
-  //StatisticsOutput_tableWidget->setItem(0, 1, 0);
-  //StatisticsOutput_tableWidget->setItem(0, 2, 0);
-  //StatisticsOutput_tableWidget->setItem(0, 3, 0);
-  //StatisticsOutput_tableWidget->setItem(0, 4, 0);
-  //StatisticsOutput_tableWidget->setItem(0, 5, 0);
-
-  //QStringList tableHeader2; /// set default GUI parameter for lower table
-  //tableHeader2<<" X "<<" Y " << " Z " << " Atlas Material # " << " Radius ";
-  //SpecifyROI_tabWidget->setHorizontalHeaderLabels(tableHeader2);
-  //SpecifyROI_tabWidget->setItem(0, 0, new QTableWidgetItem("0"));
-  //SpecifyROI_tabWidget->setItem(0, 1, new QTableWidgetItem("0"));
-  //SpecifyROI_tabWidget->setItem(0, 2, new QTableWidgetItem("0"));
-  //SpecifyROI_tabWidget->setItem(0, 3, new QTableWidgetItem(" "));
-  //SpecifyROI_tabWidget->setItem(0, 4, new QTableWidgetItem(" 0 "));
-
   //connect(StatisticsOutput_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
   //connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));  
 }
 
 void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
 {
+  auto oldRowCount = tableWidget->rowCount();
   tableWidget->setRowCount(numPorts - 1);
+
+  for (int i = oldRowCount; i < tableWidget->rowCount(); ++i)
+  {
+    //std::cout << "updating row widgets" << std::endl;
+
+    tableWidget->setItem(i, 0, new QTableWidgetItem("field" + QString::number(i)));
+    tableWidget->setItem(i, 1, new QTableWidgetItem("[populated on execute]"));
+    tableWidget->setCellWidget(i, 2, makeComboBoxItem(i));
+    tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(i % 2)));
+    tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number((i+1) % 2)));
+
+    // type is readonly
+    auto type = tableWidget->item(i, 1);
+    type->setFlags(type->flags() & ~Qt::ItemIsEditable);
+  }
+
+  tableWidget->resizeColumnsToContents();
+}
+
+QComboBox* BuildBEMatrixDialog::makeComboBoxItem(int i) const
+{
+  QStringList bcList;
+  bcList << "Measurement (Neumann)" << "Source (Dirichlet)";
+  QComboBox* bcBox = new QComboBox();
+  bcBox->addItems(bcList);
+  bcBox->setCurrentIndex(i % 2 + 1);
+  //connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(pushComboBoxChange(int)));
+  return bcBox;
 }
 
 void BuildBEMatrixDialog::push()

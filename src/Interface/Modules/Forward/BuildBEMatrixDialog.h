@@ -51,6 +51,8 @@ public Q_SLOTS:
 private Q_SLOTS:
   void pull();
   void push();
+private:
+  QComboBox* makeComboBoxItem(int i) const;
 };
 
 }
