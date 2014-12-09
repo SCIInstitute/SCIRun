@@ -262,6 +262,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
 
+  makeOptionsDialog();
   addPortLayouts();
   addPorts(*theModule_);
   optionsButton_->setVisible(theModule_->has_ui());
@@ -297,7 +298,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   resize(width(), height() + widgetHeightAdjust);
 
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
-  makeOptionsDialog();
 
   connect(helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
@@ -352,6 +352,9 @@ void ModuleWidget::resetProgressBar()
   progressBar_->setValue(0);
   progressBar_->setTextVisible(false);
 }
+
+size_t ModuleWidget::numInputPorts() const { return ports().numInputPorts(); }
+size_t ModuleWidget::numOutputPorts() const { return ports().numOutputPorts(); }
 
 void ModuleWidget::setupModuleActions()
 {
@@ -419,6 +422,7 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
     ++i;
+    dialog_->updateFromPortChange(i);
   }
   addInputPortsToLayout();
 }
@@ -712,6 +716,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
+      connect(this, SIGNAL(dynamicPortChanged()), this, SLOT(updateDialogWithPortCount()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
@@ -725,6 +730,11 @@ void ModuleWidget::makeOptionsDialog()
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
     }
   }
+}
+
+void ModuleWidget::updateDialogWithPortCount()
+{
+  dialog_->updateFromPortChange(numInputPorts());
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const

@@ -47,6 +47,8 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  tableWidget->resizeColumnsToContents();
+
   //QStringList tableHeader1;  /// set default GUI parameter for upper table
   //tableHeader1<<" ROI "<<" Avr. " << " Std. " << " Min. " << " Max. " << " # ";
   //StatisticsOutput_tableWidget->setHorizontalHeaderLabels(tableHeader1);
@@ -68,6 +70,11 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
 
   //connect(StatisticsOutput_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
   //connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));  
+}
+
+void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
+{
+  tableWidget->setRowCount(numPorts - 1);
 }
 
 void BuildBEMatrixDialog::push()

@@ -65,6 +65,7 @@ namespace Gui {
     void pull_newVersionToReplaceOld();
     void moduleSelected(bool selected);
     void toggleCollapse();
+    virtual void updateFromPortChange(int numPorts) {}
   Q_SIGNALS:
     void pullSignal();
     void executionTimeChanged(int time);
