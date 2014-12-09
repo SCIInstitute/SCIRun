@@ -26,35 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H 1
+#ifndef MODULES_LEGACY_FIELDS_BUILDMATRIXOFSURFACENORMALS_H__
+#define MODULES_LEGACY_FIELDS_BUILDMATRIXOFSURFACENORMALS_H__
 
-// Datatypes that the algorithm uses
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DatatypeFwd.h> 
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+      class SCISHARE BuildMatrixOfSurfaceNormals : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+      {
+      public:
+        BuildMatrixOfSurfaceNormals();
 
-namespace SCIRunAlgo {
+        virtual void execute() override;
+				virtual void setStateDefaults(){} 
 
-using namespace SCIRun;
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, OutputMatrix, DenseMatrix);
 
-class SCISHARE GetSurfaceElemNormalsAlgo : public AlgoBase
-{
-  public:
-    GetSurfaceElemNormalsAlgo()
-    {}
-    
-    /// Convert data into a matrix
-    bool run(FieldHandle& input, MatrixHandle& output); 
-};
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
 
-} // end namespace SCIRunAlgo
+    }
+  }
+}
 
 #endif
