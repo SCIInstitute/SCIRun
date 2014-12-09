@@ -724,7 +724,6 @@ void BuildBEMatrixBase::pre_calc_tri_areas(VMesh* hsurf, std::vector<double>& ar
 }
 
 // C++ized MollerTrumbore97 Ray Triangle intersection test.
-//#define EPSILON 1.0e-6
 bool BuildBEMatrixBase::ray_triangle_intersect(double &t,
   const Point &point,
   const Vector &dir,
@@ -741,6 +740,7 @@ bool BuildBEMatrixBase::ray_triangle_intersect(double &t,
 
   // if determinant is near zero, ray lies in plane of triangle.
   const double det = Dot(edge1, pvec);
+  const double EPSILON = 1.0e-6;
   if (det > -EPSILON && det < EPSILON)
   {
     return false;
