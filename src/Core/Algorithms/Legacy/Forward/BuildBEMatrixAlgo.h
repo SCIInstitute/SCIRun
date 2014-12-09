@@ -137,7 +137,7 @@ namespace SCIRun {
 
           static int compute_parent(const std::vector<VMesh*> &meshes, int index);
           static bool compute_nesting(std::vector<int> &nesting, const std::vector<VMesh*> &meshes);
-          static bool ray_triangle_intersect(double &t, 
+          static bool ray_triangle_intersect(double &t,
             const Geometry::Point &point,
             const Geometry::Vector &dir,
             const Geometry::Point &p0,
@@ -193,7 +193,7 @@ namespace SCIRun {
 
         typedef std::vector<bemfield> bemfield_vector;
 
-        class SCISHARE BEMAlgoImpl 
+        class SCISHARE BEMAlgoImpl
         {
         public:
           virtual ~BEMAlgoImpl() {}
@@ -204,7 +204,7 @@ namespace SCIRun {
         class SCISHARE BEMAlgoImplFactory
         {
         public:
-          static BEMAlgoPtr create();
+          static BEMAlgoPtr create(const bemfield_vector& fields);
         };
 
       }}}}

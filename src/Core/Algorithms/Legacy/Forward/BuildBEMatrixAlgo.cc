@@ -46,6 +46,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Basis/TriLinearLgn.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -122,9 +123,9 @@ void BuildBEMatrixBase::getOmega(
   if (Nn < 0)  Omega = 2 * atan( d / Nn ) + 2*M_PI ;
   if (Nn == 0)
   {
-    if ( d > 0 ) 
+    if ( d > 0 )
       Omega = M_PI;
-    else  
+    else
       Omega = -M_PI;
   }
 
@@ -209,7 +210,7 @@ void  BuildBEMatrixBase::get_cruse_weights(
   loc_radpt_y(0,6) = temp[1] + locp3[1]*r;
 
   auto A = (0.5/area) * (Fy * loc_radpt_x - Fx * loc_radpt_y);
-  
+
   DenseMatrix ones(1, 7, 1.0);
   DenseMatrix E(3, 1);
   /*
@@ -717,9 +718,9 @@ void BuildBEMatrixBase::pre_calc_tri_areas(VMesh* hsurf, std::vector<double>& ar
 
   VMesh::Face::iterator  fi, fie;
 
-  hsurf->begin(fi); 
+  hsurf->begin(fi);
   hsurf->end(fie);
-  for (; fi != fie; ++fi) 
+  for (; fi != fie; ++fi)
     areaV.push_back(hsurf->get_area(*fi));
 }
 
@@ -868,7 +869,7 @@ class SurfaceToSurface : public BEMAlgoImpl
 
 };
 
-BEMAlgoPtr BEMAlgoImplFactory::create()
+BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
 {
   ///////////////////////////////////////////////////////////////////////////////////////////////////
   // Check for special case where the potentials need to be evaluated at the nodes of a lead
@@ -877,7 +878,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create()
 
   const bemfield_vector::size_type SPECIAL_CASE_LEN = 2;
 
-  if ( this->fields_.size() == SPECIAL_CASE_LEN )
+  if ( fields.size() == SPECIAL_CASE_LEN )
   {
     VMesh *surface, *nodes;
     int surfcount=0, pointcloudcount=0;
@@ -886,15 +887,15 @@ BEMAlgoPtr BEMAlgoImplFactory::create()
 
     for (bemfield_vector::size_type i = 0; i < SPECIAL_CASE_LEN; i++)
     {
-      if (this->fields_[i].surface)
+      if (fields[i].surface)
       {
-        surface = this->fields_[i].field_->vmesh();
+        surface = fields[i].field_->vmesh();
         if (! surface->is_trisurfmesh() ) meets_conditions = false;
         surfcount++;
       }
       else
       {
-        nodes = this->fields_[i].field_->vmesh();
+        nodes = fields[i].field_->vmesh();
         if (! ( nodes->is_pointcloudmesh() ) || nodes->is_curvemesh() )
         {
           meets_conditions = false;
@@ -920,17 +921,17 @@ BEMAlgoPtr BEMAlgoImplFactory::create()
 
   bool allsurfaces=true, hasmeasurementsurf=false, hassourcesurf=false;
 
-  for (bemfield_vector::size_type i = 0; i < this->fields_.size(); i++)
+  for (bemfield_vector::size_type i = 0; i < fields.size(); i++)
   {
     // if the current field is not marked to be used as a surface OR it's not of trisurfmesh type, this algorithm does not apply
-    if ( (! this->fields_[i].field_->vmesh()->is_trisurfmesh()) || (! this->fields_[i].surface) )
+    if ( (! fields[i].field_->vmesh()->is_trisurfmesh()) || (! fields[i].surface) )
     {
       allsurfaces=false;
       break;
     }
 
-    if (this->fields_[i].measurement) hasmeasurementsurf = true;
-    if (this->fields_[i].source) hassourcesurf = true;
+    if (fields[i].measurement) hasmeasurementsurf = true;
+    if (fields[i].source) hassourcesurf = true;
   }
 
   // if all fields are surfaces, there exists a measurement and a source surface, then use the surface-to-surface algorithm... else fail
