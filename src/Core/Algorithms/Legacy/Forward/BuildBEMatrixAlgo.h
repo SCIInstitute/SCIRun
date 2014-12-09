@@ -134,8 +134,64 @@ namespace SCIRun {
             double );
 
           static void pre_calc_tri_areas(VMesh*, std::vector<double>&);
+
+          static int compute_parent(const std::vector<VMesh*> &meshes, int index);
+          static bool compute_nesting(std::vector<int> &nesting, const std::vector<VMesh*> &meshes);
+          static bool ray_triangle_intersect(double &t, 
+            const Geometry::Point &point,
+            const Geometry::Vector &dir,
+            const Geometry::Point &p0,
+            const Geometry::Point &p1,
+            const Geometry::Point &p2);
+          static void compute_intersections(std::vector<std::pair<double, int> >& results,
+            const VMesh* mesh,
+            const Geometry::Point &p, const Geometry::Vector &v,
+            int marker);
+
         };
 
+        class SCISHARE bemfield
+        {
+        public:
+          explicit bemfield(const FieldHandle& fieldHandle) :
+          field_(fieldHandle),
+            insideconductivity(0),
+            outsideconductivity(0),
+            surface(false),
+            neumann(false),
+            measurement(false),
+            dirichlet(false),
+            source(false) {}
+
+          void set_source_dirichlet()
+          {
+            this->source = true;
+            this->dirichlet = true;
+            this->measurement = false;
+            this->neumann = false;
+          }
+
+          void set_measuremen_neumann()
+          {
+            this->source = false;
+            this->dirichlet = false;
+            this->measurement = true;
+            this->neumann = true;
+          }
+
+          FieldHandle field_; // handle of the field itself
+          double insideconductivity; // if it applies, the conductivity inside the surface
+          double outsideconductivity; // if it applies, the conductivity outside the surface
+          bool surface; // true if a surface, false if just points
+          // TODO: setters? should change neumann and dirichlet based on measurement and source?
+          // BURAK ANSWER: Yes, for the time being they are directly connected. This structure allows someone to introduce a new algorithm with very few modifications to the module design.
+          bool neumann; // true if Neumann boundary conditions are defined on this surface
+          bool measurement; // true if a measurement field
+          bool dirichlet; // true if Dirichlet boundary conditions are defined on this surface
+          bool source; // true if a source field
+        };
+
+        typedef std::vector<bemfield> bemfield_vector;
 
       }}}}
 

@@ -722,3 +722,138 @@ void BuildBEMatrixBase::pre_calc_tri_areas(VMesh* hsurf, std::vector<double>& ar
   for (; fi != fie; ++fi) 
     areaV.push_back(hsurf->get_area(*fi));
 }
+
+// C++ized MollerTrumbore97 Ray Triangle intersection test.
+//#define EPSILON 1.0e-6
+bool BuildBEMatrixBase::ray_triangle_intersect(double &t,
+  const Point &point,
+  const Vector &dir,
+  const Point &p0,
+  const Point &p1,
+  const Point &p2)
+{
+  // Find vectors for two edges sharing p0.
+  const Vector edge1 = p1 - p0;
+  const Vector edge2 = p2 - p0;
+
+  // begin calculating determinant - also used to calculate U parameter.
+  const Vector pvec = Cross(dir, edge2);
+
+  // if determinant is near zero, ray lies in plane of triangle.
+  const double det = Dot(edge1, pvec);
+  if (det > -EPSILON && det < EPSILON)
+  {
+    return false;
+  }
+  const double inv_det = 1.0 / det;
+
+  // Calculate distance from vert0 to ray origin.
+  const Vector tvec = point - p0;
+
+  // Calculate U parameter and test bounds.
+  const double u = Dot(tvec, pvec) * inv_det;
+  if (u < 0.0 || u > 1.0)
+  {
+    return false;
+  }
+
+  // Prepare to test V parameter.
+  const Vector qvec = Cross(tvec, edge1);
+
+  // Calculate V parameter and test bounds.
+  const double v = Dot(dir, qvec) * inv_det;
+  if (v < 0.0 || u + v > 1.0)
+  {
+    return false;
+  }
+
+  // Calculate t, ray intersects triangle.
+  t = Dot(edge2, qvec) * inv_det;
+
+  return true;
+}
+
+void BuildBEMatrixBase::compute_intersections(std::vector<std::pair<double, int> >
+  &results,
+  const VMesh* mesh,
+  const Point &p, const Vector &v,
+  int marker)
+{
+  VMesh::Face::iterator itr, eitr;
+  mesh->begin(itr);
+  mesh->end(eitr);
+  double t;
+  while (itr != eitr)
+  {
+    VMesh::Node::array_type nodes;
+    mesh->get_nodes(nodes, *itr);
+    Point p0, p1, p2;
+    mesh->get_center(p0, nodes[0]);
+    mesh->get_center(p1, nodes[1]);
+    mesh->get_center(p2, nodes[2]);
+    if (ray_triangle_intersect(t, p, v, p0, p1, p2))
+    {
+      results.push_back(std::make_pair(t, marker));
+    }
+    ++itr;
+  }
+}
+
+static bool
+  pair_less(const std::pair<double, int> &a,
+  const std::pair<double, int> &b)
+{
+  return a.first < b.first;
+}
+
+int BuildBEMatrixBase::compute_parent(const std::vector<VMesh*> &meshes, int index)
+{
+  Point point;
+  meshes[index]->get_center(point, VMesh::Node::index_type(0));
+  Vector dir(1.0, 1.0, 1.0);
+  std::vector<std::pair<double, int> > intersections;
+
+  unsigned int i;
+  for (i = 0; i < (unsigned int)meshes.size(); i++)
+  {
+    compute_intersections(intersections, meshes[i], point, dir, i);
+  }
+
+  std::sort(intersections.begin(), intersections.end(), pair_less);
+
+  std::vector<int> counts(meshes.size(), 0);
+  for (i = 0; i < intersections.size(); i++)
+  {
+    if (intersections[i].second == index)
+    {
+      // First odd count is parent.
+      for (int j = i-1; j >= 0; j--)
+      {
+        // TODO: unusual odd/even number test?
+        if (counts[intersections[j].second] & 1)
+        {
+          return intersections[j].second;
+        }
+      }
+      // No odd parent, is outside.
+      return static_cast<int>( meshes.size() );
+    }
+    counts[intersections[i].second]++;
+  }
+
+  // Indeterminant, we should intersect with ourselves.
+  return static_cast<int>( meshes.size() );
+}
+
+bool BuildBEMatrixBase::compute_nesting(std::vector<int> &nesting, const std::vector<VMesh*> &meshes)
+{
+  nesting.resize(meshes.size());
+
+  unsigned int i;
+  for (i = 0; i < (unsigned int)meshes.size(); i++)
+  {
+    nesting[i] = compute_parent(meshes, i);
+  }
+
+  return true;
+}

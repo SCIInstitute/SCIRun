@@ -88,88 +88,16 @@ enum GUI_SURFACE_TYPE {
 // TODO: lets use intercap for class name when it's moved to an algorithm
 //
 // initial conditions: first should be measurement, rest source
-class bemfield
-{
-public:
-	explicit bemfield(const FieldHandle& fieldHandle) :
-    field_(fieldHandle),
-    insideconductivity(0),
-    outsideconductivity(0),
-    surface(false),
-    neumann(false),
-    measurement(false),
-    dirichlet(false),
-    source(false) {}
-  
-  void set_source_dirichlet()
-  {
-    this->source = true;
-    this->dirichlet = true;
-    this->measurement = false;
-    this->neumann = false;
-  }
 
-  void set_measuremen_neumann()
-  {
-    this->source = false;
-    this->dirichlet = false;
-    this->measurement = true;
-    this->neumann = true;
-  }
-
-	FieldHandle field_; // handle of the field itself
-	double insideconductivity; // if it applies, the conductivity inside the surface
-	double outsideconductivity; // if it applies, the conductivity outside the surface
-	bool surface; // true if a surface, false if just points
-  // TODO: setters? should change neumann and dirichlet based on measurement and source?
-  // BURAK ANSWER: Yes, for the time being they are directly connected. This structure allows someone to introduce a new algorithm with very few modifications to the module design.
-	bool neumann; // true if Neumann boundary conditions are defined on this surface
-	bool measurement; // true if a measurement field
-	bool dirichlet; // true if Dirichlet boundary conditions are defined on this surface
-	bool source; // true if a source field
-};
   
-typedef std::vector<bemfield> bemfield_vector;
 
 class BuildBEMatrix : public Module, public BuildBEMatrixBase
 {
 public:
-  
-  //! Constructor
-  BuildBEMatrix(GuiContext *context);
-  
-  //! Destructor
-  virtual ~BuildBEMatrix() {}
-  
+    
   virtual void execute();
   
 private:
-  bool ray_triangle_intersect(double &t,
-                              const Point &p,
-                              const Vector &v,
-                              const Point &p0,
-                              const Point &p1,
-                              const Point &p2) const;
-  void compute_intersections(std::vector<std::pair<double, int> > &results,
-                             const VMesh* mesh,
-                             const Point &p, const Vector &v,
-                             int marker) const;
-
-  int compute_parent(const vector<VMesh*> &meshes, int index);
-
-  bool compute_nesting(vector<int> &nesting,
-                       const vector<VMesh*> &meshes);
-
-  void process_field_properties(const FieldHandle& field_handle,
-                                bemfield& field,
-                                std::ostringstream& inside_cond,
-                                std::ostringstream& outside_cond,
-                                std::ostringstream& surface_type_init);
-  bool
-  validate_gui_var(const std::size_t gui_list_len,
-                   const std::size_t expected_len,
-                   const std::string& name);
-
   // BURAK EDITS:
   void algoSurfaceToNodes();
   void algoSurfacesToSurfaces();
@@ -565,95 +493,13 @@ BuildBEMatrixImpl::detectBEMalgo()
 }
 
 void
-BuildBEMatrixImpl::process_field_properties(const FieldHandle& field_handle,
-                                        bemfield& field,
-                                        std::ostringstream& inside_cond,
-                                        std::ostringstream& outside_cond,
-                                        std::ostringstream& surface_type_init)
-{
-  
-  // legacy field properties
-  static const char* INSIDE_CONDUCTIVITY = "Inside Conductivity";
-  static const char* INSIDE_OR_OUTSIDE = "in/out";
-
-  std::string condStr;
-  double condVal = 0;
-  // If there is no field property, just use default value of 0
-  if (field_handle->get_property(INSIDE_CONDUCTIVITY, condStr))
-  {
-    from_string(condStr, condVal);
-  }
-
-  // TODO: hopefully I interpreted this correctly...
-  if (field_handle->get_property(INSIDE_OR_OUTSIDE, condStr))
-  {
-    if (condStr == "in")
-    {
-      field.insideconductivity = condVal;
-      inside_cond << 0;
-      outside_cond << 1;
-    }
-    else if  (condStr == "out")
-    {
-      field.outsideconductivity = condVal;
-      inside_cond << 1;
-      outside_cond << 0;
-    }
-  }
-  // TODO: If there is no field property, just initialize both
-  // inside and outside conductivities to 0 for now.
-  else
-  {
-    inside_cond << 0;
-    outside_cond << 0;
-  }
-  
-  // TODO: initially setting all to source...
-  surface_type_init << SOURCE;
-}
-
-bool
-BuildBEMatrix::validate_gui_var(const std::size_t gui_list_len,
-                                const std::size_t expected_len,
-                                const std::string& name)
-{
-  if (gui_list_len != expected_len)
-  {
-    std::ostringstream oss;
-    oss << "Inputs from GUI for " << name << " (" << gui_list_len
-        << ") do not match number of fields (" << expected_len
-        << "). GUI input will be ignored.";
-    warning(oss.str());
-    return false;
-  }
-
-  return true;
-}
-
-void
 BuildBEMatrix::execute()
 {
   std::vector<FieldHandle> inputs;
   get_dynamic_input_handles("Surface", inputs, true);
-
-  std::vector<VMesh*> meshes;
-  std::vector<double> conductivities;
-  std::vector<int> field_generation_no_new;
-
-  std::ostringstream fieldlist, fieldtype, inside_cond, outside_cond, surface_type_init;
   
   const std::size_t INPUTS_LEN = inputs.size(), INPUT_LEN_LAST_INDEX = INPUTS_LEN - 1;    
-
-  // If any GUI variables have been set, ignore any incoming field properties - 
-  // GUI variables always take precendence.
-  //
-  // If field changes position, we should still preserve the GUI settings from previous run.
-  if ( ( guifield_inside_cond_property_.changed(true) || guifield_outside_cond_property_.changed(true) || guifield_surface_type_property_.changed(true) ) ||
-      ( guifield_inside_cond_property_.get().size() > 0 && guifield_outside_cond_property_.get().size() > 0 && guifield_surface_type_property_.get().size() > 0 ) )
-  {
-    this->process_gui_vars_ = true;
-  }
-  
+ 
   if (this->inputs_changed_)
   {
     this->fields_.clear();
@@ -692,86 +538,20 @@ BuildBEMatrix::execute()
         fieldtype << "unknown";
       }
 
-      // process legacy field properties if not set through the GUI
-      //
-      // legacy field properties don't support the other bemfield properties,
-      // so those will have to come from GUI
-      if (! this->process_gui_vars_)
-      {
-        process_field_properties(field_handle,
-                                 field,
-                                 inside_cond,
-                                 outside_cond,
-                                 surface_type_init);        
-
-        if (i < INPUT_LEN_LAST_INDEX)
-        {
-          fieldlist << " ";
-          fieldtype << " ";
-          inside_cond << " ";
-          outside_cond << " ";
-          surface_type_init << " ";
-        }
-      }
       this->fields_.push_back(field);
-    }
-
-    // set GUI vars with legacy field properties
-    if (! this->process_gui_vars_)
-    {
-      guifields_.set(fieldlist.str().c_str());
-      guifield_type_property_.set(fieldtype.str().c_str());
-      guifield_inside_cond_property_.set(inside_cond.str().c_str());
-      guifield_outside_cond_property_.set(outside_cond.str().c_str());
-      guifield_surface_type_property_.set(surface_type_init.str().c_str());
-      
-      TCLInterface::eval(get_id() + " update_fields");
     }
   }
   
-  if (this->process_gui_vars_)
+  if (true)
   {
-    this->process_gui_vars_ = false;
+   
 
-    {
-      std::vector<std::string> split_vector;
-      std::string property_string(guifield_inside_cond_property_.get());
-      balgo::split(split_vector, property_string, boost::is_any_of(" "), balgo::token_compress_on);
-
-      if ( validate_gui_var(split_vector.size(), INPUTS_LEN, "inside conductivity") )
-      {
-        for (std::vector<std::string>::size_type i = 0; i < INPUTS_LEN; ++i)
-        {
           this->fields_[i].insideconductivity = boost::lexical_cast<double>(split_vector[i]);
-        }
-      }
-    }
-    
-    {
-      std::vector<std::string> split_vector;
-      std::string property_string(guifield_outside_cond_property_.get());
-      balgo::split(split_vector, property_string, boost::is_any_of(" "), balgo::token_compress_on);
-
-      if ( validate_gui_var(split_vector.size(), INPUTS_LEN, "outside conductivity") )
-      {
-        for (std::vector<std::string>::size_type i = 0; i < INPUTS_LEN; ++i)
-        {
+  
           this->fields_[i].outsideconductivity = boost::lexical_cast<double>(split_vector[i]);
-        }
-      }
-    }
+  
     
-    {
-      std::vector<std::string> split_vector;
-      std::string property_string(guifield_surface_type_property_.get());
-      balgo::split(split_vector, property_string, boost::is_any_of(" "), balgo::token_compress_on);
-      
-      if ( validate_gui_var(split_vector.size(), INPUTS_LEN, "surface types (measurement or source)") )
-      {
-        for (std::vector<std::string>::size_type i = 0; i < INPUTS_LEN; ++i)
-        {
-          // GUI radiobuttons mapped to the gui variable string should be constrained to 0 and 1
-          // which should match up with the surface type enum declared in this file.
+
           int surface_type = boost::lexical_cast<int>(split_vector[i]);
           if (surface_type == SOURCE)
           {
@@ -781,9 +561,7 @@ BuildBEMatrix::execute()
           {
             this->fields_[i].set_measuremen_neumann();
           }
-        }
-      }
-    }
+    
   }
 
   // The specific BEM routine (2 so far) to be called is dependent on the inputs in the fields vector,
@@ -817,175 +595,5 @@ BuildBEMatrix::execute()
 
   // The BEM algorithms populate a matrix with handle "TransferMatrix". At this point all we have to do is send it as output.
   send_output_handle("BEM Forward Matrix", TransferMatrix);
-  
-  return;
-  
-    // Flip normals!
-  // The numerical integration routines expect inward facing normals, but the convention specified as input to this module is outward facing normals
-  // Therefore, this flips the outward facing normals to be inward (by reversing the order that the node indices are stored, i.e. the convention by which the normal directions are specified on these triangle surfaces)
-		// TODO: Move this code into its own function and later into the appropriate datatype as a member function
-  //    // Burak's "Outward Facing Normals" fix... assume we're given outward facing normals and flip them inward manually
-//    // NOTE: ALL SURFACES MATTER HERE -- EVERYTHING IS EXPECTED TO BE OUTWARD-FACING!
-//    VMesh::Node::array_type inodes, onodes;
-//    VMesh::Face::size_type isize;
-//    VMesh::Face::index_type faceindex;
-//    int numnodes = 0;
-//    mesh->size(isize);
-//    //Reorder nodes for each face (I think this should work for both tri and quad faces)
-//    for(Matrix::index_type i = 0; i < isize; i++){
-//      faceindex=i;
-//      mesh->get_nodes(inodes,faceindex);
-//      numnodes=inodes.size();
-//      for (int p=0; p<numnodes; p++) {
-//        onodes[numnodes-1-p]=inodes[p];
-//      }
-//      //Set the reordered nodes back into the mesh through vmesh functions
-//      mesh->set_nodes(onodes, faceindex);
-//    }
-//  
-}
 
-// C++ized MollerTrumbore97 Ray Triangle intersection test.
-//#define EPSILON 1.0e-6
-bool
-BuildBEMatrixImpl::ray_triangle_intersect(double &t,
-				       const Point &point,
-				       const Vector &dir,
-				       const Point &p0,
-				       const Point &p1,
-				       const Point &p2) const
-{
-  // Find vectors for two edges sharing p0.
-  const Vector edge1 = p1 - p0;
-  const Vector edge2 = p2 - p0;
-
-  // begin calculating determinant - also used to calculate U parameter.
-  const Vector pvec = Cross(dir, edge2);
-
-  // if determinant is near zero, ray lies in plane of triangle.
-  const double det = Dot(edge1, pvec);
-  if (det > -EPSILON && det < EPSILON)
-  {
-    return false;
-  }
-  const double inv_det = 1.0 / det;
-
-  // Calculate distance from vert0 to ray origin.
-  const Vector tvec = point - p0;
-
-  // Calculate U parameter and test bounds.
-  const double u = Dot(tvec, pvec) * inv_det;
-  if (u < 0.0 || u > 1.0)
-  {
-    return false;
-  }
-
-  // Prepare to test V parameter.
-  const Vector qvec = Cross(tvec, edge1);
-
-  // Calculate V parameter and test bounds.
-  const double v = Dot(dir, qvec) * inv_det;
-  if (v < 0.0 || u + v > 1.0)
-  {
-    return false;
-  }
-
-  // Calculate t, ray intersects triangle.
-  t = Dot(edge2, qvec) * inv_det;
-
-  return true;
-}
-
-
-void
-BuildBEMatrixImpl::compute_intersections(std::vector<std::pair<double, int> >
-              &results,
-				      const VMesh* mesh,
-				      const Point &p, const Vector &v,
-				      int marker) const
-{
-  VMesh::Face::iterator itr, eitr;
-  mesh->begin(itr);
-  mesh->end(eitr);
-  double t;
-  while (itr != eitr)
-  {
-    VMesh::Node::array_type nodes;
-    mesh->get_nodes(nodes, *itr);
-    Point p0, p1, p2;
-    mesh->get_center(p0, nodes[0]);
-    mesh->get_center(p1, nodes[1]);
-    mesh->get_center(p2, nodes[2]);
-    if (ray_triangle_intersect(t, p, v, p0, p1, p2))
-    {
-      results.push_back(std::make_pair(t, marker));
-    }
-    ++itr;
-  }
-}
-
-static bool
-pair_less(const std::pair<double, int> &a,
-	  const std::pair<double, int> &b)
-{
-  return a.first < b.first;
-}
-
-
-int
-BuildBEMatrixImpl::compute_parent(const std::vector<VMesh*> &meshes,
-                              int index)
-{
-  Point point;
-  meshes[index]->get_center(point, VMesh::Node::index_type(0));
-  Vector dir(1.0, 1.0, 1.0);
-  std::vector<std::pair<double, int> > intersections;
-
-  unsigned int i;
-  for (i = 0; i < (unsigned int)meshes.size(); i++)
-  {
-    compute_intersections(intersections, meshes[i], point, dir, i);
-  }
-
-  std::sort(intersections.begin(), intersections.end(), pair_less);
-
-  std::vector<int> counts(meshes.size(), 0);
-  for (i = 0; i < intersections.size(); i++)
-  {
-    if (intersections[i].second == index)
-    {
-      // First odd count is parent.
-      for (int j = i-1; j >= 0; j--)
-      {
-        // TODO: unusual odd/even number test?
-        if (counts[intersections[j].second] & 1)
-        {
-          return intersections[j].second;
-        }
-      }
-      // No odd parent, is outside.
-      return static_cast<int>( meshes.size() );
-    }
-    counts[intersections[i].second]++;
-  }
-
-  // Indeterminant, we should intersect with ourselves.
-  return static_cast<int>( meshes.size() );
-}
-
-
-
-bool
-BuildBEMatrixImpl::compute_nesting(std::vector<int> &nesting,
-				const std::vector<VMesh*> &meshes)
-{
-  nesting.resize(meshes.size());
-
-  unsigned int i;
-  for (i = 0; i < (unsigned int)meshes.size(); i++)
-  {
-    nesting[i] = compute_parent(meshes, i);
-  }
-
-  return true;
 }

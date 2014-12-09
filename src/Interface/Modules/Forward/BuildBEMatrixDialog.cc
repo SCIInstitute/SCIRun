@@ -53,8 +53,6 @@ void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
 
   for (int i = oldRowCount; i < tableWidget->rowCount(); ++i)
   {
-    //std::cout << "updating row widgets" << std::endl;
-
     tableWidget->setItem(i, 0, new QTableWidgetItem("field" + QString::number(i)));
     tableWidget->setItem(i, 1, new QTableWidgetItem("[populated on execute]"));
     tableWidget->setCellWidget(i, 2, makeComboBoxItem(i));
