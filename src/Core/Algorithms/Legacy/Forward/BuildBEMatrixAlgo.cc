@@ -841,7 +841,7 @@ int BuildBEMatrixBase::compute_parent(const std::vector<VMesh*> &meshes, int ind
     counts[intersections[i].second]++;
   }
 
-  // Indeterminant, we should intersect with ourselves.
+  // Indeterminate, we should intersect with ourselves.
   return static_cast<int>( meshes.size() );
 }
 
@@ -858,8 +858,17 @@ bool BuildBEMatrixBase::compute_nesting(std::vector<int> &nesting, const std::ve
   return true;
 }
 
-int
-  BuildBEMatrixImpl::detectBEMalgo()
+class SurfaceAndPoints : public BEMAlgoImpl
+{
+
+};
+
+class SurfaceToSurface : public BEMAlgoImpl
+{
+
+};
+
+BEMAlgoPtr BEMAlgoImplFactory::create()
 {
   ///////////////////////////////////////////////////////////////////////////////////////////////////
   // Check for special case where the potentials need to be evaluated at the nodes of a lead
@@ -902,7 +911,7 @@ int
     // If all of the checks above don't flag meets_conditions as false,
     // return a value that indicates the algorithm to use is the surface-to-nodes case
     if ( meets_conditions )
-      return SURFACE_AND_POINTS;
+      return boost::make_shared<SurfaceAndPoints>();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -927,10 +936,10 @@ int
   // if all fields are surfaces, there exists a measurement and a source surface, then use the surface-to-surface algorithm... else fail
   if (allsurfaces && hasmeasurementsurf && hassourcesurf)
   {
-    return SURFACES_TO_SURFACES;
+    return boost::make_shared<SurfaceToSurface>();
   }
   else
   {
-    return UNSUPPORTED;
+    return nullptr;
   }
 }
