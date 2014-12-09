@@ -87,6 +87,10 @@ BuildBEMatrix::BuildBEMatrix():
   INITIALIZE_PORT(BEM_Forward_Matrix);
 }
 
+void BuildBEMatrix::setStateDefaults()
+{
+  //TODO
+}
 
 //bool
 //BuildBEMatrix::validate_gui_var(const std::size_t gui_list_len,
