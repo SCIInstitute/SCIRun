@@ -49,6 +49,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/PointVectorOperators.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Forward;
@@ -120,19 +121,22 @@ void BuildBEMatrixBase::getOmega(
   if (Nn > 0)  Omega = 2 * atan( d / Nn );
   if (Nn < 0)  Omega = 2 * atan( d / Nn ) + 2*M_PI ;
   if (Nn == 0)
-    if ( d > 0 ) Omega = M_PI;
-    else  Omega = -M_PI;
+  {
+    if ( d > 0 ) 
+      Omega = M_PI;
+    else  
+      Omega = -M_PI;
+  }
 
-    Vector N = Cross(y21, -y13);
-    double Zn1 = Dot(Cross(y2, y3) , N);
-    double Zn2 = Dot(Cross(y3, y1) , N);
-    double Zn3 = Dot(Cross(y1, y2) , N);
+  Vector N = Cross(y21, -y13);
+  double Zn1 = Dot(Cross(y2, y3) , N);
+  double Zn2 = Dot(Cross(y3, y1) , N);
+  double Zn3 = Dot(Cross(y1, y2) , N);
 
-    //double A2 = -N.length2();
-    double A2 = N.length2();
-    coef[0][0] = (1/A2) * ( Zn1*Omega + d * Dot(y32, OmegaVec) );
-    coef[0][1] = (1/A2) * ( Zn2*Omega + d * Dot(y13, OmegaVec) );
-    coef[0][2] = (1/A2) * ( Zn3*Omega + d * Dot(y21, OmegaVec) );
+  double A2 = N.length2();
+  coef(0,0) = (1/A2) * ( Zn1*Omega + d * Dot(y32, OmegaVec) );
+  coef(0,1) = (1/A2) * ( Zn2*Omega + d * Dot(y13, OmegaVec) );
+  coef(0,2) = (1/A2) * ( Zn3*Omega + d * Dot(y21, OmegaVec) );
 }
 
 void  BuildBEMatrixBase::get_cruse_weights(
@@ -175,58 +179,47 @@ void  BuildBEMatrixBase::get_cruse_weights(
   Vector locp3(fg2_length * cos_alpha , fg2_length * sin_alpha , 0);
 
   DenseMatrix Fx(3, 1);
-  Fx[0][0] = locp3[0] - locp2[0];
-  Fx[1][0] = locp1[0] - locp3[0];
-  Fx[2][0] = locp2[0] - locp1[0];
+  Fx << locp3[0] - locp2[0],
+        locp1[0] - locp3[0],
+        locp2[0] - locp1[0];
 
   DenseMatrix Fy(3, 1);
-  Fy[0][0] = locp3[1] - locp2[1];
-  Fy[1][0] = locp1[1] - locp3[1];
-  Fy[2][0] = locp2[1] - locp1[1];
+  Fy << locp3[1] - locp2[1],
+        locp1[1] - locp3[1],
+        locp2[1] - locp1[1];
 
   Vector centroid = (locp1 + locp2 + locp3) / 3;
   DenseMatrix loc_radpt_x(1, 7);
   DenseMatrix loc_radpt_y(1, 7);
-  Vector temp;
-  loc_radpt_x[0][0] = centroid[0];
-  loc_radpt_y[0][0] = centroid[1];
-  temp = (1-s) * centroid;
-  loc_radpt_x[0][1] = temp[0] + locp1[0]*s;
-  loc_radpt_y[0][1] = temp[1] + locp1[1]*s;
-  loc_radpt_x[0][2] = temp[0] + locp2[0]*s;
-  loc_radpt_y[0][2] = temp[1] + locp2[1]*s;
-  loc_radpt_x[0][3] = temp[0] + locp3[0]*s;
-  loc_radpt_y[0][3] = temp[1] + locp3[1]*s;
+  loc_radpt_x(0,0) = centroid[0];
+  loc_radpt_y(0,0) = centroid[1];
+  Vector temp = (1-s) * centroid;
+  loc_radpt_x(0,1) = temp[0] + locp1[0]*s;
+  loc_radpt_y(0,1) = temp[1] + locp1[1]*s;
+  loc_radpt_x(0,2) = temp[0] + locp2[0]*s;
+  loc_radpt_y(0,2) = temp[1] + locp2[1]*s;
+  loc_radpt_x(0,3) = temp[0] + locp3[0]*s;
+  loc_radpt_y(0,3) = temp[1] + locp3[1]*s;
   temp = (1-r) * centroid;
-  loc_radpt_x[0][4] = temp[0] + locp1[0]*r;
-  loc_radpt_y[0][4] = temp[1] + locp1[1]*r;
-  loc_radpt_x[0][5] = temp[0] + locp2[0]*r;
-  loc_radpt_y[0][5] = temp[1] + locp2[1]*r;
-  loc_radpt_x[0][6] = temp[0] + locp3[0]*r;
-  loc_radpt_y[0][6] = temp[1] + locp3[1]*r;
+  loc_radpt_x(0,4) = temp[0] + locp1[0]*r;
+  loc_radpt_y(0,4) = temp[1] + locp1[1]*r;
+  loc_radpt_x(0,5) = temp[0] + locp2[0]*r;
+  loc_radpt_y(0,5) = temp[1] + locp2[1]*r;
+  loc_radpt_x(0,6) = temp[0] + locp3[0]*r;
+  loc_radpt_y(0,6) = temp[1] + locp3[1]*r;
 
-  DenseMatrix temp1(3, 7);
-  DenseMatrix temp2(3, 7);
-  DenseMatrix A(3, 7);
-  Mult(temp1, Fy, loc_radpt_x);
-  Mult(temp2, Fx, loc_radpt_y);
-  Add(A, 1, temp1, -1, temp2);
-  A.scalar_multiply(0.5/area);
-
-  DenseMatrix ones(1, 7);
-  for (int i=0; i < 7 ; i++) ones[0][i] = 1;
+  auto A = (0.5/area) * (Fy * loc_radpt_x - Fx * loc_radpt_y);
+  
+  DenseMatrix ones(1, 7, 1.0);
   DenseMatrix E(3, 1);
   /*
   E is a 1X3 matrix: [1st vertex  ;  2nd vertex  ;  3rd vertex]
   E = [1/3 ; 1/3 ; 1/3] + (0.5/area)*(Fy*xmid - Fx*ymid);
-  but there is no need to compute the E because by our chioce of the
+  but there is no need to compute the E because by our choice of the
   local coordinates, it is easy to show that the E is always [1 ; 0 ; 0]!
   */
-  E[0][0] = 1.0;
-  E[1][0] = 0.0;
-  E[2][0] = 0.0;
-  Mult(temp1, E, ones);
-  Add(cruse_weights, 1, temp1, -1, A);
+  E << 1,0,0;
+  cruse_weights = (E * ones) - A;
 }
 
 void BuildBEMatrixBase::get_g_coef(
@@ -241,27 +234,24 @@ void BuildBEMatrixBase::get_g_coef(
 {
   // Inputs: p1,p2,p3= cartesian coordiantes of the triangle vertices ; op= Observation Point
   // Output: g_coef = G Values (Coefficients) at 7 Radon's points = 1/r
-  Vector radpt;
-  Vector temp;
+  Vector radpt = centroid - op;
+  g_coef(0,0) = 1 / radpt.length();
 
-  radpt = centroid - op;
-  g_coef[0][0] = 1 / radpt.length();
-
-  temp = centroid * (1-s) - op;
+  Vector temp = centroid * (1-s) - op;
   radpt = temp + p1 * s;
-  g_coef[0][1] = 1 / radpt.length();
+  g_coef(0,1) = 1 / radpt.length();
   radpt = temp + p2 * s;
-  g_coef[0][2] = 1 / radpt.length();
+  g_coef(0,2) = 1 / radpt.length();
   radpt = temp + p3 * s;
-  g_coef[0][3] = 1 / radpt.length();
+  g_coef(0,3) = 1 / radpt.length();
 
   temp = centroid * (1-r) - op;
   radpt = temp + p1 * r;
-  g_coef[0][4] = 1 / radpt.length();
+  g_coef(0,4) = 1 / radpt.length();
   radpt = temp + p2 * r;
-  g_coef[0][5] = 1 / radpt.length();
+  g_coef(0,5) = 1 / radpt.length();
   radpt = temp + p3 * r;
-  g_coef[0][6] = 1 / radpt.length();
+  g_coef(0,6) = 1 / radpt.length();
 }
 
 void BuildBEMatrixBase::bem_sing(
@@ -315,44 +305,44 @@ void BuildBEMatrixBase::bem_sing(
   {
     a=lAP; b=lBP; c=lAB;
     log_term=log( (b+c)/a );
-    WAPB[0][0]=a/2 * log_term;
+    WAPB(0,0)=a/2 * log_term;
     w=1-RL;
-    WAPB[1][0]=a* (( a-c)*(-1+w) + b*w*log_term )/(2*b);
+    WAPB(1,0)=a* (( a-c)*(-1+w) + b*w*log_term )/(2*b);
     w=RL;
-    WAPB[2][0]=a*w *( a-c  +  b*log_term )/(2*b);
+    WAPB(2,0)=a*w *( a-c  +  b*log_term )/(2*b);
   }
   else
   {
-    WAPB[0][0]=0; WAPB[1][0]=0; WAPB[2][0]=0;
+    WAPB(0,0)=0; WAPB(1,0)=0; WAPB(2,0)=0;
   }
 
   if(fabs(RL-1) > 0)
   {
     a = lAP; b = lCP; c = lAC;
     log_term = log( (b+c)/a );
-    WAPC[0][0]=a/2 * log_term;
+    WAPC(0,0)=a/2 * log_term;
     w = 1-RL;
-    WAPC[1][0]=a*w *( a-c  +  b*log_term )/(2*b);
+    WAPC(1,0)=a*w *( a-c  +  b*log_term )/(2*b);
     w = RL;
-    WAPC[2][0]=a* (( a-c)*(-1+w) + b*w*log_term )/(2*b);
+    WAPC(2,0)=a* (( a-c)*(-1+w) + b*w*log_term )/(2*b);
   }
   else
   {
-    WAPC[0][0]=0; WAPC[1][0]=0; WAPC[2][0]=0;
+    WAPC(0,0)=0; WAPC(1,0)=0; WAPC(2,0)=0;
   }
 
   if(RL<0)
   {
-    WAPB[0][0]*=-1.0; WAPB[1][0]*=-1.0; WAPB[2][0]*=-1.0;
+    WAPB(0,0)*=-1.0; WAPB(1,0)*=-1.0; WAPB(2,0)*=-1.0;
   }
   if(RL>1)
   {
-    WAPC[0][0]*=-1.0; WAPC[1][0]*=-1.0; WAPC[2][0]*=-1.0;
+    WAPC(0,0)*=-1.0; WAPC(1,0)*=-1.0; WAPC(2,0)*=-1.0;
   }
 
-  g_values[one][0] = WAPB[0][0] + WAPC[0][0];
-  g_values[two][0] = WAPB[1][0] + WAPC[1][0];
-  g_values[three][0] = WAPB[2][0] + WAPC[2][0];
+  g_values[one][0] = WAPB(0,0) + WAPC(0,0);
+  g_values[two][0] = WAPB(1,0) + WAPC(1,0);
+  g_values[three][0] = WAPB(2,0) + WAPC(2,0);
 }
 
 void BuildBEMatrixBase::get_auto_g(
@@ -393,21 +383,21 @@ void BuildBEMatrixBase::get_auto_g(
   {
   case 0:
     op = p1;
-    g_values[0][0] = get_new_auto_g(op, p5, p4) + do_radon_g(p5, ctroid, p4, op, s, r, R_W);
-    g_values[1][0] = do_radon_g(p2, p6, p5, op, s, r, R_W) + do_radon_g(p5, p6, ctroid, op, s, r, R_W);
-    g_values[2][0] = do_radon_g(p3, p4, p6, op, s, r, R_W) + do_radon_g(p4, ctroid, p6, op, s, r, R_W);
+    g_values(0,0) = get_new_auto_g(op, p5, p4) + do_radon_g(p5, ctroid, p4, op, s, r, R_W);
+    g_values(1,0) = do_radon_g(p2, p6, p5, op, s, r, R_W) + do_radon_g(p5, p6, ctroid, op, s, r, R_W);
+    g_values(2,0) = do_radon_g(p3, p4, p6, op, s, r, R_W) + do_radon_g(p4, ctroid, p6, op, s, r, R_W);
     break;
   case 1:
     op = p2;
-    g_values[0][0] = do_radon_g(p1, p5, p4, op, s, r, R_W) + do_radon_g(p5, ctroid, p4, op, s, r, R_W);
-    g_values[1][0] = get_new_auto_g(op, p6, p5) + do_radon_g(p5, p6, ctroid, op, s, r, R_W);
-    g_values[2][0] = do_radon_g(p3, p4, p6, op, s, r, R_W) + do_radon_g(p4, ctroid, p6, op, s, r, R_W);
+    g_values(0,0) = do_radon_g(p1, p5, p4, op, s, r, R_W) + do_radon_g(p5, ctroid, p4, op, s, r, R_W);
+    g_values(1,0) = get_new_auto_g(op, p6, p5) + do_radon_g(p5, p6, ctroid, op, s, r, R_W);
+    g_values(2,0) = do_radon_g(p3, p4, p6, op, s, r, R_W) + do_radon_g(p4, ctroid, p6, op, s, r, R_W);
     break;
   case 2:
     op = p3;
-    g_values[0][0] = do_radon_g(p1, p5, p4, op, s, r, R_W) + do_radon_g(p5, ctroid, p4, op, s, r, R_W);
-    g_values[1][0] = do_radon_g(p2, p6, p5, op, s, r, R_W) + do_radon_g(p5, p6, ctroid, op, s, r, R_W);
-    g_values[2][0] = get_new_auto_g(op, p4, p6) + do_radon_g(p4, ctroid, p6, op, s, r, R_W);
+    g_values(0,0) = do_radon_g(p1, p5, p4, op, s, r, R_W) + do_radon_g(p5, ctroid, p4, op, s, r, R_W);
+    g_values(1,0) = do_radon_g(p2, p6, p5, op, s, r, R_W) + do_radon_g(p5, p6, ctroid, op, s, r, R_W);
+    g_values(2,0) = get_new_auto_g(op, p4, p6) + do_radon_g(p4, ctroid, p6, op, s, r, R_W);
     break;
   }
 }
@@ -518,14 +508,14 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
   double area;
 
   double sqrt15 = sqrt(15.0);
-  //R_W[0][0] = 9/40; // <- Burak! FIX ME!
-  R_W[0][0] = 9.0/40.0;
-  R_W[0][1] = (155 + sqrt15) / 1200;
-  R_W[0][2] = R_W[0][1];
-  R_W[0][3] = R_W[0][1];
-  R_W[0][4] = (155 - sqrt15) / 1200;
-  R_W[0][5] = R_W[0][4];
-  R_W[0][6] = R_W[0][4];
+  //R_W(0,0) = 9/40; // <- Burak! FIX ME!
+  R_W(0,0) = 9.0/40.0;
+  R_W(0,1) = (155 + sqrt15) / 1200;
+  R_W(0,2) = R_W(0,1);
+  R_W(0,3) = R_W(0,1);
+  R_W(0,4) = (155 - sqrt15) / 1200;
+  R_W(0,5) = R_W(0,4);
+  R_W(0,6) = R_W(0,4);
 
   double s = (1 - sqrt15) / 7;
   double r = (1 + sqrt15) / 7;
@@ -603,14 +593,14 @@ void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
   double area;
 
   double sqrt15 = sqrt(15.0);
-  //R_W[0][0] = 9/40; // <- Burak! FIX ME!
-  R_W[0][0] = 9.0/40.0;
-  R_W[0][1] = (155 + sqrt15) / 1200;
-  R_W[0][2] = R_W[0][1];
-  R_W[0][3] = R_W[0][1];
-  R_W[0][4] = (155 - sqrt15) / 1200;
-  R_W[0][5] = R_W[0][4];
-  R_W[0][6] = R_W[0][4];
+  //R_W(0,0) = 9/40; // <- Burak! FIX ME!
+  R_W(0,0) = 9.0/40.0;
+  R_W(0,1) = (155 + sqrt15) / 1200;
+  R_W(0,2) = R_W(0,1);
+  R_W(0,3) = R_W(0,1);
+  R_W(0,4) = (155 - sqrt15) / 1200;
+  R_W(0,5) = R_W(0,4);
+  R_W(0,6) = R_W(0,4);
 
   double s = (1 - sqrt15) / 7;
   double r = (1 + sqrt15) / 7;
