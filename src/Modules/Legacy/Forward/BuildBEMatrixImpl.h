@@ -27,29 +27,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FORWARD_BuildBEMatrix_H__
-#define MODULES_LEGACY_FORWARD_BuildBEMatrix_H__
+#ifndef MODULES_LEGACY_FORWARD_BuildBEMatrixImpl_H__
+#define MODULES_LEGACY_FORWARD_BuildBEMatrixImpl_H__
 
-#include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
 #include <Modules/Legacy/Forward/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Forward {
 
-      class SCISHARE BuildBEMatrix : public Dataflow::Networks::Module,
-        public Has1InputPort<DynamicPortTag<FieldPortTag>>,
-        public Has1OutputPort<MatrixPortTag>
+      class SCISHARE BuildBEMatrixImpl : public Core::Algorithms::Forward::BuildBEMatrixBase
       {
       public:
-        BuildBEMatrix();
-        virtual void setStateDefaults();
-        virtual void execute();
-
-        INPUT_PORT_DYNAMIC(0, Surface, LegacyField);
-        OUTPUT_PORT(0, BEM_Forward_Matrix, Matrix);
-
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }
