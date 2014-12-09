@@ -1,3 +1,4 @@
+
 #
 #  For more information, please see: http://software.sci.utah.edu
 # 
@@ -26,45 +27,39 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_Factory_SRCS
-  HardCodedModuleFactory.cc
-  ModuleFactoryImpl1.cc
-  ModuleFactoryImpl2.cc
+SET(Interface_Modules_Forward_FORMS
+  BuildBEMatrix.ui
 )
 
-SET(Modules_Factory_HEADERS
-  HardCodedModuleFactory.h
-  ModuleDescriptionLookup.h
+SET(Interface_Modules_Forward_HEADERS
+  BuildBEMatrixDialog.h
   share.h
 )
 
-SCIRUN_ADD_LIBRARY(Modules_Factory 
-  ${Modules_Factory_HEADERS}
-  ${Modules_Factory_SRCS}
+SET(Interface_Modules_Forward_SOURCES 
+  BuildBEMatrixDialog.cc
 )
 
-TARGET_LINK_LIBRARIES(Modules_Factory
-  Dataflow_Network
-  Modules_Math
-  Modules_Fields
-  Modules_FiniteElements
-  Modules_BrainStimulator
-  Modules_Legacy_FiniteElements
+QT4_WRAP_UI(Interface_Modules_Forward_FORMS_HEADERS ${Interface_Modules_Forward_FORMS})
+QT4_WRAP_CPP(Interface_Modules_Forward_HEADERS_MOC ${Interface_Modules_Forward_HEADERS})
+
+SCIRUN_ADD_LIBRARY(Interface_Modules_Forward
+  ${Interface_Modules_Forward_HEADERS}
+  ${Interface_Modules_Forward_FORMS_HEADERS}
+  ${Interface_Modules_Forward_HEADERS_MOC}
+  ${Interface_Modules_Forward_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_Forward 
+  #Algorithms_Field
   Modules_Legacy_Forward
-  Modules_Basic
-  Modules_DataIO
-  Modules_String
-  Modules_Render
-  Modules_Visualization
-  Modules_Legacy_Math
-  Modules_Legacy_Bundle
-  Modules_Legacy_Fields
-  Modules_Legacy_Matlab_DataIO
+  Interface_Modules_Base
+  ${SCI_BOOST_LIBRARY}
+  ${QT_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Factory)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Forward)
 ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
-
+  
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

@@ -1,13 +1,12 @@
- 
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,34 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FORWARD_BuildBEMatrix_H__
-#define MODULES_LEGACY_FORWARD_BuildBEMatrix_H__
+#ifndef INTERFACE_MODULES_FORWARD_BUILDBEMATRIXDIALOG_H
+#define INTERFACE_MODULES_FORWARD_BUILDBEMATRIXDIALOG_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Forward/share.h>
+#include "Interface/Modules/Forward/ui_BuildBEMatrix.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Interface/Modules/Forward/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Forward {
+namespace Gui {
+  
+class SCISHARE BuildBEMatrixDialog : public ModuleDialogGeneric, 
+  public Ui::BuildBEMatrix
+{
+	Q_OBJECT
+	
+public:
+  BuildBEMatrixDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  private Q_SLOTS:
+  void pull();
+  void push();
+};
 
-      class SCISHARE BuildBEMatrix : public Dataflow::Networks::Module,
-        public Has1InputPort<DynamicPortTag<FieldPortTag>>,
-        public Has1OutputPort<MatrixPortTag>
-      {
-      public:
-        BuildBEMatrix();
-        virtual void setStateDefaults();
-        virtual void execute();
-        virtual bool hasDynamicPorts() const override { return true; }
-
-        INPUT_PORT_DYNAMIC(0, Surface, LegacyField);
-        OUTPUT_PORT(0, BEM_Forward_Matrix, Matrix);
-
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-
-    }
-  }
+}
 }
 
 #endif

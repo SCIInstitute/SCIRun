@@ -79,6 +79,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
+#include <Modules/Legacy/Forward/BuildBEMatrix.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -103,6 +104,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Matlab::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
@@ -146,6 +148,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
   addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", "In progress: main path through code works", "Generates stiffness matrix ");
+  addModuleDesc<BuildBEMatrix>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<FairMesh>("Real ported module", "...");
   //TODO: incomplete impl

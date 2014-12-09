@@ -67,7 +67,7 @@ using namespace SCIRun::Dataflow::Networks;
   //GuiString guifield_outside_cond_property_;
   //GuiString guifield_surface_type_property_;
 
-const ModuleLookupInfo BuildBEMatrix::staticInfo_("BuildBEMatrix", "Forward", "BioPSE");
+const ModuleLookupInfo BuildBEMatrix::staticInfo_("BuildBEMatrix", "Forward", "SCIRun");
 
 BuildBEMatrix::BuildBEMatrix():
   Module(staticInfo_)

@@ -1,10 +1,9 @@
- 
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -27,34 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FORWARD_BuildBEMatrix_H__
-#define MODULES_LEGACY_FORWARD_BuildBEMatrix_H__
+#undef SCISHARE
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Forward/share.h>
-
-namespace SCIRun {
-  namespace Modules {
-    namespace Forward {
-
-      class SCISHARE BuildBEMatrix : public Dataflow::Networks::Module,
-        public Has1InputPort<DynamicPortTag<FieldPortTag>>,
-        public Has1OutputPort<MatrixPortTag>
-      {
-      public:
-        BuildBEMatrix();
-        virtual void setStateDefaults();
-        virtual void execute();
-        virtual bool hasDynamicPorts() const override { return true; }
-
-        INPUT_PORT_DYNAMIC(0, Surface, LegacyField);
-        OUTPUT_PORT(0, BEM_Forward_Matrix, Matrix);
-
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-
-    }
-  }
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Interface_Modules_Forward
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif
