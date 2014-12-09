@@ -36,14 +36,29 @@
  *   January 2006
  */
 
-#include <Packages/BioPSE/Core/Algorithms/NumApproximation/BuildBEMatrix.h>
+#include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
 
-namespace BioPSE {
+#include <algorithm>
+#include <map>
+#include <iostream>
+#include <string>
+#include <fstream>
+
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Basis/TriLinearLgn.h>
+#include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Forward;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 
-inline void  BuildBEMatrixBase::getOmega(
+
+
+void BuildBEMatrixBase::getOmega(
 				     const Vector& y1,
 				     const Vector& y2,
 				     const Vector& y3,
@@ -97,7 +112,7 @@ inline void  BuildBEMatrixBase::getOmega(
       this, the denominator is checked and 2*pi is added if necessary.
       The problem without the two pi results in the following situation in
       which division of the triangle into three pieces results into
-      an opposite sign compared to the sperical angle of the total
+      an opposite sign compared to the spherical angle of the total
       triangle. These cases are rare but existing.
   */
 
@@ -125,7 +140,7 @@ inline void  BuildBEMatrixBase::getOmega(
 }
 
 
-inline void  BuildBEMatrixBase::get_cruse_weights(
+void  BuildBEMatrixBase::get_cruse_weights(
 					const Vector& p1,
 					const Vector& p2,
 					const Vector& p3,
@@ -138,7 +153,7 @@ inline void  BuildBEMatrixBase::get_cruse_weights(
  Inputs: p1,p2,p3= cartesian coordiantes of the triangle vertices ;
          area = triangle area
  Output: cruse_weights = The weighting factors for the 7 Radon points of the triangle
- Format of the cruse_weights matix
+ Format of the cruse_weights matrix
               Radon point 1       Radon Point 2    ...     Radon Point 7
  Vertex 1 ->
  Vertex 2 ->
@@ -222,7 +237,7 @@ inline void  BuildBEMatrixBase::get_cruse_weights(
 }
 
 
-inline void  BuildBEMatrixBase::get_g_coef(
+void BuildBEMatrixBase::get_g_coef(
 					const Vector& p1,
 					const Vector& p2,
 					const Vector& p3,
@@ -259,7 +274,7 @@ inline void  BuildBEMatrixBase::get_g_coef(
   return;
 }
 
-inline void  BuildBEMatrixBase::bem_sing(
+void BuildBEMatrixBase::bem_sing(
 					const Vector& p1,
 					const Vector& p2,
 					const Vector& p3,
@@ -354,7 +369,7 @@ inline void  BuildBEMatrixBase::bem_sing(
 
 
 
-inline void  BuildBEMatrixBase::get_auto_g(
+void BuildBEMatrixBase::get_auto_g(
 					const Vector& p1,
 					const Vector& p2,
 					const Vector& p3,
@@ -414,7 +429,7 @@ inline void  BuildBEMatrixBase::get_auto_g(
    }
 
 
-inline double  BuildBEMatrixBase::get_new_auto_g(
+double BuildBEMatrixBase::get_new_auto_g(
 					const Vector& op,
 					const Vector& p2,
 					const Vector& p3)
@@ -468,7 +483,7 @@ inline double  BuildBEMatrixBase::get_new_auto_g(
 }
 
 
-inline double  BuildBEMatrixBase::do_radon_g(
+double BuildBEMatrixBase::do_radon_g(
 					const Vector& p1,
 					const Vector& p2,
 					const Vector& p3,
@@ -574,7 +589,6 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
 
       for (int i=0; i<3; ++i)
 	auto_G[ppi][nodes[i]]+=g_values[i][0]*mult;
-	//auto_G[ppi][nodes[i]]-=g_values[i][0]*mult;
      }
   }
   return;

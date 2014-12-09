@@ -36,109 +36,103 @@
  *   January 2006
  */
 
-#include <algorithm>
-#include <map>
-#include <iostream>
-#include <string>
-#include <fstream>
+#ifndef CORE_ALGORITHMS_LEGACY_FORWARD_BUILDBEMATRIXALGO_H
+#define CORE_ALGORITHMS_LEGACY_FORWARD_BUILDBEMATRIXALGO_H
 
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Basis/TriLinearLgn.h>
-#include <Core/Datatypes/TriSurfMesh.h>
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/Point.h>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Algorithms/Legacy/Forward/share.h>
 
-#include <Packages/BioPSE/Core/Algorithms/NumApproximation/share.h>
-
-namespace BioPSE {
-
-using namespace SCIRun;
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Forward {
 
 class SCISHARE BuildBEMatrixBase
 {
-  typedef SCIRun::TriSurfMesh<TriLinearLgn<Point> > TSMesh;
+  //typedef SCIRun::TriSurfMesh<TriLinearLgn<Point> > TSMesh;
 
 private:
 
-  inline void get_g_coef( const Vector&,
-                          const Vector&,
-                          const Vector&,
-                          const Vector&,
+  void get_g_coef( const Geometry::Vector&,
+                          const Geometry::Vector&,
+                          const Geometry::Vector&,
+                          const Geometry::Vector&,
                           double,
                           double,
-                          const Vector&,
-                          DenseMatrix&);
+                          const Geometry::Vector&,
+                          Datatypes::DenseMatrix&);
 
-  inline void get_cruse_weights( const Vector&,
-                                 const Vector&,
-                                 const Vector&,
+  void get_cruse_weights( const Geometry::Vector&,
+                                 const Geometry::Vector&,
+                                 const Geometry::Vector&,
                                  double,
                                  double,
                                  double,
-                                 DenseMatrix& );
+                                 Datatypes::DenseMatrix& );
 
-  inline void getOmega( const Vector&,
-                        const Vector&,
-                        const Vector&,
-                        DenseMatrix& );
+  void getOmega( const Geometry::Vector&,
+                        const Geometry::Vector&,
+                        const Geometry::Vector&,
+                        Datatypes::DenseMatrix& );
 
-  inline double do_radon_g( const Vector&,
-                            const Vector&,
-                            const Vector&,
-                            const Vector&,
+  double do_radon_g( const Geometry::Vector&,
+                            const Geometry::Vector&,
+                            const Geometry::Vector&,
+                            const Geometry::Vector&,
                             double,
                             double,
-                            DenseMatrix& );
+                            Datatypes::DenseMatrix& );
 
-  inline void get_auto_g( const Vector&,
-                          const Vector&,
-                          const Vector&,
+  void get_auto_g( const Geometry::Vector&,
+                          const Geometry::Vector&,
+                          const Geometry::Vector&,
                           unsigned int,
-                          DenseMatrix&,
+                          Datatypes::DenseMatrix&,
                           double,
                           double,
-                          DenseMatrix& );
+                          Datatypes::DenseMatrix& );
 						  
-  inline void bem_sing( const Vector&,
-                          const Vector&,
-                          const Vector&,
+  void bem_sing( const Geometry::Vector&,
+                          const Geometry::Vector&,
+                          const Geometry::Vector&,
                           unsigned int,
-                          DenseMatrix&,
+                          Datatypes::DenseMatrix&,
                           double,
                           double,
-                          DenseMatrix& );
+                          Datatypes::DenseMatrix& );
 
-  inline double get_new_auto_g( const Vector&,
-                                const Vector&,
-                                const Vector& );
+  double get_new_auto_g( const Geometry::Vector&,
+                                const Geometry::Vector&,
+                                const Geometry::Vector& );
    
 public:
 
    void make_cross_G( VMesh*,
                             VMesh*,
-                            DenseMatrixHandle&,
+                            Datatypes::DenseMatrixHandle&,
                             double,
                             double,
                             double,
 			    const std::vector<double>& );
 
   void make_auto_G( VMesh*,
-                           DenseMatrixHandle&,
+                           Datatypes::DenseMatrixHandle&,
                            double,
                            double,
                            double,
 			   const std::vector<double>& );
  
  void make_auto_P( VMesh*,
-                           DenseMatrixHandle&,
+                           Datatypes::DenseMatrixHandle&,
                            double,
                            double,
                            double );
 
 void make_cross_P( VMesh*,
                             VMesh*,
-                            DenseMatrixHandle&,
+                            Datatypes::DenseMatrixHandle&,
                             double,
                             double,
                             double );
@@ -148,4 +142,6 @@ void pre_calc_tri_areas(VMesh*, std::vector<double>&);
 };
 
 
-} // end namespace BioPSE
+}}}}
+
+#endif
