@@ -44,6 +44,8 @@ DEALINGS IN THE SOFTWARE.
 #include <string>
 #include <fstream>
 #include <numeric>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Basis/TriLinearLgn.h>
@@ -491,8 +493,7 @@ double BuildBEMatrixBase::do_radon_g(
 void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
   double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn_)
 {
-  VMesh::Node::size_type nsize; hsurf->size(nsize);
-  auto nnodes = nsize;
+  auto nnodes = numNodes(hsurf);
   h_GG_.reset(new DenseMatrix(nnodes, nnodes, 0.0));
   DenseMatrix& auto_G = *h_GG_;
 
@@ -564,9 +565,7 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
 void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_GG_,
   double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn_)
 {
-  VMesh::Node::size_type nsize1; hsurf1->size(nsize1);
-  VMesh::Node::size_type nsize2; hsurf2->size(nsize2);
-  h_GG_.reset(new DenseMatrix(nsize1, nsize2, 0.0));
+  h_GG_.reset(new DenseMatrix(numNodes(hsurf1), numNodes(hsurf2), 0.0));
   DenseMatrix& cross_G = *h_GG_;
 
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
@@ -1042,9 +1041,9 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   }
 
   std::vector<int> fieldNodeSize(fields.size());
-  std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [&](const bemfield& f) { return numNodes(f.field_); } );
+  std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
   const int totalNodes = std::accumulate(fieldNodeSize.begin(), fieldNodeSize.end(), 0);
-  std::vector<int> blockStarts(fields.size());
+  std::vector<int> blockStarts(fields.size() + 1);
   std::partial_sum(fieldNodeSize.begin(), fieldNodeSize.end(), blockStarts.begin() + 1);
   DenseMatrix EE(totalNodes, totalNodes);
 
@@ -1058,6 +1057,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
         auto field = fields[i].field_;
         auto blockISize = numNodes(field);
         auto block = EE.block(blockStarts[i], blockStarts[i], blockISize, blockISize);
+        std::cout << "EE block " << i << "," << j << " is size " << blockISize << " x " << blockISize << " starting at " << blockStarts[i] << "," << blockStarts[i] << std::endl;
         make_auto_P_compute(field->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
       }
       else
@@ -1067,33 +1067,52 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
         auto blockIJrows = numNodes(fieldI);
         auto blockIJcols = numNodes(fieldJ);
         auto block = EE.block(blockStarts[i],blockStarts[j],blockIJrows,blockIJcols);
+        std::cout << "EE block " << i << "," << j << " is size " << blockIJrows << " x " << blockIJcols << " starting at " << blockStarts[i] << "," << blockStarts[j] << std::endl;
         make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
       }
     }
   }
 
-  #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
-  BlockMatrix EJ(Nfields, Nsources);
+  std::cout << "EE min: " << EE.minCoeff() << std::endl;
+  std::cout << "EE max: " << EE.maxCoeff() << std::endl;
+
+  std::vector<int> sourceFieldNodeSize(sourcefieldindices.size());
+  auto filt = fields | boost::adaptors::filtered([](const bemfield& f) { return f.source; });
+  auto trans = filt | boost::adaptors::transformed([this](const bemfield& f) { return numNodes(f.field_); });
+  //boost::copy(trans, sourceFieldNodeSize.begin());
+  const int totalSourceNodes = std::accumulate(sourceFieldNodeSize.begin(), sourceFieldNodeSize.end(), 0);
+
+  DenseMatrix EJ(totalNodes, totalSourceNodes);
   // Calculate EJ(:,s) in block matrix form
   // ***NOTE THE CHANGE IN INDEXING!!!***
   // (The indices of block columns of EJ correspond to field indices according to "sourcefieldindices", and this affects everything with EJ below this point too!)
   for(int j = 0; j < Nsources; j++)
   {
     // Precalculate triangle areas for this source field/surface
-    std::vector<double> temptriangleareas;
-    pre_calc_tri_areas(fields[sourcefieldindices[j]].field_->vmesh(), temptriangleareas);
-
+    std::vector<double> triangleareas;
+    pre_calc_tri_areas(fields[sourcefieldindices[j]].field_->vmesh(), triangleareas);
+    DenseMatrixHandle tempblockelement;
     for(int i = 0; i < Nfields; i++)
     {
       if (i == sourcefieldindices[j])
-        make_auto_G(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, temptriangleareas);
-      else
-        make_cross_G(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, temptriangleareas);
+      {
+        //auto field = fields[i].field_;
+        //auto blockISize = numNodes(field);
+        //auto block = EJ.block(blockStarts[i], blockStarts[i], blockISize, blockISize);
+        //std::cout << "EJ block " << i << "," << j << " is size " << blockISize << " x " << blockISize << " starting at " << blockStarts[i] << "," << blockStarts[i] << std::endl;
 
-      EJ(i,j) = *tempblockelement;
+        make_auto_G(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
+      }
+      else
+      {
+        make_cross_G(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
+      }
+
+      //EJ(i,j) = *tempblockelement;
     }
   }
 
+    #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
   // Perform deflation on EE matrix
   double deflationconstant = 1/((EE.to_dense())->ncols()); // 1/(# cols of EE)
   BlockMatrix deflationmatrix(Nfields, Nfields);
