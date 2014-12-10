@@ -197,7 +197,7 @@ namespace SCIRun {
         {
         public:
           virtual ~BEMAlgoImpl() {}
-          virtual void doit(const bemfield_vector& fields) const = 0;
+          virtual Datatypes::MatrixHandle doit(const bemfield_vector& fields) const = 0;
         };
 
         typedef boost::shared_ptr<BEMAlgoImpl> BEMAlgoPtr;

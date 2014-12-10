@@ -862,13 +862,13 @@ bool BuildBEMatrixBase::compute_nesting(std::vector<int> &nesting, const std::ve
 class SurfaceAndPoints : public BEMAlgoImpl
 {
 public:
-  virtual void doit(const bemfield_vector& fields) const override;
+  virtual MatrixHandle doit(const bemfield_vector& fields) const override;
 };
 
 class SurfaceToSurface : public BEMAlgoImpl
 {
 public:
-  virtual void doit(const bemfield_vector& fields) const override;
+  virtual MatrixHandle doit(const bemfield_vector& fields) const override;
 };
 
 BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
@@ -947,7 +947,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
   }
 }
 
-void SurfaceToSurface::doit(const bemfield_vector& fields) const
+MatrixHandle SurfaceToSurface::doit(const bemfield_vector& fields) const
 {
   // Math for surface-to-surface BEM algorithm (based on Jeroen Stinstra's BEM Matlab code that's part of SCIRun)
   // -------------------------------------------------------------------------------------------------------------
@@ -998,7 +998,7 @@ void SurfaceToSurface::doit(const bemfield_vector& fields) const
           measurementfieldindices.push_back(i);
         }
       }
-
+#ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
       BlockMatrix EE(Nfields, Nfields);
       BlockMatrix EJ(Nfields, Nsources);
       DenseMatrixHandle tempblockelement;
@@ -1139,11 +1139,12 @@ void SurfaceToSurface::doit(const bemfield_vector& fields) const
 
                                                   //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
                                                   //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
-
+#endif
+return nullptr;
                                                 }
 
 
-                                                void
+                                                MatrixHandle
                                                 SurfaceAndPoints::doit(const bemfield_vector& fields) const
                                                 {
                                                   // NOTE: This is Jeroen's code that has been adapted to fit the new module structure
@@ -1211,12 +1212,5 @@ void SurfaceToSurface::doit(const bemfield_vector& fields) const
                                                         make_auto_G( surface, Gss, 1.0, 0.0, 1.0, area );
                                                         make_cross_G( nodes, surface, Gns, 1.0, 0.0, 1.0, area );
 
-                                                        Gss->invert();
-
-                                                        MatrixHandle mPns = Pns.get_rep();
-                                                        MatrixHandle mGns = Gns.get_rep();
-                                                        MatrixHandle mGss = Gss.get_rep();
-                                                        MatrixHandle mPss = Pss.get_rep();
-
-                                                        TransferMatrix = (mPns - mGns * mGss * mPss)->dense();
+                                                        return boost::make_shared<DenseMatrix>(*Pns - (*Gns * Gss->inverse() * *Pss));
                                                       }
