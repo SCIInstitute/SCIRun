@@ -626,15 +626,31 @@ void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
   }
 }
 
+class BuildBEMatrixBaseCompute : public BuildBEMatrixBase
+{
+public:
+  template <class MatrixType>
+  static void make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond, double op_cond);
+
+  template <class MatrixType>
+  static void make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_P, double in_cond, double out_cond, double op_cond);
+};
+
+void BuildBEMatrixBase::make_cross_P_allocate(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_PP_)
+{
+  h_PP_.reset(new DenseMatrix(numNodes(hsurf1), numNodes(hsurf2), 0.0));
+}
+
 void BuildBEMatrixBase::make_cross_P(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_PP_,
   double in_cond, double out_cond, double op_cond)
 {
-  VMesh::Node::size_type nsize1; hsurf1->size(nsize1);
-  VMesh::Node::size_type nsize2; hsurf2->size(nsize2);
-  h_PP_.reset(new DenseMatrix(nsize1, nsize2, 0.0));
-  DenseMatrix& cross_P = *h_PP_;
+  make_cross_P_allocate(hsurf1, hsurf2, h_PP_);
+  BuildBEMatrixBaseCompute::make_cross_P_compute(hsurf1, hsurf2, *h_PP_, in_cond, out_cond, op_cond);
+}
 
-  //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);
+template <class MatrixType>
+void BuildBEMatrixBaseCompute::make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_P, double in_cond, double out_cond, double op_cond)
+{
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
   //   out_cond and in_cond belong to hsurf2 and op_cond is the out_cond of hsurf1 for all the surfaces but the outermost surface which in op_cond=in_cond
   VMesh::Node::array_type nodes;
@@ -661,39 +677,30 @@ void BuildBEMatrixBase::make_cross_P(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
 
       for (i=0; i<3; ++i)
         cross_P(ppi, nodes[i])-=coef(0,i)*mult;
-
     }
   }
 }
 
 void BuildBEMatrixBase::make_auto_P_allocate(VMesh* hsurf, DenseMatrixHandle &h_PP_)
 {
-  auto nnodes = auto_P_size(hsurf);
+  auto nnodes = numNodes(hsurf);
   h_PP_.reset(new DenseMatrix(nnodes, nnodes, 0.0));
 }
 
-int BuildBEMatrixBase::auto_P_size(FieldHandle f)
+int BuildBEMatrixBase::numNodes(FieldHandle f)
 {
-  return auto_P_size(f->vmesh());
+  return numNodes(f->vmesh());
 }
 
-int BuildBEMatrixBase::auto_P_size(VMesh* hsurf)
+int BuildBEMatrixBase::numNodes(VMesh* hsurf)
 {
   VMesh::Node::size_type nsize; 
   hsurf->size(nsize);
   return static_cast<int>(nsize);
 }
 
-class BuildBEMatrixBaseCompute : public BuildBEMatrixBase
-{
-public:
-  template <class MatrixType>
-  static void make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond, double op_cond);
-};
-
 template <class MatrixType>
-void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P,
-  double in_cond, double out_cond, double op_cond)
+void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond, double op_cond)
 {
   auto nnodes = auto_P.rows();
 
@@ -1032,7 +1039,11 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     }
   }
 
-  const int totalNodes = std::accumulate(fields.begin(), fields.end(), 0, [&](int acc, const bemfield& f) { return acc + auto_P_size(f.field_); } );
+  std::vector<int> fieldNodeSize(fields.size());
+  std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [&](const bemfield& f) { return numNodes(f.field_); } );
+  const int totalNodes = std::accumulate(fieldNodeSize.begin(), fieldNodeSize.end(), 0);
+  std::vector<int> blockStarts(fields.size());
+  std::partial_sum(fieldNodeSize.begin(), fieldNodeSize.end(), blockStarts.begin() + 1);
   DenseMatrix EE(totalNodes, totalNodes);
 
   DenseMatrixHandle tempblockelement;
@@ -1045,12 +1056,19 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     {
       if (i == j)
       {
-        auto blockISize = auto_P_size(fields[i].field_);
+        auto field = fields[i].field_;
+        auto blockISize = numNodes(field);
         diagonalBlockStart += blockISize;
-        make_auto_P_compute(fields[i].field_->vmesh(), EE.block(diagonalBlockStart, diagonalBlockStart, blockISize, blockISize), fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+        make_auto_P_compute(field->vmesh(), EE.block(diagonalBlockStart, diagonalBlockStart, blockISize, blockISize), fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
       }
       else
-        make_cross_P(fields[i].field_->vmesh(), fields[j].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+      {
+        auto fieldI = fields[i].field_;
+        auto fieldJ = fields[j].field_;
+        auto blockIJrows = numNodes(fieldI);
+        auto blockIJcols = numNodes(fieldJ);
+        make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), EE.block(blockStarts[i],blockStarts[j],blockIJrows,blockIJcols), fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+      }
 
       //EE(i,j) = *tempblockelement;
     }

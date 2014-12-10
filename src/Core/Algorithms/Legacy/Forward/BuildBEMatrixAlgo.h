@@ -131,8 +131,8 @@ namespace SCIRun {
             double,
             double );
 
-          static int auto_P_size(FieldHandle f);
-          static int auto_P_size(VMesh* hsurf);
+          static int numNodes(FieldHandle f);
+          static int numNodes(VMesh* hsurf);
           static void make_auto_P_allocate( VMesh*,
             Datatypes::DenseMatrixHandle&);
 
@@ -142,6 +142,13 @@ namespace SCIRun {
             double,
             double,
             double );
+
+          static void make_cross_P_allocate( VMesh*,
+            VMesh*, Datatypes::DenseMatrixHandle&);
+          static int cross_P_rows(FieldHandle f);
+          static int cross_P_rows(VMesh* hsurf);
+          static int cross_P_cols(FieldHandle f);
+          static int cross_P_cols(VMesh* hsurf);
 
           static void pre_calc_tri_areas(VMesh*, std::vector<double>&);
 
