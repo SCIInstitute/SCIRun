@@ -411,18 +411,19 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), 
-      portAlpha()), type, 
-      moduleId, port->id(), 
-      i, port->isDynamic(), connectionFactory_, 
-      closestPortFinder_, 
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
+      portAlpha()), type,
+      moduleId, port->id(),
+      i, port->isDynamic(), connectionFactory_,
+      closestPortFinder_,
       0,
       this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
     ++i;
-    dialog_->updateFromPortChange(i);
+    if (dialog_)
+      dialog_->updateFromPortChange(i);
   }
   addInputPortsToLayout();
 }
@@ -447,11 +448,11 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
   BOOST_FOREACH(OutputPortHandle port, moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), 
-      type, moduleId, port->id(), i, port->isDynamic(), 
-      connectionFactory_, 
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
+      type, moduleId, port->id(), i, port->isDynamic(),
+      connectionFactory_,
       closestPortFinder_,
-      port->getPortDataDescriber(), 
+      port->getPortDataDescriber(),
       this);
     hookUpGeneralPortSignals(w);
     ports_->addPort(w);
@@ -734,7 +735,8 @@ void ModuleWidget::makeOptionsDialog()
 
 void ModuleWidget::updateDialogWithPortCount()
 {
-  dialog_->updateFromPortChange(numInputPorts());
+  if (dialog_)
+    dialog_->updateFromPortChange(numInputPorts());
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
