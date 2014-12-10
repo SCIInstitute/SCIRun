@@ -42,12 +42,17 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Forward/share.h>
 
 namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Forward {
+
+        ALGORITHM_PARAMETER_DECL(BoundaryConditionList);
+        ALGORITHM_PARAMETER_DECL(InsideConductivityList);
+        ALGORITHM_PARAMETER_DECL(OutsideConductivityList);
 
         class SCISHARE BuildBEMatrixBase
         {

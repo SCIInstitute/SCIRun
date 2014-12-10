@@ -57,7 +57,9 @@ using namespace SCIRun::Core::Algorithms::Forward;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-//typedef SCIRun::TriSurfMesh<TriLinearLgn<Point> > TSMesh;
+ALGORITHM_PARAMETER_DEF(Forward, BoundaryConditionList);
+ALGORITHM_PARAMETER_DEF(Forward, InsideConductivityList);
+ALGORITHM_PARAMETER_DEF(Forward, OutsideConductivityList);
 
 void BuildBEMatrixBase::getOmega(
   const Vector& y1,
