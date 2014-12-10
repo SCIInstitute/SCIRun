@@ -977,7 +977,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   //
 
   const int Nfields = fields.size();
-  double op_cond=0.0; // op_cond is not used in this formulation -- someone needs to check this math and make a better decision about how to handle this value below
+  //double op_cond=0.0; // op_cond is not used in this formulation -- someone needs to check this math and make a better decision about how to handle this value below
 
   // Count the number of fields that have been specified as being "sources" or "measurements" (and keep track of indices)
   int Nsources = 0;

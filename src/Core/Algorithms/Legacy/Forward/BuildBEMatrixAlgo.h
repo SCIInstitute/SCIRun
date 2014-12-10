@@ -171,7 +171,7 @@ namespace SCIRun {
             this->neumann = false;
           }
 
-          void set_measuremen_neumann()
+          void set_measurement_neumann()
           {
             this->source = false;
             this->dirichlet = false;
