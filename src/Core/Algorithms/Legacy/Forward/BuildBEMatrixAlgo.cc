@@ -1077,9 +1077,12 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   std::cout << "EE max: " << EE.maxCoeff() << std::endl;
 
   std::vector<int> sourceFieldNodeSize(sourcefieldindices.size());
-  auto filt = fields | boost::adaptors::filtered([](const bemfield& f) { return f.source; });
-  auto trans = filt | boost::adaptors::transformed([this](const bemfield& f) { return numNodes(f.field_); });
+  auto sourceFields = fields | boost::adaptors::filtered([](const bemfield& f) { return f.source; });
+  //following doesn't compile in VS2010, but does in clang: enable it after upgrading to 2013
+  //auto transformer = [this](const bemfield& f) -> int { return numNodes(f.field_); };
+  //auto trans = filt | boost::adaptors::transformed(transformer);
   //boost::copy(trans, sourceFieldNodeSize.begin());
+  std::transform(sourceFields.begin(), sourceFields.end(), sourceFieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
   const int totalSourceNodes = std::accumulate(sourceFieldNodeSize.begin(), sourceFieldNodeSize.end(), 0);
 
   DenseMatrix EJ(totalNodes, totalSourceNodes);
