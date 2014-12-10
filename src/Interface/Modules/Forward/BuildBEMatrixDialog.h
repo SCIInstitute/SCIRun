@@ -36,14 +36,14 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE BuildBEMatrixDialog : public ModuleDialogGeneric, 
+
+class SCISHARE BuildBEMatrixDialog : public ModuleDialogGeneric,
   public Ui::BuildBEMatrix
 {
 	Q_OBJECT
-	
+
 public:
-  BuildBEMatrixDialog(const std::string& name, 
+  BuildBEMatrixDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
 public Q_SLOTS:
@@ -53,6 +53,7 @@ private Q_SLOTS:
   void push();
 private:
   QComboBox* makeComboBoxItem(int i) const;
+  QDoubleSpinBox* makeDoubleEntryItem(int row, int col) const;
 };
 
 }

@@ -56,8 +56,8 @@ void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
     tableWidget->setItem(i, 0, new QTableWidgetItem("field" + QString::number(i)));
     tableWidget->setItem(i, 1, new QTableWidgetItem("[populated on execute]"));
     tableWidget->setCellWidget(i, 2, makeComboBoxItem(i));
-    tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(i % 2)));
-    tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number((i+1) % 2)));
+    tableWidget->setCellWidget(i, 3, makeDoubleEntryItem(i, 3));
+    tableWidget->setCellWidget(i, 4, makeDoubleEntryItem(i, 4));
 
     // type is readonly
     auto type = tableWidget->item(i, 1);
@@ -76,6 +76,14 @@ QComboBox* BuildBEMatrixDialog::makeComboBoxItem(int i) const
   bcBox->setCurrentIndex(i == 0 ? 0 : 1);
   //connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(pushComboBoxChange(int)));
   return bcBox;
+}
+
+QDoubleSpinBox* BuildBEMatrixDialog::makeDoubleEntryItem(int row, int col) const
+{
+  auto spin = new QDoubleSpinBox();
+  spin->setValue((row + col + 1) % 2);
+  //connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(pushComboBoxChange(int)));
+  return spin;
 }
 
 void BuildBEMatrixDialog::push()
