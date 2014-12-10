@@ -500,12 +500,7 @@ public:
   static void make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_P, double in_cond, double out_cond, double op_cond);
 
   template <class MatrixType>
-  static void make_auto_G_compute( VMesh*,
-  MatrixType&,
-  double,
-  double,
-  double,
-  const std::vector<double>& );
+  static void make_auto_G_compute(VMesh* hsurf, MatrixType& auto_G, double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn);
 
   template <class MatrixType>
   static void make_cross_G_compute( VMesh*,
@@ -524,11 +519,16 @@ void BuildBEMatrixBase::make_auto_G_allocate(VMesh* hsurf, DenseMatrixHandle &h_
 }
 
 void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
-  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn_)
+double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn)
 {
   make_auto_G_allocate(hsurf, h_GG_);
-  DenseMatrix& auto_G = *h_GG_;
+  BuildBEMatrixBaseCompute::make_auto_G_compute(hsurf, *h_GG_, in_cond, out_cond, op_cond, avInn);
+}
 
+template <class MatrixType>
+void BuildBEMatrixBaseCompute::make_auto_G_compute(VMesh* hsurf, MatrixType& auto_G,
+  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn)
+{
   //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
 
@@ -566,7 +566,7 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
     Vector p2(hsurf->get_point(nodes[1]));
     Vector p3(hsurf->get_point(nodes[2]));
 
-    area = avInn_[*fi];
+    area = avInn[*fi];
 
     get_cruse_weights(p1, p2, p3, s, r, area, cruse_weights);
     Vector centroid = (p1 + p2 + p3) / 3.0;
@@ -594,12 +594,22 @@ void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
   }
 }
 
-void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_GG_,
-  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn_)
+void BuildBEMatrixBase::make_cross_G_allocate(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_GG_)
 {
   h_GG_.reset(new DenseMatrix(numNodes(hsurf1), numNodes(hsurf2), 0.0));
-  DenseMatrix& cross_G = *h_GG_;
+}
 
+void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_GG_,
+  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn)
+{
+  make_cross_G_allocate(hsurf1, hsurf2, h_GG_);
+  BuildBEMatrixBaseCompute::make_cross_G_compute(hsurf1, hsurf2, *h_GG_, in_cond, out_cond, op_cond, avInn);
+}
+
+template <class MatrixType>
+void BuildBEMatrixBaseCompute::make_cross_G_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_G,
+  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn)
+{
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
   //   out_cond and in_cond belong to hsurf2 and op_cond is the out_cond of hsurf1 for all the surfaces but the outermost surface which in op_cond=in_cond
 
@@ -637,7 +647,7 @@ void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
     Vector p2(hsurf2->get_point(nodes[1]));
     Vector p3(hsurf2->get_point(nodes[2]));
 
-    area = avInn_[*fi];
+    area = avInn[*fi];
 
     get_cruse_weights(p1, p2, p3, s, r, area, cruse_weights);
     Vector centroid = (p1 + p2 + p3) / 3.0;
