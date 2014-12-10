@@ -41,102 +41,26 @@
  *
  */
 
-//#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystem.h>
-
-#include <Modules/Legacy/Forward/BuildBEMatrix.h>
+#include <Modules/Legacy/Forward/BuildBEMatrixImpl.h>
 #include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
-
-#include <Core/Utils/Legacy/StringUtil.h>
-#include <Core/Math/MiscMath.h>
-
-#include <algorithm>
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/constants.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Forward;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Forward;
 
-namespace balgo=boost::algorithm;
-
-
-class BuildBEMatrix : public Module, public BuildBEMatrixBase
+MatrixHandle BuildBEMatrixImpl::executeImpl(const FieldList& inputs) const
 {
-public:
-
-  virtual void execute();
-
-private:
-  // BURAK EDITS:
-  void algoSurfaceToNodes();
-  void algoSurfacesToSurfaces();
-  int detectBEMalgo();
-
-  DenseMatrixHandle TransferMatrix;
-
-  MatrixHandle hZoi_;
-  int old_nodes_generation_;
-  int old_surface_generation_;
-  bool process_gui_vars_;
-
-  GuiString guiselected_field_;
-  GuiString guiselected_type_;
-
-  GuiString guifields_;
-  GuiString guifield_type_property_;
-  GuiString guifield_inside_cond_property_;
-  GuiString guifield_outside_cond_property_;
-  GuiString guifield_surface_type_property_;
-
-  bemfield_vector fields_;
-};
-
-// TODO: move into class?
-std::vector<int> field_generation_no_old, old_nesting;
-std::vector<double> old_conductivities;
-
-BuildBEMatrix::BuildBEMatrix(GuiContext *context):
-  Module("BuildBEMatrix", context, Source, "Forward", "BioPSE"),
-  old_nodes_generation_( -1 ),
-  old_surface_generation_( -1 ),
-  process_gui_vars_(false),
-  guiselected_field_(get_ctx()->subVar("selected_field", false), ""),
-  guiselected_type_(get_ctx()->subVar("selected_field_type", false), ""),
-  guifields_(get_ctx()->subVar("input_field_list"), ""),
-  guifield_type_property_(get_ctx()->subVar("field_type_list"), ""),
-  guifield_inside_cond_property_(get_ctx()->subVar("inside_cond_list"), ""),
-  guifield_outside_cond_property_(get_ctx()->subVar("outside_cond_list"), ""),
-  guifield_surface_type_property_(get_ctx()->subVar("surface_type_list"), "")
-{}
-
-void
-BuildBEMatrixImpl::execute()
-{
-
-  if (this->inputs_changed_)
-  {
-    this->fields_.clear();
+    bemfield_vector fields;
 
     BOOST_FOREACH(FieldHandle input, inputs)
     {
       bemfield field(field_handle);
 
-      // don't think the strings need to be quoted, but if they do,
-      // quote using {}
-      fieldlist << "field" << i;
-
       // setting field type
-      VMesh* vmesh = inputs[i]->vmesh();
+      VMesh* vmesh = input->vmesh();
       if (vmesh->is_trisurfmesh())
       {
         field.surface = true;
@@ -155,11 +79,12 @@ BuildBEMatrixImpl::execute()
         fieldtype << "unknown";
       }
 
-      this->fields_.push_back(field);
+      fields.push_back(field);
     }
-  }
 
 
+//TODO
+#if 0
   // set flags based on gui table values
   {
 
@@ -181,37 +106,20 @@ BuildBEMatrixImpl::execute()
           }
 
   }
+  #endif
 
   // The specific BEM routine (2 so far) to be called is dependent on the inputs in the fields vector,
   // so we check for the conditions and call the appropriate routine:
-  int BEMalgo = detectBEMalgo();
+  auto BEMalgo = BEMAlgoImplFactory::create(fields);
 
-  switch(BEMalgo)
+  if (!BEMalgo)
   {
-  case UNSUPPORTED:
+//  case UNSUPPORTED:
     // We don't support the inputs and detectBEMalgo() should have reported the appropriate error, so just return
     //
     // TODO: error message needs improvement
     error("The combinations of input properties is not supported. Please see documentation for supported input field options.");
     return;
-
-  case SURFACE_AND_POINTS:
-    // BEMalgo == 1 means we've detected the special case of two fields with a surface outside and points inside
-    algoSurfaceToNodes();
-	break;
-
-  case SURFACES_TO_SURFACES:
-    // BEMalgo == 2 means we've detected the surfaces to surfaces case
-    algoSurfacesToSurfaces();
-	break;
-
-  default:
-    // Should never happen, but return with an error
-    error("Unable to detect the appropriate algorithm and the reason is unknown. Please report this error to the developers.");
-    return;
   }
-
-  // The BEM algorithms populate a matrix with handle "TransferMatrix". At this point all we have to do is send it as output.
-  send_output_handle("BEM Forward Matrix", TransferMatrix);
-
+  return BEMalgo->compute(fields);
 }
