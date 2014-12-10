@@ -1144,7 +1144,7 @@ void SurfaceToSurface::doit(const bemfield_vector& fields) const
 
 
                                                 void
-                                                BuildBEMatrixImpl::algoSurfaceToNodes()
+                                                SurfaceAndPoints::doit(const bemfield_vector& fields) const
                                                 {
                                                   // NOTE: This is Jeroen's code that has been adapted to fit the new module structure
                                                   //
@@ -1192,10 +1192,10 @@ void SurfaceToSurface::doit(const bemfield_vector& fields) const
 
                                                   for (int i=0; i<2; i++)
                                                     {
-                                                      if (this->fields_[i].surface)
-                                                        surface = this->fields_[i].field_->vmesh();
+                                                      if (fields[i].surface)
+                                                        surface = fields[i].field_->vmesh();
                                                         else
-                                                          nodes = this->fields_[i].field_->vmesh();
+                                                          nodes = fields[i].field_->vmesh();
                                                         }
 
                                                         DenseMatrixHandle Pss;
@@ -1220,4 +1220,3 @@ void SurfaceToSurface::doit(const bemfield_vector& fields) const
 
                                                         TransferMatrix = (mPns - mGns * mGss * mPss)->dense();
                                                       }
-                                                      
