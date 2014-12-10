@@ -1048,9 +1048,6 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   std::partial_sum(fieldNodeSize.begin(), fieldNodeSize.end(), blockStarts.begin() + 1);
   DenseMatrix EE(totalNodes, totalNodes);
 
-  DenseMatrixHandle tempblockelement;
-  int diagonalBlockStart = 0;
-
   // Calculate EE in block matrix form
   for(int i = 0; i < Nfields; i++)
   {
@@ -1060,8 +1057,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       {
         auto field = fields[i].field_;
         auto blockISize = numNodes(field);
-        diagonalBlockStart += blockISize;
-        make_auto_P_compute(field->vmesh(), EE.block(diagonalBlockStart, diagonalBlockStart, blockISize, blockISize), fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+        auto block = EE.block(blockStarts[i], blockStarts[i], blockISize, blockISize);
+        make_auto_P_compute(field->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
       }
       else
       {
@@ -1069,10 +1066,9 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
         auto fieldJ = fields[j].field_;
         auto blockIJrows = numNodes(fieldI);
         auto blockIJcols = numNodes(fieldJ);
-        make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), EE.block(blockStarts[i],blockStarts[j],blockIJrows,blockIJcols), fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+        auto block = EE.block(blockStarts[i],blockStarts[j],blockIJrows,blockIJcols);
+        make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
       }
-
-      //EE(i,j) = *tempblockelement;
     }
   }
 

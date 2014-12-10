@@ -564,7 +564,7 @@ bool BuildMappingMatrixAlgo::runImpl(FieldHandle source, FieldHandle destination
     return (false);  
   }
 
-  size_type n,m,nnz,e; 
+  size_type n = 0,m = 0,nnz = 0,e; 
 
   if (method == "closestdata")
   {
