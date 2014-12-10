@@ -177,9 +177,9 @@ void triCubeGeometry(FieldHandle field)
   vmesh->add_elem(vdata12);
 }
 
-FieldHandle CubeTetVolConstantBasis()
+FieldHandle CubeTetVolConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, CONSTANTDATA_E, DOUBLE_E);
+  FieldInformation fi(TETVOLMESH_E, CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
   
   tetCubeGeometry(field);
@@ -187,9 +187,9 @@ FieldHandle CubeTetVolConstantBasis()
   return field;
 }
 
-FieldHandle CubeTetVolLinearBasis()
+FieldHandle CubeTetVolLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, LINEARDATA_E, DOUBLE_E);
+  FieldInformation fi(TETVOLMESH_E, LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   tetCubeGeometry(field);
@@ -197,9 +197,9 @@ FieldHandle CubeTetVolLinearBasis()
   return field;
 }
 
-FieldHandle TetrahedronTetVolConstantBasis()
+FieldHandle TetrahedronTetVolConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, CONSTANTDATA_E, DOUBLE_E);
+  FieldInformation fi(TETVOLMESH_E, CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
 
   tetTetrahedronGeometry(field);
@@ -207,9 +207,9 @@ FieldHandle TetrahedronTetVolConstantBasis()
   return field;
 }
 
-FieldHandle TetrahedronTetVolLinearBasis()
+FieldHandle TetrahedronTetVolLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, LINEARDATA_E, DOUBLE_E);
+  FieldInformation fi(TETVOLMESH_E, LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
   
   tetTetrahedronGeometry(field);
@@ -217,9 +217,9 @@ FieldHandle TetrahedronTetVolLinearBasis()
   return field;
 }
 
-FieldHandle TriangleTriSurfConstantBasis()
+FieldHandle TriangleTriSurfConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, DOUBLE_E);
+  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
   
   triTriangleGeometry(field);
@@ -227,9 +227,9 @@ FieldHandle TriangleTriSurfConstantBasis()
   return field;
 }
 
-FieldHandle TriangleTriSurfLinearBasis()
+FieldHandle TriangleTriSurfLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, DOUBLE_E);
+  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
   
   triTriangleGeometry(field);
@@ -237,9 +237,9 @@ FieldHandle TriangleTriSurfLinearBasis()
   return field;
 }
 
-FieldHandle TetrahedronTriSurfConstantBasis()
+FieldHandle TetrahedronTriSurfConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, DOUBLE_E);
+  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
   
   triTetrahedronGeometry(field);
@@ -247,9 +247,9 @@ FieldHandle TetrahedronTriSurfConstantBasis()
   return field;
 }
 
-FieldHandle TetrahedronTriSurfLinearBasis()
+FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, DOUBLE_E);
+  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
   
   triTetrahedronGeometry(field);
@@ -257,9 +257,9 @@ FieldHandle TetrahedronTriSurfLinearBasis()
   return field;
 }
 
-FieldHandle CubeTriSurfConstantBasis()
+FieldHandle CubeTriSurfConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, DOUBLE_E);
+  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, type);
   FieldHandle field = CreateField(fi);
   
   triCubeGeometry(field);
@@ -267,9 +267,9 @@ FieldHandle CubeTriSurfConstantBasis()
   return field;
 }
 
-FieldHandle CubeTriSurfLinearBasis()
+FieldHandle CubeTriSurfLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, DOUBLE_E);
+  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, type);
   FieldHandle field = CreateField(fi);
   
   triCubeGeometry(field);

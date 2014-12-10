@@ -31,8 +31,7 @@
 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-/// Utility file containing empty and very small fields (no data).
-
+/// Utility file containing empty and very small fields (no data set, only types).
 
 namespace SCIRun
 {
@@ -43,48 +42,48 @@ namespace TestUtils
 // TODO: more field and basis types needed
 
 inline
-FieldHandle EmptyTetVolFieldConstantBasis()
+FieldHandle EmptyTetVolFieldConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, CONSTANTDATA_E, DOUBLE_E);
+  FieldInformation fi(TETVOLMESH_E, CONSTANTDATA_E, type);
   return( CreateField(fi) );
 }
 
 inline
-FieldHandle EmptyTetVolFieldLinearBasis()
+FieldHandle EmptyTetVolFieldLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TETVOLMESH_E, LINEARDATA_E, DOUBLE_E);
+  FieldInformation fi(TETVOLMESH_E, LINEARDATA_E, type);
   return( CreateField(fi) );
 }
 
 inline
-FieldHandle EmptyTriSurfFieldConstantBasis()
+FieldHandle EmptyTriSurfFieldConstantBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, DOUBLE_E);
+  FieldInformation fi(TRISURFMESH_E, CONSTANTDATA_E, type);
   return( CreateField(fi) );
 }
 
 inline
-FieldHandle EmptyTriSurfFieldLinearBasis()
+FieldHandle EmptyTriSurfFieldLinearBasis(data_info_type type)
 {
-  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, DOUBLE_E);
+  FieldInformation fi(TRISURFMESH_E, LINEARDATA_E, type);
   return( CreateField(fi) );
 }
 
 
-FieldHandle CubeTetVolConstantBasis();
-FieldHandle CubeTetVolLinearBasis();
+FieldHandle CubeTetVolConstantBasis(data_info_type type);
+FieldHandle CubeTetVolLinearBasis(data_info_type type);
 
-FieldHandle TetrahedronTetVolConstantBasis();
-FieldHandle TetrahedronTetVolLinearBasis();
+FieldHandle TetrahedronTetVolConstantBasis(data_info_type type);
+FieldHandle TetrahedronTetVolLinearBasis(data_info_type type);
 
-FieldHandle TriangleTriSurfConstantBasis();
-FieldHandle TriangleTriSurfLinearBasis();
+FieldHandle TriangleTriSurfConstantBasis(data_info_type type);
+FieldHandle TriangleTriSurfLinearBasis(data_info_type type);
 
-FieldHandle CubeTriSurfConstantBasis();
-FieldHandle CubeTriSurfLinearBasis();
+FieldHandle CubeTriSurfConstantBasis(data_info_type type);
+FieldHandle CubeTriSurfLinearBasis(data_info_type type);
 
-FieldHandle TetrahedronTriSurfConstantBasis();
-FieldHandle TetrahedronTriSurfLinearBasis();
+FieldHandle TetrahedronTriSurfConstantBasis(data_info_type type);
+FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type);
 
 }}
 
