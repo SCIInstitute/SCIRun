@@ -43,7 +43,7 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
   tableWidget->resizeColumnsToContents();
 
   //connect(StatisticsOutput_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
-  //connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));  
+  //connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }
 
 void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
@@ -73,7 +73,7 @@ QComboBox* BuildBEMatrixDialog::makeComboBoxItem(int i) const
   bcList << "Measurement (Neumann)" << "Source (Dirichlet)";
   QComboBox* bcBox = new QComboBox();
   bcBox->addItems(bcList);
-  bcBox->setCurrentIndex(i % 2 + 1);
+  bcBox->setCurrentIndex(i == 0 ? 0 : 1);
   //connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(pushComboBoxChange(int)));
   return bcBox;
 }
@@ -81,12 +81,12 @@ QComboBox* BuildBEMatrixDialog::makeComboBoxItem(int i) const
 void BuildBEMatrixDialog::push()
 {
   //if (!pulling_)
-  //{    
+  //{
   //  QPalette* palette = new QPalette();
   //  palette->setColor(QPalette::Text,Qt::red);
   //  StatisticsTableGroupBox->setPalette(*palette);
 
-  //  /// get user specified ROI data, put it in a DenseMatrix and ship it to state  
+  //  /// get user specified ROI data, put it in a DenseMatrix and ship it to state
   //  auto X = SpecifyROI_tabWidget->item(0,0)->text().toDouble();
   //  auto Y = SpecifyROI_tabWidget->item(0,1)->text().toDouble();
   //  auto Z = SpecifyROI_tabWidget->item(0,2)->text().toDouble();
@@ -147,4 +147,3 @@ void BuildBEMatrixDialog::pull()
   //  ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));
   //}
 }
-

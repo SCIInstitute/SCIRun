@@ -69,27 +69,6 @@ using namespace SCIRun::Modules::Forward;
 
 namespace balgo=boost::algorithm;
 
-namespace detail {
-
-enum BEM_ALGO_TYPE {
-  UNSUPPORTED = -1,
-  SURFACE_AND_POINTS = 1,
-  SURFACES_TO_SURFACES
-};
-
-// Unfortunately, there is no clean way to map this to TCL.
-// See method ui for code that sets up radiobuttons
-// in BuildBEMatrix.tcl.
-enum GUI_SURFACE_TYPE {
-  SOURCE = 0,
-  MEASUREMENT
-};
-
-// TODO: lets use intercap for class name when it's moved to an algorithm
-//
-// initial conditions: first should be measurement, rest source
-
-
 
 class BuildBEMatrix : public Module, public BuildBEMatrixBase
 {
@@ -140,28 +119,16 @@ BuildBEMatrix::BuildBEMatrix(GuiContext *context):
   guifield_surface_type_property_(get_ctx()->subVar("surface_type_list"), "")
 {}
 
-// BURAK EDITS:
-
 void
-BuildBEMatrix::execute()
+BuildBEMatrixImpl::execute()
 {
-  std::vector<FieldHandle> inputs;
-  get_dynamic_input_handles("Surface", inputs, true);
-
-  const std::size_t INPUTS_LEN = inputs.size(), INPUT_LEN_LAST_INDEX = INPUTS_LEN - 1;
 
   if (this->inputs_changed_)
   {
     this->fields_.clear();
-    this->fields_.reserve(INPUTS_LEN);
 
-    for (std::vector<FieldHandle>::size_type i = 0; i < INPUTS_LEN; ++i)
+    BOOST_FOREACH(FieldHandle input, inputs)
     {
-      FieldHandle field_handle = inputs[i];
-      // TODO: from old code - needed?
-      field_handle.detach();
-      field_handle->mesh_detach();
-
       bemfield field(field_handle);
 
       // don't think the strings need to be quoted, but if they do,
@@ -192,7 +159,8 @@ BuildBEMatrix::execute()
     }
   }
 
-  if (true)
+
+  // set flags based on gui table values
   {
 
 
