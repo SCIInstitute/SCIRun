@@ -81,31 +81,30 @@ bool BuildMatrixOfSurfaceNormalsAlgo::runImpl(FieldHandle input, DenseMatrixHand
     return (false);
   }
 
-  index_type k = 0;
+	VMesh::Node::index_type k = 0;
   int cnt = 0;
   Vector norm;
   for (VMesh::Node::index_type i=0; i<num_nodes; ++i)
   {
     vmesh->get_normal(norm,i); 
-    (*output)(i,k) = norm.x();
-		(*output)(i,k+1) = norm.y();
-		(*output)(i,k+2) = norm.z(); 
+    (*output)(k) = norm.x();
+		(*output)(k+1) = norm.y();
+		(*output)(k+2) = norm.z(); 
     k += 3;
     cnt++; if (cnt == 400) {cnt=0; update_progress_max(i,num_nodes); }
   }
-  
   return (true);
 }
 
 AlgorithmOutput BuildMatrixOfSurfaceNormalsAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
-	DenseMatrixHandle outputField; 
+	DenseMatrixHandle outputMatrix; 
 
-	if(!runImpl(field, outputField))
+	if(!runImpl(field, outputMatrix))
 			THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy call."); 
 
   AlgorithmOutput output;
-  output[Variables::OutputField] = outputField;
+  output[Variables::OutputMatrix] = outputMatrix;
   return output;
 }
