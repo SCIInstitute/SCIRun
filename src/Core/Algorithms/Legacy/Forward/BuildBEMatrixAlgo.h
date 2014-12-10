@@ -131,6 +131,8 @@ namespace SCIRun {
             double,
             double );
 
+          static int auto_P_size(FieldHandle f);
+          static int auto_P_size(VMesh* hsurf);
           static void make_auto_P_allocate( VMesh*,
             Datatypes::DenseMatrixHandle&);
 
@@ -201,7 +203,7 @@ namespace SCIRun {
 
         typedef std::vector<bemfield> bemfield_vector;
 
-        class SCISHARE BEMAlgoImpl : public BuildBEMatrixBase
+        class SCISHARE BEMAlgoImpl
         {
         public:
           virtual ~BEMAlgoImpl() {}

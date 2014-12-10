@@ -43,6 +43,7 @@ DEALINGS IN THE SOFTWARE.
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <numeric>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Basis/TriLinearLgn.h>
@@ -667,13 +668,23 @@ void BuildBEMatrixBase::make_cross_P(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
 
 void BuildBEMatrixBase::make_auto_P_allocate(VMesh* hsurf, DenseMatrixHandle &h_PP_)
 {
-  VMesh::Node::size_type nsize; 
-  hsurf->size(nsize);
-  auto nnodes = nsize;
+  auto nnodes = auto_P_size(hsurf);
   h_PP_.reset(new DenseMatrix(nnodes, nnodes, 0.0));
 }
 
-class BuildBEMatrixBaseHelper : public BuildBEMatrixBase
+int BuildBEMatrixBase::auto_P_size(FieldHandle f)
+{
+  return auto_P_size(f->vmesh());
+}
+
+int BuildBEMatrixBase::auto_P_size(VMesh* hsurf)
+{
+  VMesh::Node::size_type nsize; 
+  hsurf->size(nsize);
+  return static_cast<int>(nsize);
+}
+
+class BuildBEMatrixBaseCompute : public BuildBEMatrixBase
 {
 public:
   template <class MatrixType>
@@ -681,7 +692,7 @@ public:
 };
 
 template <class MatrixType>
-void BuildBEMatrixBaseHelper::make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P,
+void BuildBEMatrixBaseCompute::make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P,
   double in_cond, double out_cond, double op_cond)
 {
   auto nnodes = auto_P.rows();
@@ -732,7 +743,7 @@ void BuildBEMatrixBase::make_auto_P(VMesh* hsurf, DenseMatrixHandle &h_PP_,
   double in_cond, double out_cond, double op_cond)
 {
   make_auto_P_allocate(hsurf, h_PP_);
-  BuildBEMatrixBaseHelper::make_auto_P_compute(hsurf, *h_PP_, in_cond, out_cond, op_cond);
+  BuildBEMatrixBaseCompute::make_auto_P_compute(hsurf, *h_PP_, in_cond, out_cond, op_cond);
 }
 
 // precalculate triangles area
@@ -881,13 +892,13 @@ bool BuildBEMatrixBase::compute_nesting(std::vector<int> &nesting, const std::ve
   return true;
 }
 
-class SurfaceAndPoints : public BEMAlgoImpl
+class SurfaceAndPoints : public BEMAlgoImpl, public BuildBEMatrixBaseCompute
 {
 public:
   virtual MatrixHandle compute(const bemfield_vector& fields) const override;
 };
 
-class SurfaceToSurface : public BEMAlgoImpl
+class SurfaceToSurface : public BEMAlgoImpl, public BuildBEMatrixBaseCompute
 {
 public:
   virtual MatrixHandle compute(const bemfield_vector& fields) const override;
@@ -1020,9 +1031,12 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       measurementfieldindices.push_back(i);
     }
   }
-  #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
-  BlockMatrix EE(Nfields, Nfields);
+
+  const int totalNodes = std::accumulate(fields.begin(), fields.end(), 0, [&](int acc, const bemfield& f) { return acc + auto_P_size(f.field_); } );
+  DenseMatrix EE(totalNodes, totalNodes);
+
   DenseMatrixHandle tempblockelement;
+  int diagonalBlockStart = 0;
 
   // Calculate EE in block matrix form
   for(int i = 0; i < Nfields; i++)
@@ -1030,14 +1044,19 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     for(int j = 0; j < Nfields; j++)
     {
       if (i == j)
-        make_auto_P(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+      {
+        auto blockISize = auto_P_size(fields[i].field_);
+        diagonalBlockStart += blockISize;
+        make_auto_P_compute(fields[i].field_->vmesh(), EE.block(diagonalBlockStart, diagonalBlockStart, blockISize, blockISize), fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+      }
       else
         make_cross_P(fields[i].field_->vmesh(), fields[j].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
 
-      EE(i,j) = *tempblockelement;
+      //EE(i,j) = *tempblockelement;
     }
   }
 
+  #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
   BlockMatrix EJ(Nfields, Nsources);
   // Calculate EJ(:,s) in block matrix form
   // ***NOTE THE CHANGE IN INDEXING!!!***
