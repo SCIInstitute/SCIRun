@@ -37,6 +37,8 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
+#include <Testing/Utils/SCIRunFieldSamples.h>
+
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun;
@@ -59,9 +61,9 @@ protected:
     SCIRun::Core::Logging::Log::get().setVerbose(true);
   }
   
-  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5)
+  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=DOUBLE_E)
   {
-    FieldInformation lfi("LatVolMesh", LINEARDATA_E, "double");
+    FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
     Point minb(-1.0, -1.0, -1.0);
     Point maxb(1.0, 1.0, 1.0);
     MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
@@ -91,18 +93,18 @@ TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVols)
   JoinFieldsAlgo algo;
   
   FieldList input;
-  input.push_back(CreateEmptyLatVol(2,3,4));
+  input.push_back(CreateEmptyLatVol(2,3,4, INT_E));
   EXPECT_EQ(2*3*4, input[0]->vmesh()->num_nodes());
-  input.push_back(CreateEmptyLatVol(5,6,7));
+  input.push_back(CreateEmptyLatVol(5,6,7, INT_E));
   EXPECT_EQ(5*6*7, input[1]->vmesh()->num_nodes());
-  input.push_back(CreateEmptyLatVol(8,9,10));
+  input.push_back(CreateEmptyLatVol(8,9,10, INT_E));
   EXPECT_EQ(8*9*10, input[2]->vmesh()->num_nodes());
   
   FieldHandle output;
   EXPECT_TRUE(algo.runImpl(input, output));
   EXPECT_EQ(914, output->vmesh()->num_nodes());
   
-  input.push_back(CreateEmptyLatVol(11,12,13));
+  input.push_back(CreateEmptyLatVol(11,12,13, INT_E));
   EXPECT_EQ(11*12*13, input[3]->vmesh()->num_nodes());
   EXPECT_TRUE(algo.runImpl(input, output));
   EXPECT_EQ(2588, output->vmesh()->num_nodes());
@@ -152,9 +154,9 @@ protected:
 };
 
 // TODO: repeated code - can use above???
-FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez)
+FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type=DOUBLE_E)
 {
-  FieldInformation lfi("LatVolMesh", LINEARDATA_E, "double");
+  FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
   Point minb(-1.0, -1.0, -1.0);
   Point maxb(1.0, 1.0, 1.0);
   MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
@@ -165,11 +167,50 @@ FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez)
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
 {
-  input.push_back(CreateEmptyLatVol(2,3,4));
-  input.push_back(CreateEmptyLatVol(5,6,7));
-  input.push_back(CreateEmptyLatVol(8,9,10));
+  input.push_back(CreateEmptyLatVol(2, 3, 4, INT_E));
+  input.push_back(CreateEmptyLatVol(5, 6, 7, INT_E));
+  input.push_back(CreateEmptyLatVol(8, 9, 10, INT_E));
   algo_.runImpl(input,output);
   EXPECT_TRUE(algo_.runImpl(input, output));
+}
+
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_data_types)
+{
+  // should just print message about converting data
+  input.push_back(CreateEmptyLatVol(2, 3, 4, INT_E));
+  input.push_back(CreateEmptyLatVol(5, 6, 7, INT_E));
+  input.push_back(CreateEmptyLatVol(8, 9, 10, INT_E));
+  input.push_back(CreateEmptyLatVol(11, 12, 13, FLOAT_E));
+  algo_.runImpl(input,output);
+  EXPECT_TRUE(algo_.runImpl(input, output));
+}
+
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_missing_input)
+{
+  algo_.runImpl(input, output);
+  EXPECT_FALSE(algo_.runImpl(input, output));
+}
+
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_single_input_structured)
+{
+  input.push_back(CreateEmptyLatVol(2, 3, 4, INT_E));
+  algo_.runImpl(input, output);
+  EXPECT_TRUE(algo_.runImpl(input, output));
+}
+
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_single_input_unstructured)
+{
+  input.push_back(TriangleTriSurfConstantBasis(INT_E));
+  algo_.runImpl(input, output);
+  EXPECT_TRUE(algo_.runImpl(input, output));
+}
+
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_mismatched_field_geom)
+{
+  input.push_back(CubeTriSurfConstantBasis(INT_E));
+  input.push_back(CubeTetVolConstantBasis(INT_E));
+  algo_.runImpl(input, output);
+  EXPECT_FALSE(algo_.runImpl(input, output));
 }
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
@@ -186,7 +227,7 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
 INSTANTIATE_TEST_CASE_P(
                         JoinFieldsAlgo_Parameterized,
                         JoinFieldsAlgoTestsParameterized,
-                        Combine(Bool(), Bool(), Bool(), Bool(), Values(1e-1,1e-3)) 
+                        Combine(Bool(), Bool(), Bool(), Bool(), Values(1e-1,1e-3))
                         );
 
 #else
