@@ -490,11 +490,43 @@ double BuildBEMatrixBase::do_radon_g(
   return g2 * aV.length();
 }
 
-void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
-  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn_)
+class BuildBEMatrixBaseCompute : public BuildBEMatrixBase
+{
+public:
+  template <class MatrixType>
+  static void make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond, double op_cond);
+
+  template <class MatrixType>
+  static void make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_P, double in_cond, double out_cond, double op_cond);
+
+  template <class MatrixType>
+  static void make_auto_G_compute( VMesh*,
+  MatrixType&,
+  double,
+  double,
+  double,
+  const std::vector<double>& );
+
+  template <class MatrixType>
+  static void make_cross_G_compute( VMesh*,
+  VMesh*,
+  MatrixType&,
+  double,
+  double,
+  double,
+  const std::vector<double>& );
+};
+
+void BuildBEMatrixBase::make_auto_G_allocate(VMesh* hsurf, DenseMatrixHandle &h_GG_)
 {
   auto nnodes = numNodes(hsurf);
   h_GG_.reset(new DenseMatrix(nnodes, nnodes, 0.0));
+}
+
+void BuildBEMatrixBase::make_auto_G(VMesh* hsurf, DenseMatrixHandle &h_GG_,
+  double in_cond, double out_cond, double op_cond, const std::vector<double>& avInn_)
+{
+  make_auto_G_allocate(hsurf, h_GG_);
   DenseMatrix& auto_G = *h_GG_;
 
   //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
@@ -627,16 +659,6 @@ void BuildBEMatrixBase::make_cross_G(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
   }
 }
 
-class BuildBEMatrixBaseCompute : public BuildBEMatrixBase
-{
-public:
-  template <class MatrixType>
-  static void make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond, double op_cond);
-
-  template <class MatrixType>
-  static void make_cross_P_compute(VMesh* hsurf1, VMesh* hsurf2, MatrixType& cross_P, double in_cond, double out_cond, double op_cond);
-};
-
 void BuildBEMatrixBase::make_cross_P_allocate(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHandle &h_PP_)
 {
   h_PP_.reset(new DenseMatrix(numNodes(hsurf1), numNodes(hsurf2), 0.0));
@@ -695,7 +717,7 @@ int BuildBEMatrixBase::numNodes(FieldHandle f)
 
 int BuildBEMatrixBase::numNodes(VMesh* hsurf)
 {
-  VMesh::Node::size_type nsize; 
+  VMesh::Node::size_type nsize;
   hsurf->size(nsize);
   return static_cast<int>(nsize);
 }
