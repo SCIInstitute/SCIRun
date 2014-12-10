@@ -116,9 +116,6 @@ MatrixHandle BuildBEMatrixImpl::executeImpl(const FieldList& inputs)
 
   if (!BEMalgo)
   {
-//  case UNSUPPORTED:
-    // We don't support the inputs and detectBEMalgo() should have reported the appropriate error, so just return
-    //
     // TODO: error message needs improvement
     log_->error("The combinations of input properties is not supported. Please see documentation for supported input field options.");
     return nullptr;
