@@ -665,13 +665,26 @@ void BuildBEMatrixBase::make_cross_P(VMesh* hsurf1, VMesh* hsurf2, DenseMatrixHa
   }
 }
 
-void BuildBEMatrixBase::make_auto_P(VMesh* hsurf, DenseMatrixHandle &h_PP_,
-  double in_cond, double out_cond, double op_cond)
+void BuildBEMatrixBase::make_auto_P_allocate(VMesh* hsurf, DenseMatrixHandle &h_PP_)
 {
-  VMesh::Node::size_type nsize; hsurf->size(nsize);
+  VMesh::Node::size_type nsize; 
+  hsurf->size(nsize);
   auto nnodes = nsize;
   h_PP_.reset(new DenseMatrix(nnodes, nnodes, 0.0));
-  DenseMatrix& auto_P = *h_PP_;
+}
+
+class BuildBEMatrixBaseHelper : public BuildBEMatrixBase
+{
+public:
+  template <class MatrixType>
+  static void make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P, double in_cond, double out_cond, double op_cond);
+};
+
+template <class MatrixType>
+void BuildBEMatrixBaseHelper::make_auto_P_compute(VMesh* hsurf, MatrixType& auto_P,
+  double in_cond, double out_cond, double op_cond)
+{
+  auto nnodes = auto_P.rows();
 
   //const double mult = 1/(2*M_PI)*((out_cond - in_cond)/op_cond);  // op_cond=out_cond for all the surfaces but the outermost surface which in op_cond=in_cond
   const double mult = 1/(4*M_PI)*(out_cond - in_cond);
@@ -713,6 +726,13 @@ void BuildBEMatrixBase::make_auto_P(VMesh* hsurf, DenseMatrixHandle &h_PP_,
   {
     auto_P(i,i) = out_cond - sumOfRows(i);
   }
+}
+
+void BuildBEMatrixBase::make_auto_P(VMesh* hsurf, DenseMatrixHandle &h_PP_,
+  double in_cond, double out_cond, double op_cond)
+{
+  make_auto_P_allocate(hsurf, h_PP_);
+  BuildBEMatrixBaseHelper::make_auto_P_compute(hsurf, *h_PP_, in_cond, out_cond, op_cond);
 }
 
 // precalculate triangles area
@@ -978,8 +998,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   // T = inv(Pmm - Gms*iGss*Psm)*(Gms*iGss*Pss - Pms)
   //
 
-  const int Nfields = fields.size();
-  //double op_cond=0.0; // op_cond is not used in this formulation -- someone needs to check this math and make a better decision about how to handle this value below
+  const size_t Nfields = fields.size();
+  double op_cond=0.0; // op_cond is not used in this formulation -- someone needs to check this math and make a better decision about how to handle this value below
 
   // Count the number of fields that have been specified as being "sources" or "measurements" (and keep track of indices)
   int Nsources = 0;
@@ -1000,9 +1020,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       measurementfieldindices.push_back(i);
     }
   }
-#ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
+  #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
   BlockMatrix EE(Nfields, Nfields);
-  BlockMatrix EJ(Nfields, Nsources);
   DenseMatrixHandle tempblockelement;
 
   // Calculate EE in block matrix form
@@ -1019,6 +1038,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     }
   }
 
+  BlockMatrix EJ(Nfields, Nsources);
   // Calculate EJ(:,s) in block matrix form
   // ***NOTE THE CHANGE IN INDEXING!!!***
   // (The indices of block columns of EJ correspond to field indices according to "sourcefieldindices", and this affects everything with EJ below this point too!)
@@ -1137,12 +1157,11 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 
   C->invert();
   MatrixHandle T = C * D; // T = inv(C)*D
-  TransferMatrix = T->dense();
-
-  //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
-  //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
+  return T;
 #endif
   return nullptr;
+  //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
+  //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
 }
 
 

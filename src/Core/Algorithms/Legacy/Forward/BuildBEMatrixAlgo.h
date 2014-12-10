@@ -56,7 +56,7 @@ namespace SCIRun {
 
         class SCISHARE BuildBEMatrixBase
         {
-        private:
+        protected:
           static void get_g_coef( const Geometry::Vector&,
             const Geometry::Vector&,
             const Geometry::Vector&,
@@ -130,6 +130,9 @@ namespace SCIRun {
             double,
             double,
             double );
+
+          static void make_auto_P_allocate( VMesh*,
+            Datatypes::DenseMatrixHandle&);
 
           static void make_cross_P( VMesh*,
             VMesh*,
