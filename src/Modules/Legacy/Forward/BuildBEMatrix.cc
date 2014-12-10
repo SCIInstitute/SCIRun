@@ -6,7 +6,7 @@
    Copyright (c) 2011 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 
 
 /*
- *  BuildBEMatrix.cc: 
+ *  BuildBEMatrix.cc:
  *
  *  Written by:
  *   Saeed Babaeizadeh - Northeastern University
@@ -119,7 +119,7 @@ BuildBEMatrix::execute()
   {
     BuildBEMatrixImpl impl;
 
-    MatrixHandle transferMatrix;
+    MatrixHandle transferMatrix = impl.executeImpl(inputs);
 
     sendOutput(BEM_Forward_Matrix, transferMatrix);
   }
