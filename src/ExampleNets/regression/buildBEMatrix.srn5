@@ -16,8 +16,37 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>0</count>
+							<count>1</count>
 							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>FieldNameList</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>FieldNameList</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name></name>
+												<value>
+													<which>2</which>
+													<value>field0</value>
+												</value>
+											</item>
+											<item>
+												<name></name>
+												<value>
+													<which>2</which>
+													<value>field1</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -34,13 +63,13 @@
 						<stateMap>
 							<count>2</count>
 							<item_version>0</item_version>
-							<item class_id="8" tracking_level="0" version="0">
-								<first class_id="9" tracking_level="0" version="0">
+							<item>
+								<first>
 									<name>FileTypeName</name>
 								</first>
-								<second class_id="10" tracking_level="0" version="0">
+								<second>
 									<name>FileTypeName</name>
-									<value class_id="11" tracking_level="0" version="0">
+									<value>
 										<which>2</which>
 										<value>SCIRun Field File</value>
 									</value>
@@ -119,12 +148,12 @@
 				</second>
 			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
+		<connections class_id="13" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
+			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>BuildBEMatrix:2</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
+				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>BEM_Forward_Matrix</name>
 					<id>0</id>
 				</port1_>
@@ -160,12 +189,12 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
+	<modulePositions class_id="16" tracking_level="0" version="0">
 		<count>4</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="17" tracking_level="0" version="0">
 			<first>BuildBEMatrix:2</first>
-			<second class_id="17" tracking_level="0" version="0">
+			<second class_id="18" tracking_level="0" version="0">
 				<first>-1140</first>
 				<second>-684</second>
 			</second>
@@ -192,7 +221,7 @@
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
+	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleNotes>

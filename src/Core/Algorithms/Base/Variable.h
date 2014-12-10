@@ -91,7 +91,7 @@ namespace Algorithms {
   SCISHARE Variable makeVariable(const std::string& name, const Variable::Value& value);
 
   typedef Variable AlgorithmParameter;
-
+  typedef Variable::List VariableList;
   typedef boost::shared_ptr<Variable> VariableHandle;
 
 }

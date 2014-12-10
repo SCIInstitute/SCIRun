@@ -50,7 +50,16 @@ public Q_SLOTS:
   virtual void updateFromPortChange(int numPorts) override;
 private Q_SLOTS:
   void pull();
-  void push();
+  void pullNames();
+  void pullFieldTypes();
+  void pullBoundaryConditions();
+  void pullInsides();
+  void pullOutsides();
+  void pushTable(int,int);
+  void pushNames();
+  void pushBoundaryConditions();
+  void pushInsides();
+  void pushOutsides();
 private:
   QComboBox* makeComboBoxItem(int i) const;
   QDoubleSpinBox* makeDoubleEntryItem(int row, int col) const;

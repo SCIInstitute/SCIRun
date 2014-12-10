@@ -27,10 +27,12 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
-//#include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
+#include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Forward;
 
 BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,12 +44,13 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
 
   tableWidget->resizeColumnsToContents();
 
-  //connect(StatisticsOutput_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
+  connect(tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(pushTable(int,int)));
   //connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }
 
 void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
 {
+  std::cout << "updateFromPortChange " << numPorts << std::endl;
   auto oldRowCount = tableWidget->rowCount();
   tableWidget->setRowCount(numPorts - 1);
 
@@ -64,6 +67,7 @@ void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
     type->setFlags(type->flags() & ~Qt::ItemIsEditable);
   }
 
+  pull();
   tableWidget->resizeColumnsToContents();
 }
 
@@ -86,8 +90,17 @@ QDoubleSpinBox* BuildBEMatrixDialog::makeDoubleEntryItem(int row, int col) const
   return spin;
 }
 
-void BuildBEMatrixDialog::push()
+void BuildBEMatrixDialog::pushTable(int row, int col)
 {
+  if (0 == col)
+    pushNames();
+  else if (2 == col)
+    pushBoundaryConditions();
+  else if (3 == col)
+    pushInsides();
+  else if (4 == col)
+    pushOutsides();
+
   //if (!pulling_)
   //{
   //  QPalette* palette = new QPalette();
@@ -107,9 +120,40 @@ void BuildBEMatrixDialog::push()
   //}
 }
 
+void BuildBEMatrixDialog::pushNames()
+{
+  if (!pulling_)
+  {
+    VariableList names;
+    for (int i = 0; i < tableWidget->rowCount(); ++i)
+    {
+      auto item = tableWidget->item(i, 0);
+      std::cout << "pushing name: " << item->text().toStdString() << std::endl;
+      names.push_back(makeVariable("", item->text().toStdString()));
+    }
+    state_->setValue(Parameters::FieldNameList, names);
+  }
+}
+
+void BuildBEMatrixDialog::pushBoundaryConditions()
+{
+
+}
+
+void BuildBEMatrixDialog::pushInsides()
+{
+
+}
+
+void BuildBEMatrixDialog::pushOutsides()
+{
+
+}
 
 void BuildBEMatrixDialog::pull()
 {
+  std::cout << "BE pull" << std::endl;
+  pullNames();
   //Pulling p(this);
   //auto tableHandle = optional_any_cast_or_default<VariableHandle>(state_->getTransientValue(Parameters::StatisticsTableValues));
 
@@ -154,4 +198,36 @@ void BuildBEMatrixDialog::pull()
   //{
   //  ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));
   //}
+}
+
+void BuildBEMatrixDialog::pullNames()
+{
+  Pulling p(this);
+  auto nameList = state_->getValue(Parameters::FieldNameList).toVector();
+  const int rows = std::min(static_cast<int>(nameList.size()), tableWidget->rowCount());
+  for (int row = 0; row < rows; ++row)
+  {
+    auto item = tableWidget->item(row, 0);
+    item->setText(QString::fromStdString(nameList[row].toString()));
+  }
+}
+
+void BuildBEMatrixDialog::pullFieldTypes()
+{
+
+}
+
+void BuildBEMatrixDialog::pullBoundaryConditions()
+{
+
+}
+
+void BuildBEMatrixDialog::pullInsides()
+{
+
+}
+
+void BuildBEMatrixDialog::pullOutsides()
+{
+
 }

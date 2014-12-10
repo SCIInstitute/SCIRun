@@ -50,6 +50,8 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Forward {
 
+        ALGORITHM_PARAMETER_DECL(FieldNameList);
+        ALGORITHM_PARAMETER_DECL(FieldTypeList);
         ALGORITHM_PARAMETER_DECL(BoundaryConditionList);
         ALGORITHM_PARAMETER_DECL(InsideConductivityList);
         ALGORITHM_PARAMETER_DECL(OutsideConductivityList);
