@@ -134,7 +134,7 @@ TEST(CalculateGradientsAlgoTests, NullFieldHandleInput)
 
 TEST(CalculateGradientsAlgoTests, NoFieldDataInput)
 {
-  FieldHandle in = CubeTetVolLinearBasis();
+  FieldHandle in = CubeTetVolLinearBasis(DOUBLE_E);
   FieldHandle out;
   CalculateGradientsAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);

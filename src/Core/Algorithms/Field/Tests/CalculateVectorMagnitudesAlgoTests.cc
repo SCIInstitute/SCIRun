@@ -85,8 +85,8 @@ TEST(CalculateVectorMagnitudesAlgoTests, CompareTriSurfVectorOnNodeToSCIRun4)
   CalculateVectorMagnitudesAlgo algo;
   algo.run(in, out);
 
-  FieldHandle SCIRUN4out = CreateTriSurfVectorOnNodeSCIRun4Output();
-  VField* expected_vals = SCIRUN4out->vfield(); // what is to be expected
+  FieldHandle SCIRun4Output = CreateTriSurfVectorOnNodeSCIRun4Output();
+  VField* expected_vals = SCIRun4Output->vfield(); // what is to be expected
   VField* outputed_vals = out->vfield(); // the output
   double* expected_mag = reinterpret_cast<double*>(expected_vals->get_values_pointer());
   double* outputed_mag = reinterpret_cast<double*>(outputed_vals->get_values_pointer());
@@ -114,8 +114,8 @@ TEST(CalculateVectorMagnitudesAlgoTests, TetMeshVectorOnNodeAsInput)
   CalculateVectorMagnitudesAlgo algo;
   algo.run(in, out);
 
-  FieldHandle SCIRUN4out = CreateTetMeshVectorOnNodeSCIRun4Output();
-  VField* expected_vals = SCIRUN4out->vfield(); // what is to be expected
+  FieldHandle SCIRun4Output = CreateTetMeshVectorOnNodeSCIRun4Output();
+  VField* expected_vals = SCIRun4Output->vfield(); // what is to be expected
   VField* outputed_vals = out->vfield(); // the output
   double* expected_mag = reinterpret_cast<double*>(expected_vals->get_values_pointer());
   double* outputed_mag = reinterpret_cast<double*>(outputed_vals->get_values_pointer());
@@ -156,7 +156,7 @@ TEST(CalculateVectorMagnitudesAlgoTests, NullFieldHandleInput)
 
 TEST(CalculateVectorMagnitudesAlgoTests, NoFieldDataInput)
 {
-  FieldHandle in = CubeTetVolLinearBasis();
+  FieldHandle in = CubeTetVolLinearBasis(DOUBLE_E);
   FieldHandle out;
   CalculateVectorMagnitudesAlgo algo;
   EXPECT_THROW(algo.run(in, out), AlgorithmInputException);
