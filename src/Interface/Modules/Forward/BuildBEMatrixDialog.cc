@@ -34,6 +34,15 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Forward;
 
+namespace TableColumns
+{
+  const int FieldName = 0;
+  const int FieldType = 1;
+  const int BoundaryCondition = 2;
+  const int InsideConductivity = 3;
+  const int OutsideConductivity = 4;
+};
+
 BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
@@ -45,30 +54,30 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
   tableWidget->resizeColumnsToContents();
 
   connect(tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(pushTable(int,int)));
-  //connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }
 
 void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
 {
-  std::cout << "updateFromPortChange " << numPorts << std::endl;
+  //std::cout << "updateFromPortChange " << numPorts << std::endl;
   auto oldRowCount = tableWidget->rowCount();
   tableWidget->setRowCount(numPorts - 1);
-
+  tableWidget->blockSignals(true);
   for (int i = oldRowCount; i < tableWidget->rowCount(); ++i)
   {
-    tableWidget->setItem(i, 0, new QTableWidgetItem("field" + QString::number(i)));
-    tableWidget->setItem(i, 1, new QTableWidgetItem("[populated on execute]"));
-    tableWidget->setCellWidget(i, 2, makeComboBoxItem(i));
-    tableWidget->setCellWidget(i, 3, makeDoubleEntryItem(i, 3));
-    tableWidget->setCellWidget(i, 4, makeDoubleEntryItem(i, 4));
+    using namespace TableColumns;
+    tableWidget->setItem(i, FieldName, new QTableWidgetItem("field" + QString::number(i)));
+    tableWidget->setItem(i, FieldType, new QTableWidgetItem("[populated on execute]"));
+    tableWidget->setCellWidget(i, BoundaryCondition, makeComboBoxItem(i));
+    tableWidget->setCellWidget(i, InsideConductivity, makeDoubleEntryItem(i, InsideConductivity));
+    tableWidget->setCellWidget(i, OutsideConductivity, makeDoubleEntryItem(i, OutsideConductivity));
 
     // type is readonly
-    auto type = tableWidget->item(i, 1);
+    auto type = tableWidget->item(i, FieldType);
     type->setFlags(type->flags() & ~Qt::ItemIsEditable);
   }
-
   pull();
   tableWidget->resizeColumnsToContents();
+  tableWidget->blockSignals(false);
 }
 
 QComboBox* BuildBEMatrixDialog::makeComboBoxItem(int i) const
@@ -78,7 +87,7 @@ QComboBox* BuildBEMatrixDialog::makeComboBoxItem(int i) const
   QComboBox* bcBox = new QComboBox();
   bcBox->addItems(bcList);
   bcBox->setCurrentIndex(i == 0 ? 0 : 1);
-  //connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(pushComboBoxChange(int)));
+  connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushBoundaryConditions()));
   return bcBox;
 }
 
@@ -86,49 +95,33 @@ QDoubleSpinBox* BuildBEMatrixDialog::makeDoubleEntryItem(int row, int col) const
 {
   auto spin = new QDoubleSpinBox();
   spin->setValue((row + col + 1) % 2);
-  //connect(InputPorts, SIGNAL(currentIndexChanged(int)), this, SLOT(pushComboBoxChange(int)));
+  const char* slot = col == TableColumns::InsideConductivity ? SLOT(pushInsides()) : SLOT(pushOutsides());
+  connect(spin, SIGNAL(valueChanged(double)), this, slot);
   return spin;
 }
 
 void BuildBEMatrixDialog::pushTable(int row, int col)
 {
-  if (0 == col)
+  using namespace TableColumns;
+  if (FieldName == col)
     pushNames();
-  else if (2 == col)
+  else if (BoundaryCondition == col)
     pushBoundaryConditions();
-  else if (3 == col)
+  else if (InsideConductivity == col)
     pushInsides();
-  else if (4 == col)
+  else if (OutsideConductivity == col)
     pushOutsides();
-
-  //if (!pulling_)
-  //{
-  //  QPalette* palette = new QPalette();
-  //  palette->setColor(QPalette::Text,Qt::red);
-  //  StatisticsTableGroupBox->setPalette(*palette);
-
-  //  /// get user specified ROI data, put it in a DenseMatrix and ship it to state
-  //  auto X = SpecifyROI_tabWidget->item(0,0)->text().toDouble();
-  //  auto Y = SpecifyROI_tabWidget->item(0,1)->text().toDouble();
-  //  auto Z = SpecifyROI_tabWidget->item(0,2)->text().toDouble();
-  //  auto material = SpecifyROI_tabWidget->item(0,3)->text().toDouble();
-  //  auto radius = SpecifyROI_tabWidget->item(0,4)->text().toDouble();
-  //  DenseMatrixHandle specROI(new DenseMatrix(5,1));
-  //  (*specROI) << X, Y, Z, material, radius;
-
-  //  state_->setTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI, specROI);
-  //}
 }
 
 void BuildBEMatrixDialog::pushNames()
 {
+  using namespace TableColumns;
   if (!pulling_)
   {
     VariableList names;
     for (int i = 0; i < tableWidget->rowCount(); ++i)
     {
-      auto item = tableWidget->item(i, 0);
-      std::cout << "pushing name: " << item->text().toStdString() << std::endl;
+      auto item = tableWidget->item(i, FieldName);
       names.push_back(makeVariable("", item->text().toStdString()));
     }
     state_->setValue(Parameters::FieldNameList, names);
@@ -137,97 +130,121 @@ void BuildBEMatrixDialog::pushNames()
 
 void BuildBEMatrixDialog::pushBoundaryConditions()
 {
-
+  using namespace TableColumns;
+  if (!pulling_)
+  {
+    VariableList names;
+    for (int i = 0; i < tableWidget->rowCount(); ++i)
+    {
+      auto box = qobject_cast<QComboBox*>(tableWidget->cellWidget(i, BoundaryCondition));
+      names.push_back(makeVariable("", box->currentText().toStdString()));
+    }
+    state_->setValue(Parameters::BoundaryConditionList, names);
+  }
 }
 
 void BuildBEMatrixDialog::pushInsides()
 {
-
+  using namespace TableColumns;
+  if (!pulling_)
+  {
+    VariableList names;
+    for (int i = 0; i < tableWidget->rowCount(); ++i)
+    {
+      auto box = qobject_cast<QDoubleSpinBox*>(tableWidget->cellWidget(i, InsideConductivity));
+      names.push_back(makeVariable("", box->value()));
+    }
+    state_->setValue(Parameters::InsideConductivityList, names);
+  }
 }
 
 void BuildBEMatrixDialog::pushOutsides()
 {
-
+  using namespace TableColumns;
+  if (!pulling_)
+  {
+    VariableList names;
+    for (int i = 0; i < tableWidget->rowCount(); ++i)
+    {
+      auto box = qobject_cast<QDoubleSpinBox*>(tableWidget->cellWidget(i, OutsideConductivity));
+      names.push_back(makeVariable("", box->value()));
+    }
+    state_->setValue(Parameters::OutsideConductivityList, names);
+  }
 }
 
 void BuildBEMatrixDialog::pull()
 {
-  std::cout << "BE pull" << std::endl;
+  //std::cout << "BE pull" << std::endl;
   pullNames();
-  //Pulling p(this);
-  //auto tableHandle = optional_any_cast_or_default<VariableHandle>(state_->getTransientValue(Parameters::StatisticsTableValues));
-
-  //if (tableHandle)
-  //{
-  //  auto all_elc_values = tableHandle->toVector();
-  //  StatisticsOutput_tableWidget->setRowCount(static_cast<int>(all_elc_values.size()));
-
-  //  //TODO: use this example to improve Variable::List syntactical sugar
-
-  //  /// get the result data from the algorithm and put it in the GUI table
-  //  for (int i=0; i<all_elc_values.size(); i++)
-  //  {
-  //    auto col = (all_elc_values[i]).toVector();
-
-  //    int j = 0;
-  //    BOOST_FOREACH(const AlgorithmParameter& ap, col)
-  //    {
-  //      auto tmpstr = ap.toString();
-
-  //      auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
-  //      item->setFlags(item->flags() & ~Qt::ItemIsEditable);
-  //      StatisticsOutput_tableWidget->setItem(i, j, item);
-  //      ++j;
-  //    }
-  //  }
-  //}
-  //else
-  //{
-  //  // ?? log a message ? unsure.
-  //}
-
-  ///// get the strings PhysicalUnit / CoordinateSpaceLabel from state (directly from module level) and show it above GUI tables
-  //std::string PhysicalUnitString = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr));  /// change GUI Labels due to physical unit and used coordinate space
-  //if (!PhysicalUnitString.empty())
-  //{
-  //  StatisticsTableGroupBox->setTitle("Statistics for ROIs: " + QString::fromStdString(PhysicalUnitString));
-  //}
-
-  //std::string CoordinateSpaceLabelStr = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr));  /// change GUI Labels due to physical unit and used coordinate space
-  //if (!CoordinateSpaceLabelStr.empty())
-  //{
-  //  ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));
-  //}
+  pullFieldTypes();
+  pullBoundaryConditions();
+  pullInsides();
+  pullOutsides();
 }
 
 void BuildBEMatrixDialog::pullNames()
 {
+  using namespace TableColumns;
   Pulling p(this);
   auto nameList = state_->getValue(Parameters::FieldNameList).toVector();
   const int rows = std::min(static_cast<int>(nameList.size()), tableWidget->rowCount());
   for (int row = 0; row < rows; ++row)
   {
-    auto item = tableWidget->item(row, 0);
+    auto item = tableWidget->item(row, FieldName);
     item->setText(QString::fromStdString(nameList[row].toString()));
   }
 }
 
 void BuildBEMatrixDialog::pullFieldTypes()
 {
-
+  using namespace TableColumns;
+  Pulling p(this);
+  auto typeList = state_->getValue(Parameters::FieldTypeList).toVector();
+  const int rows = std::min(static_cast<int>(typeList.size()), tableWidget->rowCount());
+  for (int row = 0; row < rows; ++row)
+  {
+    auto item = tableWidget->item(row, FieldName);
+    item->setText(QString::fromStdString(typeList[row].toString()));
+  }
 }
 
 void BuildBEMatrixDialog::pullBoundaryConditions()
 {
-
+  using namespace TableColumns;
+  Pulling p(this);
+  auto bdyList = state_->getValue(Parameters::BoundaryConditionList).toVector();
+  const int rows = std::min(static_cast<int>(bdyList.size()), tableWidget->rowCount());
+  for (int row = 0; row < rows; ++row)
+  {
+    auto box = qobject_cast<QComboBox*>(tableWidget->cellWidget(row, BoundaryCondition));
+    auto str = QString::fromStdString(bdyList[row].toString());
+    box->setCurrentIndex(box->findText(str));
+  }
 }
 
 void BuildBEMatrixDialog::pullInsides()
 {
-
+  using namespace TableColumns;
+  Pulling p(this);
+  auto condList = state_->getValue(Parameters::InsideConductivityList).toVector();
+  const int rows = std::min(static_cast<int>(condList.size()), tableWidget->rowCount());
+  for (int row = 0; row < rows; ++row)
+  {
+    auto box = qobject_cast<QDoubleSpinBox*>(tableWidget->cellWidget(row, InsideConductivity));
+    box->setValue(condList[row].toDouble());
+  }
 }
 
 void BuildBEMatrixDialog::pullOutsides()
 {
-
+  using namespace TableColumns;
+  Pulling p(this);
+  auto condList = state_->getValue(Parameters::OutsideConductivityList).toVector();
+  const int rows = std::min(static_cast<int>(condList.size()), tableWidget->rowCount());
+  for (int row = 0; row < rows; ++row)
+  {
+    auto box = qobject_cast<QDoubleSpinBox*>(tableWidget->cellWidget(row, OutsideConductivity));
+    box->setValue(condList[row].toDouble());
+  }
 }

@@ -16,17 +16,46 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>1</count>
+							<count>4</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>FieldNameList</name>
+									<name>BoundaryConditionList</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>FieldNameList</name>
+									<name>BoundaryConditionList</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>5</which>
 										<value class_id="12" tracking_level="0" version="0">
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name></name>
+												<value>
+													<which>2</which>
+													<value>Measurement (Neumann)</value>
+												</value>
+											</item>
+											<item>
+												<name></name>
+												<value>
+													<which>2</which>
+													<value>Source (Dirichlet)</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldNameList</name>
+								</first>
+								<second>
+									<name>FieldNameList</name>
+									<value>
+										<which>5</which>
+										<value>
 											<count>2</count>
 											<item_version>0</item_version>
 											<item>
@@ -41,6 +70,64 @@
 												<value>
 													<which>2</which>
 													<value>field1</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InsideConductivityList</name>
+								</first>
+								<second>
+									<name>InsideConductivityList</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name></name>
+												<value>
+													<which>1</which>
+													<value>0</value>
+												</value>
+											</item>
+											<item>
+												<name></name>
+												<value>
+													<which>1</which>
+													<value>1</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutsideConductivityList</name>
+								</first>
+								<second>
+									<name>OutsideConductivityList</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name></name>
+												<value>
+													<which>1</which>
+													<value>1</value>
+												</value>
+											</item>
+											<item>
+												<name></name>
+												<value>
+													<which>1</which>
+													<value>0</value>
 												</value>
 											</item>
 										</value>
