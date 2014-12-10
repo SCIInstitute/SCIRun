@@ -193,10 +193,11 @@ namespace SCIRun {
 
         typedef std::vector<bemfield> bemfield_vector;
 
-        class SCISHARE BEMAlgoImpl
+        class SCISHARE BEMAlgoImpl : public BuildBEMatrixBase
         {
         public:
           virtual ~BEMAlgoImpl() {}
+          virtual void doit(const bemfield_vector& fields) const = 0;
         };
 
         typedef boost::shared_ptr<BEMAlgoImpl> BEMAlgoPtr;

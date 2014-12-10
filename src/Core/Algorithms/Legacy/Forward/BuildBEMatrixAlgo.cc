@@ -861,12 +861,14 @@ bool BuildBEMatrixBase::compute_nesting(std::vector<int> &nesting, const std::ve
 
 class SurfaceAndPoints : public BEMAlgoImpl
 {
-
+public:
+  virtual void doit(const bemfield_vector& fields) const override;
 };
 
 class SurfaceToSurface : public BEMAlgoImpl
 {
-
+public:
+  virtual void doit(const bemfield_vector& fields) const override;
 };
 
 BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
@@ -945,8 +947,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
   }
 }
 
-void
-BuildBEMatrixImpl::algoSurfacesToSurfaces()
+void SurfaceToSurface::doit(const bemfield_vector& fields) const
 {
   // Math for surface-to-surface BEM algorithm (based on Jeroen Stinstra's BEM Matlab code that's part of SCIRun)
   // -------------------------------------------------------------------------------------------------------------
@@ -975,7 +976,7 @@ BuildBEMatrixImpl::algoSurfacesToSurfaces()
   // T = inv(Pmm - Gms*iGss*Psm)*(Gms*iGss*Pss - Pms)
   //
 
-  const int Nfields = this->fields_.size();
+  const int Nfields = fields.size();
   double op_cond=0.0; // op_cond is not used in this formulation -- someone needs to check this math and make a better decision about how to handle this value below
 
   // Count the number of fields that have been specified as being "sources" or "measurements" (and keep track of indices)
@@ -986,12 +987,12 @@ BuildBEMatrixImpl::algoSurfacesToSurfaces()
 
   for(int i=0; i < Nfields; i++)
     {
-      if(this->fields_[i].source)
+      if(fields[i].source)
         {
           Nsources++;
           sourcefieldindices.push_back(i);
         }
-        else if(this->fields_[i].measurement)
+        else if(fields[i].measurement)
         {
           Nmeasurements++;
           measurementfieldindices.push_back(i);
@@ -1008,9 +1009,9 @@ BuildBEMatrixImpl::algoSurfacesToSurfaces()
           for(int j = 0; j < Nfields; j++)
             {
               if (i == j)
-                BuildBEMatrix::make_auto_P(this->fields_[i].field_->vmesh(), tempblockelement, this->fields_[i].insideconductivity, this->fields_[i].outsideconductivity, op_cond);
+                make_auto_P(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
                 else
-                  BuildBEMatrix::make_cross_P(this->fields_[i].field_->vmesh(), this->fields_[j].field_->vmesh(), tempblockelement, this->fields_[i].insideconductivity, this->fields_[i].outsideconductivity, op_cond);
+                  make_cross_P(fields[i].field_->vmesh(), fields[j].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
 
                   EE(i,j) = *tempblockelement;
                 }
@@ -1023,14 +1024,14 @@ BuildBEMatrixImpl::algoSurfacesToSurfaces()
                 {
                   // Precalculate triangle areas for this source field/surface
                   std::vector<double> temptriangleareas;
-                  BuildBEMatrix::pre_calc_tri_areas(this->fields_[sourcefieldindices[j]].field_->vmesh(), temptriangleareas);
+                  pre_calc_tri_areas(fields[sourcefieldindices[j]].field_->vmesh(), temptriangleareas);
 
                   for(int i = 0; i < Nfields; i++)
                     {
                       if (i == sourcefieldindices[j])
-                        BuildBEMatrix::make_auto_G(this->fields_[i].field_->vmesh(), tempblockelement, this->fields_[i].insideconductivity, this->fields_[i].outsideconductivity, op_cond, temptriangleareas);
+                        make_auto_G(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, temptriangleareas);
                         else
-                          BuildBEMatrix::make_cross_G(this->fields_[i].field_->vmesh(), this->fields_[sourcefieldindices[j]].field_->vmesh(), tempblockelement, this->fields_[i].insideconductivity, this->fields_[i].outsideconductivity, op_cond, temptriangleareas);
+                          make_cross_G(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, temptriangleareas);
 
                           EJ(i,j) = *tempblockelement;
                         }
@@ -1140,3 +1141,83 @@ BuildBEMatrixImpl::algoSurfacesToSurfaces()
                                                   //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
 
                                                 }
+
+
+                                                void
+                                                BuildBEMatrixImpl::algoSurfaceToNodes()
+                                                {
+                                                  // NOTE: This is Jeroen's code that has been adapted to fit the new module structure
+                                                  //
+                                                  // Math:
+                                                  // The boundary element formulation is based on Matlab code
+                                                  // bemMatrixPP2.m, which can be found in the matlab package
+
+                                                  // The BEM formulation assumes the following matrix equations
+                                                  // P_surf_surf * PHI_surf + G_surf_surf * J_surf =  sources_in_volume
+                                                  //
+                                                  // PHI_surf are the potentials on the surface
+                                                  // J_surf are the currents passing perpendicular to the surface
+                                                  // sources_in_volume is empty in this case
+                                                  //
+                                                  // P_surf_surf is the matrix that connects the potentials at the nodes to the integral over the
+                                                  // potential at the surface. Its terms consist of Green's function ( 1/ ( 4pi*||r-r'|| ) ) over
+                                                  // the surface of each element. As this integral becomes singular for a node and a triangle that
+                                                  // share a corner node, we use a trick to avoid computing this integral as we know that the
+                                                  // the system should reference potential invariant. Hence the rows of the matrix need to sum to
+                                                  // to zero
+                                                  //
+                                                  // G_surf_surf is the matrix that connects the potentials at the nodes to the integral over the
+                                                  // currents flowing through the surface.
+                                                  //
+                                                  // The second equation that we use is the expression of the potentials at an arbitrary point
+                                                  // to the potentials at the surface and the current flowing through the surface
+                                                  //
+                                                  // PHI_nodes = P_nodes_surf * PHI_surf + G_nodes_surf * J_surf
+                                                  //
+                                                  // Here matrix P_nodes_surf is the matrix that projects the contribution of the potentials of the
+                                                  // surface to the nodes within the volume
+                                                  //
+                                                  // Here G_nodes_surf is the matrix that projects the contribution of the currents flowing through
+                                                  // the surface to the nodes within the volume
+                                                  //
+                                                  // Adding both equations together will result in
+                                                  //
+                                                  // PHI_nodes = P_nodes_surf* PHI_surf - G_nodes_surf * inv( G_surf_surf) * P_surf_surf * PHI_surf
+                                                  //
+                                                  // In other words the transfer matrix is
+                                                  // P_nodes_surf - G_nodes_surf * inv( G_surf_surf) * P_surf_surf
+
+                                                  VMesh *nodes = 0;
+                                                  VMesh *surface = 0;
+
+                                                  for (int i=0; i<2; i++)
+                                                    {
+                                                      if (this->fields_[i].surface)
+                                                        surface = this->fields_[i].field_->vmesh();
+                                                        else
+                                                          nodes = this->fields_[i].field_->vmesh();
+                                                        }
+
+                                                        DenseMatrixHandle Pss;
+                                                        DenseMatrixHandle Gss;
+                                                        DenseMatrixHandle Pns;
+                                                        DenseMatrixHandle Gns;
+                                                        make_auto_P( surface, Pss, 1.0, 0.0, 1.0 );
+                                                        make_cross_P( nodes, surface, Pns, 1.0, 0.0, 1.0 );
+
+                                                        std::vector<double> area;
+                                                        pre_calc_tri_areas( surface, area );
+
+                                                        make_auto_G( surface, Gss, 1.0, 0.0, 1.0, area );
+                                                        make_cross_G( nodes, surface, Gns, 1.0, 0.0, 1.0, area );
+
+                                                        Gss->invert();
+
+                                                        MatrixHandle mPns = Pns.get_rep();
+                                                        MatrixHandle mGns = Gns.get_rep();
+                                                        MatrixHandle mGss = Gss.get_rep();
+                                                        MatrixHandle mPss = Pss.get_rep();
+
+                                                        TransferMatrix = (mPns - mGns * mGss * mPss)->dense();
+                                                      }
+                                                      
