@@ -40,7 +40,7 @@ using namespace SCIRun::TestUtils;
 
 TEST(VFieldTest, EmptyFieldConstantBasis)
 {
-  FieldHandle field = EmptyTriSurfFieldConstantBasis();
+  FieldHandle field = EmptyTriSurfFieldConstantBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
   VMesh *vmesh = field->vmesh();
@@ -60,7 +60,7 @@ TEST(VFieldTest, EmptyFieldConstantBasis)
 
 TEST(VFieldTest, EmptyFieldAddValuesConstantBasis)
 {
-  FieldHandle field = EmptyTriSurfFieldConstantBasis();
+  FieldHandle field = EmptyTriSurfFieldConstantBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
   VMesh *vmesh = field->vmesh();
@@ -76,7 +76,7 @@ TEST(VFieldTest, EmptyFieldAddValuesConstantBasis)
 
 TEST(VFieldTest, EmptyFieldLinearBasis)
 {
-  FieldHandle field = EmptyTriSurfFieldLinearBasis();
+  FieldHandle field = EmptyTriSurfFieldLinearBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
 
   VMesh *vmesh = field->vmesh();
@@ -87,7 +87,7 @@ TEST(VFieldTest, EmptyFieldLinearBasis)
 
 TEST(VFieldTest, EmptyFieldAddValuesLinearBasis)
 {
-  FieldHandle field = EmptyTriSurfFieldLinearBasis();
+  FieldHandle field = EmptyTriSurfFieldLinearBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
   VMesh *vmesh = field->vmesh();
@@ -103,7 +103,7 @@ TEST(VFieldTest, EmptyFieldAddValuesLinearBasis)
 
 TEST(VFieldTest, TetVolMeshAddValuesConstantBasis)
 {
-  FieldHandle field = TetrahedronTetVolConstantBasis();
+  FieldHandle field = TetrahedronTetVolConstantBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
   VMesh *vmesh = field->vmesh();
@@ -120,7 +120,7 @@ TEST(VFieldTest, TetVolMeshAddValuesConstantBasis)
 
 TEST(VFieldTest, TetVolMeshAddValuesLinearBasis)
 {
-  FieldHandle field = TetrahedronTetVolLinearBasis();
+  FieldHandle field = TetrahedronTetVolLinearBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
   VMesh *vmesh = field->vmesh();

@@ -41,6 +41,8 @@ namespace TestUtils
 
 // TODO: more field and basis types needed
 
+// TODO: add latvol
+
 inline
 FieldHandle EmptyTetVolFieldConstantBasis(data_info_type type)
 {

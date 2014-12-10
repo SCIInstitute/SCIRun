@@ -34,6 +34,7 @@ SET(Core_Datatypes_Legacy_Field_Tests_SRCS
   VFieldTests.cc
   #MeshFactoryTests.cc
   #TriSurfMeshTests.cc
+  TetVolMeshTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Legacy_Field_Tests ${Core_Datatypes_Legacy_Field_Tests_SRCS})
