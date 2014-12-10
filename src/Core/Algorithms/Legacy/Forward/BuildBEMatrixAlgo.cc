@@ -862,13 +862,13 @@ bool BuildBEMatrixBase::compute_nesting(std::vector<int> &nesting, const std::ve
 class SurfaceAndPoints : public BEMAlgoImpl
 {
 public:
-  virtual MatrixHandle doit(const bemfield_vector& fields) const override;
+  virtual MatrixHandle compute(const bemfield_vector& fields) const override;
 };
 
 class SurfaceToSurface : public BEMAlgoImpl
 {
 public:
-  virtual MatrixHandle doit(const bemfield_vector& fields) const override;
+  virtual MatrixHandle compute(const bemfield_vector& fields) const override;
 };
 
 BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
@@ -947,7 +947,7 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
   }
 }
 
-MatrixHandle SurfaceToSurface::doit(const bemfield_vector& fields) const
+MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 {
   // Math for surface-to-surface BEM algorithm (based on Jeroen Stinstra's BEM Matlab code that's part of SCIRun)
   // -------------------------------------------------------------------------------------------------------------
@@ -1145,7 +1145,7 @@ return nullptr;
 
 
                                                 MatrixHandle
-                                                SurfaceAndPoints::doit(const bemfield_vector& fields) const
+                                                SurfaceAndPoints::compute(const bemfield_vector& fields) const
                                                 {
                                                   // NOTE: This is Jeroen's code that has been adapted to fit the new module structure
                                                   //
