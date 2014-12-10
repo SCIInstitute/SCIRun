@@ -30,7 +30,8 @@
 #ifndef MODULES_LEGACY_FORWARD_BuildBEMatrixImpl_H__
 #define MODULES_LEGACY_FORWARD_BuildBEMatrixImpl_H__
 
-#include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
+#include <Core/Logging/LoggerFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Modules/Legacy/Forward/share.h>
 
 namespace SCIRun {
@@ -41,7 +42,12 @@ namespace SCIRun {
       class SCISHARE BuildBEMatrixImpl
       {
       public:
-        Core::Datatypes::MatrixHandle executeImpl(const FieldList& inputs) const;
+        explicit BuildBEMatrixImpl(Core::Logging::LegacyLoggerInterface* log) : log_(log) {}
+        Core::Datatypes::MatrixHandle executeImpl(const FieldList& inputs);
+        const std::vector<std::string>& getInputTypes() const { return inputTypes_; }
+      private:
+        const Core::Logging::LegacyLoggerInterface* log_;
+        std::vector<std::string> inputTypes_;
       };
 
     }

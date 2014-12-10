@@ -45,38 +45,40 @@
 #include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Logging/LoggerInterface.h>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Forward;
 
-MatrixHandle BuildBEMatrixImpl::executeImpl(const FieldList& inputs) const
+MatrixHandle BuildBEMatrixImpl::executeImpl(const FieldList& inputs)
 {
     bemfield_vector fields;
 
     BOOST_FOREACH(FieldHandle input, inputs)
     {
-      bemfield field(field_handle);
+      bemfield field(input);
 
       // setting field type
       VMesh* vmesh = input->vmesh();
       if (vmesh->is_trisurfmesh())
       {
         field.surface = true;
-        fieldtype << "surface";
+        inputTypes_.push_back("surface");
       }
       else if (vmesh->is_pointcloudmesh())
       {
         // probably redundant...
         field.surface = false;
-        fieldtype << "points";
+        inputTypes_.push_back("points");
       }
       else
       {
         // unsupported field types
-        warning("Input field in not either a TriSurf mesh or a PointCloud.");
-        fieldtype << "unknown";
+        log_->warning("Input field in not either a TriSurf mesh or a PointCloud.");
+        inputTypes_.push_back("unknown");
       }
 
       fields.push_back(field);
@@ -118,8 +120,8 @@ MatrixHandle BuildBEMatrixImpl::executeImpl(const FieldList& inputs) const
     // We don't support the inputs and detectBEMalgo() should have reported the appropriate error, so just return
     //
     // TODO: error message needs improvement
-    error("The combinations of input properties is not supported. Please see documentation for supported input field options.");
-    return;
+    log_->error("The combinations of input properties is not supported. Please see documentation for supported input field options.");
+    return nullptr;
   }
   return BEMalgo->compute(fields);
 }

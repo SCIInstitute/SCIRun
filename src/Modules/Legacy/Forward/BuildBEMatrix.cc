@@ -117,7 +117,7 @@ BuildBEMatrix::execute()
 
   if (needToExecute())
   {
-    BuildBEMatrixImpl impl;
+    BuildBEMatrixImpl impl(this);
 
     MatrixHandle transferMatrix = impl.executeImpl(inputs);
 
