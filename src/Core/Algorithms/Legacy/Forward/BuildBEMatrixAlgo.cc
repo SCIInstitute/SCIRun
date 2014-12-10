@@ -183,13 +183,13 @@ void  BuildBEMatrixBase::get_cruse_weights(
 
   DenseMatrix Fx(3, 1);
   Fx << locp3[0] - locp2[0],
-        locp1[0] - locp3[0],
-        locp2[0] - locp1[0];
+    locp1[0] - locp3[0],
+    locp2[0] - locp1[0];
 
   DenseMatrix Fy(3, 1);
   Fy << locp3[1] - locp2[1],
-        locp1[1] - locp3[1],
-        locp2[1] - locp1[1];
+    locp1[1] - locp3[1],
+    locp2[1] - locp1[1];
 
   Vector centroid = (locp1 + locp2 + locp3) / 3;
   DenseMatrix loc_radpt_x(1, 7);
@@ -988,231 +988,230 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   std::vector<int> measurementfieldindices;
 
   for(int i=0; i < Nfields; i++)
+  {
+    if(fields[i].source)
     {
-      if(fields[i].source)
-        {
-          Nsources++;
-          sourcefieldindices.push_back(i);
-        }
-        else if(fields[i].measurement)
-        {
-          Nmeasurements++;
-          measurementfieldindices.push_back(i);
-        }
-      }
+      Nsources++;
+      sourcefieldindices.push_back(i);
+    }
+    else if(fields[i].measurement)
+    {
+      Nmeasurements++;
+      measurementfieldindices.push_back(i);
+    }
+  }
 #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
-      BlockMatrix EE(Nfields, Nfields);
-      BlockMatrix EJ(Nfields, Nsources);
-      DenseMatrixHandle tempblockelement;
+  BlockMatrix EE(Nfields, Nfields);
+  BlockMatrix EJ(Nfields, Nsources);
+  DenseMatrixHandle tempblockelement;
 
-      // Calculate EE in block matrix form
-      for(int i = 0; i < Nfields; i++)
-        {
-          for(int j = 0; j < Nfields; j++)
-            {
-              if (i == j)
-                make_auto_P(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
-                else
-                  make_cross_P(fields[i].field_->vmesh(), fields[j].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+  // Calculate EE in block matrix form
+  for(int i = 0; i < Nfields; i++)
+  {
+    for(int j = 0; j < Nfields; j++)
+    {
+      if (i == j)
+        make_auto_P(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+      else
+        make_cross_P(fields[i].field_->vmesh(), fields[j].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
 
-                  EE(i,j) = *tempblockelement;
-                }
-              }
+      EE(i,j) = *tempblockelement;
+    }
+  }
 
-              // Calculate EJ(:,s) in block matrix form
-              // ***NOTE THE CHANGE IN INDEXING!!!***
-              // (The indices of block columns of EJ correspond to field indices according to "sourcefieldindices", and this affects everything with EJ below this point too!)
-              for(int j = 0; j < Nsources; j++)
-                {
-                  // Precalculate triangle areas for this source field/surface
-                  std::vector<double> temptriangleareas;
-                  pre_calc_tri_areas(fields[sourcefieldindices[j]].field_->vmesh(), temptriangleareas);
+  // Calculate EJ(:,s) in block matrix form
+  // ***NOTE THE CHANGE IN INDEXING!!!***
+  // (The indices of block columns of EJ correspond to field indices according to "sourcefieldindices", and this affects everything with EJ below this point too!)
+  for(int j = 0; j < Nsources; j++)
+  {
+    // Precalculate triangle areas for this source field/surface
+    std::vector<double> temptriangleareas;
+    pre_calc_tri_areas(fields[sourcefieldindices[j]].field_->vmesh(), temptriangleareas);
 
-                  for(int i = 0; i < Nfields; i++)
-                    {
-                      if (i == sourcefieldindices[j])
-                        make_auto_G(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, temptriangleareas);
-                        else
-                          make_cross_G(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, temptriangleareas);
+    for(int i = 0; i < Nfields; i++)
+    {
+      if (i == sourcefieldindices[j])
+        make_auto_G(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, temptriangleareas);
+      else
+        make_cross_G(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, temptriangleareas);
 
-                          EJ(i,j) = *tempblockelement;
-                        }
-                      }
+      EJ(i,j) = *tempblockelement;
+    }
+  }
 
-                      // Perform deflation on EE matrix
-                      double deflationconstant = 1/((EE.to_dense())->ncols()); // 1/(# cols of EE)
-                      BlockMatrix deflationmatrix(Nfields, Nfields);
+  // Perform deflation on EE matrix
+  double deflationconstant = 1/((EE.to_dense())->ncols()); // 1/(# cols of EE)
+  BlockMatrix deflationmatrix(Nfields, Nfields);
 
-                      for(int i = 0; i < Nfields; i++)
-                        {
-                          for(int j = 0; j < Nfields; j++)
-                            {
-                              tempblockelement = EE(i,j);
-                              deflationmatrix(i,j) = DenseMatrix(tempblockelement->nrows(), tempblockelement->ncols(), deflationconstant);
-                            }
-                          }
+  for(int i = 0; i < Nfields; i++)
+  {
+    for(int j = 0; j < Nfields; j++)
+    {
+      tempblockelement = EE(i,j);
+      deflationmatrix(i,j) = DenseMatrix(tempblockelement->nrows(), tempblockelement->ncols(), deflationconstant);
+    }
+  }
 
-                          EE = EE + deflationmatrix;
+  EE = EE + deflationmatrix;
 
 
-                          // Split EE apart into Pmm, Pss, Pms, and Psm
-                          // -----------------------------------------------
-                          // Pmm:
-                          BlockMatrix BlockPmm(Nmeasurements, Nmeasurements);
-                          for(int i = 0; i < Nmeasurements; i++)
-                            {
-                              for(int j = 0; j < Nmeasurements; j++)
-                                {
-                                  BlockPmm(i,j) = EE(measurementfieldindices[i],measurementfieldindices[j]);
-                                }
-                              }
-                              DenseMatrixHandle Pmm = BlockPmm.to_dense();
+  // Split EE apart into Pmm, Pss, Pms, and Psm
+  // -----------------------------------------------
+  // Pmm:
+  BlockMatrix BlockPmm(Nmeasurements, Nmeasurements);
+  for(int i = 0; i < Nmeasurements; i++)
+  {
+    for(int j = 0; j < Nmeasurements; j++)
+    {
+      BlockPmm(i,j) = EE(measurementfieldindices[i],measurementfieldindices[j]);
+    }
+  }
+  DenseMatrixHandle Pmm = BlockPmm.to_dense();
 
-                              // Pss:
-                              BlockMatrix BlockPss(Nsources, Nsources);
-                              for(int i = 0; i < Nsources; i++)
-                                {
-                                  for(int j = 0; j < Nsources; j++)
-                                    {
-                                      BlockPss(i,j)=EE(sourcefieldindices[i],sourcefieldindices[j]);
-                                    }
-                                  }
-                                  DenseMatrixHandle Pss = BlockPss.to_dense();
+  // Pss:
+  BlockMatrix BlockPss(Nsources, Nsources);
+  for(int i = 0; i < Nsources; i++)
+  {
+    for(int j = 0; j < Nsources; j++)
+    {
+      BlockPss(i,j)=EE(sourcefieldindices[i],sourcefieldindices[j]);
+    }
+  }
+  DenseMatrixHandle Pss = BlockPss.to_dense();
 
-                                  // Pms:
-                                  BlockMatrix BlockPms(Nmeasurements, Nsources);
-                                  for(int i = 0; i < Nmeasurements; i++)
-                                    {
-                                      for(int j = 0; j < Nsources; j++)
-                                        {
-                                          BlockPms(i,j)=EE(measurementfieldindices[i],sourcefieldindices[j]);
-                                        }
-                                      }
-                                      DenseMatrixHandle Pms = BlockPms.to_dense();
+  // Pms:
+  BlockMatrix BlockPms(Nmeasurements, Nsources);
+  for(int i = 0; i < Nmeasurements; i++)
+  {
+    for(int j = 0; j < Nsources; j++)
+    {
+      BlockPms(i,j)=EE(measurementfieldindices[i],sourcefieldindices[j]);
+    }
+  }
+  DenseMatrixHandle Pms = BlockPms.to_dense();
 
-                                      // Psm:
-                                      BlockMatrix BlockPsm(Nsources, Nmeasurements);
-                                      for(int i = 0; i < Nsources; i++)
-                                        {
-                                          for(int j = 0; j < Nmeasurements; j++)
-                                            {
-                                              BlockPsm(i,j)=EE(sourcefieldindices[i],measurementfieldindices[j]);
-                                            }
-                                          }
-                                          DenseMatrixHandle Psm = BlockPsm.to_dense();
+  // Psm:
+  BlockMatrix BlockPsm(Nsources, Nmeasurements);
+  for(int i = 0; i < Nsources; i++)
+  {
+    for(int j = 0; j < Nmeasurements; j++)
+    {
+      BlockPsm(i,j)=EE(sourcefieldindices[i],measurementfieldindices[j]);
+    }
+  }
+  DenseMatrixHandle Psm = BlockPsm.to_dense();
 
-                                          // Split EJ apart into Gms and Gss (see ALL-CAPS note above about differences in block row vs column indexing in EJ matrix)
-                                          // -----------------------------------------------
-                                          // Gms:
-                                          BlockMatrix BlockGms(Nmeasurements, Nsources);
-                                          for(int i = 0; i < Nmeasurements; i++)
-                                            {
-                                              for(int j = 0; j < Nsources; j++)
-                                                {
-                                                  BlockGms(i,j)=EJ(measurementfieldindices[i],j);
-                                                }
-                                              }
-                                              DenseMatrixHandle Gms = BlockGms.to_dense();
+  // Split EJ apart into Gms and Gss (see ALL-CAPS note above about differences in block row vs column indexing in EJ matrix)
+  // -----------------------------------------------
+  // Gms:
+  BlockMatrix BlockGms(Nmeasurements, Nsources);
+  for(int i = 0; i < Nmeasurements; i++)
+  {
+    for(int j = 0; j < Nsources; j++)
+    {
+      BlockGms(i,j)=EJ(measurementfieldindices[i],j);
+    }
+  }
+  DenseMatrixHandle Gms = BlockGms.to_dense();
 
-                                              // Gss:
-                                              BlockMatrix BlockGss(Nsources, Nsources);
-                                              for(int i = 0; i < Nsources; i++)
-                                                {
-                                                  for(int j = 0; j < Nsources; j++)
-                                                    {
-                                                      BlockGss(i,j) = EJ(sourcefieldindices[i],j);
-                                                    }
-                                                  }
-                                                  DenseMatrixHandle Gss = BlockGss.to_dense();
+  // Gss:
+  BlockMatrix BlockGss(Nsources, Nsources);
+  for(int i = 0; i < Nsources; i++)
+  {
+    for(int j = 0; j < Nsources; j++)
+    {
+      BlockGss(i,j) = EJ(sourcefieldindices[i],j);
+    }
+  }
+  DenseMatrixHandle Gss = BlockGss.to_dense();
 
-                                                  // TODO: add deflation step
+  // TODO: add deflation step
 
-                                                  // Compute T here (see math in comments above)
-                                                  // TransferMatrix = T = inv(Pmm - Gms*iGss*Psm)*(Gms*iGss*Pss - Pms) = inv(C)*D
-                                                  Gss->invert(); // iGss = inv(Gss)
+  // Compute T here (see math in comments above)
+  // TransferMatrix = T = inv(Pmm - Gms*iGss*Psm)*(Gms*iGss*Pss - Pms) = inv(C)*D
+  Gss->invert(); // iGss = inv(Gss)
 
-                                                  MatrixHandle Y = Gms * Gss;
-                                                  MatrixHandle C = Pmm - Y * Psm;
-                                                  MatrixHandle D = Y * Pss - Pms;
+  MatrixHandle Y = Gms * Gss;
+  MatrixHandle C = Pmm - Y * Psm;
+  MatrixHandle D = Y * Pss - Pms;
 
-                                                  C->invert();
-                                                  MatrixHandle T = C * D; // T = inv(C)*D
-                                                  TransferMatrix = T->dense();
+  C->invert();
+  MatrixHandle T = C * D; // T = inv(C)*D
+  TransferMatrix = T->dense();
 
-                                                  //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
-                                                  //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
+  //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
+  //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
 #endif
-return nullptr;
-                                                }
+  return nullptr;
+}
 
 
-                                                MatrixHandle
-                                                SurfaceAndPoints::compute(const bemfield_vector& fields) const
-                                                {
-                                                  // NOTE: This is Jeroen's code that has been adapted to fit the new module structure
-                                                  //
-                                                  // Math:
-                                                  // The boundary element formulation is based on Matlab code
-                                                  // bemMatrixPP2.m, which can be found in the matlab package
+MatrixHandle SurfaceAndPoints::compute(const bemfield_vector& fields) const
+{
+  // NOTE: This is Jeroen's code that has been adapted to fit the new module structure
+  //
+  // Math:
+  // The boundary element formulation is based on Matlab code
+  // bemMatrixPP2.m, which can be found in the matlab package
 
-                                                  // The BEM formulation assumes the following matrix equations
-                                                  // P_surf_surf * PHI_surf + G_surf_surf * J_surf =  sources_in_volume
-                                                  //
-                                                  // PHI_surf are the potentials on the surface
-                                                  // J_surf are the currents passing perpendicular to the surface
-                                                  // sources_in_volume is empty in this case
-                                                  //
-                                                  // P_surf_surf is the matrix that connects the potentials at the nodes to the integral over the
-                                                  // potential at the surface. Its terms consist of Green's function ( 1/ ( 4pi*||r-r'|| ) ) over
-                                                  // the surface of each element. As this integral becomes singular for a node and a triangle that
-                                                  // share a corner node, we use a trick to avoid computing this integral as we know that the
-                                                  // the system should reference potential invariant. Hence the rows of the matrix need to sum to
-                                                  // to zero
-                                                  //
-                                                  // G_surf_surf is the matrix that connects the potentials at the nodes to the integral over the
-                                                  // currents flowing through the surface.
-                                                  //
-                                                  // The second equation that we use is the expression of the potentials at an arbitrary point
-                                                  // to the potentials at the surface and the current flowing through the surface
-                                                  //
-                                                  // PHI_nodes = P_nodes_surf * PHI_surf + G_nodes_surf * J_surf
-                                                  //
-                                                  // Here matrix P_nodes_surf is the matrix that projects the contribution of the potentials of the
-                                                  // surface to the nodes within the volume
-                                                  //
-                                                  // Here G_nodes_surf is the matrix that projects the contribution of the currents flowing through
-                                                  // the surface to the nodes within the volume
-                                                  //
-                                                  // Adding both equations together will result in
-                                                  //
-                                                  // PHI_nodes = P_nodes_surf* PHI_surf - G_nodes_surf * inv( G_surf_surf) * P_surf_surf * PHI_surf
-                                                  //
-                                                  // In other words the transfer matrix is
-                                                  // P_nodes_surf - G_nodes_surf * inv( G_surf_surf) * P_surf_surf
+  // The BEM formulation assumes the following matrix equations
+  // P_surf_surf * PHI_surf + G_surf_surf * J_surf =  sources_in_volume
+  //
+  // PHI_surf are the potentials on the surface
+  // J_surf are the currents passing perpendicular to the surface
+  // sources_in_volume is empty in this case
+  //
+  // P_surf_surf is the matrix that connects the potentials at the nodes to the integral over the
+  // potential at the surface. Its terms consist of Green's function ( 1/ ( 4pi*||r-r'|| ) ) over
+  // the surface of each element. As this integral becomes singular for a node and a triangle that
+  // share a corner node, we use a trick to avoid computing this integral as we know that the
+  // the system should reference potential invariant. Hence the rows of the matrix need to sum to
+  // to zero
+  //
+  // G_surf_surf is the matrix that connects the potentials at the nodes to the integral over the
+  // currents flowing through the surface.
+  //
+  // The second equation that we use is the expression of the potentials at an arbitrary point
+  // to the potentials at the surface and the current flowing through the surface
+  //
+  // PHI_nodes = P_nodes_surf * PHI_surf + G_nodes_surf * J_surf
+  //
+  // Here matrix P_nodes_surf is the matrix that projects the contribution of the potentials of the
+  // surface to the nodes within the volume
+  //
+  // Here G_nodes_surf is the matrix that projects the contribution of the currents flowing through
+  // the surface to the nodes within the volume
+  //
+  // Adding both equations together will result in
+  //
+  // PHI_nodes = P_nodes_surf* PHI_surf - G_nodes_surf * inv( G_surf_surf) * P_surf_surf * PHI_surf
+  //
+  // In other words the transfer matrix is
+  // P_nodes_surf - G_nodes_surf * inv( G_surf_surf) * P_surf_surf
 
-                                                  VMesh *nodes = 0;
-                                                  VMesh *surface = 0;
+  VMesh *nodes = 0;
+  VMesh *surface = 0;
 
-                                                  for (int i=0; i<2; i++)
-                                                    {
-                                                      if (fields[i].surface)
-                                                        surface = fields[i].field_->vmesh();
-                                                        else
-                                                          nodes = fields[i].field_->vmesh();
-                                                        }
+  for (int i=0; i<2; i++)
+  {
+    if (fields[i].surface)
+      surface = fields[i].field_->vmesh();
+    else
+      nodes = fields[i].field_->vmesh();
+  }
 
-                                                        DenseMatrixHandle Pss;
-                                                        DenseMatrixHandle Gss;
-                                                        DenseMatrixHandle Pns;
-                                                        DenseMatrixHandle Gns;
-                                                        make_auto_P( surface, Pss, 1.0, 0.0, 1.0 );
-                                                        make_cross_P( nodes, surface, Pns, 1.0, 0.0, 1.0 );
+  DenseMatrixHandle Pss;
+  DenseMatrixHandle Gss;
+  DenseMatrixHandle Pns;
+  DenseMatrixHandle Gns;
+  make_auto_P( surface, Pss, 1.0, 0.0, 1.0 );
+  make_cross_P( nodes, surface, Pns, 1.0, 0.0, 1.0 );
 
-                                                        std::vector<double> area;
-                                                        pre_calc_tri_areas( surface, area );
+  std::vector<double> area;
+  pre_calc_tri_areas( surface, area );
 
-                                                        make_auto_G( surface, Gss, 1.0, 0.0, 1.0, area );
-                                                        make_cross_G( nodes, surface, Gns, 1.0, 0.0, 1.0, area );
+  make_auto_G( surface, Gss, 1.0, 0.0, 1.0, area );
+  make_cross_G( nodes, surface, Gns, 1.0, 0.0, 1.0, area );
 
-                                                        return boost::make_shared<DenseMatrix>(*Pns - (*Gns * Gss->inverse() * *Pss));
-                                                      }
+  return boost::make_shared<DenseMatrix>(*Pns - (*Gns * Gss->inverse() * *Pss));
+}
