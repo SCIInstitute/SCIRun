@@ -52,63 +52,81 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Forward;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
+
+BuildBEMatrixImpl::BuildBEMatrixImpl(const VariableList& names,
+  const VariableList& bdyConds,
+  const VariableList& outside,
+  const VariableList& inside,
+  LegacyLoggerInterface* log) : 
+  names_(names),
+  bdyConds_(bdyConds),
+  outside_(outside),
+  inside_(inside),
+  log_(log)
+{
+
+}
 
 MatrixHandle BuildBEMatrixImpl::executeImpl(const FieldList& inputs)
 {
-    bemfield_vector fields;
+  bemfield_vector fields;
 
-    BOOST_FOREACH(FieldHandle input, inputs)
+  BOOST_FOREACH(FieldHandle input, inputs)
+  {
+    bemfield field(input);
+
+    // setting field type
+    VMesh* vmesh = input->vmesh();
+    if (vmesh->is_trisurfmesh())
     {
-      bemfield field(input);
-
-      // setting field type
-      VMesh* vmesh = input->vmesh();
-      if (vmesh->is_trisurfmesh())
-      {
-        field.surface = true;
-        inputTypes_.push_back("surface");
-      }
-      else if (vmesh->is_pointcloudmesh())
-      {
-        // probably redundant...
-        field.surface = false;
-        inputTypes_.push_back("points");
-      }
-      else
-      {
-        // unsupported field types
-        log_->warning("Input field in not either a TriSurf mesh or a PointCloud.");
-        inputTypes_.push_back("unknown");
-      }
-
-      fields.push_back(field);
+      field.surface = true;
+      inputTypes_.push_back("surface");
+    }
+    else if (vmesh->is_pointcloudmesh())
+    {
+      // probably redundant...
+      field.surface = false;
+      inputTypes_.push_back("points");
+    }
+    else
+    {
+      // unsupported field types
+      log_->warning("Input field in not either a TriSurf mesh or a PointCloud.");
+      inputTypes_.push_back("unknown");
     }
 
-
-//TODO
-#if 0
-  // set flags based on gui table values
-  {
-
-
-          this->fields_[i].insideconductivity = boost::lexical_cast<double>(split_vector[i]);
-
-          this->fields_[i].outsideconductivity = boost::lexical_cast<double>(split_vector[i]);
-
-
-
-          int surface_type = boost::lexical_cast<int>(split_vector[i]);
-          if (surface_type == SOURCE)
-          {
-            this->fields_[i].set_source_dirichlet();
-          }
-          else // measurement
-          {
-            this->fields_[i].set_measuremen_neumann();
-          }
-
+    fields.push_back(field);
   }
-  #endif
+
+  if (names_.size() != fields.size())
+    THROW_INVALID_ARGUMENT("# of Input fields does match # of names from table.");
+  if (bdyConds_.size() != fields.size())
+    THROW_INVALID_ARGUMENT("# of Input fields does match # of boundary conditions from table.");
+  if (outside_.size() != fields.size())
+    THROW_INVALID_ARGUMENT("# of Input fields does match # of outside conductivities from table.");
+  if (inside_.size() != fields.size())
+    THROW_INVALID_ARGUMENT("# of Input fields does match # of inside conductivities from table.");
+
+  {
+    for (size_t i = 0; i < fields.size(); ++i)
+    {
+      bemfield& field = fields[i];
+      field.insideconductivity = inside_[i].toDouble();
+      field.outsideconductivity = outside_[i].toDouble();
+        
+      std::string surface_type = bdyConds_[i].toString();
+      if (surface_type.find("Dirichlet") != std::string::npos)
+      {
+        field.set_source_dirichlet();
+      }
+      else // measurement
+      {
+        field.set_measurement_neumann();
+      }
+    }
+  }
 
   // The specific BEM routine (2 so far) to be called is dependent on the inputs in the fields vector,
   // so we check for the conditions and call the appropriate routine:

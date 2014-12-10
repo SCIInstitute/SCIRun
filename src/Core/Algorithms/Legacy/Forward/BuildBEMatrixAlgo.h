@@ -56,6 +56,8 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(InsideConductivityList);
         ALGORITHM_PARAMETER_DECL(OutsideConductivityList);
 
+        typedef std::vector<std::string> FieldTypeListType;
+
         class SCISHARE BuildBEMatrixBase
         {
         protected:

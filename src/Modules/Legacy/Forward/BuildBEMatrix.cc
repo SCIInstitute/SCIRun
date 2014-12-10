@@ -45,6 +45,7 @@
 
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
 #include <Modules/Legacy/Forward/BuildBEMatrixImpl.h>
+#include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
@@ -52,36 +53,11 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
-
-  //bool
-  //validate_gui_var(const std::size_t gui_list_len,
-  //                 const std::size_t expected_len,
-  //                 const std::string& name);
-
-  //GuiString guiselected_field_;
-  //GuiString guiselected_type_;
-
-  //GuiString guifields_;
-  //GuiString guifield_type_property_;
-  //GuiString guifield_inside_cond_property_;
-  //GuiString guifield_outside_cond_property_;
-  //GuiString guifield_surface_type_property_;
+using namespace SCIRun::Core::Algorithms::Forward;
 
 const ModuleLookupInfo BuildBEMatrix::staticInfo_("BuildBEMatrix", "Forward", "SCIRun");
 
-BuildBEMatrix::BuildBEMatrix():
-  Module(staticInfo_)
-//     ,
-//   old_nodes_generation_( -1 ),
-//   old_surface_generation_( -1 ),
-//   process_gui_vars_(false),
-//   guiselected_field_(get_ctx()->subVar("selected_field", false), ""),
-//   guiselected_type_(get_ctx()->subVar("selected_field_type", false), ""),
-//   guifields_(get_ctx()->subVar("input_field_list"), ""),
-//   guifield_type_property_(get_ctx()->subVar("field_type_list"), ""),
-//   guifield_inside_cond_property_(get_ctx()->subVar("inside_cond_list"), ""),
-//   guifield_outside_cond_property_(get_ctx()->subVar("outside_cond_list"), ""),
-//   guifield_surface_type_property_(get_ctx()->subVar("surface_type_list"), "")
+BuildBEMatrix::BuildBEMatrix() : Module(staticInfo_)
 {
   INITIALIZE_PORT(Surface);
   INITIALIZE_PORT(BEM_Forward_Matrix);
@@ -89,37 +65,25 @@ BuildBEMatrix::BuildBEMatrix():
 
 void BuildBEMatrix::setStateDefaults()
 {
-  //TODO
 }
 
-//bool
-//BuildBEMatrix::validate_gui_var(const std::size_t gui_list_len,
-//                                const std::size_t expected_len,
-//                                const std::string& name)
-//{
-//  if (gui_list_len != expected_len)
-//  {
-//    std::ostringstream oss;
-//    oss << "Inputs from GUI for " << name << " (" << gui_list_len
-//        << ") do not match number of fields (" << expected_len
-//        << "). GUI input will be ignored.";
-//    warning(oss.str());
-//    return false;
-//  }
-//
-//  return true;
-//}
-
-void
-BuildBEMatrix::execute()
+void BuildBEMatrix::execute()
 {
   auto inputs = getRequiredDynamicInputs(Surface);
 
   if (needToExecute())
   {
-    BuildBEMatrixImpl impl(this);
+    auto state = get_state();
+    auto fieldNames = state->getValue(Parameters::FieldNameList).toVector();
+    auto boundaryConditions = state->getValue(Parameters::BoundaryConditionList).toVector();
+    auto outsideConds = state->getValue(Parameters::OutsideConductivityList).toVector();
+    auto insideConds = state->getValue(Parameters::InsideConductivityList).toVector();
+
+    BuildBEMatrixImpl impl(fieldNames, boundaryConditions, outsideConds, insideConds, this);
 
     MatrixHandle transferMatrix = impl.executeImpl(inputs);
+    auto fieldTypes = impl.getInputTypes();
+    state->setTransientValue(Parameters::FieldTypeList, fieldTypes);
 
     sendOutput(BEM_Forward_Matrix, transferMatrix);
   }

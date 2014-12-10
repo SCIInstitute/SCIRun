@@ -200,12 +200,12 @@ void BuildBEMatrixDialog::pullFieldTypes()
 {
   using namespace TableColumns;
   Pulling p(this);
-  auto typeList = state_->getValue(Parameters::FieldTypeList).toVector();
+  auto typeList = optional_any_cast_or_default<FieldTypeListType>(state_->getTransientValue(Parameters::FieldTypeList));
   const int rows = std::min(static_cast<int>(typeList.size()), tableWidget->rowCount());
   for (int row = 0; row < rows; ++row)
   {
     auto item = tableWidget->item(row, FieldName);
-    item->setText(QString::fromStdString(typeList[row].toString()));
+    item->setText(QString::fromStdString(typeList[row]));
   }
 }
 
