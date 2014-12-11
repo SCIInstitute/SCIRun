@@ -204,7 +204,7 @@ void BuildBEMatrixDialog::pullFieldTypes()
   const int rows = std::min(static_cast<int>(typeList.size()), tableWidget->rowCount());
   for (int row = 0; row < rows; ++row)
   {
-    auto item = tableWidget->item(row, FieldName);
+    auto item = tableWidget->item(row, FieldType);
     item->setText(QString::fromStdString(typeList[row]));
   }
 }
