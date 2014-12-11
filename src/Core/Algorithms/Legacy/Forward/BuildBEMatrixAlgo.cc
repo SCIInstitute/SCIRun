@@ -1075,9 +1075,10 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   std::vector<int> fieldNodeSize(fields.size());
   std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
   const int totalNodes = std::accumulate(fieldNodeSize.begin(), fieldNodeSize.end(), 0);
-  std::vector<int> blockStarts(fields.size() + 1);
-  std::partial_sum(fieldNodeSize.begin(), fieldNodeSize.end(), blockStarts.begin() + 1);
+  std::vector<int> blockStartsEE(fields.size() + 1);
+  std::partial_sum(fieldNodeSize.begin(), fieldNodeSize.end(), blockStartsEE.begin() + 1);
   DenseMatrix EE(totalNodes, totalNodes);
+  std::cout << "EE: " << totalNodes << " x " << totalNodes << std::endl;
 
   // Calculate EE in block matrix form
   for(int i = 0; i < Nfields; i++)
@@ -1088,8 +1089,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       {
         auto field = fields[i].field_;
         auto blockISize = numNodes(field);
-        auto block = EE.block(blockStarts[i], blockStarts[i], blockISize, blockISize);
-        std::cout << "EE block " << i << "," << j << " is size " << blockISize << " x " << blockISize << " starting at " << blockStarts[i] << "," << blockStarts[i] << std::endl;
+        auto block = EE.block(blockStartsEE[i], blockStartsEE[i], blockISize, blockISize);
+        std::cout << "EE block " << i << "," << j << " is size " << blockISize << " x " << blockISize << " starting at " << blockStartsEE[i] << "," << blockStartsEE[i] << std::endl;
         make_auto_P_compute(field->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
       }
       else
@@ -1098,8 +1099,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
         auto fieldJ = fields[j].field_;
         auto blockIJrows = numNodes(fieldI);
         auto blockIJcols = numNodes(fieldJ);
-        auto block = EE.block(blockStarts[i],blockStarts[j],blockIJrows,blockIJcols);
-        std::cout << "EE block " << i << "," << j << " is size " << blockIJrows << " x " << blockIJcols << " starting at " << blockStarts[i] << "," << blockStarts[j] << std::endl;
+        auto block = EE.block(blockStartsEE[i],blockStartsEE[j],blockIJrows,blockIJcols);
+        std::cout << "EE block " << i << "," << j << " is size " << blockIJrows << " x " << blockIJcols << " starting at " << blockStartsEE[i] << "," << blockStartsEE[j] << std::endl;
         make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
       }
     }
@@ -1116,8 +1117,13 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   //boost::copy(trans, sourceFieldNodeSize.begin());
   std::transform(sourceFields.begin(), sourceFields.end(), sourceFieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
   const int totalSourceNodes = std::accumulate(sourceFieldNodeSize.begin(), sourceFieldNodeSize.end(), 0);
+  std::vector<int> blockStartsEJ(sourceFieldNodeSize.size() + 1);
+  std::partial_sum(sourceFieldNodeSize.begin(), sourceFieldNodeSize.end(), blockStartsEJ.begin() + 1);
 
   DenseMatrix EJ(totalNodes, totalSourceNodes);
+
+  std::cout << "EE: " << totalNodes << " x " << totalSourceNodes << std::endl;
+
   // Calculate EJ(:,s) in block matrix form
   // ***NOTE THE CHANGE IN INDEXING!!!***
   // (The indices of block columns of EJ correspond to field indices according to "sourcefieldindices", and this affects everything with EJ below this point too!)
@@ -1126,21 +1132,28 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     // Precalculate triangle areas for this source field/surface
     std::vector<double> triangleareas;
     pre_calc_tri_areas(fields[sourcefieldindices[j]].field_->vmesh(), triangleareas);
-    DenseMatrixHandle tempblockelement;
+
     for(int i = 0; i < Nfields; i++)
     {
       if (i == sourcefieldindices[j])
       {
-        //auto field = fields[i].field_;
-        //auto blockISize = numNodes(field);
-        //auto block = EJ.block(blockStarts[i], blockStarts[i], blockISize, blockISize);
-        //std::cout << "EJ block " << i << "," << j << " is size " << blockISize << " x " << blockISize << " starting at " << blockStarts[i] << "," << blockStarts[i] << std::endl;
+        auto field = fields[i].field_;
+        auto blockISize = numNodes(field);
+        auto block = EJ.block(blockStartsEE[i], blockStartsEJ[j], blockISize, blockISize);
+        std::cout << "EJ block auto " << i << "," << j << " is size " << blockISize << " x " << blockISize << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j] << std::endl;
 
-        make_auto_G(fields[i].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
+        make_auto_G_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }
       else
       {
-        make_cross_G(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), tempblockelement, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
+        auto fieldI = fields[i].field_;
+        auto fieldJ = fields[sourcefieldindices[j]].field_;
+        auto blockIJrows = numNodes(fieldI);
+        auto blockIJcols = numNodes(fieldJ);
+        auto block = EJ.block(blockStartsEE[i],blockStartsEJ[j],blockIJrows,blockIJcols);
+        std::cout << "EJ block cross " << i << "," << j << " is size " << blockIJrows << " x " << blockIJcols << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j] << std::endl;
+
+        make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }
 
       //EJ(i,j) = *tempblockelement;
