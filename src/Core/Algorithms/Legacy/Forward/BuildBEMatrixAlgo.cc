@@ -1155,26 +1155,18 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 
         make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }
-
-      //EJ(i,j) = *tempblockelement;
     }
   }
 
-    #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
+  std::cout << "EJ min: " << EJ.minCoeff() << std::endl;
+  std::cout << "EJ max: " << EJ.maxCoeff() << std::endl;
+
   // Perform deflation on EE matrix
-  double deflationconstant = 1/((EE.to_dense())->ncols()); // 1/(# cols of EE)
-  BlockMatrix deflationmatrix(Nfields, Nfields);
+  const double deflationconstant = 1.0/EE.ncols();
 
-  for(int i = 0; i < Nfields; i++)
-  {
-    for(int j = 0; j < Nfields; j++)
-    {
-      tempblockelement = EE(i,j);
-      deflationmatrix(i,j) = DenseMatrix(tempblockelement->nrows(), tempblockelement->ncols(), deflationconstant);
-    }
-  }
+  #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
 
-  EE = EE + deflationmatrix;
+  EE = EE + deflationconstant;
 
 
   // Split EE apart into Pmm, Pss, Pms, and Psm
