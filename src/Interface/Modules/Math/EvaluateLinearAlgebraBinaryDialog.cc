@@ -47,7 +47,7 @@ EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::
   connect(addRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(subtractRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(multiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-  buttonBox->setVisible(false);
+  //buttonBox->setVisible(false);
 }
 
 int EvaluateLinearAlgebraBinaryDialog::getSelectedOperator() const

@@ -45,7 +45,8 @@ namespace Math {
     {
       ADD,
       SUBTRACT,
-      MULTIPLY
+      MULTIPLY,
+			FUNCTION
     };
 
     /// @todo: idea (type, name)
