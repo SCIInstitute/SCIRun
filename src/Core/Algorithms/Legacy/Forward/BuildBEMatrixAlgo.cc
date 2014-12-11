@@ -48,6 +48,7 @@ DEALINGS IN THE SOFTWARE.
 #include <boost/range/algorithm/copy.hpp>
 
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/BlockMatrix.h>
 #include <Core/Basis/TriLinearLgn.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
@@ -1020,6 +1021,13 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
   }
 }
 
+static void printInfo(const DenseMatrix& m, const std::string& name)
+{
+  std::cout << name << ": " << m.rows() << " x " << m.cols() << std::endl;
+  std::cout << name << " min: " << m.minCoeff() << std::endl;
+  std::cout << name << " max: " << m.maxCoeff() << std::endl;
+}
+
 MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 {
   // Math for surface-to-surface BEM algorithm (based on Jeroen Stinstra's BEM Matlab code that's part of SCIRun)
@@ -1074,13 +1082,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 
   std::vector<int> fieldNodeSize(fields.size());
   std::transform(fields.begin(), fields.end(), fieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
-  const int totalNodes = std::accumulate(fieldNodeSize.begin(), fieldNodeSize.end(), 0);
-  std::vector<int> blockStartsEE(fields.size() + 1);
-  std::partial_sum(fieldNodeSize.begin(), fieldNodeSize.end(), blockStartsEE.begin() + 1);
-  DenseMatrix EE(totalNodes, totalNodes);
-  std::cout << "EE: " << totalNodes << " x " << totalNodes << std::endl;
-  typedef std::map<int,std::map<int,boost::tuple<int,int,int,int>>> BlockInfoMap;
-  BlockInfoMap blockInfoEE;
+  DenseBlockMatrix EE(fieldNodeSize, fieldNodeSize);
 
   // Calculate EE in block matrix form
   for(int i = 0; i < Nfields; i++)
@@ -1090,28 +1092,20 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       if (i == j)
       {
         auto field = fields[i].field_;
-        auto blockISize = numNodes(field);
-        auto block = EE.block(blockStartsEE[i], blockStartsEE[i], blockISize, blockISize);
-        std::cout << "EE block " << i << "," << j << " is size " << blockISize << " x " << blockISize << " starting at " << blockStartsEE[i] << "," << blockStartsEE[i] << std::endl;
+        auto block = EE.blockRef(i, j);
+        std::cout << "EE block " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEE[i] */<< std::endl;
         make_auto_P_compute(field->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
-        blockInfoEE[i][j] = boost::make_tuple(blockStartsEE[i], blockStartsEE[i], blockISize, blockISize);
       }
       else
       {
-        auto fieldI = fields[i].field_;
-        auto fieldJ = fields[j].field_;
-        auto blockIJrows = numNodes(fieldI);
-        auto blockIJcols = numNodes(fieldJ);
-        auto block = EE.block(blockStartsEE[i],blockStartsEE[j],blockIJrows,blockIJcols);
-        std::cout << "EE block " << i << "," << j << " is size " << blockIJrows << " x " << blockIJcols << " starting at " << blockStartsEE[i] << "," << blockStartsEE[j] << std::endl;
+        auto block = EE.blockRef(i, j);
+        std::cout << "EE block " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEE[i] */ << std::endl;
         make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
-        blockInfoEE[i][j] = boost::make_tuple(blockStartsEE[i],blockStartsEE[j],blockIJrows,blockIJcols);
       }
     }
   }
 
-  std::cout << "EE min: " << EE.minCoeff() << std::endl;
-  std::cout << "EE max: " << EE.maxCoeff() << std::endl;
+  printInfo(EE.matrix(), "EE");
 
   std::vector<int> sourceFieldNodeSize(sourcefieldindices.size());
   auto sourceFields = fields | boost::adaptors::filtered([](const bemfield& f) { return f.source; });
@@ -1120,13 +1114,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   //auto trans = filt | boost::adaptors::transformed(transformer);
   //boost::copy(trans, sourceFieldNodeSize.begin());
   std::transform(sourceFields.begin(), sourceFields.end(), sourceFieldNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
-  const int totalSourceNodes = std::accumulate(sourceFieldNodeSize.begin(), sourceFieldNodeSize.end(), 0);
-  std::vector<int> blockStartsEJ(sourceFieldNodeSize.size() + 1);
-  std::partial_sum(sourceFieldNodeSize.begin(), sourceFieldNodeSize.end(), blockStartsEJ.begin() + 1);
 
-  DenseMatrix EJ(totalNodes, totalSourceNodes);
-
-  std::cout << "EE: " << totalNodes << " x " << totalSourceNodes << std::endl;
+  DenseBlockMatrix EJ(fieldNodeSize, sourceFieldNodeSize);
 
   // Calculate EJ(:,s) in block matrix form
   // ***NOTE THE CHANGE IN INDEXING!!!***
@@ -1141,118 +1130,118 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     {
       if (i == sourcefieldindices[j])
       {
-        auto field = fields[i].field_;
-        auto blockISize = numNodes(field);
-        auto block = EJ.block(blockStartsEE[i], blockStartsEJ[j], blockISize, blockISize);
-        std::cout << "EJ block auto " << i << "," << j << " is size " << blockISize << " x " << blockISize << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j] << std::endl;
+        auto block = EJ.blockRef(i,j);
+        std::cout << "EJ block auto " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
 
         make_auto_G_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }
       else
       {
-        auto fieldI = fields[i].field_;
-        auto fieldJ = fields[sourcefieldindices[j]].field_;
-        auto blockIJrows = numNodes(fieldI);
-        auto blockIJcols = numNodes(fieldJ);
-        auto block = EJ.block(blockStartsEE[i],blockStartsEJ[j],blockIJrows,blockIJcols);
-        std::cout << "EJ block cross " << i << "," << j << " is size " << blockIJrows << " x " << blockIJcols << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j] << std::endl;
+        auto block = EJ.blockRef(i,j);
+        std::cout << "EJ block cross " << i << "," << j << " is size " << block.rows() << " x " << block.cols()/* << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
 
         make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }
     }
   }
 
-  std::cout << "EJ min: " << EJ.minCoeff() << std::endl;
-  std::cout << "EJ max: " << EJ.maxCoeff() << std::endl;
+  printInfo(EJ.matrix(), "EJ");
 
   // Perform deflation on EE matrix
-  const double deflationconstant = 1.0/EE.ncols();
-  EE = EE.array() + deflationconstant;
+  const double deflationconstant = 1.0/EE.matrix().ncols();
+  EE.matrix() = EE.matrix().array() + deflationconstant;
 
-  const int totalMeasurementNodes = totalNodes - totalSourceNodes;
+  std::vector<int> measurementNodeSize(measurementfieldindices.size());
+  auto measFields = fields | boost::adaptors::filtered([](const bemfield& f) { return f.measurement; });
+  //following doesn't compile in VS2010, but does in clang: enable it after upgrading to 2013
+  //auto transformer = [this](const bemfield& f) -> int { return numNodes(f.field_); };
+  //auto trans = filt | boost::adaptors::transformed(transformer);
+  //boost::copy(trans, sourceFieldNodeSize.begin());
+  std::transform(measFields.begin(), measFields.end(), measurementNodeSize.begin(), [this](const bemfield& f) { return numNodes(f.field_); } );
 
   // Split EE apart into Pmm, Pss, Pms, and Psm
   // -----------------------------------------------
   // Pmm:
-  DenseMatrix Pmm(totalMeasurementNodes, totalMeasurementNodes);
-  int PmmRow = 0, PmmCol = 0;
+  DenseBlockMatrix Pmm(measurementNodeSize, measurementNodeSize);
   for(int i = 0; i < Nmeasurements; i++)
   {
-    int rowBlockSize = 0;
     for(int j = 0; j < Nmeasurements; j++)
     {
-      auto blockInfo = blockInfoEE[measurementfieldindices[i]][measurementfieldindices[j]];
-      Pmm.block(PmmRow,PmmCol,blockInfo.get<2>(), blockInfo.get<3>()) = EE.block(blockInfo.get<0>(), blockInfo.get<1>(), blockInfo.get<2>(), blockInfo.get<3>());
-      PmmCol += blockInfo.get<3>();
-      rowBlockSize = blockInfo.get<2>();
+      Pmm.blockRef(i,j) = EE.blockRef(measurementfieldindices[i], measurementfieldindices[j]);
     }
-    PmmRow += rowBlockSize;
   }
+  printInfo(Pmm.matrix(), "Pmm");
 
   // Pss:
-  DenseMatrix Pss(totalSourceNodes, totalSourceNodes);
+  DenseBlockMatrix Pss(sourceFieldNodeSize, sourceFieldNodeSize);
   for(int i = 0; i < Nsources; i++)
   {
     for(int j = 0; j < Nsources; j++)
     {
-      //Pss.block(i,j) = EE.block(sourcefieldindices[i],sourcefieldindices[j]);
+      Pss.blockRef(i,j) = EE.blockRef(sourcefieldindices[i],sourcefieldindices[j]);
     }
   }
+  printInfo(Pss.matrix(), "Pss");
 
   // Pms:
-  DenseMatrix Pms(totalMeasurementNodes, totalSourceNodes);
+  DenseBlockMatrix Pms(measurementNodeSize, sourceFieldNodeSize);
   for(int i = 0; i < Nmeasurements; i++)
   {
     for(int j = 0; j < Nsources; j++)
     {
-      //Pms.block(i,j) = EE.block(measurementfieldindices[i],sourcefieldindices[j]);
+      Pms.blockRef(i,j) = EE.blockRef(measurementfieldindices[i],sourcefieldindices[j]);
     }
   }
+  printInfo(Pms.matrix(), "Pms");
+
 
   // Psm:
-  DenseMatrix Psm(totalSourceNodes, totalMeasurementNodes);
+  DenseBlockMatrix Psm(sourceFieldNodeSize, measurementNodeSize);
   for(int i = 0; i < Nsources; i++)
   {
     for(int j = 0; j < Nmeasurements; j++)
     {
-      //Psm.block(i,j) = EE.block(sourcefieldindices[i],measurementfieldindices[j]);
+      Psm.blockRef(i,j) = EE.blockRef(sourcefieldindices[i],measurementfieldindices[j]);
     }
   }
+  printInfo(Psm.matrix(), "Psm");
 
   // Split EJ apart into Gms and Gss (see ALL-CAPS note above about differences in block row vs column indexing in EJ matrix)
   // -----------------------------------------------
   // Gms:
-  DenseMatrix Gms(totalMeasurementNodes, totalSourceNodes);
+  DenseBlockMatrix Gms(measurementNodeSize, sourceFieldNodeSize);
   for(int i = 0; i < Nmeasurements; i++)
   {
     for(int j = 0; j < Nsources; j++)
     {
-      //Gms.block(i,j) = EJ.block(measurementfieldindices[i],j);
+      Gms.blockRef(i,j) = EJ.blockRef(measurementfieldindices[i],j);
     }
   }
+  printInfo(Gms.matrix(), "Gms");
 
   // Gss:
-  DenseMatrix Gss(totalSourceNodes, totalSourceNodes);
+  DenseBlockMatrix Gss(sourceFieldNodeSize, sourceFieldNodeSize);
   for(int i = 0; i < Nsources; i++)
   {
     for(int j = 0; j < Nsources; j++)
     {
-      //Gss.block(i,j) = EJ.block(sourcefieldindices[i],j);
+      Gss.blockRef(i,j) = EJ.blockRef(sourcefieldindices[i],j);
     }
   }
+  printInfo(Gss.matrix(), "Gss");
 
   // TODO: add deflation step
 
   // Compute T here (see math in comments above)
   // TransferMatrix = T = inv(Pmm - Gms*iGss*Psm)*(Gms*iGss*Pss - Pms) = inv(C)*D
-
-  auto Y = Gms * Gss.inverse();
-  auto C = Pmm - Y * Psm;
-  auto D = Y * Pss - Pms;
+  
+  auto Y = Gms.matrix() * Gss.matrix().inverse();
+  auto C = Pmm.matrix() - Y * Psm.matrix();
+  auto D = Y * Pss.matrix() - Pms.matrix();
 
   auto T = C.inverse() * D; // T = inv(C)*D
   return boost::make_shared<DenseMatrix>(T);
-
+  
   //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
   //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
 }

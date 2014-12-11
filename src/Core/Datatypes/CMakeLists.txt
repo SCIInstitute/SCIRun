@@ -27,6 +27,7 @@
 #
 
 SET(Core_Datatypes_SRCS
+  BlockMatrix.cc
   Color.cc
   ColorMap.cc
   Datatype.cc
@@ -40,6 +41,7 @@ SET(Core_Datatypes_SRCS
 )
 
 SET(Core_Datatypes_HEADERS
+  BlockMatrix.h
   Color.h
   ColorMap.h
   Datatype.h
