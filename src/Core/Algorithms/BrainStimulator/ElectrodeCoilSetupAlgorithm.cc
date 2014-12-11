@@ -488,7 +488,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
    { 
     continue; 
    }
-   std::cout << "abra" << elc_thickness[i] << std::endl; 
    double distance=0;
    bool skip_current_iteration=false;
    VMesh::Node::index_type didx;
@@ -1142,7 +1141,6 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
      	
     if (c2==tDCS_stim_type) /// tDCS?
     {
-     std::cout << "tDCS" << std::endl;
      if(valid_position)
      {
       elc_prototyp_map.push_back(c1); 
@@ -1157,9 +1155,6 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
     
     if (c2==TMS_stim_type) /// TMS?
     {
-     
-     std::cout << "TMS" << std::endl;
-         
      if(valid_normal && valid_position)
      {
       coil_prototyp_map.push_back(c1); 
