@@ -1163,12 +1163,9 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 
   // Perform deflation on EE matrix
   const double deflationconstant = 1.0/EE.ncols();
+  EE = EE.array() + deflationconstant;
 
   #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
-
-  EE = EE + deflationconstant;
-
-
   // Split EE apart into Pmm, Pss, Pms, and Psm
   // -----------------------------------------------
   // Pmm:
