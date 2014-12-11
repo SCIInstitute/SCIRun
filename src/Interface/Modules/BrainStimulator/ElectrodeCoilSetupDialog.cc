@@ -202,7 +202,7 @@ void ElectrodeCoilSetupDialog::initialize_comboboxes(int i, std::vector<Algorith
      stimtype_from_state=-1;
     }
   
-    if (stimtype_from_state>=0 && stimtype_from_state<=3)
+    if (stimtype_from_state>=0 && stimtype_from_state<=3)  /// TODO: make a static constant
       tmp2=stimtype_from_state; 
    
     InputPorts->setCurrentIndex(tmp1);
