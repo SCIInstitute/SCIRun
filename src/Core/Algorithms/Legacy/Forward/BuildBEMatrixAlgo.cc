@@ -1165,92 +1165,84 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   const double deflationconstant = 1.0/EE.ncols();
   EE = EE.array() + deflationconstant;
 
-  #ifdef NEED_TO_CONVERT_BLOCKMATRIX_TO_EIGEN_SYNTAX
+  const int totalMeasurementNodes = totalNodes - totalSourceNodes;
+
   // Split EE apart into Pmm, Pss, Pms, and Psm
   // -----------------------------------------------
   // Pmm:
-  BlockMatrix BlockPmm(Nmeasurements, Nmeasurements);
+  DenseMatrix Pmm(totalMeasurementNodes, totalMeasurementNodes);
   for(int i = 0; i < Nmeasurements; i++)
   {
     for(int j = 0; j < Nmeasurements; j++)
     {
-      BlockPmm(i,j) = EE(measurementfieldindices[i],measurementfieldindices[j]);
+      //Pmm.block(i,j) = EE.block(measurementfieldindices[i],measurementfieldindices[j]);
     }
   }
-  DenseMatrixHandle Pmm = BlockPmm.to_dense();
 
   // Pss:
-  BlockMatrix BlockPss(Nsources, Nsources);
+  DenseMatrix Pss(totalSourceNodes, totalSourceNodes);
   for(int i = 0; i < Nsources; i++)
   {
     for(int j = 0; j < Nsources; j++)
     {
-      BlockPss(i,j)=EE(sourcefieldindices[i],sourcefieldindices[j]);
+      //Pss.block(i,j) = EE.block(sourcefieldindices[i],sourcefieldindices[j]);
     }
   }
-  DenseMatrixHandle Pss = BlockPss.to_dense();
 
   // Pms:
-  BlockMatrix BlockPms(Nmeasurements, Nsources);
+  DenseMatrix Pms(totalMeasurementNodes, totalSourceNodes);
   for(int i = 0; i < Nmeasurements; i++)
   {
     for(int j = 0; j < Nsources; j++)
     {
-      BlockPms(i,j)=EE(measurementfieldindices[i],sourcefieldindices[j]);
+      //Pms.block(i,j) = EE.block(measurementfieldindices[i],sourcefieldindices[j]);
     }
   }
-  DenseMatrixHandle Pms = BlockPms.to_dense();
 
   // Psm:
-  BlockMatrix BlockPsm(Nsources, Nmeasurements);
+  DenseMatrix Psm(totalSourceNodes, totalMeasurementNodes);
   for(int i = 0; i < Nsources; i++)
   {
     for(int j = 0; j < Nmeasurements; j++)
     {
-      BlockPsm(i,j)=EE(sourcefieldindices[i],measurementfieldindices[j]);
+      //Psm.block(i,j) = EE.block(sourcefieldindices[i],measurementfieldindices[j]);
     }
   }
-  DenseMatrixHandle Psm = BlockPsm.to_dense();
 
   // Split EJ apart into Gms and Gss (see ALL-CAPS note above about differences in block row vs column indexing in EJ matrix)
   // -----------------------------------------------
   // Gms:
-  BlockMatrix BlockGms(Nmeasurements, Nsources);
+  DenseMatrix Gms(totalMeasurementNodes, totalSourceNodes);
   for(int i = 0; i < Nmeasurements; i++)
   {
     for(int j = 0; j < Nsources; j++)
     {
-      BlockGms(i,j)=EJ(measurementfieldindices[i],j);
+      //Gms.block(i,j) = EJ.block(measurementfieldindices[i],j);
     }
   }
-  DenseMatrixHandle Gms = BlockGms.to_dense();
 
   // Gss:
-  BlockMatrix BlockGss(Nsources, Nsources);
+  DenseMatrix Gss(totalSourceNodes, totalSourceNodes);
   for(int i = 0; i < Nsources; i++)
   {
     for(int j = 0; j < Nsources; j++)
     {
-      BlockGss(i,j) = EJ(sourcefieldindices[i],j);
+      //Gss.block(i,j) = EJ.block(sourcefieldindices[i],j);
     }
   }
-  DenseMatrixHandle Gss = BlockGss.to_dense();
 
   // TODO: add deflation step
 
   // Compute T here (see math in comments above)
   // TransferMatrix = T = inv(Pmm - Gms*iGss*Psm)*(Gms*iGss*Pss - Pms) = inv(C)*D
-  Gss->invert(); // iGss = inv(Gss)
+  
+  auto Y = Gms * Gss.inverse();
+  auto C = Pmm - Y * Psm;
+  auto D = Y * Pss - Pms;
 
-  MatrixHandle Y = Gms * Gss;
-  MatrixHandle C = Pmm - Y * Psm;
-  MatrixHandle D = Y * Pss - Pms;
+  auto T = C.inverse() * D; // T = inv(C)*D
+  return boost::make_shared<DenseMatrix>(T);
 
-  C->invert();
-  MatrixHandle T = C * D; // T = inv(C)*D
-  return T;
-#endif
-  return nullptr;
   //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
   //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
 }
