@@ -1079,6 +1079,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   std::partial_sum(fieldNodeSize.begin(), fieldNodeSize.end(), blockStartsEE.begin() + 1);
   DenseMatrix EE(totalNodes, totalNodes);
   std::cout << "EE: " << totalNodes << " x " << totalNodes << std::endl;
+  typedef std::map<int,std::map<int,boost::tuple<int,int,int,int>>> BlockInfoMap;
+  BlockInfoMap blockInfoEE;
 
   // Calculate EE in block matrix form
   for(int i = 0; i < Nfields; i++)
@@ -1092,6 +1094,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
         auto block = EE.block(blockStartsEE[i], blockStartsEE[i], blockISize, blockISize);
         std::cout << "EE block " << i << "," << j << " is size " << blockISize << " x " << blockISize << " starting at " << blockStartsEE[i] << "," << blockStartsEE[i] << std::endl;
         make_auto_P_compute(field->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+        blockInfoEE[i][j] = boost::make_tuple(blockStartsEE[i], blockStartsEE[i], blockISize, blockISize);
       }
       else
       {
@@ -1102,6 +1105,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
         auto block = EE.block(blockStartsEE[i],blockStartsEE[j],blockIJrows,blockIJcols);
         std::cout << "EE block " << i << "," << j << " is size " << blockIJrows << " x " << blockIJcols << " starting at " << blockStartsEE[i] << "," << blockStartsEE[j] << std::endl;
         make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+        blockInfoEE[i][j] = boost::make_tuple(blockStartsEE[i],blockStartsEE[j],blockIJrows,blockIJcols);
       }
     }
   }
@@ -1171,12 +1175,18 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   // -----------------------------------------------
   // Pmm:
   DenseMatrix Pmm(totalMeasurementNodes, totalMeasurementNodes);
+  int PmmRow = 0, PmmCol = 0;
   for(int i = 0; i < Nmeasurements; i++)
   {
+    int rowBlockSize = 0;
     for(int j = 0; j < Nmeasurements; j++)
     {
-      //Pmm.block(i,j) = EE.block(measurementfieldindices[i],measurementfieldindices[j]);
+      auto blockInfo = blockInfoEE[measurementfieldindices[i]][measurementfieldindices[j]];
+      Pmm.block(PmmRow,PmmCol,blockInfo.get<2>(), blockInfo.get<3>()) = EE.block(blockInfo.get<0>(), blockInfo.get<1>(), blockInfo.get<2>(), blockInfo.get<3>());
+      PmmCol += blockInfo.get<3>();
+      rowBlockSize = blockInfo.get<2>();
     }
+    PmmRow += rowBlockSize;
   }
 
   // Pss:
@@ -1235,7 +1245,7 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 
   // Compute T here (see math in comments above)
   // TransferMatrix = T = inv(Pmm - Gms*iGss*Psm)*(Gms*iGss*Pss - Pms) = inv(C)*D
-  
+
   auto Y = Gms * Gss.inverse();
   auto C = Pmm - Y * Psm;
   auto D = Y * Pss - Pms;
