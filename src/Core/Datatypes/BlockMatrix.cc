@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,7 +32,7 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-DenseBlockMatrix::DenseBlockMatrix(const RowBlockSizes& rbs, const ColumnBlockSizes& cbs) : 
+DenseBlockMatrix::DenseBlockMatrix(const RowBlockSizes& rbs, const ColumnBlockSizes& cbs) :
   blockStartsRow_(rbs.size() + 1),
   blockStartsCol_(cbs.size() + 1)
 {
@@ -43,7 +43,7 @@ DenseBlockMatrix::DenseBlockMatrix(const RowBlockSizes& rbs, const ColumnBlockSi
   std::partial_sum(cbs.begin(), cbs.end(), blockStartsCol_.begin() + 1);
 
   matrix_.resize(totalRows, totalCols);
-  //std::cout << "EE: " << totalNodes << " x " << totalNodes << std::endl;
+  matrix_.setZero();
 }
 
 int DenseBlockMatrix::startRow(int i) const

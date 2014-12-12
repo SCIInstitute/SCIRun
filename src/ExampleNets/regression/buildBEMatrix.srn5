@@ -33,14 +33,14 @@
 												<name></name>
 												<value>
 													<which>2</which>
-													<value>Measurement (Neumann)</value>
+													<value>Source (Dirichlet)</value>
 												</value>
 											</item>
 											<item>
 												<name></name>
 												<value>
 													<which>2</which>
-													<value>Source (Dirichlet)</value>
+													<value>Measurement (Neumann)</value>
 												</value>
 											</item>
 										</value>
