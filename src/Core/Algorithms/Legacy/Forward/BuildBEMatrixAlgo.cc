@@ -1091,15 +1091,12 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
     {
       if (i == j)
       {
-        auto field = fields[i].field_;
         auto block = EE.blockRef(i, j);
-        std::cout << "EE block " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEE[i] */<< std::endl;
-        make_auto_P_compute(field->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
+        make_auto_P_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
       }
       else
       {
         auto block = EE.blockRef(i, j);
-        std::cout << "EE block " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEE[i] */ << std::endl;
         make_cross_P_compute(fields[i].field_->vmesh(), fields[j].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond);
       }
     }
@@ -1150,6 +1147,8 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
   // Perform deflation on EE matrix
   const double deflationconstant = 1.0/EE.matrix().ncols();
   EE.matrix() = EE.matrix().array() + deflationconstant;
+
+  printInfo(EE.matrix(), "EE after deflation");
 
   std::vector<int> measurementNodeSize(measurementfieldindices.size());
   auto measFields = fields | boost::adaptors::filtered([](const bemfield& f) { return f.measurement; });
@@ -1234,14 +1233,14 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
 
   // Compute T here (see math in comments above)
   // TransferMatrix = T = inv(Pmm - Gms*iGss*Psm)*(Gms*iGss*Pss - Pms) = inv(C)*D
-  
+
   auto Y = Gms.matrix() * Gss.matrix().inverse();
   auto C = Pmm.matrix() - Y * Psm.matrix();
   auto D = Y * Pss.matrix() - Pms.matrix();
 
   auto T = C.inverse() * D; // T = inv(C)*D
   return boost::make_shared<DenseMatrix>(T);
-  
+
   //This could be done on one line (see below), but Y (see above) would need to be calculated twice:
   //MatrixHandle TransferMatrix1 = inv(Pmm - Gms * Gss * Psm) * (Gms * Gss * Pss - Pms);
 }
