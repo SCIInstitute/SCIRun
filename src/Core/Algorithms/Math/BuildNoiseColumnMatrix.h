@@ -40,7 +40,7 @@ namespace SCIRun {
 			
 				
 				class SCISHARE BuildNoiseColumnMatrixAlgorithm : public AlgorithmBase
-				{
+				{	
 					public:
 						static AlgorithmInputName InputMatrix;
 						static AlgorithmOutputName ResultMatrix;

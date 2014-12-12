@@ -35,17 +35,13 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <Core/Math/MusilRNG.h>
-#include <Core/Math/MiscMath.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
+MusilRNG *musil = new MusilRNG;
 
 BuildNoiseColumnMatrixAlgorithm::BuildNoiseColumnMatrixAlgorithm()
 {
@@ -54,7 +50,6 @@ BuildNoiseColumnMatrixAlgorithm::BuildNoiseColumnMatrixAlgorithm()
 
 void BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle output_matrix) const
 {
-	//auto return_matrix = input_matrix;
 	if(matrix_is::sparse(output_matrix))
 		matrix_convert::to_dense(output_matrix);		
 	
@@ -64,21 +59,8 @@ void BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle output_matrix) const
 	int nr = output_matrix->nrows();
 	int nc = output_matrix->ncols();
 	double curr;
-	MusilRNG* rng = new MusilRNG();
-	//srand(time(NULL));
 	
 	double snr = get(SignalToNoiseRatio()).toDouble();
-	
-	std::cout << "The value of snr is: " << snr << std::endl;
-	/*
-	for(r = 0; r < nr; r++) {
-		for(c = 0; c < nc; c++)
-		{
-			curr = output_matrix->get(r,c);
-			mean += curr;
-		}
-	}
-	*/
 	
 	mean /= nr*nc;
 	for(r = 0; r < nr; r++) {
@@ -96,35 +78,11 @@ void BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle output_matrix) const
 	{
 		for(c = 0; c < nc; c++)
 		{
-			//MusilRNG *rng = new MusilRNG(6);
-			const double rnd = 2.0 * (*rng)() -1.0;
+			const double rnd = 2.0 * (*musil)() -1.0;
 			double perturb = rnd * sigma * sqrt((-2.0 * log(rnd*rnd))/(rnd*rnd));
 			output_matrix->put(r,c,perturb);
 		}
 	}
-	
-	//std::cout << "RNG output: " << std::endl;
-	//for(int z = 0; z < 10; z++)
-				//std::cout << rng() << " ";
-	
-	
-	/*
-	std::cout << std::endl << std::endl;
-	std::cout << "The output matrix:\n";
-	for(r = 0; r < nr; r++) {
-		for(c = 0; c < nc; c++) {
-			std::cout << output_matrix->get(r,c) << " ";
-		}
-		std::cout << std::endl;
-	}
-	std::cout << std::endl << std::endl;
-	*/
-	
-	
-	
-	
-	
-	//return return_matrix;
 }
 
 AlgorithmOutput BuildNoiseColumnMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
@@ -133,35 +91,7 @@ AlgorithmOutput BuildNoiseColumnMatrixAlgorithm::run_generic(const AlgorithmInpu
 	
 	MatrixHandle output_matrix = input_matrix;
 	
-	/*
-	std::cout << "The input matrix:\n";
-	for(int r = 0; r < 5; r++) {
-		for(int c = 0; c < 5; c++) {
-			std::cout << input_matrix->get(r,c) << " ";
-		}
-		std::cout << std::endl << std::endl;
-	}
-	*/
-	
-	
-	
 	run(output_matrix);
-	
-	
-	
-	/*
-	std::cout << std::endl;
-	std::cout << "The input matrix:\n";
-	for(int r = 0; r < 5; r++) {
-		for(int c = 0; c < 5; c++) {
-			std::cout << input_matrix->get(r,c) << " ";
-		}
-		std::cout << std::endl;
-	}
-	*/
-	
-	
-	
 	
 	AlgorithmOutput output;
 	output[Variables::ResultMatrix] = output_matrix;
