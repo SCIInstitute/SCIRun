@@ -86,6 +86,7 @@ const AlgorithmInputName ElectrodeCoilSetupAlgorithm::LOCATIONS("LOCATIONS");
 const int ElectrodeCoilSetupAlgorithm::unknown_stim_type = 0; 
 const int ElectrodeCoilSetupAlgorithm::TMS_stim_type     = 1; 
 const int ElectrodeCoilSetupAlgorithm::tDCS_stim_type    = 2;
+const double ElectrodeCoilSetupAlgorithm::direction_bound = -0.99;
 
 const AlgorithmParameterName ElectrodeCoilSetupAlgorithm::columnNames[] = 
 { Name("Input #"), 
@@ -425,7 +426,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
       if (fielddata->ncols()!=3)
       {
        std::ostringstream ostr4;
-       ostr4 << " Trying to generate magnetic dipoles for TMS coil defined in table row " << i << " could not find any prototyp normals - using (NX,NY,NZ) from GUI instead! " << std::endl;
+       ostr4 << " Trying to generate magnetic dipoles for TMS coil defined in table row " << i+1 << " could not find any prototyp normals - using (NX,NY,NZ) from GUI instead! " << std::endl;
        remark(ostr4.str());	
       }
     }   
@@ -442,7 +443,16 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
       Point vec((*magnetic_dipoles)(j,0),(*magnetic_dipoles)(j,1),(*magnetic_dipoles)(j,2));
       tms_coils_field_values.push_back(vec);
     }  
-   }
+   } else
+   {
+     std::ostringstream ostr3;
+     ostr3 << " TMS coil definition for " << i+1 << ". row needs be a point cloud (with defined scalar or vectors data)." << std::endl;
+     remark(ostr3.str());
+     continue; 
+   }  
+  } else
+  {
+     THROW_ALGORITHM_PROCESSING_ERROR("Internal error: coil definition inconsistent. ");
   }
  }
 
@@ -462,7 +472,96 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
   return tms_coils_field;
 } 
   
-boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::make_tdcs_electrodes(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness) const 
+boost::tuple<Variable::List,double, double, double> ElectrodeCoilSetupAlgorithm::make_table_row(int i, double x, double y, double z, double nx, double ny, double nz) const
+{
+ Variable::List tmp;
+ double out_nx, out_ny, out_nz;
+ auto tab_values = get(Parameters::TableValues).toVector(); 
+ auto col = tab_values[i].toVector();
+ std::string str1=col[0].toString();
+ std::string str2=col[1].toString();
+ std::string str3=col[2].toString();
+ std::string str4=col[3].toString();
+ std::string str5=col[4].toString();
+ std::string str6=col[5].toString();
+ 
+ std::string str7=col[6].toString();
+ std::string str8=col[7].toString();
+ std::string str9=col[8].toString();
+ 
+ std::string str10=col[9].toString(); 
+ 
+ if (str7.compare("???")==0)
+ {
+  str7 = boost::str(boost::format("%.3f") % nx);
+  out_nx=nx;
+ } else
+ {
+  try 
+  {
+   out_nx = boost::lexical_cast<double>(col[6].toString());
+  } catch(bad_lexical_cast&) { } 
+ }
+ 
+ if (str8.compare("???")==0)
+ {
+  str8 = boost::str(boost::format("%.3f") % ny);
+  out_ny=ny;
+ } else
+ {
+  try 
+  {
+   out_ny = boost::lexical_cast<double>(col[7].toString());
+  } catch(bad_lexical_cast&) { } 
+ }
+ 
+ if (str9.compare("???")==0)
+ {
+  str9 = boost::str(boost::format("%.3f") % nz);
+  out_nz=nz;
+ } else
+ {
+  try 
+  {
+   out_nz = boost::lexical_cast<double>(col[8].toString());
+  } catch(bad_lexical_cast&) { } 
+ }
+ 
+ Variable var1=makeVariable("Input #", boost::str(boost::format("%s") % str1));
+ Variable var2=makeVariable("Type",   boost::str(boost::format("%s") % str2)); 
+
+ Variable var3,var4,var5;
+      
+ if (str3.compare("???")==0)
+  var3=makeVariable("X",     boost::str(boost::format("%.3f") % x));
+  else
+    var3=makeVariable("X",   boost::str(boost::format("%s") % str3));     
+   
+ if (str4.compare("???")==0) 
+  var4=makeVariable("Y",     boost::str(boost::format("%.3f") % y));
+   else
+    var4=makeVariable("Y",   boost::str(boost::format("%s") % str4));
+
+ if (str5.compare("???")==0) 
+  var5=makeVariable("Y",     boost::str(boost::format("%.3f") % z));
+   else
+    var5=makeVariable("Z",   boost::str(boost::format("%s") % str5));
+
+ Variable var6=makeVariable("Angle",  boost::str(boost::format("%s") % str6));  
+
+ ///if this table row was selected as tDCS -> project point to scalp surface and put its normal in table (NX,NY,NZ)
+ Variable var7=makeVariable("NX", boost::str(boost::format("%s") % str7));
+ Variable var8=makeVariable("NY", boost::str(boost::format("%s") % str8));
+ Variable var9=makeVariable("NZ", boost::str(boost::format("%s") % str9));
+ 
+ Variable var10=makeVariable("thickness",boost::str(boost::format("%s") % str10));
+ tmp += var1,var2,var3,var4,var5,var6,var7,var8,var9,var10;
+   
+ return boost::make_tuple(tmp, out_nx, out_ny, out_nz);
+}
+  
+  
+boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> ElectrodeCoilSetupAlgorithm::make_tdcs_electrodes(FieldHandle scalp, const std::vector<FieldHandle>& elc_coil_proto, const std::vector<double>& elc_prototyp_map, const std::vector<double>& elc_x, const std::vector<double>& elc_y, const std::vector<double>& elc_z, const std::vector<double>& elc_angle_rotation, const std::vector<double>& elc_thickness, VariableHandle table) const 
 {
  int nr_elc_sponge_triangles=0, num_valid_electrode_definition=0, nr_elc_sponge_triangles_on_scalp=0;
  std::vector<double> field_values, field_values_elc_on_scalp;
@@ -475,9 +574,11 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
  FieldHandle output = CreateField(fieldinfo3);
  VMesh* output_vmesh = output->vmesh(); 
  VField* output_vfld = output->vfield();
-  
- DenseMatrixHandle elc_sponge_locations;   
- if (elc_thickness.size()==elc_prototyp_map.size() && elc_x.size()==elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size())
+ Variable::List new_table;
+ DenseMatrixHandle elc_sponge_locations;  
+ auto tab_values = get(Parameters::TableValues).toVector(); 
+ bool flip_normal=false;
+ if (tab_values.size()==elc_prototyp_map.size() && elc_thickness.size()==elc_prototyp_map.size() && elc_x.size()==elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size())
  {  
   VMesh* scalp_vmesh = scalp->vmesh(); 
   VField* scalp_vfld = scalp->vfield(); 
@@ -497,6 +598,22 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
    Vector norm;
    scalp_vmesh->synchronize(Mesh::NORMALS_E);
    scalp_vmesh->get_normal(norm,didx); /// ... get its normal
+   //update GUI table normals
+   double nx,ny,nz;
+   Variable::List new_row;
+   boost::tie(new_row,nx,ny,nz)=make_table_row(i,elc_x[i],elc_y[i],elc_z[i],norm.x(),norm.y(),norm.z());
+   new_table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), new_row));  
+   if (!(nx==0.0 && ny==0.0 && nz==0.0))
+   {
+    Vector norm2(nx,ny,nz);
+    double dot_product=Dot(norm, norm2);
+    norm = Vector(nx,ny,nz);  
+    if (dot_product<direction_bound)
+    {
+      flip_normal=true;
+    }   
+   } 
+     
    /// move coil prototype to projected location
    /// first, compute the transfer matrices
    std::vector<double> axis;
@@ -513,7 +630,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
    }   
    FieldHandle prototype = elc_coil_proto[elc_prototyp_map[i]-1];
    FieldInformation fi(prototype);
-   if(fi.is_trisurfmesh()) // put this to tms as well but for points, remark!
+   if(fi.is_trisurfmesh()) 
    {
     GetMeshNodesAlgo algo_getfieldnodes;
     DenseMatrixHandle fieldnodes;
@@ -629,7 +746,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
     if (!tmp_sdf_vfld || tmp_sdf_vfld->num_values()<=0)
     {
      std::ostringstream ostr3;
-     ostr3 << " Electrode sponge/scalp surface could not be found for " << i << ". electrode. Make sure that prototype encapsulated scalp." << std::endl;
+     ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode. Make sure that prototype encapsulated scalp." << std::endl;
      remark(ostr3.str());
      skip_current_iteration=true;
      continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 	
@@ -654,7 +771,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
     if(!found_elc_surf)
     {
      std::ostringstream ostr3;
-     ostr3 << " Electrode sponge/scalp surface could not be found for " << i << ". electrode (after sdf binarization). Make sure that prototype encapsulates scalp." << std::endl;
+     ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (after sdf binarization). Make sure that prototype encapsulates scalp." << std::endl;
      remark(ostr3.str());
      skip_current_iteration=true;
      continue;/// in that case go to the next electrode -> leave the for loop thats iterating over
@@ -672,7 +789,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
     if (!final_electrode_sponge_surf_fld || final_electrode_sponge_surf_fld->num_values()<=0 || !final_electrode_sponge_surf_msh || final_electrode_sponge_surf_msh->num_elems()<=0)
     {
      std::ostringstream ostr3;
-     ostr3 << " Electrode sponge/scalp surface could not be found for " << i << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
+     ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
      remark(ostr3.str());
      skip_current_iteration=true;
      continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 
@@ -695,7 +812,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
     if (!found_elc_surf)
     {
      std::ostringstream ostr3;
-     ostr3 << " Electrode sponge/scalp surface could not be found for " << i << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
+     ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
      remark(ostr3.str());
      skip_current_iteration=true;
      continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
@@ -726,7 +843,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
      if(!found_elc_surf)
      {
        std::ostringstream ostr3;
-       ostr3 << " Electrode sponge/scalp surface could not be found for " << i << ". electrode (after domainsplit). Make sure that prototype encapsulates scalp." << std::endl;
+       ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (after domainsplit). Make sure that prototype encapsulates scalp." << std::endl;
        remark(ostr3.str());
        found_elc_surf=false;
        continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
@@ -775,7 +892,12 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
 	 x/=normal_mag;
          y/=normal_mag;
          z/=normal_mag;
-	 Point tmp_pt(q.x()-x*elc_thickness[i],q.y()-y*elc_thickness[i],q.z()-z*elc_thickness[i]);
+	 Point tmp_pt;
+	 if (!flip_normal)
+	   tmp_pt=Point(q.x()+x*elc_thickness[i],q.y()+y*elc_thickness[i],q.z()+z*elc_thickness[i]);
+	     else
+	      tmp_pt=Point(q.x()-x*elc_thickness[i],q.y()-y*elc_thickness[i],q.z()-z*elc_thickness[i]); 
+	      
 	 output_vmesh->add_point(tmp_pt);
 	 count_pts++;
 	}
@@ -821,7 +943,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
 	  if (distance!=0)
 	  {
 	   std::ostringstream ostr3;
-           ostr3 << " Electrode sponge/scalp surface could not be found for " << i << ". electrode (could not find scalp bnd fragment node in scalp fragment). Make sure that prototype encapsulates scalp." << std::endl;
+           ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (could not find scalp bnd fragment node in scalp fragment). Make sure that prototype encapsulates scalp." << std::endl;
            remark(ostr3.str());
            break;   
 	  }
@@ -830,7 +952,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
 	  if (distance!=0)
 	  {
 	   std::ostringstream ostr3;
-           ostr3 << " Electrode sponge/scalp surface could not be found for " << i << ". electrode (could not find scalp bnd fragment node in scalp fragment). Make sure that prototype encapsulates scalp." << std::endl;         
+           ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (could not find scalp bnd fragment node in scalp fragment). Make sure that prototype encapsulates scalp." << std::endl;         
            remark(ostr3.str());
            break;    
 	  }
@@ -853,7 +975,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
        } else
        {
          std::ostringstream ostr3;
-         ostr3 << " Trying to get boundary for scalp peace usind to create electrode " << i << ". Make sure that prototype encapsulates scalp." << std::endl;         
+         ostr3 << " Trying to get boundary for scalp peace usind to create electrode " << i+1 << ". Make sure that prototype encapsulates scalp." << std::endl;         
          remark(ostr3.str());
          continue;    
        }
@@ -861,8 +983,15 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
       }
      }
      
-   }	    
-
+   } else
+   {
+    std::ostringstream ostr3;
+    ostr3 << " tDCS electrode definition for " << i+1 << ". row needs be a point cloud (with defined scalar or vectors data)." << std::endl;
+    remark(ostr3.str());
+    skip_current_iteration=true;
+    continue; 	    
+   }
+  
   tdcs_vfld->resize_values();
   tdcs_vfld->set_values(field_values);
   output_vfld->resize_values();
@@ -891,7 +1020,9 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgo
   remark(ostr3.str());	
  }
  
- return boost::make_tuple(elc_sponge_locations, electrode_field, output);
+ VariableHandle table2(new Variable(Name("Table"), new_table));
+ 
+ return boost::make_tuple(elc_sponge_locations, electrode_field, output, table2);
 }
 
 boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::run(const FieldHandle scalp, const DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const
@@ -1116,7 +1247,7 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
      if(c7==0 && c8==0 && c9==0)
      {
       std::ostringstream ostr3;
-      ostr3 << " The TMS coil defined in table row " << i << " could not get any valid normal information, found normal contained only zeros (0,0,0). " << std::endl;
+      ostr3 << " The TMS coil defined in table row " << i+1 << " could not get any valid normal information, found normal contained only zeros (0,0,0). " << std::endl;
       remark(ostr3.str());	
       valid_normal=false;
      }
@@ -1168,7 +1299,7 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
      } else
         {
 	  std::ostringstream ostr3;
-	  ostr3 << " The TMS coil defined in table row " << i << " has no normal defined (NX,NY,NZ). Further, no normal could be taken from the linked prototyp field data. " << std::endl;
+	  ostr3 << " The TMS coil defined in table row " << i+1 << " has no normal defined (NX,NY,NZ). Further, no normal could be taken from the linked prototyp field data. " << std::endl;
 	  remark(ostr3.str());	
 	}
     }  
@@ -1186,7 +1317,7 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
   
   if (t1==t2 && t1==t3 && t1==t4 && t1==t5 && t14>0 && t1>0)
   {
-    boost::tie(elc_sponge_locations, electrodes_field, final_electrodes_field) = make_tdcs_electrodes(scalp, elc_coil_proto, elc_prototyp_map, elc_x, elc_y, elc_z, elc_angle_rotation, elc_thickness);
+    boost::tie(elc_sponge_locations, electrodes_field, final_electrodes_field, table_output) = make_tdcs_electrodes(scalp, elc_coil_proto, elc_prototyp_map, elc_x, elc_y, elc_z, elc_angle_rotation, elc_thickness, table_output);
     valid_tdcs=true;
   }
   
