@@ -355,13 +355,15 @@ void ElectrodeCoilSetupDialog::updateThicknessColumnValues(double value)
   for (int i=0; i<electrode_coil_tableWidget->rowCount(); i++)
   {
     auto item = electrode_coil_tableWidget->item(i, 9);
-
-    if (ElectrodethicknessCheckBoxButton)
+    if (item)
     {
-      electrode_coil_tableWidget->blockSignals(true);
-      item->setText(text);
-      electrode_coil_tableWidget->scrollToItem(item);
-      electrode_coil_tableWidget->blockSignals(false);
+      if (ElectrodethicknessCheckBoxButton)
+      {
+        electrode_coil_tableWidget->blockSignals(true);
+        item->setText(text);
+        electrode_coil_tableWidget->scrollToItem(item);
+        electrode_coil_tableWidget->blockSignals(false);
+      }
     }
   }
 
@@ -376,13 +378,15 @@ void ElectrodeCoilSetupDialog::toggleThicknessColumnReadOnly(int state)
   for (int i=0; i<electrode_coil_tableWidget->rowCount(); i++)
   {
     auto item = electrode_coil_tableWidget->item(i, 9);
-
-    if (ElectrodethicknessCheckBoxButton)
+    if (item)
     {
-      item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+      if (ElectrodethicknessCheckBoxButton)
+      {
+        item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+      }
+      else
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
     }
-    else
-      item->setFlags(item->flags() | Qt::ItemIsEditable);
   }
 
   if (ElectrodethicknessCheckBoxButton)

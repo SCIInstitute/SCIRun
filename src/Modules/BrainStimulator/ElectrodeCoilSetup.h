@@ -36,7 +36,7 @@
 /// The module gets the triangulated scalp surface as the first input and a matrix of possible locations as the second. The third and any following input fields (dynamic input ports)
 /// are considered to be prototypes of electrodes or TMS coils that need to be positioned. After the first execution using a minimum of 3 (valid) inputs the positions appear as table rows
 /// in the GUI. The GUI allows to assign a prototype (first table column), normal direction etc. as well as the type of stimulation (second table column). Based on the choices made in the  
-/// first (prototype, "Input #") and second coloumn (stimulation type, "Type") information are gathered from the rest of the row. An defined tDCS electrode or TMS coil will be moved using
+/// first (prototype, "Input #") and second column (stimulation type, "Type") information are gathered from the rest of the row. An defined tDCS electrode or TMS coil will be moved using
 /// its location ("X","Y","Z"), its normal ("NX","NY","NZ") and can be rotated along its normal by the angle table cell defined in degrees. Throughout this table, multiple electrodes and TMS coils
 /// can be located at their final destinations. For a tDCS electrode specification, the placed and oriented prototype (contains electrode dimension) is used to cut the scalp that is covered by the
 /// electrode. This piece of scalp and its normals are used to generate the electrode sponge shape by using the thickness table parameter. The module contains three outputs: 1) the averaged scalp 
@@ -52,7 +52,6 @@
 //////////////////////////////////////////////////////////////////////////
 /// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
-using namespace SCIRun::Core::Datatypes;
 
 namespace SCIRun {
   namespace Modules {
