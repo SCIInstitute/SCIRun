@@ -25,49 +25,79 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <iostream>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <vector>
 
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
 ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("ElectrodeCoilSetup", "BrainStimulator", "SCIRun"))
 {
- INITIALIZE_PORT(INPUTFIELDS);
- INITIALIZE_PORT(ELECTRODES_FIELD);
+ INITIALIZE_PORT(SCALP_SURF);
+ INITIALIZE_PORT(LOCATIONS);
+ INITIALIZE_PORT(ELECTRODECOILPROTOTYPES);
+ INITIALIZE_PORT(ELECTRODE_SPONGE_LOCATION_AVR);
  INITIALIZE_PORT(COILS_FIELD);
+ INITIALIZE_PORT(MOVED_ELECTRODES_FIELD);
+ INITIALIZE_PORT(FINAL_ELECTRODES_FIELD);
 }
 
 void ElectrodeCoilSetupModule::setStateDefaults()
 {
-  /// @todo
+  setStateIntFromAlgo(Parameters::NumberOfPrototypes);
+  setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
+  setStateBoolFromAlgo(Parameters::AllInputsTDCS);
+  setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
+  setStateListFromAlgo(Parameters::TableValues);
+  setStateDoubleFromAlgo(Parameters::ElectrodethicknessSpinBox);
+  setStateBoolFromAlgo(Parameters::ElectrodethicknessCheckBox);
 }
 
 void ElectrodeCoilSetupModule::execute()
 {
-  auto fields = getRequiredDynamicInputs(INPUTFIELDS);
-  //auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
-   // UI input
-  //auto param = get_state()->getValue(Variables::AppendMatrixOption).toInt();
+  auto scalp = getRequiredInput(SCALP_SURF);
+  auto locations = getRequiredInput(LOCATIONS);
+  auto elc_coil_proto = getRequiredDynamicInputs(ELECTRODECOILPROTOTYPES);
 
-  //algorithm parameter
-  //algo_->set(Variables::AppendMatrixOption, param);
- 
-  
-  //algorithm input and run
-  auto output = algo().run_generic(withInputData((INPUTFIELDS, fields)));
-
-  //algorithm output
-  sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
-  sendOutputFromAlgorithm(COILS_FIELD, output);
+ if (needToExecute())  //newStatePresent
+ {
+   setAlgoBoolFromState(Parameters::ProtoTypeInputCheckbox);
+   setAlgoBoolFromState(Parameters::AllInputsTDCS);
+   setAlgoIntFromState(Parameters::ProtoTypeInputComboBox);
+   setAlgoBoolFromState(Parameters::ElectrodethicknessCheckBox);
+   setAlgoDoubleFromState(Parameters::ElectrodethicknessSpinBox);
+   
+   update_state(Executing);
+   if(elc_coil_proto.size()>0)
+    {
+     get_state()->setValue(Parameters::NumberOfPrototypes, (int)elc_coil_proto.size());
+     setAlgoIntFromState(Parameters::NumberOfPrototypes);
+    }
+   
+    setAlgoListFromState(Parameters::TableValues);
+    auto input = make_input((SCALP_SURF, scalp)(LOCATIONS, locations)(ELECTRODECOILPROTOTYPES, elc_coil_proto));
+    std::vector<AlgorithmParameter> table_handle = (get_state()->getValue(Parameters::TableValues)).toVector();
+	
+    algo().set(Parameters::TableValues, table_handle);
+     
+    auto output = algo().run_generic(input);
+    auto table = output.additionalAlgoOutput();
+    if (table)
+     get_state()->setValue(Parameters::TableValues, table->value());
+    sendOutputFromAlgorithm(FINAL_ELECTRODES_FIELD, output);
+    sendOutputFromAlgorithm(MOVED_ELECTRODES_FIELD, output);
+    sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
+    sendOutputFromAlgorithm(COILS_FIELD, output);
+ }
 }
