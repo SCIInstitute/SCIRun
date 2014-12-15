@@ -217,7 +217,7 @@
 			<item>
 				<moduleId1_>ReadMatrix:2</moduleId1_>
 				<port1_>
-					<name>MatrixLoaded</name>
+					<name>Matrix</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ElectrodeCoilSetup:0</moduleId2_>
