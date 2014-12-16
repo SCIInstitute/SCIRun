@@ -31,7 +31,6 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <boost/optional.hpp> 
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
