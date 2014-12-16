@@ -32,6 +32,7 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h> 
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
@@ -117,6 +118,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(GenerateROIStatistics, GenerateROIStatisticsAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
       ADD_MODULE_ALGORITHM(ReportFieldInfo, ReportFieldInfoAlgorithm)
+			ADD_MODULE_ALGORITHM(BuildMatrixOfSurfaceNormals, BuildMatrixOfSurfaceNormalsAlgo) 
       ADD_MODULE_ALGORITHM(ReportMatrixInfo, ReportMatrixInfoAlgorithm)
       ADD_MODULE_ALGORITHM(AppendMatrix, AppendMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(ReadMatrix, ReadMatrixAlgorithm)

@@ -76,6 +76,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
+#include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h> 
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
@@ -165,6 +166,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
   addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
+	addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "..."); 
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
 

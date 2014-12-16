@@ -32,6 +32,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CreateLatVol.h
   GetFieldBoundary.h
   BuildMappingMatrix.h
+  BuildMatrixOfSurfaceNormals.h
   CalculateDistanceToField.h
   CalculateDistanceToFieldBoundary.h
   CollectFields.h
@@ -93,7 +94,7 @@ SET(Modules_Legacy_Fields_SRCS
   ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
   BuildMappingMatrix.cc
-  #BuildMatrixOfSurfaceNormals.cc
+  BuildMatrixOfSurfaceNormals.cc
   #GetCentroidsFromMesh.cc
   #ConvertMeshCoordinateSystem.cc
   ConvertFieldBasis.cc

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H
+#define CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H 1
 
-// Datatypes that the algorithm uses
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+//#include <Core/Algorithms/Base/AlgorithmMacros.h>
+//#include <Core/GeometryPrimitives/Vector.h>
+//#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 #include <Core/Datatypes/DatatypeFwd.h> 
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GetSurfaceElemNormalsAlgo : public AlgoBase
-{
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
+  
+  class SCISHARE BuildMatrixOfSurfaceNormalsAlgo : public AlgorithmBase
+  {
   public:
-    GetSurfaceElemNormalsAlgo()
-    {}
-    
-    /// Convert data into a matrix
-    bool run(FieldHandle& input, MatrixHandle& output); 
-};
+			BuildMatrixOfSurfaceNormalsAlgo(); 
+			bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle& output) const;
+			virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+  };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif
