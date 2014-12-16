@@ -26,37 +26,58 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H
-#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H
+#define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
 
 // Datatypes that the algorithm uses
 #include <Core/Datatypes/DatatypeFwd.h> 
-
-// Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-
-// for Windows support
-#include <Core/Algorithms/Legacy/Fields/share.h>
-
+#include <boost/unordered_map.hpp> 
 
 namespace SCIRun{
 		namespace Core{
 				namespace Algorithms{
 						namespace Fields{
 
-ALGORITHM_PARAMETER_DECL(RefineMethod);
-ALGORITHM_PARAMETER_DECL(AddConstraints);
-ALGORITHM_PARAMETER_DECL(IsoValue);
+struct edgepair_t
+		{
+      VMesh::index_type first;
+      VMesh::index_type second;
+    };
 
-class SCISHARE RefineMeshAlgo : public AlgorithmBase
+struct edgepairequal
 {
-  public:  
-    RefineMeshAlgo();
-		bool runImpl(FieldHandle input, Datatypes::Double isovalue, FieldHandle& output, Datatypes::MatrixHandle& mapping) const; 
-		bool runImpl(FieldHandle input, FieldHandle& output) const; 
-
-		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+    bool operator()(const edgepair_t &a, const edgepair_t &b) const
+    {
+    return a.first == b.first && a.second == b.second;
+    }
 };
+
+struct edgepairless
+{
+    bool operator()(const edgepair_t &a, const edgepair_t &b)
+    {
+    return less(a, b);
+    }
+    static bool less(const edgepair_t &a, const edgepair_t &b)
+    {
+    return a.first < b.first || a.first == b.first && a.second < b.second;
+    }
+};
+
+struct IndexHash {
+  static const size_t bucket_size = 4;
+  static const size_t min_buckets = 8;
+  
+  size_t operator()(const index_type &idx) const
+    { return (static_cast<size_t>(idx)); }
+  
+  bool operator()(const index_type &i1, const index_type &i2) const
+    { return (i1 < i2); }
+};
+
+
+typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
+
 
 								}}}}
 

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,38 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H
-#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H 1
+#ifndef MODULES_LEGACY_FIELDS_REFINEMESH_H__
+#define MODULES_LEGACY_FIELDS_REFINEMESH_H__
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/DatatypeFwd.h> 
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+namespace SCIRun {
+  namespace Modules {
+				namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Legacy/Fields/share.h>
+	/// @class RefineMesh
+	/// @brief Convert a QuadSurfField into a TriSurfField. 
 
+      class SCISHARE RefineMesh : public Dataflow::Networks::Module,
+				public Has2InputPorts<FieldPortTag, ScalarPortTag>,
+        public Has1OutputPort<FieldPortTag>
+				//public Has2OutputPorts<FieldPortTag, MatrixMappingPortTag> 
+      {
+      public:
+        RefineMesh();
 
-namespace SCIRun{
-		namespace Core{
-				namespace Algorithms{
-						namespace Fields{
+        virtual void execute();
+        virtual void setStateDefaults(); 
 
-ALGORITHM_PARAMETER_DECL(RefineMethod);
-ALGORITHM_PARAMETER_DECL(AddConstraints);
-ALGORITHM_PARAMETER_DECL(IsoValue);
+        INPUT_PORT(0, InputField, LegacyField);
+				INPUT_PORT(1, IsoValueField, Double);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+				//OUTPUT_PORT(1, Mapping ,Matrix);
 
-class SCISHARE RefineMeshAlgo : public AlgorithmBase
-{
-  public:  
-    RefineMeshAlgo();
-		bool runImpl(FieldHandle input, Datatypes::Double isovalue, FieldHandle& output, Datatypes::MatrixHandle& mapping) const; 
-		bool runImpl(FieldHandle input, FieldHandle& output) const; 
+				static const Dataflow::Networks::ModuleLookupInfo staticInfo_; 
+			};
 
-		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
-};
-
-								}}}}
+    }
+  }
+}
 
 #endif
