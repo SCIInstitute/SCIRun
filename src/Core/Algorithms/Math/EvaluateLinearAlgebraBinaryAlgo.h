@@ -31,13 +31,13 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <boost/optional.hpp> 
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Math {
-
   class SCISHARE EvaluateLinearAlgebraBinaryAlgorithm : public AlgorithmBase
   {
   public:
@@ -55,7 +55,7 @@ namespace Math {
 
     EvaluateLinearAlgebraBinaryAlgorithm();
     typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
-    typedef Operator Parameters;
+    typedef boost::tuple<Operator, boost::optional<std::string> > Parameters;
     typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
 
     Outputs run(const Inputs& inputs, const Parameters& params) const;

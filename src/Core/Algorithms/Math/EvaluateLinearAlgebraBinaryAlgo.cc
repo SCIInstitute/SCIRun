@@ -30,14 +30,17 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Parser/ArrayMathEngine.h> 
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun;
 
 EvaluateLinearAlgebraBinaryAlgorithm::EvaluateLinearAlgebraBinaryAlgorithm()
 {
   addParameter(Variables::Operator, 0);
+	addParameter(Variables::FunctionString, "x+y"); 
 }
 
 EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
@@ -48,8 +51,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   ENSURE_ALGORITHM_INPUT_NOT_NULL(lhs, "lhs");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(rhs, "rhs");
 
-  Operator oper = params;
-
+  Operator oper = params.get<0>();
   /// @todo: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
@@ -65,6 +67,35 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     result.reset(lhs->clone());
     *result *= *rhs;
     break;
+	case FUNCTION:
+			{
+				result.reset(lhs->clone());
+				NewArrayMathEngine engine;
+				//engine.setLogger(this); 
+				MatrixHandle lhsInput, rhsInput; 
+				lhsInput.reset(lhs->clone()); 
+				rhsInput.reset(rhs->clone()); 
+			
+				if (!(engine.add_input_fullmatrix("x", lhsInput ) )) ;//return;
+				if (!(engine.add_input_fullmatrix("y", rhsInput ) )) ;//return;
+      
+				//std::string func = function_.get();
+				boost::optional<std::string> func = params.get<1>(); 
+				std::string function_string = func.get(); 
+
+				function_string = "RESULT="+function_string;
+				engine.add_expressions(function_string);
+
+				MatrixHandle omatrix = lhsInput;
+				if(!(engine.add_output_fullmatrix("RESULT",omatrix))) ;//return;
+      
+				// Actual engine call, which does the dynamic compilation, the creation of the
+				// code for all the objects, as well as inserting the function and looping 
+				// over every data point
+				if (!(engine.run())) ;//return;
+				//send_output_handle("Output", omatrix);
+			}
+    break;   
   default:
     THROW_ALGORITHM_INPUT_ERROR("ERROR: unknown binary operation");
     break;
@@ -77,10 +108,12 @@ AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run_generic(const Algorith
 {
   auto LHS = input.get<DenseMatrix>(Variables::LHS);
   auto RHS = input.get<DenseMatrix>(Variables::RHS);
+	auto func = boost::make_optional(get(Variables::FunctionString).toString()); 
 
-  auto result = run(boost::make_tuple(LHS, RHS), Operator(get(Variables::Operator).toInt()));
+  auto result = run(boost::make_tuple(LHS, RHS), boost::make_tuple(Operator(get(Variables::Operator).toInt()), func));
 
   AlgorithmOutput output;
   output[Variables::Result] = result;
   return output;
 }
+
