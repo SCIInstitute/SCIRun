@@ -68,11 +68,12 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/ConvertFieldBasisType.h
   TransformMesh/ScaleFieldMeshAndData.h
   TransformMesh/ProjectPointsOntoMesh.h
+  MeshData/FlipSurfaceNormals.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
   #RegisterWithCorrespondences.cc
-  #MeshData/FlipSurfaceNormals.cc
+  MeshData/FlipSurfaceNormals.cc
   #Cleanup/CleanupTetMesh.cc
   #Cleanup/RemoveUnusedNodes.cc
   #ClipMesh/ClipMeshByIsovalue.cc

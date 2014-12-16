@@ -26,100 +26,52 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@author
-///   David Weinstein
-///   Department of Computer Science
-///   University of Utah
-///@date  June 1999
+#include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
+#include <Core/Algorithms/Math/BuildNoiseColumnMatrix.h>
 
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixFwd.h>
+//#include <Core/Datatypes/Legacy/Matrix/ColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Core/Math/MiscMath.h>
-#include <Core/Math/MusilRNG.h>
-#include <iostream>
-#include <sstream>
 
-namespace SCIRun {
 
-///@class BuildNoiseColumnMatrix
-///@brief This module creates a noise vector. 
 
-class BuildNoiseColumnMatrix : public Module {
-  MusilRNG musil;
-  GuiDouble snr_;
-public:
-  BuildNoiseColumnMatrix(GuiContext* ctx);
-  virtual ~BuildNoiseColumnMatrix();
-  virtual void execute();
-};
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-DECLARE_MAKER(BuildNoiseColumnMatrix)
-BuildNoiseColumnMatrix::BuildNoiseColumnMatrix(GuiContext* ctx)
-: Module("BuildNoiseColumnMatrix", ctx, Filter,"Math", "SCIRun"),
-  snr_(get_ctx()->subVar("snr"), 10.0)
+
+BuildNoiseColumnMatrix::BuildNoiseColumnMatrix() : Module(ModuleLookupInfo("BuildNoiseColumnMatrix","Math","SCIRun"))
 {
+	INITIALIZE_PORT(InputMatrix);
+	INITIALIZE_PORT(ResultMatrix);
 }
 
-
-BuildNoiseColumnMatrix::~BuildNoiseColumnMatrix()
+void  BuildNoiseColumnMatrix::setStateDefaults()
 {
+	setStateDoubleFromAlgo(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio());
 }
 
-
-void
-BuildNoiseColumnMatrix::execute()
+void BuildNoiseColumnMatrix::execute()
 {
-  update_state(NeedData);
+	auto input_matrix = getRequiredInput(InputMatrix);
+	//if(inputsChanged() || newStatePresent())
+	if(needToExecute())
+	{
+		algo().set(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio(),get_state()->getValue(BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio()).toDouble());
+		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
+		sendOutputFromAlgorithm(ResultMatrix, output);
+	}
 
-  MatrixHandle matH;
-  if (!get_input_handle("Signal", matH)) return;
+} 
 
-  // gotta make sure we have a Dense or Column matrix...
-  // ...if it's Sparse, change it to Dense
 
-  SparseRowMatrix *sm = dynamic_cast<SparseRowMatrix *>(matH.get_rep());
-  if (sm) matH = matH->dense();
-  else matH.detach();
 
-  double mean, power, sigma;
-  mean=power=sigma=0;
-  int r, c;
-  int nr = matH->nrows();
-  int nc = matH->ncols();
-  double curr;
-  double snr = snr_.get();
-  for (r=0; r<nr; r++)
-    for (c=0; c<nc; c++) {
-      curr = matH->get(r, c);
-      mean += curr;
-    }
-  mean /= nr*nc;
-  for (r=0; r<nr; r++)
-    for (c=0; c<nc; c++) {
-      curr = matH->get(r, c);
-      power += (curr-mean)*(curr-mean);
-    }
-  power /= nr*nc;
-  
-  sigma = sqrt(power)/(snr*Sqrt(2*M_PI));
-  
-  for (r=0; r<nr; r++)
-  {
-    for (c=0; c<nc; c++)
-    {
-      // Gaussian distribution about this percentage
-      const double rnd = 2.0 * musil() - 1.0;
-      double perturb = rnd * sigma * sqrt((-2.0 * log(rnd*rnd)) / (rnd*rnd));
-      matH->put(r, c, perturb);
-    }
-  }
 
-  send_output_handle("Noise", matH);
-}
 
-} // End namespace SCIRun
+
+
