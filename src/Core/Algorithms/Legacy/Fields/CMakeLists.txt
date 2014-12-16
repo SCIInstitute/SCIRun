@@ -32,6 +32,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   DistanceField/CalculateSignedDistanceField.h
   DistanceField/CalculateDistanceField.h
   Mapping/ApplyMappingMatrix.h
+  FieldData/BuildMatrixOfSurfaceNormalsAlgo.h
   #Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h
   #FieldData/ConvertIndicesToFieldData.h
@@ -116,6 +117,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FilterFieldData/TriSurfPhaseFilter.cc
   #FindNodes/FindClosestNode.cc
   #FindNodes/FindClosestNodeByValue.cc
+  FieldData/BuildMatrixOfSurfaceNormalsAlgo.cc
   Mapping/BuildMappingMatrixAlgo.cc
   Mapping/MapFieldDataFromElemToNode.cc
   Mapping/MapFieldDataFromNodeToElem.cc
