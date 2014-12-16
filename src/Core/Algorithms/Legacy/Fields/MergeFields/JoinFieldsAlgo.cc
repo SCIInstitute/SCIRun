@@ -146,6 +146,13 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   {
     for (size_t p=0; p<inputs.size(); p++)
     {
+      VField* ifield = inputs[p]->vfield();
+      if (ifield->num_values() == 0)
+      {
+        error("Node values can only be matched if all fields contain data values.");
+        return (false);
+      }
+
       FieldInformation fi(input[p]);
       if (!(fi.is_scalar()))
       {
@@ -316,7 +323,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
           if (merge_nodes)
           {
             imesh->get_center(P,nodeq);
-             
+
             if (match_node_values) ifield->get_value(curval,nodeq);
              
             // Convert to grid coordinates.
