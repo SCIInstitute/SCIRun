@@ -26,38 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H
-#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHCURVEALGOV_H
+#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHCURVEALGOV_H 1
 
 // Datatypes that the algorithm uses
 #include <Core/Datatypes/DatatypeFwd.h> 
 
 // Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 // for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
+using namespace SCIRun::Core::Geometry;
 
 namespace SCIRun{
 		namespace Core{
 				namespace Algorithms{
 						namespace Fields{
 
-ALGORITHM_PARAMETER_DECL(RefineMethod);
-ALGORITHM_PARAMETER_DECL(AddConstraints);
-ALGORITHM_PARAMETER_DECL(IsoValue);
-
-class SCISHARE RefineMeshAlgo : public AlgorithmBase
+class RefineMeshCurveAlgoV : public AlgorithmBase
 {
-  public:  
-    RefineMeshAlgo();
-		bool runImpl(FieldHandle input, Datatypes::Double isovalue, FieldHandle& output, Datatypes::MatrixHandle& mapping) const; 
+public: 
+		RefineMeshCurveAlgoV(); 
+		
+		bool  runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const; 
 		bool runImpl(FieldHandle input, FieldHandle& output) const; 
-
-		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+		AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 };
-
 								}}}}
 
 #endif

@@ -75,6 +75,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
+#include <Modules/Legacy/Fields/RefineMesh.h> 
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
 #include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h> 
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
@@ -165,11 +166,12 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ClipFieldByFunction>("In progress", "...");
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
   addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
+  addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress");
+	addModuleDesc<RefineMesh>("RefineMesh","ChangeMesh", "SCIRun", "Real ported module", "..."); 
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
 	addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "..."); 
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
-
 
   // insert module desc here
 }

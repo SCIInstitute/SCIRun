@@ -26,11 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H
-#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHQUADSURFALGOV_H
+#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHQUADSURFALGOV_H 1
 
 // Datatypes that the algorithm uses
 #include <Core/Datatypes/DatatypeFwd.h> 
+#include <Core/Datatypes/Legacy/Field/VMesh.h> 
+#include <boost/unordered_map.hpp> 
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/EdgePairHash.h> 
 
 // Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -38,24 +42,46 @@
 // for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
+using namespace SCIRun::Core::Geometry;
 
 namespace SCIRun{
 		namespace Core{
 				namespace Algorithms{
 						namespace Fields{
 
-ALGORITHM_PARAMETER_DECL(RefineMethod);
-ALGORITHM_PARAMETER_DECL(AddConstraints);
-ALGORITHM_PARAMETER_DECL(IsoValue);
 
-class SCISHARE RefineMeshAlgo : public AlgorithmBase
+class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
 {
   public:  
-    RefineMeshAlgo();
-		bool runImpl(FieldHandle input, Datatypes::Double isovalue, FieldHandle& output, Datatypes::MatrixHandle& mapping) const; 
-		bool runImpl(FieldHandle input, FieldHandle& output) const; 
+    RefineMeshQuadSurfAlgoV();
+	
+	bool runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const; 
+	bool runImpl(FieldHandle input, FieldHandle& output) const; 
+	AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+	
+  private:		 
+	
+	double RIinterpolateV(std::vector<double>& ivalues,
+                        VMesh::Node::array_type& onodes,
+                        double coords[2])const;			
+						
+	void dice(VMesh *refined, 
+						 hash_map_type &emap,
+             VMesh::Node::array_type onodes,
+             VMesh::index_type index, 
+             VMesh::mask_type mask,
+             VMesh::size_type maxnode,
+             std::vector<double>& ivalues,
+             std::vector<double>& evalues,
+						 double vv,
+						 int basis_order) const;
 
-		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
+	VMesh::Node::index_type lookup(VMesh *refined,
+                                 hash_map_type &edgemap,
+                                 VMesh::Node::index_type a,
+                                 VMesh::Node::index_type b,
+                                 double factor,
+                                 std::vector<double>& ivalues) const; 
 };
 
 								}}}}

@@ -69,6 +69,14 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/ConvertFieldBasisType.h
   TransformMesh/ScaleFieldMeshAndData.h
   TransformMesh/ProjectPointsOntoMesh.h
+  RefineMesh/RefineMesh.h
+	
+  RefineMesh/RefineMeshCurveAlgoV.h
+  RefineMesh/RefineMeshHexVolAlgoV.h
+  RefineMesh/RefineMeshQuadSurfAlgoV.h
+  RefineMesh/RefineMeshTetVolAlgoV.h
+  RefineMesh/RefineMeshTriSurfAlgoV.h
+  RefineMesh/EdgePairHash.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -155,7 +163,12 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   MeshDerivatives/GetFieldBoundaryAlgo.cc
   #MeshDerivatives/GetBoundingBox.cc
   MeshDerivatives/SplitByConnectedRegion.cc
-  #RefineMesh/RefineMesh.cc
+  RefineMesh/RefineMesh.cc
+  RefineMesh/RefineMeshCurveAlgoV.cc
+  RefineMesh/RefineMeshHexVolAlgoV.cc
+  RefineMesh/RefineMeshQuadSurfAlgoV.cc
+  RefineMesh/RefineMeshTetVolAlgoV.cc
+  RefineMesh/RefineMeshTriSurfAlgoV.cc
   ResampleMesh/ResampleRegularMesh.cc
   #ResampleMesh/PadRegularMesh.cc
   #SampleField/GeneratePointSamplesFromField.cc
