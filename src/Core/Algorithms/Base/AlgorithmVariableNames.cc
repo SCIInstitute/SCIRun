@@ -47,6 +47,7 @@ PARAMETER(ColorMapName)
 PARAMETER(FileTypeList)
 PARAMETER(FileExtension)
 PARAMETER(FileTypeName)
+PARAMETER(FunctionString)
 
 INPUT(InputMatrix)
 INPUT(FirstMatrix)
