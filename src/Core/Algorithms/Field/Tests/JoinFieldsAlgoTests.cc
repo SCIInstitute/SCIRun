@@ -68,7 +68,6 @@ protected:
     Point maxb(1.0, 1.0, 1.0);
     MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
     FieldHandle ofh = CreateField(lfi,mesh);
-    ofh->vfield()->clear_all_values();
     return ofh;
   }
 };
@@ -161,7 +160,6 @@ FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez,
   Point maxb(1.0, 1.0, 1.0);
   MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
   FieldHandle ofh = CreateField(lfi,mesh);
-  ofh->vfield()->clear_all_values();
   return ofh;
 }
 
@@ -170,7 +168,6 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
   input.push_back(CreateEmptyLatVol(2, 3, 4, INT_E));
   input.push_back(CreateEmptyLatVol(5, 6, 7, INT_E));
   input.push_back(CreateEmptyLatVol(8, 9, 10, INT_E));
-  algo_.runImpl(input,output);
   EXPECT_TRUE(algo_.runImpl(input, output));
 }
 
@@ -181,7 +178,6 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_data_types
   input.push_back(CreateEmptyLatVol(5, 6, 7, INT_E));
   input.push_back(CreateEmptyLatVol(8, 9, 10, INT_E));
   input.push_back(CreateEmptyLatVol(11, 12, 13, FLOAT_E));
-  algo_.runImpl(input,output);
   EXPECT_TRUE(algo_.runImpl(input, output));
 }
 
@@ -194,14 +190,22 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_missing_in
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_single_input_structured)
 {
   input.push_back(CreateEmptyLatVol(2, 3, 4, INT_E));
-  algo_.runImpl(input, output);
   EXPECT_TRUE(algo_.runImpl(input, output));
 }
 
-TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_single_input_unstructured)
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_single_input_unstructured_match_nodes)
 {
+  // sample field has no data
   input.push_back(TriangleTriSurfConstantBasis(INT_E));
-  algo_.runImpl(input, output);
+  algo_.set(JoinFieldsAlgo::MatchNodeValues, true);
+  EXPECT_FALSE(algo_.runImpl(input, output));
+}
+
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_single_input_unstructured_no_node_match)
+{
+  // sample field has no data
+  input.push_back(TriangleTriSurfConstantBasis(INT_E));
+  algo_.set(JoinFieldsAlgo::MatchNodeValues, false);
   EXPECT_TRUE(algo_.runImpl(input, output));
 }
 
@@ -209,7 +213,6 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_mismatched
 {
   input.push_back(CubeTriSurfConstantBasis(INT_E));
   input.push_back(CubeTetVolConstantBasis(INT_E));
-  algo_.runImpl(input, output);
   EXPECT_FALSE(algo_.runImpl(input, output));
 }
 
@@ -234,4 +237,4 @@ INSTANTIATE_TEST_CASE_P(
 
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
 
-#endif 
+#endif
