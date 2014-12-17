@@ -25,43 +25,34 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
-#include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Testing;
-using namespace SCIRun::Modules::BrainStimulator;
-using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
-using ::testing::Mock;
+#ifndef INTERFACE_MODULES_FIELDS_REFINE_MESH_DIALOG_H
+#define INTERFACE_MODULES_FIELDS_REFINE_MESH_DIALOG_H
 
-class ElectrodeCoilSetupTests : public ModuleTest
+#include "Interface/Modules/Fields/ui_RefineMesh.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
+
+namespace SCIRun {
+namespace Gui {
+
+class SCISHARE RefineMeshDialog : public ModuleDialogGeneric,
+  public Ui::RefineMesh
 {
+	Q_OBJECT
 
+public:
+  RefineMeshDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+private Q_SLOTS:
+		void setIsoValueEnabled(); 
+private:
+		boost::shared_ptr<class RefineMeshDialogImpl> impl_; 
 };
 
-TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
-{
-  auto tdcs = makeModule("ElectrodeCoilSetup");
-  ASSERT_TRUE(tdcs != nullptr);
-  FieldHandle nullField;
-  stubPortNWithThisData(tdcs, 0, nullField);
-  stubPortNWithThisData(tdcs, 1, nullField);
-
-  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException); 
+}
 }
 
-TEST_F(ElectrodeCoilSetupTests, DISABLED_Foo)
-{
-  FAIL() << "TODO";
-}
+#endif

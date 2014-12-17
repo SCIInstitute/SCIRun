@@ -26,35 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTETVOLALGOV_H
+#define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTETVOLALGOV_H 1
 
 // Datatypes that the algorithm uses
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DatatypeFwd.h> 
 
 // Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 // for Windows support
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-namespace SCIRunAlgo {
+using namespace SCIRun::Core::Geometry; 
 
-using namespace SCIRun;
+namespace SCIRun{
+		namespace Core{
+				namespace Algorithms{
+						namespace Fields{
 
-class SCISHARE GetSurfaceElemNormalsAlgo : public AlgoBase
+class SCISHARE RefineMeshTetVolAlgoV : public AlgorithmBase
 {
-  public:
-    GetSurfaceElemNormalsAlgo()
-    {}
-    
-    /// Convert data into a matrix
-    bool run(FieldHandle& input, MatrixHandle& output); 
+		public:
+				RefineMeshTetVolAlgoV();
+				
+		bool runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const;
+		bool runImpl(FieldHandle input, FieldHandle& output) const; 
+		AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 };
-
-} // end namespace SCIRunAlgo
+						}}}}
 
 #endif

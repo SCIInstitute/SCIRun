@@ -25,43 +25,30 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
-#include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Testing;
-using namespace SCIRun::Modules::BrainStimulator;
-using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
-using ::testing::Mock;
+#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H
+#define CORE_ALGORITHMS_FIELDS_FIELDDATA_BUILDMATRIXOFSURFACENORMALSALGO_H 1
 
-class ElectrodeCoilSetupTests : public ModuleTest
-{
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+//#include <Core/Algorithms/Base/AlgorithmMacros.h>
+//#include <Core/GeometryPrimitives/Vector.h>
+//#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Core/Datatypes/DatatypeFwd.h> 
 
-};
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
+  
+  class SCISHARE BuildMatrixOfSurfaceNormalsAlgo : public AlgorithmBase
+  {
+  public:
+			BuildMatrixOfSurfaceNormalsAlgo(); 
+			bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle& output) const;
+			virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+  };
 
-TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
-{
-  auto tdcs = makeModule("ElectrodeCoilSetup");
-  ASSERT_TRUE(tdcs != nullptr);
-  FieldHandle nullField;
-  stubPortNWithThisData(tdcs, 0, nullField);
-  stubPortNWithThisData(tdcs, 1, nullField);
+}}}}
 
-  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException); 
-}
-
-TEST_F(ElectrodeCoilSetupTests, DISABLED_Foo)
-{
-  FAIL() << "TODO";
-}
+#endif

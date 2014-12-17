@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,35 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H 1
+#ifndef MODULES_LEGACY_FIELDS_REFINEMESH_H__
+#define MODULES_LEGACY_FIELDS_REFINEMESH_H__
 
-// Datatypes that the algorithm uses
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DatatypeFwd.h> 
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Modules {
+				namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+	/// @class RefineMesh
+	/// @brief Convert a QuadSurfField into a TriSurfField. 
 
-namespace SCIRunAlgo {
+      class SCISHARE RefineMesh : public Dataflow::Networks::Module,
+				public Has2InputPorts<FieldPortTag, ScalarPortTag>,
+        public Has1OutputPort<FieldPortTag>
+				//public Has2OutputPorts<FieldPortTag, MatrixMappingPortTag> 
+      {
+      public:
+        RefineMesh();
 
-using namespace SCIRun;
+        virtual void execute();
+        virtual void setStateDefaults(); 
 
-class SCISHARE GetSurfaceElemNormalsAlgo : public AlgoBase
-{
-  public:
-    GetSurfaceElemNormalsAlgo()
-    {}
-    
-    /// Convert data into a matrix
-    bool run(FieldHandle& input, MatrixHandle& output); 
-};
+        INPUT_PORT(0, InputField, LegacyField);
+				INPUT_PORT(1, IsoValueField, Double);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+				//OUTPUT_PORT(1, Mapping ,Matrix);
 
-} // end namespace SCIRunAlgo
+				static const Dataflow::Networks::ModuleLookupInfo staticInfo_; 
+			};
+
+    }
+  }
+}
 
 #endif

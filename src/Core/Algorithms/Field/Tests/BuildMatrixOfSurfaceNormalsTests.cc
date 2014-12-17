@@ -25,43 +25,33 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-//////////////////////////////////////////////////////////////////////////
-/// @todo MORITZ
-//////////////////////////////////////////////////////////////////////////
-#include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
+ 
+#include <gtest/gtest.h>
+
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Testing;
-using namespace SCIRun::Modules::BrainStimulator;
-using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
-using ::testing::Mock;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core; 
+using namespace SCIRun::TestUtils;
 
-class ElectrodeCoilSetupTests : public ModuleTest
+TEST(BuildMatrixOfSurfaceNormalsTests, InOutNoCrash)
 {
+  //BuildMatrixOfSurfaceNormalsAlgo algo;
+	//FieldHandle surfMesh = loadFieldFromFile(TestResources::rootDir() / "simple_cube_trisurf.fld");
+	//ASSERT_TRUE(surfMesh->vmesh()->is_surface()); 
+	//
+	//Datatypes::DenseMatrixHandle output_matrix; 
+	//algo.runImpl(surfMesh, output_matrix); 
 
-};
+	EXPECT_EQ(1,1); 
 
-TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
-{
-  auto tdcs = makeModule("ElectrodeCoilSetup");
-  ASSERT_TRUE(tdcs != nullptr);
-  FieldHandle nullField;
-  stubPortNWithThisData(tdcs, 0, nullField);
-  stubPortNWithThisData(tdcs, 1, nullField);
-
-  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException); 
-}
-
-TEST_F(ElectrodeCoilSetupTests, DISABLED_Foo)
-{
-  FAIL() << "TODO";
 }
