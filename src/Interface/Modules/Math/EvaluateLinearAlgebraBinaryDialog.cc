@@ -38,7 +38,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 
-typedef SCIRun::Modules::Math::EvaluateLinearAlgebraBinaryModule EvaluateLinearAlgebraBinaryModule; 
+//typedef SCIRun::Modules::Math::EvaluateLinearAlgebraBinaryModule EvaluateLinearAlgebraBinaryModule; 
 
 EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)

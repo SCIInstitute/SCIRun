@@ -69,7 +69,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     break;
 	case FUNCTION:
 			{
-				result.reset(lhs->clone());
+				//result.reset(lhs->clone());
 				NewArrayMathEngine engine;
 				//engine.setLogger(this); 
 				MatrixHandle lhsInput, rhsInput; 
@@ -86,13 +86,18 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
 				function_string = "RESULT="+function_string;
 				engine.add_expressions(function_string);
 
-				MatrixHandle omatrix = lhsInput;
+				MatrixHandle omatrix;
+				omatrix.reset(lhsInput->clone());
 				if(!(engine.add_output_fullmatrix("RESULT",omatrix))) ;//return;
       
 				// Actual engine call, which does the dynamic compilation, the creation of the
 				// code for all the objects, as well as inserting the function and looping 
 				// over every data point
 				if (!(engine.run())) ;//return;
+				//omatrix.reset(); 
+				//result.reset(omatrix);
+				//result.reset(new DenseMatrixHandle(omatrix->clone()));
+				result.reset(omatrix->clone());  
 				//send_output_handle("Output", omatrix);
 			}
     break;   
