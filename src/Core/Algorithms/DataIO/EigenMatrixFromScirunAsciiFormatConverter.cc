@@ -111,7 +111,7 @@ boost::optional<std::string> EigenMatrixFromScirunAsciiFormatConverter::getMatri
 {
   if (reporter_)
     reporter_->update_progress(0.2);
-  
+
   std::istringstream reader(matStr);
   std::string line;
   while(std::getline(reader, line))
@@ -191,7 +191,7 @@ EigenMatrixFromScirunAsciiFormatConverter::DenseData EigenMatrixFromScirunAsciiF
 
 boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawSparseData> EigenMatrixFromScirunAsciiFormatConverter::parseSparseMatrixString(const std::string& matString)
 {
-  boost::regex r("(\\d+) (\\d+) (\\d+) \\{8 (.*)\\}\\{8 (.*)\\}\\{(.*)\\}\\}\h*");
+  boost::regex r("(\\d+) (\\d+) (\\d+) \\{8 (.*)\\}\\{8 (.*)\\}\\{(.*)\\}\\}\\h*");
   boost::smatch what;
   regex_match(matString, what, r);
   if (what.size() == 7)

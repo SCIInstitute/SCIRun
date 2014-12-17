@@ -187,10 +187,13 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #TracePoints/TracePoints.cc
 )
 
+# This algo is not used by the module (yet)
+IF(FALSE)
 IF(WITH_TETGEN)
   SET(Core_Algorithms_Legacy_Fields_SRCS ${Core_Algorithms_Legacy_Fields_SRCS}
     TetGen/InterfaceWithTetGen.cc)
 ENDIF(WITH_TETGEN)
+ENDIF()
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields
   ${Core_Algorithms_Legacy_Fields_HEADERS}
@@ -208,11 +211,13 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   #${SCI_TEEM_LIBRARY}
 )
 
+IF(FALSE)
 IF(WITH_TETGEN)
   TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
      ${SCI_TETGEN_LIBRARY}
   )
 ENDIF(WITH_TETGEN)
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Fields)
