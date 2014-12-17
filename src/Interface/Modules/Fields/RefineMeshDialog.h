@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H 1
+#ifndef INTERFACE_MODULES_FIELDS_REFINE_MESH_DIALOG_H
+#define INTERFACE_MODULES_FIELDS_REFINE_MESH_DIALOG_H
 
-// Datatypes that the algorithm uses
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DatatypeFwd.h> 
+#include "Interface/Modules/Fields/ui_RefineMesh.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+namespace Gui {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GetSurfaceElemNormalsAlgo : public AlgoBase
+class SCISHARE RefineMeshDialog : public ModuleDialogGeneric,
+  public Ui::RefineMesh
 {
-  public:
-    GetSurfaceElemNormalsAlgo()
-    {}
-    
-    /// Convert data into a matrix
-    bool run(FieldHandle& input, MatrixHandle& output); 
+	Q_OBJECT
+
+public:
+  RefineMeshDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+private Q_SLOTS:
+		void setIsoValueEnabled(); 
+private:
+		boost::shared_ptr<class RefineMeshDialogImpl> impl_; 
 };
 
-} // end namespace SCIRunAlgo
+}
+}
 
 #endif

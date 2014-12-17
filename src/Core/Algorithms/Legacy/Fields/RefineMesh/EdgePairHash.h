@@ -26,35 +26,59 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H
+#define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
 
 // Datatypes that the algorithm uses
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DatatypeFwd.h> 
+#include <boost/unordered_map.hpp> 
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun{
+		namespace Core{
+				namespace Algorithms{
+						namespace Fields{
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+struct edgepair_t
+		{
+      VMesh::index_type first;
+      VMesh::index_type second;
+    };
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GetSurfaceElemNormalsAlgo : public AlgoBase
+struct edgepairequal
 {
-  public:
-    GetSurfaceElemNormalsAlgo()
-    {}
-    
-    /// Convert data into a matrix
-    bool run(FieldHandle& input, MatrixHandle& output); 
+    bool operator()(const edgepair_t &a, const edgepair_t &b) const
+    {
+    return a.first == b.first && a.second == b.second;
+    }
 };
 
-} // end namespace SCIRunAlgo
+struct edgepairless
+{
+    bool operator()(const edgepair_t &a, const edgepair_t &b)
+    {
+    return less(a, b);
+    }
+    static bool less(const edgepair_t &a, const edgepair_t &b)
+    {
+    return a.first < b.first || a.first == b.first && a.second < b.second;
+    }
+};
+
+struct IndexHash {
+  static const size_t bucket_size = 4;
+  static const size_t min_buckets = 8;
+  
+  size_t operator()(const index_type &idx) const
+    { return (static_cast<size_t>(idx)); }
+  
+  bool operator()(const index_type &i1, const index_type &i2) const
+    { return (i1 < i2); }
+};
+
+
+typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
+
+
+								}}}}
 
 #endif

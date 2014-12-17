@@ -28,6 +28,7 @@
 
 SET(Algorithms_Field_Tests_SRCS
   CalculateVectorMagnitudesAlgoTests.cc
+  BuildMatrixOfSurfaceNormalsTests.cc
   CalculateGradientsAlgoTests.cc
   GetDomainBoundaryTests.cc
   GetFieldBoundaryTests.cc
