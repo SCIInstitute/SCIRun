@@ -70,7 +70,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     break;
 	case FUNCTION:
 			{
-				NewArrayMathEngine engine;
+				NewArrayMathEngine engine; 
 				MatrixHandle lhsInput, rhsInput;
 				lhsInput.reset(lhs->clone());
 				rhsInput.reset(rhs->clone());
@@ -113,4 +113,3 @@ AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run_generic(const Algorith
   output[Variables::Result] = result;
   return output;
 }
-

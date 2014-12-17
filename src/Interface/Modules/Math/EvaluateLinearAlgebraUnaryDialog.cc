@@ -62,6 +62,8 @@ int EvaluateLinearAlgebraUnaryDialog::getSelectedOperator() const
     return (int)EvaluateLinearAlgebraUnaryAlgorithm::NEGATE;
   if (scalarMultiplyRadioButton_->isChecked())
     return (int)EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY;
+  if (functionRadioButton_->isChecked())
+		return (int)EvaluateLinearAlgebraUnaryAlgorithm::FUNCTION;
   else
     return -1;
 }
@@ -79,6 +81,9 @@ void EvaluateLinearAlgebraUnaryDialog::setSelectedOperator(int op)
   case (int)EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY:
     scalarMultiplyRadioButton_->setChecked(true);
     break;
+	case (int) EvaluateLinearAlgebraUnaryAlgorithm::FUNCTION:
+		functionRadioButton_->setChecked(true); 
+		break;
   }
 }
 
@@ -95,11 +100,17 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str)
   {
     state_->setValue(Variables::ScalarValue, value);
   }
+	std::string stringValue = str.toStdString(); 
+	if(state_->getValue(Variables::FunctionString).toString() != stringValue)
+	{
+			state_->setValue(Variables::FunctionString, value); 
+	}
 }
 
 void EvaluateLinearAlgebraUnaryDialog::pushOperationToState()
 {
   pushOperationToState(scalarLineEdit_->text());
+	pushOperationToState(functionLineEdit_->text()); 
 }
 
 void EvaluateLinearAlgebraUnaryDialog::pull()
@@ -107,4 +118,5 @@ void EvaluateLinearAlgebraUnaryDialog::pull()
   //TODO convert to new widget managers
   setSelectedOperator(state_->getValue(Variables::Operator).toInt());
   scalarLineEdit_->setText(QString::number(state_->getValue(Variables::ScalarValue).toDouble()));
+	functionLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::FunctionString).toString())); 
 }

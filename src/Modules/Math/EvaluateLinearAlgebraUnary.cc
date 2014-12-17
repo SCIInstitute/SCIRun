@@ -51,6 +51,7 @@ void EvaluateLinearAlgebraUnaryModule::setStateDefaults()
   auto state = get_state();
   state->setValue(Variables::Operator, 0);
   state->setValue(Variables::ScalarValue, 0);
+	state->setValue(Variables::FunctionString, std::string("x+y")); 
 }
 
 void EvaluateLinearAlgebraUnaryModule::execute()
@@ -59,12 +60,13 @@ void EvaluateLinearAlgebraUnaryModule::execute()
 
   /// @todo: standardize on camel case!
   auto state = get_state();
-  
   auto oper = state->getValue(Variables::Operator).toInt();
   double scalar = state->getValue(Variables::ScalarValue).toDouble();
+	auto func = state->getValue(Variables::FunctionString).toString(); 
 
   algo().set(Variables::Operator, oper);
   algo().set(Variables::ScalarValue, scalar);
+	algo().set(Variables::FunctionString, func); 
   auto output = algo().run_generic(withInputData((InputMatrix, denseInput)));
   sendOutputFromAlgorithm(Result, output);
 }
