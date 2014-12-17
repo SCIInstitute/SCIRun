@@ -978,8 +978,8 @@ protected:
   bool elems_locate(ARRAY &array,BBox b) const
   {
     array.clear();
-    const Point r1 = this->mesh_->transform_.unproject(b.min());
-    const Point r2 = this->mesh_->transform_.unproject(b.max());
+    const Point r1 = this->mesh_->transform_.unproject(b.get_min());
+    const Point r2 = this->mesh_->transform_.unproject(b.get_max());
     double epsilon = this->mesh_->get_epsilon();
     
     index_type i1 = static_cast<index_type>(floor(r1.x()-epsilon)); 

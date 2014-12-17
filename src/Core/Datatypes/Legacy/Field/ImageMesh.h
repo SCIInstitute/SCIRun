@@ -1301,9 +1301,9 @@ ImageMesh<Basis>::get_faces(typename Face::array_type &arr, const Core::Geometry
 {
   arr.clear();
   typename Face::index_type min;
-  locate(min, bbox.min());
+  locate(min, bbox.get_min());
   typename Face::index_type max;
-  locate(max, bbox.max());
+  locate(max, bbox.get_max());
 
   if (max.i_ >= ni_ - 1) max.i_ = ni_ - 2;
   if (max.j_ >= nj_ - 1) max.j_ = nj_ - 2;

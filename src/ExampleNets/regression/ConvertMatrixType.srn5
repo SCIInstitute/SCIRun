@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -544,71 +544,71 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ConvertMatrixType:31</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-978</first>
-				<second>-699</second>
+				<first>-9.78000000000000000e+002</first>
+				<second>-6.99000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertMatrixType:35</first>
 			<second>
-				<first>-532</first>
-				<second>-608</second>
+				<first>-5.41000000000000000e+002</first>
+				<second>-6.24000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertMatrixType:38</first>
 			<second>
-				<first>-367</first>
-				<second>-475</second>
+				<first>-3.67000000000000000e+002</first>
+				<second>-4.75000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertMatrixType:41</first>
 			<second>
-				<first>-1220</first>
-				<second>-537</second>
+				<first>-1.22000000000000000e+003</first>
+				<second>-5.37000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:33</first>
 			<second>
-				<first>-1029</first>
-				<second>-825</second>
+				<first>-1.02900000000000000e+003</first>
+				<second>-8.25000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:34</first>
 			<second>
-				<first>-548</first>
-				<second>-744</second>
+				<first>-5.48000000000000000e+002</first>
+				<second>-7.44000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:32</first>
 			<second>
-				<first>-939</first>
-				<second>-538</second>
+				<first>-9.39000000000000000e+002</first>
+				<second>-5.38000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:36</first>
 			<second>
-				<first>-641</first>
-				<second>-473</second>
+				<first>-6.41000000000000000e+002</first>
+				<second>-4.73000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:37</first>
 			<second>
-				<first>-367</first>
-				<second>-362</second>
+				<first>-3.67000000000000000e+002</first>
+				<second>-3.62000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:42</first>
 			<second>
-				<first>-1214</first>
-				<second>-414</second>
+				<first>-1.21400000000000000e+003</first>
+				<second>-4.14000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>

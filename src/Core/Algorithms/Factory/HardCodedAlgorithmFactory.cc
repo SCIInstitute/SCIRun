@@ -42,6 +42,7 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h> 
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
@@ -65,6 +66,7 @@
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
+#include <Core/Algorithms/Math/BuildNoiseColumnMatrix.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
@@ -160,6 +162,8 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 			ADD_MODULE_ALGORITHM(RefineMesh, RefineMeshAlgo)
       ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
 			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)
+	  ADD_MODULE_ALGORITHM(FlipSurfaceNormals,FlipSurfaceNormalsAlgo)
+	  ADD_MODULE_ALGORITHM(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(BuildMappingMatrix, BuildMappingMatrixAlgo)
     ;
   }

@@ -127,7 +127,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
 
-    ASSERT_TRUE(aph->threadMode());
+    ASSERT_TRUE(!!aph->threadMode());
     EXPECT_EQ("serial", *aph->threadMode());
   }
 
@@ -137,7 +137,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
 
-    ASSERT_TRUE(aph->threadMode());
+    ASSERT_TRUE(!!aph->threadMode());
     EXPECT_EQ("serial", *aph->threadMode());
   }
 }

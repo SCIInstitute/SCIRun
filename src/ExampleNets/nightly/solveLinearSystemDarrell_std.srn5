@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -134,7 +134,7 @@
 									<name>TargetError</name>
 									<value>
 										<which>1</which>
-										<value>0.00069999999999999988</value>
+										<value>6.99999999999999880e-004</value>
 									</value>
 								</second>
 							</item>
@@ -230,36 +230,36 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ReadMatrix:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-857</first>
-				<second>-432</second>
+				<first>-8.57000000000000000e+002</first>
+				<second>-4.32000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:1</first>
 			<second>
-				<first>-1177</first>
-				<second>-423</second>
+				<first>-1.17700000000000000e+003</first>
+				<second>-4.23000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:3</first>
 			<second>
-				<first>-779</first>
-				<second>-190</second>
+				<first>-7.79000000000000000e+002</first>
+				<second>-1.90000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>SolveLinearSystem:4</first>
 			<second>
-				<first>-1035</first>
-				<second>-304</second>
+				<first>-1.03500000000000000e+003</first>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>WriteMatrix:2</first>
 			<second>
-				<first>-1179</first>
-				<second>-193</second>
+				<first>-1.17900000000000000e+003</first>
+				<second>-1.93000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>

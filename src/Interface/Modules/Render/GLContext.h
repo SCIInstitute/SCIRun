@@ -35,7 +35,6 @@
 #define INTERFACE_MODULES_RENDER_GLCONTEXT_H
 
 // For windows.
-/// \todo Make this definition specific to windows.
 #define NOMINMAX
 
 #include <Interface/Modules/Render/GLContextPlatformCompatibility.h>
@@ -44,7 +43,7 @@ namespace SCIRun {
 namespace Gui {
 
 /// Context that will be sent to spire.
-class GLContext : public spire::Context
+class GLContext
 {
 public:
   GLContext(QGLWidget* glWidget);

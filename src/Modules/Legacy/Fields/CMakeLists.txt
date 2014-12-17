@@ -69,11 +69,12 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
+  FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
-  #FlipSurfaceNormals.cc
+  FlipSurfaceNormals.cc
   #GenerateElectrode.cc
   #PadRegularMesh.cc
   ResampleRegularMesh.cc

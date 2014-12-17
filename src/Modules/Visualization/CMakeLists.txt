@@ -51,6 +51,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Core_Datatypes
   Core_Datatypes_Mesh
   Core_Datatypes_Legacy_Field
+  Core_Algorithms_Visualization
   ${OPENGL_LIBRARIES}
 )
 

@@ -201,7 +201,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
-    node_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max()));
+    node_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.get_min(), box.get_max()));
 
     if (sx == 0) sx = 1;
     if (sy == 0) sy = 1;
@@ -227,7 +227,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     if (sy == 0) sy = 1;
     if (sz == 0) sz = 1;
     
-    elem_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max()));
+    elem_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.get_min(), box.get_max()));
     
     ni = node_grid->get_ni()-1;
     nj = node_grid->get_nj()-1;

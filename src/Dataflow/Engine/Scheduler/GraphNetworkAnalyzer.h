@@ -32,7 +32,6 @@
 #include <boost/noncopyable.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/bimap.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/share.h>

@@ -31,10 +31,12 @@
 #ifndef CORE_GEOMETRY_BBOX_H
 #define CORE_GEOMETRY_BBOX_H 1
 
+#define NOMINMAX
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
+#define NOMINMAX
 
 /// @todo replace asserts in this code with warnings or other reporting
 /// mechanism that doesn't abort the program
@@ -150,8 +152,8 @@ class BBox {
     {
       if(b.valid())
       {
-        extend(b.min());
-        extend(b.max());
+        extend(b.get_min());
+        extend(b.get_max());
       }
     }
     
@@ -189,10 +191,10 @@ class BBox {
     /// Scale the bounding box by s, centered around o
     SCISHARE void scale(double s, const Vector &o);
 
-    inline Point min() const
+    inline Point get_min() const
       { return cmin_; }
     
-    inline Point max() const
+    inline Point get_max() const
       { return cmax_; }
 
     inline Vector diagonal() const

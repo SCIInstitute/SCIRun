@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -142,7 +142,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -224,7 +224,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -234,7 +234,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(255,255,255)</value>
+										<value>Color(160,160,164)</value>
 									</value>
 								</second>
 							</item>
@@ -256,6 +256,30 @@
 								</first>
 								<second>
 									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -324,7 +348,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -334,7 +358,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(255,255,255)</value>
+										<value>Color(160,160,164)</value>
 									</value>
 								</second>
 							</item>
@@ -356,6 +380,30 @@
 								</first>
 								<second>
 									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -554,57 +602,57 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-174</first>
-				<second>-107</second>
+				<first>-1.74000000000000000e+002</first>
+				<second>-1.07000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:1</first>
 			<second>
-				<first>-582</first>
-				<second>-217</second>
+				<first>-5.82000000000000000e+002</first>
+				<second>-2.17000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:5</first>
 			<second>
-				<first>-440</first>
-				<second>-369</second>
+				<first>-4.40000000000000000e+002</first>
+				<second>-3.69000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:3</first>
 			<second>
-				<first>-473</first>
-				<second>-54</second>
+				<first>-4.73000000000000000e+002</first>
+				<second>-5.40000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:2</first>
 			<second>
-				<first>-588</first>
-				<second>91</second>
+				<first>-5.88000000000000000e+002</first>
+				<second>9.10000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:4</first>
 			<second>
-				<first>-209</first>
-				<second>91</second>
+				<first>-2.09000000000000000e+002</first>
+				<second>9.10000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:6</first>
 			<second>
-				<first>-520</first>
-				<second>204</second>
+				<first>-5.20000000000000000e+002</first>
+				<second>2.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:7</first>
 			<second>
-				<first>-204</first>
-				<second>208</second>
+				<first>-2.04000000000000000e+002</first>
+				<second>2.08000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>

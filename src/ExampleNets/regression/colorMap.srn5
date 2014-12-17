@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -72,8 +72,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>10</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(160,160,164)</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>EdgeTransparency</name>
@@ -104,6 +116,30 @@
 								</first>
 								<second>
 									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -226,29 +262,29 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateStandardColorMap:3</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1010</first>
-				<second>-177</second>
+				<first>-1.01000000000000000e+003</first>
+				<second>-1.77000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:4</first>
 			<second>
-				<first>-800</first>
-				<second>76</second>
+				<first>-8.00000000000000000e+002</first>
+				<second>7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:2</first>
 			<second>
-				<first>-1081</first>
-				<second>2</second>
+				<first>-1.08100000000000000e+003</first>
+				<second>2.00000000000000000e+000</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-672</first>
-				<second>-102</second>
+				<first>-6.72000000000000000e+002</first>
+				<second>-1.02000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>

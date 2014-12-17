@@ -84,7 +84,7 @@ Q_SIGNALS:
   {
   public:
     explicit ZLevelManager(QGraphicsScene* scene);
-    int max() const { return maxZ_; }
+    int get_max() const { return maxZ_; }
     void bringToFront();
     void sendToBack();
   private:
