@@ -69,6 +69,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
+  SwapFieldDataWithMatrixEntries.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -132,7 +133,7 @@ SET(Modules_Legacy_Fields_SRCS
   #MergeTriSurfs.cc
   #ClipVolumeByIsovalue.cc
   RefineMesh.cc
-  #SwapFieldDataWithMatrixEntries.cc
+  SwapFieldDataWithMatrixEntries.cc
   #SwapNodeLocationsWithMatrixEntries.cc
   #ConvertLatVolDataFromElemToNode.cc
   #ConvertLatVolDataFromNodeToElem.cc
