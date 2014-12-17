@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -236,43 +236,43 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AppendMatrix:2</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-8.48000000000000000e+002</first>
-				<second>-2.20000000000000000e+002</second>
+				<first>-848</first>
+				<second>-220</second>
 			</second>
 		</item>
 		<item>
 			<first>AppendMatrix:3</first>
 			<second>
-				<first>-5.71000000000000000e+002</first>
-				<second>-2.42000000000000000e+002</second>
+				<first>-571</first>
+				<second>-242</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:0</first>
 			<second>
-				<first>-5.73000000000000000e+002</first>
-				<second>-3.93000000000000000e+002</second>
+				<first>-573</first>
+				<second>-393</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:1</first>
 			<second>
-				<first>-9.36000000000000000e+002</first>
-				<second>-3.88000000000000000e+002</second>
+				<first>-936</first>
+				<second>-388</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:4</first>
 			<second>
-				<first>-8.42000000000000000e+002</first>
-				<second>-7.70000000000000000e+001</second>
+				<first>-842</first>
+				<second>-77</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:5</first>
 			<second>
-				<first>-5.15000000000000000e+002</first>
-				<second>-9.40000000000000000e+001</second>
+				<first>-515</first>
+				<second>-94</second>
 			</second>
 		</item>
 	</modulePositions>
