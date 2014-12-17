@@ -54,6 +54,7 @@ SET(Interface_Modules_Fields_FORMS
   ClipFieldByFunction.ui
   RefineMesh.ui
   ConvertFieldBasis.ui
+  swapfielddatawithmatrixentries.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -84,6 +85,7 @@ SET(Interface_Modules_Fields_HEADERS
   RefineMeshDialog.h
   ConvertFieldBasisDialog.h
   share.h
+  SwapFieldDataWithMatrixEntriesDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -112,6 +114,7 @@ SET(Interface_Modules_Fields_SOURCES
   MapFieldDataOntoElemsDialog.cc
   MapFieldDataOntoNodesDialog.cc
   ClipFieldByFunctionDialog.cc
+  SwapFieldDataWithMatrixEntriesDialog.cc
   RefineMeshDialog.cc
 )
 
