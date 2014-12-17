@@ -31,6 +31,7 @@
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Parser/ArrayMathEngine.h> 
+#include <Core/Datatypes/MatrixTypeConversions.h> 
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
@@ -71,34 +72,30 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
 			{
 				//result.reset(lhs->clone());
 				NewArrayMathEngine engine;
-				//engine.setLogger(this); 
-				MatrixHandle lhsInput, rhsInput; 
-				lhsInput.reset(lhs->clone()); 
-				rhsInput.reset(rhs->clone()); 
+				//engine.setLogger(this);
+				MatrixHandle lhsInput, rhsInput;
+				lhsInput.reset(lhs->clone());
+				rhsInput.reset(rhs->clone());
 			
 				if (!(engine.add_input_fullmatrix("x", lhsInput ) )) ;//return;
 				if (!(engine.add_input_fullmatrix("y", rhsInput ) )) ;//return;
       
-				//std::string func = function_.get();
 				boost::optional<std::string> func = params.get<1>(); 
 				std::string function_string = func.get(); 
 
 				function_string = "RESULT="+function_string;
 				engine.add_expressions(function_string);
 
-				MatrixHandle omatrix;
-				omatrix.reset(lhsInput->clone());
-				if(!(engine.add_output_fullmatrix("RESULT",omatrix))) ;//return;
-      
+				//MatrixHandle omatrix;
+				//omatrix.reset(lhsInput);
+
+				if(!(engine.add_output_fullmatrix("RESULT",lhsInput))) ;//return;
+        //if (!(engine.add_output_fullmatrix("RESULT", lhsInput))); 
 				// Actual engine call, which does the dynamic compilation, the creation of the
 				// code for all the objects, as well as inserting the function and looping 
 				// over every data point
 				if (!(engine.run())) ;//return;
-				//omatrix.reset(); 
-				//result.reset(omatrix);
-				//result.reset(new DenseMatrixHandle(omatrix->clone()));
-				result.reset(omatrix->clone());  
-				//send_output_handle("Output", omatrix);
+				result = matrix_cast::as_dense(lhsInput); 
 			}
     break;   
   default:
