@@ -70,9 +70,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     break;
 	case FUNCTION:
 			{
-				//result.reset(lhs->clone());
 				NewArrayMathEngine engine;
-				//engine.setLogger(this);
 				MatrixHandle lhsInput, rhsInput;
 				lhsInput.reset(lhs->clone());
 				rhsInput.reset(rhs->clone());
@@ -85,9 +83,6 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
 
 				function_string = "RESULT="+function_string;
 				engine.add_expressions(function_string);
-
-				//MatrixHandle omatrix;
-				//omatrix.reset(lhsInput);
 
 				if(!(engine.add_output_fullmatrix("RESULT",lhsInput))) ;//return;
         //if (!(engine.add_output_fullmatrix("RESULT", lhsInput))); 
