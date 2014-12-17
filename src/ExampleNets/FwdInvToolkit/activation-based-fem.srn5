@@ -26,7 +26,7 @@
 									<name>ModelType</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>dipole</value>
+										<value>sources and sinks</value>
 									</value>
 								</second>
 							</item>
@@ -78,7 +78,7 @@
 									<name>ModelType</name>
 									<value>
 										<which>2</which>
-										<value>dipole</value>
+										<value>sources and sinks</value>
 									</value>
 								</second>
 							</item>
@@ -1324,7 +1324,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>42</count>
+			<count>43</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>ApplyFEMCurrentSource:0</moduleId1_>
@@ -1476,7 +1476,7 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ApplyFEMCurrentSource:1</moduleId2_>
+				<moduleId2_>ApplyFEMCurrentSource:0</moduleId2_>
 				<port2_>
 					<name>Sources</name>
 					<id>0</id>
@@ -1488,19 +1488,31 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>BuildMappingMatrix:14</moduleId2_>
+				<moduleId2_>BuildMappingMatrix:15</moduleId2_>
 				<port2_>
 					<name>Destination</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateFieldData:11</moduleId1_>
+				<moduleId1_>CreateFieldData:12</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>BuildMappingMatrix:15</moduleId2_>
+				<moduleId2_>ApplyFEMCurrentSource:1</moduleId2_>
+				<port2_>
+					<name>Sources</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:12</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>BuildMappingMatrix:14</moduleId2_>
 				<port2_>
 					<name>Destination</name>
 					<id>0</id>
@@ -1859,8 +1871,8 @@
 		<item>
 			<first>BuildMappingMatrix:14</first>
 			<second>
-				<first>-254.47005964857721</first>
-				<second>626.07228622076127</second>
+				<first>-76</first>
+				<second>532</second>
 			</second>
 		</item>
 		<item>
@@ -1894,15 +1906,15 @@
 		<item>
 			<first>CreateFieldData:11</first>
 			<second>
-				<first>-372.10515342982706</first>
-				<second>266.88983311138628</second>
+				<first>-304</first>
+				<second>304</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:12</first>
 			<second>
-				<first>-68.105153429827112</first>
-				<second>266.88983311138628</second>
+				<first>0</first>
+				<second>304</second>
 			</second>
 		</item>
 		<item>
