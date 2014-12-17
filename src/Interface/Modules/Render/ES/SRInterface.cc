@@ -223,9 +223,9 @@ namespace SCIRun {
 		}
 
 		//------------------------------------------------------------------------------
-		void SRInterface::showAxes(bool value)
+		void SRInterface::showOrientation(bool value)
 		{
-			showAxes_ = value;
+			showOrientation_ = value;
 		}
 
 		//------------------------------------------------------------------------------
@@ -607,7 +607,7 @@ namespace SCIRun {
 
 			mCore.execute(currentTime, constantDeltaTime);
 
-			if (showAxes_)
+			if (showOrientation_)
 			{
 				// Do not even attempt to render if the framebuffer is not complete.
 				// This can happen when the rendering window is hidden (in SCIRun5 for
@@ -1129,7 +1129,7 @@ namespace SCIRun {
 		// Create default colormaps.
 		void SRInterface::generateColormaps()
 		{
-			showAxes_ = true;
+			showOrientation_ = true;
 			size_t rainbowArraySize = sizeof(rainbowRaw) / sizeof(*rainbowRaw);
 
 			std::vector<uint8_t> rainbow;

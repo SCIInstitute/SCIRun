@@ -131,8 +131,8 @@ namespace SCIRun {
 			/// Sets the selected View of the window
 			void setView(const glm::vec3& view, const glm::vec3& up);
 
-			/// Toggle Axes
-			void showAxes(bool value);
+			/// Toggle Orientation Axes
+			void showOrientation(bool value);
 
 		private:
 
@@ -210,7 +210,7 @@ namespace SCIRun {
 			// Apply uniform.
 			void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
 
-			bool							  showAxes_;		///< Whether the coordinate axes will render or not.
+			bool							showOrientation_; ///< Whether the coordinate axes will render or not.
 
 			MouseMode                       mMouseMode;       ///< Current mouse mode.
 

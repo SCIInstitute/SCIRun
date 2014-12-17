@@ -53,7 +53,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 	addToolBar();
 	addViewBar();
-	addShowAxesCheckbox();
+	addConfigurationButton();
 
 	// Setup Qt OpenGL widget.
 	QGLFormat fmt;
@@ -96,6 +96,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
+	
+	addConfigurationDock(QString::fromStdString(name));
 }
 
 //------------------------------------------------------------------------------
@@ -187,10 +189,10 @@ void ViewSceneDialog::autoViewClicked()
 }
 
 //------------------------------------------------------------------------------
-void ViewSceneDialog::showAxesChecked()
+void ViewSceneDialog::showOrientationChecked()
 {
 	std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-	spire->showAxes(mShowAxesCheckBox->isChecked());
+	spire->showOrientation(mShowOrientationCheckBox->isChecked());
 }
 
 //------------------------------------------------------------------------------
@@ -359,6 +361,14 @@ void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::configurationButtonClicked()
+{
+	showConfiguration_ = !mConfigurationDock->isVisible();
+	mConfigurationDock->setEnabled(showConfiguration_);
+	mConfigurationDock->setVisible(showConfiguration_);
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar()
 {
 	mToolBar = new QToolBar(this);
@@ -474,15 +484,51 @@ void ViewSceneDialog::addViewOptions()
 }
 
 
-void ViewSceneDialog::addShowAxesCheckbox()
+void ViewSceneDialog::addShowOrientationCheckbox()
 {
-	mShowAxesCheckBox = new QCheckBox();
-	mShowAxesCheckBox->setText("Show Axes");
-	mShowAxesCheckBox->setToolTip("Toggle Coordinate Axes");
-	mShowAxesCheckBox->setChecked(true);
+	mShowOrientationCheckBox = new QCheckBox();
+	mShowOrientationCheckBox->setText("Orientation");
+	mShowOrientationCheckBox->setToolTip("Toggle Orientation Axes");
+	mShowOrientationCheckBox->setChecked(true);
 
-	connect(mShowAxesCheckBox, SIGNAL(clicked()), this, SLOT(showAxesChecked()));
-	mToolBar->addWidget(mShowAxesCheckBox);
+	connect(mShowOrientationCheckBox, SIGNAL(clicked()), this, SLOT(showOrientationChecked()));
+	//mToolBar->addWidget(mShowOrientationCheckBox);
+	//mToolBar->addSeparator();
+}
+
+void ViewSceneDialog::addConfigurationDock(const QString& viewName)
+{
+	showConfiguration_ = false;
+	mConfigurationDock = new QDockWidget(this);
+	QString name = viewName + " Configuration";
+	mConfigurationDock->setWindowTitle(name);
+	mConfigurationDock->setAllowedAreas(Qt::RightDockWidgetArea);
+	mConfigurationDock->setFloating(true);
+	mConfigurationDock->setMinimumWidth(300);
+	mConfigurationDock->setMinimumHeight(150);
+	mConfigurationDock->setVisible(false);
+	mConfigurationDock->setEnabled(false);
+
+	QTabWidget* tabs = new QTabWidget(mConfigurationDock);
+	tabs->setFixedSize(245, 150);
+	addShowOrientationCheckbox();
+	QWidget* viewTab = new QWidget();
+	mShowOrientationCheckBox->setParent(viewTab);
+	tabs->addTab(viewTab, "View");
+
+
+
+}
+
+void ViewSceneDialog::addConfigurationButton()
+{
+	QPushButton* configurationButton = new QPushButton(this);
+	configurationButton->setToolTip("Open/Close Configuration Menu");
+	configurationButton->setText("Configuration");
+	configurationButton->setAutoDefault(false);
+	configurationButton->setDefault(false);
+	connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+	mToolBar->addWidget(configurationButton);
 	mToolBar->addSeparator();
 }
 

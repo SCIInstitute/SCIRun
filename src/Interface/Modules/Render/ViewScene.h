@@ -76,10 +76,11 @@ namespace SCIRun {
 			void menuMouseControlChanged(int index);
 			void autoViewClicked();
 			void newGeometryValue();
-			void showAxesChecked();
+			void showOrientationChecked();
 			void viewBarButtonClicked();
 			void viewAxisSelected(int index);
 			void viewVectorSelected(int index);
+			void configurationButtonClicked();
 
 		protected:
 			virtual void closeEvent(QCloseEvent *evt) override;
@@ -93,22 +94,28 @@ namespace SCIRun {
 			void addViewBarButton();
 			void addViewBar();
 			void addViewOptions();
-			void addShowAxesCheckbox();
+			void addShowOrientationCheckbox();
+			void addConfigurationDock(const QString& viewName);
+			void addConfigurationButton();
 
 			void lookDownAxisX(int upIndex, glm::vec3& up);
 			void lookDownAxisY(int upIndex, glm::vec3& up);
 			void lookDownAxisZ(int upIndex, glm::vec3& up);
 
-			GLWidget*                             mGLWidget;			///< GL widget containing context.
-			std::weak_ptr<Render::SRInterface>    mSpire;				///< Instance of Spire.
-			QToolBar*                             mToolBar;			///< Tool bar.
-			QToolBar*                             mViewBar;			///< Tool bar for view options.
-			QComboBox*                            mDownViewBox;		///< Combo box for Down axis options.
-			QComboBox*                            mUpVectorBox;		///< Combo box for Up Vector options.
-			QCheckBox*							mShowAxesCheckBox;	///< Check to show the Axes
+			GLWidget*                             mGLWidget;				///< GL widget containing context.
+			std::weak_ptr<Render::SRInterface>    mSpire;					///< Instance of Spire.
+			QToolBar*                             mToolBar;					///< Tool bar.
+			QToolBar*                             mViewBar;					///< Tool bar for view options.
+			QComboBox*                            mDownViewBox;				///< Combo box for Down axis options.
+			QComboBox*                            mUpVectorBox;				///< Combo box for Up Vector options.
+			QCheckBox*							  mShowOrientationCheckBox;	///< Check to show the Orientational Axes
+
+			QDockWidget*						  mConfigurationDock;		///< Dock holding configuration functions
+
 
 			bool shown_;
 			bool hideViewBar_;
+			bool showConfiguration_;
 			std::shared_ptr<class ViewSceneItemManager> itemManager_;
 		};
 
