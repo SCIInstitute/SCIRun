@@ -26,38 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
-#include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Dataflow/Network/Module.h>
+#ifndef MODULES_LEGACY_FIELDS_FLIPSURFACENORMALS_H_
+#define MODULES_LEGACY_FIELDS_FLIPSURFACENORMALS_H_ 1
 
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
-
-
-//const  ModuleLookupInfo FlipSurfaceNormals::staticInfo_("FlipSurfaceNormals","ChangeMesh","SCIRun");
-
-FlipSurfaceNormals::FlipSurfaceNormals()  : Module(ModuleLookupInfo("FlipSurfaceNormals","ChangeMesh","SCIRun"),false)
-{
-	INITIALIZE_PORT(InputField);
-	INITIALIZE_PORT(OutputField);
-}
-
-void  FlipSurfaceNormals::execute() 
-{
-	FieldHandle ifield = getRequiredInput(InputField);
-	
-	if(needToExecute())
-	{
-		update_state(Executing);
-	
-		auto output = algo().run_generic(withInputData((InputField,ifield)));
-	
-		sendOutputFromAlgorithm(OutputField,output);
+namespace SCIRun {
+	namespace Modules {
+		namespace Fields {
+		
+		class SCISHARE FlipSurfaceNormals : public Dataflow::Networks::Module, 
+			public Has1InputPort<FieldPortTag>,
+			public Has1OutputPort<FieldPortTag>
+			{
+				public:
+					FlipSurfaceNormals();
+					virtual void setStateDefaults() {}
+					virtual void execute();
+					
+					INPUT_PORT(0, InputField, LegacyField);
+					OUTPUT_PORT(0, OutputField, LegacyField);
+					
+					//static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+			
+			};
+		}
 	}
 }
+
+#endif
+			
