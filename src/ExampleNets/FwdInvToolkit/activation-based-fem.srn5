@@ -296,8 +296,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputFieldName</name>
+								</first>
+								<second>
+									<name>InputFieldName</name>
+									<value>
+										<which>2</which>
+										<value>--- no name ---</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputType</name>
+								</first>
+								<second>
+									<name>InputType</name>
+									<value>
+										<which>2</which>
+										<value>ConstantData</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>OutputType</name>
@@ -1210,7 +1234,7 @@
 									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1261,7 +1285,7 @@
 								<second>
 									<name>MaxIterations</name>
 									<value>
-										<which>1</which>
+										<which>0</which>
 										<value>500</value>
 									</value>
 								</second>
@@ -1298,7 +1322,7 @@
 									<name>TargetError</name>
 									<value>
 										<which>1</which>
-										<value>1.0000000000000001e-05</value>
+										<value>9.9999999999999995e-08</value>
 									</value>
 								</second>
 							</item>
