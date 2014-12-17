@@ -44,6 +44,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/GetFieldData.h
   FieldData/SetFieldData.h
   FieldData/SetFieldDataToConstantValue.h
+  FieldData/SwapFieldDataWithMatrixEntriesAlgo.h
   #FieldData/SmoothVecFieldMedian.h
   Mapping/BuildMappingMatrixAlgo.h
   DomainFields/GetDomainBoundaryAlgo.h
@@ -69,6 +70,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/ConvertFieldBasisType.h
   TransformMesh/ScaleFieldMeshAndData.h
   TransformMesh/ProjectPointsOntoMesh.h
+  MeshData/FlipSurfaceNormals.h
   RefineMesh/RefineMesh.h
 	
   RefineMesh/RefineMeshCurveAlgoV.h
@@ -81,7 +83,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
   #RegisterWithCorrespondences.cc
-  #MeshData/FlipSurfaceNormals.cc
+  MeshData/FlipSurfaceNormals.cc
   #Cleanup/CleanupTetMesh.cc
   #Cleanup/RemoveUnusedNodes.cc
   #ClipMesh/ClipMeshByIsovalue.cc
@@ -113,7 +115,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/CalculateFieldDataMetric.cc
 #FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
-
+  FieldData/SwapFieldDataWithMatrixEntriesAlgo.cc
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
@@ -187,10 +189,13 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #TracePoints/TracePoints.cc
 )
 
+# This algo is not used by the module (yet)
+IF(FALSE)
 IF(WITH_TETGEN)
   SET(Core_Algorithms_Legacy_Fields_SRCS ${Core_Algorithms_Legacy_Fields_SRCS}
     TetGen/InterfaceWithTetGen.cc)
 ENDIF(WITH_TETGEN)
+ENDIF()
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields
   ${Core_Algorithms_Legacy_Fields_HEADERS}
@@ -208,11 +213,13 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   #${SCI_TEEM_LIBRARY}
 )
 
+IF(FALSE)
 IF(WITH_TETGEN)
   TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
      ${SCI_TETGEN_LIBRARY}
   )
 ENDIF(WITH_TETGEN)
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Fields)

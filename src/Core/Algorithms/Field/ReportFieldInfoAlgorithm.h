@@ -59,6 +59,8 @@ namespace Fields {
 
     Outputs run(const Inputs& input) const;
 
+    static std::string summarize(const Outputs& info);
+
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
   private:

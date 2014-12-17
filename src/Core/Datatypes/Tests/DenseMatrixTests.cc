@@ -33,6 +33,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/BlockMatrix.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun::Core::Datatypes;
@@ -252,4 +253,36 @@ TEST(DenseMatrixTests, CanReadNaNs)
   EXPECT_TRUE((expected - m).hasNaN());
   //comparison won't work with NaNs.
   //EXPECT_EQ(expected, m);
+}
+
+TEST(BlockMatrixTest, CanConstructFromBlockSizes)
+{
+  std::vector<int> rowBlocks, colBlocks;
+  rowBlocks += 2,3,4;
+  colBlocks += 5,2;
+
+  DenseBlockMatrix blocks(rowBlocks, colBlocks);
+
+  EXPECT_EQ(9, blocks.matrix().nrows());
+  EXPECT_EQ(7, blocks.matrix().ncols());
+}
+
+TEST(BlockMatrixTest, CanAccessBlockByIndex)
+{
+  std::vector<int> rowBlocks, colBlocks;
+  rowBlocks += 2,3,4;
+  colBlocks += 5,2;
+
+  DenseBlockMatrix blocks(rowBlocks, colBlocks);
+
+  for (int i = 0; i < rowBlocks.size(); ++i)
+  {
+    for (int j = 0; j < colBlocks.size(); ++j)
+    {
+      auto blockIJ = blocks.blockRef(i,j);
+      EXPECT_EQ(rowBlocks[i], blockIJ.rows());
+      EXPECT_EQ(colBlocks[j], blockIJ.cols());
+      //std::cout << "block size " << i << "," << j << ": " << blockIJ.rows() << " x " << blockIJ.cols() << std::endl;
+    }
+  }
 }

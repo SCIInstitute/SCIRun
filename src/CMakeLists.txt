@@ -288,7 +288,15 @@ EXTERNAL_TEEM_LIBRARY(GIT)
 
 
 ########################################################################
+# Configure tetgen external project
+
+OPTION(WITH_TETGEN "Build Tetgen." ON)
+MARK_AS_ADVANCED(WITH_TETGEN)
+
+
+########################################################################
 # Configure CPM and Spire - http://github.com/iauns/cpm
+# Configure CPM and Spire - http://github.com/CIBC-Internal/cpm
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -299,9 +307,9 @@ if(NOT GIT_FOUND)
   message(FATAL_ERROR "CPM requires Git.")
 endif()
 if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
-  message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
+  message(STATUS "Cloning repo (https://github.com/CIBC-Internal/cpm)")
   execute_process(
-    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
+    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/CIBC-Internal/cpm ${CPM_DIR}
     RESULT_VARIABLE error_code
     OUTPUT_QUIET ERROR_QUIET)
   if(error_code)
@@ -310,25 +318,79 @@ if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
 endif()
 include(${CPM_DIR}/CPM.cmake)
 
+# TODO: Add tags for *all* of the CPM modules. This will allow upstream
+# flexibility. Once all versions are appopriately tagged, I will be able
+# to untag upstream and keep it moving forward.
+
 # ++ MODULE: GL Platform
 CPM_AddModule("gl_platform"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-platform"
-  GIT_TAG "1.3.5")
-
-# ++ MODULE: Spire
-CPM_AddModule("spire"
-  GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-gl-platform"
   GIT_TAG "origin/master")
 
 # ++ MODULE: Arc-Look-At (Autoview Camera)
 CPM_AddModule("look_at"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-arc-look-at"
-  GIT_TAG "1.0.0")
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-arc-look-at"
+  GIT_TAG "origin/master")
 
-# ++ MODULE: GL State
-CPM_AddModule("gl_state"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-state.git"
-  GIT_TAG "1.0.4")
+# ++ MODULE: Entity System
+CPM_AddModule("es"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-entity-system"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Entity system component serialization
+CPM_AddModule("es_cereal"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-cereal"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Cereal support for GLM.
+CPM_AddModule("cereal_glm"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-cereal-glm"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: ES Systems
+CPM_AddModule("es_systems"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-systems"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Async filesystem support
+CPM_AddModule("es_fs"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-fs"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: General transforms and components
+CPM_AddModule("es_general"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-general"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Entity System Rendering.
+CPM_AddModule("es_render"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-render"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Acorn
+CPM_AddModule("es_acorn"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-acorn"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Var buffer
+CPM_AddModule("var_buffer"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-var-buffer"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: BSerialize
+CPM_AddModule("bserialize"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-bserialize"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
 
 CPM_Finish()
 
@@ -359,13 +421,13 @@ function (CopyAssets src_asset_dir dest_asset_dir)
 endfunction()
 
 if (DEFINED OUTPUT_SHADER_DIR)
-  CopyShaders(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/SpireSCIRun/shaders ${OUTPUT_SHADER_DIR})
+  CopyShaders(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/ES/shaders ${OUTPUT_SHADER_DIR})
 else()
   message(WARNING "Not copying shader files. OUTPUT_SHADER_DIR variable not found.")
 endif()
 
 if (DEFINED OUTPUT_ASSET_DIR)
-  CopyAssets(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/SpireSCIRun/assets ${OUTPUT_ASSET_DIR})
+  CopyAssets(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/ES/assets ${OUTPUT_ASSET_DIR})
 else()
   message(WARNING "Not copying asset files. OUTPUT_ASSET_DIR variable not found.")
 endif()
@@ -380,7 +442,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 
 # TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
-  SET(QT_MIN_VERSION "4.8.0")
+  SET(QT_MIN_VERSION "4.8.1")
   FIND_PACKAGE(Qt4 REQUIRED)
   SET(QT_USE_QTOPENGL TRUE)
 
@@ -423,6 +485,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/log4cpp/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
+  ${SCI_TETGEN_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
@@ -558,9 +621,12 @@ SET_PROPERTY(TARGET Algorithms_Base         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_DataIO       PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Math         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Field         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Algorithms_Describe         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_BrainStimulator         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Factory   PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Legacy_Forward         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Visualization         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_FiniteElements         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_DataIO         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Converter         PROPERTY FOLDER "Core/Algorithms")
@@ -611,6 +677,7 @@ SET_PROPERTY(TARGET Interface_Modules_String   PROPERTY FOLDER "Interface/Module
 SET_PROPERTY(TARGET Interface_Modules_Fields   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_Bundle   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_Matlab   PROPERTY FOLDER "Interface/Modules")
+SET_PROPERTY(TARGET Interface_Modules_Forward   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_Factory   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Application")
 
@@ -627,6 +694,7 @@ SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualizati
 SET_PROPERTY(TARGET Modules_BrainStimulator   PROPERTY FOLDER "Modules/Brain")
 SET_PROPERTY(TARGET Modules_Legacy_FiniteElements   PROPERTY FOLDER "Modules/FiniteElements")
 SET_PROPERTY(TARGET Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
+SET_PROPERTY(TARGET Modules_Legacy_Forward PROPERTY FOLDER "Modules/Forward")
 SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
@@ -643,6 +711,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Algorithms_BrainStimulator_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_Math_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_Field_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
+  SET_PROPERTY(TARGET Algorithms_Describe_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_FiniteElements_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Core_Application_Tests   PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Application_Session_Tests   PROPERTY FOLDER "Core/Tests")
@@ -697,6 +766,11 @@ IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python_Tests         PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
   SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
+ENDIF()
+
+IF(WITH_TETGEN)
+  SET_PROPERTY(TARGET tetgen         PROPERTY FOLDER "Externals")
+  SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
 ENDIF()
 
 ########################################################################

@@ -883,8 +883,8 @@ public:
     array.clear();
     index_type is,js,ks;
     index_type ie,je,ke;
-    elem_grid_->locate_clamp(is,js,ks,b.min());
-    elem_grid_->locate_clamp(ie,je,ke,b.max());
+    elem_grid_->locate_clamp(is,js,ks,b.get_min());
+    elem_grid_->locate_clamp(ie,je,ke,b.get_max());
     for (index_type i=is; i<=ie;i++)
       for (index_type j=js; j<je;j++)
         for (index_type k=ks; k<ke; k++)
@@ -1801,7 +1801,7 @@ StructHexVolMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
     Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
-    elem_grid_.reset(new SearchGridT<typename LatVolMesh<Basis>::Elem::index_type>(sx, sy, sz, b.min(), b.max()));
+    elem_grid_.reset(new SearchGridT<typename LatVolMesh<Basis>::Elem::index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename LatVolMesh<Basis>::Elem::iterator ci, cie;
     this->begin(ci);
@@ -1836,7 +1836,7 @@ StructHexVolMesh<Basis>::compute_node_grid(Core::Geometry::BBox& bb)
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
     Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
-    node_grid_.reset(new SearchGridT<typename LatVolMesh<Basis>::Node::index_type>(sx, sy, sz, b.min(), b.max()));
+    node_grid_.reset(new SearchGridT<typename LatVolMesh<Basis>::Node::index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename LatVolMesh<Basis>::Node::iterator ni, nie;
     this->begin(ni);

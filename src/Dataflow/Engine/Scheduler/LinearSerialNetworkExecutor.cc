@@ -38,13 +38,14 @@ using namespace SCIRun::Dataflow::Networks;
 
 namespace
 {
-  struct LinearExecution
+  struct LinearExecution : public WaitsForStartupInitialization
   {
     LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
     {
     }
     void operator()() const
     {
+      waitForStartupInit();
       bounds_.executeStarts_();
       BOOST_FOREACH(const ModuleId& id, order_)
       {

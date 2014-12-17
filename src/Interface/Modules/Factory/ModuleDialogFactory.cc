@@ -45,6 +45,7 @@
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
 #include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/Math/GetMatrixSliceDialog.h>
+#include <Interface/Modules/Math/BuildNoiseColumnMatrixDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
@@ -62,6 +63,7 @@
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/FairMeshDialog.h>
+#include <Interface/Modules/Fields/InterfaceWithTetGenDialog.h>
 #include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
@@ -69,9 +71,14 @@
 #include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
 #include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
+#include <Interface/Modules/Fields/BuildMappingMatrixDialog.h>
 #include <Interface/Modules/Fields/RefineMeshDialog.h> 
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
-#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h> 
+#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
+#include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h> 
+#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
+#include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
+#include <Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
@@ -141,9 +148,12 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemDialog)
     ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
     ADD_MODULE_DIALOG(FairMesh, FairMeshDialog)
+    ADD_MODULE_DIALOG(BuildBEMatrix, BuildBEMatrixDialog)
+    ADD_MODULE_DIALOG(ApplyFEMCurrentSource, ApplyFEMCurrentSourceDialog)
     ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
+    ADD_MODULE_DIALOG(InterfaceWithTetGen, InterfaceWithTetGenDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoElements, MapFieldDataOntoElemsDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
@@ -153,6 +163,9 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 		ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
 		ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
+	ADD_MODULE_DIALOG(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixDialog)
+		ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
+    ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
   ;
 }
 

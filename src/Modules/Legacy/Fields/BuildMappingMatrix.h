@@ -50,8 +50,7 @@ namespace SCIRun {
         INPUT_PORT(1, Destination, LegacyField);
         OUTPUT_PORT(0, Mapping, Matrix);
 
-        static const Core::Algorithms::AlgorithmParameterName MapSourceToSingleDestination;
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }

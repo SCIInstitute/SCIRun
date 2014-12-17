@@ -31,6 +31,7 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
+#include <Interface/Modules/Render/GLWidget.h>
 #include <iostream>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -38,19 +39,16 @@
 #include <QtDebug>
 #include <Core/Application/Application.h>
 
-#include <Interface/Modules/Render/GLWidget.h>
+namespace SCIRun {
+namespace Gui {
 
-using namespace SCIRun::Gui;
-
-void logFunction(const std::string& str, spire::Interface::LOG_LEVEL level)
-{
-  std::cout << str;
-}
+const int RendererUpdateInMS = 35;
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(QtGLContext* context) :
     QGLWidget(context),
-    mContext(new GLContext(this))
+    mContext(new GLContext(this)),
+    mCurrentTime(0.0)
 {
   /// \todo Implement this intelligently. This function is called everytime
   ///       there is a new graphics context.
@@ -64,13 +62,11 @@ GLWidget::GLWidget(QtGLContext* context) :
   auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
   shaderSearchDirs.push_back(shadersInBinDirectory.string());
 
-  mGraphics = std::shared_ptr<SRInterface>(
-      new SRInterface(
-          std::dynamic_pointer_cast<spire::Context>(mContext),
-          shaderSearchDirs, logFunction));
+  mGraphics = std::shared_ptr<Render::SRInterface>(
+      new Render::SRInterface(mContext, shaderSearchDirs));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
-  mTimer->start(35);
+  mTimer->start(RendererUpdateInMS);
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
@@ -93,15 +89,15 @@ void GLWidget::initializeGL()
 }
 
 //------------------------------------------------------------------------------
-SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
+SCIRun::Render::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  SRInterface::MouseButton btn = SRInterface::MOUSE_NONE;
+  SCIRun::Render::SRInterface::MouseButton btn = SCIRun::Render::SRInterface::MOUSE_NONE;
   if (event->buttons() & Qt::LeftButton)
-    btn = SRInterface::MOUSE_LEFT;
+    btn = Render::SRInterface::MOUSE_LEFT;
   else if (event->buttons() & Qt::RightButton)
-    btn = SRInterface::MOUSE_RIGHT;
+    btn = Render::SRInterface::MOUSE_RIGHT;
   else if (event->buttons() & Qt::MidButton)
-    btn = SRInterface::MOUSE_MIDDLE;
+    btn = Render::SRInterface::MOUSE_MIDDLE;
   
   return btn;
 }
@@ -110,21 +106,21 @@ SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   // Extract appropriate key.
-  SRInterface::MouseButton btn = getSpireButton(event);
+  SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  SRInterface::MouseButton btn = getSpireButton(event);
+  SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  SRInterface::MouseButton btn = getSpireButton(event);
+  SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
 }
 
@@ -162,7 +158,13 @@ void GLWidget::makeCurrent()
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  mGraphics->doFrame();
+  double updateTime = static_cast<double>(RendererUpdateInMS) / 1000.0;
+  mCurrentTime += updateTime;
+
+  mGraphics->doFrame(mCurrentTime, updateTime);
   mContext->swapBuffers();
 }
+
+} // namespace Gui
+} // namespace SCIRun
 

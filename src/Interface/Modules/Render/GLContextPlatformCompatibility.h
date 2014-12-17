@@ -33,13 +33,10 @@
 // before GL headers, but Qt with X11 needs to be included before GL.
 //
 // Note: If GLEW is ever replaced, review the usefulness of this header.
-#ifdef _WIN32
-#  include <spire/Interface.h>
-#  include <QtOpenGL/QGLWidget>
-#else
-#  include <QtOpenGL/QGLWidget>
-#  include <spire/Interface.h>
-#endif
+
+#include <Interface/Modules/Render/UndefiningX11Cruft.h>
+
+#include <QtOpenGL/QGLWidget>
 
 #include <Interface/Modules/Render/namespaces.h>
 

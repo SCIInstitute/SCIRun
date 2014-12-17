@@ -36,7 +36,7 @@ SET(Modules_Legacy_Math_SRCS
   #SortMatrix.cc
   #RemoveZeroRowsAndColumns.cc
   #AppendMatrix.cc
-  #BuildNoiseColumnMatrix.cc
+  BuildNoiseColumnMatrix.cc
   #CreateGeometricTransform.cc
   #ChooseMatrix.cc
   #ComputeSVD.cc
@@ -72,7 +72,7 @@ SET(Modules_Legacy_Math_HEADERS
   #SortMatrix.h
   #RemoveZeroRowsAndColumns.h
   #AppendMatrix.h
-  #BuildNoiseColumnMatrix.h
+  BuildNoiseColumnMatrix.h
   #CreateGeometricTransform.h
   #ChooseMatrix.h
   #ComputeSVD.h

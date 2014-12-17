@@ -53,12 +53,12 @@ BBox::is_similar_to(const BBox &b, double diff) const
 {
   if (!is_valid_ || !b.valid()) return false;
   Vector acceptable_diff=((diagonal()+b.diagonal())/2.0)*diff;
-  Vector min_diff(cmin_-b.min());
+  Vector min_diff(cmin_-b.get_min());
   min_diff = Vector(fabs(min_diff.x()),fabs(min_diff.y()),fabs(min_diff.z()));
   if (min_diff.x()>acceptable_diff.x()) return false;
   if (min_diff.y()>acceptable_diff.y()) return false;
   if (min_diff.z()>acceptable_diff.z()) return false;
-  Vector max_diff(cmax_-b.max());
+  Vector max_diff(cmax_ - b.get_max());
   max_diff = Vector(fabs(max_diff.x()),fabs(max_diff.y()),fabs(max_diff.z()));
   if (max_diff.x()>acceptable_diff.x()) return false;
   if (max_diff.y()>acceptable_diff.y()) return false;
@@ -137,8 +137,8 @@ void Pio(Piostream &stream, BBox & box)
     
   // Store the valid flag as an int to be backwards compatible.
   int tmp = box.valid();
-  Point min = box.min();
-  Point max = box.min();
+  Point min = box.get_min();
+  Point max = box.get_max();
   Pio(stream, tmp);
   if (tmp) 
   {

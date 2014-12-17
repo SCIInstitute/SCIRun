@@ -34,6 +34,7 @@ SET(Algorithms_Field_Tests_SRCS
   GetFieldBoundaryTests.cc
   ReportFieldInfoTests.cc
   ConvertFieldBasisAlgoTests.cc
+  SwapFieldDataWithMatrixEntriesAlgoTests.cc
   ConvertMeshToTriSurfMeshAlgoTests.cc
   ConvertMeshToPointCloudMeshAlgoTests.cc
   AlignMeshBoundingBoxesAlgoTests.cc

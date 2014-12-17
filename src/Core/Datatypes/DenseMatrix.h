@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 
 
 #ifndef CORE_DATATYPES_DENSE_MATRIX_H
-#define CORE_DATATYPES_DENSE_MATRIX_H 
+#define CORE_DATATYPES_DENSE_MATRIX_H
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/GeometryPrimitives/Transform.h> /// @todo
@@ -52,7 +52,7 @@ namespace Datatypes {
     //DenseMatrixGeneric() : Base() {}
     DenseMatrixGeneric(size_t nrows = 0, size_t ncols = 0) : EigenBase(nrows, ncols) {}
 
-    DenseMatrixGeneric(size_t nrows, size_t ncols, const T& val) : EigenBase(nrows, ncols) 
+    DenseMatrixGeneric(size_t nrows, size_t ncols, const T& val) : EigenBase(nrows, ncols)
     {
       this->fill(val);
     }
@@ -73,7 +73,14 @@ namespace Datatypes {
       return *this;
     }
 
-    virtual DenseMatrixGeneric* clone() const 
+    template<typename OtherDerived>
+    DenseMatrixGeneric& operator=(const Eigen::ArrayBase<OtherDerived>& other)
+    {
+      this->EigenBase::operator=(other);
+      return *this;
+    }
+
+    virtual DenseMatrixGeneric* clone() const
     {
       return new DenseMatrixGeneric(*this);
     }
@@ -92,7 +99,7 @@ namespace Datatypes {
     static PersistentTypeID type_id;
     static PersistentMaker0 maker0;
 
-    bool isSymmetric() const 
+    bool isSymmetric() const
     {
       if (this->nrows() != this->ncols())
         return false;
@@ -107,7 +114,7 @@ namespace Datatypes {
     {
       (*this)(i,j) = val;
     }
-  
+
   private:
     virtual void print(std::ostream& o) const
     {
@@ -157,7 +164,7 @@ namespace Datatypes {
       }
     }
   }
-  
+
 }}}
 
 #include <Core/Datatypes/MatrixIO.h>
