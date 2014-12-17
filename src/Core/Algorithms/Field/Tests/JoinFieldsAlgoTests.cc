@@ -1,29 +1,29 @@
 /*
-   For more information, please see: http://software.sci.utah.edu
+For more information, please see: http://software.sci.utah.edu
 
-   The MIT License
+The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
-   University of Utah.
+Copyright (c) 2012 Scientific Computing and Imaging Institute,
+University of Utah.
 
-   License for the specific language governing rights and limitations under
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this software and associated documentation files (the "Software"),
-   to deal in the Software without restriction, including without limitation
-   the rights to use, copy, modify, merge, publish, distribute, sublicense,
-   and/or sell copies of the Software, and to permit persons to whom the
-   Software is furnished to do so, subject to the following conditions:
+License for the specific language governing rights and limitations under
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
 
-   The above copyright notice and this permission notice shall be included
-   in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 */
 
 #include <gtest/gtest.h>
@@ -134,52 +134,52 @@ using ::testing::Combine;
 class JoinFieldsAlgoTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool, bool, double> >
 {
 public:
-JoinFieldsAlgo algo_;
-FieldList input;
-FieldHandle output; 
+  JoinFieldsAlgo algo_;
+  FieldList input;
+  FieldHandle output; 
 protected:
   virtual void SetUp()
   {
     SCIRun::Core::Logging::Log::get().setVerbose(true);
-	// How to set parameters on an algorithm (that come from the GUI)
+    // How to set parameters on an algorithm (that come from the GUI)
     algo_.set(JoinFieldsAlgo::MergeNodes,      ::std::tr1::get<0>(GetParam()));
-	algo_.set(JoinFieldsAlgo::MergeElems,      ::std::tr1::get<1>(GetParam()));
+    algo_.set(JoinFieldsAlgo::MergeElems,      ::std::tr1::get<1>(GetParam()));
     algo_.set(JoinFieldsAlgo::MatchNodeValues, ::std::tr1::get<2>(GetParam()));
     algo_.set(JoinFieldsAlgo::MakeNoData,      ::std::tr1::get<3>(GetParam()));
     algo_.set(JoinFieldsAlgo::Tolerance,       ::std::tr1::get<4>(GetParam()));
-	
+
   }
   virtual void TearDown(){ }
 };
 FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez)
-  {
-    FieldInformation lfi("LatVolMesh", 1, "double");
-    Point minb(-1.0, -1.0, -1.0);
-    Point maxb(1.0, 1.0, 1.0);
-    MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
-    FieldHandle ofh = CreateField(lfi,mesh);
-    ofh->vfield()->clear_all_values();
-    return ofh;
+{
+  FieldInformation lfi("LatVolMesh", 1, "double");
+  Point minb(-1.0, -1.0, -1.0);
+  Point maxb(1.0, 1.0, 1.0);
+  MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
+  FieldHandle ofh = CreateField(lfi,mesh);
+  ofh->vfield()->clear_all_values();
+  return ofh;
 }  
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
 {
-	input.push_back(CreateEmptyLatVol(2,3,4));
-	input.push_back(CreateEmptyLatVol(5,6,7));
-	input.push_back(CreateEmptyLatVol(8,9,10));
-	algo_.runImpl(input,output); 
-	EXPECT_TRUE(algo_.runImpl(input, output));
+  input.push_back(CreateEmptyLatVol(2,3,4));
+  input.push_back(CreateEmptyLatVol(5,6,7));
+  input.push_back(CreateEmptyLatVol(8,9,10));
+  algo_.runImpl(input,output); 
+  EXPECT_TRUE(algo_.runImpl(input, output));
 }
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
 {
-	input.push_back(CreateEmptyLatVol(2,3,4));
-	input.push_back(CreateEmptyLatVol(5,6,7));
-	input.push_back(CreateEmptyLatVol(8,9,10));
+  input.push_back(CreateEmptyLatVol(2,3,4));
+  input.push_back(CreateEmptyLatVol(5,6,7));
+  input.push_back(CreateEmptyLatVol(8,9,10));
 
-	auto outputObj = algo_.run_generic(withInputData((Variables::InputFields, input)));
-	FieldHandle output = outputObj.get<Field>(Variables::OutputField);
-	EXPECT_EQ(output->vmesh()->num_nodes(),output->vmesh()->num_nodes());
+  auto outputObj = algo_.run_generic(withInputData((Variables::InputFields, input)));
+  FieldHandle output = outputObj.get<Field>(Variables::OutputField);
+  EXPECT_EQ(output->vmesh()->num_nodes(),output->vmesh()->num_nodes());
 }
 
 INSTANTIATE_TEST_CASE_P(

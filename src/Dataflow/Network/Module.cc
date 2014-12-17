@@ -503,7 +503,7 @@ void Module::setAlgoDoubleFromState(const AlgorithmParameterName& name)
 
 void Module::setAlgoOptionFromState(const AlgorithmParameterName& name)
 {
-  algo().set_option(name, get_state()->getValue(name).toString());
+	algo().set_option(name, get_state()->getValue(name).toString());
 }
 
 void Module::setStateStringFromAlgoOption(const AlgorithmParameterName& name)
@@ -693,6 +693,6 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
       }
     }
   }
-  LOG_DEBUG("\tFound replacement: " << potentialReplacement.lookupInfo_.module_name_ << std::endl);
+  //LOG_DEBUG("\tFound replacement: " << potentialReplacement.lookupInfo_.module_name_ << std::endl);
   return true;
 }

@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1114</width>
-         <height>477</height>
+         <width>1117</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -150,6 +150,14 @@
     <addaction name="actionPinAllModuleUIs_"/>
     <addaction name="actionHideAllModuleUIs_"/>
     <addaction name="actionRestoreAllModuleUIs_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCenterNetworkViewer_"/>
+    <addaction name="actionZoomIn_"/>
+    <addaction name="actionZoomOut_"/>
+    <addaction name="actionZoomBestFit_"/>
+    <addaction name="actionResetNetworkZoom_"/>
+    <addaction name="actionDragMode_"/>
+    <addaction name="actionSelectMode_"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
@@ -326,7 +334,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="miniviewTextLabel_">
        <property name="text">
         <string>Network Miniview</string>
        </property>
@@ -368,7 +376,7 @@
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>200</height>
+         <height>265</height>
         </size>
        </property>
        <property name="whatsThis">
@@ -398,6 +406,12 @@
            <width>531</width>
            <height>231</height>
           </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>531</width>
+           <height>231</height>
+          </size>
          </property>
          <property name="title">
           <string>Display Options</string>
@@ -1154,6 +1168,50 @@
   <action name="actionReset_Window_Layout">
    <property name="text">
     <string>Reset Window Layout</string>
+   </property>
+  </action>
+  <action name="actionCenterNetworkViewer_">
+   <property name="text">
+    <string>Center Network View</string>
+   </property>
+  </action>
+  <action name="actionResetNetworkZoom_">
+   <property name="text">
+    <string>Reset Network Zoom</string>
+   </property>
+  </action>
+  <action name="actionDragMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Drag Mode</string>
+   </property>
+  </action>
+  <action name="actionSelectMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select Mode</string>
+   </property>
+  </action>
+  <action name="actionZoomIn_">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+  </action>
+  <action name="actionZoomOut_">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+  </action>
+  <action name="actionZoomBestFit_">
+   <property name="text">
+    <string>Zoom Best Fit</string>
    </property>
   </action>
  </widget>

@@ -72,7 +72,7 @@ public:
   size_t numInputPorts() const;
   size_t numOutputPorts() const;
 
-  const PortWidgetManager& ports() { return *ports_; }
+  const PortWidgetManager& ports() const { return *ports_; }
 
   std::string getModuleId() const { return moduleId_; }
   SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
@@ -140,6 +140,7 @@ private Q_SLOTS:
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
   void replaceModuleWith();
+  void updateDialogWithPortCount();
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
@@ -156,12 +157,13 @@ private:
   QDockWidget* dockable_;
   void makeOptionsDialog();
   void setupModuleActions();
+  void adjustDockState(bool dockEnabled);
+  Qt::DockWidgetArea allowedDockArea() const;
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   QMenu* getReplaceWithMenu();
 
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
-  Qt::DockWidgetArea allowedArea_;
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;

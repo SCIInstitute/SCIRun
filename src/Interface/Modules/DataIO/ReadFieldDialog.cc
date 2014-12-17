@@ -32,7 +32,6 @@
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/ImportExport/GenericIEPlugin.h>
 #include <iostream>
-#include <boost/filesystem.hpp>
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;

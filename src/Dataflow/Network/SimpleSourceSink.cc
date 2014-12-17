@@ -32,9 +32,12 @@ DEALINGS IN THE SOFTWARE.
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <boost/foreach.hpp>
 #include <Core/Logging/Log.h>
+// don't really like this dependency
+#include <Core/Algorithms/Describe/DescribeDatatype.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::General;
 
 SimpleSink::SimpleSink() :
   hasChanged_(false),
@@ -162,4 +165,10 @@ void SimpleSource::clearAllSources()
 {
   BOOST_FOREACH(SimpleSource* source, instances_)
     source->data_.reset();
+}
+
+std::string SimpleSource::describeData() const
+{
+  DescribeDatatype dd;
+  return dd.describe(data_);
 }

@@ -30,7 +30,9 @@
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/String.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Core::Algorithms;
@@ -38,29 +40,76 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::DataIO;
 
-WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun"))
+WriteMatrixModule::WriteMatrixModule()
+  : my_base("WriteMatrix", "DataIO", "SCIRun", "Filename")
+  //gui_increment_(get_ctx()->subVar("increment"), 0),
+  //gui_current_(get_ctx()->subVar("current"), 0)
 {
-  INITIALIZE_PORT(Filename);
   INITIALIZE_PORT(MatrixToWrite);
+  filetype_ = "Binary";
+  objectPortName_ = &MatrixToWrite;
+
+  MatrixIEPluginManager mgr;
+  auto types = makeGuiTypesListForExport(mgr);
+  get_state()->setValue(Variables::FileTypeList, types);
 }
 
-/// @todo: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
+bool WriteMatrixModule::call_exporter(const std::string& filename)
+{
+  ///@todo: how will this work via python? need more code to set the filetype based on the extension...
+  MatrixIEPluginManager mgr;
+  MatrixIEPlugin *pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).toString());
+  if (pl)
+  {
+    return pl->writeFile(handle_, filename, getLogger());
+  }
+  return false;
+}
+
 void WriteMatrixModule::execute()
 {
-  auto matrix = getRequiredInput(MatrixToWrite);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  //get the current file name
+  const std::string oldfilename=filename_.get();
 
-  auto fileOption = getOptionalInput(Filename);
-
-  if (fileOption && *fileOption)
+  //determine if we should increment an index in the file name
+  if (gui_increment_.get()) 
   {
-    get_state()->setValue(SCIRun::Core::Algorithms::Variables::Filename, (*fileOption)->value());
-  }
-  auto path = get_state()->getValue(Variables::Filename).toFilename();
-  filename_ = path.string();
 
-  if (needToExecute())
-  {
-    algo().set(Variables::Filename, filename_);
-    algo().run_generic(withInputData((MatrixToWrite, matrix)));
+    //warn the user if they try to use 'Increment' incorrectly	
+    const std::string::size_type loc2 = oldfilename.find("%d");
+    if(loc2 == std::string::npos) 
+    {
+      remark("To use the increment function, there must be a '%d' in the file name.");
+    }
+
+    char buf[1024];
+
+    int current=gui_current_.get();
+    sprintf(buf, filename_.get().c_str(), current);
+
+    filename_.set(buf);
+    gui_current_.set(current+1);
   }
+#endif
+
+  my_base::execute();
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  if (gui_increment_.get())
+    filename_.set(oldfilename);
+#endif
+
+}
+
+bool WriteMatrixModule::useCustomExporter(const std::string& filename) const 
+{
+  auto ft = get_state()->getValue(Variables::FileTypeName).toString();
+  LOG_DEBUG("WriteMatrix with filetype " << ft);
+
+  filetype_ = (ft == "SCIRun Matrix ASCII") ? "ASCII" : "Binary";
+
+  return !(ft == "" ||
+    ft == "SCIRun Matrix Binary" ||
+    ft == "SCIRun Matrix ASCII");
 }

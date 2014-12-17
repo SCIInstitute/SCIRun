@@ -30,38 +30,34 @@
 #define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H 1
 
 // Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DatatypeFwd.h> 
 
 // Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
 // for Windows support
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-namespace SCIRunAlgo {
 
-using namespace SCIRun;
+namespace SCIRun{
+		namespace Core{
+				namespace Algorithms{
+						namespace Fields{
 
-class SCISHARE RefineMeshAlgo : public AlgoBase
+ALGORITHM_PARAMETER_DECL(RefineMethod);
+ALGORITHM_PARAMETER_DECL(AddConstraints);
+ALGORITHM_PARAMETER_DECL(IsoValue);
+
+class SCISHARE RefineMeshAlgo : public AlgorithmBase
 {
   public:  
-    /// Set defaults
-    RefineMeshAlgo()
-    { 
-      /// Option for selecting which nodes to refine
-      add_option("select","all","equal|lessthan|greaterthan|all|none");
-      add_scalar("isoval",0.0);
-      
-      /// option only affecting hex refinement
-      add_bool("hex_convex",false);
-    }
-    
-    /// Run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
+    RefineMeshAlgo();
+		bool runImpl(FieldHandle input, Datatypes::Double isovalue, FieldHandle& output, Datatypes::MatrixHandle& mapping) const; 
+		bool runImpl(FieldHandle input, FieldHandle& output) const; 
+
+		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 };
 
-} // end namespace
+								}}}}
 
 #endif

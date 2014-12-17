@@ -41,21 +41,24 @@
 // in ascii format into a SCIRun matrix.
 
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
+#include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Logging/LoggerInterface.h>
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Datatypes;
 
-MatrixHandle SimpleTextFileMatrix_reader(ProgressReporter *pr, const char *filename);
-bool SimpleTextFileMatrix_writer(ProgressReporter *pr, MatrixHandle matrix, const char *filename);
-
-MatrixHandle SimpleTextFileMatrix_reader(ProgressReporter *pr, const char *filename)
+MatrixHandle SCIRun::SimpleTextFileMatrix_reader(LoggerHandle pr, const char *filename)
 {
-  MatrixHandle result;
+  DenseMatrixHandle result;
 
   SCIRun::size_type ncols = 0;
   SCIRun::size_type nrows = 0;
@@ -125,14 +128,14 @@ MatrixHandle SimpleTextFileMatrix_reader(ProgressReporter *pr, const char *filen
     std::ifstream inputfile;
     inputfile.exceptions( std::ifstream::badbit );
 
-    result = new DenseMatrix(nrows,ncols);
-    if (result.get_rep() == 0)
+    result.reset(new DenseMatrix(nrows,ncols));
+    if (!result)
     {
       if (pr) pr->error("Could not allocate matrix");
       return(result);
     }
     
-    double* dataptr = result->get_data_pointer();
+    double* dataptr = result->data();
     int k = 0;
 
     try
@@ -167,22 +170,20 @@ MatrixHandle SimpleTextFileMatrix_reader(ProgressReporter *pr, const char *filen
   return(result);
 }
 
-bool SimpleTextFileMatrix_writer(ProgressReporter *pr, MatrixHandle matrix, const char *filename)
+bool SCIRun::SimpleTextFileMatrix_writer(LoggerHandle pr, MatrixHandle matrix, const char *filename)
 {
-
   std::ofstream outputfile;
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
 
-  MatrixHandle temp = matrix->dense();
-  matrix = temp;
+  DenseMatrixHandle dense = matrix_convert::to_dense(matrix);
   
-  if (matrix.get_rep() == 0)
+  if (!dense)
   {
     if (pr) pr->error("Empty matrix detected");
     return(false);
   }
 
-  double* dataptr = matrix->get_data_pointer();
+  double* dataptr = dense->data();
   if (dataptr == 0)
   {
     if (pr) pr->error("Empty matrix detected");
@@ -194,9 +195,9 @@ bool SimpleTextFileMatrix_writer(ProgressReporter *pr, MatrixHandle matrix, cons
     outputfile.open(filename);
     
     size_t k = 0;
-    for (int p=0; p<matrix->nrows(); p++)  
+    for (int p=0; p<dense->nrows(); p++)  
     {
-      for (int q=0; q<matrix->ncols(); q++)  
+      for (int q=0; q<dense->ncols(); q++)  
       {
         double val = dataptr[k++];
         if (is_integral_value(val))
@@ -215,8 +216,3 @@ bool SimpleTextFileMatrix_writer(ProgressReporter *pr, MatrixHandle matrix, cons
   }  
   return (true);
 }
-
-static MatrixIEPlugin SimpleTextFileMatrix_plugin("SimpleTextFile","", "",SimpleTextFileMatrix_reader,SimpleTextFileMatrix_writer);
-
-} // end namespace
-

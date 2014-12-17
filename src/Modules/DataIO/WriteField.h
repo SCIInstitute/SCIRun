@@ -31,7 +31,6 @@
 #define MODULES_DATAIO_WRITE_FIELD_H
 
 #include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Modules/DataIO/GenericWriter.h>
 #include <Modules/DataIO/share.h>
 

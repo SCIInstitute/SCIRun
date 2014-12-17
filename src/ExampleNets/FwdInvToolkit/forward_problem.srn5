@@ -226,17 +226,17 @@
 									<name>TextEntry</name>
 									<value>
 										<which>2</which>
-										<value>0.0
-0.00005
-0.0000375
-0.000125
-0.000054
-0.000238
-0.00068
-0.00005
-0.00068
-0.00068
-0.000238</value>
+										<value>0.0	air
+0.00005	skin
+0.0000375	fat
+0.000125	muscle
+0.000054	lung
+0.000238	myocardium
+0.00068	heart blood
+0.00005	fatpad
+0.00068	bone
+0.00068	blood
+0.000238	heart</value>
 									</value>
 								</second>
 							</item>
@@ -1515,7 +1515,7 @@
 			<item>
 				<moduleId1_>ReadMatrix:1</moduleId1_>
 				<port1_>
-					<name>MatrixLoaded</name>
+					<name>Matrix</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>GetMatrixSlice:24</moduleId2_>

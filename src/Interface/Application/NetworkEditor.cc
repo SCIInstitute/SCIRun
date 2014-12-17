@@ -63,7 +63,9 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   sendToBackAction_(0),
   propertiesAction_(0),
   modulesSelectedByCL_(false),
+  currentScale_(1),
   scene_(new QGraphicsScene(parent)),
+  visibleItems_(true),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
   dialogErrorControl_(dialogErrorControl),
@@ -88,6 +90,9 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
 
   updateActions();
   ensureVisible(0,0,0,0);
+
+  setMouseAsDragMode();
+
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setExecutionContext(this);
 #endif
@@ -100,22 +105,28 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
   if (controller_)
   {
-    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)),
-      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)));
 
     disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
+
+    disconnect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
+      this, SLOT(connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
   }
 
   controller_ = controller;
 
   if (controller_)
   {
-    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)),
-      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)));
 
     connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
+
+    connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
+      this, SLOT(connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
   }
 }
 
@@ -124,13 +135,21 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
   return controller_;
 }
 
-void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
+void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count)
 {
+  //std::cout << "\tNE modules done (start): " << *count.count << std::endl;
   ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
 
   setupModuleWidget(moduleWidget);
+  count.increment();
+  //std::cout << "\tNE modules done (end): " << *count.count << std::endl;
   Q_EMIT modified();
+}
+
+void NetworkEditor::connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
+{
+  //std::cout << "Received queued connection request: " << ConnectionId::create(cd).id_ << std::endl;
 }
 
 boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler()
@@ -205,6 +224,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkEditorMouseButtonPressed()), module, SIGNAL(cancelConnectionsInProgress()));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
     module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+    //std::cout << "module connectionAdded hooked up " << std::endl;
   connect(module, SIGNAL(executedManually(const SCIRun::Dataflow::Networks::ModuleHandle&)),
     this, SLOT(executeModule(const SCIRun::Dataflow::Networks::ModuleHandle&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
@@ -229,7 +249,6 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(zLevelManager_->get_max());
-  proxy->setVisible(true);
   proxy->setPos(lastModulePosition_);
   lastModulePosition_ += moduleAddIncrement;
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
@@ -249,8 +268,19 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   scene_->clearSelection();
   proxy->setSelected(true);
   bringToFront();
+  proxy->setVisible(visibleItems_);
 
   GuiLogger::Instance().log("Module added.");
+}
+
+void NetworkEditor::setMouseAsDragMode()
+{
+  setDragMode(ScrollHandDrag);
+}
+
+void NetworkEditor::setMouseAsSelectMode()
+{
+  setDragMode(RubberBandDrag);
 }
 
 void NetworkEditor::bringToFront()
@@ -295,6 +325,19 @@ ModuleWidget* getModule(QGraphicsItem* item)
   if (proxy)
     return static_cast<ModuleWidget*>(proxy->widget());
   return 0;
+}
+
+void NetworkEditor::setVisibility(bool visible)
+{
+  visibleItems_ = visible;
+  ModuleWidget::connectionFactory_->setVisibility(visible);
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto p = getModuleProxy(item))
+      p->setVisible(visibleItems_);
+    else if (auto c = dynamic_cast<ConnectionLine*>(item))
+      c->setVisible(visibleItems_);
+  }
 }
 
 //TODO copy/paste
@@ -593,14 +636,26 @@ void NetworkEditor::unselectConnectionGroup()
 ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 {
   ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
+  fillModulePositionMap(*positions);
+  return positions;
+}
+
+void NetworkEditor::fillModulePositionMap(ModulePositions& positions) const
+{
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      positions->modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
+      positions.modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
     }
   }
-  return positions;
+}
+
+void NetworkEditor::centerView()
+{
+  ModulePositions positions;
+  fillModulePositionMap(positions);
+  centerOn(findCenterOfNetwork(positions));
 }
 
 ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
@@ -769,6 +824,11 @@ int NetworkEditor::errorCode() const
 ModuleEventProxy::ModuleEventProxy()
 {
   qRegisterMetaType<std::string>("std::string");
+  qRegisterMetaType<SCIRun::Dataflow::Networks::ModuleHandle>("SCIRun::Dataflow::Networks::ModuleHandle");
+  qRegisterMetaType<SCIRun::Dataflow::Networks::ConnectionDescription>("SCIRun::Dataflow::Networks::ConnectionDescription");
+  qRegisterMetaType<SCIRun::Dataflow::Networks::ModuleId>("SCIRun::Dataflow::Networks::ModuleId");
+  qRegisterMetaType<SCIRun::Dataflow::Networks::ConnectionId>("SCIRun::Dataflow::Networks::ConnectionId");
+  qRegisterMetaType<SCIRun::Dataflow::Engine::ModuleCounter>("SCIRun::Dataflow::Engine::ModuleCounter");
 }
 
 void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle module)
@@ -846,6 +906,62 @@ void NetworkEditor::restoreAllModuleUIs()
     if (module)
       module->showUI();
   }
+}
+
+namespace
+{
+  const double minScale = 0.03;
+  const double maxScale = 4.0;
+  const double scaleFactor = 1.15;
+}
+
+void NetworkEditor::wheelEvent(QWheelEvent* event)
+{
+  setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+  if (event->delta() > 0)
+  {
+    zoomIn();
+  }
+  else
+  {
+    zoomOut();
+  }
+  // Don't call superclass handler here
+  // as wheel is normally used for moving scrollbars
+}
+
+void NetworkEditor::zoomIn()
+{
+  if (currentScale_ < maxScale)
+  {
+    double factor = std::min(scaleFactor, 4.0/currentScale_);
+    scale(factor, factor);
+    currentScale_ *= factor;
+    Q_EMIT zoomLevelChanged(currentZoomPercentage());
+  }
+}
+
+void NetworkEditor::zoomOut()
+{
+  if (currentScale_ > minScale)
+  {
+    scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+    currentScale_ /= scaleFactor;
+    Q_EMIT zoomLevelChanged(currentZoomPercentage());
+  }
+}
+
+void NetworkEditor::zoomReset()
+{
+  scale(1.0 / currentScale_, 1.0 / currentScale_);
+  currentScale_ = 1;
+  Q_EMIT zoomLevelChanged(currentZoomPercentage());
+}
+
+int NetworkEditor::currentZoomPercentage() const
+{
+  return static_cast<int>(currentScale_ * 100);
 }
 
 NetworkEditor::~NetworkEditor()
