@@ -166,7 +166,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ClipFieldByFunction>("In progress", "...");
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
   addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
-  addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress");
 	addModuleDesc<RefineMesh>("RefineMesh","ChangeMesh", "SCIRun", "Real ported module", "..."); 
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
 	addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "..."); 
