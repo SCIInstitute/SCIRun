@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
-#include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Dataflow/Network/Module.h>
+#ifndef ALGORITHMS_MATH_BUILDNOISECOLUMNMATRIX_H
+#define ALGORITHMS_MATH_BUILDNOISECOLUMNMATRIX_H 1
 
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Math/share.h>
+#include <Core/Datatypes/MatrixFwd.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
-
-
-//const  ModuleLookupInfo FlipSurfaceNormals::staticInfo_("FlipSurfaceNormals","ChangeMesh","SCIRun");
-
-FlipSurfaceNormals::FlipSurfaceNormals()  : Module(ModuleLookupInfo("FlipSurfaceNormals","ChangeMesh","SCIRun"),false)
-{
-	INITIALIZE_PORT(InputField);
-	INITIALIZE_PORT(OutputField);
-}
-
-void  FlipSurfaceNormals::execute() 
-{
-	FieldHandle ifield = getRequiredInput(InputField);
-	
-	if(needToExecute())
-	{
-		update_state(Executing);
-	
-		auto output = algo().run_generic(withInputData((InputField,ifield)));
-	
-		sendOutputFromAlgorithm(OutputField,output);
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+			namespace Math {
+			
+				
+				class SCISHARE BuildNoiseColumnMatrixAlgorithm : public AlgorithmBase
+				{	
+					public:
+						static AlgorithmInputName InputMatrix;
+						static AlgorithmOutputName ResultMatrix;
+						static AlgorithmParameterName SignalToNoiseRatio();
+						BuildNoiseColumnMatrixAlgorithm();
+						void run(Datatypes::MatrixHandle output_matrix) const;
+						AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+				};
+			}
+		}
 	}
 }
+#endif
