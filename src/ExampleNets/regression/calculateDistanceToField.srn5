@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -62,7 +62,7 @@
 									<name>TruncateDistance</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -114,7 +114,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -202,7 +202,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -782,57 +782,57 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateDistanceToField:2</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-9.31000000000000000e+002</first>
-				<second>-3.92000000000000000e+002</second>
+				<first>-931</first>
+				<second>-392</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-7.90000000000000000e+002</first>
-				<second>-5.82000000000000000e+002</second>
+				<first>-790</first>
+				<second>-582</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:1</first>
 			<second>
-				<first>-1.12800000000000000e+003</first>
-				<second>-5.47000000000000000e+002</second>
+				<first>-1128</first>
+				<second>-547</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:4</first>
 			<second>
-				<first>-5.95000000000000000e+002</first>
-				<second>-2.71000000000000000e+002</second>
+				<first>-595</first>
+				<second>-271</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:3</first>
 			<second>
-				<first>-9.09000000000000000e+002</first>
-				<second>-1.71000000000000000e+002</second>
+				<first>-909</first>
+				<second>-171</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:6</first>
 			<second>
-				<first>-1.16500000000000000e+003</first>
-				<second>-3.70000000000000000e+002</second>
+				<first>-1165</first>
+				<second>-370</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:7</first>
 			<second>
-				<first>-5.38000000000000000e+002</first>
-				<second>-3.66000000000000000e+002</second>
+				<first>-538</first>
+				<second>-366</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:5</first>
 			<second>
-				<first>-8.80000000000000000e+002</first>
-				<second>-1.20000000000000000e+001</second>
+				<first>-880</first>
+				<second>-12</second>
 			</second>
 		</item>
 	</modulePositions>

@@ -30,12 +30,14 @@
 SET(Testing_Utils_HEADERS
   MatrixTestUtilities.h
   SCIRunUnitTests.h
+  SCIRunFieldSamples.h
   share.h
 )
 
 SET(Testing_Utils_SRCS
   MatrixTestUtilities.cc
   SCIRunUnitTests.cc
+  SCIRunFieldSamples.cc
 )
 
 SCIRUN_ADD_LIBRARY(Testing_Utils 

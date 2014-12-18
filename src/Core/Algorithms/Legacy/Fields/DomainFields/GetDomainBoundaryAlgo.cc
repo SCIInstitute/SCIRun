@@ -65,18 +65,6 @@ struct pointtype
   bool hasneighbor;
 };
 
-struct IndexHash 
-{
-  static const size_t bucket_size = 4;
-  static const size_t min_buckets = 8;
-  
-  size_t operator()(const index_type &idx) const
-    { return (static_cast<size_t>(idx)); }
-  
-  bool operator()(const index_type &i1, const index_type &i2) const
-    { return (i1 < i2); }
-};
-
 AlgorithmInputName GetDomainBoundaryAlgo::ElemLink("ElemLink");
 AlgorithmOutputName GetDomainBoundaryAlgo::BoundaryField("BoundaryField");
 
@@ -96,8 +84,8 @@ GetDomainBoundaryAlgo::GetDomainBoundaryAlgo()
 bool 
 GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainlink, FieldHandle& output) const
 {
-  typedef boost::unordered_multimap<index_type,pointtype,IndexHash> pointhash_map_type;
-  typedef boost::unordered_map<index_type,VMesh::Node::index_type,IndexHash> hash_map_type;
+  typedef boost::unordered_multimap<index_type,pointtype> pointhash_map_type;
+  typedef boost::unordered_map<index_type,VMesh::Node::index_type> hash_map_type;
 
   ScopedAlgorithmStatusReporter asr(this, "GetDomainBoundary");
   using namespace Parameters;

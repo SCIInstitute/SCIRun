@@ -39,6 +39,8 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
+// TODO: more mesh types needed
+
 void runTest(int basis, const std::string& expectedBasisTypeTemplate, const std::string& expectedBasisString, int expectedNumData)
 {
   FieldInformation lfi("LatVolMesh", basis, "double");

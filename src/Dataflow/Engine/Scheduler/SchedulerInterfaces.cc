@@ -63,7 +63,7 @@ void WaitsForStartupInitialization::waitForStartupInit() const
   if (shouldWait_)
   {
     std::cout << "Waiting for rendering system initialization...." << std::endl;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(450));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(600));
     std::cout << "Done waiting." << std::endl;
     shouldWait_ = false;
   }

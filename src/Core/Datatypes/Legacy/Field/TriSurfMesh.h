@@ -65,9 +65,6 @@
 
 namespace SCIRun {
 
-  using namespace SCIRun::Core::Basis;
-  using namespace SCIRun::Core::Geometry;
-
 /////////////////////////////////////////////////////
 // Declarations for virtual interface
 
@@ -84,12 +81,12 @@ VMesh* CreateVTriSurfMesh(MESH*) { return (0); }
 #if (SCIRUN_TRISURF_SUPPORT > 0)
 /// Declare that these can be found in a library that is already
 /// precompiled. So dynamic compilation will not instantiate them again.
-SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<Core::Basis::TriLinearLgn<Core::Geometry::Point> >* mesh);
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<Core::Basis::TriQuadraticLgn<Core::Geometry::Point> >* mesh);
 #endif
 #if (SCIRUN_CUBIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<Core::Basis::TriCubicHmt<Core::Geometry::Point> >* mesh);
 #endif
 
 #endif
@@ -575,7 +572,7 @@ public:
     ElemData ed(*this, eidx);
     std::vector<Core::Geometry::Point> Jv;
     basis_.derivate(coords, ed, Jv);
-    result = Cross(Vector(Jv[0]), Vector(Jv[1]));
+    result = Cross(Core::Geometry::Vector(Jv[0]), Core::Geometry::Vector(Jv[1]));
     result.normalize();
   }
 
@@ -650,7 +647,7 @@ public:
     StackVector<Core::Geometry::Point,2> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
-    Core::Geometry::Vector Jv2 = Cross(Vector(Jv[0]), Vector(Jv[1]));
+    Core::Geometry::Vector Jv2 = Cross(Core::Geometry::Vector(Jv[0]), Core::Geometry::Vector(Jv[1]));
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -673,7 +670,7 @@ public:
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     Jv.resize(3);
-    Core::Geometry::Vector v = Cross(Vector(Jv[0]), Vector(Jv[1])); v.normalize();
+    Core::Geometry::Vector v = Cross(Core::Geometry::Vector(Jv[0]), Core::Geometry::Vector(Jv[1])); v.normalize();
     Jv[2] = v.asPoint();
 
     return (InverseMatrix3P(Jv,Ji));
@@ -704,7 +701,8 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3);
-    Core::Geometry::Vector v = Cross(Vector(Jv[0]), Vector(Jv[1])); v.normalize();
+    Core::Geometry::Vector v = Cross(Core::Geometry::Vector(Jv[0]), Core::Geometry::Vector(Jv[1]));
+    v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     size_t num_vertices = basis_.number_of_vertices();
@@ -712,7 +710,8 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3);
-      v = Cross(Vector(Jv[0]), Vector(Jv[1])); v.normalize();
+      v = Cross(Core::Geometry::Vector(Jv[0]), Core::Geometry::Vector(Jv[1]));
+      v.normalize();
       Jv[2] = v.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -732,7 +731,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3);
-    Core::Geometry::Vector v = Cross(Vector(Jv[0]), Vector(Jv[1]));
+    Core::Geometry::Vector v = Cross(Core::Geometry::Vector(Jv[0]), Core::Geometry::Vector(Jv[1]));
     v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
@@ -742,7 +741,8 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3);
-      v = Cross(Vector(Jv[0]), Vector(Jv[1])); v.normalize();
+      v = Cross(Core::Geometry::Vector(Jv[0]), Core::Geometry::Vector(Jv[1]));
+      v.normalize();
       Jv[2] = v.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;

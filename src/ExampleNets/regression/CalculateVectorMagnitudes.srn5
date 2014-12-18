@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -550,134 +550,134 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateVectorMagnitudes:100</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1.85100000000000000e+003</first>
-				<second>-1.33100000000000000e+003</second>
+				<first>-1851</first>
+				<second>-1331</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateVectorMagnitudes:101</first>
 			<second>
-				<first>-1.23200000000000000e+003</first>
-				<second>-1.34000000000000000e+003</second>
+				<first>-1232</first>
+				<second>-1340</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateVectorMagnitudes:24</first>
 			<second>
-				<first>-1.82700000000000000e+003</first>
-				<second>-9.31000000000000000e+002</second>
+				<first>-1827</first>
+				<second>-931</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateVectorMagnitudes:26</first>
 			<second>
-				<first>-1.13800000000000000e+003</first>
-				<second>-9.44000000000000000e+002</second>
+				<first>-1138</first>
+				<second>-944</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateVectorMagnitudes:94</first>
 			<second>
-				<first>-2.25700000000000000e+003</first>
-				<second>-1.31000000000000000e+003</second>
+				<first>-2257</first>
+				<second>-1310</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:46</first>
 			<second>
-				<first>-1.67700000000000000e+003</first>
-				<second>-1.05900000000000000e+003</second>
+				<first>-1677</first>
+				<second>-1059</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:60</first>
 			<second>
-				<first>-9.63000000000000000e+002</first>
-				<second>-1.45300000000000000e+003</second>
+				<first>-963</first>
+				<second>-1453</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:63</first>
 			<second>
-				<first>-1.62600000000000000e+003</first>
-				<second>-1.44900000000000000e+003</second>
+				<first>-1626</first>
+				<second>-1449</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:65</first>
 			<second>
-				<first>-1.01400000000000000e+003</first>
-				<second>-1.07300000000000000e+003</second>
+				<first>-1014</first>
+				<second>-1073</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:77</first>
 			<second>
-				<first>-2.25400000000000000e+003</first>
-				<second>-1.41700000000000000e+003</second>
+				<first>-2254</first>
+				<second>-1417</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:103</first>
 			<second>
-				<first>-1.48600000000000000e+003</first>
-				<second>-9.31000000000000000e+002</second>
+				<first>-1486</first>
+				<second>-931</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:25</first>
 			<second>
-				<first>-1.82900000000000000e+003</first>
-				<second>-8.19000000000000000e+002</second>
+				<first>-1829</first>
+				<second>-819</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:27</first>
 			<second>
-				<first>-1.14000000000000000e+003</first>
-				<second>-8.25000000000000000e+002</second>
+				<first>-1140</first>
+				<second>-825</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:28</first>
 			<second>
-				<first>-8.06000000000000000e+002</first>
-				<second>-9.42000000000000000e+002</second>
+				<first>-806</first>
+				<second>-942</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:95</first>
 			<second>
-				<first>-2.25900000000000000e+003</first>
-				<second>-1.20300000000000000e+003</second>
+				<first>-2259</first>
+				<second>-1203</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:96</first>
 			<second>
-				<first>-1.52400000000000000e+003</first>
-				<second>-1.33000000000000000e+003</second>
+				<first>-1524</first>
+				<second>-1330</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:97</first>
 			<second>
-				<first>-1.85200000000000000e+003</first>
-				<second>-1.22200000000000000e+003</second>
+				<first>-1852</first>
+				<second>-1222</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:98</first>
 			<second>
-				<first>-1.23300000000000000e+003</first>
-				<second>-1.23100000000000000e+003</second>
+				<first>-1233</first>
+				<second>-1231</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:99</first>
 			<second>
-				<first>-9.02000000000000000e+002</first>
-				<second>-1.34100000000000000e+003</second>
+				<first>-902</first>
+				<second>-1341</second>
 			</second>
 		</item>
 	</modulePositions>

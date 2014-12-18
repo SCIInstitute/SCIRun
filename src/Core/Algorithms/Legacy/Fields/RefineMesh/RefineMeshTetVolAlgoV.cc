@@ -60,7 +60,7 @@ RefineMeshTetVolAlgoV::RefineMeshTetVolAlgoV()
 
 bool  
 RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output,
-                      std::string select, double isoval) const
+                      const std::string& select, double isoval) const
 {
   FieldInformation fi(input);
  
@@ -814,25 +814,11 @@ RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output,
   rfield->resize_values();
   if (rfield->basis_order() == 0) rfield->set_values(evalues);
   if (rfield->basis_order() == 1) rfield->set_values(ivalues);
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-	rfield->copy_properties(field);
-	#endif
+  CopyProperties(*input, *output);
   return (true);
 }
-bool RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output) const
-{
-		std::string select;
-		double isoval;
-		return runImpl(input, output, select, isoval); 
-}
+
 AlgorithmOutput RefineMeshTetVolAlgoV::run_generic(const AlgorithmInput& input) const 
 {
-	auto field = input.get<Field>(Variables::InputField);
-  FieldHandle outputField;
-
-  if (!runImpl(field, outputField))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-	AlgorithmOutput output;
-	output[Variables::OutputField] = outputField;
-  return output;
+  throw "not implemented";
 }

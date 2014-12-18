@@ -121,6 +121,7 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   if (fi.is_quad_element())
   {
     RefineMeshQuadSurfAlgoV algo;
+    algo.setUpdaterFunc(getUpdaterFunc());
     return(algo.runImpl(input,output,addCon,isoVal));
   }
   
@@ -129,24 +130,28 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 		bool convex = false; 
 		convex = rMethod == "Expand refinement volume to improve element quality"; 
     RefineMeshHexVolAlgoV algo;
+    algo.setUpdaterFunc(getUpdaterFunc());
 		return(algo.runImpl(input,output,convex,addCon,isoVal));
   }
 
   if (fi.is_crv_element())
   {
 			RefineMeshCurveAlgoV algo; 
+      algo.setUpdaterFunc(getUpdaterFunc());
 			return(algo.runImpl(input,output,addCon,isoVal));
   }
   
   if (fi.is_tri_element())
   { 
 			RefineMeshTriSurfAlgoV algo; 
+      algo.setUpdaterFunc(getUpdaterFunc());
 			return(algo.runImpl(input,output,addCon,isoVal));
   }
   
   if (fi.is_tet_element())
   {
 			RefineMeshTetVolAlgoV algo; 
+      algo.setUpdaterFunc(getUpdaterFunc());
 			return(algo.runImpl(input,output,addCon,isoVal));
   }
 

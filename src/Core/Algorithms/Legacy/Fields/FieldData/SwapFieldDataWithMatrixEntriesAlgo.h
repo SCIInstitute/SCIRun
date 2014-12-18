@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,23 +24,13 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SWAPFIELDDATAWITHMATRIXENTRIESALGO_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SWAPFIELDDATAWITHMATRIXENTRIESALGO_H 1
 
-//// Datatypes that the algorithm uses
-//#include <Core/Datatypes/Mesh.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/Matrix.h>
-
-#include <Core/Datatypes/DatatypeFwd.h> 
-//#include <Core/Datatypes/DenseMatrix.h>
-// Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-
-// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -48,23 +38,26 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-		ALGORITHM_PARAMETER_DECL(PreserveScalar); 
+        ALGORITHM_PARAMETER_DECL(PreserveScalar);
 
-class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
-{
-  public:
-    SwapFieldDataWithMatrixEntriesAlgo();
-  
-    bool runImpl(FieldHandle input_field, 
-				Datatypes::DenseMatrixHandle input_matrix, 
-				FieldHandle& output_field, 
-				Datatypes::DenseMatrixHandle& output_matrix)const;
+        class SCISHARE SwapFieldDataWithMatrixEntriesAlgo : public AlgorithmBase
+        {
+        public:
+          SwapFieldDataWithMatrixEntriesAlgo();
 
-		bool runImpl(FieldHandle input, Datatypes::DenseMatrixHandle input_matrix, FieldHandle& output) const; 
+          bool runImpl(FieldHandle input_field,
+            Datatypes::MatrixHandle input_matrix,
+            FieldHandle& output_field,
+            Datatypes::MatrixHandle& output_matrix)const;
 
-		virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
-};
-			}}}}
+          bool runImpl(FieldHandle input, Datatypes::MatrixHandle input_matrix, FieldHandle& output) const;
+
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
+      }
+    }
+  }
+}
 
 #endif
 
