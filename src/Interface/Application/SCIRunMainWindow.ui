@@ -44,7 +44,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1114</width>
+         <width>1103</width>
          <height>467</height>
         </rect>
        </property>
@@ -193,7 +193,7 @@
    <property name="minimumSize">
     <size>
      <width>299</width>
-     <height>328</height>
+     <height>364</height>
     </size>
    </property>
    <property name="features">
@@ -217,10 +217,16 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>40</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
-           <width>85</width>
-           <height>16777215</height>
+           <width>100</width>
+           <height>40</height>
           </size>
          </property>
          <property name="toolTip">
