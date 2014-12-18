@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTETVOLALGOV_H
 #define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHTETVOLALGOV_H 1
@@ -40,22 +40,23 @@
 // for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
-using namespace SCIRun::Core::Geometry; 
-
 namespace SCIRun{
-		namespace Core{
-				namespace Algorithms{
-						namespace Fields{
+  namespace Core{
+    namespace Algorithms{
+      namespace Fields{
 
-class SCISHARE RefineMeshTetVolAlgoV : public AlgorithmBase
-{
-		public:
-				RefineMeshTetVolAlgoV();
-				
-		bool runImpl(FieldHandle input, FieldHandle& output, const std::string& select, double isoval) const;
-		bool runImpl(FieldHandle input, FieldHandle& output) const; 
-		AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
-};
-						}}}}
+        class SCISHARE RefineMeshTetVolAlgoV : public AlgorithmBase
+        {
+        public:
+          RefineMeshTetVolAlgoV();
+
+          bool runImpl(FieldHandle input, FieldHandle& output, const std::string& select, double isoval) const;
+          bool runImpl(FieldHandle input, FieldHandle& output) const;
+          AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
+      }
+    }
+  }
+}
 
 #endif

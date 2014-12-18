@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHQUADSURFALGOV_H
 #define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESHQUADSURFALGOV_H 1
@@ -42,48 +42,49 @@
 // for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
-using namespace SCIRun::Core::Geometry;
-
 namespace SCIRun{
-		namespace Core{
-				namespace Algorithms{
-						namespace Fields{
+  namespace Core{
+    namespace Algorithms{
+      namespace Fields{
 
 
-class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
-{
-  public:  
-    RefineMeshQuadSurfAlgoV();
-	
-	bool runImpl(FieldHandle input, FieldHandle& output, const std::string& select, double isoval) const; 
-	bool runImpl(FieldHandle input, FieldHandle& output) const; 
-	AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
-	
-  private:		 
-	
-	double RIinterpolateV(std::vector<double>& ivalues,
-                        VMesh::Node::array_type& onodes,
-                        double coords[2])const;			
-						
-	void dice(VMesh *refined, 
-						 hash_map_type &emap,
-             VMesh::Node::array_type onodes,
-             VMesh::index_type index, 
-             VMesh::mask_type mask,
-             VMesh::size_type maxnode,
-             std::vector<double>& ivalues,
-             std::vector<double>& evalues,
-						 double vv,
-						 int basis_order) const;
+        class SCISHARE RefineMeshQuadSurfAlgoV : public AlgorithmBase
+        {
+        public:
+          RefineMeshQuadSurfAlgoV();
 
-	VMesh::Node::index_type lookup(VMesh *refined,
-                                 hash_map_type &edgemap,
-                                 VMesh::Node::index_type a,
-                                 VMesh::Node::index_type b,
-                                 double factor,
-                                 std::vector<double>& ivalues) const; 
-};
+          bool runImpl(FieldHandle input, FieldHandle& output, const std::string& select, double isoval) const;
+          bool runImpl(FieldHandle input, FieldHandle& output) const;
+          AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 
-								}}}}
+        private:
+
+          double RIinterpolateV(std::vector<double>& ivalues,
+            VMesh::Node::array_type& onodes,
+            double coords[2])const;
+
+          void dice(VMesh *refined,
+            edge_hash_type &emap,
+            VMesh::Node::array_type onodes,
+            VMesh::index_type index,
+            VMesh::mask_type mask,
+            VMesh::size_type maxnode,
+            std::vector<double>& ivalues,
+            std::vector<double>& evalues,
+            double vv,
+            int basis_order) const;
+
+          VMesh::Node::index_type lookup(VMesh *refined,
+            edge_hash_type &edgemap,
+            VMesh::Node::index_type a,
+            VMesh::Node::index_type b,
+            double factor,
+            std::vector<double>& ivalues) const;
+        };
+
+      }
+    }
+  }
+}
 
 #endif

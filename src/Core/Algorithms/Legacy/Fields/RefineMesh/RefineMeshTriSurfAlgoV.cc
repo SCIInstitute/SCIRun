@@ -366,18 +366,10 @@ RefineMeshTriSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output,
   rfield->resize_values();
   if (rfield->basis_order() == 0) rfield->set_values(evalues);
   if (rfield->basis_order() == 1) rfield->set_values(ivalues);
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-	rfield->copy_properties(field);
-	#endif
+  CopyProperties(*input, *output);
   return (true);
 }
 
-bool RefineMeshTriSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output) const
-{
-		std::string select;
-		double isoval;
-		return runImpl(input, output, select, isoval); 
-}
 AlgorithmOutput RefineMeshTriSurfAlgoV::run_generic(const AlgorithmInput& input) const 
 {
 	auto field = input.get<Field>(Variables::InputField);
