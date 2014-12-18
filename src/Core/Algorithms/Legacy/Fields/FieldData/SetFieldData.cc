@@ -54,7 +54,7 @@ SetFieldDataAlgo::SetFieldDataAlgo()
 }
 
 
-bool SetFieldDataAlgo::verify_input_data(FieldHandle& input_field, DenseMatrixHandle& data, size_type& numvals, FieldInformation& fi) const
+bool SetFieldDataAlgo::verify_input_data(FieldHandle& input_field, DenseMatrixHandle data, size_type& numvals, FieldInformation& fi) const
 {
   VMesh* imesh = input_field->vmesh();
   
@@ -214,7 +214,7 @@ bool SetFieldDataAlgo::verify_input_data(FieldHandle& input_field, DenseMatrixHa
   return found;
 }
 
-bool SetFieldDataAlgo::setscalardata(VField* ofield, DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
+bool SetFieldDataAlgo::setscalardata(VField* ofield, DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
 {
       if (((nrows == 1)&&(ncols == numvals))||((ncols == 1)&&(nrows == numvals)))
       {
@@ -247,7 +247,7 @@ bool SetFieldDataAlgo::setscalardata(VField* ofield, DenseMatrixHandle& data, si
    return true;   
 }
 
-bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
+bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
 {
     /// Handle Vector values
     if ((ncols == 3)&&(nrows == numvals))
@@ -297,7 +297,7 @@ bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle& data, si
  return true;
 }
 
-bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
+bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
 {
     /// Fill field with Tensor values
     /// Handle 6 by n data 

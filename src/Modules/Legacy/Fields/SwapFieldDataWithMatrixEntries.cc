@@ -29,11 +29,7 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-//#include <Dataflow/Network/ModuleStateInterface.h>
-//#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
-#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Matrix.h> 
-
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
@@ -52,10 +48,12 @@ SwapFieldDataWithMatrixEntries::SwapFieldDataWithMatrixEntries()
 		INITIALIZE_PORT(OutputField); 
 		INITIALIZE_PORT(OutputMatrix); 
 }
+
 void SwapFieldDataWithMatrixEntries::setStateDefaults()
 {
 	setStateBoolFromAlgo(Parameters::PreserveScalar); 
 }
+
 void
 SwapFieldDataWithMatrixEntries::execute()
 {

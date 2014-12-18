@@ -36,9 +36,6 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-	/// @class SWAPFIELDDATAWITHMATRIXENTRIES
-	/// This module glues any number of input fields into one output field. 
-
       class SCISHARE SwapFieldDataWithMatrixEntries : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, MatrixPortTag>,
         public Has2OutputPorts<FieldPortTag, MatrixPortTag>
@@ -50,9 +47,9 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, LegacyField);
-				INPUT_PORT(1, InputMatrix, DenseMatrix);  
+				INPUT_PORT(1, InputMatrix, Matrix);  
         OUTPUT_PORT(0, OutputField, LegacyField);
-				OUTPUT_PORT(1, OutputMatrix, DenseMatrix); 
+				OUTPUT_PORT(1, OutputMatrix, Matrix); 
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
