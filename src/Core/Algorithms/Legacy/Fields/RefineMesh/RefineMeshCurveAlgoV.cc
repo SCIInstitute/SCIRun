@@ -55,8 +55,7 @@ RefineMeshCurveAlgoV::RefineMeshCurveAlgoV()
 }
 
 bool  
-RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output,
-                       std::string select, double isoval) const
+RefineMeshCurveAlgoV::runImpl(FieldHandle input, FieldHandle& output, const std::string& select, double isoval) const
 {
   /// Obtain information on what type of input field we have
   FieldInformation fi(input);

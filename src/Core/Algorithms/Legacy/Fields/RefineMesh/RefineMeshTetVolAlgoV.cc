@@ -60,7 +60,7 @@ RefineMeshTetVolAlgoV::RefineMeshTetVolAlgoV()
 
 bool  
 RefineMeshTetVolAlgoV::runImpl(FieldHandle input, FieldHandle& output,
-                      std::string select, double isoval) const
+                      const std::string& select, double isoval) const
 {
   FieldInformation fi(input);
  

@@ -52,7 +52,7 @@ class SCISHARE RefineMeshTetVolAlgoV : public AlgorithmBase
 		public:
 				RefineMeshTetVolAlgoV();
 				
-		bool runImpl(FieldHandle input, FieldHandle& output, std::string select, double isoval) const;
+		bool runImpl(FieldHandle input, FieldHandle& output, const std::string& select, double isoval) const;
 		bool runImpl(FieldHandle input, FieldHandle& output) const; 
 		AlgorithmOutput run_generic(const AlgorithmInput& input) const override; 
 };

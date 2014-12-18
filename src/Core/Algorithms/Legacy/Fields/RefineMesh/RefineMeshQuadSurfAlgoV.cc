@@ -327,7 +327,7 @@ void RefineMeshQuadSurfAlgoV::dice(VMesh *refined,
 bool
 RefineMeshQuadSurfAlgoV::
 runImpl(FieldHandle input, FieldHandle& output,
-                  std::string select, double isoval) const
+                  const std::string& select, double isoval) const
 {
   // Obtain information on what type of input field we have
   FieldInformation fi(input);
