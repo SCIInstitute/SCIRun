@@ -223,7 +223,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   executor.execute(context, order);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+  boost::this_thread::sleep(boost::posix_time::milliseconds(800));
 
   //grab reporting module state
   ReportMatrixInfoAlgorithm::Outputs reportOutput = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
@@ -275,7 +275,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   strategy.execute(context);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+  boost::this_thread::sleep(boost::posix_time::milliseconds(800));
 
   //grab reporting module state
   ReportMatrixInfoAlgorithm::Outputs reportOutput = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
