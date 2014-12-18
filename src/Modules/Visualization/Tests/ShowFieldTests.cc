@@ -73,7 +73,8 @@ TEST_P(ShowFieldScalingTest, ConstructLatVolGeometry)
 INSTANTIATE_TEST_CASE_P(
   ConstructLatVolGeometry,
   ShowFieldScalingTest,
-  Values(20, 40, 60, 80
-  , 100, 120, 150, 200//, 256
+  Values(20, 40, 60, 80, 100
+  //, 120, 150, 200 //to speed up make test
+  //, 256 // probably runs out of memory
   )
   );
