@@ -93,7 +93,7 @@ double RefineMeshQuadSurfAlgoV::RIinterpolateV(std::vector<double>& ivalues,
 						}
 
 VMesh::Node::index_type RefineMeshQuadSurfAlgoV::lookup(VMesh *refined,
-                                 hash_map_type &edgemap,
+                                 edge_hash_type &edgemap,
                                  VMesh::Node::index_type a,
                                  VMesh::Node::index_type b,
                                  double factor,
@@ -101,26 +101,26 @@ VMesh::Node::index_type RefineMeshQuadSurfAlgoV::lookup(VMesh *refined,
   {
     edgepair_t ep;
     ep.first = a; ep.second = b;
-		hash_map_type::iterator loc = edgemap.find(ep.first);
+    const edge_hash_type::iterator loc = edgemap.find(ep);
     if (loc == edgemap.end())
     {
       Point pa, pb;
       refined->get_point(pa, a);
       refined->get_point(pb, b);
-      const Point inbetween = Point((1.0-factor)*pa + (factor)*pb);
+      const Point inbetween = ((1.0 - factor)*pa + (factor)*pb).asPoint();
       const VMesh::Node::index_type newnode = refined->add_point(inbetween);
-      ivalues.push_back(((1.0-factor)*ivalues[a]+(factor)*ivalues[b]));
-      edgemap[ep.first] = newnode;
+      ivalues.push_back(((1.0 - factor)*ivalues[a] + (factor)*ivalues[b]));
+      edgemap[ep] = newnode;
       return newnode;
     }
     else
     {
-				return (*loc).second;
+      return (*loc).second;
     }
   }
 
 void RefineMeshQuadSurfAlgoV::dice(VMesh *refined,
-                         hash_map_type &emap,
+                         edge_hash_type &emap,
                          VMesh::Node::array_type onodes,
                          VMesh::index_type index,
                          VMesh::mask_type mask,
@@ -346,7 +346,7 @@ runImpl(FieldHandle input, FieldHandle& output,
   VMesh*  refined = output->vmesh();
   VField* rfield  = output->vfield();
 
-  hash_map_type emap;
+  edge_hash_type emap;
   VMesh::Node::array_type onodes(4);
  
   // get all values, make computation easier
@@ -507,25 +507,11 @@ runImpl(FieldHandle input, FieldHandle& output,
   rfield->resize_values();
   if (rfield->basis_order() == 0) rfield->set_values(evalues);
   if (rfield->basis_order() == 1) rfield->set_values(ivalues);
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-	rfield->copy_properties(field);
-  #endif
+  CopyProperties(*input, *output);
   return (true);
 }
-bool RefineMeshQuadSurfAlgoV::runImpl(FieldHandle input, FieldHandle& output) const 
-{
-		std::string select;
-		double isoval;
-		return runImpl(input, output, select, isoval); 
-}
+
 AlgorithmOutput RefineMeshQuadSurfAlgoV::run_generic(const AlgorithmInput& input) const 
 {
-	auto field = input.get<Field>(Variables::InputField);
-  FieldHandle outputField;
-
-  if (!runImpl(field, outputField))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-	AlgorithmOutput output;
-	output[Variables::OutputField] = outputField;
-  return output;
+  throw "not implemented";
 }

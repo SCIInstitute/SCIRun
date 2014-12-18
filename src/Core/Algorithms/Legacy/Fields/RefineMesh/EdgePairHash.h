@@ -30,8 +30,8 @@
 #define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
 
 // Datatypes that the algorithm uses
-#include <Core/Datatypes/DatatypeFwd.h> 
 #include <boost/unordered_map.hpp> 
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun{
   namespace Core{
@@ -40,8 +40,16 @@ namespace SCIRun{
 
         typedef std::pair<VMesh::index_type, VMesh::index_type> edgepair_t;
 
-        typedef boost::unordered_map<index_type, index_type> hash_map_type;
+        struct SCISHARE edgepairhash
+        {
+          size_t operator()(const edgepair_t &a) const
+          {
+            boost::hash<size_t> h;
+            return h((a.first << 3) ^ a.second);
+          }
+        };
 
+        typedef boost::unordered_map<edgepair_t, VMesh::Node::index_type, edgepairhash> edge_hash_type;
 
       }
     }
