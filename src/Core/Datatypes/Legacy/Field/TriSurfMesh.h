@@ -65,9 +65,6 @@
 
 namespace SCIRun {
 
-  using namespace SCIRun::Core::Basis;
-  using namespace SCIRun::Core::Geometry;
-
 /////////////////////////////////////////////////////
 // Declarations for virtual interface
 
@@ -84,12 +81,12 @@ VMesh* CreateVTriSurfMesh(MESH*) { return (0); }
 #if (SCIRUN_TRISURF_SUPPORT > 0)
 /// Declare that these can be found in a library that is already
 /// precompiled. So dynamic compilation will not instantiate them again.
-SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<Core::Basis::TriLinearLgn<Core::Geometry::Point> >* mesh);
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<Core::Basis::TriQuadraticLgn<Core::Geometry::Point> >* mesh);
 #endif
 #if (SCIRUN_CUBIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<Core::Basis::TriCubicHmt<Core::Geometry::Point> >* mesh);
 #endif
 
 #endif
