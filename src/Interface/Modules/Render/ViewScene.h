@@ -76,7 +76,7 @@ namespace SCIRun {
 			void menuMouseControlChanged(int index);
 			void autoViewClicked();
 			void newGeometryValue();
-			void showOrientationChecked();
+			void showOrientationChecked(bool value);
 			void viewBarButtonClicked();
 			void viewAxisSelected(int index);
 			void viewVectorSelected(int index);
@@ -88,15 +88,15 @@ namespace SCIRun {
 			virtual void contextMenuEvent(QContextMenuEvent* e) override {}
 		private:
 			void addToolBar();
-			void addMouseMenu();
+			void addMouseMenu(QWidget* widget);
 			void addAutoViewButton();
 			void addObjectToggleMenu();
 			void addViewBarButton();
 			void addViewBar();
 			void addViewOptions();
-			void addShowOrientationCheckbox();
-			void addConfigurationDock(const QString& viewName);
 			void addConfigurationButton();
+			void addConfigurationDock(const QString& viewName);
+			void addShowOrientationCheckbox(QWidget* widget);
 
 			void lookDownAxisX(int upIndex, glm::vec3& up);
 			void lookDownAxisY(int upIndex, glm::vec3& up);
@@ -108,10 +108,7 @@ namespace SCIRun {
 			QToolBar*                             mViewBar;					///< Tool bar for view options.
 			QComboBox*                            mDownViewBox;				///< Combo box for Down axis options.
 			QComboBox*                            mUpVectorBox;				///< Combo box for Up Vector options.
-			QCheckBox*							  mShowOrientationCheckBox;	///< Check to show the Orientational Axes
-
 			QDockWidget*						  mConfigurationDock;		///< Dock holding configuration functions
-
 
 			bool shown_;
 			bool hideViewBar_;
