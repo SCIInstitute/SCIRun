@@ -50,6 +50,7 @@
 #include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
+#include <Interface/Modules/Fields/EditMeshBoundingBoxDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
@@ -165,7 +166,8 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 		ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
 	ADD_MODULE_DIALOG(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixDialog)
 		ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
-    ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
+		ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
+	ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
   ;
 }
 

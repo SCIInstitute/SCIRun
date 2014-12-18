@@ -46,6 +46,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Math/GetMatrixSlice.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Fields/ReportFieldInfo.h>
+#include <Modules/Fields/EditMeshBoundingBox.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
@@ -176,7 +177,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
-  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
+  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix", "Math", "SCIRun", "...", "...");
+  addModuleDesc<EditMeshBoundingBoxModule>("Rewrite", "...");
   
 
   // insert module desc here
