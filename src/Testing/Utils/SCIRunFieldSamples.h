@@ -31,6 +31,8 @@
 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
+#include <Testing/Utils/share.h>
+
 /// Utility file containing empty and very small fields (no data set, only types).
 
 namespace SCIRun
@@ -72,20 +74,20 @@ FieldHandle EmptyTriSurfFieldLinearBasis(data_info_type type)
 }
 
 
-FieldHandle CubeTetVolConstantBasis(data_info_type type);
-FieldHandle CubeTetVolLinearBasis(data_info_type type);
+SCISHARE FieldHandle CubeTetVolConstantBasis(data_info_type type);
+SCISHARE FieldHandle CubeTetVolLinearBasis(data_info_type type);
 
-FieldHandle TetrahedronTetVolConstantBasis(data_info_type type);
-FieldHandle TetrahedronTetVolLinearBasis(data_info_type type);
+SCISHARE FieldHandle TetrahedronTetVolConstantBasis(data_info_type type);
+SCISHARE FieldHandle TetrahedronTetVolLinearBasis(data_info_type type);
 
-FieldHandle TriangleTriSurfConstantBasis(data_info_type type);
-FieldHandle TriangleTriSurfLinearBasis(data_info_type type);
+SCISHARE FieldHandle TriangleTriSurfConstantBasis(data_info_type type);
+SCISHARE FieldHandle TriangleTriSurfLinearBasis(data_info_type type);
 
-FieldHandle CubeTriSurfConstantBasis(data_info_type type);
-FieldHandle CubeTriSurfLinearBasis(data_info_type type);
+SCISHARE FieldHandle CubeTriSurfConstantBasis(data_info_type type);
+SCISHARE FieldHandle CubeTriSurfLinearBasis(data_info_type type);
 
-FieldHandle TetrahedronTriSurfConstantBasis(data_info_type type);
-FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type);
+SCISHARE FieldHandle TetrahedronTriSurfConstantBasis(data_info_type type);
+SCISHARE FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type);
 
 }}
 
