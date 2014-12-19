@@ -45,6 +45,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
+// TODO: more tests needed
+
 TEST(MapFieldDataFromSourceToDestinationAlgoTests, ThrowsOnNullInput)
 {
   MapFieldDataFromSourceToDestinationAlgo algo;

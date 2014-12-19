@@ -226,6 +226,22 @@ private:
   }
 };
 
+#if 0
+//Interesting idea but hard to manage lifetime of Widget pointers, if they live in a dynamic table. This will need to be melded into the TableWidget subclass.
+template <class Manager, class Widget>
+class CompositeSlotManager : public WidgetSlotManager
+{
+public:
+  CompositeSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, const std::vector<Widget*>& widgets)
+    : WidgetSlotManager(state, dialog) 
+  {
+    std::transform(widgets.begin(), widgets.end(), std::back_inserter(managers_), [&](Widget* w) { return boost::make_shared<Manager>(state, dialog, stateKey, w); });
+  }
+private:
+  std::vector<boost::shared_ptr<Manager>> managers_;
+};
+#endif
+
 void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
@@ -363,7 +379,7 @@ public:
           auto value = boost::lexical_cast<double>(lineEdit_->text().toStdString());
           state_->setValue(stateKey_, value);
         }
-        catch (boost::bad_lexical_cast& e)
+        catch (boost::bad_lexical_cast&)
         {
           // ignore for now
         }

@@ -52,7 +52,9 @@ SET(Interface_Modules_Fields_FORMS
   MapFieldDataOntoElems.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
+  RefineMesh.ui
   ConvertFieldBasis.ui
+  swapfielddatawithmatrixentries.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -80,8 +82,10 @@ SET(Interface_Modules_Fields_HEADERS
   MapFieldDataOntoElemsDialog.h
   MapFieldDataOntoNodesDialog.h
   ClipFieldByFunctionDialog.h
+  RefineMeshDialog.h
   ConvertFieldBasisDialog.h
   share.h
+  SwapFieldDataWithMatrixEntriesDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -110,6 +114,8 @@ SET(Interface_Modules_Fields_SOURCES
   MapFieldDataOntoElemsDialog.cc
   MapFieldDataOntoNodesDialog.cc
   ClipFieldByFunctionDialog.cc
+  SwapFieldDataWithMatrixEntriesDialog.cc
+  RefineMeshDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

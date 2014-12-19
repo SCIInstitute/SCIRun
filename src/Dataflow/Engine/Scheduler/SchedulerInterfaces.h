@@ -141,6 +141,14 @@ namespace Engine {
     std::map<std::string, int> components_;
   };
 
+  class SCISHARE WaitsForStartupInitialization
+  {
+  public:
+    void waitForStartupInit() const;
+  private:
+    static bool shouldWait_;
+  };
+
 }}}
 
 #endif

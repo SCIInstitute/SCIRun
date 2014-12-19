@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
+#include <boost/optional/optional_io.hpp>
 #include <gmock/gmock.h>
 
 namespace SCIRun {

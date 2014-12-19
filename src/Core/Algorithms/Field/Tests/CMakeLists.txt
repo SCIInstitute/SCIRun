@@ -28,11 +28,13 @@
 
 SET(Algorithms_Field_Tests_SRCS
   CalculateVectorMagnitudesAlgoTests.cc
+  BuildMatrixOfSurfaceNormalsTests.cc
   CalculateGradientsAlgoTests.cc
   GetDomainBoundaryTests.cc
   GetFieldBoundaryTests.cc
   ReportFieldInfoTests.cc
   ConvertFieldBasisAlgoTests.cc
+  SwapFieldDataWithMatrixEntriesAlgoTests.cc
   ConvertMeshToTriSurfMeshAlgoTests.cc
   ConvertMeshToPointCloudMeshAlgoTests.cc
   AlignMeshBoundingBoxesAlgoTests.cc

@@ -26,16 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <gl-platform/GLPlatform.hpp>
+
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
+#include <Interface/Modules/Render/GLWidget.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 #include <Modules/Render/ViewScene.h>
+
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
+using namespace SCIRun::Render;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -60,7 +66,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     glLayout->update();
 
     // Set spire transient value (should no longer be used).
-    mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
+    mSpire = std::weak_ptr<Render::SRInterface>(mGLWidget->getSpire());
   }
   else
   {
@@ -69,10 +75,17 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   }
 
   {
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
-    spire->setMouseMode(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? SRInterface::MOUSE_NEWSCIRUN : SRInterface::MOUSE_OLDSCIRUN);
+    if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
+    {
+      spire->setMouseMode(Render::SRInterface::MOUSE_NEWSCIRUN);
+    }
+    else
+    {
+      spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
+    }
   }
 
   state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
@@ -113,7 +126,7 @@ void ViewSceneDialog::newGeometryValue()
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
       return;
     }
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
     {
       LOG_DEBUG("Logical error: Spire lock not acquired.");
@@ -132,7 +145,7 @@ void ViewSceneDialog::newGeometryValue()
   }
   else
   {
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
     spire->removeAllGeomObjects();
@@ -144,7 +157,7 @@ void ViewSceneDialog::newGeometryValue()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::menuMouseControlChanged(int index)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
   if (spire == nullptr)
     return;
 
@@ -163,7 +176,7 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::autoViewClicked()
 {
-  std::shared_ptr<SRInterface> spireLock = mSpire.lock();
+  std::shared_ptr<Render::SRInterface> spireLock = mSpire.lock();
   spireLock->doAutoView();
 }
 

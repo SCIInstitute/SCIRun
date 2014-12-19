@@ -72,7 +72,7 @@ public:
   size_t numInputPorts() const;
   size_t numOutputPorts() const;
 
-  const PortWidgetManager& ports() { return *ports_; }
+  const PortWidgetManager& ports() const { return *ports_; }
 
   std::string getModuleId() const { return moduleId_; }
   SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
@@ -140,6 +140,7 @@ private Q_SLOTS:
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
   void replaceModuleWith();
+  void updateDialogWithPortCount();
 private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;

@@ -1516,7 +1516,7 @@ CurveMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
   t.load_identity();
   Core::Geometry::BBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
-  t.pre_translate(Core::Geometry::Vector(bbox.min()));
+  t.pre_translate(Core::Geometry::Vector(bbox.get_min()));
 }
 
 template <class Basis>

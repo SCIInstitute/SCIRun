@@ -262,6 +262,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
 
+  makeOptionsDialog();
   addPortLayouts();
   addPorts(*theModule_);
   optionsButton_->setVisible(theModule_->has_ui());
@@ -297,7 +298,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   resize(width(), height() + widgetHeightAdjust);
 
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
-  makeOptionsDialog();
 
   connect(helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
@@ -352,6 +352,9 @@ void ModuleWidget::resetProgressBar()
   progressBar_->setValue(0);
   progressBar_->setTextVisible(false);
 }
+
+size_t ModuleWidget::numInputPorts() const { return ports().numInputPorts(); }
+size_t ModuleWidget::numOutputPorts() const { return ports().numOutputPorts(); }
 
 void ModuleWidget::setupModuleActions()
 {
@@ -408,17 +411,19 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), 
-      portAlpha()), type, 
-      moduleId, port->id(), 
-      i, port->isDynamic(), connectionFactory_, 
-      closestPortFinder_, 
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
+      portAlpha()), type,
+      moduleId, port->id(),
+      i, port->isDynamic(), connectionFactory_,
+      closestPortFinder_,
       0,
       this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
     ++i;
+    if (dialog_)
+      dialog_->updateFromPortChange(i);
   }
   addInputPortsToLayout();
 }
@@ -443,11 +448,11 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
   BOOST_FOREACH(OutputPortHandle port, moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), 
-      type, moduleId, port->id(), i, port->isDynamic(), 
-      connectionFactory_, 
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
+      type, moduleId, port->id(), i, port->isDynamic(),
+      connectionFactory_,
       closestPortFinder_,
-      port->getPortDataDescriber(), 
+      port->getPortDataDescriber(),
       this);
     hookUpGeneralPortSignals(w);
     ports_->addPort(w);
@@ -712,6 +717,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
+      connect(this, SIGNAL(dynamicPortChanged()), this, SLOT(updateDialogWithPortCount()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
@@ -725,6 +731,12 @@ void ModuleWidget::makeOptionsDialog()
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
     }
   }
+}
+
+void ModuleWidget::updateDialogWithPortCount()
+{
+  if (dialog_)
+    dialog_->updateFromPortChange(numInputPorts());
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const

@@ -26,14 +26,14 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-An installer is available for OS X (10.7 or greater).
+An installer is available for OS X (10.7 or greater) and Windows 7+.
 
 SCIRun 5 build instructions
 
 Required:
 
   Windows (tested on Windows 7, 8):
-    Visual Studio C++ 2010
+    Visual Studio C++ 2013
 
     Qt 4.8
       Build from source (see http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:Building_Releases#Installing_Qt_on_your_system_and_building_from_scratch for instructions),
@@ -68,7 +68,7 @@ Required:
 CMake Build Generators:
 
   Windows:
-    Visual Studio 2010 C++
+    Visual Studio 12 C++ (2013)
 
   OS X:
     Unix Makefiles (Xcode projects not currently supported)

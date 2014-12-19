@@ -158,8 +158,8 @@ CreateLatVol::execute()
         datatype = TENSOR;
       }
       BBox bbox = (*ifieldhandleOption)->vmesh()->get_bounding_box();
-      minb = bbox.min();
-      maxb = bbox.max();
+      minb = bbox.get_min();
+      maxb = bbox.get_max();
     }
 
     double padPercent = get_state()->getValue(PadPercent).toDouble();

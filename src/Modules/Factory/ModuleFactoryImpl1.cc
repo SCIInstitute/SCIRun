@@ -75,10 +75,16 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
+#include <Modules/Legacy/Fields/RefineMesh.h> 
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
+#include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
+#include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
+#include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h> 
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
+#include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
+#include <Modules/Legacy/Forward/BuildBEMatrix.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -103,6 +109,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Matlab::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
@@ -145,7 +152,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
+	addModuleDesc<SwapFieldDataWithMatrixEntries>("SwapFieldDataWithMatrixEntires","..."); 
   addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", "In progress: main path through code works", "Generates stiffness matrix ");
+  addModuleDesc<BuildBEMatrix>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<FairMesh>("Real ported module", "...");
   //TODO: incomplete impl
@@ -161,10 +170,14 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ClipFieldByFunction>("In progress", "...");
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
   addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
+	addModuleDesc<RefineMesh>("RefineMesh","ChangeMesh", "SCIRun", "Real ported module", "..."); 
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
+	addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "..."); 
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
-
+  addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
+  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
+  
 
   // insert module desc here
 }
