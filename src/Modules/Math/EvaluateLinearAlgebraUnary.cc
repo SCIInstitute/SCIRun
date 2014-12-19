@@ -51,7 +51,7 @@ void EvaluateLinearAlgebraUnaryModule::setStateDefaults()
   auto state = get_state();
   state->setValue(Variables::Operator, 0);
   state->setValue(Variables::ScalarValue, 0);
-	state->setValue(Variables::FunctionString, std::string("x+y")); 
+	state->setValue(Variables::FunctionString, std::string("x+10")); 
 }
 
 void EvaluateLinearAlgebraUnaryModule::execute()

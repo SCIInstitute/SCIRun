@@ -43,7 +43,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
 {
   addParameter(Variables::Operator, 0);
   addParameter(Variables::ScalarValue, 0);
-	addParameter(Variables::FunctionString, "x+y"); 
+	addParameter(Variables::FunctionString, "x+10"); 
 }
 
 EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
@@ -54,7 +54,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   Operator oper = params.get<0>();
 
   /// @todo: absolutely need matrix move semantics here!!!!!!!
-  switch (oper)
+  switch (oper) 
   {
   case NEGATE:
     result.reset(matrix->clone());
@@ -89,13 +89,14 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
 				engine.add_expressions(function_string);
 
 				if(!(engine.add_output_fullmatrix("RESULT",matrixInput))) ;//return;
-				//if (!(engine.add_output_fullmatrix("RESULT", lhsInput))); 
+				//if (!(engine.add_output_fullmatrix("RESULT", lhsInput)));
 				// Actual engine call, which does the dynamic compilation, the creation of the
 				// code for all the objects, as well as inserting the function and looping 
 				// over every data point
 				if (!(engine.run())) ;//return;
 				result = matrix_cast::as_dense(matrixInput);
 		}
+		break;
   default:
     THROW_ALGORITHM_INPUT_ERROR("Unknown operand");
   }
@@ -109,7 +110,7 @@ AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const Algorithm
 
   auto scalar = boost::make_optional(get(Variables::ScalarValue).toDouble());
 	auto function = boost::make_optional(get(Variables::FunctionString).toString()); 
-
+	std::string whatIsFunction = function.get(); 
   auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).toInt()), scalar, function));
 
   AlgorithmOutput output;

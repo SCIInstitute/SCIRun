@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>EvaluateLinearAlgebraUnary</class>
  <widget class="QDialog" name="EvaluateLinearAlgebraUnary">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -139,129 +142,33 @@
  <connections>
   <connection>
    <sender>scalarMultiplyRadioButton_</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>scalarLineEdit_</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>85</x>
-     <y>74</y>
+     <x>51</x>
+     <y>77</y>
     </hint>
     <hint type="destinationlabel">
-     <x>106</x>
-     <y>96</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>negateRadioButton_</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>scalarLineEdit_</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>61</x>
-     <y>54</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>168</x>
+     <x>64</x>
      <y>97</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>transposeRadioButton_</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>scalarLineEdit_</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>65</x>
-     <y>28</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>173</x>
-     <y>110</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>functionRadioButton_</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>functionLineEdit_</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>58</x>
-     <y>126</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>62</x>
-     <y>147</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scalarMultiplyRadioButton_</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>functionLineEdit_</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>133</x>
-     <y>73</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>138</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>functionRadioButton_</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>scalarLineEdit_</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>81</x>
-     <y>127</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>83</x>
-     <y>100</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>negateRadioButton_</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>functionLineEdit_</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
      <x>47</x>
-     <y>52</y>
+     <y>130</y>
     </hint>
     <hint type="destinationlabel">
-     <x>50</x>
-     <y>147</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>transposeRadioButton_</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>functionLineEdit_</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>65</x>
-     <y>33</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>79</x>
-     <y>153</y>
+     <x>60</x>
+     <y>150</y>
     </hint>
    </hints>
   </connection>
