@@ -110,7 +110,7 @@ AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const Algorithm
 
   auto scalar = boost::make_optional(get(Variables::ScalarValue).toDouble());
 	auto function = boost::make_optional(get(Variables::FunctionString).toString()); 
-	std::string whatIsFunction = function.get(); 
+
   auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).toInt()), scalar, function));
 
   AlgorithmOutput output;
