@@ -16,7 +16,7 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
@@ -56,6 +56,18 @@
 							</item>
 							<item>
 								<first>
+									<name>OutputMatrixType</name>
+								</first>
+								<second>
+									<name>OutputMatrixType</name>
+									<value>
+										<which>2</which>
+										<value>sparse</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>PassThrough</name>
 								</first>
 								<second>
@@ -80,7 +92,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -115,6 +127,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputMatrixType</name>
+								</first>
+								<second>
+									<name>OutputMatrixType</name>
+									<value>
+										<which>2</which>
+										<value>passThrough</value>
 									</value>
 								</second>
 							</item>
@@ -144,7 +168,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -179,6 +203,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputMatrixType</name>
+								</first>
+								<second>
+									<name>OutputMatrixType</name>
+									<value>
+										<which>2</which>
+										<value>column</value>
 									</value>
 								</second>
 							</item>
@@ -208,7 +244,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -243,6 +279,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputMatrixType</name>
+								</first>
+								<second>
+									<name>OutputMatrixType</name>
+									<value>
+										<which>2</which>
+										<value>dense</value>
 									</value>
 								</second>
 							</item>

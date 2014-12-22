@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,7 +40,30 @@
 #include <log4cpp/BasicLayout.hh>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 #include <Core/Utils/Exception.h>
+
+// Includes for platform specific functions to get directory to store temp files and user data
+#ifdef _WIN32
+#include <shlobj.h>
+#include <tlhelp32.h>
+#include <windows.h>
+#include <LMCons.h>
+#include <psapi.h>
+#else
+#include <stdlib.h>
+#include <sys/types.h>
+#ifndef __APPLE__
+#include <unistd.h>
+#include <sys/sysinfo.h>
+#else
+#include <unistd.h>
+#include <sys/utsname.h>
+#include <sys/sysctl.h>
+#include <sys/param.h>
+#include <sys/mount.h>
+#endif
+#endif
 
 using namespace SCIRun::Core::Logging;
 
@@ -60,12 +83,12 @@ namespace SCIRun
       class LogImpl
       {
       public:
-        LogImpl() : cppLogger_(log4cpp::Category::getRoot()), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
+        LogImpl() : name_("root"), cppLogger_(log4cpp::Category::getRoot()), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
           setAppenders();
         }
 
-        LogImpl(const std::string& name) : cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
+        explicit LogImpl(const std::string& name) : name_(name), cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
           /// @todo
           setAppenders();
@@ -84,7 +107,7 @@ namespace SCIRun
           return latestStream_;
         }
 
-        bool verbose() const 
+        bool verbose() const
         {
           return cppLogger_.getPriority() == log4cpp::Priority::DEBUG;
         }
@@ -114,7 +137,7 @@ namespace SCIRun
           case NOTICE: cpp_level = log4cpp::Priority::NOTICE; break;
           case INFO:   cpp_level = log4cpp::Priority::INFO;   break;
           case DEBUG_LOG:  cpp_level = log4cpp::Priority::DEBUG;  break;
-          default:         
+          default:
             THROW_INVALID_ARGUMENT("Unknown log level: " + boost::lexical_cast<std::string>((int)level));
           };
           if (cpp_level == log4cpp::Priority::NOTSET)
@@ -124,7 +147,9 @@ namespace SCIRun
           return cpp_level;
         }
 
+        boost::filesystem::path file_;
       private:
+        std::string name_;
         log4cpp::Category& cppLogger_;
         Log::Stream latestStream_;
 
@@ -148,7 +173,8 @@ namespace SCIRun
           }
           appender1->setLayout(layout1);
 
-          log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "scirun5.log");
+          file_ = Log::logDirectory() / ("scirun5_" + name_ + ".log");
+          log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", file_.string());
           auto layout2 = new log4cpp::PatternLayout();
           std::string backupPattern2 = layout1->getConversionPattern();
           try
@@ -174,10 +200,25 @@ namespace SCIRun
 
 Log::Log() : impl_(new LogImpl)
 {
-} 
+  init();
+}
 
 Log::Log(const std::string& name) : impl_(new LogImpl(name))
 {
+  init();
+}
+
+void Log::init()
+{
+  *this << DEBUG_LOG << "Logging to file: " << impl_->file_.string() << std::endl;
+}
+
+boost::filesystem::path Log::directory_(ApplicationHelper().configDirectory());
+
+boost::filesystem::path Log::logDirectory() { return directory_; }
+void Log::setLogDirectory(const boost::filesystem::path& dir)
+{
+  directory_ = dir;
 }
 
 Log& Log::get()
@@ -258,4 +299,188 @@ void Log::setVerbose(bool v)
 bool Log::verbose() const
 {
   return impl_->verbose();
+}
+
+//TODO: move
+
+// following ugly code copied from Seg3D.
+
+bool ApplicationHelper::get_user_directory( boost::filesystem::path& user_dir, bool config_path)
+{
+#ifdef _WIN32
+  TCHAR dir[MAX_PATH];
+
+  // Try to create the local application directory
+  // If it already exists return the name of the directory.
+
+  if( config_path )
+  {
+    if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_LOCAL_APPDATA, 0, 0, dir ) ) )
+    {
+      user_dir = boost::filesystem::path( dir );
+      return true;
+    }
+    else
+    {
+      std::cerr << "Could not get user directory.";
+      return false;
+    }
+  }
+  else
+  {
+    if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, 0, 0, dir ) ) )
+    {
+      user_dir = boost::filesystem::path( dir );
+      return true;
+    }
+    else
+    {
+      std::cerr << "Could not get user directory.";
+      return false;
+    }
+  }
+#else
+
+  if ( getenv( "HOME" ) )
+  {
+    user_dir = boost::filesystem::path( getenv( "HOME" ) );
+
+    if (! boost::filesystem::exists( user_dir ) )
+    {
+      std::cerr << "Could not get user directory.";
+      return false;
+    }
+
+    return true;
+  }
+  else
+  {
+    std::cerr << "Could not get user directory.";
+    return false;
+  }
+#endif
+}
+
+
+bool ApplicationHelper::get_user_desktop_directory( boost::filesystem::path& user_desktop_dir )
+{
+#ifdef _WIN32
+  TCHAR dir[MAX_PATH];
+
+  // Try to create the local application directory
+  // If it already exists return the name of the directory.
+
+  if ( SUCCEEDED( SHGetFolderPath( 0, CSIDL_DESKTOPDIRECTORY, 0, 0, dir ) ) )
+  {
+    user_desktop_dir = boost::filesystem::path( dir );
+    return true;
+  }
+  else
+  {
+    std::cerr << "Could not get user desktop directory.";
+    return false;
+  }
+
+
+#else
+
+  if ( getenv( "HOME" ) )
+  {
+    user_desktop_dir = boost::filesystem::path( getenv( "HOME" ) ) / "Desktop" / "";
+
+    if (! boost::filesystem::exists( user_desktop_dir ) )
+    {
+      std::cerr << "Could not get user desktop directory.";
+      return false;
+    }
+
+
+    return true;
+  }
+  else
+  {
+    std::cerr << "Could not get user desktop directory.";
+    return false;
+  }
+#endif
+}
+
+bool ApplicationHelper::get_config_directory( boost::filesystem::path& config_dir )
+{
+  boost::filesystem::path user_dir;
+  if ( !( get_user_directory( user_dir, true ) ) ) return false;
+
+#ifdef _WIN32
+  config_dir = user_dir / applicationName();
+#else
+  std::string dot_app_name = std::string( "." ) + applicationName();
+  config_dir = user_dir / dot_app_name;
+#endif
+
+  if ( !( boost::filesystem::exists( config_dir ) ) )
+  {
+    if ( !( boost::filesystem::create_directory( config_dir ) ) )
+    {
+      std::cerr << "Could not create directory: " << config_dir.string() << std::endl;
+      return false;
+    }
+
+    std::cerr << "Created directory: " << config_dir.string() << std::endl;
+  }
+
+  return true;
+}
+
+bool ApplicationHelper::get_user_name( std::string& user_name )
+{
+#ifdef _WIN32
+  TCHAR name[UNLEN+1];
+  DWORD length = UNLEN;
+
+  if ( GetUserName( name, &length ) )
+  {
+    user_name = std::string( name );
+    return true;
+  }
+  else
+  {
+    std::cerr << "Could not resolve user name.";
+    return false;
+  }
+#else
+  if ( getenv( "USER" ) )
+  {
+    user_name = std::string( getenv( "USER" ) );
+    return true;
+  }
+  else
+  {
+    std::cerr << "Could not resolve user name.";
+    return false;
+  }
+#endif
+
+}
+
+boost::filesystem::path ApplicationHelper::configDirectory()
+{
+  boost::filesystem::path config;
+  if (!get_config_directory(config))
+    return boost::filesystem::current_path();
+  return config;
+}
+
+std::string ApplicationHelper::applicationName()
+{
+  return "SCIRun";
+}
+
+ApplicationHelper::ApplicationHelper()
+{
+#if WIN32
+  boost::filesystem::path::imbue( std::locale( "" ) );
+#endif
+  boost::filesystem::path dummy("boost bug workaround");
+  if (dummy.string().empty())
+    std::cout << dummy.string() << std::endl;
 }

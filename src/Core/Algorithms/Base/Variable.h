@@ -42,12 +42,10 @@
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
-  
+
   class SCISHARE Variable
   {
   public:
-    /// @todo: expand this 
-
     typedef std::vector<Variable> List;
 
     typedef boost::variant<
@@ -60,12 +58,14 @@ namespace Algorithms {
     > Value;
 
     Variable() {}
-    Variable(const Name& name, const Value& value) : name_(name), value_(value) {}
-    Variable(const Name& name, const Datatypes::DatatypeHandle& value) : name_(name), data_(value) {}
+    Variable(const Name& name, const Value& value);
+    Variable(const Name& name, const Datatypes::DatatypeHandle& data) : name_(name), data_(data) {}
+    virtual ~Variable() {}
 
     const Name& name() const { return name_; }
     const Value& value() const { return value_; }
-    virtual void setValue(const Value& val) { value_ = val; }
+    //TODO: remove virtual on this class
+    virtual void setValue(const Value& val);
 
     int toInt() const;
     double toDouble() const;
@@ -87,11 +87,12 @@ namespace Algorithms {
   };
 
   SCISHARE bool operator==(const Variable& lhs, const Variable& rhs);
+  SCISHARE bool operator!=(const Variable& lhs, const Variable& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   SCISHARE Variable makeVariable(const std::string& name, const Variable::Value& value);
-  
+
   typedef Variable AlgorithmParameter;
-  
+  typedef Variable::List VariableList;
   typedef boost::shared_ptr<Variable> VariableHandle;
 
 }

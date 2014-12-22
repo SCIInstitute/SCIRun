@@ -101,6 +101,7 @@ namespace Gui {
 
     Dataflow::Networks::NetworkFileHandle openedFile_;
   private:
+    int loadImpl(const Dataflow::Networks::NetworkFileHandle& file);
     std::string filename_;
     NetworkEditor* networkEditor_;
   };

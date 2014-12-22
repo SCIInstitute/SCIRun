@@ -45,9 +45,41 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
 
   addSpinBoxManager(indexSpinBox_, Parameters::SliceIndex);
   addTwoChoiceBooleanComboBoxManager(rowColumnComboBox_, Parameters::IsSliceColumn);
+
+  nextIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipForward));
+  connect(nextIndexButton_, SIGNAL(clicked()), this, SLOT(incrementIndex()));
+  previousIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipBackward));
+  connect(previousIndexButton_, SIGNAL(clicked()), this, SLOT(decrementIndex()));
+  firstIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekBackward));
+  connect(firstIndexButton_, SIGNAL(clicked()), this, SLOT(selectFirstIndex()));
+  lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
+  connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
 }
 
 void GetMatrixSliceDialog::pull()
 {
   pull_newVersionToReplaceOld();
+}
+
+void GetMatrixSliceDialog::incrementIndex()
+{
+  indexSpinBox_->stepUp();
+  Q_EMIT executeActionTriggered();
+}
+
+void GetMatrixSliceDialog::decrementIndex()
+{
+  indexSpinBox_->stepDown();
+  Q_EMIT executeActionTriggered();
+}
+
+void GetMatrixSliceDialog::selectFirstIndex()
+{
+  indexSpinBox_->setValue(0);
+  Q_EMIT executeActionTriggered();
+}
+
+void GetMatrixSliceDialog::selectLastIndex()
+{
+  std::cout << "end--needs requirements" << std::endl;
 }

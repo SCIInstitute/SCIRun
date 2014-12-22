@@ -29,6 +29,7 @@
 
 SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
+  BuildMappingMatrix.ui
   GetDomainBoundary.ui
   JoinFields.ui
   FairMesh.ui
@@ -38,7 +39,9 @@ SET(Interface_Modules_Fields_FORMS
   CreateFieldData.ui
   CalculateFieldData.ui
   InterfaceWithCleaverDialog.ui
+  InterfaceWithTetGen.ui
   SetFieldDataDialog.ui
+  SetFieldDataToConstantValue.ui
   MapFieldDataFromElemToNodeDialog.ui
   MapFieldDataFromNodeToElemDialog.ui
   MapFieldDataFromSourceToDestinationDialog.ui
@@ -48,9 +51,15 @@ SET(Interface_Modules_Fields_FORMS
   calculatedistancetofieldboundary.ui #TODO: fix case
   MapFieldDataOntoElems.ui
   MapFieldDataOntoNodes.ui
+  ClipFieldByFunction.ui
+  RefineMesh.ui
+  ConvertFieldBasis.ui
+  swapfielddatawithmatrixentries.ui
+  EditMeshBoundingBox.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
+  BuildMappingMatrixDialog.h
   CreateLatVolDialog.h
   CreateFieldDataDialog.h
   CalculateFieldDataDialog.h
@@ -61,7 +70,9 @@ SET(Interface_Modules_Fields_HEADERS
   SplitFieldByDomainDialog.h
   SplitFieldByConnectedRegionDialog.h
   InterfaceWithCleaverDialog.h
+  InterfaceWithTetGenDialog.h
   SetFieldDataDialog.h
+  SetFieldDataToConstantValueDialog.h
   MapFieldDataFromElemToNodeDialog.h
   MapFieldDataFromNodeToElemDialog.h
   MapFieldDataFromSourceToDestinationDialog.h
@@ -71,13 +82,20 @@ SET(Interface_Modules_Fields_HEADERS
   CalculateDistanceToFieldBoundaryDialog.h
   MapFieldDataOntoElemsDialog.h
   MapFieldDataOntoNodesDialog.h
+  ClipFieldByFunctionDialog.h
+  RefineMeshDialog.h
+  ConvertFieldBasisDialog.h
   share.h
+  SwapFieldDataWithMatrixEntriesDialog.h
+  EditMeshBoundingBoxDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
+  BuildMappingMatrixDialog.cc
   CreateLatVolDialog.cc
   CreateFieldDataDialog.cc
   CalculateFieldDataDialog.cc
+  ConvertFieldBasisDialog.cc
   GetDomainBoundaryDialog.cc
   JoinFieldsDialog.cc
   FairMeshDialog.cc
@@ -85,7 +103,9 @@ SET(Interface_Modules_Fields_SOURCES
   SplitFieldByDomainDialog.cc
   SplitFieldByConnectedRegionDialog.cc
   InterfaceWithCleaverDialog.cc
+  InterfaceWithTetGenDialog.cc
   SetFieldDataDialog.cc
+  SetFieldDataToConstantValueDialog.cc
   MapFieldDataFromElemToNodeDialog.cc
   MapFieldDataFromNodeToElemDialog.cc
   MapFieldDataFromSourceToDestinationDialog.cc
@@ -95,6 +115,10 @@ SET(Interface_Modules_Fields_SOURCES
   CalculateDistanceToFieldBoundaryDialog.cc
   MapFieldDataOntoElemsDialog.cc
   MapFieldDataOntoNodesDialog.cc
+  ClipFieldByFunctionDialog.cc
+  SwapFieldDataWithMatrixEntriesDialog.cc
+  RefineMeshDialog.cc
+  EditMeshBoundingBoxDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

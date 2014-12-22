@@ -137,7 +137,6 @@ FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
   conductivities += get(Skin).toDouble(), get(SoftBone).toDouble(), get(HardBone).toDouble(),
   get(CSF).toDouble(), get(GM).toDouble(), get(WM).toDouble(), get(Electrode).toDouble(), get(InternalAir).toDouble();
 
-  
   // check if defined conductivities and lookup table are consistent
   if (conductivities.size() != ElemLabelLookup.size())
     THROW_ALGORITHM_INPUT_ERROR("Defined conductivities and lookup table are inconsistent! ");

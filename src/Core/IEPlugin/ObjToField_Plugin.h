@@ -35,8 +35,8 @@
 
 namespace SCIRun 
 {
-  SCISHARE FieldHandle ObjToField_reader(Core::Logging::Log& pr, const char *filename);
-  SCISHARE bool FieldToObj_writer(Core::Logging::Log& pr, FieldHandle fh, const char* filename);
+  SCISHARE FieldHandle ObjToField_reader(Core::Logging::LoggerHandle pr, const char *filename);
+  SCISHARE bool FieldToObj_writer(Core::Logging::LoggerHandle pr, FieldHandle fh, const char* filename);
 }
 
 #endif

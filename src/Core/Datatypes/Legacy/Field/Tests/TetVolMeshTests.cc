@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2014 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -24,61 +24,26 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
-   author: Moritz Dannhauer
-   latest change: 04/30/2014
 */
+
+#include <Testing/Utils/SCIRunFieldSamples.h>
+
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <gtest/gtest.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+
+#include <gtest/gtest.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
-
-
-FieldHandle TetMesh1()
-{
- FieldInformation fi("TetVolMesh", 1, "double");    
- FieldHandle singleTetField_ = CreateField(fi);
- VMesh *vmesh = singleTetField_->vmesh();
- VMesh::Node::array_type vdata;
- vdata.resize(4);
-      
- vmesh->node_reserve(8);
- vmesh->elem_reserve(1);
- vmesh->add_point( Point(0.0, 0.0, 0.0) );
- vmesh->add_point( Point(1.0, 0.0, 0.0) );
- vmesh->add_point( Point(1.0, 1.0, 0.0) );
- vmesh->add_point( Point(0.0, 1.0, 0.0) ); 
- vmesh->add_point( Point(0.0, 0.0, 1.0) );
- vmesh->add_point( Point(1.0, 0.0, 1.0) );
- vmesh->add_point( Point(1.0, 1.0, 1.0) );
- vmesh->add_point( Point(0.0, 1.0, 1.0) );
- 
- vdata[0]=5; vdata[1]=6;  vdata[2]=0; vdata[3]=4;
- vmesh->add_elem(vdata);
- vdata[0]=0; vdata[1]=7;  vdata[2]=2; vdata[3]=3;
- vmesh->add_elem(vdata);
- vdata[0]=2; vdata[1]=6;  vdata[2]=0; vdata[3]=1;
- vmesh->add_elem(vdata);
- vdata[0]=0; vdata[1]=6;  vdata[2]=5; vdata[3]=1;
- vmesh->add_elem(vdata);
- vdata[0]=0; vdata[1]=6;  vdata[2]=2; vdata[3]=7;
- vmesh->add_elem(vdata);
- vdata[0]=6; vdata[1]=7;  vdata[2]=0; vdata[3]=4;
- vmesh->add_elem(vdata);
- 
- return singleTetField_;
-}
-
+using namespace SCIRun::TestUtils;
 
 TEST(TetVolMeshTest, CheckMeshIteratorTetVolMesh)
 {
   FieldHandle output;
-  FieldHandle tetmesh=TetMesh1();
+  FieldHandle tetmesh = CubeTetVolLinearBasis(NONE_E);
   
   VMesh* mesh = tetmesh->vmesh();
   

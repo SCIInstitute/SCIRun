@@ -26,72 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshData/FlipSurfaceNormals.h>
+#include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+//#include <Dataflow/Network/Module.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Core/Datatypes/Field.h>
-#include <Dataflow/Network/Module.h>
-//#include <Core/Malloc/Allocator.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 
-//using namespace SCIRun;
 
-/// @class FlipSurfaceNormals
-/// @brief Changes the normal of the face of an element on a surface mesh by
-/// reordering how the nodes are ordered in the face definition.
+//const  ModuleLookupInfo FlipSurfaceNormals::staticInfo_("FlipSurfaceNormals","ChangeMesh","SCIRun");
 
-class FlipSurfaceNormals : public Module 
+FlipSurfaceNormals::FlipSurfaceNormals()  : Module(ModuleLookupInfo("FlipSurfaceNormals","ChangeMesh","SCIRun"),false)
 {
-  public:
-
-    FlipSurfaceNormals(GuiContext* ctx);
-    virtual ~FlipSurfaceNormals();
-    virtual void execute();
-    virtual void tcl_command(GuiArgs&, void*);
-  
-  private:
-    SCIRunAlgo::FlipSurfaceNormalsAlgo algo_;
-
-};
-
-
-DECLARE_MAKER(FlipSurfaceNormals)
-
-FlipSurfaceNormals::FlipSurfaceNormals(GuiContext* ctx) :
-  Module("FlipSurfaceNormals", ctx, Filter, "ChangeMesh", "SCIRun")
-{
-  algo_.set_progress_reporter(this);
+	INITIALIZE_PORT(InputField);
+	INITIALIZE_PORT(OutputField);
 }
 
-FlipSurfaceNormals::~FlipSurfaceNormals(){
-}
-
-void
-FlipSurfaceNormals::execute()
+void  FlipSurfaceNormals::execute() 
 {
-  FieldHandle input, output;
-
-  //get_input_handle( "vector_median_filt", input, true );
-  get_input_handle("InputSurface",input,true);
-
-  // If no data or a changed recalcute.
-  if( inputs_changed_ || !oport_cached("OutputSurface") )
-  {
-    update_state(Executing);
-
-    if (!(algo_.run(input,output))) return;
-    send_output_handle( "OutputSurface", output );
-  }
-
+	FieldHandle ifield = getRequiredInput(InputField);
+	
+	if(needToExecute())
+	{
+		update_state(Executing);
+	
+		auto output = algo().run_generic(withInputData((InputField,ifield)));
+	
+		sendOutputFromAlgorithm(OutputField,output);
+	}
 }
-
-void
-FlipSurfaceNormals::tcl_command(GuiArgs& args, void* userdata)
-{
-  Module::tcl_command(args, userdata);
-}
-
-} // End namespace SCIRun
-
-

@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Mesh/FieldFwd.h
-
 #ifndef CORE_DATATYPES_FIELD_FWD_H
 #define CORE_DATATYPES_FIELD_FWD_H
 

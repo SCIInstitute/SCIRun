@@ -32,7 +32,6 @@
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/ParallelModuleExecutionOrder.h>
-#include <boost/lambda/lambda.hpp>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {

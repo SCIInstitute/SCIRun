@@ -41,6 +41,8 @@
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/GeometryPrimitives/share.h>
 
+#define NOMINMAX
+
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
@@ -218,16 +220,16 @@ inline Vector operator*(const double s, const Vector& v) {
 
 inline Vector Min(const Vector &v1, const Vector &v2)
 {
-  return Vector(std::min(v1.x(), v2.x()),
-    std::min(v1.y(), v2.y()),
-    std::min(v1.z(), v2.z()));
+  return Vector((std::min)(v1.x(), v2.x()),
+    (std::min)(v1.y(), v2.y()),
+    (std::min)(v1.z(), v2.z()));
 }
 
 inline Vector Max(const Vector &v1, const Vector &v2)
 {
-  return Vector(std::max(v1.x(), v2.x()),
-    std::max(v1.y(), v2.y()),
-    std::max(v1.z(), v2.z()));
+  return Vector((std::max)(v1.x(), v2.x()),
+    (std::max)(v1.y(), v2.y()),
+    (std::max)(v1.z(), v2.z()));
 }
 
 SCISHARE void Pio( Piostream&, Vector& );

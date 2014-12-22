@@ -30,9 +30,10 @@
 #define CORE_ALGORITHMS_FIELDS_MESHDATA_GETSURFACEELEMNORMALS_H 1
 
 // Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+//#include <Core/Datatypes/Mesh.h>
+//#include <Core/Datatypes/Field.h>
+//#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DatatypeFwd.h> 
 
 // Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>

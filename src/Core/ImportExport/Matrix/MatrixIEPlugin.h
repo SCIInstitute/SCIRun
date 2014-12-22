@@ -44,7 +44,6 @@
 
 #include <Core/ImportExport/GenericIEPlugin.h>
 #include <Core/Datatypes/MatrixFwd.h>
-
 #include <Core/ImportExport/share.h>
 
 namespace SCIRun 
@@ -54,7 +53,9 @@ namespace SCIRun
 
   typedef IEPluginLegacyAdapter<Core::Datatypes::Matrix> MatrixIEPluginLegacyAdapter;
 
-  typedef GenericIEPluginManager<Core::Datatypes::Matrix> MatrixIEPluginManager;
+  class SCISHARE MatrixIEPluginManager : public GenericIEPluginManager<Core::Datatypes::Matrix>
+  {
+  };
 
 }
 

@@ -40,12 +40,11 @@
 #include <Core/Logging/Log.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-
-FieldHandle ObjToField_reader(LoggerHandle pr, const char *filename)
+FieldHandle SCIRun::ObjToField_reader(LoggerHandle pr, const char *filename)
 {
   FieldHandle result;
   ObjToFieldReader reader(pr);
@@ -59,7 +58,7 @@ FieldHandle ObjToField_reader(LoggerHandle pr, const char *filename)
   return result;
 }
 
-bool FieldToObj_writer(LoggerHandle pr, FieldHandle fh, const char* filename)
+bool SCIRun::FieldToObj_writer(LoggerHandle pr, FieldHandle fh, const char* filename)
 {
   ObjToFieldReader writer(pr);
 
@@ -70,14 +69,4 @@ bool FieldToObj_writer(LoggerHandle pr, FieldHandle fh, const char* filename)
   }
 
   return true;
-}
-
-template class GenericIEPluginManager<Field>;
-
-/// @todo: split out into separate file
-void IEPluginManager::Initialize()
-{
-  static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "obj", "", ObjToField_reader, FieldToObj_writer);
-}
-
 }

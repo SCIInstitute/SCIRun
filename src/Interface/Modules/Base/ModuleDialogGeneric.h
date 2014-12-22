@@ -42,6 +42,7 @@ namespace SCIRun {
 namespace Gui {
 
   typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
+  typedef GuiStringTranslationMap::value_type StringPair;
 
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
@@ -49,6 +50,9 @@ namespace Gui {
   public:
     virtual ~ModuleDialogGeneric();
     bool isPulling() const { return pulling_; } //yuck
+    QAction* getExecuteAction() { return executeAction_; }
+    void setDockable(QDockWidget* dock) { dock_ = dock; } // to enable title changes
+    void updateWindowTitle(const QString& title);
 
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
@@ -59,7 +63,11 @@ namespace Gui {
     //need a better name: read/updateUI
     virtual void pull() = 0;
     void pull_newVersionToReplaceOld();
+    void moduleSelected(bool selected);
+    void toggleCollapse();
+    virtual void updateFromPortChange(int numPorts) {}
   Q_SIGNALS:
+    void pullSignal();
     void executionTimeChanged(int time);
     void executeActionTriggered();
   protected:
@@ -90,9 +98,16 @@ namespace Gui {
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
+    void createShrinkAction();
+    void doCollapse();
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
     QAction* executeAction_;
+    QAction* shrinkAction_;
+    bool collapsed_;
+    QString windowTitle_;
+    QDockWidget* dock_;
+    QSize oldSize_;
   };
 
 }

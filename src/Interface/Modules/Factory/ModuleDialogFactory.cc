@@ -31,6 +31,7 @@
 #include <Interface/Modules/Testing/SendScalarDialog.h>
 #include <Interface/Modules/Testing/ReceiveScalarDialog.h>
 #include <Interface/Modules/DataIO/ReadMatrixDialog.h>
+#include <Interface/Modules/DataIO/ReadMatrixClassicDialog.h>
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
 #include <Interface/Modules/DataIO/ReadMeshDialog.h>
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
@@ -44,9 +45,12 @@
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
 #include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/Math/GetMatrixSliceDialog.h>
+#include <Interface/Modules/Math/BuildNoiseColumnMatrixDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
+#include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
+#include <Interface/Modules/Fields/EditMeshBoundingBoxDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
@@ -60,16 +64,27 @@
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/FairMeshDialog.h>
+#include <Interface/Modules/Fields/InterfaceWithTetGenDialog.h>
 #include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataOntoElemsDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataOntoNodesDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
+#include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
+#include <Interface/Modules/Fields/BuildMappingMatrixDialog.h>
+#include <Interface/Modules/Fields/RefineMeshDialog.h> 
+#include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
+#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
+#include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h> 
+#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
+#include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
+#include <Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
 #include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
+#include <Interface/Modules/Matlab/ImportDatatypesFromMatlabDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 #include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
@@ -93,7 +108,8 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
   insert(dialogMakerMap_)
     ADD_MODULE_DIALOG(SendScalar, SendScalarDialog)
     ADD_MODULE_DIALOG(ReceiveScalar, ReceiveScalarDialog)
-    ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixDialog)
+    //ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixDialog)
+    ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixClassicDialog)
     ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
     ADD_MODULE_DIALOG(ReadMesh, ReadMeshDialog)
     ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)
@@ -105,6 +121,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(AppendMatrix, AppendMatrixDialog)
     ADD_MODULE_DIALOG(CreateMatrix, CreateMatrixDialog)
     ADD_MODULE_DIALOG(CreateString, CreateStringDialog)
+		ADD_MODULE_DIALOG(NetworkNotes, NetworkNotesDialog)
     ADD_MODULE_DIALOG(PrintDatatype, PrintDatatypeDialog)
     ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
     ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
@@ -132,13 +149,25 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MapFieldDataFromNodeToElem, MapFieldDataFromNodeToElemDialog)
     ADD_MODULE_DIALOG(ResampleRegularMesh, ResampleRegularMeshDialog)
     ADD_MODULE_DIALOG(FairMesh, FairMeshDialog)
+    ADD_MODULE_DIALOG(BuildBEMatrix, BuildBEMatrixDialog)
+    ADD_MODULE_DIALOG(ApplyFEMCurrentSource, ApplyFEMCurrentSourceDialog)
     ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
-    ADD_MODULE_DIALOG(MapFieldDataOntoElems, MapFieldDataOntoElemsDialog)
+    ADD_MODULE_DIALOG(InterfaceWithTetGen, InterfaceWithTetGenDialog)
+    ADD_MODULE_DIALOG(MapFieldDataOntoElements, MapFieldDataOntoElemsDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
     ADD_MODULE_DIALOG(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionDialog)
+    ADD_MODULE_DIALOG(ClipFieldByFunction, ClipFieldByFunctionDialog)
+    ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
+		ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
+    ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
+		ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
+	ADD_MODULE_DIALOG(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixDialog)
+		ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
+		ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
+	ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
   ;
 }
 
@@ -146,7 +175,9 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
 {
   BOOST_FOREACH(const DialogMakerMap::value_type& makerPair, dialogMakerMap_)
   {
-    if (moduleId.find(makerPair.first) != std::string::npos)
+    //TODO: match full string name; need to strip module id's number
+    auto findIndex = moduleId.find(makerPair.first);
+    if (findIndex != std::string::npos && moduleId[makerPair.first.size()] == ':')
       return makerPair.second(moduleId, state, parentToUse_);
   }
 

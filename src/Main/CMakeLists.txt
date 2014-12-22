@@ -103,6 +103,12 @@ IF(APPLE AND BUILD_BUNDLE)
 # IF(${CMAKE_GENERATOR} MATCHES "Xcode")
 
   IF(${CMAKE_GENERATOR} MATCHES "Unix Makefiles")
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      POST_BUILD
+      # clean out libraries
+      COMMAND ${CMAKE_COMMAND} ARGS -E remove ${APPLICATION_NAME}.app/Contents/Contents/Frameworks/*.dylib
+      WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
     # otool can be used to check list of dependent dylibs
     ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME} 
       POST_BUILD

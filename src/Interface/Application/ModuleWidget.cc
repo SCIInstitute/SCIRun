@@ -31,6 +31,8 @@
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 #include <Core/Logging/Log.h>
+#include <Core/Application/Application.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Connection.h>
@@ -44,12 +46,15 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Application/MainWindowCollaborators.h>
 
 #include <Dataflow/Network/Module.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
@@ -80,7 +85,7 @@ namespace Gui {
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
-        << disabled(new QAction("Replace With->(TODO)", parent))
+        << disabled(new QAction("Replace With", parent))
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
@@ -217,7 +222,7 @@ namespace
   const int extraWidthThreshold = 5;
   const int smushFactor = 15;
   const int titleFontSize = 12;
-  const int widgetHeightAdjust = 7;
+  const int widgetHeightAdjust = 1;
 #endif
 }
 
@@ -258,12 +263,14 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   displayImpl_->progressBar_->setMinimum(0);
   displayImpl_->progressBar_->setValue(0);
 
+  makeOptionsDialog();
   addPortLayouts();
   addPorts(*theModule_);
   displayImpl_->optionsButton_->setVisible(theModule_->has_ui());
 
   displayImpl_->executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   connect(displayImpl_->executePushButton_, SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  addWidgetToExecutionDisableList(executePushButton_);
 
   int pixelWidth = displayImpl_->titleLabel_->fontMetrics().boundingRect(displayImpl_->titleLabel_->text()).width();
   //std::cout << titleLabel_->text().toStdString() << std::endl;
@@ -292,7 +299,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   resize(width(), height() + widgetHeightAdjust);
 
   connect(displayImpl_->optionsButton_, SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
-  makeOptionsDialog();
 
   connect(displayImpl_->helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
@@ -317,6 +323,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connectUpdateNote(this);
 
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
+
+  Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
   //TODO: doh, how do i destroy myself?
   //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
@@ -346,11 +354,44 @@ void ModuleWidget::resetProgressBar()
   displayImpl_->progressBar_->setTextVisible(false);
 }
 
+size_t ModuleWidget::numInputPorts() const { return ports().numInputPorts(); }
+size_t ModuleWidget::numOutputPorts() const { return ports().numOutputPorts(); }
+
 void ModuleWidget::setupModuleActions()
 {
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
+  addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
+  moduleActionButton_->setMenu(actionsMenu_->getMenu());
 
+  auto replaceWith = actionsMenu_->getAction("Replace With");
+  auto menu = new QMenu(this);
+  replaceWith->setMenu(menu);
+  fillReplaceWithMenu();
+  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
+  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
   displayImpl_->moduleActionButton_->setMenu(actionsMenu_->getMenu());
+}
+
+void ModuleWidget::fillReplaceWithMenu()
+{
+  auto menu = getReplaceWithMenu();
+  menu->clear();
+  LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
+  fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
+    [this](const ModuleDescription& md) { return canReplaceWith(this->theModule_, md); },
+    [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); });
+}
+
+QMenu* ModuleWidget::getReplaceWithMenu()
+{
+  return actionsMenu_->getAction("Replace With")->menu();
+}
+
+void ModuleWidget::replaceModuleWith()
+{
+  QAction* action = qobject_cast<QAction*>(sender());
+  QString moduleToReplace = action->text();
+  Q_EMIT replaceModuleWith(theModule_, moduleToReplace.toStdString());
 }
 
 void ModuleWidget::addPortLayouts()
@@ -372,11 +413,19 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
   {
     auto type = port->get_typename();
     //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
+      portAlpha()), type,
+      moduleId, port->id(),
+      i, port->isDynamic(), connectionFactory_,
+      closestPortFinder_,
+      0,
+      this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
     ++i;
+    if (dialog_)
+      dialog_->updateFromPortChange(i);
   }
   addInputPortsToLayout();
 }
@@ -401,7 +450,12 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
   BOOST_FOREACH(OutputPortHandle port, moduleInfoProvider.outputPorts())
   {
     auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
+      type, moduleId, port->id(), i, port->isDynamic(),
+      connectionFactory_,
+      closestPortFinder_,
+      port->getPortDataDescriber(),
+      this);
     hookUpGeneralPortSignals(w);
     ports_->addPort(w);
     ++i;
@@ -490,7 +544,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     InputPortHandle port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, 0, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_->addPort(w);
@@ -540,6 +594,11 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
+  removeWidgetFromExecutionDisableList(executePushButton_);
+  removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
+  if (dialog_)
+    removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());
+
   //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
   //disconnect()
   deleting_ = true;
@@ -635,11 +694,13 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 void ModuleWidget::setColorSelected()
 {
   updateBackgroundColor(moduleRGBA(0,255,255));
+  Q_EMIT moduleSelected(true);
 }
 
 void ModuleWidget::setColorUnselected()
 {
   updateBackgroundColor(defaultBackgroundColor_);
+  Q_EMIT moduleSelected(false);
 }
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
@@ -655,18 +716,56 @@ void ModuleWidget::makeOptionsDialog()
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();
+      addWidgetToExecutionDisableList(dialog_->getExecuteAction());
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
+      connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
+      connect(this, SIGNAL(dynamicPortChanged()), this, SLOT(updateDialogWithPortCount()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
+      dialog_->setDockable(dockable_);
       dockable_->setMinimumSize(dialog_->minimumSize());
-      dockable_->setAllowedAreas(Qt::RightDockWidgetArea);
+      dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
       SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
+      dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
+      connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
     }
   }
+}
+
+void ModuleWidget::updateDialogWithPortCount()
+{
+  if (dialog_)
+    dialog_->updateFromPortChange(numInputPorts());
+}
+
+Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
+{
+  return Core::Preferences::Instance().modulesAreDockable ? Qt::RightDockWidgetArea : Qt::NoDockWidgetArea;
+}
+
+void ModuleWidget::adjustDockState(bool dockEnabled)
+{
+  if (dockable_)
+  {
+    dockable_->setAllowedAreas(allowedDockArea());
+  }
+
+  if (dockEnabled)
+  {
+
+  }
+  else
+  {
+    if (dockable_)
+    {
+      dockable_->setFloating(true);
+    }
+  }
+
 }
 
 boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
@@ -686,10 +785,20 @@ void ModuleWidget::toggleOptionsDialog()
       {
         dockable_->setFloating(true);
       }
+      colorOptionsButton(true);
     }
     else
+    {
       hideUI();
+      colorOptionsButton(false);
+    }
   }
+}
+
+void ModuleWidget::colorOptionsButton(bool visible)
+{
+  QString styleSheet = visible ? "background-color: rgb(0,0,220); color: white;" : "";
+  optionsButton_->setStyleSheet(styleSheet);
 }
 
 void ModuleWidget::updateProgressBar(double percent)

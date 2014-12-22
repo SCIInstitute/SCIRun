@@ -30,10 +30,13 @@
 #define ALGORITHMS_MATH_INTERFACEWITHCLEAVER_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Field/share.h>
+
+namespace Cleaver
+{
+  class ScalarField;
+}
 
 namespace SCIRun {
 namespace Core {
@@ -45,18 +48,17 @@ namespace Fields {
   public:
     InterfaceWithCleaverAlgorithm();  
 
-    static AlgorithmInputName InputFields;
-    static AlgorithmOutputName OutputField;
-    static AlgorithmParameterName VerboseCheckBox;
-    static AlgorithmParameterName PaddingCheckBox;
-    static AlgorithmParameterName AbsoluteVolumeScalingRadioButton;
-    static AlgorithmParameterName RelativeVolumeScalingRadioButton;       
-    static AlgorithmParameterName VolumeScalingSpinBox_X;
-    static AlgorithmParameterName VolumeScalingSpinBox_Y;
-    static AlgorithmParameterName VolumeScalingSpinBox_Z;
+    static AlgorithmParameterName Verbose;
+    static AlgorithmParameterName Padding;
+    static AlgorithmParameterName VolumeScalingOption;
+    static AlgorithmParameterName VolumeScalingX;
+    static AlgorithmParameterName VolumeScalingY;
+    static AlgorithmParameterName VolumeScalingZ;
     
     FieldHandle run(const FieldList& input) const;
     virtual AlgorithmOutput run_generic(const AlgorithmInput &) const override;
+
+    static boost::shared_ptr<Cleaver::ScalarField> makeCleaverFieldFromLatVol(FieldHandle field);
   };
 
 }}}}

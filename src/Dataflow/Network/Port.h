@@ -62,6 +62,7 @@ public:
   const Connection* connection(size_t) const;
 
   virtual PortId id() const { return id_; }
+  virtual void setId(const PortId& id) { id_ = id; }
   std::string get_typename() const { return typeName_; }
   std::string get_colorname() const { return colorName_; }
   std::string get_portname() const { return portName_; }
@@ -123,6 +124,7 @@ public:
   virtual bool isDynamic() const { return false; } /// @todo: design dynamic output ports
   virtual bool hasData() const override;
   virtual void attach(Connection* conn) override;
+  virtual PortDataDescriber getPortDataDescriber() const override;
 private:
   DatatypeSourceInterfaceHandle source_;
 };

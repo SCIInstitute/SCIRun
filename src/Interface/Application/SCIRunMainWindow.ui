@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1117</width>
-         <height>516</height>
+         <width>1103</width>
+         <height>467</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -151,6 +151,14 @@
     <addaction name="actionHideAllModuleUIs_"/>
     <addaction name="actionRestoreAllModuleUIs_"/>
     <addaction name="separator"/>
+    <addaction name="actionCenterNetworkViewer_"/>
+    <addaction name="actionZoomIn_"/>
+    <addaction name="actionZoomOut_"/>
+    <addaction name="actionZoomBestFit_"/>
+    <addaction name="actionResetNetworkZoom_"/>
+    <addaction name="actionDragMode_"/>
+    <addaction name="actionSelectMode_"/>
+    <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
@@ -185,7 +193,7 @@
    <property name="minimumSize">
     <size>
      <width>299</width>
-     <height>328</height>
+     <height>364</height>
     </size>
    </property>
    <property name="features">
@@ -209,10 +217,16 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>40</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
-           <width>85</width>
-           <height>16777215</height>
+           <width>100</width>
+           <height>40</height>
           </size>
          </property>
          <property name="toolTip">
@@ -238,9 +252,15 @@
        </item>
        <item>
         <widget class="QPushButton" name="clearFilterButton_">
+         <property name="minimumSize">
+          <size>
+           <width>58</width>
+           <height>32</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
-           <width>40</width>
+           <width>58</width>
            <height>16777215</height>
           </size>
          </property>
@@ -326,7 +346,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="miniviewTextLabel_">
        <property name="text">
         <string>Network Miniview</string>
        </property>
@@ -368,7 +388,7 @@
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>200</height>
+         <height>265</height>
         </size>
        </property>
        <property name="whatsThis">
@@ -388,16 +408,22 @@
          <string>Display options for the network editor.</string>
         </property>
         <attribute name="title">
-         <string>Network Editor*</string>
+         <string>Network Editor</string>
         </attribute>
         <widget class="QGroupBox" name="layoutOptionsGroupBox_">
          <property name="geometry">
           <rect>
-           <x>9</x>
-           <y>9</y>
-           <width>461</width>
-           <height>211</height>
+           <x>10</x>
+           <y>0</y>
+           <width>531</width>
+           <height>231</height>
           </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>531</width>
+           <height>231</height>
+          </size>
          </property>
          <property name="title">
           <string>Display Options</string>
@@ -628,6 +654,16 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="dockableModulesCheckBox_">
+            <property name="text">
+             <string>Enable Module Dock</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </widget>
@@ -639,7 +675,7 @@
          <string>Stored paths available for use in module I/O.</string>
         </property>
         <attribute name="title">
-         <string>Options*</string>
+         <string>Options</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
@@ -650,7 +686,7 @@
               <bool>true</bool>
              </property>
              <property name="title">
-              <string>SCIRun Path Settings*</string>
+              <string>SCIRun Path Settings</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
@@ -1144,6 +1180,50 @@
   <action name="actionReset_Window_Layout">
    <property name="text">
     <string>Reset Window Layout</string>
+   </property>
+  </action>
+  <action name="actionCenterNetworkViewer_">
+   <property name="text">
+    <string>Center Network View</string>
+   </property>
+  </action>
+  <action name="actionResetNetworkZoom_">
+   <property name="text">
+    <string>Reset Network Zoom</string>
+   </property>
+  </action>
+  <action name="actionDragMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Drag Mode</string>
+   </property>
+  </action>
+  <action name="actionSelectMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Select Mode</string>
+   </property>
+  </action>
+  <action name="actionZoomIn_">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+  </action>
+  <action name="actionZoomOut_">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+  </action>
+  <action name="actionZoomBestFit_">
+   <property name="text">
+    <string>Zoom Best Fit</string>
    </property>
   </action>
  </widget>

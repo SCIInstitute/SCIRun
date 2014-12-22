@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2014 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -49,7 +49,6 @@ namespace SCIRun {
           static AlgorithmParameterName Tolerance;
           static AlgorithmParameterName MatchNodeValues;
           static AlgorithmParameterName MakeNoData;
-          static AlgorithmInputName InputFields;
 
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
         };

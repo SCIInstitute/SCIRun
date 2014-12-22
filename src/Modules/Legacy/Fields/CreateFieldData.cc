@@ -89,10 +89,6 @@ CreateFieldData::execute()
   TCLInterface::eval(get_id()+" update_text");
 #endif
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || guiformat_.changed() || guibasis_.changed() 
-                    || guifunction_.changed() || !oport_cached("Field"))
-#endif
   if (needToExecute())
   {
     update_state(Executing);

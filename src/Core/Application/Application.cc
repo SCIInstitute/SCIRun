@@ -40,6 +40,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 #include <Core/Utils/Exception.h>
+#include <Core/Application/Session/Session.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -60,7 +61,7 @@ namespace SCIRun
     public:
       CommandLineParser parser;
       boost::filesystem::path app_filepath_;
-      boost::filesystem::path app_filename_;	
+      boost::filesystem::path app_filename_;
       ApplicationParametersHandle parameters_;
       NetworkEditorControllerHandle controller_;
     };
@@ -73,10 +74,15 @@ Application::Application() :
 	private_( new ApplicationPrivate )
 {
   private_->app_filepath_ = boost::filesystem::current_path();
+  auto configDir = configDirectory();
+  Log::setLogDirectory(configDir);
+  SessionManager::Instance().initialize(configDir);
+  SessionManager::Instance().session()->beginSession();
 }
 
 Application::~Application()
 {
+  SessionManager::Instance().session()->endSession();
 }
 
 void Application::shutdown()
@@ -95,6 +101,13 @@ void Application::shutdown()
   {
     Log::get() << EMERG << "Unknown unhandled exception during application shutdown" << std::endl;
   }
+}
+
+static ApplicationHelper applicationHelper;
+
+std::string Application::applicationName() const
+{
+  return applicationHelper.applicationName();
 }
 
 ApplicationParametersHandle Application::parameters() const
@@ -162,6 +175,31 @@ std::string Application::version() const
 	/// @todo:
   ///return CORE_APPLICATION_VERSION;
   return "5.0.0 developer version";
+}
+
+boost::filesystem::path Application::configDirectory() const
+{
+  return applicationHelper.configDirectory();
+}
+
+bool Application::get_user_directory( boost::filesystem::path& user_dir, bool config_path) const
+{
+  return applicationHelper.get_user_directory(user_dir, config_path);
+}
+
+bool Application::get_user_desktop_directory( boost::filesystem::path& user_desktop_dir ) const
+{
+  return applicationHelper.get_user_desktop_directory(user_desktop_dir);
+}
+
+bool Application::get_config_directory( boost::filesystem::path& config_dir ) const
+{
+  return applicationHelper.get_config_directory(config_dir);
+}
+
+bool Application::get_user_name( std::string& user_name ) const
+{
+  return applicationHelper.get_user_name(user_name);
 }
 
 /*

@@ -29,7 +29,7 @@
 /// @todo Documentation Dataflow/Network/ModuleStateInterface.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H
-#define DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H 
+#define DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H
 
 #include <string>
 #include <iostream>
@@ -50,14 +50,14 @@ namespace Networks {
   {
   public:
     virtual ~ModuleStateInterface();
-    
+
     typedef std::vector<SCIRun::Core::Algorithms::AlgorithmParameterName> Keys;
     typedef SCIRun::Core::Algorithms::AlgorithmParameterName Name;
     typedef SCIRun::Core::Algorithms::AlgorithmParameter Value;
 
     //serialized state
     virtual const Value getValue(const Name& name) const = 0;
-    virtual void setValue(const Name& name, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value) = 0;
+    virtual void setValue(const Name& name, const Value::Value& value) = 0;
     virtual bool containsKey(const Name& name) const = 0;
     virtual Keys getKeys() const = 0;
     virtual ModuleStateHandle clone() const = 0;
@@ -105,7 +105,7 @@ namespace Networks {
   {
     return x ? any_cast_or_default_<T>(*x) : T();
   }
-  
+
   class SCISHARE StateChangeObserver
   {
   public:

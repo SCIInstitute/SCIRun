@@ -28,6 +28,7 @@
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Network/NetworkInterface.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -53,4 +54,17 @@ ExecutionContext::ExecutionContext(const NetworkInterface& net) : network(net), 
 const ExecutionBounds& ExecutionContext::bounds() const
 {
   return executionBounds_;
+}
+
+bool WaitsForStartupInitialization::shouldWait_(true);
+
+void WaitsForStartupInitialization::waitForStartupInit() const
+{
+  if (shouldWait_)
+  {
+    std::cout << "Waiting for rendering system initialization...." << std::endl;
+    boost::this_thread::sleep(boost::posix_time::milliseconds(600));
+    std::cout << "Done waiting." << std::endl;
+    shouldWait_ = false;
+  }
 }

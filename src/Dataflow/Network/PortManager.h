@@ -40,6 +40,7 @@
 #include <boost/range/algorithm/copy.hpp>
 #include <string>
 #include <map>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {
@@ -50,14 +51,20 @@ class PortManager : boost::noncopyable
 {
 private:
   typedef std::map<PortId, T> PortMap;
+  typedef std::map<std::string, bool> DynamicMap;
   PortMap ports_;
+  DynamicMap isDynamic_;
   ModuleInterface* module_;
-  
+  void checkDynamicPortInvariant(const std::string& name);
+  void throwForPortNotFound(const PortId& id) const;
+  std::vector<T> findAllByName(const std::string& name) const;
+
 public:
   PortManager();
   size_t size() const;
   size_t add(const T& item);
   void remove(const PortId& id);
+  T operator[](const PortId& id);
   T operator[](const PortId& id) const;
   std::vector<T> operator[](const std::string& name) const;
   bool hasPort(const PortId& id) const;
@@ -85,10 +92,32 @@ size_t
 PortManager<T>::add(const T& item)
 { 
   ports_[item->id()] = item;
+  isDynamic_[item->id().name] = item->isDynamic();
+
+  if (item->isDynamic())
+    checkDynamicPortInvariant(item->id().name);
+
   /// @todo: who should manage port indexes?
   //item->setIndex(size() - 1);
   auto index = size() - 1;
   return index;
+}
+
+template<class T>
+void
+PortManager<T>::checkDynamicPortInvariant(const std::string& name)
+{
+  auto byName = findAllByName(name);
+  const size_t lastIndex = byName.size() - 1;
+  std::vector<PortId> toRemove;
+  for (int i = 0; i < byName.size(); ++i)
+  {
+    auto port = byName[i];
+    if (0 == port->nconnections() && i != lastIndex)
+      toRemove.push_back(port->id());
+  }
+  BOOST_FOREACH(const PortId& id, toRemove)
+    remove(id);
 }
 
 template<class T>
@@ -110,19 +139,46 @@ PortManager<T>::remove(const PortId& id)
 
 template<class T>
 T
+PortManager<T>::operator[](const PortId& id)
+{
+  auto it = ports_.find(id);
+  if (it == ports_.end())
+  {
+    if (isDynamic_[id.name])
+    {
+      auto byName = findAllByName(id.name);
+      if (byName.empty())
+      {
+        throwForPortNotFound(id);
+      }
+      auto newPort = boost::shared_ptr<typename T::element_type>(byName[0]->clone());
+      newPort->setId(id);
+      newPort->setIndex(add(newPort));
+      return newPort;
+    }
+    else
+      throwForPortNotFound(id);
+  }
+  return it->second;
+}
+
+template<class T>
+void
+PortManager<T>::throwForPortNotFound(const PortId& id) const
+{
+  std::ostringstream ostr;
+  ostr << "PortManager tried to access a port that does not exist: " << id;
+  BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
+}
+
+template<class T>
+T
 PortManager<T>::operator[](const PortId& id) const
 {
   auto it = ports_.find(id);
   if (it == ports_.end())
   {
-    /// @todo: need a way to detect and create arbitrary dynamic ports from serialized files.
-    //if (id.dynamic)
-    //  std::cout << "DYNAMIC PORT NEEDS TO INSERT ITSELF HERE SOMEHOW" << std::endl;
-    //else
-    //  std::cout << "NOT SETTING PORT FLAGS CORRECT" << std::endl;
-    std::ostringstream ostr;
-    ostr << "PortManager tried to access a port that does not exist: " << id;
-    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
+    throwForPortNotFound(id);
   }
   return it->second;
 }
@@ -130,11 +186,17 @@ PortManager<T>::operator[](const PortId& id) const
 template<class T>
 std::vector<T> PortManager<T>::operator[](const std::string& name) const
 {
+  return findAllByName(name);
+}
+
+template<class T>
+std::vector<T> PortManager<T>::findAllByName(const std::string& name) const
+{
   std::vector<T> portsWithName;
 
   boost::copy(
     ports_ | boost::adaptors::map_values 
-              | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
+    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
 
   if (portsWithName.empty())
   {

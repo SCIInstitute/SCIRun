@@ -33,6 +33,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
+#include <boost/any.hpp>
 #include <gmock/gmock.h>
 
 namespace SCIRun {
@@ -56,7 +57,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(findOutputPortsWithName, std::vector<OutputPortHandle>(const std::string&));
           MOCK_CONST_METHOD0(outputPorts, std::vector<OutputPortHandle>());
           MOCK_CONST_METHOD1(hasInputPort, bool(const PortId&));
-          MOCK_CONST_METHOD1(getInputPort, InputPortHandle(const PortId&));
+          MOCK_METHOD1(getInputPort, InputPortHandle(const PortId&));
           MOCK_CONST_METHOD1(findInputPortsWithName, std::vector<InputPortHandle>(const std::string&));
           MOCK_CONST_METHOD0(inputPorts, std::vector<InputPortHandle>());
           MOCK_CONST_METHOD0(num_input_ports, size_t());
@@ -106,6 +107,15 @@ namespace SCIRun {
     }
   }
 }
+
+namespace boost {
+inline std::ostream& operator<<(std::ostream& o, const boost::any& a)
+{
+  return o << "boost::any";
+}
+}
+
+#include <boost/optional/optional_io.hpp>
 
 #ifdef WIN32
 #define ENABLE_ON_WINDOWS(test) test
