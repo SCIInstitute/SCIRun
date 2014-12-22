@@ -63,10 +63,10 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, WM);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, Electrode);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, InternalAir);
 
-AlgorithmInputName  SetConductivitiesToTetMeshAlgorithm::InputField("InputField");
-AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::OutputField("OutputField");
+AlgorithmInputName  SetConductivitiesToMeshAlgorithm::InputField("InputField");
+AlgorithmOutputName SetConductivitiesToMeshAlgorithm::OutputField("OutputField");
 
-SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
+SetConductivitiesToMeshAlgorithm::SetConductivitiesToMeshAlgorithm()
 {
   ElemLabelLookup += 1,2,3,4,5,6,7,8;
 
@@ -82,7 +82,7 @@ SetConductivitiesToTetMeshAlgorithm::SetConductivitiesToTetMeshAlgorithm()
   addParameter(InternalAir,  1e-6);
 }
 
-AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetConductivitiesToMeshAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   auto mesh  = input.get<Field>(InputField);
   
@@ -95,7 +95,7 @@ AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const Algorithm
   return output;
 }
 
-FieldHandle SetConductivitiesToTetMeshAlgorithm::run(FieldHandle fh) const
+FieldHandle SetConductivitiesToMeshAlgorithm::run(FieldHandle fh) const
 {
   // making sure the field is not null
   if (!fh)

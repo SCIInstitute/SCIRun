@@ -1191,12 +1191,12 @@
 				</second>
 			</item>
 			<item>
-				<first>SetConductivitiesToTetMesh:56</first>
+				<first>SetConductivitiesToMesh:56</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>BrainStimulator</category_name_>
-						<module_name_>SetConductivitiesToTetMesh</module_name_>
+						<module_name_>SetConductivitiesToMesh</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -1331,12 +1331,12 @@
 				</second>
 			</item>
 			<item>
-				<first>SetupRHSforTDCSandTMS:48</first>
+				<first>SetupTDCS:48</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>BrainStimulator</category_name_>
-						<module_name_>SetupRHSforTDCSandTMS</module_name_>
+						<module_name_>SetupTDCS</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -1528,7 +1528,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(255,0,27)</value>
+										<value>Color(160,160,164)</value>
 									</value>
 								</second>
 							</item>
@@ -1652,7 +1652,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(255,255,255)</value>
+										<value>Color(160,160,164)</value>
 									</value>
 								</second>
 							</item>
@@ -2350,7 +2350,7 @@
 					<name>BoundaryField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:48</moduleId2_>
+				<moduleId2_>SetupTDCS:48</moduleId2_>
 				<port2_>
 					<name>ELECTRODE_TRI_SURF_MESH</name>
 					<id>0</id>
@@ -2362,7 +2362,7 @@
 					<name>BoundaryField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:48</moduleId2_>
+				<moduleId2_>SetupTDCS:48</moduleId2_>
 				<port2_>
 					<name>SCALP_TRI_SURF_MESH</name>
 					<id>0</id>
@@ -2410,7 +2410,7 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetConductivitiesToTetMesh:56</moduleId2_>
+				<moduleId2_>SetConductivitiesToMesh:56</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -2422,7 +2422,7 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:48</moduleId2_>
+				<moduleId2_>SetupTDCS:48</moduleId2_>
 				<port2_>
 					<name>MESH</name>
 					<id>0</id>
@@ -2482,7 +2482,7 @@
 					<name>Matrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SetupRHSforTDCSandTMS:48</moduleId2_>
+				<moduleId2_>SetupTDCS:48</moduleId2_>
 				<port2_>
 					<name>ELECTRODE_SPONGE_LOCATION_AVR</name>
 					<id>0</id>
@@ -2501,7 +2501,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetConductivitiesToTetMesh:56</moduleId1_>
+				<moduleId1_>SetConductivitiesToMesh:56</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
@@ -2513,7 +2513,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetConductivitiesToTetMesh:56</moduleId1_>
+				<moduleId1_>SetConductivitiesToMesh:56</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
@@ -2525,7 +2525,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetConductivitiesToTetMesh:56</moduleId1_>
+				<moduleId1_>SetConductivitiesToMesh:56</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
@@ -2549,7 +2549,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
+				<moduleId1_>SetupTDCS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_CONTACT_IMPEDANCE</name>
 					<id>0</id>
@@ -2561,7 +2561,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
+				<moduleId1_>SetupTDCS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_ELEMENT</name>
 					<id>0</id>
@@ -2573,7 +2573,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
+				<moduleId1_>SetupTDCS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_ELEMENT_DEFINITION</name>
 					<id>0</id>
@@ -2585,7 +2585,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
+				<moduleId1_>SetupTDCS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_ELEMENT_TYPE</name>
 					<id>0</id>
@@ -2597,7 +2597,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
+				<moduleId1_>SetupTDCS:48</moduleId1_>
 				<port1_>
 					<name>ELECTRODE_SPONGE_SURF</name>
 					<id>0</id>
@@ -2609,7 +2609,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
+				<moduleId1_>SetupTDCS:48</moduleId1_>
 				<port1_>
 					<name>LHS_KNOWNS</name>
 					<id>0</id>
@@ -2621,7 +2621,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
+				<moduleId1_>SetupTDCS:48</moduleId1_>
 				<port1_>
 					<name>RHS</name>
 					<id>0</id>
@@ -2633,7 +2633,7 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SetupRHSforTDCSandTMS:48</moduleId1_>
+				<moduleId1_>SetupTDCS:48</moduleId1_>
 				<port1_>
 					<name>SELECTMATRIXINDECES</name>
 					<id>0</id>
@@ -3144,7 +3144,7 @@
 			</second>
 		</item>
 		<item>
-			<first>SetConductivitiesToTetMesh:56</first>
+			<first>SetConductivitiesToMesh:56</first>
 			<second>
 				<first>-2.05600000000000000e+003</first>
 				<second>3.22000000000000000e+002</second>
@@ -3158,7 +3158,7 @@
 			</second>
 		</item>
 		<item>
-			<first>SetupRHSforTDCSandTMS:48</first>
+			<first>SetupTDCS:48</first>
 			<second>
 				<first>-1.52000000000000000e+003</first>
 				<second>3.04000000000000000e+002</second>

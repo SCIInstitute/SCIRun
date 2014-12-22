@@ -81,26 +81,26 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, normal_dot_product_bound);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, pointdistancebound);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, number_of_electrodes);
 
-AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::MESH("MESH");
-AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::SCALP_TRI_SURF_MESH("SCALP_TRI_SURF_MESH");
-AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_TRI_SURF_MESH("ELECTRODE_TRI_SURF_MESH");
-AlgorithmInputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_SPONGE_LOCATION_AVR("ELECTRODE_SPONGE_LOCATION_AVR");
-AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_ELEMENT("ELECTRODE_ELEMENT");
-AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_ELEMENT_TYPE("ELECTRODE_ELEMENT_TYPE");
-AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_ELEMENT_DEFINITION("ELECTRODE_ELEMENT_DEFINITION");
-AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_CONTACT_IMPEDANCE("ELECTRODE_CONTACT_IMPEDANCE");
-AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::RHS("RHS");
-AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::LHS_KNOWNS("LHS_KNOWNS");
-AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::ELECTRODE_SPONGE_SURF("ELECTRODE_SPONGE_SURF");
-AlgorithmOutputName SetupRHSforTDCSandTMSAlgorithm::SELECTMATRIXINDECES("SELECTMATRIXINDECES");
+AlgorithmInputName SetupTDCSAlgorithm::MESH("MESH");
+AlgorithmInputName SetupTDCSAlgorithm::SCALP_TRI_SURF_MESH("SCALP_TRI_SURF_MESH");
+AlgorithmInputName SetupTDCSAlgorithm::ELECTRODE_TRI_SURF_MESH("ELECTRODE_TRI_SURF_MESH");
+AlgorithmInputName SetupTDCSAlgorithm::ELECTRODE_SPONGE_LOCATION_AVR("ELECTRODE_SPONGE_LOCATION_AVR");
+AlgorithmOutputName SetupTDCSAlgorithm::ELECTRODE_ELEMENT("ELECTRODE_ELEMENT");
+AlgorithmOutputName SetupTDCSAlgorithm::ELECTRODE_ELEMENT_TYPE("ELECTRODE_ELEMENT_TYPE");
+AlgorithmOutputName SetupTDCSAlgorithm::ELECTRODE_ELEMENT_DEFINITION("ELECTRODE_ELEMENT_DEFINITION");
+AlgorithmOutputName SetupTDCSAlgorithm::ELECTRODE_CONTACT_IMPEDANCE("ELECTRODE_CONTACT_IMPEDANCE");
+AlgorithmOutputName SetupTDCSAlgorithm::RHS("RHS");
+AlgorithmOutputName SetupTDCSAlgorithm::LHS_KNOWNS("LHS_KNOWNS");
+AlgorithmOutputName SetupTDCSAlgorithm::ELECTRODE_SPONGE_SURF("ELECTRODE_SPONGE_SURF");
+AlgorithmOutputName SetupTDCSAlgorithm::SELECTMATRIXINDECES("SELECTMATRIXINDECES");
 
-AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(int i) { return AlgorithmParameterName(Name("elc"+boost::lexical_cast<std::string>(i)));}
-AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeImpedanceParameterName(int i) { return AlgorithmParameterName(Name("imp_elc"+boost::lexical_cast<std::string>(i)));}
+AlgorithmParameterName SetupTDCSAlgorithm::ElectrodeParameterName(int i) { return AlgorithmParameterName(Name("elc" + boost::lexical_cast<std::string>(i))); }
+AlgorithmParameterName SetupTDCSAlgorithm::ElectrodeImpedanceParameterName(int i) { return AlgorithmParameterName(Name("imp_elc" + boost::lexical_cast<std::string>(i))); }
     
-const double SetupRHSforTDCSandTMSAlgorithm::electode_current_summation_bound = 1e-6;
-const double SetupRHSforTDCSandTMSAlgorithm::special_label = -4321;
+const double SetupTDCSAlgorithm::electode_current_summation_bound = 1e-6;
+const double SetupTDCSAlgorithm::special_label = -4321;
 
-SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
+SetupTDCSAlgorithm::SetupTDCSAlgorithm()
 {
   addParameter(Parameters::ELECTRODE_VALUES, 0); // just a default value, will be replaced with vector
   addParameter(Parameters::IMPEDANCE_VALUES, 0);
@@ -110,7 +110,7 @@ SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
   addParameter(Parameters::pointdistancebound, 0.0001);
 }
 
-AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetupTDCSAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   auto mesh = input.get<Field>(MESH);
 
@@ -127,12 +127,12 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   {
     auto elecName = all_elc_values[i].nameForXml(); 
    // auto elecValue = all_elc_values[i].getDouble(); // why is not that used?
-    auto expectedElecName = SetupRHSforTDCSandTMSAlgorithm::ElecrodeParameterName(i); // ElecrodeParameterName(i);
+    auto expectedElecName = ElectrodeParameterName(i); // ElecrodeParameterName(i);
     if(elecName.name_.compare(expectedElecName.name_) != 0) // if so, electrodes are being stored out of order.
       THROW_ALGORITHM_PROCESSING_ERROR("Values are being stored out of order!");
       
     auto impelecName = all_imp_elc_values[i].nameForXml(); 
-    auto expectedImpElecName = SetupRHSforTDCSandTMSAlgorithm::ElecrodeImpedanceParameterName(i);
+    auto expectedImpElecName = ElectrodeImpedanceParameterName(i);
     if(elecName.name_.compare(expectedElecName.name_) != 0) // if so, electrodes are being stored out of order.
       THROW_ALGORITHM_PROCESSING_ERROR("Impedance values are being stored out of order!");
   }
@@ -182,7 +182,7 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
 }
 
 /// replace this code with calls to splitfieldbyconnectedregion, clipfieldby* if available for SCIRun5 
-boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle> SetupRHSforTDCSandTMSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
+boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle> SetupTDCSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
  VMesh*  mesh_vmesh = mesh->vmesh();
  VMesh::size_type mesh_num_nodes = mesh_vmesh->num_nodes();
@@ -459,6 +459,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   /// use SplitFieldByDomainAlgo to find only labeled (based on elc. normal criteria) surfaces
   VMesh::Elem::index_type c_ind=0;
   SplitFieldByDomainAlgo algo2;
+  algo2.setUpdaterFunc(getUpdaterFunc());
   FieldList output;  
   algo2.set(SplitFieldByDomainAlgo::SortBySize, true);
   algo2.set(SplitFieldByDomainAlgo::SortAscending, false);
@@ -598,7 +599,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  return boost::make_tuple(lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp,elc_sponge_surf);
 }
 
-DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const
+DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const
 {
   /// get the right-hand-side from GUI
   std::vector<Variable, std::allocator<Variable>> elcs_wanted; 
@@ -644,7 +645,7 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, c
   return output;
 }
 
-boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle, DenseMatrixHandle> SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
+boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle, DenseMatrixHandle> SetupTDCSAlgorithm::run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
   if (num_of_elc > 128) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes given exceeds what is possible ");}  /// number of possible electrodes is currently bound to 128 electrodes in default setting
   if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}

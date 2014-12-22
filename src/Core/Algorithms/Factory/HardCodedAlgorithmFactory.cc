@@ -117,8 +117,8 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(AlignMeshBoundingBoxes, AlignMeshBoundingBoxesAlgo)
       ADD_MODULE_ALGORITHM(GetFieldNodes, GetMeshNodesAlgo)     /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
       ADD_MODULE_ALGORITHM(ElectrodeCoilSetup, ElectrodeCoilSetupAlgorithm)
-      ADD_MODULE_ALGORITHM(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshAlgorithm)
-      ADD_MODULE_ALGORITHM(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSAlgorithm)
+      ADD_MODULE_ALGORITHM(SetConductivitiesToMesh, SetConductivitiesToMeshAlgorithm)
+      ADD_MODULE_ALGORITHM(SetupTDCS, SetupTDCSAlgorithm)
       ADD_MODULE_ALGORITHM(GenerateROIStatistics, GenerateROIStatisticsAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
       ADD_MODULE_ALGORITHM(ReportFieldInfo, ReportFieldInfoAlgorithm)
@@ -177,6 +177,7 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
   if (func != factoryMap_.end())
     h.reset((func->second)());
 
+  //TODO: make a convenience function to copy these for "sub-algorithms"
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());

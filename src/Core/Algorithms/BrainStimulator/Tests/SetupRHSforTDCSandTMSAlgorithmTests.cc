@@ -95,7 +95,7 @@ namespace
 
 TEST(SetupRHSforTDCSandTMSAlgorithm, Correct)
 {
-  SetupRHSforTDCSandTMSAlgorithm algo;
+  SetupTDCSAlgorithm algo;
   int m=6;
   std::vector<Variable> elc;
   
