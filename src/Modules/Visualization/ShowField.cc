@@ -217,7 +217,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
   if (showEdges)
   {
-    renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, id);
+		renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, id);
   }
 
   // Set value ranges for color mapping fields. We should use uniforms for
@@ -389,12 +389,15 @@ void ShowFieldModule::renderFacesLinear(
 
   uint32_t iboIndex = 0;
   int64_t numVBOElements = 0;
+	
   while (fiter != fiterEnd) 
   {
     mesh->get_nodes(nodes, *fiter);
  
     std::vector<Core::Geometry::Point> points(nodes.size());
     std::vector<Core::Geometry::Vector> normals(nodes.size());
+
+	//std::cout << "Node Size: " << nodes.size() << std::endl;
 
     for (size_t i = 0; i < nodes.size(); i++)
     {
@@ -540,7 +543,7 @@ void ShowFieldModule::renderFacesLinear(
     ++fiter;
     ++numVBOElements;
   }
-
+ 
   std::string uniqueNodeID = id + "face";
   std::string vboName      = uniqueNodeID + "VBO";
   std::string iboName      = uniqueNodeID + "IBO";
@@ -856,7 +859,6 @@ void ShowFieldModule::addFaceGeom(
 
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
-        writeVBOScalarValue(scols[1]);
         if (!doubleSided) {writeVBOScalarValue(scols[1]);}
         else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 

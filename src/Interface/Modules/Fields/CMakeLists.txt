@@ -55,6 +55,7 @@ SET(Interface_Modules_Fields_FORMS
   RefineMesh.ui
   ConvertFieldBasis.ui
   swapfielddatawithmatrixentries.ui
+  EditMeshBoundingBox.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -86,6 +87,7 @@ SET(Interface_Modules_Fields_HEADERS
   ConvertFieldBasisDialog.h
   share.h
   SwapFieldDataWithMatrixEntriesDialog.h
+  EditMeshBoundingBoxDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -116,6 +118,7 @@ SET(Interface_Modules_Fields_SOURCES
   ClipFieldByFunctionDialog.cc
   SwapFieldDataWithMatrixEntriesDialog.cc
   RefineMeshDialog.cc
+  EditMeshBoundingBoxDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})
