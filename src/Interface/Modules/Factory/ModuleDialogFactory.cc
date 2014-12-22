@@ -63,7 +63,9 @@
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/FairMeshDialog.h>
+#if WITH_TETGEN
 #include <Interface/Modules/Fields/InterfaceWithTetGenDialog.h>
+#endif
 #include <Interface/Modules/Fields/ProjectPointsOntoMeshDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldDialog.h>
 #include <Interface/Modules/Fields/CalculateDistanceToFieldBoundaryDialog.h>
@@ -72,10 +74,10 @@
 #include <Interface/Modules/Fields/MapFieldDataFromSourceToDestinationDialog.h>
 #include <Interface/Modules/Fields/ClipFieldByFunctionDialog.h>
 #include <Interface/Modules/Fields/BuildMappingMatrixDialog.h>
-#include <Interface/Modules/Fields/RefineMeshDialog.h> 
+#include <Interface/Modules/Fields/RefineMeshDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
 #include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
-#include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h> 
+#include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
 #include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
 #include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
 #include <Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h>
@@ -153,7 +155,9 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ProjectPointsOntoMesh, ProjectPointsOntoMeshDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToField, CalculateDistanceToFieldDialog)
     ADD_MODULE_DIALOG(CalculateDistanceToFieldBoundary, CalculateDistanceToFieldBoundaryDialog)
+    #if WITH_TETGEN
     ADD_MODULE_DIALOG(InterfaceWithTetGen, InterfaceWithTetGenDialog)
+    #endif
     ADD_MODULE_DIALOG(MapFieldDataOntoElements, MapFieldDataOntoElemsDialog)
     ADD_MODULE_DIALOG(MapFieldDataOntoNodes, MapFieldDataOntoNodesDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
@@ -163,7 +167,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 		ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
 		ADD_MODULE_DIALOG(ConvertFieldBasis, ConvertFieldBasisDialog)
-	ADD_MODULE_DIALOG(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixDialog)
+	  ADD_MODULE_DIALOG(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixDialog)
 		ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
   ;
