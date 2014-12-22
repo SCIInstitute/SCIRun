@@ -48,13 +48,11 @@ EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-	//addLineEditManager(functionLineEdit_, EvaluateLinearAlgebraBinaryModule::FunctionString); 
-
-  connect(functionLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushOperationToState())); 
+	addLineEditManager(functionLineEdit_, Variables::FunctionString); 
   connect(addRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(subtractRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(multiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-	connect(functionRadioButton_,  SIGNAL(clicked()), this, SLOT(pushOperationToState())); 
+	connect(functionRadioButton_,  SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   //buttonBox->setVisible(false);
 }
 

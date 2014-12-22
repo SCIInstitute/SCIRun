@@ -45,9 +45,9 @@ EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-	connect(scalarLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushOperationToState()));
-	connect(functionLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushOperationToState())); 
-  connect(transposeRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
+	addDoubleLineEditManager(scalarLineEdit_, Variables::ScalarValue);
+	addLineEditManager(functionLineEdit_, Variables::FunctionString); 
+	connect(transposeRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(negateRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(scalarMultiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
 	connect(functionRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState())); 
@@ -121,7 +121,7 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str)
 void EvaluateLinearAlgebraUnaryDialog::pushOperationToState()
 {
 		if(scalarMultiplyRadioButton_->isChecked())
-				pushOperationToState(scalarLineEdit_->text());
+			pushOperationToState(scalarLineEdit_->text());
 		else if(functionRadioButton_->isChecked())
 				pushOperationToState(functionLineEdit_->text());
 		else 

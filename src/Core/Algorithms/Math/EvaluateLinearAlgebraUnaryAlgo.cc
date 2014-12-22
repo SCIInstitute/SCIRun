@@ -80,7 +80,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
 				MatrixHandle matrixInput;
 				matrixInput.reset(matrix->clone());
 			
-				if (!(engine.add_input_fullmatrix("x", matrixInput ) )) ;//return;
+				if (!(engine.add_input_fullmatrix("x", matrixInput ) )) ;
       
 				boost::optional<std::string> func = params.get<2>(); 
 				std::string function_string = func.get(); 
@@ -88,12 +88,11 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
 				function_string = "RESULT="+function_string;
 				engine.add_expressions(function_string);
 
-				if(!(engine.add_output_fullmatrix("RESULT",matrixInput))) ;//return;
-				//if (!(engine.add_output_fullmatrix("RESULT", lhsInput)));
+				if(!(engine.add_output_fullmatrix("RESULT",matrixInput))) ;
 				// Actual engine call, which does the dynamic compilation, the creation of the
 				// code for all the objects, as well as inserting the function and looping 
 				// over every data point
-				if (!(engine.run())) ;//return;
+				if (!(engine.run())) ;
 				result = matrix_cast::as_dense(matrixInput);
 		}
 		break;
