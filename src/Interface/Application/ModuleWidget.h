@@ -57,8 +57,6 @@ class NetworkEditor;
 class PortWidgetManager;
 class DialogErrorControl;
 
-class ModuleWidget : public QFrame,
-  public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module, public HasNotes
 class ModuleWidgetDisplay : public Ui::Module
 {};
 

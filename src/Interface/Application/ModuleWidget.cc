@@ -270,7 +270,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 
   displayImpl_->executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   connect(displayImpl_->executePushButton_, SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
-  addWidgetToExecutionDisableList(executePushButton_);
+  addWidgetToExecutionDisableList(displayImpl_->executePushButton_);
 
   int pixelWidth = displayImpl_->titleLabel_->fontMetrics().boundingRect(displayImpl_->titleLabel_->text()).width();
   //std::cout << titleLabel_->text().toStdString() << std::endl;
@@ -361,7 +361,7 @@ void ModuleWidget::setupModuleActions()
 {
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
-  moduleActionButton_->setMenu(actionsMenu_->getMenu());
+  displayImpl_->moduleActionButton_->setMenu(actionsMenu_->getMenu());
 
   auto replaceWith = actionsMenu_->getAction("Replace With");
   auto menu = new QMenu(this);
@@ -594,7 +594,7 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
-  removeWidgetFromExecutionDisableList(executePushButton_);
+  removeWidgetFromExecutionDisableList(displayImpl_->executePushButton_);
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
   if (dialog_)
     removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());
@@ -798,7 +798,7 @@ void ModuleWidget::toggleOptionsDialog()
 void ModuleWidget::colorOptionsButton(bool visible)
 {
   QString styleSheet = visible ? "background-color: rgb(0,0,220); color: white;" : "";
-  optionsButton_->setStyleSheet(styleSheet);
+  displayImpl_->optionsButton_->setStyleSheet(styleSheet);
 }
 
 void ModuleWidget::updateProgressBar(double percent)
