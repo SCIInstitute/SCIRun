@@ -53,6 +53,13 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 	addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
 	addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
 	addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
+  connectButtonToExecuteSignal(showNodesCheckBox_);
+  connectButtonToExecuteSignal(showEdgesCheckBox_);
+  connectButtonToExecuteSignal(showFacesCheckBox_);
+  connectButtonToExecuteSignal(enableTransparencyNodesCheckBox_);
+  connectButtonToExecuteSignal(enableTransparencyEdgesCheckBox_);
+  connectButtonToExecuteSignal(enableTransparencyFacesCheckBox_);
+  connectButtonToExecuteSignal(invertNormalsCheckBox);
 
 	connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 	connect(nodesAsPointsButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));

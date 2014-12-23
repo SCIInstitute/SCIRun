@@ -61,6 +61,11 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
 {
 }
 
+void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
+{
+  connect(button, SIGNAL(clicked()), this, SIGNAL(executeActionTriggered()));
+}
+
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
 {
   setWindowTitle(title);
