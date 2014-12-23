@@ -182,7 +182,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
   addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix", "Math", "SCIRun", "...", "...");
-  addModuleDesc<EditMeshBoundingBoxModule>("Rewrite", "...");
+  addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
 
 
   // insert module desc here
