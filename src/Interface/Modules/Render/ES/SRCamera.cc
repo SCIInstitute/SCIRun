@@ -145,6 +145,12 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 }
 
 //------------------------------------------------------------------------------
+void SRCamera::setView(const glm::vec3& view, const glm::vec3& up)
+{
+    mArcLookAt->setView(view, up);
+}
+
+//------------------------------------------------------------------------------
 glm::vec2 SRCamera::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
 {
   float windowOriginX = 0.0f;

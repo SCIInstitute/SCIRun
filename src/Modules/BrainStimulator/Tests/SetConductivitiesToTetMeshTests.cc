@@ -69,7 +69,7 @@ TEST_F(SetConductivitiesToTetMeshTests, TetMeshScalarSevenElem)
 {
   UseRealAlgorithmFactory f;
 
-  auto test = makeModule("SetConductivitiesToTetMesh");
+  auto test = makeModule("SetConductivitiesToMesh");
   stubPortNWithThisData(test, 0, CreateTetMeshSevenElem());
 
   EXPECT_NO_THROW(test->execute());
@@ -79,7 +79,7 @@ TEST_F(SetConductivitiesToTetMeshTests, TetMeshVectorOnElem)
 {
   UseRealAlgorithmFactory f;
 
-  auto test = makeModule("SetConductivitiesToTetMesh");
+  auto test = makeModule("SetConductivitiesToMesh");
   stubPortNWithThisData(test, 0, CreateTetMeshVectorOnElem());
 
   EXPECT_THROW(test->execute(), AlgorithmInputException);
@@ -89,7 +89,7 @@ TEST_F(SetConductivitiesToTetMeshTests, CheckInputParameters)
 {
   UseRealAlgorithmFactory f;
 
-  auto test = makeModule("SetConductivitiesToTetMesh");
+  auto test = makeModule("SetConductivitiesToMesh");
   stubPortNWithThisData(test, 0, CreateTetMeshVectorOnElem());
 
   EXPECT_THROW(test->execute(), AlgorithmInputException);
@@ -97,7 +97,7 @@ TEST_F(SetConductivitiesToTetMeshTests, CheckInputParameters)
 
 TEST_F(SetConductivitiesToTetMeshTests, SparseRowMatrixInput)
 {
-  auto test = makeModule("SetConductivitiesToTetMesh");
+  auto test = makeModule("SetConductivitiesToMesh");
 	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
 	m->insert(0,0) = 1;
 	m->insert(0,1) = 7;
@@ -115,7 +115,7 @@ TEST_F(SetConductivitiesToTetMeshTests, SparseRowMatrixInput)
 
 TEST_F(SetConductivitiesToTetMeshTests, ThrowsForNullInput)
 {
-  auto test = makeModule("SetConductivitiesToTetMesh");
+  auto test = makeModule("SetConductivitiesToMesh");
   ASSERT_TRUE(test != nullptr);
   FieldHandle nullField;
   stubPortNWithThisData(test, 0, nullField);

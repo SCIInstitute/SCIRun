@@ -58,10 +58,10 @@ namespace BrainStimulator {
   ALGORITHM_PARAMETER_DECL(Electrode);
   ALGORITHM_PARAMETER_DECL(InternalAir);
 
-  class SCISHARE SetConductivitiesToTetMeshAlgorithm : public AlgorithmBase
+  class SCISHARE SetConductivitiesToMeshAlgorithm : public AlgorithmBase
   {
     public:
-      SetConductivitiesToTetMeshAlgorithm();
+      SetConductivitiesToMeshAlgorithm();
       FieldHandle run(FieldHandle fh) const;
     
       AlgorithmOutput run_generic(const AlgorithmInput& input) const;

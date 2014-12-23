@@ -55,6 +55,7 @@ SET(Interface_Modules_Fields_FORMS
   RefineMesh.ui
   ConvertFieldBasis.ui
   swapfielddatawithmatrixentries.ui
+  EditMeshBoundingBox.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -85,6 +86,7 @@ SET(Interface_Modules_Fields_HEADERS
   ConvertFieldBasisDialog.h
   share.h
   SwapFieldDataWithMatrixEntriesDialog.h
+  EditMeshBoundingBoxDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -114,6 +116,7 @@ SET(Interface_Modules_Fields_SOURCES
   ClipFieldByFunctionDialog.cc
   SwapFieldDataWithMatrixEntriesDialog.cc
   RefineMeshDialog.cc
+  EditMeshBoundingBoxDialog.cc
 )
 
 IF(WITH_TETGEN)

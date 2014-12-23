@@ -821,6 +821,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      /// use projected point r (that was projected on scalp surface) to differentiate which surface is the one to use
      /// but first splitbydomain to get the surface with tha value 1.0
      SplitFieldByDomainAlgo algo_splitfieldbydomain;
+     algo_splitfieldbydomain.setUpdaterFunc(getUpdaterFunc());
      FieldList final_electrode_sponge_surf_domainsplit;  
      algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortBySize, true);
      algo_splitfieldbydomain.set(SplitFieldByDomainAlgo::SortAscending, false);
