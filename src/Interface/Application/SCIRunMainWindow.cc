@@ -390,7 +390,7 @@ void SCIRunMainWindow::executeCommandLineRequests()
 
 void SCIRunMainWindow::executeAll()
 {
-  if (Core::Preferences::Instance().saveBeforeExecute)
+  if (Core::Preferences::Instance().saveBeforeExecute && !Core::Application::Instance().parameters()->isRegressionMode())
   {
     saveNetwork();
   }
