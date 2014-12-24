@@ -39,53 +39,127 @@ using namespace SCIRun::Core::Geometry;
 
 const ModuleLookupInfo EditMeshBoundingBox::staticInfo_("EditMeshBoundingBox", "ChangeMesh", "SCIRun");
 
+namespace SCIRun
+{
+  class SCISHARE GeometryPortInterface
+  {
+
+  };
+
+  class SCISHARE BoxWidgetInterface
+  {
+  public:
+    virtual ~BoxWidgetInterface() {}
+    //TODO: need conversion to GPI type above, maybe
+    virtual void connect(OutputPortHandle port) = 0;
+    virtual void setRestrictX(bool restrict) = 0;
+    virtual void setRestrictY(bool restrict) = 0;
+    virtual void setRestrictZ(bool restrict) = 0;
+    virtual void setRestrictR(bool restrict) = 0;
+    virtual void setRestrictD(bool restrict) = 0;
+    virtual void setRestrictI(bool restrict) = 0;
+    virtual void unrestrictTranslation() = 0;
+    virtual void restrictTranslationXYZ() = 0;
+    virtual void restrictTranslationRDI() = 0;
+  };
+}
+
+class BoxWidgetNull : public BoxWidgetInterface
+{
+public:
+  virtual void connect(OutputPortHandle port) override
+  {
+    std::cout << "BoxWidgetNull::connect called" << std::endl;
+  }
+  virtual void setRestrictX(bool restrict) override
+  {
+    std::cout << "BoxWidgetNull::setRestrictX called with " << restrict << std::endl;
+  }
+  virtual void setRestrictY(bool restrict) override
+  {
+    std::cout << "BoxWidgetNull::setRestrictY called with " << restrict << std::endl;
+  }
+  virtual void setRestrictZ(bool restrict) override
+  {
+    std::cout << "BoxWidgetNull::setRestrictZ called with " << restrict << std::endl;
+  }
+  virtual void setRestrictR(bool restrict) override
+  {
+    std::cout << "BoxWidgetNull::setRestrictR called with " << restrict << std::endl;
+  }
+  virtual void setRestrictD(bool restrict) override
+  {
+    std::cout << "BoxWidgetNull::setRestrictD called with " << restrict << std::endl;
+  }
+  virtual void setRestrictI(bool restrict) override
+  {
+    std::cout << "BoxWidgetNull::setRestrictI called with " << restrict << std::endl;
+  }
+  virtual void unrestrictTranslation() override
+  {
+    std::cout << "BoxWidgetNull::unrestrictTranslation called" << std::endl;
+  }
+  virtual void restrictTranslationXYZ() override
+  {
+    std::cout << "BoxWidgetNull::restrictTranslationXYZ called" << std::endl;
+  }
+  virtual void restrictTranslationRDI() override
+  {
+    std::cout << "BoxWidgetNull::restrictTranslationRDI called" << std::endl;
+  }
+};
+
+class WidgetFactory
+{
+public:
+  static BoxWidgetPtr createBox();
+};
+
 EditMeshBoundingBox::EditMeshBoundingBox() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
   INITIALIZE_PORT(Transformation_Widget);
   INITIALIZE_PORT(Transformation_Matrix);
+}
 
-#ifdef WORKING_ON_EDITMESH_DAN
-  GeometryOPortHandle ogport;
-  get_oport_handle("Transformation Widget", ogport);
-
-  box_ = new BoxWidget(this, &widget_lock_, 1.0, false, false);
-  box_->Connect(ogport.get_rep());
-  box_->SetRestrictX(restrict_x_.get());
-  box_->SetRestrictY(restrict_y_.get());
-  box_->SetRestrictZ(restrict_z_.get());
-  box_->SetRestrictR(restrict_r_.get());
-  box_->SetRestrictD(restrict_d_.get());
-  box_->SetRestrictI(restrict_i_.get());
-  int val = restrict_translation_.get();
-  if (val == 0) box_->UnRestrictTranslation();
-  else if (val == 1) box_->RestrictTranslationXYZ();
-  else if (val == 2) box_->RestrictTranslationRDI();
-#endif
-  clear_vals();
+void EditMeshBoundingBox::createBoxWidget()
+{
+  box_ = WidgetFactory::createBox();  //new BoxWidget(this, &widget_lock_, 1.0, false, false);
+  box_->connect(getOutputPort(Transformation_Widget));
 }
 
 void EditMeshBoundingBox::setStateDefaults()
 {
+  clear_vals();
+  auto state = get_state();
+  state->setValue(RestrictX, false);
+  state->setValue(RestrictY, false);
+  state->setValue(RestrictZ, false);
+  state->setValue(RestrictR, false);
+  state->setValue(RestrictD, false);
+  state->setValue(RestrictI, false);
   //TODO
+
+  createBoxWidget();
+  setBoxRestrictions();
 }
 
 void EditMeshBoundingBox::execute()
 {
   //TODO: need version to pass a func for ifNull case--fancy but useful. For now just reset each time.
   clear_vals();
+  setBoxRestrictions();
   auto field = getRequiredInput(InputField);
 
   if (needToExecute())
   {
+    update_state(Executing);
     update_input_attributes(field);
   }
 }
 
-
-void
-EditMeshBoundingBox::clear_vals()
+void EditMeshBoundingBox::clear_vals()
 {
   auto state = get_state();
   const std::string cleared("---");
@@ -97,16 +171,14 @@ EditMeshBoundingBox::clear_vals()
   state->setValue(InputSizeZ, cleared);
 }
 
-
-void
-EditMeshBoundingBox::update_input_attributes(FieldHandle f)
+void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 {
   Point center;
   Vector size;
 
   BBox bbox = f->vmesh()->get_bounding_box();
 
-  if (!bbox.valid()) 
+  if (!bbox.valid())
   {
     warning("Input field is empty -- using unit cube.");
     bbox.extend(Point(0, 0, 0));
@@ -230,38 +302,31 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
 #endif
 }
 
+void EditMeshBoundingBox::setBoxRestrictions()
+{
+  auto state = get_state();
+  box_->setRestrictX(state->getValue(RestrictX).toBool());
+  box_->setRestrictY(state->getValue(RestrictY).toBool());
+  box_->setRestrictZ(state->getValue(RestrictZ).toBool());
+  box_->setRestrictR(state->getValue(RestrictR).toBool());
+  box_->setRestrictD(state->getValue(RestrictD).toBool());
+  box_->setRestrictI(state->getValue(RestrictI).toBool());
+  if (state->getValue(NoTranslation).toBool())
+    box_->unrestrictTranslation();
+  else if (state->getValue(XYZTranslation).toBool())
+    box_->restrictTranslationXYZ();
+  else if (state->getValue(RDITranslation).toBool())
+    box_->restrictTranslationRDI();
+}
+
 void EditMeshBoundingBox::executeImpl()
 {
 #ifdef WORKING_ON_EDITMESH_DAN
-  FieldHandle fh;
-  if (!get_input_handle("Input Field", fh, false))
-  {
-    clear_vals();
-    return;
-  }
-
-  box_->SetRestrictX(restrict_x_.get());
-  box_->SetRestrictY(restrict_y_.get());
-  box_->SetRestrictZ(restrict_z_.get());
-  box_->SetRestrictR(restrict_r_.get());
-  box_->SetRestrictD(restrict_d_.get());
-  box_->SetRestrictI(restrict_i_.get());
-  int val = restrict_translation_.get();
-  if (val == 0) box_->UnRestrictTranslation();
-  else if (val == 1) box_->RestrictTranslationXYZ();
-  else if (val == 2) box_->RestrictTranslationRDI();
-
-  // The output port is required.
-  update_state(Executing);
-
   // build the transform widget and set the the initial
   // field transform.
 
-  if (generation_ != fh.get_rep()->generation || resetting_.get())
+  if true
   {
-    generation_ = fh.get_rep()->generation;
-    // get and display the attributes of the input field
-    update_input_attributes(fh);
     build_widget(fh, resetting_.get());
     BBox bbox = fh->vmesh()->get_bounding_box();
     if (!bbox.valid()) {
@@ -331,7 +396,7 @@ void EditMeshBoundingBox::executeImpl()
       if (outputsizey_.get() < 0) outputsizey_.set(-outputsizey_.get());
       if (outputsizez_.get() < 0) outputsizez_.set(-outputsizez_.get());
       // error("Degenerate BBox requested.");
-      // return;                    // degenerate 
+      // return;                    // degenerate
       //end bug fix: avoid degenerated bbox, M. Dannhauer, 05/29/14
     }
     Vector sizex, sizey, sizez;
@@ -426,6 +491,10 @@ EditMeshBoundingBox::widget_moved(bool last)
 #endif
 }
 
+BoxWidgetPtr WidgetFactory::createBox()
+{
+  return boost::make_shared<BoxWidgetNull>();
+}
 
 const AlgorithmParameterName EditMeshBoundingBox::InputCenterX("InputCenterX");
 const AlgorithmParameterName EditMeshBoundingBox::InputCenterY("InputCenterY");

@@ -33,9 +33,13 @@
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
+
+  class BoxWidgetInterface;
+  typedef boost::shared_ptr<BoxWidgetInterface> BoxWidgetPtr;
+
 namespace Modules {
 namespace Fields {
-  
+
   class SCISHARE EditMeshBoundingBox : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
     public Has3OutputPorts<FieldPortTag, GeometryPortTag, MatrixPortTag>
@@ -79,8 +83,8 @@ namespace Fields {
     INPUT_PORT(0, InputField, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
     OUTPUT_PORT(1, Transformation_Widget, GeometryObject);
-    OUTPUT_PORT(2, Transformation_Matrix, Matrix);	
-	
+    OUTPUT_PORT(2, Transformation_Matrix, Matrix);
+
 	static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
   private:
@@ -89,6 +93,10 @@ namespace Fields {
     void update_input_attributes(FieldHandle);
     void build_widget(FieldHandle, bool reset);
     void widget_moved(bool);
+    void createBoxWidget();
+    void setBoxRestrictions();
+
+    BoxWidgetPtr box_;
   };
 }}}
 
