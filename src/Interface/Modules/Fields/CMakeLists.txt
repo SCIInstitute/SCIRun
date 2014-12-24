@@ -70,7 +70,6 @@ SET(Interface_Modules_Fields_HEADERS
   SplitFieldByDomainDialog.h
   SplitFieldByConnectedRegionDialog.h
   InterfaceWithCleaverDialog.h
-  InterfaceWithTetGenDialog.h
   SetFieldDataDialog.h
   SetFieldDataToConstantValueDialog.h
   MapFieldDataFromElemToNodeDialog.h
@@ -103,7 +102,6 @@ SET(Interface_Modules_Fields_SOURCES
   SplitFieldByDomainDialog.cc
   SplitFieldByConnectedRegionDialog.cc
   InterfaceWithCleaverDialog.cc
-  InterfaceWithTetGenDialog.cc
   SetFieldDataDialog.cc
   SetFieldDataToConstantValueDialog.cc
   MapFieldDataFromElemToNodeDialog.cc
@@ -120,6 +118,15 @@ SET(Interface_Modules_Fields_SOURCES
   RefineMeshDialog.cc
   EditMeshBoundingBoxDialog.cc
 )
+
+IF(WITH_TETGEN)
+  SET(Interface_Modules_Fields_SOURCES ${Interface_Modules_Fields_SOURCES}
+    InterfaceWithTetGenDialog.cc
+  )
+  SET(Interface_Modules_Fields_HEADERS ${Interface_Modules_Fields_HEADERS}
+    InterfaceWithTetGenDialog.h
+  )
+ENDIF(WITH_TETGEN)
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})
 QT4_WRAP_CPP(Interface_Modules_Fields_HEADERS_MOC ${Interface_Modules_Fields_HEADERS})

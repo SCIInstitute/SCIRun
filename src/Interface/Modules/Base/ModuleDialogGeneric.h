@@ -74,6 +74,7 @@ namespace Gui {
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
     virtual void contextMenuEvent(QContextMenuEvent* e) override;
     void fixSize();
+    void connectButtonToExecuteSignal(QAbstractButton* button);
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
 
     //TODO: need a better push/pull model

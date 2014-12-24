@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2014 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -37,14 +37,14 @@ PROJECT(SCIRun)
 
 ###############################################################################
 # Don't allow the user to build in the src directory...
-#  
+#
 
 IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( "" )
   MESSAGE( "Building SCIRun in the source directory is not allowed." )
   MESSAGE( "(In order to clean up, you now need to run: rm -rf CMakeFiles CMakeCache.txt" )
   MESSAGE( "" )
-  MESSAGE( FATAL_ERROR "Goodbye." ) 
+  MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
 
@@ -116,7 +116,7 @@ INCLUDE(CheckCXXCompilerFlag)
 INCLUDE(ExternalProject)
 
 IF(WIN32)
-  ADD_DEFINITIONS("/wd4251 /wd4275 -D_CRT_SECURE_NO_WARNINGS") 
+  ADD_DEFINITIONS("/wd4251 /wd4275 -D_CRT_SECURE_NO_WARNINGS")
 ENDIF(WIN32)
 
 ########################################################################
@@ -136,19 +136,13 @@ IF(BUILD_TESTING)
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
 
-  SET(USER_UNIT_TEST_RESOURCE_DIR "../../../scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests" CACHE PATH "Root for unit testing files")
-
-  IF(NOT EXISTS "${USER_UNIT_TEST_RESOURCE_DIR}")
-    MESSAGE( WARNING "Unit test resource path does not exist. Please set it correctly to run all the unit tests. Try mapping this svn path: https://gforge.sci.utah.edu/gf/project/sciruntests/scmsvn/?action=browse&path=%2FSCIRunUnitTestData%2FSCIRun5%2FUnitTests%2F" )
-  ENDIF()
-
-  # adding a brand new path to store the github data repo location; eventually will replace above, and perhaps be another external project link.
+  # adding a brand new path to store the github data repo location; eventually will be another external project link.
   SET(SCIRUN_TEST_RESOURCE_DIR "../../SCIRunTestData" CACHE PATH "Root for all github-based testing files")
 
   IF(NOT EXISTS "${SCIRUN_TEST_RESOURCE_DIR}")
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
   ENDIF()
-  
+
   ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
@@ -167,7 +161,7 @@ IF(BUILD_WITH_PYTHON)
 
   ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
   ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
-ENDIF(BUILD_WITH_PYTHON)  
+ENDIF(BUILD_WITH_PYTHON)
 
 
 ########################################################################
@@ -292,6 +286,9 @@ EXTERNAL_TEEM_LIBRARY(GIT)
 
 OPTION(WITH_TETGEN "Build Tetgen." ON)
 MARK_AS_ADVANCED(WITH_TETGEN)
+IF(WITH_TETGEN)
+  ADD_DEFINITIONS(-DWITH_TETGEN)
+ENDIF(WITH_TETGEN)
 
 
 ########################################################################
@@ -804,7 +801,7 @@ SET(CPACK_PACKAGE_NAME "${APPLICATION_NAME}")
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${APPLICATION_NAME}")
 SET(CPACK_PACKAGE_VENDOR "${APPLICATION_VENDOR}")
-      
+
 # TODO: actually used? looks like CPACK_RESOURCE_FILE_README gets used in OS X installer
 # check NSIS installer once it exists...
 SET(CPACK_PACKAGE_DESCRIPTION_FILE ${PACKAGING_DESCRIPTION})
@@ -842,18 +839,18 @@ ELSEIF(WIN32 AND NOT UNIX)
   # There is a bug in NSIS that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backslashes.
   SET(CPACK_PACKAGE_ICON "${PACKAGING_ICON}")
- 
+
   IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     SET(CPACK_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
     SET(CMAKE_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
   ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  
+
   IF(CMAKE_SIZEOF_VOID_P MATCHES 8)
     SET(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
   ELSE(CMAKE_SIZEOF_VOID_P MATCHES 8)
     SET(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
-  ENDIF(CMAKE_SIZEOF_VOID_P MATCHES 8)  
-  
+  ENDIF(CMAKE_SIZEOF_VOID_P MATCHES 8)
+
   SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\${APPLICATION_NAME}")
   SET(CPACK_NSIS_MUI_ICON "${APPLICATION_WINDOWS_ICON}")
   SET(CPACK_NSIS_DISPLAY_NAME "${APPLICATION_NAME} ${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
