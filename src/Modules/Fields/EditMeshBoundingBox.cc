@@ -59,13 +59,8 @@ EditMeshBoundingBox::EditMeshBoundingBox() : Module(staticInfo_)
   if (val == 0) box_->UnRestrictTranslation();
   else if (val == 1) box_->RestrictTranslationXYZ();
   else if (val == 2) box_->RestrictTranslationRDI();
-  inputcenterx_.set("---");
-  inputcentery_.set("---");
-  inputcenterz_.set("---");
-  inputsizex_.set("---");
-  inputsizey_.set("---");
-  inputsizez_.set("---");
 #endif
+  clear_vals();
 }
 
 void EditMeshBoundingBox::setStateDefaults()
@@ -82,14 +77,14 @@ void EditMeshBoundingBox::execute()
 void
 EditMeshBoundingBox::clear_vals()
 {
-#ifdef WORKING_ON_EDITMESH_DAN
-  inputcenterx_.set("---");
-  inputcentery_.set("---");
-  inputcenterz_.set("---");
-  inputsizex_.set("---");
-  inputsizey_.set("---");
-  inputsizez_.set("---");
-#endif
+  auto state = get_state();
+  const std::string cleared("---");
+  state->setValue(InputCenterX, cleared);
+  state->setValue(InputCenterY, cleared);
+  state->setValue(InputCenterZ, cleared);
+  state->setValue(InputSizeX, cleared);
+  state->setValue(InputSizeY, cleared);
+  state->setValue(InputSizeZ, cleared);
 }
 
 
