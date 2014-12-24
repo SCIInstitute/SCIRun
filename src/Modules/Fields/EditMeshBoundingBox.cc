@@ -27,12 +27,15 @@
 */
 
 #include <Modules/Fields/EditMeshBoundingBox.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
 
 const ModuleLookupInfo EditMeshBoundingBox::staticInfo_("EditMeshBoundingBox", "ChangeMesh", "SCIRun");
 
@@ -70,7 +73,14 @@ void EditMeshBoundingBox::setStateDefaults()
 
 void EditMeshBoundingBox::execute()
 {
-  //TODO
+  //TODO: need version to pass a func for ifNull case--fancy but useful. For now just reset each time.
+  clear_vals();
+  auto field = getRequiredInput(InputField);
+
+  if (needToExecute())
+  {
+    update_input_attributes(field);
+  }
 }
 
 
@@ -91,13 +101,13 @@ EditMeshBoundingBox::clear_vals()
 void
 EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 {
-#ifdef WORKING_ON_EDITMESH_DAN
   Point center;
   Vector size;
 
   BBox bbox = f->vmesh()->get_bounding_box();
 
-  if (!bbox.valid()) {
+  if (!bbox.valid()) 
+  {
     warning("Input field is empty -- using unit cube.");
     bbox.extend(Point(0, 0, 0));
     bbox.extend(Point(1, 1, 1));
@@ -105,13 +115,13 @@ EditMeshBoundingBox::update_input_attributes(FieldHandle f)
   size = bbox.diagonal();
   center = bbox.center();
 
-  inputcenterx_.set(to_string(center.x()));
-  inputcentery_.set(to_string(center.y()));
-  inputcenterz_.set(to_string(center.z()));
-  inputsizex_.set(to_string(size.x()));
-  inputsizey_.set(to_string(size.y()));
-  inputsizez_.set(to_string(size.z()));
-#endif
+  auto state = get_state();
+  state->setValue(InputCenterX, boost::lexical_cast<std::string>(center.x()));
+  state->setValue(InputCenterY, boost::lexical_cast<std::string>(center.y()));
+  state->setValue(InputCenterZ, boost::lexical_cast<std::string>(center.z()));
+  state->setValue(InputSizeX, boost::lexical_cast<std::string>(size.x()));
+  state->setValue(InputSizeY, boost::lexical_cast<std::string>(size.y()));
+  state->setValue(InputSizeZ, boost::lexical_cast<std::string>(size.z()));
 }
 
 
