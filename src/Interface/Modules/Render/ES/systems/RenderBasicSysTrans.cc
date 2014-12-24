@@ -38,7 +38,7 @@ namespace shaders = CPM_GL_SHADERS_NS;
 namespace SCIRun {
 namespace Render {
 
-class RenderBasicSys :
+class RenderBasicSysTrans :
     public es::GenericSystem<true,
                              RenderBasicGeom,   // TAG class
                              SRRenderState,
@@ -60,7 +60,7 @@ class RenderBasicSys :
 {
 public:
 
-  static const char* getName() {return "RenderBasicSys";}
+  static const char* getName() {return "RenderBasicSysTrans";}
 
   bool isComponentOptional(uint64_t type) override
   {
@@ -98,7 +98,7 @@ public:
       return;
     }
 
-		if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+		if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY))
 		{
 			return;
 		}
@@ -177,12 +177,12 @@ public:
     geom.front().attribs.bind();
 
     // Disable zwrite if we are rendering a transparent object.
-   /* if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    //if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
     {
       GL(glDepthMask(GL_FALSE));
       GL(glDisable(GL_CULL_FACE));
     }
-*/
+
     if (rlist.size() > 0)
     {
       glm::mat4 rlistTrafo = trafo.front().transform;
@@ -313,14 +313,14 @@ public:
   }
 };
 
-void registerSystem_RenderBasicGeom(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_RenderBasicTransGeom(CPM_ES_ACORN_NS::Acorn& core)
 {
-  core.registerSystem<RenderBasicSys>();
+	core.registerSystem<RenderBasicSysTrans>();
 }
 
-const char* getSystemName_RenderBasicGeom()
+const char* getSystemName_RenderBasicTransGeom()
 {
-  return RenderBasicSys::getName();
+	return RenderBasicSysTrans::getName();
 }
 
 } // namespace Render

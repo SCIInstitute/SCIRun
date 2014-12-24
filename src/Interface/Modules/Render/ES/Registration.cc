@@ -38,6 +38,7 @@
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "systems/RenderBasicSys.h"
+#include "systems/RenderBasicSysTrans.h"
 #include "systems/RenderColorMapSys.h"
 
 namespace SCIRun {
@@ -49,13 +50,14 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
   registerSystem_CoreBootstrap(core);
   registerSystem_AssetBootstrap(core);
   registerSystem_RenderBasicGeom(core);
+	registerSystem_RenderBasicTransGeom(core);
   registerSystem_RenderColorMap(core);
 
   // Register components
   core.registerComponent<StaticSRInterface>();
   core.registerComponent<StaticWorldLight>();
   core.registerComponent<LightingUniforms>();
-  core.registerComponent<RenderBasicGeom>();
+	core.registerComponent<RenderBasicGeom>();
   core.registerComponent<RenderColorMapGeom>();
   core.registerComponent<SRRenderState>();
   core.registerComponent<RenderList>();
