@@ -86,6 +86,7 @@ namespace Gui {
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
         << disabled(new QAction("Replace With", parent))
+        << disabled(new QAction("Collapse", parent))
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)

@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_MODULEWIDGET_H
 
 #include "ui_Module.h"
+#include "ui_ModuleMini.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/timer.hpp>
@@ -57,7 +58,16 @@ class NetworkEditor;
 class PortWidgetManager;
 class DialogErrorControl;
 
-class ModuleWidgetDisplay : public Ui::Module
+
+class ModuleWidgetDisplayBase
+{
+  //TODO: abstract buttons, etc
+};
+
+class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
+{};
+
+class ModuleWidgetDisplayMini : public Ui::ModuleMini, public ModuleWidgetDisplayBase
 {};
 
 class ModuleWidget : public QFrame,
@@ -145,6 +155,7 @@ private Q_SLOTS:
   void replaceModuleWith();
   void updateDialogWithPortCount();
 private:
+  //TODO: change to ModuleWidgetDisplayBase*
   ModuleWidgetDisplay* displayImpl_;
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
