@@ -696,19 +696,23 @@ void ShowFieldModule::renderFacesLinear(
     }
   }
 
-  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                 numVBOElements, mesh->get_bounding_box(), true));
+	GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+		numVBOElements, mesh->get_bounding_box(), true);
+
+  geom->mVBOs.push_back(geomVBO);
 
   // Construct IBO.
-  geom->mIBOs.push_back(
-      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr));
+
+	GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+
+	geom->mIBOs.push_back(geomIBO);
 
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-                                   colorScheme, state, GeometryObject::RENDER_VBO_IBO);
+                                   colorScheme, state, GeometryObject::RENDER_VBO_IBO, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -1275,19 +1279,23 @@ void ShowFieldModule::renderNodes(
     vboOnGPU = false;
   }
 
-  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                 numVBOElements, mesh->get_bounding_box(), vboOnGPU));
+	GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+		numVBOElements, mesh->get_bounding_box(), vboOnGPU);
+
+	geom->mVBOs.push_back(geomVBO);
 
   // Construct IBO.
-  geom->mIBOs.push_back(
-      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::POINTS, sizeof(uint32_t), iboBufferSPtr));
+
+	GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::POINTS, sizeof(uint32_t), iboBufferSPtr);
+
+	geom->mIBOs.push_back(geomIBO);
 
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-                                   colorScheme, state, renderType);
+				colorScheme, state, renderType, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -1593,19 +1601,23 @@ void ShowFieldModule::renderEdges(
   //   vboOnGPU = false;
   // }
 
-  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                 numVBOElements, mesh->get_bounding_box(), vboOnGPU));
+	GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+		numVBOElements, mesh->get_bounding_box(), vboOnGPU);
+
+	geom->mVBOs.push_back(geomVBO);
 
   // Construct IBO.
-  geom->mIBOs.push_back(
-      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr));
+
+	GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
+
+	geom->mIBOs.push_back(geomIBO);
 
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-                                   colorScheme, state, renderType);
+					colorScheme, state, renderType, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }

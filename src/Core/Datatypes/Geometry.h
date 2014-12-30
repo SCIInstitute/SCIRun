@@ -144,17 +144,19 @@ namespace Datatypes {
     /// Defines a Spire object 'pass'.
     struct SpireSubPass
     {
-      SpireSubPass(const std::string& name, const std::string& vbo, 
-                   const std::string& ibo, const std::string& program,
+      SpireSubPass(const std::string& name, const std::string& vboName, 
+                   const std::string& iboName, const std::string& program,
                    ColorScheme scheme, const RenderState& state,
-                   RenderType renType) :
+                   RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo) :
           passName(name),
-          vboName(vbo),
-          iboName(ibo),
+          vboName(vboName),
+          iboName(iboName),
           programName(program),
           renderState(state),
           renderType(renType),
-          mColorScheme(scheme)
+          mColorScheme(scheme),
+					vbo(vbo),
+					ibo(ibo)
       {}
 
       std::string   passName;
@@ -163,6 +165,8 @@ namespace Datatypes {
       std::string   programName;
       RenderState   renderState;
       RenderType    renderType;
+			SpireVBO			vbo;
+			SpireIBO			ibo;
 
       struct Uniform
       {

@@ -235,13 +235,13 @@ namespace SCIRun {
 		}
 
 		//------------------------------------------------------------------------------
-		uint64_t SRInterface::getEntityIDForName(const std::string& name)
+		uint64_t SRInterface::getEntityIDForName(const std::string& name, int port)
 		{
-			return static_cast<uint64_t>(std::hash<std::string>()(name));
+			return (static_cast<uint64_t>(std::hash<std::string>()(name)) >> 8) + (static_cast<uint64_t>(port) << 56);
 		}
 
 		//------------------------------------------------------------------------------
-		void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> obj)
+		void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> obj, int port)
 		{
 			// Ensure our rendering context is current on our thread.
 			mContext->makeCurrent();
@@ -269,7 +269,7 @@ namespace SCIRun {
 				// entity ID.
 				for (const auto& pass : foundObject->mPasses)
 				{
-					uint64_t entityID = getEntityIDForName(pass.passName);
+					uint64_t entityID = getEntityIDForName(pass.passName, port);
 					mCore.removeEntity(entityID);
 				}
 
@@ -361,7 +361,7 @@ namespace SCIRun {
 
 			// Add default identity transform to the object globally (instead of per-pass)
 			glm::mat4 xform;
-			mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap));
+			mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap, port));
 			SRObject& elem = mSRObjects.back();
 
 			ren::ShaderMan& shaderMan = *mCore.getStaticComponent<ren::StaticShaderMan>()->instance;
@@ -371,7 +371,7 @@ namespace SCIRun {
 			{
 				const Core::Datatypes::GeometryObject::SpireSubPass& pass = *it;
 
-				uint64_t entityID = getEntityIDForName(pass.passName);
+				uint64_t entityID = getEntityIDForName(pass.passName, port);
 
 				if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
 				{
@@ -555,14 +555,13 @@ namespace SCIRun {
 		void SRInterface::removeAllGeomObjects()
 		{
 			mContext->makeCurrent();
-
 			for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
 			{
 				// Iterate through each of the passes and remove their associated
 				// entity ID.
 				for (const auto& pass : it->mPasses)
 				{
-					uint64_t entityID = getEntityIDForName(pass.passName);
+					uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
 					mCore.removeEntity(entityID);
 				}
 			}
@@ -581,7 +580,7 @@ namespace SCIRun {
 				{
 					for (const auto& pass : it->mPasses)
 					{
-						uint64_t entityID = getEntityIDForName(pass.passName);
+						uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
 						mCore.removeEntity(entityID);
 					}
 					it = mSRObjects.erase(it);

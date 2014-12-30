@@ -23,6 +23,8 @@
 
 #include <bserialize/BSerialize.hpp>
 
+#include <Core/Datatypes/Geometry.h>
+
 #include "../comp/RenderBasicGeom.h"
 #include "../comp/SRRenderState.h"
 #include "../comp/RenderList.h"
@@ -56,7 +58,8 @@ class RenderBasicSysTrans :
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
-                             ren::StaticVBOMan>
+                             ren::StaticVBOMan,
+														 Core::Datatypes::GeometryObject::SpireSubPass>
 {
 public:
 
@@ -90,7 +93,8 @@ public:
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
-      const es::ComponentGroup<ren::StaticVBOMan>& vboMan) override
+      const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
+			const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)

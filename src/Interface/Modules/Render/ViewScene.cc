@@ -141,11 +141,12 @@ void ViewSceneDialog::newGeometryValue()
 			return;
 		}
 
+		int port = 0;
 		std::vector<std::string> validObjects;
-		for (auto it = geomData->begin(); it != geomData->end(); ++it)
+		for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
 		{
 			boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
-			spire->handleGeomObject(obj);
+			spire->handleGeomObject(obj, port);
 			validObjects.push_back(obj->objectName);
 			itemManager_->addItem(QString::fromStdString(obj->objectName));
 		}
