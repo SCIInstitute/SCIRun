@@ -33,6 +33,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -54,6 +55,8 @@ namespace Visualization {
     static Core::Algorithms::AlgorithmParameterName EdgeTransparency;
     static Core::Algorithms::AlgorithmParameterName FaceTransparency;
     static Core::Algorithms::AlgorithmParameterName FaceInvertNormals;
+    static Core::Algorithms::AlgorithmParameterName NodeAsPoints;
+    static Core::Algorithms::AlgorithmParameterName NodeAsSpheres;
     static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
 
     INPUT_PORT(0, Field, LegacyField);
@@ -74,21 +77,66 @@ namespace Visualization {
         boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
         Dataflow::Networks::ModuleStateHandle state, const std::string& id);
 
-
-    /// IBO Construction
+    /// Mesh construction. Any of the functions below can modify the renderState.
+    /// This modified render state will be passed onto the renderer.
     /// @{
-    void buildFacesIBO(
-        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade, 
-        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
+    void renderNodes(
+        boost::shared_ptr<SCIRun::Field> field,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+        RenderState state, Core::Datatypes::GeometryHandle geom, 
+        const std::string& id);
 
-    void buildEdgesIBO(
-        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
-        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
+    void renderFaces(
+        boost::shared_ptr<SCIRun::Field> field,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+        RenderState state, Core::Datatypes::GeometryHandle geom, 
+        unsigned int approx_div,
+        const std::string& id);
 
-    void buildNodesIBO(
-        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
-        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
+    void renderFacesLinear(
+        boost::shared_ptr<SCIRun::Field> field,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+        RenderState state, Core::Datatypes::GeometryHandle geom, 
+        unsigned int approxDiv,
+        const std::string& id);
+
+    void addFaceGeom(
+        const std::vector<Core::Geometry::Point>  &points,
+        const std::vector<Core::Geometry::Vector> &normals,
+        bool withNormals,
+        uint32_t& iboBufferIndex,
+        CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
+        CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
+        Core::Datatypes::GeometryObject::ColorScheme colorScheme,
+        std::vector<double> &scols,
+        std::vector<Core::Datatypes::Material> &vcols,
+        const RenderState& state);
+
+    void renderEdges(
+        boost::shared_ptr<SCIRun::Field> field,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+        RenderState state,
+        Core::Datatypes::GeometryHandle geom, 
+        const std::string& id);
     /// @}
+
+    /// State evaluation
+    /// @{
+    RenderState getNodeRenderState(
+        Dataflow::Networks::ModuleStateHandle state,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+
+    RenderState getEdgeRenderState(
+        Dataflow::Networks::ModuleStateHandle state,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+
+    RenderState getFaceRenderState(
+        Dataflow::Networks::ModuleStateHandle state,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
+    /// @}
+
+    void applyColorMapScaling(boost::shared_ptr<SCIRun::Field> field,
+                              Core::Datatypes::GeometryObject::SpireSubPass& pass);
 
   };
 

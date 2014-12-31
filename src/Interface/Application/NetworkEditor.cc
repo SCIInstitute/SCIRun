@@ -65,6 +65,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   modulesSelectedByCL_(false),
   currentScale_(1),
   scene_(new QGraphicsScene(parent)),
+  visibleItems_(true),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
   dialogErrorControl_(dialogErrorControl),
@@ -247,8 +248,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
-  proxy->setZValue(zLevelManager_->max());
-  proxy->setVisible(true);
+  proxy->setZValue(zLevelManager_->get_max());
   proxy->setPos(lastModulePosition_);
   lastModulePosition_ += moduleAddIncrement;
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
@@ -268,6 +268,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   scene_->clearSelection();
   proxy->setSelected(true);
   bringToFront();
+  proxy->setVisible(visibleItems_);
 
   GuiLogger::Instance().log("Module added.");
 }
@@ -324,6 +325,19 @@ ModuleWidget* getModule(QGraphicsItem* item)
   if (proxy)
     return static_cast<ModuleWidget*>(proxy->widget());
   return 0;
+}
+
+void NetworkEditor::setVisibility(bool visible)
+{
+  visibleItems_ = visible;
+  ModuleWidget::connectionFactory_->setVisibility(visible);
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto p = getModuleProxy(item))
+      p->setVisible(visibleItems_);
+    else if (auto c = dynamic_cast<ConnectionLine*>(item))
+      c->setVisible(visibleItems_);
+  }
 }
 
 //TODO copy/paste

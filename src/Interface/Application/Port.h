@@ -30,8 +30,6 @@
 #define INTERFACE_APPLICATION_PORTWIDGET_H
 
 #include <boost/shared_ptr.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
 #include <QGraphicsWidget>
 #include <QPushButton>
 #include <QColor>
@@ -79,9 +77,12 @@ class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider
 {
   Q_OBJECT
 public:
-  PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isInput, bool isDynamic,
+  PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, 
+    const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isInput, bool isDynamic,
     boost::shared_ptr<ConnectionFactory> connectionFactory,
-    boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent = 0);
+    boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+    SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
+    QWidget* parent = 0);
   virtual ~PortWidget();
 
   QString name() const { return name_; }
@@ -119,6 +120,8 @@ public:
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
+
+  SCIRun::Dataflow::Networks::PortDataDescriber getPortDataDescriber() const { return portDataDescriber_; }
 
 protected:
   virtual void moveEvent(QMoveEvent * event);
@@ -161,6 +164,7 @@ private:
   boost::shared_ptr<ConnectionFactory> connectionFactory_;
   boost::shared_ptr<ClosestPortFinder> closestPortFinder_;
   PortActionsMenu* menu_;
+  SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber_;
   //TODO
   typedef std::map<std::string, std::map<bool, std::map<SCIRun::Dataflow::Networks::PortId, PortWidget*>>> PortWidgetMap;
   static PortWidgetMap portWidgetMap_;
@@ -190,7 +194,8 @@ public:
   InputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
     const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic,
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
-    boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+    boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+    SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
     QWidget* parent = 0);
 };
 
@@ -201,7 +206,14 @@ public:
     const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic, 
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+    SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
     QWidget* parent = 0);
+};
+
+class DataInfoDialog
+{
+public:
+  static void show(SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber, const QString& label, const std::string& id);
 };
 
 }

@@ -48,12 +48,12 @@ namespace SCIRun {
 namespace Modules {
 namespace BrainStimulator {
 
-class SCISHARE SetConductivitiesToTetMeshModule : public SCIRun::Dataflow::Networks::Module,
+class SCISHARE SetConductivitiesToMesh : public SCIRun::Dataflow::Networks::Module,
   public Has1InputPort<FieldPortTag>,
   public Has1OutputPort<FieldPortTag>
 {
   public:
-    SetConductivitiesToTetMeshModule();
+    SetConductivitiesToMesh();
 
     virtual void execute();
     virtual void setStateDefaults();

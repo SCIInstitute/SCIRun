@@ -68,7 +68,7 @@ TEST(TypeIDTableTests, CanRegisterObjectForLater)
 
   auto ctor = table.findConstructorInfo(type);
 
-  EXPECT_TRUE(ctor);
+  EXPECT_TRUE(!!ctor);
 }
 
 TEST(TypeIDTableTests, CannotRegisterConflictingCtors)
@@ -88,7 +88,7 @@ TEST(TypeIDTableTests, CannotRegisterConflictingCtors)
 
   auto ctor = table.findConstructorInfo(type);
 
-  EXPECT_TRUE(ctor);
+  EXPECT_TRUE(!!ctor);
   EXPECT_EQ(1, ctor->x);
 }
 

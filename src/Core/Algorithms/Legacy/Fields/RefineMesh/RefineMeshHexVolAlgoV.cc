@@ -285,7 +285,7 @@ VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point_convex(VMesh *refined,
 
 VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point_convex(VMesh *refined,
                                       VMesh::Node::array_type &nodes,
-                                      Point coordsp,
+                                      const Point& coordsp,
                                       std::vector<double>& ivalues,
                                       int basis_order) const
     {
@@ -296,7 +296,7 @@ VMesh::Node::index_type RefineMeshHexVolAlgoV::add_point_convex(VMesh *refined,
 
 
 VMesh::Node::index_type RefineMeshHexVolAlgoV::lookup(VMesh *refined,
-                                   hash_map_type &edgemap,
+                                   edge_hash_type &edgemap,
                                    VMesh::Node::array_type &nodes,
                                    const int *reorder, 
                                    VMesh::index_type a, 
@@ -306,26 +306,24 @@ VMesh::Node::index_type RefineMeshHexVolAlgoV::lookup(VMesh *refined,
                                    int basis_order) const
     {
       edgepair_t ep;
-      ep.first = nodes[reorder[a]]; 
+      ep.first = nodes[reorder[a]];
       ep.second = nodes[reorder[b]];
-
-			hash_map_type::iterator it, it_end; 
-			it = edgemap.begin(); 
-			it_end = edgemap.end();
-      if (it == it_end)
+      const edge_hash_type::iterator loc = edgemap.find(ep);
+      if (loc == edgemap.end())
       {
-        const VMesh::Node::index_type newnode = add_point(refined, nodes, reorder, a, b, factor,ivalues,basis_order);
-        edgemap[ep.first] = newnode; 
+        const VMesh::Node::index_type newnode =
+          add_point(refined, nodes, reorder, a, b, factor, ivalues, basis_order);
+        edgemap[ep] = newnode;
         return newnode;
       }
       else
       {
-					return (*it).second;
+        return (*loc).second;
       }
     };
 
 VMesh::Node::index_type RefineMeshHexVolAlgoV::lookup_convex(VMesh *refined,
-                                   hash_map_type &edgemap,
+                                   edge_hash_type &edgemap,
                                    VMesh::Node::array_type &onodes,
                                    const int *reorder, 
                                    VMesh::index_type a, 
@@ -334,30 +332,25 @@ VMesh::Node::index_type RefineMeshHexVolAlgoV::lookup_convex(VMesh *refined,
                                    int basis_order) const
     {
       edgepair_t ep;
-      ep.first = onodes[reorder[a]]; 
+      ep.first = onodes[reorder[a]];
       ep.second = onodes[reorder[b]];
-			hash_map_type::iterator it, it_end; 
-			it = edgemap.begin();
-			it_end = edgemap.end(); 
-
-      if (it == it_end)
+      const edge_hash_type::iterator loc = edgemap.find(ep);
+      if (loc == edgemap.end())
       {
         const VMesh::Node::index_type newnode =
-          add_point_convex(refined, onodes, reorder, a, b,ivalues,basis_order);
-				//edgemap.find(ep) = newnode;
-				//edgemap.insert(newnode); 
-				edgemap[ep.first] = newnode; 
+          add_point_convex(refined, onodes, reorder, a, b, ivalues, basis_order);
+        edgemap[ep] = newnode;
         return newnode;
       }
       else
       {
-        return (*it).second;
+        return (*loc).second;
       }
     };
 
 void
 RefineMeshHexVolAlgoV::dice(VMesh *refined,
-                           hash_map_type &emap,
+                           edge_hash_type &emap,
                            VMesh::Node::array_type nodes,
                            VMesh::index_type index,
                            VMesh::mask_type mask,
@@ -518,7 +511,7 @@ RefineMeshHexVolAlgoV::RefineMeshHexVolAlgoV()
 bool
 RefineMeshHexVolAlgoV::
 runImpl(FieldHandle input, FieldHandle& output, bool convex, 
-               std::string select, double isoval) const
+               const std::string& select, double isoval) const
 {
   // Obtain information on what type of input field we have
   FieldInformation fi(input);
@@ -537,7 +530,7 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
   VMesh*  refined = output->vmesh();
   VField* rfield  = output->vfield();
 
-  hash_map_type emap;
+  edge_hash_type emap;
   VMesh::Node::array_type onodes(8);
   VMesh::Node::array_type nnodes(8);
   
@@ -1560,26 +1553,11 @@ runImpl(FieldHandle input, FieldHandle& output, bool convex,
   rfield->resize_values();
   if (rfield->basis_order() == 0) rfield->set_values(evalues);
   if (rfield->basis_order() == 1) rfield->set_values(ivalues);
-	#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  rfield->copy_properties(field);
-  #endif
+  CopyProperties(*input, *output);
 	return (true);
 }
-bool RefineMeshHexVolAlgoV::runImpl(FieldHandle input, FieldHandle& output) const
-{
-		std::string select;
-		double isoval;
-		bool convex = 0;
-		return runImpl(input, output, convex, select, isoval); 
-}
+
 AlgorithmOutput RefineMeshHexVolAlgoV::run_generic(const AlgorithmInput& input) const 
 {
-	auto field = input.get<Field>(Variables::InputField);
-  FieldHandle outputField;
-
-  if (!runImpl(field, outputField))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-	AlgorithmOutput output;
-	output[Variables::OutputField] = outputField;
-  return output;
+  throw "not implemented";
 }

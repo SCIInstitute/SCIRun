@@ -169,8 +169,9 @@ bool FileOpenCommand::execute()
         // so I'll come back to this idea when there's time to refactor that part of the code (NEC::loadNetwork)
         //QFuture<int> future = QtConcurrent::run(load);
         //progress.setValue(future.result());
-
+        networkEditor_->setVisibility(false);
         progress.setValue(load());
+        networkEditor_->setVisibility(true);
       }
       openedFile_ = openedFile;
 

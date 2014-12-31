@@ -48,10 +48,10 @@ class SCISHARE SetFieldDataAlgo : public AlgorithmBase
     bool GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const; 
     bool GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
     #endif
-    bool verify_input_data(FieldHandle& input_field, Datatypes::DenseMatrixHandle& data, size_type& numvals,FieldInformation& fi) const;
-    bool setscalardata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
-    bool setvectordata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
-    bool settensordata(VField* ofield, Datatypes::DenseMatrixHandle& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
+    bool verify_input_data(FieldHandle& input_field, Datatypes::DenseMatrixHandle data, size_type& numvals,FieldInformation& fi) const;
+    bool setscalardata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
+    bool setvectordata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
+    bool settensordata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
     static AlgorithmParameterName keepTypeCheckBox;
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 };

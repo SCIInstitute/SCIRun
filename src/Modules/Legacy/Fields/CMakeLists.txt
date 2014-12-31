@@ -69,10 +69,12 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
+  FlipSurfaceNormals.h
+  SwapFieldDataWithMatrixEntries.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
-  #FlipSurfaceNormals.cc
+  FlipSurfaceNormals.cc
   #GenerateElectrode.cc
   #PadRegularMesh.cc
   ResampleRegularMesh.cc
@@ -132,7 +134,7 @@ SET(Modules_Legacy_Fields_SRCS
   #MergeTriSurfs.cc
   #ClipVolumeByIsovalue.cc
   RefineMesh.cc
-  #SwapFieldDataWithMatrixEntries.cc
+  SwapFieldDataWithMatrixEntries.cc
   #SwapNodeLocationsWithMatrixEntries.cc
   #ConvertLatVolDataFromElemToNode.cc
   #ConvertLatVolDataFromNodeToElem.cc
@@ -194,7 +196,13 @@ SET(Modules_Legacy_Fields_SRCS
 
 IF(WITH_TETGEN)
   SET(Modules_Legacy_Fields_SRCS ${Modules_Legacy_Fields_SRCS}
-    InterfaceWithTetGen.cc)
+    InterfaceWithTetGen.cc
+	InterfaceWithTetGenImpl.cc
+	)
+  SET(Modules_Legacy_Fields_HEADERS ${Modules_Legacy_Fields_HEADERS}
+	InterfaceWithTetGen.h
+    InterfaceWithTetGenImpl.h
+	)
 ENDIF(WITH_TETGEN)
     
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields 

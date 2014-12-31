@@ -157,10 +157,10 @@ GenericReader<HType, PortTag>::execute()
 
   time_t new_filemodification = boost::filesystem::last_write_time(filename_);
 
-  if (needToExecute()
+  if (new_filemodification != old_filemodification_ ||
+    needToExecute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     || filename_changed ||
-      new_filemodification != old_filemodification_ ||
       !oport_cached(0) ||
       !oport_cached("Filename") 
 #endif

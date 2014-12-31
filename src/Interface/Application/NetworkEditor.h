@@ -84,7 +84,7 @@ Q_SIGNALS:
   {
   public:
     explicit ZLevelManager(QGraphicsScene* scene);
-    int max() const { return maxZ_; }
+    int get_max() const { return maxZ_; }
     void bringToFront();
     void sendToBack();
   private:
@@ -151,6 +151,8 @@ Q_SIGNALS:
     boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
     int currentZoomPercentage() const;
+
+    void setVisibility(bool visible);
 
   protected:
     virtual void dropEvent(QDropEvent* event) override;
@@ -234,6 +236,7 @@ Q_SIGNALS:
 
     QGraphicsScene* scene_;
 
+    bool visibleItems_;
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
 		boost::shared_ptr<DialogErrorControl> dialogErrorControl_;

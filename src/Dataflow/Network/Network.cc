@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,6 +33,7 @@
 #include <iostream>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
+#include <boost/thread.hpp>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/Module.h>
@@ -87,11 +88,11 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
 
   ENSURE_NOT_NULL(outputModule, "cannot connect null output module");
   ENSURE_NOT_NULL(inputModule, "cannot connect null input module");
-  
+
   // assure that the ports are not altered while connecting
   //m1->oports_.lock();
   //m2->iports_.lock();
-  
+
   if (!outputModule->hasOutputPort(outputPortId))
   {
     std::ostringstream ostr;
@@ -106,7 +107,7 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   }
 
   ConnectionId id = ConnectionId::create(ConnectionDescription(
-    OutgoingConnectionDescription(outputModule->get_id(), outputPortId), 
+    OutgoingConnectionDescription(outputModule->get_id(), outputPortId),
     IncomingConnectionDescription(inputModule->get_id(), inputPortId)));
   if (connections_.find(id) == connections_.end())
   {
@@ -226,8 +227,15 @@ NetworkGlobalSettings& Network::settings()
 
 void Network::setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter)
 {
+  auto update = [=]() {
   BOOST_FOREACH(ModuleHandle module, modules_ | boost::adaptors::filtered(filter))
     module->setExecutionState(state);
+  };
+
+  //TODO: possible fix for network execute delay. Need to test with users.
+  //boost::thread t(update);
+  // for now, just run in this thread
+  update();
 }
 
 void Network::clear()

@@ -2017,8 +2017,8 @@ protected:
     array.clear();
     index_type is,js,ks;
     index_type ie,je,ke;
-    elem_grid_->locate_clamp(is,js,ks,b.min());
-    elem_grid_->locate_clamp(ie,je,ke,b.max());
+    elem_grid_->locate_clamp(is,js,ks,b.get_min());
+    elem_grid_->locate_clamp(ie,je,ke,b.get_max());
     for (index_type i=is; i<=ie;i++)
       for (index_type j=js; j<je;j++)
         for (index_type k=ks; k<ke; k++)
@@ -2405,7 +2405,7 @@ QuadSurfMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
   t.load_identity();
   Core::Geometry::BBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
-  t.pre_translate(Core::Geometry::Vector(bbox.min()));
+  t.pre_translate(Core::Geometry::Vector(bbox.get_min()));
 }
 
 template <class Basis>
@@ -3087,7 +3087,7 @@ QuadSurfMesh<Basis>::compute_node_grid()
     
     Core::Geometry::BBox b = bbox_; 
     b.extend(10*epsilon_);
-    node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
+    node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename Node::iterator ni, nie;
     begin(ni); end(nie);
@@ -3124,7 +3124,7 @@ QuadSurfMesh<Basis>::compute_elem_grid()
     
     Core::Geometry::BBox b = bbox_; 
     b.extend(10*epsilon_);
-    elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
+    elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
     typename Elem::iterator ci, cie;
     begin(ci); end(cie);

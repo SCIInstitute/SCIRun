@@ -29,6 +29,7 @@
 
 SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
+  BuildMappingMatrix.ui
   GetDomainBoundary.ui
   JoinFields.ui
   FairMesh.ui
@@ -38,6 +39,7 @@ SET(Interface_Modules_Fields_FORMS
   CreateFieldData.ui
   CalculateFieldData.ui
   InterfaceWithCleaverDialog.ui
+  InterfaceWithTetGen.ui
   SetFieldDataDialog.ui
   SetFieldDataToConstantValue.ui
   MapFieldDataFromElemToNodeDialog.ui
@@ -52,9 +54,12 @@ SET(Interface_Modules_Fields_FORMS
   ClipFieldByFunction.ui
   RefineMesh.ui
   ConvertFieldBasis.ui
+  swapfielddatawithmatrixentries.ui
+  EditMeshBoundingBox.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
+  BuildMappingMatrixDialog.h
   CreateLatVolDialog.h
   CreateFieldDataDialog.h
   CalculateFieldDataDialog.h
@@ -80,9 +85,12 @@ SET(Interface_Modules_Fields_HEADERS
   RefineMeshDialog.h
   ConvertFieldBasisDialog.h
   share.h
+  SwapFieldDataWithMatrixEntriesDialog.h
+  EditMeshBoundingBoxDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
+  BuildMappingMatrixDialog.cc
   CreateLatVolDialog.cc
   CreateFieldDataDialog.cc
   CalculateFieldDataDialog.cc
@@ -106,8 +114,19 @@ SET(Interface_Modules_Fields_SOURCES
   MapFieldDataOntoElemsDialog.cc
   MapFieldDataOntoNodesDialog.cc
   ClipFieldByFunctionDialog.cc
+  SwapFieldDataWithMatrixEntriesDialog.cc
   RefineMeshDialog.cc
+  EditMeshBoundingBoxDialog.cc
 )
+
+IF(WITH_TETGEN)
+  SET(Interface_Modules_Fields_SOURCES ${Interface_Modules_Fields_SOURCES}
+    InterfaceWithTetGenDialog.cc
+  )
+  SET(Interface_Modules_Fields_HEADERS ${Interface_Modules_Fields_HEADERS}
+    InterfaceWithTetGenDialog.h
+  )
+ENDIF(WITH_TETGEN)
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})
 QT4_WRAP_CPP(Interface_Modules_Fields_HEADERS_MOC ${Interface_Modules_Fields_HEADERS})

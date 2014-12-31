@@ -98,7 +98,7 @@ namespace
 
 TEST_F(SetupRHSforTDCSandTMSTests, Correct)
 {
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  auto tdcs = makeModule("SetupTDCS");
   stubPortNWithThisData(tdcs, 0, LoadMickeyMouseCleaverMesh());
   stubPortNWithThisData(tdcs, 1, LoadMickeyMouseScalpMesh());
   stubPortNWithThisData(tdcs, 2, LoadMickeyMouseElectrodeSpongeMesh());
@@ -108,7 +108,7 @@ TEST_F(SetupRHSforTDCSandTMSTests, Correct)
 
 TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForWrongType)
 {
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  auto tdcs = makeModule("SetupTDCS");
 
   stubPortNWithThisData(tdcs, 0, ElectrodeSpongeLocationAndThickness());
   stubPortNWithThisData(tdcs, 1, ElectrodeSpongeLocationAndThickness());
@@ -120,7 +120,7 @@ TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForWrongType)
 
 TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForNullInput)
 {
-  auto tdcs = makeModule("SetupRHSforTDCSandTMS");
+  auto tdcs = makeModule("SetupTDCS");
   FieldHandle nullField;
   stubPortNWithThisData(tdcs, 0, nullField);
   stubPortNWithThisData(tdcs, 1, nullField);

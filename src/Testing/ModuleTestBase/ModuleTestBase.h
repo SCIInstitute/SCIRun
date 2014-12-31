@@ -28,6 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -37,10 +38,10 @@ namespace SCIRun
 {
   namespace Testing 
   {
-    class SCISHARE ModuleTest : public ::testing::Test
+    class SCISHARE ModuleTestBase
     {
     protected:
-      ModuleTest();
+      ModuleTestBase();
 
       Dataflow::Networks::ModuleHandle makeModule(const std::string& name);
 
@@ -52,7 +53,19 @@ namespace SCIRun
       Core::Algorithms::AlgorithmParameter algoParam_;
     };
 
+    class SCISHARE ModuleTest : public ::testing::Test, public ModuleTestBase
+    {
+    
+    };
+
+    template <typename Param>
+    class ParameterizedModuleTest : public ::testing::TestWithParam<Param>, public ModuleTestBase
+    {
+
+    };
+
     SCISHARE FieldHandle CreateEmptyLatVol();
+    SCISHARE FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez);
 
     class SCISHARE MockAlgorithm : public SCIRun::Core::Algorithms::AlgorithmBase
     {

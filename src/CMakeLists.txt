@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2014 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -28,7 +28,7 @@
 IF(UNIX)
   # temporary - needed to make Travis CI build work
   # TODO: revisit and delete when CMake 2.8.11 or greater is available
-  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
+  CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7 FATAL_ERROR)
 ELSE()
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
 ENDIF(UNIX)
@@ -37,14 +37,14 @@ PROJECT(SCIRun)
 
 ###############################################################################
 # Don't allow the user to build in the src directory...
-#  
+#
 
 IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( "" )
   MESSAGE( "Building SCIRun in the source directory is not allowed." )
   MESSAGE( "(In order to clean up, you now need to run: rm -rf CMakeFiles CMakeCache.txt" )
   MESSAGE( "" )
-  MESSAGE( FATAL_ERROR "Goodbye." ) 
+  MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
 
@@ -116,7 +116,7 @@ INCLUDE(CheckCXXCompilerFlag)
 INCLUDE(ExternalProject)
 
 IF(WIN32)
-  ADD_DEFINITIONS("/wd4251 /wd4275 -D_CRT_SECURE_NO_WARNINGS") 
+  ADD_DEFINITIONS("/wd4251 /wd4275 -D_CRT_SECURE_NO_WARNINGS")
 ENDIF(WIN32)
 
 ########################################################################
@@ -136,19 +136,13 @@ IF(BUILD_TESTING)
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
 
-  SET(USER_UNIT_TEST_RESOURCE_DIR "../../../scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests" CACHE PATH "Root for unit testing files")
-
-  IF(NOT EXISTS "${USER_UNIT_TEST_RESOURCE_DIR}")
-    MESSAGE( WARNING "Unit test resource path does not exist. Please set it correctly to run all the unit tests. Try mapping this svn path: https://gforge.sci.utah.edu/gf/project/sciruntests/scmsvn/?action=browse&path=%2FSCIRunUnitTestData%2FSCIRun5%2FUnitTests%2F" )
-  ENDIF()
-
-  # adding a brand new path to store the github data repo location; eventually will replace above, and perhaps be another external project link.
+  # adding a brand new path to store the github data repo location; eventually will be another external project link.
   SET(SCIRUN_TEST_RESOURCE_DIR "../../SCIRunTestData" CACHE PATH "Root for all github-based testing files")
 
   IF(NOT EXISTS "${SCIRUN_TEST_RESOURCE_DIR}")
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
   ENDIF()
-  
+
   ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
@@ -167,7 +161,7 @@ IF(BUILD_WITH_PYTHON)
 
   ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
   ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
-ENDIF(BUILD_WITH_PYTHON)  
+ENDIF(BUILD_WITH_PYTHON)
 
 
 ########################################################################
@@ -288,7 +282,18 @@ EXTERNAL_TEEM_LIBRARY(GIT)
 
 
 ########################################################################
+# Configure tetgen external project
+
+OPTION(WITH_TETGEN "Build Tetgen." ON)
+MARK_AS_ADVANCED(WITH_TETGEN)
+IF(WITH_TETGEN)
+  ADD_DEFINITIONS(-DWITH_TETGEN)
+ENDIF(WITH_TETGEN)
+
+
+########################################################################
 # Configure CPM and Spire - http://github.com/iauns/cpm
+# Configure CPM and Spire - http://github.com/CIBC-Internal/cpm
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -299,9 +304,9 @@ if(NOT GIT_FOUND)
   message(FATAL_ERROR "CPM requires Git.")
 endif()
 if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
-  message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
+  message(STATUS "Cloning repo (https://github.com/CIBC-Internal/cpm)")
   execute_process(
-    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
+    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/CIBC-Internal/cpm ${CPM_DIR}
     RESULT_VARIABLE error_code
     OUTPUT_QUIET ERROR_QUIET)
   if(error_code)
@@ -310,25 +315,79 @@ if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
 endif()
 include(${CPM_DIR}/CPM.cmake)
 
+# TODO: Add tags for *all* of the CPM modules. This will allow upstream
+# flexibility. Once all versions are appopriately tagged, I will be able
+# to untag upstream and keep it moving forward.
+
 # ++ MODULE: GL Platform
 CPM_AddModule("gl_platform"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-platform"
-  GIT_TAG "1.3.5")
-
-# ++ MODULE: Spire
-CPM_AddModule("spire"
-  GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-gl-platform"
   GIT_TAG "origin/master")
 
 # ++ MODULE: Arc-Look-At (Autoview Camera)
 CPM_AddModule("look_at"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-arc-look-at"
-  GIT_TAG "1.0.0")
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-arc-look-at"
+  GIT_TAG "origin/master")
 
-# ++ MODULE: GL State
-CPM_AddModule("gl_state"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-state.git"
-  GIT_TAG "1.0.4")
+# ++ MODULE: Entity System
+CPM_AddModule("es"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-entity-system"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Entity system component serialization
+CPM_AddModule("es_cereal"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-cereal"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Cereal support for GLM.
+CPM_AddModule("cereal_glm"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-cereal-glm"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: ES Systems
+CPM_AddModule("es_systems"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-systems"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Async filesystem support
+CPM_AddModule("es_fs"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-fs"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: General transforms and components
+CPM_AddModule("es_general"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-general"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Entity System Rendering.
+CPM_AddModule("es_render"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-render"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Acorn
+CPM_AddModule("es_acorn"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-acorn"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Var buffer
+CPM_AddModule("var_buffer"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-var-buffer"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: BSerialize
+CPM_AddModule("bserialize"
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-bserialize"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
 
 CPM_Finish()
 
@@ -359,13 +418,13 @@ function (CopyAssets src_asset_dir dest_asset_dir)
 endfunction()
 
 if (DEFINED OUTPUT_SHADER_DIR)
-  CopyShaders(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/SpireSCIRun/shaders ${OUTPUT_SHADER_DIR})
+  CopyShaders(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/ES/shaders ${OUTPUT_SHADER_DIR})
 else()
   message(WARNING "Not copying shader files. OUTPUT_SHADER_DIR variable not found.")
 endif()
 
 if (DEFINED OUTPUT_ASSET_DIR)
-  CopyAssets(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/SpireSCIRun/assets ${OUTPUT_ASSET_DIR})
+  CopyAssets(${CMAKE_CURRENT_SOURCE_DIR}/Interface/Modules/Render/ES/assets ${OUTPUT_ASSET_DIR})
 else()
   message(WARNING "Not copying asset files. OUTPUT_ASSET_DIR variable not found.")
 endif()
@@ -380,7 +439,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 
 # TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
-  SET(QT_MIN_VERSION "4.8.0")
+  SET(QT_MIN_VERSION "4.8.1")
   FIND_PACKAGE(Qt4 REQUIRED)
   SET(QT_USE_QTOPENGL TRUE)
 
@@ -423,6 +482,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/log4cpp/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
+  ${SCI_TETGEN_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
@@ -558,9 +618,12 @@ SET_PROPERTY(TARGET Algorithms_Base         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_DataIO       PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Math         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Field         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Algorithms_Describe         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_BrainStimulator         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Factory   PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Legacy_Forward         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Visualization         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_FiniteElements         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_DataIO         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Converter         PROPERTY FOLDER "Core/Algorithms")
@@ -611,6 +674,7 @@ SET_PROPERTY(TARGET Interface_Modules_String   PROPERTY FOLDER "Interface/Module
 SET_PROPERTY(TARGET Interface_Modules_Fields   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_Bundle   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_Matlab   PROPERTY FOLDER "Interface/Modules")
+SET_PROPERTY(TARGET Interface_Modules_Forward   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_Factory   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Application")
 
@@ -627,6 +691,7 @@ SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualizati
 SET_PROPERTY(TARGET Modules_BrainStimulator   PROPERTY FOLDER "Modules/Brain")
 SET_PROPERTY(TARGET Modules_Legacy_FiniteElements   PROPERTY FOLDER "Modules/FiniteElements")
 SET_PROPERTY(TARGET Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
+SET_PROPERTY(TARGET Modules_Legacy_Forward PROPERTY FOLDER "Modules/Forward")
 SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
@@ -643,6 +708,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Algorithms_BrainStimulator_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_Math_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_Field_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
+  SET_PROPERTY(TARGET Algorithms_Describe_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_FiniteElements_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Core_Application_Tests   PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Application_Session_Tests   PROPERTY FOLDER "Core/Tests")
@@ -699,6 +765,11 @@ IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
 ENDIF()
 
+IF(WITH_TETGEN)
+  SET_PROPERTY(TARGET tetgen         PROPERTY FOLDER "Externals")
+  SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
+ENDIF()
+
 ########################################################################
 # Custom CMake settings for CPack
 
@@ -730,7 +801,7 @@ SET(CPACK_PACKAGE_NAME "${APPLICATION_NAME}")
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${APPLICATION_NAME}")
 SET(CPACK_PACKAGE_VENDOR "${APPLICATION_VENDOR}")
-      
+
 # TODO: actually used? looks like CPACK_RESOURCE_FILE_README gets used in OS X installer
 # check NSIS installer once it exists...
 SET(CPACK_PACKAGE_DESCRIPTION_FILE ${PACKAGING_DESCRIPTION})
@@ -768,18 +839,18 @@ ELSEIF(WIN32 AND NOT UNIX)
   # There is a bug in NSIS that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backslashes.
   SET(CPACK_PACKAGE_ICON "${PACKAGING_ICON}")
- 
+
   IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     SET(CPACK_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
     SET(CMAKE_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
   ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  
+
   IF(CMAKE_SIZEOF_VOID_P MATCHES 8)
     SET(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
   ELSE(CMAKE_SIZEOF_VOID_P MATCHES 8)
     SET(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
-  ENDIF(CMAKE_SIZEOF_VOID_P MATCHES 8)  
-  
+  ENDIF(CMAKE_SIZEOF_VOID_P MATCHES 8)
+
   SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\${APPLICATION_NAME}")
   SET(CPACK_NSIS_MUI_ICON "${APPLICATION_WINDOWS_ICON}")
   SET(CPACK_NSIS_DISPLAY_NAME "${APPLICATION_NAME} ${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")

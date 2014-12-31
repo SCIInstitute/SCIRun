@@ -51,8 +51,6 @@ namespace Fields {
     OUTPUT_PORT(0, Remapped_Destination, LegacyField);
   
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-    static const Core::Algorithms::AlgorithmParameterName InterpolationBasis;
-    static const Core::Algorithms::AlgorithmParameterName map_source_to_single_dest;
   };
 
 }}}
