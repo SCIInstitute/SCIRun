@@ -95,6 +95,11 @@ void SetupRHSforTDCSandTMSModule::execute()
     }
     
     auto output = algo().run_generic(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
+    
+    auto table = output.additionalAlgoOutput(); /// get the two outputs, the third table column and the container that establishes data transfer between GUI/Algo via state  
+    if (table)
+      get_state()->setValue(Parameters::SurfaceAreaValues, table->value());
+    
     sendOutputFromAlgorithm(LHS_KNOWNS, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT_TYPE, output);

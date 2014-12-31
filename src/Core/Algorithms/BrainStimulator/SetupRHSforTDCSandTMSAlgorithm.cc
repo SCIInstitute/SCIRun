@@ -74,6 +74,7 @@ using namespace SCIRun;
 
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodeTableValues);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ImpedanceTableValues);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, SurfaceAreaValues);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ELECTRODE_VALUES);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, IMPEDANCE_VALUES);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, refnode);
@@ -99,12 +100,14 @@ AlgorithmParameterName SetupRHSforTDCSandTMSAlgorithm::ElecrodeImpedanceParamete
     
 const double SetupRHSforTDCSandTMSAlgorithm::electode_current_summation_bound = 1e-6;
 const int SetupRHSforTDCSandTMSAlgorithm::special_label = 4321;
+const int SetupRHSforTDCSandTMSAlgorithm::max_number_of_electrodes = 512;
 
 SetupRHSforTDCSandTMSAlgorithm::SetupRHSforTDCSandTMSAlgorithm()
-{
+{  
+  addParameter(Parameters::SurfaceAreaValues, 0);
   addParameter(Parameters::ELECTRODE_VALUES, 0); // just a default value, will be replaced with vector
   addParameter(Parameters::IMPEDANCE_VALUES, 0);
-  addParameter(Parameters::number_of_electrodes, 128);
+  addParameter(Parameters::number_of_electrodes, max_number_of_electrodes);
   addParameter(Parameters::refnode, 0);  
   addParameter(Parameters::normal_dot_product_bound, 0.7);
   addParameter(Parameters::pointdistancebound, 0.0001);
@@ -167,7 +170,8 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   
   DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs, selectmatrixind;
   FieldHandle elec_sponge_surf;
-  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs, elec_sponge_surf, selectmatrixind) = run(mesh, all_elc_values, all_imp_elc_values, num_of_elc, scalp_tri_surf, elc_tri_surf, elc_sponge_location);
+  std::vector<double> electrode_sponge_areas;
+  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs, elec_sponge_surf, selectmatrixind, electrode_sponge_areas) = run(mesh, all_elc_values, all_imp_elc_values, num_of_elc, scalp_tri_surf, elc_tri_surf, elc_sponge_location);
   
   output[LHS_KNOWNS] = lhs_knowns;
   output[ELECTRODE_ELEMENT] = elc_element;
@@ -178,11 +182,18 @@ AlgorithmOutput SetupRHSforTDCSandTMSAlgorithm::run_generic(const AlgorithmInput
   output[SELECTMATRIXINDECES] = selectmatrixind;
   output[ELECTRODE_SPONGE_SURF] = elec_sponge_surf;
   
+  Variable::List surface_area;
+  for (long i=0; i<electrode_sponge_areas.size(); i++)
+  {
+    surface_area.push_back(makeVariable("surf_area_" + boost::lexical_cast<std::string>(i), electrode_sponge_areas[i]));
+  }
+  VariableHandle var_surface_area(new Variable(Name("surf_areas"), surface_area));
+  output.setAdditionalAlgoOutput(var_surface_area);
   return output;
 }
 
 /// replace this code with calls to splitfieldbyconnectedregion, clipfieldby* if available for SCIRun5 
-boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle> SetupRHSforTDCSandTMSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
+boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle, std::vector<double>> SetupRHSforTDCSandTMSAlgorithm::create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
  VMesh*  mesh_vmesh = mesh->vmesh();
  VMesh::size_type mesh_num_nodes = mesh_vmesh->num_nodes();
@@ -454,7 +465,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     VMesh::Node::array_type onodes(3); 
     tmp_mesh->get_nodes(onodes, idx);
       
-    //tmp_mesh->find_closest_node(distance,o4,node_ind,o3);
     tmp_mesh->get_center(o1,onodes[0]);
     tmp_mesh->get_center(o2,onodes[1]);
     tmp_mesh->get_center(o3,onodes[2]);
@@ -508,11 +518,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     remark(" At least for one electrode the electrode/sponge interface could not be identified.");
     continue;
   } else
-  {
-    std::ostringstream ostr1;
-    ostr1 << "Electrode surface center estimation and found location differ: " << distance << ". The bigger the value the more concerned you should be. A distance close to 0..1 is optimial. Visualize the 8th (Field) output to make sure otherwise the simulation could be wrong!"  <<  std::endl;    
-    remark(ostr1.str()); 
-     
+  {     
     SplitFieldByConnectedRegionAlgo algo3;
     algo3.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
     algo3.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
@@ -574,6 +580,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  
  mesh_vmesh->synchronize(Mesh::NODE_LOCATE_E);
  
+ std::vector<double> electrode_sponge_areas;
+ double area=0.0; double prev_elc=0;
  for(VMesh::Elem::index_type l=0; l<elc_sponge_surf_vmesh->num_elems(); l++)
  {
   (*elc_elem_typ)(l,0)=2; //define triangles to incject currents in TDCS simulations
@@ -583,21 +591,50 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   elc_sponge_surf_vmesh->get_center(p,onodes[0]);
   mesh_vmesh->find_closest_node(distance,q,node_ind,p);
   (*elc_elem_def)(l,0)=node_ind;
+  Point pos;
+  mesh_vmesh->get_point(pos, node_ind);
+  double x1=pos.x(), y1=pos.y(), z1=pos.z();
   
   elc_sponge_surf_vmesh->get_center(p,onodes[1]);
   mesh_vmesh->find_closest_node(distance,q,node_ind,p); 
   (*elc_elem_def)(l,1)=node_ind;
+  mesh_vmesh->get_point(pos, node_ind);
+  double x2=pos.x(), y2=pos.y(), z2=pos.z();
   
   elc_sponge_surf_vmesh->get_center(p,onodes[2]);
   mesh_vmesh->find_closest_node(distance,q,node_ind,p);
   (*elc_elem_def)(l,2)=node_ind;
+  mesh_vmesh->get_point(pos, node_ind);
+  double x3=pos.x(), y3=pos.y(), z3=pos.z();
   
   (*elc_elem_def)(l,3)=0; 
   (*elc_elem)(l,0)=field_values[l]; 
   (*elc_con_imp)(l,0)=impedances[l];
- }
   
- return boost::make_tuple(lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp,elc_sponge_surf);
+  ///compute surface area of electrode/scalp interface
+  double area_tmp =y1*z2+z1*y3+y2*z3-z2*y3-z1*y2-y1*z3;
+  double area_tmp1=z1*x2+x1*z3+z2*x3-x2*z3-x1*z2-z1*x3;
+  double area_tmp2=x1*y2+y1*x3+x2*y3-y2*x3-y1*x2-x1*y3;
+  double triangle_area=0.5 * sqrt(area_tmp*area_tmp+area_tmp1*area_tmp1+area_tmp2*area_tmp2);
+  
+  double tmp_fld_val=0;
+  elc_sponge_surf_vfld->get_value(tmp_fld_val,l);
+    
+  if(prev_elc!=tmp_fld_val)
+  {
+   area*=1e-6; /// convert electrode/sponge surface area from mm^2 to m^2 
+   electrode_sponge_areas.push_back(area);
+   area=0.0;
+   prev_elc=tmp_fld_val;
+  } else
+  {
+   area+=triangle_area;
+  }
+ }
+ area*=1e-6;
+ electrode_sponge_areas.push_back(area);
+ 
+ return boost::make_tuple(lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp,elc_sponge_surf, electrode_sponge_areas);
 }
 
 DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const
@@ -646,9 +683,9 @@ DenseMatrixHandle SetupRHSforTDCSandTMSAlgorithm::create_rhs(FieldHandle mesh, c
   return output;
 }
 
-boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle, DenseMatrixHandle> SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
+boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, FieldHandle, DenseMatrixHandle, std::vector<double>> SetupRHSforTDCSandTMSAlgorithm::run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc, int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, DenseMatrixHandle elc_sponge_location) const
 {
-  if (num_of_elc > 128) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes given exceeds what is possible ");}  /// number of possible electrodes is currently bound to 128 electrodes in default setting
+  if (num_of_elc > max_number_of_electrodes) { THROW_ALGORITHM_INPUT_ERROR("Number of electrodes (>512) given exceeds what is possible ");}  /// number of  possible electrodes is currently bound to 512 electrodes in default setting
   if (num_of_elc < 0) { THROW_ALGORITHM_INPUT_ERROR("Negative number of electrodes given ");}
   
   if (!mesh) THROW_ALGORITHM_INPUT_ERROR("Input field (mesh) was not allocated "); 
@@ -660,7 +697,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   
   DenseMatrixHandle lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp;
   FieldHandle elec_sponge_surf;
-  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, elec_sponge_surf) = create_lhs(mesh, impelc,scalp_tri_surf, elc_tri_surf, elc_sponge_location); /// get various left-hand-side outputs
+  std::vector<double> electrode_sponge_areas;
+  boost::tie(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, elec_sponge_surf, electrode_sponge_areas) = create_lhs(mesh, impelc,scalp_tri_surf, elc_tri_surf, elc_sponge_location); /// get various left-hand-side outputs
   
   DenseMatrixHandle selectmatrixind(new DenseMatrix(mesh->vmesh()->num_nodes(), 1)); ///create indeces for SelectSubMatrix
   for(long i=0;i<mesh->vmesh()->num_nodes();i++)
@@ -668,5 +706,5 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
    (*selectmatrixind)(i,0)=i;
   }
   
-  return boost::make_tuple(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs, elec_sponge_surf, selectmatrixind);
+  return boost::make_tuple(lhs_knowns, elc_element, elc_element_typ, elc_element_def, elc_contact_imp, rhs, elec_sponge_surf, selectmatrixind, electrode_sponge_areas);
 }
