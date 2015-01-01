@@ -437,12 +437,14 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
       sizex = Vector(state->getValue(OutputSizeX).toDouble(), 0, 0);
       sizey = Vector(0, state->getValue(OutputSizeY).toDouble(), 0);
       sizez = Vector(0, 0, state->getValue(OutputSizeZ).toDouble());
+      std::cout << "setting size from gui: " << sizex << " " << sizey << " " << sizez << std::endl;
     }
     else
     {
       sizex = (right - center) * 2;
       sizey = (down - center) * 2;
       sizez = (in - center) * 2;
+      std::cout << "setting size default: " << sizex << " " << sizey << " " << sizez << std::endl;
     }
     if (useOutputCenter)
     {
@@ -464,7 +466,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
   box_->GetPosition(center, right, down, in);
 
   Transform t, r;
-  Point unused;
   t.load_identity();
   t.pre_scale(Vector((right - center).length(),
     (down - center).length(),
