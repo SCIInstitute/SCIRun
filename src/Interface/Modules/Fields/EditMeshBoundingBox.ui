@@ -227,7 +227,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="font">
       <font>
@@ -241,6 +241,9 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="QCheckBox" name="useOutputCenterCheckBox_">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="font">
          <font>
           <weight>75</weight>
@@ -253,16 +256,31 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="outputCenterXSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="outputCenterXSpinBox_">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QDoubleSpinBox" name="outputCenterYSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="outputCenterYSpinBox_">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QDoubleSpinBox" name="outputCenterZSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="outputCenterZSpinBox_">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QCheckBox" name="useOutputSizeCheckBox_">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="font">
          <font>
           <weight>75</weight>

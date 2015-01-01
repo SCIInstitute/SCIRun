@@ -29,6 +29,7 @@
 #include <Modules/Fields/EditMeshBoundingBox.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -61,6 +62,8 @@ namespace SCIRun
     virtual void unrestrictTranslation() = 0;
     virtual void restrictTranslationXYZ() = 0;
     virtual void restrictTranslationRDI() = 0;
+    virtual void SetPosition(const Point&, const Point&, const Point&, const Point&) = 0;
+    virtual void GetPosition(Point&, Point&, Point&, Point&) const = 0;
   };
 }
 
@@ -107,6 +110,14 @@ public:
   {
     std::cout << "BoxWidgetNull::restrictTranslationRDI called" << std::endl;
   }
+  virtual void SetPosition(const Point& center, const Point& right, const Point& down, const Point& in) override
+  {
+    std::cout << "BoxWidgetNull::SetPosition called: " << center << " " << right << " " << down << " " << in << std::endl;
+  }
+  virtual void GetPosition(Point& center, Point& right, Point& down, Point& in) const override
+  {
+    std::cout << "BoxWidgetNull::GetPosition called: " << std::endl;
+  }
 };
 
 class WidgetFactory
@@ -115,7 +126,25 @@ public:
   static BoxWidgetPtr createBox();
 };
 
-EditMeshBoundingBox::EditMeshBoundingBox() : Module(staticInfo_)
+namespace SCIRun
+{
+  namespace Modules
+  {
+    namespace Fields
+    {
+      class EditMeshBoundingBoxImpl
+      {
+      public:
+        Transform box_initial_transform_;
+        Transform field_initial_transform_;
+      };
+    }
+  }
+}
+
+
+EditMeshBoundingBox::EditMeshBoundingBox() : Module(staticInfo_),
+  impl_(new EditMeshBoundingBoxImpl)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
@@ -139,6 +168,15 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(RestrictR, false);
   state->setValue(RestrictD, false);
   state->setValue(RestrictI, false);
+  state->setValue(UseOutputCenter, false);
+  state->setValue(UseOutputSize, false);
+  state->setValue(OutputCenterX, 0.0);
+  state->setValue(OutputCenterY, 0.0);
+  state->setValue(OutputCenterZ, 0.0);
+  state->setValue(OutputSizeX, 0.0);
+  state->setValue(OutputSizeY, 0.0);
+  state->setValue(OutputSizeZ, 0.0);
+
   //TODO
 
   createBoxWidget();
@@ -156,6 +194,7 @@ void EditMeshBoundingBox::execute()
   {
     update_state(Executing);
     update_input_attributes(field);
+    executeImpl(field);
   }
 }
 
@@ -319,38 +358,36 @@ void EditMeshBoundingBox::setBoxRestrictions()
     box_->restrictTranslationRDI();
 }
 
-void EditMeshBoundingBox::executeImpl()
+void EditMeshBoundingBox::executeImpl(FieldHandle fh)
 {
-#ifdef WORKING_ON_EDITMESH_DAN
-  // build the transform widget and set the the initial
-  // field transform.
-
-  if true
+  auto state = get_state();
   {
-    build_widget(fh, resetting_.get());
+    build_widget(fh, state->getValue(Resetting).toBool());
     BBox bbox = fh->vmesh()->get_bounding_box();
-    if (!bbox.valid()) {
+    if (!bbox.valid())
+    {
       warning("Input field is empty -- using unit cube.");
       bbox.extend(Point(0, 0, 0));
       bbox.extend(Point(1, 1, 1));
     }
-    Vector size(bbox.max() - bbox.min());
-    if (fabs(size.x())<1.e-4)
+    Vector size(bbox.get_max() - bbox.get_min());
+    const double SMALL = 1.e-4;
+    if (fabs(size.x()) < SMALL)
     {
-      size.x(2.e-4);
-      bbox.extend(bbox.min() - Vector(1.e-4, 0, 0));
+      size.x(2 * SMALL);
+      bbox.extend(bbox.get_min() - Vector(SMALL, 0, 0));
     }
-    if (fabs(size.y())<1.e-4)
+    if (fabs(size.y()) < SMALL)
     {
-      size.y(2.e-4);
-      bbox.extend(bbox.min() - Vector(0, 1.e-4, 0));
+      size.y(2 * SMALL);
+      bbox.extend(bbox.get_min() - Vector(0, SMALL, 0));
     }
-    if (fabs(size.z())<1.e-4)
+    if (fabs(size.z()) < SMALL)
     {
-      size.z(2.e-4);
-      bbox.extend(bbox.min() - Vector(0, 0, 1.e-4));
+      size.z(2 * SMALL);
+      bbox.extend(bbox.get_min() - Vector(0, 0, SMALL));
     }
-    Point center(bbox.min() + size / 2.);
+    Point center(bbox.get_min() + size / 2.);
     Vector sizex(size.x(), 0, 0);
     Vector sizey(0, size.y(), 0);
     Vector sizez(0, 0, size.z());
@@ -361,51 +398,45 @@ void EditMeshBoundingBox::executeImpl()
 
     Transform r;
     Point unused;
-    field_initial_transform_.load_identity();
+    impl_->field_initial_transform_.load_identity();
 
     double sx = (right - center).length();
     double sy = (down - center).length();
     double sz = (in - center).length();
 
-    if (sx < 1e-12) sx = 1.0;
-    if (sy < 1e-12) sy = 1.0;
-    if (sz < 1e-12) sz = 1.0;
+    const double VERY_SMALL = 1e-12;
+    if (sx < VERY_SMALL) sx = 1.0;
+    if (sy < VERY_SMALL) sy = 1.0;
+    if (sz < VERY_SMALL) sz = 1.0;
 
-    field_initial_transform_.pre_scale(Vector(sx, sy, sz));
+    impl_->field_initial_transform_.pre_scale(Vector(sx, sy, sz));
     r.load_frame((right - center).safe_normal(),
       (down - center).safe_normal(),
       (in - center).safe_normal());
 
-    field_initial_transform_.pre_trans(r);
-    field_initial_transform_.pre_translate(center.asVector());
+    impl_->field_initial_transform_.pre_trans(r);
+    impl_->field_initial_transform_.pre_translate(Vector(center));
 
-    resetting_.set(0);
+    state->setValue(Resetting, false);
   }
 
-  if (useoutputsize_.get() || useoutputcenter_.get())
+  const bool useOutputSize = state->getValue(UseOutputSize).toBool();
+  const bool useOutputCenter = state->getValue(UseOutputCenter).toBool();
+  if (useOutputSize || useOutputCenter)
   {
     Point center, right, down, in;
-    outputcenterx_.reset(); outputcentery_.reset(); outputcenterz_.reset();
-    outputsizex_.reset(); outputsizey_.reset(); outputsizez_.reset();
-    if (outputsizex_.get() < 0 ||
-      outputsizey_.get() < 0 ||
-      outputsizez_.get() < 0)
-    {
-      //begin bug fix: avoid degenerated bbox, M. Dannhauer, 05/29/14
-      if (outputsizex_.get() < 0) outputsizex_.set(-outputsizex_.get());
-      if (outputsizey_.get() < 0) outputsizey_.set(-outputsizey_.get());
-      if (outputsizez_.get() < 0) outputsizez_.set(-outputsizez_.get());
-      // error("Degenerate BBox requested.");
-      // return;                    // degenerate
-      //end bug fix: avoid degenerated bbox, M. Dannhauer, 05/29/14
-    }
+
+    state->setValue(OutputSizeX, std::fabs(state->getValue(OutputSizeX).toDouble()));
+    state->setValue(OutputSizeY, std::fabs(state->getValue(OutputSizeY).toDouble()));
+    state->setValue(OutputSizeZ, std::fabs(state->getValue(OutputSizeZ).toDouble()));
+
     Vector sizex, sizey, sizez;
     box_->GetPosition(center, right, down, in);
-    if (useoutputsize_.get())
+    if (useOutputSize)
     {
-      sizex = Vector(outputsizex_.get(), 0, 0);
-      sizey = Vector(0, outputsizey_.get(), 0);
-      sizez = Vector(0, 0, outputsizez_.get());
+      sizex = Vector(state->getValue(OutputSizeX).toDouble(), 0, 0);
+      sizey = Vector(0, state->getValue(OutputSizeY).toDouble(), 0);
+      sizez = Vector(0, 0, state->getValue(OutputSizeZ).toDouble());
     }
     else
     {
@@ -413,11 +444,11 @@ void EditMeshBoundingBox::executeImpl()
       sizey = (down - center) * 2;
       sizez = (in - center) * 2;
     }
-    if (useoutputcenter_.get())
+    if (useOutputCenter)
     {
-      center = Point(outputcenterx_.get(),
-        outputcentery_.get(),
-        outputcenterz_.get());
+      center = Point(state->getValue(OutputCenterX).toDouble(),
+        state->getValue(OutputCenterY).toDouble(),
+        state->getValue(OutputCenterZ).toDouble());
     }
     right = Point(center + sizex / 2.);
     down = Point(center + sizey / 2.);
@@ -442,25 +473,21 @@ void EditMeshBoundingBox::executeImpl()
     (down - center).safe_normal(),
     (in - center).safe_normal());
   t.pre_trans(r);
-  t.pre_translate(center.asVector());
+  t.pre_translate(Vector(center));
 
-
-  Transform inv(field_initial_transform_);
+  Transform inv(impl_->field_initial_transform_);
   inv.invert();
   t.post_trans(inv);
 
   // Change the input field handle here.
-  fh.detach();
+  FieldHandle output(fh->deep_clone());
+  output->vmesh()->transform(t);
 
-  fh->mesh_detach();
-  fh->vmesh()->transform(t);
-
-  send_output_handle("Output Field", fh);
+  sendOutput(OutputField, output);
 
   // Convert the transform into a matrix and send it out.
-  MatrixHandle mh = new DenseMatrix(t);
-  send_output_handle("Transformation Matrix", mh);
-#endif
+  MatrixHandle mh(new DenseMatrix(t));
+  sendOutput(Transformation_Matrix, mh);
 }
 
 void
@@ -495,6 +522,8 @@ BoxWidgetPtr WidgetFactory::createBox()
 {
   return boost::make_shared<BoxWidgetNull>();
 }
+
+const AlgorithmParameterName EditMeshBoundingBox::Resetting("Resetting");
 
 const AlgorithmParameterName EditMeshBoundingBox::InputCenterX("InputCenterX");
 const AlgorithmParameterName EditMeshBoundingBox::InputCenterY("InputCenterY");
