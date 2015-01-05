@@ -30,6 +30,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Modules/Fields/BoxWidgetTypes.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -39,33 +40,6 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
 const ModuleLookupInfo EditMeshBoundingBox::staticInfo_("EditMeshBoundingBox", "ChangeMesh", "SCIRun");
-
-namespace SCIRun
-{
-  class SCISHARE GeometryPortInterface
-  {
-
-  };
-
-  class SCISHARE BoxWidgetInterface
-  {
-  public:
-    virtual ~BoxWidgetInterface() {}
-    //TODO: need conversion to GPI type above, maybe
-    virtual void connect(OutputPortHandle port) = 0;
-    virtual void setRestrictX(bool restrict) = 0;
-    virtual void setRestrictY(bool restrict) = 0;
-    virtual void setRestrictZ(bool restrict) = 0;
-    virtual void setRestrictR(bool restrict) = 0;
-    virtual void setRestrictD(bool restrict) = 0;
-    virtual void setRestrictI(bool restrict) = 0;
-    virtual void unrestrictTranslation() = 0;
-    virtual void restrictTranslationXYZ() = 0;
-    virtual void restrictTranslationRDI() = 0;
-    virtual void SetPosition(const Point&, const Point&, const Point&, const Point&) = 0;
-    virtual void GetPosition(Point&, Point&, Point&, Point&) const = 0;
-  };
-}
 
 class BoxWidgetNull : public BoxWidgetInterface
 {
