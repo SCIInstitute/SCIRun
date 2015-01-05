@@ -38,6 +38,7 @@ SET(Modules_Fields_HEADERS
   CreateScalarFieldDataBasic.h
   ReportFieldInfo.h
   EditMeshBoundingBox.h
+  BoxWidgetTypes.h
   share.h
 )
 
