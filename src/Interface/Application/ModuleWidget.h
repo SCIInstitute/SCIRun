@@ -29,8 +29,6 @@
 #ifndef INTERFACE_APPLICATION_MODULEWIDGET_H
 #define INTERFACE_APPLICATION_MODULEWIDGET_H
 
-#include "ui_Module.h"
-#include "ui_ModuleMini.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/timer.hpp>
@@ -46,6 +44,7 @@
 
 class QGraphicsProxyWidget;
 class QDockWidget;
+class QProgressBar;
 
 namespace SCIRun {
 namespace Gui {
@@ -62,28 +61,24 @@ class DialogErrorControl;
 class ModuleWidgetDisplayBase
 {
 public:
+  virtual ~ModuleWidgetDisplayBase() {}
   virtual void setupFrame(QFrame* frame) = 0;
   virtual void setupTitle(const QString& name) = 0;
   virtual void setupProgressBar() = 0;
   virtual void setupSpecial() = 0;
   virtual void setupOptionsButton(bool hasUI) = 0;
-  virtual QButton* getOptionsButton() const = 0;
+  virtual QAbstractButton* getOptionsButton() const = 0;
+  virtual QAbstractButton* getExecuteButton() const = 0;
+  virtual QAbstractButton* getHelpButton() const = 0;
+  virtual QAbstractButton* getLogButton() const = 0;
+  virtual QPushButton* getModuleActionButton() const = 0;
 
-  virtual void setProgressValue(double percent) = 0;
-  virtual void updateProgressToolTip() = 0;
-
-  virtual void colorOptionButton(const QString& style) = 0;
+  virtual QProgressBar* getProgressBar() const = 0;
 
   virtual int getTitleWidth() const = 0;
 
   virtual void adjustLayout(QLayout* layout) = 0;
 };
-
-class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
-{};
-
-class ModuleWidgetDisplayMini : public Ui::ModuleMini, public ModuleWidgetDisplayBase
-{};
 
 class ModuleWidget : public QFrame,
   public SCIRun::Dataflow::Networks::ExecutableObject, /*public Ui::Module,*/ public HasNotes
