@@ -55,12 +55,13 @@ namespace SCIRun {
           work_(new DynamicExecutor::ModuleWorkQueue(numModules)),
           producer_(new DynamicExecutor::ModuleProducer(context.addAdditionalFilter(ModuleWaitingFilter::Instance()),
             &context.lookup, context.bounds(), network, lock, work_, numModules)),
-          consumer_(new DynamicExecutor::ModuleConsumer(work_, &context.lookup, producer_))
+          consumer_(new DynamicExecutor::ModuleConsumer(work_, &context.lookup, producer_)),
+          network_(network)
         {
         }
         void operator()() const
         {
-          waitForStartupInit();
+          waitForStartupInit(*network_);
           boost::thread consume(boost::ref(*consumer_));
           boost::thread produce(boost::ref(*producer_));
           consume.join();
@@ -70,6 +71,7 @@ namespace SCIRun {
         DynamicExecutor::ModuleWorkQueuePtr work_;
         DynamicExecutor::ModuleProducerPtr producer_;
         DynamicExecutor::ModuleConsumerPtr consumer_;
+        const NetworkInterface* network_;
       };
 }}}
 

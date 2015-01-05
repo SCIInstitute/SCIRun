@@ -45,7 +45,7 @@ namespace
     }
     void operator()() const
     {
-      waitForStartupInit();
+      waitForStartupInit(lookup_);
       bounds_.executeStarts_();
       BOOST_FOREACH(const ModuleId& id, order_)
       {

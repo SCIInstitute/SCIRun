@@ -49,7 +49,8 @@ namespace Networks {
   {
   public:
     virtual ~ExecutableLookup() {}
-    virtual ExecutableObject* lookupExecutable(const ModuleId& id) const = 0; 
+    virtual ExecutableObject* lookupExecutable(const ModuleId& id) const = 0;
+    virtual bool containsViewScene() const = 0;
     virtual int errorCode() const = 0;
   };
 
