@@ -84,14 +84,33 @@ public:
   {
     std::cout << "BoxWidgetNull::restrictTranslationRDI called" << std::endl;
   }
-  virtual void SetPosition(const Point& center, const Point& right, const Point& down, const Point& in) override
+  virtual void setPosition(const Point& center, const Point& right, const Point& down, const Point& in) override
   {
-    std::cout << "BoxWidgetNull::SetPosition called: " << center << " " << right << " " << down << " " << in << std::endl;
+    std::cout << "BoxWidgetNull::setPosition called: " << center << " " << right << " " << down << " " << in << std::endl;
+    center_ = center;
+    right_ = right;
+    down_ = down;
+    in_ = in;
   }
-  virtual void GetPosition(Point& center, Point& right, Point& down, Point& in) const override
+  virtual void getPosition(Point& center, Point& right, Point& down, Point& in) const override
   {
-    std::cout << "BoxWidgetNull::GetPosition called: " << std::endl;
+    std::cout << "BoxWidgetNull::getPosition called: " << std::endl;
+    center = center_;
+    right = right_;
+    down = down_;
+    in = in_;
   }
+  virtual void setScale(double scale) override
+  {
+    std::cout << "BoxWidgetNull::setScale called with " << scale << std::endl;
+  }
+  virtual void setCurrentMode(int mode) override
+  {
+    std::cout << "BoxWidgetNull::setCurrentMode called with " << mode << std::endl;
+  }
+
+private:
+  Point center_, right_, down_, in_;
 };
 
 class WidgetFactory
@@ -111,6 +130,7 @@ namespace SCIRun
       public:
         Transform box_initial_transform_;
         Transform field_initial_transform_;
+        BBox box_initial_bounds_;
       };
     }
   }
@@ -209,48 +229,57 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
   state->setValue(InputSizeZ, boost::lexical_cast<std::string>(size.z()));
 }
 
-
-void
-EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
+bool EditMeshBoundingBox::isBoxEmpty() const
 {
-#ifdef WORKING_ON_EDITMESH_DAN
-  if (reset || box_scale_.get() <= 0 ||
+  //TODO
+  return true;
+  /*
+  reset || box_scale_.get() <= 0 ||
     (box_center_.get() == Point(0.0, 0.0, 0.0) &&
     box_right_.get() == Point(0.0, 0.0, 0.0) &&
     box_down_.get() == Point(0.0, 0.0, 0.0) &&
     box_in_.get() == Point(0.0, 0.0, 0.0)))
+    */
+}
+
+void
+EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
+{
+  if (isBoxEmpty())
   {
     Point center;
     Vector size;
     BBox bbox = f->vmesh()->get_bounding_box();
-    if (!bbox.valid()) {
+    if (!bbox.valid()) 
+    {
       warning("Input field is empty -- using unit cube.");
       bbox.extend(Point(0, 0, 0));
       bbox.extend(Point(1, 1, 1));
     }
-    box_initial_bounds_ = bbox;
+    impl_->box_initial_bounds_ = bbox;
 
     // build a widget identical to the BBox
-    size = Vector(bbox.max() - bbox.min());
-    if (fabs(size.x())<1.e-4)
+    size = Vector(bbox.get_max() - bbox.get_min());
+    const double SMALL = 1e-4;
+    if (fabs(size.x())<SMALL)
     {
-      size.x(2.e-4);
-      bbox.extend(bbox.min() - Vector(1.0e-4, 0.0, 0.0));
-      bbox.extend(bbox.max() + Vector(1.0e-4, 0.0, 0.0));
+      size.x(2 * SMALL);
+      bbox.extend(bbox.get_min() - Vector(SMALL, 0.0, 0.0));
+      bbox.extend(bbox.get_max() + Vector(SMALL, 0.0, 0.0));
     }
-    if (fabs(size.y())<1.e-4)
+    if (fabs(size.y())<SMALL)
     {
-      size.y(2.e-4);
-      bbox.extend(bbox.min() - Vector(0.0, 1.0e-4, 0.0));
-      bbox.extend(bbox.max() + Vector(0.0, 1.0e-4, 0.0));
+      size.y(2 * SMALL);
+      bbox.extend(bbox.get_min() - Vector(0.0, SMALL, 0.0));
+      bbox.extend(bbox.get_max() + Vector(0.0, SMALL, 0.0));
     }
-    if (fabs(size.z())<1.e-4)
+    if (fabs(size.z())<SMALL)
     {
-      size.z(2.e-4);
-      bbox.extend(bbox.min() - Vector(0.0, 0.0, 1.0e-4));
-      bbox.extend(bbox.max() + Vector(0.0, 0.0, 1.0e-4));
+      size.z(2 * SMALL);
+      bbox.extend(bbox.get_min() - Vector(0.0, 0.0, SMALL));
+      bbox.extend(bbox.get_max() + Vector(0.0, 0.0, SMALL));
     }
-    center = Point(bbox.min() + size / 2.);
+    center = Point(bbox.get_min() + size / 2.);
 
     Vector sizex(size.x(), 0, 0);
     Vector sizey(0, size.y(), 0);
@@ -262,34 +291,37 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
 
     // Translate * Rotate * Scale.
     Transform r;
-    box_initial_transform_.load_identity();
-    box_initial_transform_.pre_scale(Vector((right - center).length(),
+    impl_->box_initial_transform_.load_identity();
+    impl_->box_initial_transform_.pre_scale(Vector((right - center).length(),
       (down - center).length(),
       (in - center).length()));
     r.load_frame((right - center).safe_normal(),
       (down - center).safe_normal(),
       (in - center).safe_normal());
-    box_initial_transform_.pre_trans(r);
-    box_initial_transform_.pre_translate(center.asVector());
+    impl_->box_initial_transform_.pre_trans(r);
+    impl_->box_initial_transform_.pre_translate(Vector(center));
 
+    auto state = get_state();
     const double newscale = size.length() * 0.015;
-    double bscale = box_real_scale_.get();
+    double bscale = state->getValue(BoxRealScale).toDouble();
     if (bscale < newscale * 1e-2 || bscale > newscale * 1e2)
     {
       bscale = newscale;
     }
-    box_->SetScale(bscale); // callback sets box_scale for us.
-    box_->SetPosition(center, right, down, in);
-    box_->SetCurrentMode(box_mode_.get());
+    box_->setScale(bscale); // callback sets box_scale for us.
+    box_->setPosition(center, right, down, in);
+    box_->setCurrentMode(state->getValue(BoxMode).toInt());
+#ifdef WORKING_ON_EDITMESH_DAN
     box_center_.set(center);
     box_right_.set(right);
     box_down_.set(down);
     box_in_.set(in);
     box_scale_.set(-1.0);
+#endif
   }
   else
   {
-
+#ifdef WORKING_ON_EDITMESH_DAN
     const double l2norm = (box_right_.get().vector() +
       box_down_.get().vector() +
       box_in_.get().vector()).length();
@@ -299,12 +331,13 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     {
       bscale = newscale;
     }
-    box_->SetScale(bscale); // callback sets box_scale for us.
-    box_->SetPosition(box_center_.get(), box_right_.get(),
+    box_->setScale(bscale); // callback sets box_scale for us.
+    box_->setPosition(box_center_.get(), box_right_.get(),
       box_down_.get(), box_in_.get());
-    box_->SetCurrentMode(box_mode_.get());
+    box_->setCurrentMode(box_mode_.get());
+#endif
   }
-
+#ifdef WORKING_ON_EDITMESH_DAN
   GeomGroup *widget_group = new GeomGroup;
   widget_group->add(box_->GetWidget());
 
@@ -405,20 +438,20 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
     state->setValue(OutputSizeZ, std::fabs(state->getValue(OutputSizeZ).toDouble()));
 
     Vector sizex, sizey, sizez;
-    box_->GetPosition(center, right, down, in);
+    box_->getPosition(center, right, down, in);
     if (useOutputSize)
     {
       sizex = Vector(state->getValue(OutputSizeX).toDouble(), 0, 0);
       sizey = Vector(0, state->getValue(OutputSizeY).toDouble(), 0);
       sizez = Vector(0, 0, state->getValue(OutputSizeZ).toDouble());
-      std::cout << "setting size from gui: " << sizex << " " << sizey << " " << sizez << std::endl;
+      //std::cout << "setting size from gui: " << sizex << " " << sizey << " " << sizez << std::endl;
     }
     else
     {
       sizex = (right - center) * 2;
       sizey = (down - center) * 2;
       sizez = (in - center) * 2;
-      std::cout << "setting size default: " << sizex << " " << sizey << " " << sizez << std::endl;
+      //std::cout << "setting size default: " << sizex << " " << sizey << " " << sizez << std::endl;
     }
     if (useOutputCenter)
     {
@@ -430,14 +463,14 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
     down = Point(center + sizey / 2.);
     in = Point(center + sizez / 2.);
 
-    box_->SetPosition(center, right, down, in);
+    box_->setPosition(center, right, down, in);
   }
 
   // Transform the mesh if necessary.
   // Translate * Rotate * Scale.
 
   Point center, right, down, in;
-  box_->GetPosition(center, right, down, in);
+  box_->getPosition(center, right, down, in);
 
   Transform t, r;
   t.load_identity();
@@ -465,30 +498,30 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
   sendOutput(Transformation_Matrix, mh);
 }
 
-void
-EditMeshBoundingBox::widget_moved(bool last)
+void EditMeshBoundingBox::widget_moved(bool last)
 {
-#ifdef WORKING_ON_EDITMESH_DAN
   if (last)
   {
     Point center, right, down, in;
-    outputcenterx_.reset(); outputcentery_.reset(); outputcenterz_.reset();
-    outputsizex_.reset(); outputsizey_.reset(); outputsizez_.reset();
-    box_->GetPosition(center, right, down, in);
-    outputcenterx_.set(center.x());
-    outputcentery_.set(center.y());
-    outputcenterz_.set(center.z());
-    outputsizex_.set((right.x() - center.x())*2.);
-    outputsizey_.set((down.y() - center.y())*2.);
-    outputsizez_.set((in.z() - center.z())*2.);
-    box_mode_.set(box_->GetMode());
+    box_->getPosition(center, right, down, in);
+    auto state = get_state();
+    state->setValue(OutputCenterX, center.x());
+    state->setValue(OutputCenterY, center.y());
+    state->setValue(OutputCenterZ, center.z());
+    state->setValue(OutputSizeX, (right.x() - center.x())*2.);
+    state->setValue(OutputSizeY, (down.y() - center.y())*2.);
+    state->setValue(OutputSizeZ, (in.z() - center.z())*2.);
+#ifdef WORKING_ON_EDITMESH_DAN
+    state->setValue(BoxMode, box_mode_.set(box_->GetMode());
     box_center_.set(center);
     box_right_.set(right);
     box_down_.set(down);
     box_in_.set(in);
     box_scale_.set(1.0);
     want_to_execute();
+#endif
   }
+#ifdef WORKING_ON_EDITMESH_DAN
   box_real_scale_.set(box_->GetScale());
 #endif
 }
@@ -529,3 +562,7 @@ const AlgorithmParameterName EditMeshBoundingBox::RestrictZ("RestrictZ");
 const AlgorithmParameterName EditMeshBoundingBox::RestrictR("RestrictR");
 const AlgorithmParameterName EditMeshBoundingBox::RestrictD("RestrictD");
 const AlgorithmParameterName EditMeshBoundingBox::RestrictI("RestrictI");
+
+const AlgorithmParameterName EditMeshBoundingBox::BoxMode("BoxMode");
+const AlgorithmParameterName EditMeshBoundingBox::BoxRealScale("BoxRealScale");
+

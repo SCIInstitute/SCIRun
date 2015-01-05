@@ -56,8 +56,10 @@ namespace SCIRun
     virtual void unrestrictTranslation() = 0;
     virtual void restrictTranslationXYZ() = 0;
     virtual void restrictTranslationRDI() = 0;
-    virtual void SetPosition(const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&) = 0;
-    virtual void GetPosition(Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&) const = 0;
+    virtual void setPosition(const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&) = 0;
+    virtual void getPosition(Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&) const = 0;
+    virtual void setScale(double scale) = 0;
+    virtual void setCurrentMode(int mode) = 0;
   };
 
 }

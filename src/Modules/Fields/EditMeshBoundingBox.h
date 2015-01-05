@@ -83,6 +83,9 @@ namespace Fields {
 	static const Core::Algorithms::AlgorithmParameterName RestrictD;
 	static const Core::Algorithms::AlgorithmParameterName RestrictI;
 
+  static const Core::Algorithms::AlgorithmParameterName BoxMode;
+  static const Core::Algorithms::AlgorithmParameterName BoxRealScale;
+
     INPUT_PORT(0, InputField, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
     OUTPUT_PORT(1, Transformation_Widget, GeometryObject);
@@ -95,6 +98,7 @@ namespace Fields {
     void clear_vals();
     void update_input_attributes(FieldHandle);
     void build_widget(FieldHandle, bool reset);
+    bool isBoxEmpty() const;
     void widget_moved(bool);
     void createBoxWidget();
     void setBoxRestrictions();
