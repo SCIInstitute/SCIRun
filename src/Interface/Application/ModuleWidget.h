@@ -61,7 +61,22 @@ class DialogErrorControl;
 
 class ModuleWidgetDisplayBase
 {
-  //TODO: abstract buttons, etc
+public:
+  virtual void setupFrame(QFrame* frame) = 0;
+  virtual void setupTitle(const QString& name) = 0;
+  virtual void setupProgressBar() = 0;
+  virtual void setupSpecial() = 0;
+  virtual void setupOptionsButton(bool hasUI) = 0;
+  virtual QButton* getOptionsButton() const = 0;
+
+  virtual void setProgressValue(double percent) = 0;
+  virtual void updateProgressToolTip() = 0;
+
+  virtual void colorOptionButton(const QString& style) = 0;
+
+  virtual int getTitleWidth() const = 0;
+
+  virtual void adjustLayout(QLayout* layout) = 0;
 };
 
 class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
@@ -128,6 +143,7 @@ public Q_SLOTS:
   void pinUI();
   void hideUI();
   void showUI();
+  void setMiniMode(bool mini);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -156,7 +172,7 @@ private Q_SLOTS:
   void updateDialogWithPortCount();
 private:
   //TODO: change to ModuleWidgetDisplayBase*
-  ModuleWidgetDisplay* displayImpl_;
+  ModuleWidgetDisplayBase* displayImpl_;
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;

@@ -871,12 +871,12 @@ void SCIRunMainWindow::showPythonWarning(bool visible)
 
 void SCIRunMainWindow::makeModulesLargeSize()
 {
-  std::cout << "Modules are large" << std::endl;
+  networkEditor_->setModuleMini(false);
 }
 
 void SCIRunMainWindow::makeModulesSmallSize()
 {
-  std::cout << "TODO: Modules are small" << std::endl;
+  networkEditor_->setModuleMini(true);
 }
 
 namespace {

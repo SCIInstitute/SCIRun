@@ -188,6 +188,7 @@ Q_SIGNALS:
     void zoomOut();
     void zoomReset();
     void centerView();
+    void setModuleMini(bool mini);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);

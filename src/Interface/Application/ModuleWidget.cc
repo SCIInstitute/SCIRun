@@ -878,3 +878,11 @@ void ModuleWidget::executeButtonPushed()
   LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   Q_EMIT executedManually(theModule_);
 }
+
+void ModuleWidget::setMiniMode(bool mini)
+{
+  if (mini)
+    std::cout << "TODO: Modules are small" << std::endl;
+  else
+    std::cout << "Modules are large" << std::endl;
+}

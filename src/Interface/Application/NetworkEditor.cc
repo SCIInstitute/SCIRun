@@ -982,6 +982,16 @@ bool NetworkEditor::containsViewScene() const
   return findFirstByName(scene_->items(), "ViewScene") != nullptr;
 }
 
+void NetworkEditor::setModuleMini(bool mini)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->setMiniMode(mini);
+  }
+}
+
 NetworkEditor::~NetworkEditor()
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
