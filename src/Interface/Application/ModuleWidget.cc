@@ -269,6 +269,8 @@ public:
   virtual int getTitleWidth() const override;
 
   virtual void adjustLayout(QLayout* layout) override;
+private:
+  mutable QPushButton nullButton_;
 };
 
 void ModuleWidgetDisplay::setupFrame(QFrame* frame)
@@ -344,9 +346,9 @@ void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
 {
   //TODO: centralize platform-dependent code
   #ifdef WIN32
-  layout->removeItem(displayImpl_->verticalSpacer_Mac);
-  layout->removeItem(displayImpl_->horizontalSpacer_Mac1);
-  layout->removeItem(displayImpl_->horizontalSpacer_Mac2);
+  layout->removeItem(verticalSpacer_Mac);
+  layout->removeItem(horizontalSpacer_Mac1);
+  layout->removeItem(horizontalSpacer_Mac2);
   #endif
 }
 
@@ -380,7 +382,7 @@ void ModuleWidgetDisplayMini::setupSpecial()
 
 void ModuleWidgetDisplayMini::setupOptionsButton(bool hasUI)
 {
-  //optionsButton_->setVisible(hasUI);
+  optionsButton_->setEnabled(hasUI);
   //executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
@@ -391,26 +393,22 @@ QAbstractButton* ModuleWidgetDisplayMini::getOptionsButton() const
 
 QAbstractButton* ModuleWidgetDisplayMini::getExecuteButton() const
 {
-  static QPushButton* nullButton = new QPushButton;
-  return nullButton;
+  return &nullButton_;
 }
 
 QAbstractButton* ModuleWidgetDisplayMini::getHelpButton() const
 {
-  static QPushButton* nullButton = new QPushButton;
-  return nullButton;
+  return &nullButton_;
 }
 
 QAbstractButton* ModuleWidgetDisplayMini::getLogButton() const
 {
-  static QPushButton* nullButton = new QPushButton;
-  return nullButton;
+  return &nullButton_;
 }
 
 QPushButton* ModuleWidgetDisplayMini::getModuleActionButton() const
 {
-  static QPushButton* nullButton = new QPushButton;
-  return nullButton;
+  return &nullButton_;
 }
 
 QProgressBar* ModuleWidgetDisplayMini::getProgressBar() const
@@ -420,8 +418,7 @@ QProgressBar* ModuleWidgetDisplayMini::getProgressBar() const
 
 int ModuleWidgetDisplayMini::getTitleWidth() const
 {
-  return 100;
-//  return titleLabel_->fontMetrics().boundingRect(titleLabel_->text()).width();
+  return optionsButton_->fontMetrics().boundingRect(optionsButton_->text()).width() + 50;
 }
 
 void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
