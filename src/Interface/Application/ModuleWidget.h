@@ -184,12 +184,13 @@ private:
   void addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void hookUpGeneralPortSignals(PortWidget* port) const;
-  void setupDisplayConnections();
-  void resizeBasedOnModuleName();
+  void setupDisplayConnections(ModuleWidgetDisplayBase* display);
+  void resizeBasedOnModuleName(ModuleWidgetDisplayBase* display);
   std::string moduleId_;
   class ModuleDialogGeneric* dialog_;
   QDockWidget* dockable_;
   void makeOptionsDialog();
+  void setupDisplay(ModuleWidgetDisplayBase* display, const QString& name);
   void setupModuleActions();
   void adjustDockState(bool dockEnabled);
   Qt::DockWidgetArea allowedDockArea() const;

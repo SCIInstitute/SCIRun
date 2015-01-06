@@ -464,30 +464,19 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   currentDisplay_ = globalMiniMode_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
   setCurrentIndex(globalMiniMode_ ? miniIndex : fullIndex);
 
-  currentDisplay_->setupTitle(name);
-
-  //TODO: ultra ugly. no other place for this code right now.
-  //TODO: to be handled in issue #212
-  if (name == "ViewScene")
-  {
-    currentDisplay_->setupSpecial();
-  }
-  currentDisplay_->setupProgressBar();
-  currentDisplay_->setupButtons(theModule_->has_ui(), this);
+  setupDisplay(currentDisplay_, name);
 
   makeOptionsDialog();
   addPortLayouts();
   addPorts(*theModule_);
 
-  resizeBasedOnModuleName();
-  resize(currentWidget()->size());
+  resizeBasedOnModuleName(currentDisplay_);
 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->connectExecutionStateChanged(boost::bind(&ModuleWidget::moduleStateUpdated, this, _1));
   connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
 
   setupModuleActions();
-  currentDisplay_->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
 
   logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), dialogErrorControl_, SCIRunMainWindow::Instance());
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
@@ -514,13 +503,27 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   if (theModule_->has_ui())
     theModule_->setUiToggleFunc([&](bool b){ dialog_->setVisible(b); });
 
-  setupDisplayConnections();
+  setupDisplayConnections(currentDisplay_);
 }
 
-void ModuleWidget::resizeBasedOnModuleName()
+void ModuleWidget::setupDisplay(ModuleWidgetDisplayBase* display, const QString& name)
+{
+  display->setupTitle(name);
+
+  //TODO: ultra ugly. no other place for this code right now.
+  //TODO: to be handled in issue #212
+  if (name == "ViewScene")
+  {
+    display->setupSpecial();
+  }
+  display->setupProgressBar();
+  display->setupButtons(theModule_->has_ui(), this);
+}
+
+void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display)
 {
   auto widget = currentWidget();
-  int pixelWidth = currentDisplay_->getTitleWidth();
+  int pixelWidth = display->getTitleWidth();
   //std::cout << titleLabel_->text().toStdString() << std::endl;
   //std::cout << "\tPixelwidth = " << pixelWidth << std::endl;
   int extraWidth = pixelWidth - moduleWidthThreshold;
@@ -537,18 +540,20 @@ void ModuleWidget::resizeBasedOnModuleName()
     widget->resize(widget->width() - smushFactor, widget->height());
     //std::cout << "\tNew width: " << width() << std::endl;
   }
-  currentDisplay_->adjustLayout(widget->layout());
+  display->adjustLayout(widget->layout());
   widget->resize(widget->width(), widget->height() + widgetHeightAdjust);
+  resize(widget->size());
 }
 
-void ModuleWidget::setupDisplayConnections()
+void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
 {
-  connect(currentDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
-  addWidgetToExecutionDisableList(currentDisplay_->getExecuteButton());
-  connect(currentDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
-  connect(currentDisplay_->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
-  connect(currentDisplay_->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
-  connect(currentDisplay_->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(raise()));
+  connect(display->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
+  addWidgetToExecutionDisableList(display->getExecuteButton());
+  connect(display->getOptionsButton(), SIGNAL(clicked()), this, SLOT(toggleOptionsDialog()));
+  connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
+  connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
+  connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(raise()));
+  display->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
@@ -812,6 +817,7 @@ void ModuleWidget::printPortPositions() const
 ModuleWidget::~ModuleWidget()
 {
   removeWidgetFromExecutionDisableList(currentDisplay_->getExecuteButton());
+  //removeWidgetFromExecutionDisableList(fullWidgetDisplay_->getExecuteButton());
   removeWidgetFromExecutionDisableList(actionsMenu_->getAction("Execute"));
   if (dialog_)
     removeWidgetFromExecutionDisableList(dialog_->getExecuteAction());
@@ -1099,9 +1105,9 @@ bool ModuleWidget::globalMiniMode_(false);
 void ModuleWidget::setMiniMode(bool mini)
 {
   if (mini)
-    std::cout << "TODO: Modules are small" << std::endl;
+    collapseToMiniMode();
   else
-    std::cout << "Modules are large" << std::endl;
+    expandToFullMode();
 }
 
 void ModuleWidget::setGlobalMiniMode(bool mini)
