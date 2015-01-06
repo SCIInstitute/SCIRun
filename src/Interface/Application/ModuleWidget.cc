@@ -350,6 +350,102 @@ void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
   #endif
 }
 
+class ModuleWidgetDisplayComposite : public ModuleWidgetDisplayBase
+{
+public:
+  ModuleWidgetDisplayComposite(/*TODO: initializer list!*/)
+  {}
+
+  virtual void setupFrame(QFrame* frame) override
+  {
+    BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+      mwd->setupFrame(frame);
+  }
+
+  virtual void setupTitle(const QString& name) override
+{
+  BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+  mwd->setupTitle(name);
+}
+
+  virtual void setupProgressBar() override
+{
+  BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+  mwd->setupProgressBar();
+}
+
+  virtual void setupSpecial() override
+  {
+    BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+    mwd->setupSpecial();
+  }
+
+  virtual void setupOptionsButton(bool hasUI) override
+{
+  BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+  mwd->setupOptionsButton(hasUI);
+}
+  virtual QAbstractButton* getOptionsButton() const override
+{
+  //TODO
+  return 0;
+  //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+  //mwd->setupFrame(frame);
+}
+  virtual QAbstractButton* getExecuteButton() const override
+{
+  //TODO
+  return 0;
+  //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+  //mwd->setupFrame(frame);
+}
+  virtual QAbstractButton* getHelpButton() const override
+{
+  //TODO
+  return 0;
+  //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+  //mwd->setupFrame(frame);
+}
+  virtual QAbstractButton* getLogButton() const override
+{
+  //TODO
+  return 0;
+  //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+  //mwd->setupFrame(frame);
+}
+  virtual QPushButton* getModuleActionButton() const override
+{
+  //TODO
+  return 0;
+  //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+  //mwd->setupFrame(frame);
+}
+
+  virtual QProgressBar* getProgressBar() const override
+{
+  //TODO
+  return 0;
+//  BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+//  mwd->setupFrame(frame);
+}
+
+  virtual int getTitleWidth() const override
+{
+  //TODO
+  return 100;
+  //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+  //mwd->setupFrame(frame);
+}
+
+  virtual void adjustLayout(QLayout* layout) override
+{
+  BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
+    mwd->adjustLayout(layout);
+}
+private:
+  std::set<ModuleWidgetDisplayPtr> displays_;
+};
+
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QFrame(parent), HasNotes(theModule->get_id(), true),
@@ -735,7 +831,7 @@ ModuleWidget::~ModuleWidget()
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }
-  delete displayImpl_;
+  //delete displayImpl_;
 }
 
 void ModuleWidget::trackConnections()

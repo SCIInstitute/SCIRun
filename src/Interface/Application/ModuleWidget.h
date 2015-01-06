@@ -80,6 +80,8 @@ public:
   virtual void adjustLayout(QLayout* layout) = 0;
 };
 
+typedef boost::shared_ptr<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
+
 class ModuleWidget : public QFrame,
   public SCIRun::Dataflow::Networks::ExecutableObject, /*public Ui::Module,*/ public HasNotes
 {
@@ -166,8 +168,7 @@ private Q_SLOTS:
   void replaceModuleWith();
   void updateDialogWithPortCount();
 private:
-  //TODO: change to ModuleWidgetDisplayBase*
-  ModuleWidgetDisplayBase* displayImpl_;
+  ModuleWidgetDisplayPtr displayImpl_;
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
