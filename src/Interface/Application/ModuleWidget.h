@@ -168,7 +168,9 @@ private Q_SLOTS:
   void replaceModuleWith();
   void updateDialogWithPortCount();
 private:
-  ModuleWidgetDisplayPtr displayImpl_;
+  ModuleWidgetDisplayBase* currentDisplay_;
+  ModuleWidgetDisplayPtr fullWidgetDisplay_;
+  ModuleWidgetDisplayPtr miniWidgetDisplay_;
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
@@ -179,6 +181,7 @@ private:
   void addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void hookUpGeneralPortSignals(PortWidget* port) const;
+  void setupDisplayConnections();
   std::string moduleId_;
   class ModuleDialogGeneric* dialog_;
   QDockWidget* dockable_;
