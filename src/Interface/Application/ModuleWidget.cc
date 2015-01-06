@@ -350,6 +350,90 @@ void ModuleWidgetDisplay::adjustLayout(QLayout* layout)
   #endif
 }
 
+void ModuleWidgetDisplayMini::setupFrame(QFrame* frame)
+{
+  setupUi(frame);
+}
+
+void ModuleWidgetDisplayMini::setupTitle(const QString& name)
+{
+  optionsButton_->setFont(QFont("Helvetica", titleFontSize, QFont::Bold));
+  optionsButton_->setText(name);
+}
+
+void ModuleWidgetDisplayMini::setupProgressBar()
+{
+  progressBar_->setMaximum(100);
+  progressBar_->setMinimum(0);
+  progressBar_->setValue(0);
+  progressBar_->setTextVisible(false);
+}
+
+void ModuleWidgetDisplayMini::setupSpecial()
+{
+  optionsButton_->setText("VIEW");
+  optionsButton_->setToolTip("View renderer output");
+  optionsButton_->resize(100, optionsButton_->height());
+  //executePushButton_->hide();
+  progressBar_->setVisible(false);
+}
+
+void ModuleWidgetDisplayMini::setupOptionsButton(bool hasUI)
+{
+  //optionsButton_->setVisible(hasUI);
+  //executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+}
+
+QAbstractButton* ModuleWidgetDisplayMini::getOptionsButton() const
+{
+  return optionsButton_;
+}
+
+QAbstractButton* ModuleWidgetDisplayMini::getExecuteButton() const
+{
+  static QPushButton* nullButton = new QPushButton;
+  return nullButton;
+}
+
+QAbstractButton* ModuleWidgetDisplayMini::getHelpButton() const
+{
+  static QPushButton* nullButton = new QPushButton;
+  return nullButton;
+}
+
+QAbstractButton* ModuleWidgetDisplayMini::getLogButton() const
+{
+  static QPushButton* nullButton = new QPushButton;
+  return nullButton;
+}
+
+QPushButton* ModuleWidgetDisplayMini::getModuleActionButton() const
+{
+  static QPushButton* nullButton = new QPushButton;
+  return nullButton;
+}
+
+QProgressBar* ModuleWidgetDisplayMini::getProgressBar() const
+{
+  return progressBar_;
+}
+
+int ModuleWidgetDisplayMini::getTitleWidth() const
+{
+  return 100;
+//  return titleLabel_->fontMetrics().boundingRect(titleLabel_->text()).width();
+}
+
+void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
+{
+  // //TODO: centralize platform-dependent code
+  // #ifdef WIN32
+  // layout->removeItem(displayImpl_->verticalSpacer_Mac);
+  // layout->removeItem(displayImpl_->horizontalSpacer_Mac1);
+  // layout->removeItem(displayImpl_->horizontalSpacer_Mac2);
+  // #endif
+}
+
 class ModuleWidgetDisplayComposite : public ModuleWidgetDisplayBase
 {
 public:
@@ -449,7 +533,6 @@ private:
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QFrame(parent), HasNotes(theModule->get_id(), true),
-  displayImpl_(new ModuleWidgetDisplay),
   ports_(new PortWidgetManager),
   deletedFromGui_(true),
   colorLocked_(false),
@@ -464,6 +547,11 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   deleting_(false),
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192))
 {
+  if (globalMiniMode_)
+    displayImpl_.reset(new ModuleWidgetDisplayMini);
+  else
+    displayImpl_.reset(new ModuleWidgetDisplay);
+
   displayImpl_->setupFrame(this);
   displayImpl_->setupTitle(name);
 
@@ -1081,8 +1169,11 @@ void ModuleWidget::executeButtonPushed()
   Q_EMIT executedManually(theModule_);
 }
 
+bool ModuleWidget::globalMiniMode_(false);
+
 void ModuleWidget::setMiniMode(bool mini)
 {
+  globalMiniMode_ = mini;
   if (mini)
     std::cout << "TODO: Modules are small" << std::endl;
   else

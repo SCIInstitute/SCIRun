@@ -203,6 +203,8 @@ private:
   NetworkEditor* editor_;
   bool deleting_;
   const QString defaultBackgroundColor_;
+
+  static bool globalMiniMode_;
 };
 
 }
