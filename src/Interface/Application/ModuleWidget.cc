@@ -88,7 +88,7 @@ namespace Gui {
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
         << disabled(new QAction("Replace With", parent))
-        << disabled(new QAction("Collapse", parent))
+        << new QAction("Collapse", parent)
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
@@ -236,7 +236,7 @@ public:
   virtual void setupTitle(const QString& name) override;
   virtual void setupProgressBar() override;
   virtual void setupSpecial() override;
-  virtual void setupOptionsButton(bool hasUI) override;
+  virtual void setupButtons(bool hasUI, QObject* module) override;
   virtual QAbstractButton* getOptionsButton() const override;
   virtual QAbstractButton* getExecuteButton() const override;
   virtual QAbstractButton* getHelpButton() const override;
@@ -257,7 +257,7 @@ public:
   virtual void setupTitle(const QString& name) override;
   virtual void setupProgressBar() override;
   virtual void setupSpecial() override;
-  virtual void setupOptionsButton(bool hasUI) override;
+  virtual void setupButtons(bool hasUI, QObject* module) override;
   virtual QAbstractButton* getOptionsButton() const override;
   virtual QAbstractButton* getExecuteButton() const override;
   virtual QAbstractButton* getHelpButton() const override;
@@ -301,7 +301,7 @@ void ModuleWidgetDisplay::setupSpecial()
   progressBar_->setVisible(false);
 }
 
-void ModuleWidgetDisplay::setupOptionsButton(bool hasUI)
+void ModuleWidgetDisplay::setupButtons(bool hasUI, QObject*)
 {
   optionsButton_->setVisible(hasUI);
   executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
@@ -380,9 +380,10 @@ void ModuleWidgetDisplayMini::setupSpecial()
   progressBar_->setVisible(false);
 }
 
-void ModuleWidgetDisplayMini::setupOptionsButton(bool hasUI)
+void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
 {
   optionsButton_->setEnabled(hasUI);
+  module->connect(expandToolButton_, SIGNAL(clicked()), SLOT(expandToFullMode()));
   //executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
@@ -431,102 +432,6 @@ void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
   // #endif
 }
 
-class ModuleWidgetDisplayComposite : public ModuleWidgetDisplayBase
-{
-public:
-  ModuleWidgetDisplayComposite(/*TODO: initializer list!*/)
-  {}
-
-  virtual void setupFrame(QFrame* frame) override
-  {
-    BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-      mwd->setupFrame(frame);
-  }
-
-  virtual void setupTitle(const QString& name) override
-  {
-    BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-      mwd->setupTitle(name);
-  }
-
-  virtual void setupProgressBar() override
-  {
-    BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-      mwd->setupProgressBar();
-  }
-
-  virtual void setupSpecial() override
-  {
-    BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-      mwd->setupSpecial();
-  }
-
-  virtual void setupOptionsButton(bool hasUI) override
-  {
-    BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-      mwd->setupOptionsButton(hasUI);
-  }
-  virtual QAbstractButton* getOptionsButton() const override
-  {
-    //TODO
-    return 0;
-    //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-    //mwd->setupFrame(frame);
-  }
-  virtual QAbstractButton* getExecuteButton() const override
-  {
-    //TODO
-    return 0;
-    //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-    //mwd->setupFrame(frame);
-  }
-  virtual QAbstractButton* getHelpButton() const override
-  {
-    //TODO
-    return 0;
-    //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-    //mwd->setupFrame(frame);
-  }
-  virtual QAbstractButton* getLogButton() const override
-  {
-    //TODO
-    return 0;
-    //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-    //mwd->setupFrame(frame);
-  }
-  virtual QPushButton* getModuleActionButton() const override
-  {
-    //TODO
-    return 0;
-    //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-    //mwd->setupFrame(frame);
-  }
-
-  virtual QProgressBar* getProgressBar() const override
-  {
-    //TODO
-    return 0;
-    //  BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-    //  mwd->setupFrame(frame);
-  }
-
-  virtual int getTitleWidth() const override
-  {
-    //TODO
-    return 100;
-    //BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-    //mwd->setupFrame(frame);
-  }
-
-  virtual void adjustLayout(QLayout* layout) override
-  {
-    BOOST_FOREACH(ModuleWidgetDisplayPtr mwd, displays_)
-      mwd->adjustLayout(layout);
-  }
-private:
-  std::set<ModuleWidgetDisplayPtr> displays_;
-};
-
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
@@ -547,11 +452,18 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   deleting_(false),
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192))
 {
+  const int fullIndex = 0;
+  auto frameFull = new QFrame();
+  fullWidgetDisplay_->setupFrame(frameFull);
+  addWidget(frameFull);
+  const int miniIndex = 1;
+  auto frameMini = new QFrame();
+  miniWidgetDisplay_->setupFrame(frameMini);
+  addWidget(frameMini);
+
   currentDisplay_ = globalMiniMode_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
-  
-  auto frame1 = new QFrame();
-  currentDisplay_->setupFrame(frame1);
-  addWidget(frame1);
+  setCurrentIndex(globalMiniMode_ ? miniIndex : fullIndex);
+
   currentDisplay_->setupTitle(name);
 
   //TODO: ultra ugly. no other place for this code right now.
@@ -561,15 +473,15 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
     currentDisplay_->setupSpecial();
   }
   currentDisplay_->setupProgressBar();
-  currentDisplay_->setupOptionsButton(theModule_->has_ui());
+  currentDisplay_->setupButtons(theModule_->has_ui(), this);
 
   makeOptionsDialog();
   addPortLayouts();
   addPorts(*theModule_);
-  
+
   resizeBasedOnModuleName();
   resize(currentWidget()->size());
-  
+
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->connectExecutionStateChanged(boost::bind(&ModuleWidget::moduleStateUpdated, this, _1));
   connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
@@ -584,6 +496,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
+  connect(actionsMenu_->getAction("Collapse"), SIGNAL(triggered()), this, SLOT(collapseToMiniMode()));
 
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
   connectUpdateNote(this);
@@ -1185,9 +1098,27 @@ bool ModuleWidget::globalMiniMode_(false);
 
 void ModuleWidget::setMiniMode(bool mini)
 {
-  globalMiniMode_ = mini;
   if (mini)
     std::cout << "TODO: Modules are small" << std::endl;
   else
     std::cout << "Modules are large" << std::endl;
+}
+
+void ModuleWidget::setGlobalMiniMode(bool mini)
+{
+  globalMiniMode_ = mini;
+  if (mini)
+    std::cout << "All Modules are small" << std::endl;
+  else
+    std::cout << "All Modules are large" << std::endl;
+}
+
+void ModuleWidget::collapseToMiniMode()
+{
+  std::cout << "collapse slot" << std::endl;
+}
+
+void ModuleWidget::expandToFullMode()
+{
+  std::cout << "expand slot" << std::endl;
 }

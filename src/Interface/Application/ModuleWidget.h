@@ -66,7 +66,7 @@ public:
   virtual void setupTitle(const QString& name) = 0;
   virtual void setupProgressBar() = 0;
   virtual void setupSpecial() = 0;
-  virtual void setupOptionsButton(bool hasUI) = 0;
+  virtual void setupButtons(bool hasUI, QObject* module) = 0;
   virtual QAbstractButton* getOptionsButton() const = 0;
   virtual QAbstractButton* getExecuteButton() const = 0;
   virtual QAbstractButton* getHelpButton() const = 0;
@@ -141,6 +141,9 @@ public Q_SLOTS:
   void hideUI();
   void showUI();
   void setMiniMode(bool mini);
+  void collapseToMiniMode();
+  void expandToFullMode();
+  static void setGlobalMiniMode(bool mini);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);

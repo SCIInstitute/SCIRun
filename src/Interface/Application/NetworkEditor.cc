@@ -984,6 +984,7 @@ bool NetworkEditor::containsViewScene() const
 
 void NetworkEditor::setModuleMini(bool mini)
 {
+  ModuleWidget::setGlobalMiniMode(mini);
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
