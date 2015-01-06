@@ -1,3 +1,4 @@
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -30,10 +31,14 @@
 #include <Interface/Application/GuiApplication.h>
 #include <Core/ConsoleApplication/ConsoleApplication.h>
 
+
 using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Console;
 
+
+// If not WIN32 use this main()/entry point.
+#ifndef WIN32
 int main(int argc, const char* argv[])
 {
   Application::Instance().readCommandLine(argc, argv);
@@ -46,3 +51,28 @@ int main(int argc, const char* argv[])
   return ConsoleApplication::run(argc, argv);
 #endif
 }
+#endif
+
+// If building on WIN32, use this entry point.
+#ifdef WIN32
+#include <windows.h>
+int CALLBACK WinMain(
+  _In_  HINSTANCE hInstance,
+  _In_  HINSTANCE hPrevInstance,
+  _In_  LPSTR lpCmdLine,
+  _In_  int nCmdShow
+)
+{
+  const char *argv[] = {GetCommandLine()};
+  int argc = 1;
+  Application::Instance().readCommandLine(argc, argv);
+  
+  //TODO: must read --headless flag here, or try pushing command queue building all the way up here
+
+#ifndef BUILD_HEADLESS
+  return GuiApplication::run(argc, argv);
+#else
+  return ConsoleApplication::run(argc, argv);
+#endif
+}
+#endif
