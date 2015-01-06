@@ -32,7 +32,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/timer.hpp>
-#include <QFrame>
+#include <QStackedWidget>
 #include <set>
 #include <deque>
 #include <Interface/Application/Note.h>
@@ -82,7 +82,7 @@ public:
 
 typedef boost::shared_ptr<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
-class ModuleWidget : public QFrame,
+class ModuleWidget : public QStackedWidget,
   public SCIRun::Dataflow::Networks::ExecutableObject, /*public Ui::Module,*/ public HasNotes
 {
 	Q_OBJECT
@@ -182,6 +182,7 @@ private:
   void addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void hookUpGeneralPortSignals(PortWidget* port) const;
   void setupDisplayConnections();
+  void resizeBasedOnModuleName();
   std::string moduleId_;
   class ModuleDialogGeneric* dialog_;
   QDockWidget* dockable_;

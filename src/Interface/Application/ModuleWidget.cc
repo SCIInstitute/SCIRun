@@ -529,7 +529,7 @@ private:
 
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
-  : QFrame(parent), HasNotes(theModule->get_id(), true),
+  : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
   currentDisplay_(0),
   fullWidgetDisplay_(new ModuleWidgetDisplay),
   miniWidgetDisplay_(new ModuleWidgetDisplayMini),
@@ -548,8 +548,10 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192))
 {
   currentDisplay_ = globalMiniMode_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
-
-  currentDisplay_->setupFrame(this);
+  
+  auto frame1 = new QFrame();
+  currentDisplay_->setupFrame(frame1);
+  addWidget(frame1);
   currentDisplay_->setupTitle(name);
 
   //TODO: ultra ugly. no other place for this code right now.
@@ -559,39 +561,21 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
     currentDisplay_->setupSpecial();
   }
   currentDisplay_->setupProgressBar();
+  currentDisplay_->setupOptionsButton(theModule_->has_ui());
 
   makeOptionsDialog();
   addPortLayouts();
   addPorts(*theModule_);
-  currentDisplay_->setupOptionsButton(theModule_->has_ui());
-
   
-  int pixelWidth = currentDisplay_->getTitleWidth();
-  //std::cout << titleLabel_->text().toStdString() << std::endl;
-  //std::cout << "\tPixelwidth = " << pixelWidth << std::endl;
-  int extraWidth = pixelWidth - moduleWidthThreshold;
-  //std::cout << "\textraWidth = " << extraWidth << std::endl;
-  if (extraWidth > extraWidthThreshold)
-  {
-    //std::cout << "\tGROWING MODULE Current width: " << width() << std::endl;
-    resize(width() + extraWidth + extraModuleWidth, height());
-    //std::cout << "\tNew width: " << width() << std::endl;
-  }
-  else
-  {
-    //std::cout << "\tSHRINKING MODULE Current width: " << width() << std::endl;
-    resize(width() - smushFactor, height());
-    //std::cout << "\tNew width: " << width() << std::endl;
-  }
-
-  currentDisplay_->adjustLayout(layout());
-  resize(width(), height() + widgetHeightAdjust);
+  resizeBasedOnModuleName();
+  resize(currentWidget()->size());
   
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->connectExecutionStateChanged(boost::bind(&ModuleWidget::moduleStateUpdated, this, _1));
   connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
 
   setupModuleActions();
+  currentDisplay_->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
 
   logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), dialogErrorControl_, SCIRunMainWindow::Instance());
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
@@ -618,6 +602,30 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
     theModule_->setUiToggleFunc([&](bool b){ dialog_->setVisible(b); });
 
   setupDisplayConnections();
+}
+
+void ModuleWidget::resizeBasedOnModuleName()
+{
+  auto widget = currentWidget();
+  int pixelWidth = currentDisplay_->getTitleWidth();
+  //std::cout << titleLabel_->text().toStdString() << std::endl;
+  //std::cout << "\tPixelwidth = " << pixelWidth << std::endl;
+  int extraWidth = pixelWidth - moduleWidthThreshold;
+  //std::cout << "\textraWidth = " << extraWidth << std::endl;
+  if (extraWidth > extraWidthThreshold)
+  {
+    //std::cout << "\tGROWING MODULE Current width: " << width() << std::endl;
+    widget->resize(widget->width() + extraWidth + extraModuleWidth, widget->height());
+    //std::cout << "\tNew width: " << width() << std::endl;
+  }
+  else
+  {
+    //std::cout << "\tSHRINKING MODULE Current width: " << width() << std::endl;
+    widget->resize(widget->width() - smushFactor, widget->height());
+    //std::cout << "\tNew width: " << width() << std::endl;
+  }
+  currentDisplay_->adjustLayout(widget->layout());
+  widget->resize(widget->width(), widget->height() + widgetHeightAdjust);
 }
 
 void ModuleWidget::setupDisplayConnections()
@@ -662,7 +670,6 @@ void ModuleWidget::setupModuleActions()
   fillReplaceWithMenu();
   connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
-  currentDisplay_->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
 }
 
 void ModuleWidget::fillReplaceWithMenu()
@@ -689,7 +696,7 @@ void ModuleWidget::replaceModuleWith()
 
 void ModuleWidget::addPortLayouts()
 {
-  layout()->setContentsMargins(5,0,5,0);
+  currentWidget()->layout()->setContentsMargins(5, 0, 5, 0);
 }
 
 void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
@@ -776,7 +783,9 @@ void ModuleWidget::addOutputPortsToLayout()
     outputPortLayout_ = new QHBoxLayout;
     outputPortLayout_->setSpacing(PORT_SPACING);
     outputPortLayout_->setAlignment(Qt::AlignLeft);
-    qobject_cast<QVBoxLayout*>(layout())->insertLayout(-1, outputPortLayout_, 1);
+    auto vbox = qobject_cast<QVBoxLayout*>(currentWidget()->layout());
+    if (vbox)
+      vbox->insertLayout(-1, outputPortLayout_, 1);
   }
   ports_->addOutputsToLayout(outputPortLayout_);
 }
@@ -806,7 +815,9 @@ void ModuleWidget::addInputPortsToLayout()
     inputPortLayout_ = new QHBoxLayout;
     inputPortLayout_->setSpacing(PORT_SPACING);
     inputPortLayout_->setAlignment(Qt::AlignLeft);
-    qobject_cast<QVBoxLayout*>(layout())->insertLayout(0, inputPortLayout_, 1);
+    auto vbox = qobject_cast<QVBoxLayout*>(currentWidget()->layout());
+    if (vbox)
+      vbox->insertLayout(0, inputPortLayout_, 1);
   }
   ports_->addInputsToLayout(inputPortLayout_);
 }
