@@ -241,13 +241,16 @@ void ModuleProxyWidget::highlightIfSelected()
 
 QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
 {
+  //std::cout << module_->getModuleId() << " MPW item change: " << (int)change << std::endl;
   if (change == ItemPositionHasChanged)
   {
+    //std::cout << module_->getModuleId() << "\tposition change" << std::endl;
     module_->trackConnections();
     updateNotePosition();
   }
   return QGraphicsItem::itemChange(change, value);
 }
+
 void ModuleProxyWidget::createPortPositionProviders()
 {
   //std::cout << "create PPPs" << std::endl;

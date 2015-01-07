@@ -1157,10 +1157,6 @@ void ModuleWidget::setMiniMode(bool mini)
 void ModuleWidget::setGlobalMiniMode(bool mini)
 {
   globalMiniMode_ = mini;
-  if (mini)
-    std::cout << "All Modules are small" << std::endl;
-  else
-    std::cout << "All Modules are large" << std::endl;
 }
 
 void ModuleWidget::collapseToMiniMode()
@@ -1185,4 +1181,5 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
   //std::cout << "new  widget size: " << size.width() << " " << size.height() << std::endl;
   setCurrentIndex(newIndex);
   resize(size);
+  Q_EMIT displayChanged();
 }

@@ -271,6 +271,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(snapToModules()), proxy, SLOT(snapToGrid()));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
+  connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
+  connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
