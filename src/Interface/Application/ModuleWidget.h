@@ -181,7 +181,8 @@ private:
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 
-  void addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider, int index);
+  void addPorts(int index);
+  void createPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void createOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void hookUpGeneralPortSignals(PortWidget* port) const;
@@ -206,16 +207,20 @@ private:
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
 
+  void changeDisplay(int oldIndex, int newIndex);
   void addPortLayouts(int index);
   void addInputPortsToLayout(int index);
   void addInputPortsToWidget(int index);
+  void removeInputPortsFromWidget(int index);
   void addOutputPortsToLayout(int index);
   void addOutputPortsToWidget(int index);
+  void removeOutputPortsFromWidget(int index);
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
   NetworkEditor* editor_;
   bool deleting_;
   const QString defaultBackgroundColor_;
+  int fullIndex_, miniIndex_;
 
   static bool globalMiniMode_;
 };

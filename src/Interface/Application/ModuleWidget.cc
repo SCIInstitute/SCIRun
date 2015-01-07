@@ -451,19 +451,23 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   outputPortLayout_(nullptr),
   editor_(ed),
   deleting_(false),
-  defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192))
+  defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192)),
+  fullIndex_(0),
+  miniIndex_(0)
 {
   setupModuleActions();
   setupLogging();
 
-  const int fullIndex = buildDisplay(fullWidgetDisplay_.get(), name);
-  const int miniIndex = buildDisplay(miniWidgetDisplay_.get(), name);
+  fullIndex_ = buildDisplay(fullWidgetDisplay_.get(), name);
+  miniIndex_ = buildDisplay(miniWidgetDisplay_.get(), name);
 
   currentDisplay_ = isMini_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
-  setCurrentIndex(isMini_ ? miniIndex : fullIndex);
+  setCurrentIndex(isMini_ ? miniIndex_ : fullIndex_);
 
-  addPorts(*theModule_, currentIndex());
+  createPorts(*theModule_);
+  addPorts(currentIndex());
 
+  //std::cout << "current widget size: " << currentWidget()->size().width() << " " << currentWidget()->size().height() << std::endl;
   resize(currentWidget()->size());
 
   makeOptionsDialog();
@@ -628,11 +632,15 @@ void ModuleWidget::addPortLayouts(int index)
   widget(index)->layout()->setContentsMargins(5, 0, 5, 0);
 }
 
-void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider, int index)
+void ModuleWidget::createPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
   createInputPorts(moduleInfoProvider);
-  addInputPortsToLayout(index);
   createOutputPorts(moduleInfoProvider);
+}
+
+void ModuleWidget::addPorts(int index)
+{
+  addInputPortsToLayout(index);
   addOutputPortsToLayout(index);
 }
 
@@ -724,6 +732,13 @@ void ModuleWidget::addOutputPortsToWidget(int index)
     vbox->insertLayout(-1, outputPortLayout_, 1);
 }
 
+void ModuleWidget::removeOutputPortsFromWidget(int index)
+{
+  auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
+  if (vbox)
+    vbox->removeItem(outputPortLayout_);
+}
+
 void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
 {
   if (inputPorts_.empty())
@@ -759,6 +774,13 @@ void ModuleWidget::addInputPortsToWidget(int index)
   auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
   if (vbox)
     vbox->insertLayout(0, inputPortLayout_, 1);
+}
+
+void ModuleWidget::removeInputPortsFromWidget(int index)
+{
+  auto vbox = qobject_cast<QVBoxLayout*>(widget(index)->layout());
+  if (vbox)
+    vbox->removeItem(inputPortLayout_);
 }
 
 void PortWidgetManager::reindexInputs()
@@ -1143,10 +1165,24 @@ void ModuleWidget::setGlobalMiniMode(bool mini)
 
 void ModuleWidget::collapseToMiniMode()
 {
-  std::cout << "collapse slot" << std::endl;
+  changeDisplay(currentIndex(), miniIndex_);
+  isMini_ = true;
 }
 
 void ModuleWidget::expandToFullMode()
 {
-  std::cout << "expand slot" << std::endl;
+  changeDisplay(currentIndex(), fullIndex_);
+  isMini_ = false;
+}
+
+void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
+{
+  removeInputPortsFromWidget(oldIndex);
+  removeOutputPortsFromWidget(oldIndex);
+  addInputPortsToWidget(newIndex);
+  addOutputPortsToWidget(newIndex);
+  auto size = widget(newIndex)->size();
+  //std::cout << "new  widget size: " << size.width() << " " << size.height() << std::endl;
+  setCurrentIndex(newIndex);
+  resize(size);
 }
