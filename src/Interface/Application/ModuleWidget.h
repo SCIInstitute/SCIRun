@@ -83,7 +83,7 @@ public:
 typedef boost::shared_ptr<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
 class ModuleWidget : public QStackedWidget,
-  public SCIRun::Dataflow::Networks::ExecutableObject, /*public Ui::Module,*/ public HasNotes
+  public SCIRun::Dataflow::Networks::ExecutableObject, public HasNotes
 {
 	Q_OBJECT
 
@@ -177,21 +177,24 @@ private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
+  bool isMini_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 
-  void addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
-  void addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
-  void addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider, int index);
+  void createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void createOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void hookUpGeneralPortSignals(PortWidget* port) const;
   void setupDisplayConnections(ModuleWidgetDisplayBase* display);
-  void resizeBasedOnModuleName(ModuleWidgetDisplayBase* display);
+  void resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index);
   std::string moduleId_;
   class ModuleDialogGeneric* dialog_;
   QDockWidget* dockable_;
   void makeOptionsDialog();
-  void setupDisplay(ModuleWidgetDisplayBase* display, const QString& name);
+  int buildDisplay(ModuleWidgetDisplayBase* display, const QString& name);
+  void setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name);
   void setupModuleActions();
+  void setupLogging();
   void adjustDockState(bool dockEnabled);
   Qt::DockWidgetArea allowedDockArea() const;
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
@@ -203,9 +206,11 @@ private:
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
 
-  void addPortLayouts();
-  void addInputPortsToLayout();
-  void addOutputPortsToLayout();
+  void addPortLayouts(int index);
+  void addInputPortsToLayout(int index);
+  void addInputPortsToWidget(int index);
+  void addOutputPortsToLayout(int index);
+  void addOutputPortsToWidget(int index);
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
   NetworkEditor* editor_;
