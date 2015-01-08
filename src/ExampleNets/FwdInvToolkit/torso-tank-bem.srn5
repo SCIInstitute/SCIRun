@@ -60,7 +60,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>20</count>
+							<count>21</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -70,7 +70,7 @@
 									<name>InputCenterX</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>-15.170000000000002</value>
 									</value>
 								</second>
 							</item>
@@ -82,7 +82,7 @@
 									<name>InputCenterY</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>44.325000000000003</value>
 									</value>
 								</second>
 							</item>
@@ -94,7 +94,7 @@
 									<name>InputCenterZ</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>287.85000000000002</value>
 									</value>
 								</second>
 							</item>
@@ -106,7 +106,7 @@
 									<name>InputSizeX</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>100.52000000000001</value>
 									</value>
 								</second>
 							</item>
@@ -118,7 +118,7 @@
 									<name>InputSizeY</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>100.87</value>
 									</value>
 								</second>
 							</item>
@@ -130,7 +130,7 @@
 									<name>InputSizeZ</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>158.83999999999997</value>
 									</value>
 								</second>
 							</item>
@@ -203,6 +203,18 @@
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Resetting</name>
+								</first>
+								<second>
+									<name>Resetting</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -496,8 +508,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Field File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/pot_based_BEM_forward/tank.fld</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -512,8 +548,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Field File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/pot_based_BEM_forward/cage.fld</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -528,8 +588,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Field File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/pot_based_BEM_forward/tank_measured_only.fld</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -544,8 +628,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Matrix File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/pot_based_BEM_forward/Utankr.mat</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -560,8 +668,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Matrix File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/pot_based_BEM_forward/Ucager.mat</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
