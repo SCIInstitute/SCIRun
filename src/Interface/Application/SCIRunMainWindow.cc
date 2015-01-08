@@ -199,8 +199,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   //TODO: will be a user or network setting
   makePipesEuclidean();
 
-  connect(largeModuleSizeRadioButton_, SIGNAL(clicked()), this, SLOT(makeModulesLargeSize()));
-  connect(smallModuleSizeRadioButton_, SIGNAL(clicked()), this, SLOT(makeModulesSmallSize()));
+  connect(largeModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesLargeSize()));
+  connect(smallModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesSmallSize()));
 
   for (int i = 0; i < MaxRecentFiles; ++i)
   {
