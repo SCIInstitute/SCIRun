@@ -45,6 +45,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   dock_(0)
 {
   setModal(false);
+  setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
 
   if (state_)
   {
