@@ -1178,7 +1178,6 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
   addInputPortsToWidget(newIndex);
   addOutputPortsToWidget(newIndex);
   auto size = widget(newIndex)->size();
-  //std::cout << "new  widget size: " << size.width() << " " << size.height() << std::endl;
   setCurrentIndex(newIndex);
   resize(size);
   Q_EMIT displayChanged();

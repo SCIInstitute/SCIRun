@@ -74,6 +74,7 @@ namespace SCIRun
       bool grabbedByWidget_, isSelected_;
       QWidget* pressedSubWidget_;
       QPointF position_;
+      QPointF cachedPosition_;
     };
 
   }

@@ -241,10 +241,11 @@ void ModuleProxyWidget::highlightIfSelected()
 
 QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
 {
-  //std::cout << module_->getModuleId() << " MPW item change: " << (int)change << std::endl;
+  if (pos() != QPointF(0,0))
+    cachedPosition_ = pos();
+
   if (change == ItemPositionHasChanged)
   {
-    //std::cout << module_->getModuleId() << "\tposition change" << std::endl;
     module_->trackConnections();
     updateNotePosition();
   }
@@ -262,6 +263,10 @@ void ModuleProxyWidget::createPortPositionProviders()
 
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
     p->setPositionObject(pp);
+  }
+  if (pos() == QPointF(0, 0) && cachedPosition_ != pos())
+  {
+    setPos(cachedPosition_);
   }
 }
 
