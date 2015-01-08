@@ -237,6 +237,7 @@ public:
   virtual void setupProgressBar() override;
   virtual void setupSpecial() override;
   virtual void setupButtons(bool hasUI, QObject* module) override;
+  virtual void setupIcons() override;
   virtual QAbstractButton* getOptionsButton() const override;
   virtual QAbstractButton* getExecuteButton() const override;
   virtual QAbstractButton* getHelpButton() const override;
@@ -258,6 +259,7 @@ public:
   virtual void setupProgressBar() override;
   virtual void setupSpecial() override;
   virtual void setupButtons(bool hasUI, QObject* module) override;
+  virtual void setupIcons() override;
   virtual QAbstractButton* getOptionsButton() const override;
   virtual QAbstractButton* getExecuteButton() const override;
   virtual QAbstractButton* getHelpButton() const override;
@@ -304,7 +306,19 @@ void ModuleWidgetDisplay::setupSpecial()
 void ModuleWidgetDisplay::setupButtons(bool hasUI, QObject*)
 {
   optionsButton_->setVisible(hasUI);
-  executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+}
+
+void ModuleWidgetDisplay::setupIcons()
+{
+  getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
+  getOptionsButton()->setText("");
+  getOptionsButton()->setIcon(QPixmap(":/general/Resources/new/modules/options.png"));
+  getHelpButton()->setText("");
+  getHelpButton()->setIcon(QPixmap(":/general/Resources/new/modules/help.png"));
+  getLogButton()->setText("");
+  getLogButton()->setIcon(QPixmap(":/general/Resources/new/modules/info.png"));
+  getModuleActionButton()->setText("");
+  getModuleActionButton()->setIcon(QPixmap(":/general/Resources/new/modules/settings.png"));
 }
 
 QAbstractButton* ModuleWidgetDisplay::getOptionsButton() const
@@ -385,6 +399,11 @@ void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
   optionsButton_->setEnabled(hasUI);
   module->connect(expandToolButton_, SIGNAL(clicked()), SLOT(expandToFullMode()));
   //executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+}
+
+void ModuleWidgetDisplayMini::setupIcons()
+{
+  
 }
 
 QAbstractButton* ModuleWidgetDisplayMini::getOptionsButton() const
@@ -489,6 +508,7 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
   int index = addWidget(frame);
 
   setupDisplayWidgets(display, name);
+  display->setupIcons();
 
   addPortLayouts(index);
 

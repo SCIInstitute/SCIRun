@@ -67,6 +67,7 @@ public:
   virtual void setupProgressBar() = 0;
   virtual void setupSpecial() = 0;
   virtual void setupButtons(bool hasUI, QObject* module) = 0;
+  virtual void setupIcons() = 0;
   virtual QAbstractButton* getOptionsButton() const = 0;
   virtual QAbstractButton* getExecuteButton() const = 0;
   virtual QAbstractButton* getHelpButton() const = 0;
