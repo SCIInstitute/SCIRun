@@ -20,6 +20,7 @@
 #include <es-render/comp/MatUniform.hpp>
 #include <es-render/comp/StaticGLState.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
+#include <es-render/comp/StaticIBOMan.hpp>
 
 #include <bserialize/BSerialize.hpp>
 
@@ -54,12 +55,13 @@ class RenderBasicSysTrans :
                              ren::VecUniform,
                              ren::MatUniform,
                              ren::Shader,
-                             ren::GLState,
+														 ren::GLState,
+														 Core::Datatypes::GeometryObject::SpireSubPass,
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
-                             ren::StaticVBOMan,
-														 Core::Datatypes::GeometryObject::SpireSubPass>
+                             ren::StaticVBOMan>
+														 //ren::StaticIBOMan>
 {
 public:
 
@@ -89,12 +91,14 @@ public:
       const es::ComponentGroup<ren::VecUniform>& vecUniforms,
       const es::ComponentGroup<ren::MatUniform>& matUniforms,
       const es::ComponentGroup<ren::Shader>& shader,
-      const es::ComponentGroup<ren::GLState>& state,
+			const es::ComponentGroup<ren::GLState>& state,
+			const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
-      const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
-			const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass) override
+      const es::ComponentGroup<ren::StaticVBOMan>& vboMan
+			//const es::ComponentGroup<ren::StaticIBOMan>& iboMan
+			) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -106,6 +110,66 @@ public:
 		{
 			return;
 		}
+		/*
+		// setup vertex buffers
+		std::vector<std::tuple<std::string, size_t, bool>> attributeData;
+		for (const auto& attribData : pass.front().vbo.attributes)
+		{
+			attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
+		}
+
+		std::string name = pass.front().vbo.name + "trans";
+
+		GLuint vboID = vboMan.front().instance->addInMemoryVBO(pass.front().vbo.data->getBuffer(), pass.front().vbo.data->getBufferSize(),
+			attributeData, name);
+
+		// setup index buffers
+
+		GLenum primType = GL_UNSIGNED_SHORT;
+		switch (pass.front().ibo.indexSize)
+		{
+		case 1: // 8-bit
+			primType = GL_UNSIGNED_BYTE;
+			break;
+
+		case 2: // 16-bit
+			primType = GL_UNSIGNED_SHORT;
+			break;
+
+		case 4: // 32-bit
+			primType = GL_UNSIGNED_INT;
+			break;
+
+		default:
+			primType = GL_UNSIGNED_INT;
+			throw std::invalid_argument("Unable to determine index buffer depth.");
+			break;
+		}
+
+		GLenum primitive = GL_TRIANGLES;
+		switch (pass.front().ibo.prim)
+		{
+		case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
+			primitive = GL_POINTS;
+			break;
+
+		case Core::Datatypes::GeometryObject::SpireIBO::LINES:
+			primitive = GL_LINES;
+			break;
+
+		case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
+		default:
+			primitive = GL_TRIANGLES;
+			break;
+		}
+
+		int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
+
+		std::string transIBOName = pass.front().ibo.name + "trans";
+
+		GLuint iboID = iboMan.front().instance->addInMemoryIBO(pass.front().ibo.data->getBuffer(), pass.front().ibo.data->getBufferSize(), primitive, primType,
+			numPrimitives, transIBOName);
+
 
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
@@ -118,7 +182,7 @@ public:
       // 2) It is more correct than issuing a modify call. The data is used
       //    directly below to render geometry.
       const_cast<RenderBasicGeom&>(geom.front()).attribs.setup(
-          vbo.front().glid, shader.front().glid, vboMan.front());
+          vboID, shader.front().glid, vboMan.front());
 
       /// \todo Optimize by pulling uniforms only once.
       if (commonUniforms.size() > 0)
@@ -161,8 +225,8 @@ public:
     GL(glUseProgram(shader.front().glid));
 
     // Bind VBO and IBO
-    GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo.front().glid));
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vboID));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
 
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
@@ -305,7 +369,7 @@ public:
       GL(glDepthMask(GL_TRUE));
       GL(glEnable(GL_CULL_FACE));
     }
-
+		*/
     geom.front().attribs.unbind();
 
     // Reapply the default state here -- only do this if static state is

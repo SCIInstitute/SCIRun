@@ -40,6 +40,7 @@
 // CPM modules
 #include <glm/glm.hpp>
 #include <var-buffer/VarBuffer.hpp>
+#include <es-cereal/ComponentSerialize.hpp>
 
 #include <Core/Datatypes/share.h>
 
@@ -96,6 +97,7 @@ namespace Datatypes {
         bool        normalize;
       };
 
+			SpireVBO(){}
       SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
                std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboData,
                int64_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
@@ -124,6 +126,7 @@ namespace Datatypes {
         TRIANGLES,
       };
 
+			SpireIBO() {}
       SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
                std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
           name(iboName),
@@ -144,6 +147,7 @@ namespace Datatypes {
     /// Defines a Spire object 'pass'.
     struct SpireSubPass
     {
+			SpireSubPass() {}
       SpireSubPass(const std::string& name, const std::string& vboName, 
                    const std::string& iboName, const std::string& program,
                    ColorScheme scheme, const RenderState& state,
@@ -158,6 +162,14 @@ namespace Datatypes {
 					vbo(vbo),
 					ibo(ibo)
       {}
+
+			static const char* getName() { return "SpireSubPass"; }
+
+			bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+			{
+				// No need to serialize.
+				return true;
+			}
 
       std::string   passName;
       std::string   vboName;
@@ -176,6 +188,7 @@ namespace Datatypes {
           UNIFORM_VEC4
         };
 
+				Uniform(){}
         Uniform(const std::string& nameIn, float d) :
             name(nameIn),
             type(UNIFORM_SCALAR),

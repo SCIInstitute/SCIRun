@@ -160,6 +160,15 @@ public:
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo.front().glid));
 
+		bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+		bool cullFace = glIsEnabled(GL_CULL_FACE);
+		bool blend = glIsEnabled(GL_BLEND);
+
+		GL(glDepthMask(GL_TRUE));
+		GL(glDisable(GL_CULL_FACE));
+		GL(glDisable(GL_BLEND));
+
+		
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
     {
@@ -176,13 +185,6 @@ public:
 
     geom.front().attribs.bind();
 
-    // Disable zwrite if we are rendering a transparent object.
-   /* if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
-    {
-      GL(glDepthMask(GL_FALSE));
-      GL(glDisable(GL_CULL_FACE));
-    }
-*/
     if (rlist.size() > 0)
     {
       glm::mat4 rlistTrafo = trafo.front().transform;
@@ -295,12 +297,10 @@ public:
                           ibo.front().primType, 0));
       }
     }
-
-    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
-    {
-      GL(glDepthMask(GL_TRUE));
-      GL(glEnable(GL_CULL_FACE));
-    }
+		
+		GL(glDepthMask(depthMask));
+		GL(glDisable(cullFace));
+		GL(glDisable(blend));
 
     geom.front().attribs.unbind();
 

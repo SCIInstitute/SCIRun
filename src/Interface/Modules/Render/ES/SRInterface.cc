@@ -367,9 +367,9 @@ namespace SCIRun {
 			ren::ShaderMan& shaderMan = *mCore.getStaticComponent<ren::StaticShaderMan>()->instance;
 
 			// Add passes
-			for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
+			for (auto it = obj->mPasses.begin(); it != obj->mPasses.end(); ++it)
 			{
-				const Core::Datatypes::GeometryObject::SpireSubPass& pass = *it;
+				Core::Datatypes::GeometryObject::SpireSubPass& pass = *it;
 
 				uint64_t entityID = getEntityIDForName(pass.passName, port);
 
@@ -408,6 +408,7 @@ namespace SCIRun {
 
 					addVBOToEntity(entityID, assetName);
 					addIBOToEntity(entityID, assetName);
+					mCore.addComponent(entityID, pass);
 				}
 
 				// Load vertex and fragment shader will use an already loaded program.
