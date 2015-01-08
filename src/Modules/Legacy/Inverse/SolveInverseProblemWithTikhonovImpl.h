@@ -65,13 +65,13 @@ namespace BioPSE
       residual_constrained_squared
     };
 
-    TikhonovAlgorithmImpl(const SCIRun::Core::Datatypes::MatrixHandle& forwardMatrix,
-                          const SCIRun::Core::Datatypes::MatrixHandle& measuredData,
+    TikhonovAlgorithmImpl(const SCIRun::Core::Datatypes::DenseMatrixHandle& forwardMatrix,
+                          const SCIRun::Core::Datatypes::DenseMatrixHandle& measuredData,
                           AlgorithmChoice regularizationChoice = automatic,
                           AlgorithmSolutionSubcase regularizationSolutionSubcase = solution_constrained,
                           AlgorithmResidualSubcase regularizationResidualSubcase = residual_constrained,
-                          const SCIRun::Core::Datatypes::MatrixHandle sourceWeighting = 0,
-                          const SCIRun::Core::Datatypes::MatrixHandle sensorWeighting = 0,
+                          const SCIRun::Core::Datatypes::DenseMatrixHandle sourceWeighting = 0,
+                          const SCIRun::Core::Datatypes::DenseMatrixHandle sensorWeighting = 0,
                           bool computeRegularizedInverse = false,
                           SCIRun::Core::Logging::LegacyLoggerInterface* pr = 0);
 
@@ -112,13 +112,13 @@ namespace BioPSE
     static double LambdaLookup(const LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
 
   private:
-    const SCIRun::Core::Datatypes::MatrixHandle& forwardMatrix_;
-    const SCIRun::Core::Datatypes::MatrixHandle& measuredData_;
-    const SCIRun::Core::Datatypes::MatrixHandle sourceWeighting_;
-    const SCIRun::Core::Datatypes::MatrixHandle sensorWeighting_;
+    const SCIRun::Core::Datatypes::DenseMatrixHandle& forwardMatrix_;
+    const SCIRun::Core::Datatypes::DenseMatrixHandle& measuredData_;
+    const SCIRun::Core::Datatypes::DenseMatrixHandle sourceWeighting_;
+    const SCIRun::Core::Datatypes::DenseMatrixHandle sensorWeighting_;
 
-    SCIRun::Core::Datatypes::MatrixHandle inverseSolution_;
-    SCIRun::Core::Datatypes::MatrixHandle inverseMatrix_;
+    SCIRun::Core::Datatypes::DenseMatrixHandle inverseSolution_;
+    SCIRun::Core::Datatypes::DenseMatrixHandle inverseMatrix_;
     SCIRun::Core::Datatypes::DenseColumnMatrixHandle regularizationParameter_;
 
     AlgorithmChoice regularizationChoice_;

@@ -42,6 +42,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/MatrixTypeConversions.h>
 
 #include <Core/Logging/LoggerInterface.h>
+#include <Core/Utils/Exception.h>
 
 //#include <Core/Exceptions/Exception.h>
 //#include <Core/Exceptions/InvalidState.h>
@@ -52,16 +53,17 @@ namespace BioPSE
 {
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Logging;
 
-TikhonovAlgorithmImpl::TikhonovAlgorithmImpl(const MatrixHandle& forwardMatrix,
-                                             const MatrixHandle& measuredData,
+TikhonovAlgorithmImpl::TikhonovAlgorithmImpl(const DenseMatrixHandle& forwardMatrix,
+                                             const DenseMatrixHandle& measuredData,
                                              AlgorithmChoice regularizationChoice,
                                              AlgorithmSolutionSubcase regularizationSolutionSubcase,
                                              AlgorithmResidualSubcase regularizationResidualSubcase,
-                                             const MatrixHandle sourceWeighting,
-                                             const MatrixHandle sensorWeighting,
+                                             const DenseMatrixHandle sourceWeighting,
+                                             const DenseMatrixHandle sensorWeighting,
                                              bool computeRegularizedInverse,
                                              LegacyLoggerInterface* pr)
 : forwardMatrix_(forwardMatrix),
@@ -88,7 +90,7 @@ MatrixHandle TikhonovAlgorithmImpl::get_inverse_matrix() const
   return inverseMatrix_;
 }
 
-ColumnMatrixHandle TikhonovAlgorithmImpl::get_regularization_parameter() const
+DenseColumnMatrixHandle TikhonovAlgorithmImpl::get_regularization_parameter() const
 {
   return regularizationParameter_;
 }
@@ -229,6 +231,15 @@ TikhonovAlgorithmImpl::LambdaLookup(const LCurveInput& input, double lambda, int
   return -1;
 }
 
+namespace LinearAlgebra
+{
+  void solve_lapack(const DenseMatrix&, const DenseColumnMatrix&, DenseMatrix&)
+  {
+    //TODO obviously
+  }
+
+  class LapackError : public std::exception {};
+}
 
 void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 {
@@ -238,11 +249,11 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
   const int N = forwardMatrix_->ncols();
   if (M != measuredData_->nrows())
   {
-    throw InvalidState("Input matrix dimensions must agree.");
+    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Input matrix dimensions must agree."));
   }
   if (1 != measuredData_->ncols())
   {
-    throw InvalidState("Measured data must be a vector");
+    BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Measured data must be a vector"));
   }
   //decide used Tikhonov regularization formulation (underdetermined or overdetermined)
   //based purely on relationship of number of sensors compared to number of source reconstruction points
@@ -253,81 +264,79 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     // OPERATE ON DATA:
     // Compute X = R * R^T * A^T (A * R * R^T * A^T + LAMBDA * LAMBDA * C * C^T) * Y
     //.........................................................................
-    MatrixHandle ARRtrAtr, RRtrAtr;
+    DenseMatrix ARRtrAtr, RRtrAtr;
     double lambda=0, lambda_sq=0;
-    MatrixHandle forward_transpose_h = forwardMatrix_->make_transpose();
-    MatrixHandle matrixRegMat_handle;
+    DenseMatrix forward_transpose = forwardMatrix_->transpose();
+    DenseMatrix regMat;
+    #ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
     SparseRowMatrixHandle sourceWeighting_sparse;
-    DenseColumnMatrixHandle solution_handle = new ColumnMatrix(M);
+    #endif
+    DenseColumnMatrixHandle solution_handle(new DenseColumnMatrix(M));
     DenseColumnMatrix &solution = *solution_handle;
-    DenseColumnMatrixHandle RRtrAtrsolution = new ColumnMatrix(N);
+    DenseColumnMatrixHandle RRtrAtrsolution(new DenseColumnMatrix(N));
     DenseColumnMatrix &RRtrAtrsolution_handle = *RRtrAtrsolution;
 
-    const ColumnMatrixHandle measuredDataRef = measuredData_->column();
+    const DenseMatrixHandle measuredDataRef = measuredData_;
     if (!sourceWeighting_) //check if a Source Space Weighting Matrix exist?
     {
-      matrixRegMat_handle = DenseMatrix::identity(N);
-      ARRtrAtr = (forwardMatrix_ * forward_transpose_h);
-      RRtrAtr = forward_transpose_h;
+      regMat = DenseMatrix::Identity(N, N);
+      ARRtrAtr = *forwardMatrix_ * forward_transpose;
+      RRtrAtr = forward_transpose;
     }
     else
     {
       if(((regularizationSolutionSubcase_==solution_constrained) && ((N != sourceWeighting_->nrows()) || (N != sourceWeighting_->ncols()))) ||
          ((regularizationSolutionSubcase_==solution_constrained_squared) && (N != sourceWeighting_->nrows())))
       {
-        throw InvalidState("Solution Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of columns) !");
+        BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Solution Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of columns) !"));
       }
-      matrixRegMat_handle = sourceWeighting_;
+      regMat = *sourceWeighting_;
+      #ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
       sourceWeighting_sparse = sourceWeighting_->sparse();
-      MatrixHandle AR;
-      MatrixHandle RtrAtr;
+      #endif
 
       if (regularizationSolutionSubcase_== solution_constrained)
       {
-        RRtrAtr = sourceWeighting_sparse * forward_transpose_h;
-	AR = forwardMatrix_;
-	ARRtrAtr = (AR * RRtrAtr)->dense();
+        auto RRtrAtr = *sourceWeighting_ * forward_transpose;
+	      auto AR = forwardMatrix_;
+	      ARRtrAtr = *AR * RRtrAtr;
       }
       else if (regularizationSolutionSubcase_== solution_constrained_squared)
       {
-        AR = (forwardMatrix_ * sourceWeighting_sparse)->dense();
-	RtrAtr = AR->make_transpose();
-        RRtrAtr = (sourceWeighting_sparse * RtrAtr)->dense();
-	ARRtrAtr = (AR * RtrAtr)->dense();
+        auto AR = *forwardMatrix_ * *sourceWeighting_;
+	      auto RtrAtr = AR.transpose();
+        auto RRtrAtr = *sourceWeighting_ * RtrAtr;
+	      ARRtrAtr = AR * RtrAtr;
       }
-
     }
-    const DenseMatrix &RRtrAtr_ = *(RRtrAtr->dense());
-    MatrixHandle hMatrixNoiseCov_transpose;
-    MatrixHandle CCtr;
+    DenseMatrix CCtr;
     if (!sensorWeighting_) //check if a Sensor Space (Noise Covariance) Weighting Matrix exist?
     {
-      CCtr = DenseMatrix::identity(M);
+      CCtr = DenseMatrix::Identity(M, M);
     }
     else
     {
       if (((regularizationResidualSubcase_ == residual_constrained) && ((M != sensorWeighting_->nrows()) || (M != sensorWeighting_->ncols()))) ||
           ((regularizationResidualSubcase_ == residual_constrained_squared) && (M != sensorWeighting_->nrows())))
       {
-        throw InvalidState("Data Residual Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of rows) !");
+        BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Data Residual Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of rows) !"));
       }
       else
       {
-        hMatrixNoiseCov_transpose = sensorWeighting_->make_transpose();
         if (regularizationResidualSubcase_ == residual_constrained)
-          CCtr = sensorWeighting_;
+          CCtr = *sensorWeighting_;
         else
           if ( regularizationResidualSubcase_ == residual_constrained_squared )
-            CCtr = (sensorWeighting_ * hMatrixNoiseCov_transpose)->dense();
+            CCtr = *sensorWeighting_ * sensorWeighting_->transpose();
       }
     }
-    DenseMatrix &tmpd1 = *(ARRtrAtr->dense());
-    DenseMatrix ARRtrAtr_h=tmpd1;
-    DenseMatrix &tmpd2 = *(CCtr->dense());
-    DenseMatrix CCtr_h=tmpd2;
+    //DenseMatrix &tmpd1 = ARRtrAtr;
+    //DenseMatrix ARRtrAtr_h=tmpd1;
+    //DenseMatrix &tmpd2 = CCtr;
+    //DenseMatrix CCtr_h=tmpd2;
 
-    MatrixHandle regForMatrix_handle = new DenseMatrix(M, M);
-    DenseMatrix & regForMatrix = *(regForMatrix_handle->dense());
+    DenseMatrixHandle regForMatrix_handle(new DenseMatrix(M, M));
+    DenseMatrix & regForMatrix = *regForMatrix_handle;
 
 
     //Get Regularization parameter(s) : Lambda
@@ -355,18 +364,18 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       lambdaArray[0] = input.lambdaMin_;
       const double lam_step = pow(10.0, log10(input.lambdaMax_ / input.lambdaMin_) / (nLambda-1));
 
-      ColumnMatrixHandle Ax = new ColumnMatrix(M);
-      MatrixHandle Rx = new ColumnMatrix(N);
+      DenseColumnMatrixHandle Ax(new DenseColumnMatrix(M));
+      DenseColumnMatrixHandle Rx(new DenseColumnMatrix(N));
 
       int lambda_index = 0;
-      const DenseMatrix &forwardMatrixRef = *(forwardMatrix_->dense());
+      const DenseMatrix &forwardMatrixRef = *forwardMatrix_;
 
-      int nr_rows = CCtr->nrows();
-      int nr_cols = CCtr->ncols();
+      int nr_rows = CCtr.nrows();
+      int nr_cols = CCtr.ncols();
       const int NR_BOUNDS_CHECK = nr_rows * nr_cols;
 
-      double* AtrA = ARRtrAtr_h.get_data_pointer();
-      double* LLtr = CCtr_h.get_data_pointer();
+      double* AtrA = ARRtrAtr.data();
+      double* LLtr = CCtr.data();
 
       for (int j = 0; j < nLambda; j++)
       {
@@ -377,7 +386,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 
         lambda_sq = lambdaArray[j] * lambdaArray[j]; //generate current lambda
 
-        double* rm   = regForMatrix.get_data_pointer();
+        double* rm = regForMatrix.data();
 
         for (int i = 0; i < NR_BOUNDS_CHECK; i++)
         {
@@ -415,12 +424,15 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           throw;
         }
 
-        RRtrAtr_.multiply(solution, RRtrAtrsolution_handle);
+        RRtrAtr.multiply(solution, RRtrAtrsolution_handle);
 
-        if (sourceWeighting_.get_rep())
+        if (sourceWeighting_)
         {
-          if  (RRtrAtrsolution->nrows()== sourceWeighting_sparse->ncols()) Rx = sourceWeighting_sparse * RRtrAtrsolution; else
-          if  (RRtrAtrsolution->nrows()== sourceWeighting_sparse->nrows()) Rx = (sourceWeighting_sparse->make_transpose()) * RRtrAtrsolution; else
+          if (RRtrAtrsolution->nrows() == sourceWeighting_->ncols())
+            Rx = *sourceWeighting_ * RRtrAtrsolution;
+          else if  (RRtrAtrsolution->nrows() == sourceWeighting_->nrows())
+            Rx = sourceWeighting_->transpose() * RRtrAtrsolution;
+          else
           {
             const std::string errorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. ");
             if (pr_)
@@ -433,7 +445,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
             }
           }
         }
-        else Rx = RRtrAtrsolution;
+        else
+          Rx = RRtrAtrsolution;
 
         // Calculate the norm of Ax-b and Rx for L curve
         forwardMatrixRef.multiply(RRtrAtrsolution_handle, *Ax);
@@ -463,8 +476,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     }
     lambda_sq = lambda * lambda;
     //compute the solution with the selected regularization parameter: lambda
-    regularizationParameter_ = new ColumnMatrix(1);
-    regularizationParameter_->put(0, 0, lambda);
+    regularizationParameter_.reset(new DenseColumnMatrix(1));
+    (*regularizationParameter_)[0] = lambda;
     int nr_rows = regForMatrix_handle->nrows();
     int nr_cols = regForMatrix_handle->ncols();
 
@@ -480,13 +493,13 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     {
       regForMatrix.invert();
 
-      if (sourceWeighting_.get_rep())
+      if (sourceWeighting_)
       {
         inverseMatrix_ = RRtrAtr * regForMatrix_handle;
       }
       else
       {
-        inverseMatrix_  = forward_transpose_h * regForMatrix_handle;
+        inverseMatrix_  = forward_transpose * regForMatrix_handle;
       }
       inverseSolution_ = inverseMatrix_ * measuredData_;
     }
@@ -496,7 +509,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       {
         LinearAlgebra::solve_lapack(regForMatrix, *measuredDataRef,solution);
       }
-      catch (LapackError& e)
+      catch (LinearAlgebra::LapackError& e)
       {
         const std::string errorMessage("The Tikhonov linear system could not be solved for a regularization parameter in the Lambda Range of the L-curve. Use a higher Lambda Range ''From'' value for the L-Curve calculation.");
         if (pr_)
@@ -523,8 +536,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         throw;
       }
 
-      RRtrAtr_.multiply(solution, RRtrAtrsolution_handle);
-      inverseSolution_ = RRtrAtr * solution.dense();
+      RRtrAtr.multiply(solution, RRtrAtrsolution_handle);
+      inverseSolution_ = RRtrAtr * solution;
     }
 
   }
@@ -538,10 +551,10 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       // Computes X = (A^T * C^T * C * A + LAMBDA * LAMBDA * R^T * R) * A^T * C^T * C *Y
       //.........................................................................
       // calculate A^T * A
-      MatrixHandle forward_transpose_h = forwardMatrix_->make_transpose();
-      MatrixHandle mat_AtrA;
-      MatrixHandle CCtr;
-      MatrixHandle hMatrixNoiseCov_transpose;
+      DenseMatrix forward_transpose = forwardMatrix_->transpose();
+      DenseMatrix mat_AtrA;
+      DenseMatrix CCtr;
+      DenseMatrix matrixNoiseCov_transpose;
 
       if (!sensorWeighting_)
       //check if a Sensor Space (Noise Covariance) Weighting Matrix exist?
@@ -553,78 +566,70 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         // or have replaced with more efficient calculations
         // (Eigen may have algorithms we can use).
         //CCtr = DenseMatrix::identity(M);
-        mat_AtrA = (forward_transpose_h * forwardMatrix_)->dense();
+        mat_AtrA = forward_transpose * *forwardMatrix_;
       }
       else
       {
         if (((regularizationResidualSubcase_ == residual_constrained) && ((M != sensorWeighting_->nrows()) || (M != sensorWeighting_->ncols()))) ||
             ((regularizationResidualSubcase_ == residual_constrained_squared) && (M != sensorWeighting_->ncols())))
         {
-          throw InvalidState(" Data Residual Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of rows) ! ");
+          BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Data Residual Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of rows)!"));
         }
 
-        hMatrixNoiseCov_transpose = sensorWeighting_->make_transpose();
+        matrixNoiseCov_transpose = sensorWeighting_->transpose();
 
         // regularizationResidualSubcase_ is either residual_constrained (default) or residual_constrained_squared
         if (regularizationResidualSubcase_ == residual_constrained)
           CCtr = sensorWeighting_->dense();
         else
           if (regularizationResidualSubcase_ == residual_constrained_squared)
-            CCtr = (hMatrixNoiseCov_transpose * sensorWeighting_)->dense();
+            CCtr = matrixNoiseCov_transpose * *sensorWeighting_;
 
-        mat_AtrA = (forward_transpose_h * CCtr * forwardMatrix_)->dense();
+        mat_AtrA = forward_transpose * CCtr * *forwardMatrix_;
       }
-      DenseMatrix &mat_AtrA_h = *(mat_AtrA->dense());
       // calculate R^T * R
-      MatrixHandle mat_RtrR_handle;
-      MatrixHandle matrixRegMat_handle;
+      DenseMatrix RtrR;
+      DenseMatrix regMat;
 
       if (!sourceWeighting_)
       {
-        matrixRegMat_handle = DenseMatrix::identity(N);
-        mat_RtrR_handle = DenseMatrix::identity(N);
+        regMat = DenseMatrix::Identity(N, N);
+        RtrR = DenseMatrix::Identity(N, N);
       }
       else
       {
         if(((regularizationSolutionSubcase_==solution_constrained) && ((N != sourceWeighting_->nrows()) || (N != sourceWeighting_->ncols()))) ||
            ((regularizationSolutionSubcase_==solution_constrained_squared) && (N != sourceWeighting_->ncols())))
         {
-          throw InvalidState(" Solution Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of columns) ! ");
+          BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo("Solution Weighting Matrix (number of rows and columns) must fit matrix dimensions of Forward Matrix (number of columns) ! "));
         }
-        matrixRegMat_handle =  sourceWeighting_;
-        MatrixHandle matrixRegMat_transpose_handle = sourceWeighting_->make_transpose();
+        regMat =  sourceWeighting_;
 
         if (regularizationSolutionSubcase_ == solution_constrained_squared)
-	     mat_RtrR_handle = (matrixRegMat_transpose_handle*matrixRegMat_handle)->dense();
-        else
-          if (regularizationSolutionSubcase_ == solution_constrained)
-             mat_RtrR_handle=matrixRegMat_handle->dense();
-
+          RtrR = sourceWeighting_->transpose() * regMat;
+        else if (regularizationSolutionSubcase_ == solution_constrained)
+          RtrR = regMat;
       }
-      DenseMatrix &tmp_dense = *(mat_RtrR_handle->dense());
-      DenseMatrix mat_RtrR=tmp_dense;
-      DenseMatrix &matrixRegMatD = *(matrixRegMat_handle->dense());
+
       double lambda = 0, lambda_sq = 0;
       int lambda_index = 0;
       // calculate A^T * Y
-      MatrixHandle AtrYHandle = new ColumnMatrix(N);
-      DenseColumnMatrix &tmp_columnMatrix = *(AtrYHandle->column());
-      DenseColumnMatrix mat_AtrY= tmp_columnMatrix;
-      DenseColumnMatrix &measuredDataRef=*(new ColumnMatrix(N));
-      if (sensorWeighting_.get_rep())
+      DenseColumnMatrix AtrY(N);
+      DenseColumnMatrix measuredDataRef;
+      if (sensorWeighting_)
       {
         measuredDataRef=*(CCtr*measuredData_)->column();
       }
       else
       {
-        measuredDataRef= *(measuredData_->column());
+        measuredDataRef= *measuredData_;
       }
       forwardMatrix_->mult_transpose(measuredDataRef, mat_AtrY);
-      MatrixHandle regForMatrix_handle = new DenseMatrix(N, N);
-      DenseMatrix &regForMatrix = static_cast<DenseMatrix&>(*regForMatrix_handle);
-      DenseColumnMatrixHandle solution_handle = new ColumnMatrix(N);
-      DenseColumnMatrixHandle Ax_handle = new ColumnMatrix(M);
-      DenseColumnMatrixHandle Rx_handle = new ColumnMatrix(N);
+      DenseMatrixHandle regForMatrix_handle(new DenseMatrix(N, N));
+      DenseMatrix &regForMatrix = *regForMatrix_handle;
+      DenseColumnMatrixHandle solution_handle(new DenseColumnMatrix(N));
+      DenseColumnMatrixHandle Ax_handle(new DenseColumnMatrix(M));
+      DenseColumnMatrixHandle Rx_handle(new DenseColumnMatrix(N));
       DenseColumnMatrix &solution = *solution_handle;
       DenseColumnMatrix &Ax = *Ax_handle;
       DenseColumnMatrix &Rx = *Rx_handle;
@@ -709,7 +714,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           }
 
           ////////////////////////////////
-          const DenseMatrix &forwardMatrixRef = *(forwardMatrix_->dense());
+          const DenseMatrix &forwardMatrixRef = *forwardMatrix_;
 
           forwardMatrixRef.multiply(solution, Ax);
           const DenseColumnMatrixHandle measuredData = measuredData_->column();
@@ -741,14 +746,14 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       } // END  else if (reg_method_.get() == "lcurve")
       lambda_sq = lambda * lambda;
 
-      regularizationParameter_ = new ColumnMatrix(1);
-      regularizationParameter_->put(0, 0, lambda);
+      regularizationParameter_.reset(new DenseColumnMatrix(1));
+      (*regularizationParameter_)[0] = lambda;
       int nr_rows = regForMatrix_handle->nrows();
       int nr_cols = regForMatrix_handle->ncols();
       const int NR_BOUNDS_CHECK = nr_rows * nr_cols;
-      double* AtrA = mat_AtrA_h.get_data_pointer();
-      double* RtrR = mat_RtrR.get_data_pointer();
-      double* rm   = regForMatrix.get_data_pointer();
+      double* AtrA = mat_AtrA_h.data();
+      double* RtrR = mat_RtrR.data();
+      double* rm   = regForMatrix.data();
 
       for (int i = 0; i < NR_BOUNDS_CHECK; i++)
       {
@@ -757,7 +762,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       if (computeRegularizedInverse_)
       {
         regForMatrix.invert();
-        inverseMatrix_ = (regForMatrix_handle * forward_transpose_h) * CCtr;
+        inverseMatrix_ = (regForMatrix_handle * forward_transpose) * CCtr;
         inverseSolution_ = inverseMatrix_ * measuredData_;
       }
       else
@@ -800,9 +805,9 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
 
 void TikhonovAlgorithmImpl::update_graph(const TikhonovAlgorithmImpl::Input& input, double lambda, int lambda_index, const double epsilon)
 {
-  if (lcurveInput_handle_.get() != 0 && input.updateLCurveGui_)
+  if (lcurveInput_handle_ && input.updateLCurveGui_)
   {
-    lambda = TikhonovAlgorithmImpl::LambdaLookup(*lcurveInput_handle_, lambda, lambda_index, epsilon);
+    lambda = LambdaLookup(*lcurveInput_handle_, lambda, lambda_index, epsilon);
     if (lambda >= 0)
     {
       input.updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
@@ -918,8 +923,8 @@ void SolveInverseProblemWithTikhonov::update_lcurve_gui(const double lambda, con
 }
 #endif
 
-TikhonovAlgorithmImpl::LCurveInput::LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, int nLambda/*, const double lambdaStep*/)
-: rho_(rho), eta_(eta), lambdaArray_(lambdaArray), nLambda_(nLambda)/*, lambdaStep_(lambdaStep)*/
+TikhonovAlgorithmImpl::LCurveInput::LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, int nLambda)
+: rho_(rho), eta_(eta), lambdaArray_(lambdaArray), nLambda_(nLambda)
 {}
 
 TikhonovAlgorithmImpl::Input::Input(const std::string& regMethod, double lambdaFromTextEntry, double lambdaSlider, int lambdaCount, double lambdaMin, double lambdaMax,
