@@ -223,6 +223,7 @@ private:
   bool deleting_;
   const QString defaultBackgroundColor_;
   int fullIndex_, miniIndex_;
+  bool isViewScene_; //TODO: lots of special logic around this case. 
 
   static bool globalMiniMode_;
 };

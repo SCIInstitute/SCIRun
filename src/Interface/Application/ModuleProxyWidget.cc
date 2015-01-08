@@ -179,7 +179,7 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
   if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
-    p->doMouseRelease(event->button(), mapToScene(event->pos()));
+    p->doMouseRelease(event->button(), mapToScene(event->pos()), event->modifiers());
     return;
   }
   if (grabbedByWidget_)

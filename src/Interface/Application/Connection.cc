@@ -437,7 +437,14 @@ namespace
 void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& label, const std::string& id)
 {
   auto info = eval(portDataDescriber);
-  QMessageBox::information(SCIRunMainWindow::Instance(), label + " Data info: " + QString::fromStdString(id), info);
+
+  QMessageBox* msgBox = new QMessageBox(SCIRunMainWindow::Instance());
+  msgBox->setAttribute(Qt::WA_DeleteOnClose);
+  msgBox->setStandardButtons(QMessageBox::Ok);
+  msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
+  msgBox->setText(info);
+  msgBox->setModal(false); 
+  msgBox->show();
 }
 
 void ConnectionLine::keyPressEvent(QKeyEvent* event)

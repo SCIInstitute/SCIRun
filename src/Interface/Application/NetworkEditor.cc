@@ -583,28 +583,32 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 	if (event->button() != Qt::LeftButton)
 		Q_EMIT networkEditorMouseButtonPressed();
 
-	if (ConnectionLine* cL = getSingleConnectionSelected())
-		if (event->buttons() & Qt::LeftButton)
-			if (!(event->modifiers() & Qt::ControlModifier))
-		{
-			auto selectedPair = cL->getConnectedToModuleIds();
+  if (ConnectionLine* cL = getSingleConnectionSelected())
+  {
+    if (event->buttons() & Qt::LeftButton)
+    {
+      if (!(event->modifiers() & Qt::ControlModifier))
+      {
+        auto selectedPair = cL->getConnectedToModuleIds();
 
-			findById(scene_->items(),selectedPair.first)->setSelected(true);
-			findById(scene_->items(),selectedPair.second)->setSelected(true);
-			modulesSelectedByCL_ = true;
-		}
-	QGraphicsView::mouseMoveEvent(event);
+        findById(scene_->items(), selectedPair.first)->setSelected(true);
+        findById(scene_->items(), selectedPair.second)->setSelected(true);
+        modulesSelectedByCL_ = true;
+      }
+    }
+  }
+  QGraphicsView::mouseMoveEvent(event);
 }
 
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
-		if(modulesSelectedByCL_)
-		{
-				unselectConnectionGroup();
-				Q_EMIT modified();
-		}
-		modulesSelectedByCL_ = false;
-	QGraphicsView::mouseReleaseEvent(event);
+  if (modulesSelectedByCL_)
+  {
+    unselectConnectionGroup();
+    Q_EMIT modified();
+  }
+  modulesSelectedByCL_ = false;
+  QGraphicsView::mouseReleaseEvent(event);
 }
 
 ConnectionLine* NetworkEditor::getSingleConnectionSelected()
@@ -932,18 +936,23 @@ namespace
 
 void NetworkEditor::wheelEvent(QWheelEvent* event)
 {
-  setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-
-  if (event->delta() > 0)
+  if (event->modifiers() & Qt::ShiftModifier)
   {
-    zoomIn();
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+    if (event->delta() > 0)
+    {
+      zoomIn();
+    }
+    else
+    {
+      zoomOut();
+    }
+    // Don't call superclass handler here
+    // as wheel is normally used for moving scrollbars
   }
   else
-  {
-    zoomOut();
-  }
-  // Don't call superclass handler here
-  // as wheel is normally used for moving scrollbars
+    QGraphicsView::wheelEvent(event);
 }
 
 void NetworkEditor::zoomIn()
@@ -977,6 +986,32 @@ void NetworkEditor::zoomReset()
 int NetworkEditor::currentZoomPercentage() const
 {
   return static_cast<int>(currentScale_ * 100);
+}
+
+//static QGraphicsTextItem* zoomHelp = 0;
+
+void NetworkEditor::keyPressEvent(QKeyEvent *event)
+{
+  if (event->key() == Qt::Key_Shift)
+  {
+    //TODO
+    //if (!zoomHelp)
+    //  zoomHelp = new QGraphicsTextItem("Network zoom enabled on scroll");
+    //scene()->addItem(zoomHelp);
+    //std::cout << "SHIFT IS ZOOM" << std::endl;
+  }
+  QGraphicsView::keyPressEvent(event);
+}
+
+void NetworkEditor::keyReleaseEvent(QKeyEvent *event)
+{
+  if (event->key() == Qt::Key_Shift)
+  {
+    //TODO
+    //scene()->removeItem(zoomHelp);
+    //std::cout << "DONEZOOM" << std::endl;
+  }
+  QGraphicsView::keyPressEvent(event);
 }
 
 bool NetworkEditor::containsViewScene() const
