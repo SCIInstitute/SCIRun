@@ -610,23 +610,25 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
    }
    double distance=0;
    bool skip_current_iteration=false;
+   bool quads_order_sum_positive=false;
+   
    VMesh::Node::index_type didx;
    Point elc(elc_x[i],elc_y[i],elc_z[i]),r;
    scalp_vmesh->synchronize(Mesh::NODE_LOCATE_E);
    scalp_vmesh->find_closest_node(distance,r,didx,elc);  /// project GUI (x,y,z) onto scalp and ...
-   Vector norm;
+   Vector normal;
    scalp_vmesh->synchronize(Mesh::NORMALS_E);
-   scalp_vmesh->get_normal(norm,didx); /// ... get its normal
+   scalp_vmesh->get_normal(normal,didx); /// ... get its normal
    //update GUI table normals
    double nx,ny,nz;
    Variable::List new_row;
-   boost::tie(new_row,nx,ny,nz)=make_table_row(i,elc_x[i],elc_y[i],elc_z[i],norm.x(),norm.y(),norm.z());
+   boost::tie(new_row,nx,ny,nz)=make_table_row(i,elc_x[i],elc_y[i],elc_z[i],normal.x(),normal.y(),normal.z());
    new_table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), new_row));  
    if (!(nx==0.0 && ny==0.0 && nz==0.0))
    {
     Vector norm2(nx,ny,nz);
-    double dot_product=Dot(norm, norm2);
-    norm = Vector(nx,ny,nz);  
+    double dot_product=Dot(normal, norm2);
+    normal = Vector(nx,ny,nz);  
     if (dot_product<direction_bound)
     {
       flip_normal=true;
@@ -635,9 +637,9 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
    /// move coil prototype to projected location
    /// first, compute the transfer matrices
    std::vector<double> axis;
-   axis.push_back(norm[0]);
-   axis.push_back(norm[1]);
-   axis.push_back(norm[2]);
+   axis.push_back(normal[0]);
+   axis.push_back(normal[1]);
+   axis.push_back(normal[2]);
    double angle=elc_angle_rotation[i];
    DenseMatrixHandle rotation_matrix,rotation_matrix1,rotation_matrix2;
    rotation_matrix1 = make_rotation_matrix(angle, axis);
@@ -938,12 +940,56 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	}
        }
        
+       if (fi_scalp.is_quadsurfmesh())
+       {
+        /// find quad element at electrode center to evaluate if the ordering (normal) is correct to find elements that are not ordered properly.        
+	Point cp;
+        VMesh::Elem::index_type cf;
+        tmp_fld_msh->find_closest_elem(distance,cp, cf, elc);
+        VMesh::Node::array_type onodes(4); 
+        tmp_fld_msh->get_nodes(onodes, cf);
+	tmp_fld_msh->get_center(cp,onodes[0]);
+	Vector v1(cp.x(),cp.y(),cp.z());
+	tmp_fld_msh->get_center(p,onodes[1]);
+	Vector v2(cp.x(),cp.y(),cp.z());
+	tmp_fld_msh->get_center(cp,onodes[2]);
+	Vector v3(cp.x(),cp.y(),cp.z());
+	tmp_fld_msh->get_center(p,onodes[3]);
+	Vector v4(cp.x(),cp.y(),cp.z());
+	Vector square_norm_1 = SCIRun::Core::Geometry::Cross((v2-v1), (v3-v1));
+	Vector square_norm_2 = SCIRun::Core::Geometry::Cross((v1-v2), (v4-v2));
+	Vector square_norm_3 = SCIRun::Core::Geometry::Cross((v1-v3), (v4-v3));
+	Vector square_norm_4 = SCIRun::Core::Geometry::Cross((v3-v4), (v2-v4)); 
+	if ( ( square_norm_1[0]!=square_norm_2[0] || square_norm_1[1]!=square_norm_2[1] || square_norm_1[2]!=square_norm_2[2]) ||
+	      (square_norm_1[0]!=square_norm_3[0] || square_norm_1[1]!=square_norm_3[1] || square_norm_1[2]!=square_norm_3[2]) ||
+	      (square_norm_1[0]!=square_norm_4[0] || square_norm_1[1]!=square_norm_4[1] || square_norm_1[2]!=square_norm_4[2])
+	    )
+	 {
+	  std::ostringstream ostr_;
+          ostr_ << " The squares in the quadsurf mesh are not flat, which is normal if the surfaces are smoothed or tightening was used. That could be not a problem. Check the quality of module's third output to be sure. " << std::endl;
+          remark(ostr_.str());	 
+	 }
+       double dot_product_quad=Dot(normal, square_norm_1);
+       double area_sum = 0;
+
+	if(dot_product_quad<0)
+	{
+	 area_sum = Dot(normal, SCIRun::Core::Geometry::Cross((v3-v1),(v2-v1)));
+	} else
+	{
+	 area_sum = Dot(normal, SCIRun::Core::Geometry::Cross((v3-v1),(v4-v1)));
+	}
+	if (area_sum<0)
+	   quads_order_sum_positive=false; 
+	     else
+	       quads_order_sum_positive=true;
+        }
+       
        int offset=nr_elc_sponge_triangles_on_scalp;
        for (int iter_tmp=0;iter_tmp<2;iter_tmp++)
        {
         for (VMesh::Elem::index_type k=0; k<tmp_fld_msh->num_elems(); k++) 
-        {
-	 
+        {	 
 	 if (fi_scalp.is_trisurfmesh())
 	 {
           VMesh::Node::array_type onodes(3); 
@@ -953,10 +999,36 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           onodes[2]+=offset;
           output_vmesh->add_elem(onodes);
 	 } else
-	  if (fi_scalp.is_quadsurfmesh())
-	   {
+	  if (fi_scalp.is_quadsurfmesh()) /// TODO: invert normals for top part, check and correct ordering
+	   {	    
 	    VMesh::Node::array_type onodes(4); 
             tmp_fld_msh->get_nodes(onodes, k);
+	    if (iter_tmp==0)
+	    {
+	     Point cp;
+	     tmp_fld_msh->get_center(cp,onodes[0]);
+	     Vector v1(cp.x(),cp.y(),cp.z());
+	     tmp_fld_msh->get_center(cp,onodes[1]);
+	     Vector v2(cp.x(),cp.y(),cp.z());
+	     tmp_fld_msh->get_center(cp,onodes[2]);
+	     Vector v3(cp.x(),cp.y(),cp.z());
+	     tmp_fld_msh->get_center(cp,onodes[3]);
+	     Vector v4(cp.x(),cp.y(),cp.z());
+	     double area_sum = Dot(normal, SCIRun::Core::Geometry::Cross((v3-v1),(v2-v1)));
+	     if (area_sum<0 && quads_order_sum_positive) /// if a quad element is in the wrong order (normal) -> reorder it
+	     {
+	      int i1=0,i2=0,i3=0,i4=0;
+	      i1=onodes[0];
+	      i2=onodes[1];
+	      i3=onodes[2];
+	      i4=onodes[3];
+	      onodes[0]=i1;
+	      onodes[1]=i4;
+	      onodes[2]=i3;
+	      onodes[3]=i2;
+	     }
+	    }
+	    
             onodes[0]+=offset;
             onodes[1]+=offset;
             onodes[2]+=offset;
@@ -1026,10 +1098,10 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	  if (fi_scalp.is_quadsurfmesh())
 	  {
 	   VMesh::Node::array_type onodes(4);
-	   onodes[0]=i4+nr_elc_sponge_triangles_on_scalp;
-	   onodes[1]=i3+nr_elc_sponge_triangles_on_scalp;
-	   onodes[2]=i1+nr_elc_sponge_triangles_on_scalp;
-	   onodes[3]=i2+nr_elc_sponge_triangles_on_scalp;
+	   onodes[0]=i1+nr_elc_sponge_triangles_on_scalp; 
+	   onodes[1]=i2+nr_elc_sponge_triangles_on_scalp;
+	   onodes[2]=i4+nr_elc_sponge_triangles_on_scalp;
+	   onodes[3]=i3+nr_elc_sponge_triangles_on_scalp;
 	   output_vmesh->add_elem(onodes);
 	   field_values_elc_on_scalp.push_back(i);
 	  }
@@ -1089,6 +1161,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
  VariableHandle table2(new Variable(Name("Table"), new_table));
  
  return boost::make_tuple(elc_sponge_locations, electrode_field, output, table2);
+
 }
 
 boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::run(const FieldHandle scalp, const DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const
