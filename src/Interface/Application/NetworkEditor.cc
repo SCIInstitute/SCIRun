@@ -988,7 +988,7 @@ int NetworkEditor::currentZoomPercentage() const
   return static_cast<int>(currentScale_ * 100);
 }
 
-static QGraphicsTextItem* zoomHelp = 0;
+//static QGraphicsTextItem* zoomHelp = 0;
 
 void NetworkEditor::keyPressEvent(QKeyEvent *event)
 {
