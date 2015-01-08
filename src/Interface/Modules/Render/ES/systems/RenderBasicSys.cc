@@ -171,12 +171,22 @@ public:
 
     geom.front().attribs.bind();
 
+		bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+		bool cullFace = glIsEnabled(GL_CULL_FACE);
+		bool blend = glIsEnabled(GL_BLEND);
+
     // Disable zwrite if we are rendering a transparent object.
     if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
     {
       GL(glDepthMask(GL_FALSE));
-      GL(glDisable(GL_CULL_FACE));
+      //GL(glDisable(GL_CULL_FACE));
     }
+		else
+		{
+			GL(glDepthMask(GL_TRUE));
+			GL(glDisable(GL_CULL_FACE));
+			GL(glDisable(GL_BLEND));
+		}
 
     if (rlist.size() > 0)
     {
@@ -296,6 +306,18 @@ public:
       GL(glDepthMask(GL_TRUE));
       GL(glEnable(GL_CULL_FACE));
     }
+		else
+		{
+			GL(glDepthMask(depthMask));
+			if (cullFace)
+			{
+				GL(glEnable(GL_CULL_FACE));
+			}
+			if (blend)
+			{
+				GL(glEnable(GL_BLEND));
+			}
+		}
 
     geom.front().attribs.unbind();
 
