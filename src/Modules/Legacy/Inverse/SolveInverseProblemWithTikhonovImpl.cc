@@ -30,40 +30,30 @@ DEALINGS IN THE SOFTWARE.
 //    Author     : Moritz Dannhauer, Ayla Khan, Dan White
 //    Date       : November 02th, 2012 (last update)
 
-#if 0
-
-#include <cstdio>
-#include <cmath>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <Packages/BioPSE/Dataflow/Modules/Inverse/SolveInverseProblemWithTikhonov.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovImpl.h>
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixOperations.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
-#include <Core/Exceptions/Exception.h>
-#include <Core/Exceptions/InvalidState.h>
-#include <Core/Exceptions/DimensionMismatch.h>
-#include <Core/Exceptions/LapackError.h>
+#include <Core/Logging/LoggerInterface.h>
+
+//#include <Core/Exceptions/Exception.h>
+//#include <Core/Exceptions/InvalidState.h>
+//#include <Core/Exceptions/DimensionMismatch.h>
+//#include <Core/Exceptions/LapackError.h>
 
 namespace BioPSE
 {
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Logging;
 
 TikhonovAlgorithmImpl::TikhonovAlgorithmImpl(const MatrixHandle& forwardMatrix,
                                              const MatrixHandle& measuredData,
@@ -73,7 +63,7 @@ TikhonovAlgorithmImpl::TikhonovAlgorithmImpl(const MatrixHandle& forwardMatrix,
                                              const MatrixHandle sourceWeighting,
                                              const MatrixHandle sensorWeighting,
                                              bool computeRegularizedInverse,
-                                             SCIRun::ProgressReporter* pr)
+                                             LegacyLoggerInterface* pr)
 : forwardMatrix_(forwardMatrix),
 measuredData_(measuredData),
 sourceWeighting_(sourceWeighting),
@@ -87,8 +77,6 @@ pr_(pr)
 {
   //TODO: size checking here.
 }
-
-TikhonovAlgorithmImpl::~TikhonovAlgorithmImpl() {}
 
 MatrixHandle TikhonovAlgorithmImpl::get_inverse_solution() const
 {
@@ -105,6 +93,7 @@ ColumnMatrixHandle TikhonovAlgorithmImpl::get_regularization_parameter() const
   return regularizationParameter_;
 }
 
+#if 0
 class SolveInverseProblemWithTikhonov : public Module
 {
   GuiDouble     lambda_from_textentry_;
@@ -131,10 +120,6 @@ public:
   void update_lcurve_gui(const double lambda, const TikhonovAlgorithmImpl::LCurveInput& input, const int lambda_index);
 };
 
-//! Module Maker
-DECLARE_MAKER(SolveInverseProblemWithTikhonov)
-
-
 //! Constructor
 SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov(GuiContext *context) :
 Module("SolveInverseProblemWithTikhonov", context, Source, "Inverse", "BioPSE"),
@@ -153,7 +138,7 @@ log_val_(context->subVar("log_val"), 0.02),
 lambda_corner_from_scale_(context->subVar("lambda_corner_from_scale", false), 0)
 {
 }
-
+#endif
 
 //! Find Corner, find the maximal curvature which corresponds to the L-curve corner
 //! changed by Moritz Dannhauer
@@ -171,7 +156,7 @@ TikhonovAlgorithmImpl::FindCorner(const LCurveInput& input, int& lambda_index)
   std::vector<double> ddrho(nLambda);
   std::vector<double> lrho(nLambda);
   std::vector<double> leta(nLambda);
-  ColumnMatrix kapa(nLambda);
+  DenseColumnMatrix kapa(nLambda);
 
   double maxKapa = -1.0e10;
   for (int i = 0; i < nLambda; i++)
@@ -273,13 +258,13 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     MatrixHandle forward_transpose_h = forwardMatrix_->make_transpose();
     MatrixHandle matrixRegMat_handle;
     SparseRowMatrixHandle sourceWeighting_sparse;
-    ColumnMatrixHandle solution_handle = new ColumnMatrix(M);
-    ColumnMatrix &solution = *solution_handle;
-    ColumnMatrixHandle RRtrAtrsolution = new ColumnMatrix(N);
-    ColumnMatrix &RRtrAtrsolution_handle = *RRtrAtrsolution;
+    DenseColumnMatrixHandle solution_handle = new ColumnMatrix(M);
+    DenseColumnMatrix &solution = *solution_handle;
+    DenseColumnMatrixHandle RRtrAtrsolution = new ColumnMatrix(N);
+    DenseColumnMatrix &RRtrAtrsolution_handle = *RRtrAtrsolution;
 
     const ColumnMatrixHandle measuredDataRef = measuredData_->column();
-    if (!sourceWeighting_.get_rep()) //check if a Source Space Weighting Matrix exist?
+    if (!sourceWeighting_) //check if a Source Space Weighting Matrix exist?
     {
       matrixRegMat_handle = DenseMatrix::identity(N);
       ARRtrAtr = (forwardMatrix_ * forward_transpose_h);
@@ -315,7 +300,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     const DenseMatrix &RRtrAtr_ = *(RRtrAtr->dense());
     MatrixHandle hMatrixNoiseCov_transpose;
     MatrixHandle CCtr;
-    if (!sensorWeighting_.get_rep()) //check if a Sensor Space (Noise Covariance) Weighting Matrix exist?
+    if (!sensorWeighting_) //check if a Sensor Space (Noise Covariance) Weighting Matrix exist?
     {
       CCtr = DenseMatrix::identity(M);
     }
@@ -558,7 +543,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       MatrixHandle CCtr;
       MatrixHandle hMatrixNoiseCov_transpose;
 
-      if (!sensorWeighting_.get_rep())
+      if (!sensorWeighting_)
       //check if a Sensor Space (Noise Covariance) Weighting Matrix exist?
       {
         // For large problems, allocating this matrix causes the module to hang.
@@ -594,7 +579,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       MatrixHandle mat_RtrR_handle;
       MatrixHandle matrixRegMat_handle;
 
-      if (!sourceWeighting_.get_rep())
+      if (!sourceWeighting_)
       {
         matrixRegMat_handle = DenseMatrix::identity(N);
         mat_RtrR_handle = DenseMatrix::identity(N);
@@ -623,9 +608,9 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       int lambda_index = 0;
       // calculate A^T * Y
       MatrixHandle AtrYHandle = new ColumnMatrix(N);
-      ColumnMatrix &tmp_columnMatrix = *(AtrYHandle->column());
-      ColumnMatrix mat_AtrY= tmp_columnMatrix;
-      ColumnMatrix &measuredDataRef=*(new ColumnMatrix(N));
+      DenseColumnMatrix &tmp_columnMatrix = *(AtrYHandle->column());
+      DenseColumnMatrix mat_AtrY= tmp_columnMatrix;
+      DenseColumnMatrix &measuredDataRef=*(new ColumnMatrix(N));
       if (sensorWeighting_.get_rep())
       {
         measuredDataRef=*(CCtr*measuredData_)->column();
@@ -637,12 +622,12 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       forwardMatrix_->mult_transpose(measuredDataRef, mat_AtrY);
       MatrixHandle regForMatrix_handle = new DenseMatrix(N, N);
       DenseMatrix &regForMatrix = static_cast<DenseMatrix&>(*regForMatrix_handle);
-      ColumnMatrixHandle solution_handle = new ColumnMatrix(N);
-      ColumnMatrixHandle Ax_handle = new ColumnMatrix(M);
-      ColumnMatrixHandle Rx_handle = new ColumnMatrix(N);
-      ColumnMatrix &solution = *solution_handle;
-      ColumnMatrix &Ax = *Ax_handle;
-      ColumnMatrix &Rx = *Rx_handle;
+      DenseColumnMatrixHandle solution_handle = new ColumnMatrix(N);
+      DenseColumnMatrixHandle Ax_handle = new ColumnMatrix(M);
+      DenseColumnMatrixHandle Rx_handle = new ColumnMatrix(N);
+      DenseColumnMatrix &solution = *solution_handle;
+      DenseColumnMatrix &Ax = *Ax_handle;
+      DenseColumnMatrix &Rx = *Rx_handle;
       if ((input.regMethod_ == "single") || (input.regMethod_ == "slider"))
       {
         if (input.regMethod_ == "single")
@@ -668,9 +653,9 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         lambdaArray[0] = input.lambdaMin_;
         const double lam_step = pow(10.0, log10(input.lambdaMax_ / input.lambdaMin_) / (nLambda-1));
 
-        double* AtrA = mat_AtrA_h.get_data_pointer();
-        double* RtrR = mat_RtrR.get_data_pointer();
-        double* rm   = regForMatrix.get_data_pointer();
+        double* AtrA = mat_AtrA_h.data();
+        double* RtrR = mat_RtrR.data();
+        double* rm   = regForMatrix.data();
 
         int s = N*N;
         for (int j = 0; j < nLambda; j++)
@@ -727,7 +712,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           const DenseMatrix &forwardMatrixRef = *(forwardMatrix_->dense());
 
           forwardMatrixRef.multiply(solution, Ax);
-          const ColumnMatrixHandle measuredData = measuredData_->column();
+          const DenseColumnMatrixHandle measuredData = measuredData_->column();
           matrixRegMatD.multiply(solution, Rx);
           // Calculate the norm of Ax-b and Rx
           rho[j]=0; eta[j]=0;
@@ -825,6 +810,7 @@ void TikhonovAlgorithmImpl::update_graph(const TikhonovAlgorithmImpl::Input& inp
   }
 }
 
+#if 0
 //! Module execution
 void SolveInverseProblemWithTikhonov::execute()
 {
@@ -930,6 +916,7 @@ void SolveInverseProblemWithTikhonov::update_lcurve_gui(const double lambda, con
 
   TCLInterface::execute(str.str());
 }
+#endif
 
 TikhonovAlgorithmImpl::LCurveInput::LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, int nLambda/*, const double lambdaStep*/)
 : rho_(rho), eta_(eta), lambdaArray_(lambdaArray), nLambda_(nLambda)/*, lambdaStep_(lambdaStep)*/
@@ -942,5 +929,3 @@ updateLCurveGui_(updateLCurveGui)
 {}
 
 } // End namespace BioPSE
-
-#endif

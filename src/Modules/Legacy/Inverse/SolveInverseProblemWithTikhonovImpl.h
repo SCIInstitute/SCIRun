@@ -39,7 +39,7 @@
 #include <boost/function.hpp>
 
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Utils/ProgressReporter.h>
+#include <Core/Logging/LoggerFwd.h>
 
 #include <Modules/Legacy/Inverse/share.h>
 
@@ -73,8 +73,7 @@ namespace BioPSE
                           const SCIRun::Core::Datatypes::MatrixHandle sourceWeighting = 0,
                           const SCIRun::Core::Datatypes::MatrixHandle sensorWeighting = 0,
                           bool computeRegularizedInverse = false,
-                          SCIRun::Core::Utility::ProgressReporter* pr = 0);
-    ~TikhonovAlgorithmImpl();
+                          SCIRun::Core::Logging::LegacyLoggerInterface* pr = 0);
 
     SCIRun::Core::Datatypes::MatrixHandle get_inverse_solution() const;
     SCIRun::Core::Datatypes::MatrixHandle get_inverse_matrix() const;
@@ -129,7 +128,7 @@ namespace BioPSE
     double lambda_;
     bool computeRegularizedInverse_;
     boost::shared_ptr<LCurveInput> lcurveInput_handle_;
-    SCIRun::Core::Utility::ProgressReporter* pr_;
+    SCIRun::Core::Logging::LegacyLoggerInterface* pr_;
   };
 }
 
