@@ -27,8 +27,7 @@
 */
 
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
-//#include <Modules/Legacy/Forward/BuildBEMatrixImpl.h>
-//#include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
+#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovImpl.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 

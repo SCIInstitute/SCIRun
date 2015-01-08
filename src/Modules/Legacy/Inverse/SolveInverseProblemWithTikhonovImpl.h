@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,9 +39,9 @@
 #include <boost/function.hpp>
 
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Util/ProgressReporter.h>
+#include <Core/Utils/ProgressReporter.h>
 
-#include <Packages/BioPSE/Dataflow/Modules/Inverse/share.h>
+#include <Modules/Legacy/Inverse/share.h>
 
 namespace BioPSE
 {
@@ -59,26 +59,26 @@ namespace BioPSE
       solution_constrained,
       solution_constrained_squared
     };
-    
+
     enum AlgorithmResidualSubcase {
       residual_constrained,
       residual_constrained_squared
     };
-    
-    TikhonovAlgorithmImpl(const SCIRun::MatrixHandle& forwardMatrix,
-                          const SCIRun::MatrixHandle& measuredData,
+
+    TikhonovAlgorithmImpl(const SCIRun::Core::Datatypes::MatrixHandle& forwardMatrix,
+                          const SCIRun::Core::Datatypes::MatrixHandle& measuredData,
                           AlgorithmChoice regularizationChoice = automatic,
                           AlgorithmSolutionSubcase regularizationSolutionSubcase = solution_constrained,
                           AlgorithmResidualSubcase regularizationResidualSubcase = residual_constrained,
-                          const SCIRun::MatrixHandle sourceWeighting = 0,
-                          const SCIRun::MatrixHandle sensorWeighting = 0,
+                          const SCIRun::Core::Datatypes::MatrixHandle sourceWeighting = 0,
+                          const SCIRun::Core::Datatypes::MatrixHandle sensorWeighting = 0,
                           bool computeRegularizedInverse = false,
-                          SCIRun::ProgressReporter* pr = 0);
+                          SCIRun::Core::Utility::ProgressReporter* pr = 0);
     ~TikhonovAlgorithmImpl();
-    
-    SCIRun::MatrixHandle get_inverse_solution() const;
-    SCIRun::MatrixHandle get_inverse_matrix() const;
-    SCIRun::ColumnMatrixHandle get_regularization_parameter() const;
+
+    SCIRun::Core::Datatypes::MatrixHandle get_inverse_solution() const;
+    SCIRun::Core::Datatypes::MatrixHandle get_inverse_matrix() const;
+    SCIRun::Core::Datatypes::DenseColumnMatrixHandle get_regularization_parameter() const;
 
     struct SCISHARE LCurveInput
     {
@@ -90,7 +90,7 @@ namespace BioPSE
       LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda);
     };
 
-    struct SCISHARE Input 
+    struct SCISHARE Input
     {
       std::string regMethod_;
       double lambdaFromTextEntry_;
@@ -111,25 +111,25 @@ namespace BioPSE
 
     static double FindCorner(const LCurveInput& input, int& lambda_index);
     static double LambdaLookup(const LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
-    
-  private:
-    const SCIRun::MatrixHandle& forwardMatrix_;
-    const SCIRun::MatrixHandle& measuredData_;
-    const SCIRun::MatrixHandle sourceWeighting_;
-    const SCIRun::MatrixHandle sensorWeighting_;
 
-    SCIRun::MatrixHandle inverseSolution_;
-    SCIRun::MatrixHandle inverseMatrix_;
-    SCIRun::ColumnMatrixHandle regularizationParameter_;
-    
+  private:
+    const SCIRun::Core::Datatypes::MatrixHandle& forwardMatrix_;
+    const SCIRun::Core::Datatypes::MatrixHandle& measuredData_;
+    const SCIRun::Core::Datatypes::MatrixHandle sourceWeighting_;
+    const SCIRun::Core::Datatypes::MatrixHandle sensorWeighting_;
+
+    SCIRun::Core::Datatypes::MatrixHandle inverseSolution_;
+    SCIRun::Core::Datatypes::MatrixHandle inverseMatrix_;
+    SCIRun::Core::Datatypes::DenseColumnMatrixHandle regularizationParameter_;
+
     AlgorithmChoice regularizationChoice_;
     AlgorithmSolutionSubcase regularizationSolutionSubcase_;
     AlgorithmResidualSubcase regularizationResidualSubcase_;
-    
+
     double lambda_;
     bool computeRegularizedInverse_;
     boost::shared_ptr<LCurveInput> lcurveInput_handle_;
-    SCIRun::ProgressReporter* pr_;
+    SCIRun::Core::Utility::ProgressReporter* pr_;
   };
 }
 
