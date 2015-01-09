@@ -102,6 +102,7 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str)
 	{
 		bool ok;
 		double value = str.toDouble(&ok);
+		std::cout << value << std::endl; 
 			if (ok && state_->getValue(Variables::ScalarValue).toDouble() != value)
 			{
 				state_->setValue(Variables::ScalarValue, value);
@@ -111,7 +112,7 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str)
 	if (functionRadioButton_->isChecked())
 	{
 		std::string stringValue = str.toStdString(); 
-		if (state_->getValue(Variables::FunctionString).toString() != stringValue || stringValue != "")
+		if (state_->getValue(Variables::FunctionString).toString() != stringValue )
 		{
 			state_->setValue(Variables::FunctionString, stringValue);
 		}
