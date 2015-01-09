@@ -1792,7 +1792,7 @@ void
 LatVolMesh<Basis>::get_cells(typename Cell::index_type &begin, typename Cell::index_type &end,
                              const Core::Geometry::BBox &bbox) {
 
-  const Core::Geometry::Point minp = transform_.unproject(bbox.min());
+  const Core::Geometry::Point minp = transform_.unproject(bbox.get_min());
   index_type mini = (index_type)floor(minp.x());
   index_type minj = (index_type)floor(minp.y());
   index_type mink = (index_type)floor(minp.z());
@@ -1800,7 +1800,7 @@ LatVolMesh<Basis>::get_cells(typename Cell::index_type &begin, typename Cell::in
   if (minj < 0) { minj = 0; }
   if (mink < 0) { mink = 0; }
 
-  const Core::Geometry::Point maxp = transform_.unproject(bbox.max());
+  const Core::Geometry::Point maxp = transform_.unproject(bbox.get_max());
   index_type maxi = (index_type)floor(maxp.x());
   index_type maxj = (index_type)floor(maxp.y());
   index_type maxk = (index_type)floor(maxp.z());
@@ -1917,11 +1917,11 @@ LatVolMesh<Basis>::get_nodes(typename Node::index_type &begin,
   // inside the mesh boundaries.
   Core::Geometry::BBox mesh_boundary = get_bounding_box();
   // crop by min boundary
-  Core::Geometry::Point min = Max(bbox.min(), mesh_boundary.min());
-  Core::Geometry::Point max = Max(bbox.max(), mesh_boundary.min());
+  Core::Geometry::Point min = Max(bbox.get_min(), mesh_boundary.get_min());
+  Core::Geometry::Point max = Max(bbox.get_max(), mesh_boundary.get_min());
   // crop by max boundary
-  min = Min(min, mesh_boundary.max());
-  max = Min(max, mesh_boundary.max());
+  min = Min(min, mesh_boundary.get_max());
+  max = Min(max, mesh_boundary.get_max());
   typename Node::index_type min_index, max_index;
 
   // If one of the locates return true, then we have a valid iteration

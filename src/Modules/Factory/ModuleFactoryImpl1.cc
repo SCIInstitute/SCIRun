@@ -46,6 +46,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Math/GetMatrixSlice.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Fields/ReportFieldInfo.h>
+#include <Modules/Fields/EditMeshBoundingBox.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
@@ -64,6 +65,10 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ResampleRegularMesh.h>
 #include <Modules/Legacy/Fields/FairMesh.h>
+#ifdef WITH_TETGEN
+#include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
+#endif
+#include <Modules/Legacy/Fields/BuildMappingMatrix.h>
 #include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/ScaleFieldMeshAndData.h>
 #include <Modules/Legacy/Fields/ProjectPointsOntoMesh.h>
@@ -73,16 +78,23 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/MapFieldDataOntoNodes.h>
 #include <Modules/Legacy/Fields/ClipFieldByFunction3.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromSourceToDestination.h>
+#include <Modules/Legacy/Fields/RefineMesh.h>
 #include <Modules/Legacy/Fields/SetFieldDataToConstantValue.h>
+#include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
+#include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
+#include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
+#include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
+#include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
+#include <Modules/Legacy/Forward/BuildBEMatrix.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/WriteField.h>
 #include <Modules/String/CreateString.h>
-#include <Modules/String/NetworkNotes.h> 
+#include <Modules/String/NetworkNotes.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/CreateBasicColorMap.h>
@@ -100,6 +112,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Matlab::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
@@ -122,7 +135,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
   addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
   addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
-	addModuleDesc<NetworkNotesModule>("NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "..."); 
+	addModuleDesc<NetworkNotesModule>("NetworkNotes", "String", "SCIRun", "Functional, needs GUI work.", "...");
   //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
   addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
   addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
@@ -142,13 +155,19 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
   addModuleDesc<CalculateFieldData>("Real ported module", "...");
+	addModuleDesc<SwapFieldDataWithMatrixEntries>("SwapFieldDataWithMatrixEntires","...");
   addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", "In progress: main path through code works", "Generates stiffness matrix ");
+  addModuleDesc<BuildBEMatrix>("Real ported module", "...");
   addModuleDesc<ResampleRegularMesh>("Real ported module", "...");
   addModuleDesc<FairMesh>("Real ported module", "...");
   //TODO: incomplete impl
   //addModuleDesc<ConvertFieldBasis>("NOT WORKING YET--Real ported module", "...");
   //addModuleDesc<ScaleFieldMeshAndData>("NOT WORKING YET--Real ported module", "...");
   addModuleDesc<ProjectPointsOntoMesh>("Real ported module", "...");
+  addModuleDesc<ApplyFEMCurrentSource>("Real ported module", "...");
+  #ifdef WITH_TETGEN
+  addModuleDesc<InterfaceWithTetGen>("Real ported module", "...");
+  #endif
   addModuleDesc<CalculateDistanceToField>("Real ported module", "...");
   addModuleDesc<CalculateDistanceToFieldBoundary>("Real ported module", "...");
   addModuleDesc<MapFieldDataOntoNodes>("Real ported module", "...");
@@ -156,8 +175,14 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ClipFieldByFunction>("In progress", "...");
   addModuleDesc<MapFieldDataFromSourceToDestination>("Real ported module", "...");
   addModuleDesc<GetMatrixSlice>("New module based on GetRowOrColumnFromMatrix", "...");
+	addModuleDesc<RefineMesh>("RefineMesh","ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<SetFieldDataToConstantValue>("Real ported module", "...");
+	addModuleDesc<BuildMatrixOfSurfaceNormals>("Real ported module", "...");
+  addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
+  addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
+  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix", "Math", "SCIRun", "...", "...");
+  addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
 
 
   // insert module desc here

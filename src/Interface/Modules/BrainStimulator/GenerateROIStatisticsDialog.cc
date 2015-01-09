@@ -72,6 +72,7 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
 
 void GenerateROIStatisticsDialog::push()
 {
+
   if (!pulling_)
   {    
     QPalette* palette = new QPalette();

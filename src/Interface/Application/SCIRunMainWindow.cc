@@ -199,8 +199,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   //TODO: will be a user or network setting
   makePipesEuclidean();
 
-  connect(largeModuleSizeRadioButton_, SIGNAL(clicked()), this, SLOT(makeModulesLargeSize()));
-  connect(smallModuleSizeRadioButton_, SIGNAL(clicked()), this, SLOT(makeModulesSmallSize()));
+  connect(largeModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesLargeSize()));
+  connect(smallModuleSizeToolButton_, SIGNAL(clicked()), this, SLOT(makeModulesSmallSize()));
 
   for (int i = 0; i < MaxRecentFiles; ++i)
   {
@@ -390,7 +390,7 @@ void SCIRunMainWindow::executeCommandLineRequests()
 
 void SCIRunMainWindow::executeAll()
 {
-  if (Core::Preferences::Instance().saveBeforeExecute)
+  if (Core::Preferences::Instance().saveBeforeExecute && !Core::Application::Instance().parameters()->isRegressionMode())
   {
     saveNetwork();
   }
@@ -590,18 +590,18 @@ void SCIRunMainWindow::networkModified()
 
 void SCIRunMainWindow::setActionIcons()
 {
-  actionNew_->setIcon(QPixmap(":/general/Resources/new.png"));
-  actionLoad_->setIcon(QPixmap(":/general/Resources/load.png"));
-  actionSave_->setIcon(QPixmap(":/general/Resources/save.png"));
-  actionRunScript_->setIcon(QPixmap(":/general/Resources/script.png"));
+  actionNew_->setIcon(QPixmap(":/general/Resources/new/general/new.png"));
+  actionLoad_->setIcon(QPixmap(":/general/Resources/new/general/folder.png"));
+  actionSave_->setIcon(QPixmap(":/general/Resources/new/general/save.png"));
+  actionRunScript_->setIcon(QPixmap(":/general/Resources/new/general/wand.png"));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
-  actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
   actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
   actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
   //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-  actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/hideAll.png"));
-  actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/rightAll.png"));
-  actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/showAll.png"));
+  actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/hideAll.png"));
+  actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/rightAll.png"));
+  actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/showAll.png"));
 
   actionCenterNetworkViewer_->setIcon(QPixmap(":/general/Resources/align_center.png"));
   actionResetNetworkZoom_->setIcon(QPixmap(":/general/Resources/zoom_reset.png"));
@@ -871,12 +871,12 @@ void SCIRunMainWindow::showPythonWarning(bool visible)
 
 void SCIRunMainWindow::makeModulesLargeSize()
 {
-  std::cout << "Modules are large" << std::endl;
+  networkEditor_->setModuleMini(false);
 }
 
 void SCIRunMainWindow::makeModulesSmallSize()
 {
-  std::cout << "TODO: Modules are small" << std::endl;
+  networkEditor_->setModuleMini(true);
 }
 
 namespace {

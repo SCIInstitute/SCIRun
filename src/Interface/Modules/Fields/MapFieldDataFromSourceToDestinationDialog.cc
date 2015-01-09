@@ -70,6 +70,7 @@ MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDi
 void MapFieldDataFromSourceToDestinationDialog::pull()
 {
   pull_newVersionToReplaceOld();
+  Pulling p(this);
   if (IsNan(state_->getValue(Parameters::DefaultValue).toDouble()))
   {
     useNanForUnassignedValuesCheckBox_->setChecked(true);
@@ -82,12 +83,18 @@ void MapFieldDataFromSourceToDestinationDialog::pull()
 
 void MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue(int state)
 {
-  if (0 != state)
-    state_->setValue(Parameters::MaxDistance, -1.0);
+  if (!pulling_)
+  {
+    if (0 != state)
+      state_->setValue(Parameters::MaxDistance, -1.0);
+  }
 }
 
 void MapFieldDataFromSourceToDestinationDialog::setUseNanForUnassignedValues(int state)
 {
-  if (0 != state)
-    state_->setValue(Parameters::DefaultValue, std::numeric_limits<double>::quiet_NaN());
+  if (!pulling_)
+  {
+    if (0 != state)
+      state_->setValue(Parameters::DefaultValue, std::numeric_limits<double>::quiet_NaN());
+  }
 }

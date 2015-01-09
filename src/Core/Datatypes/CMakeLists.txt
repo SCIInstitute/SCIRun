@@ -27,10 +27,12 @@
 #
 
 SET(Core_Datatypes_SRCS
+  BlockMatrix.cc
   Color.cc
   ColorMap.cc
   Datatype.cc
   Geometry.cc
+  Material.cc
   Matrix.cc
   MatrixTypeConversions.cc
   PropertyManagerExtensions.cc
@@ -40,6 +42,7 @@ SET(Core_Datatypes_SRCS
 )
 
 SET(Core_Datatypes_HEADERS
+  BlockMatrix.h
   Color.h
   ColorMap.h
   Datatype.h
@@ -48,6 +51,7 @@ SET(Core_Datatypes_HEADERS
   DenseColumnMatrix.h
   Geometry.h
   HasId.h
+  Material.h
   Matrix.h
   MatrixComparison.h
   MatrixFwd.h

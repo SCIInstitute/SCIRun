@@ -50,6 +50,9 @@ public:
     return boost::join(inputPorts_, outputPorts_);
   }
 
+  size_t numInputPorts() const { return inputPorts_.size(); }
+  size_t numOutputPorts() const { return outputPorts_.size(); }
+
   void addPort(InputPortWidget* port);
   void addPort(OutputPortWidget* port);
   bool removeDynamicPort(const SCIRun::Dataflow::Networks::PortId& pid, QHBoxLayout* layout);

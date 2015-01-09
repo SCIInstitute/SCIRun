@@ -56,10 +56,10 @@ namespace BrainStimulator {
   ALGORITHM_PARAMETER_DECL(pointdistancebound);
   ALGORITHM_PARAMETER_DECL(number_of_electrodes);
   
-  class SCISHARE SetupRHSforTDCSandTMSAlgorithm : public AlgorithmBase
+  class SCISHARE SetupTDCSAlgorithm : public AlgorithmBase
   {
   public:
-    SetupRHSforTDCSandTMSAlgorithm();
+    SetupTDCSAlgorithm();
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
     boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle, Datatypes::DenseMatrixHandle> run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc,int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
@@ -79,8 +79,8 @@ namespace BrainStimulator {
     static AlgorithmOutputName SELECTMATRIXINDECES;
     static AlgorithmOutputName ELECTRODE_SPONGE_SURF;
     
-    static Core::Algorithms::AlgorithmParameterName ElecrodeParameterName(int i);
-    static Core::Algorithms::AlgorithmParameterName ElecrodeImpedanceParameterName(int i);
+    static Core::Algorithms::AlgorithmParameterName ElectrodeParameterName(int i);
+    static Core::Algorithms::AlgorithmParameterName ElectrodeImpedanceParameterName(int i);
   private:  
     static const double special_label;
     static const double electode_current_summation_bound;

@@ -75,8 +75,8 @@ protected:
     // BrainStimulator
     "('ElectrodeCoilSetup',             1,        0,                  0,              0,          1,              0,                    1,                  0,                              0,             0),"
     "('GenerateROIStatistics',          1,        0,                  0,              0,          0,              0,                    1,                  0,                              0,             0),"
-    "('SetConductivitiesToTetMesh',     1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
-    "('SetupRHSforTDCSandTMS',          1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
+    "('SetConductivitiesToMesh',     1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
+    "('SetupTDCS',          1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
     // Bundle
     "('GetFieldsFromBundle',            1,        1,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('InsertFieldsIntoBundle',         1,        1,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"

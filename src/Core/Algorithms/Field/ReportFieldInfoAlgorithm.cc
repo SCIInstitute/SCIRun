@@ -164,3 +164,19 @@ AlgorithmOutput ReportFieldInfoAlgorithm::run_generic(const AlgorithmInput& inpu
   output.setTransient(info);
   return output;
 }
+
+std::string ReportFieldInfoAlgorithm::summarize(const Outputs& info)
+{
+  std::ostringstream ostr;
+  ostr << "Type: " << info.type << std::endl;
+  ostr << "Center: " << info.center << std::endl;
+  ostr << "Size: " << info.size << std::endl;
+  ostr << "Data min,max: " << info.dataMin << " , " << info.dataMax << std::endl;
+  ostr << "# nodes: " << info.numnodes_ << std::endl;
+  ostr << "# elements: " << info.numelements_ << std::endl;
+  ostr << "# data: " << info.numdata_ << std::endl;
+  ostr << "Data location: " << info.dataLocation << std::endl;
+  ostr << "Dims (x,y,z): " << info.dims << std::endl;
+  ostr << "Geometric size: " << info.geometricSize << std::endl;
+  return ostr.str();
+}

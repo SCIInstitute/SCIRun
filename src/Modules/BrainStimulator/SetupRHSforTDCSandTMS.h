@@ -58,12 +58,12 @@ namespace SCIRun {
   namespace Modules {
     namespace BrainStimulator {
 
-class SCISHARE SetupRHSforTDCSandTMSModule : public SCIRun::Dataflow::Networks::Module,
+class SCISHARE SetupTDCS : public SCIRun::Dataflow::Networks::Module,
   public Has4InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, MatrixPortTag>,
   public Has8OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, FieldPortTag>
 {
   public:
-    SetupRHSforTDCSandTMSModule();
+    SetupTDCS();
 
     virtual void execute();
     virtual void setStateDefaults();

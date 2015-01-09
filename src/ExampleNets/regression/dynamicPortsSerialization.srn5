@@ -350,7 +350,7 @@
 									<name>tolerance</name>
 									<value>
 										<which>1</which>
-										<value>9.9999999999999995e-007</value>
+										<value>9.9999999999999995e-07</value>
 									</value>
 								</second>
 							</item>

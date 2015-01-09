@@ -71,6 +71,7 @@ namespace Networks {
   };
   
   typedef boost::signals2::signal<void(const PortId&, SCIRun::Core::Datatypes::DatatypeHandle)> DataOnPortHasChangedSignalType;
+  typedef boost::function<std::string()> PortDataDescriber;
 
   class SCISHARE InputPortInterface : virtual public PortInterface
   {
@@ -90,6 +91,7 @@ namespace Networks {
     virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
     virtual bool hasData() const = 0;
     virtual OutputPortInterface* clone() const { return 0; } // TODO
+    virtual PortDataDescriber getPortDataDescriber() const = 0;
   };
 
   class SCISHARE PortConnectionDeterminer

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2014 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -146,6 +146,13 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   {
     for (size_t p=0; p<inputs.size(); p++)
     {
+      VField* ifield = inputs[p]->vfield();
+      if (ifield->num_values() == 0)
+      {
+        error("Node values can only be matched if all fields contain data values.");
+        return (false);
+      }
+
       FieldInformation fi(input[p]);
       if (!(fi.is_scalar()))
       {
@@ -170,6 +177,8 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   size_type tot_num_nodes = 0;
   size_type tot_num_elems = 0;
   
+  if (merge_elems) merge_nodes = true;
+  
   // Compute bounding box and number of nodes
   // and elements
   for (size_t p = 0; p < inputs.size(); p++)
@@ -182,8 +191,8 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     tot_num_nodes += imesh->num_nodes();
     tot_num_elems += imesh->num_elems();
   }
-  
-  if (merge_elems) merge_nodes = true;
+
+//  if (merge_elems) merge_nodes = true;
 
   // Add an epsilon so all nodes will be inside
   if (merge_nodes)
@@ -201,7 +210,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
-    node_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max()));
+    node_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.get_min(), box.get_max()));
 
     if (sx == 0) sx = 1;
     if (sy == 0) sy = 1;
@@ -227,7 +236,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
     if (sy == 0) sy = 1;
     if (sz == 0) sz = 1;
     
-    elem_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max()));
+    elem_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.get_min(), box.get_max()));
     
     ni = node_grid->get_ni()-1;
     nj = node_grid->get_nj()-1;
@@ -314,7 +323,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
           if (merge_nodes)
           {
             imesh->get_center(P,nodeq);
-             
+
             if (match_node_values) ifield->get_value(curval,nodeq);
              
             // Convert to grid coordinates.

@@ -44,8 +44,8 @@ void ModuleDialogFactory::addDialogsToMakerMap2()
   insert(dialogMakerMap_)
     ADD_MODULE_DIALOG(tDCSSimulator, TDCSSimulatorDialog)
     ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
-    ADD_MODULE_DIALOG(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshDialog)
+    ADD_MODULE_DIALOG(SetConductivitiesToMesh, SetConductivitiesToTetMeshDialog)
     ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
-    ADD_MODULE_DIALOG(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSDialog)   
+    ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
   ;
 }

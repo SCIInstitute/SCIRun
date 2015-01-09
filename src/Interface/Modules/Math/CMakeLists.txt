@@ -37,6 +37,7 @@ SET(Interface_Modules_Math_FORMS
   ReportMatrixInfo.ui
   SolveLinearSystem.ui
   ConvertMatrixType.ui
+  BuildNoiseColumnMatrix.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -50,6 +51,7 @@ SET(Interface_Modules_Math_HEADERS
   share.h
   SolveLinearSystemDialog.h
   ConvertMatrixTypeDialog.h
+  BuildNoiseColumnMatrixDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES 
@@ -62,6 +64,7 @@ SET(Interface_Modules_Math_SOURCES
   ReportMatrixInfoDialog.cc
   SolveLinearSystemDialog.cc
   ConvertMatrixTypeDialog.cc
+  BuildNoiseColumnMatrixDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})

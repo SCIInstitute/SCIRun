@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BuildBEMatrix</class>
+ <widget class="QDialog" name="BuildBEMatrix">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>734</width>
+    <height>140</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>734</width>
+    <height>140</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QTableWidget" name="tableWidget">
+     <property name="minimumSize">
+      <size>
+       <width>700</width>
+       <height>0</height>
+      </size>
+     </property>
+     <column>
+      <property name="text">
+       <string>Field Name</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Field Type</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Boundary Condition</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Inside Conductivity</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Outside Conductivity</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

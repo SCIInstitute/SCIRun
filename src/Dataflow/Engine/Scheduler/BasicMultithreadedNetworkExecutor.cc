@@ -40,13 +40,14 @@ using namespace SCIRun::Core::Thread;
 
 namespace
 {
-  struct ParallelExecution
+  struct ParallelExecution : public WaitsForStartupInitialization
   {
     ParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
     {}
 
     void operator()() const
     {
+      waitForStartupInit(*lookup_);
       /// @todo ESSENTIAL: scoped start/finish signaling
       bounds_.executeStarts_();
       for (int group = order_.minGroup(); group <= order_.maxGroup(); ++group)

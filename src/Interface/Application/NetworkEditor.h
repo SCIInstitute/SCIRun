@@ -84,7 +84,7 @@ Q_SIGNALS:
   {
   public:
     explicit ZLevelManager(QGraphicsScene* scene);
-    int max() const { return maxZ_; }
+    int get_max() const { return maxZ_; }
     void bringToFront();
     void sendToBack();
   private:
@@ -117,6 +117,7 @@ Q_SIGNALS:
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
     virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const SCIRun::Dataflow::Networks::ModuleId& id) const;
+    virtual bool containsViewScene() const;
 
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
@@ -152,6 +153,8 @@ Q_SIGNALS:
 
     int currentZoomPercentage() const;
 
+    void setVisibility(bool visible);
+
   protected:
     virtual void dropEvent(QDropEvent* event) override;
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
@@ -159,6 +162,8 @@ Q_SIGNALS:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void wheelEvent(QWheelEvent* event) override;
+    virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void keyReleaseEvent(QKeyEvent *event) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -185,6 +190,7 @@ Q_SIGNALS:
     void zoomOut();
     void zoomReset();
     void centerView();
+    void setModuleMini(bool mini);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -234,6 +240,7 @@ Q_SIGNALS:
 
     QGraphicsScene* scene_;
 
+    bool visibleItems_;
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
 		boost::shared_ptr<DialogErrorControl> dialogErrorControl_;

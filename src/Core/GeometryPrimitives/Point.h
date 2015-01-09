@@ -193,17 +193,17 @@ SCISHARE Point centroid(const std::vector<Point>& points);
 
 inline Point Min(const Point& p1, const Point& p2)
 {
-  double x=std::min(p1[0], p2[0]);
-  double y=std::min(p1[1], p2[1]);
-  double z=std::min(p1[2], p2[2]);
+  double x=(std::min)(p1[0], p2[0]);
+  double y=(std::min)(p1[1], p2[1]);
+  double z=(std::min)(p1[2], p2[2]);
   return Point(x,y,z);
 }
 
 inline Point Max(const Point& p1, const Point& p2)
 {
-  double x=std::max(p1[0], p2[0]);
-  double y=std::max(p1[1], p2[1]);
-  double z=std::max(p1[2], p2[2]);
+  double x=(std::max)(p1[0], p2[0]);
+  double y=(std::max)(p1[1], p2[1]);
+  double z=(std::max)(p1[2], p2[2]);
   return Point(x,y,z);
 }
 

@@ -65,6 +65,7 @@ namespace Gui {
     void pull_newVersionToReplaceOld();
     void moduleSelected(bool selected);
     void toggleCollapse();
+    virtual void updateFromPortChange(int numPorts) {}
   Q_SIGNALS:
     void pullSignal();
     void executionTimeChanged(int time);
@@ -73,6 +74,7 @@ namespace Gui {
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
     virtual void contextMenuEvent(QContextMenuEvent* e) override;
     void fixSize();
+    void connectButtonToExecuteSignal(QAbstractButton* button);
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
 
     //TODO: need a better push/pull model
@@ -94,6 +96,7 @@ namespace Gui {
     void addCheckBoxManager(QCheckBox* checkBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addCheckableButtonManager(QAbstractButton* checkable, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addDynamicLabelManager(QLabel* label, const Core::Algorithms::AlgorithmParameterName& stateKey);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();

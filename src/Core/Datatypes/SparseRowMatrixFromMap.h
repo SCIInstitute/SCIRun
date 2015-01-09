@@ -31,6 +31,7 @@
 #define CORE_DATATYPES_SPARSEMATRIXFROMMAP_H
 
 #include <map>
+#include <boost/shared_array.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Datatypes/share.h>
@@ -65,6 +66,37 @@ namespace SCIRun
         SparseRowMatrixFromMap();
 
         static size_type get_nnz(const Values& data);
+      };
+
+      template <typename T>
+      class LegacySparseDataContainer
+      {
+      public:
+        typedef boost::shared_array<index_type> Rows;
+        typedef boost::shared_array<index_type> Columns;
+        typedef boost::shared_array<T> Storage;
+
+        LegacySparseDataContainer(size_type rowSize, size_type columnSize, size_type dataSize) :
+        rows_(new index_type[rowSize]),
+          columns_(new index_type[columnSize]),
+          data_(new T[dataSize])
+        { }
+        LegacySparseDataContainer(size_type rowSize, size_type columnAndDataSize) :
+        rows_(new index_type[rowSize]),
+          columns_(new index_type[columnAndDataSize]),
+          data_(new T[columnAndDataSize])
+        { }
+
+        bool allocated() const { return rows_ && columns_ && data_; }
+
+        const Rows& rows() const { return rows_; }
+        const Columns& columns() const { return columns_; }
+        const Storage& data() const { return data_; }
+
+      private:
+        const Rows rows_;
+        const Columns columns_;
+        const Storage data_;
       };
     }
   }

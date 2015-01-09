@@ -50,6 +50,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_FiniteElements
   Modules_BrainStimulator
   Modules_Legacy_FiniteElements
+  Modules_Legacy_Forward
   Modules_Basic
   Modules_DataIO
   Modules_String

@@ -64,6 +64,7 @@ namespace Networks {
     virtual ConnectionDescriptionList connections() const;
     virtual int errorCode() const;
     virtual void incrementErrorCode(const ModuleId& moduleId);
+    virtual bool containsViewScene() const;
     virtual NetworkGlobalSettings& settings();
     virtual std::string toString() const;
     virtual void setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter);

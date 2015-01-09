@@ -45,6 +45,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   dock_(0)
 {
   setModal(false);
+  setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
 
   if (state_)
   {
@@ -59,6 +60,11 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
 {
+}
+
+void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
+{
+  connect(button, SIGNAL(clicked()), this, SIGNAL(executeActionTriggered()));
 }
 
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
@@ -226,6 +232,22 @@ private:
   }
 };
 
+#if 0
+//Interesting idea but hard to manage lifetime of Widget pointers, if they live in a dynamic table. This will need to be melded into the TableWidget subclass.
+template <class Manager, class Widget>
+class CompositeSlotManager : public WidgetSlotManager
+{
+public:
+  CompositeSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, const std::vector<Widget*>& widgets)
+    : WidgetSlotManager(state, dialog) 
+  {
+    std::transform(widgets.begin(), widgets.end(), std::back_inserter(managers_), [&](Widget* w) { return boost::make_shared<Manager>(state, dialog, stateKey, w); });
+  }
+private:
+  std::vector<boost::shared_ptr<Manager>> managers_;
+};
+#endif
+
 void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, stateKey, comboBox));
@@ -358,7 +380,15 @@ public:
       virtual void pushImpl() override
       {
         LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
-        state_->setValue(stateKey_, boost::lexical_cast<double>(lineEdit_->text().toStdString()));
+        try 
+        {
+          auto value = boost::lexical_cast<double>(lineEdit_->text().toStdString());
+          state_->setValue(stateKey_, value);
+        }
+        catch (boost::bad_lexical_cast&)
+        {
+          // ignore for now
+        }
       }
 private:
   AlgorithmParameterName stateKey_;
@@ -496,4 +526,33 @@ private:
 void ModuleDialogGeneric::addCheckableButtonManager(QAbstractButton* checkable, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<CheckableButtonSlotManager>(state_, *this, stateKey, checkable));
+}
+
+class DynamicLabelSlotManager : public WidgetSlotManager
+{
+public:
+  DynamicLabelSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLabel* label) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), label_(label)
+  {
+  }
+  virtual void pull() override
+  {
+    auto newValue = state_->getValue(stateKey_).toString();
+    if (newValue != label_->text().toStdString())
+    {
+      LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);
+      label_->setText(QString::fromStdString(newValue));
+    }
+  }
+  virtual void pushImpl() override
+  {
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QLabel* label_;
+};
+
+void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
 }

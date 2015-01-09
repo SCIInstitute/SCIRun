@@ -138,7 +138,7 @@
               <item>
                <widget class="QGroupBox" name="groupBox_4">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="title">
                  <string>Node Display Type</string>
@@ -157,7 +157,7 @@
                  <item>
                   <widget class="QRadioButton" name="nodesAsSpheresButton_">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="text">
                     <string>Spheres</string>

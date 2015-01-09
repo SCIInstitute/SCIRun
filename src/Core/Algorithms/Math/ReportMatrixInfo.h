@@ -44,6 +44,7 @@ namespace Math {
     typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
 
     Outputs run(const Inputs& input) const;
+    static std::string summarize(const Outputs& info);
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };

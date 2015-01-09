@@ -58,7 +58,7 @@ TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
   stubPortNWithThisData(tdcs, 0, nullField);
   stubPortNWithThisData(tdcs, 1, nullField);
 
-  EXPECT_THROW(tdcs->execute(), NoHandleOnPortException);  //nulls are removed, so should throw "no handle"
+  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException); 
 }
 
 TEST_F(ElectrodeCoilSetupTests, DISABLED_Foo)

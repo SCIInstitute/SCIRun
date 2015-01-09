@@ -29,12 +29,14 @@
 # CMakeLists.txt for Dataflow/Modules/FiniteElements
 
 SET(Modules_Legacy_FiniteElements_HEADERS
+  ApplyFEMCurrentSource.h
   BuildFEMatrix.h
   BuildTDCSMatrix.h
   BuildFEVolRHS.h
 )
 
 SET(Modules_Legacy_FiniteElements_SRCS
+  ApplyFEMCurrentSource.cc
   #DefinePeriodicBoundaries.cc
   #BuildFEGridMapping.cc
   #BuildFEGridMappingByDomain.cc

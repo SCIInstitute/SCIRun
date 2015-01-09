@@ -65,6 +65,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   modulesSelectedByCL_(false),
   currentScale_(1),
   scene_(new QGraphicsScene(parent)),
+  visibleItems_(true),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
   dialogErrorControl_(dialogErrorControl),
@@ -176,6 +177,19 @@ namespace
     }
     return 0;
   }
+
+  ModuleProxyWidget* findFirstByName(const QList<QGraphicsItem*>& list, const std::string& name)
+  {
+    Q_FOREACH(QGraphicsItem* item, list)
+    {
+      if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        if (w->getModuleWidget()->getModuleId().find(name) != std::string::npos)
+          return w;
+      }
+    }
+    return 0;
+  }
 }
 
 void NetworkEditor::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
@@ -247,8 +261,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
-  proxy->setZValue(zLevelManager_->max());
-  proxy->setVisible(true);
+  proxy->setZValue(zLevelManager_->get_max());
   proxy->setPos(lastModulePosition_);
   lastModulePosition_ += moduleAddIncrement;
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
@@ -258,6 +271,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(snapToModules()), proxy, SLOT(snapToGrid()));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
+  connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
+  connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
@@ -268,6 +283,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   scene_->clearSelection();
   proxy->setSelected(true);
   bringToFront();
+  proxy->setVisible(visibleItems_);
 
   GuiLogger::Instance().log("Module added.");
 }
@@ -324,6 +340,19 @@ ModuleWidget* getModule(QGraphicsItem* item)
   if (proxy)
     return static_cast<ModuleWidget*>(proxy->widget());
   return 0;
+}
+
+void NetworkEditor::setVisibility(bool visible)
+{
+  visibleItems_ = visible;
+  ModuleWidget::connectionFactory_->setVisibility(visible);
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto p = getModuleProxy(item))
+      p->setVisible(visibleItems_);
+    else if (auto c = dynamic_cast<ConnectionLine*>(item))
+      c->setVisible(visibleItems_);
+  }
 }
 
 //TODO copy/paste
@@ -554,28 +583,32 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 	if (event->button() != Qt::LeftButton)
 		Q_EMIT networkEditorMouseButtonPressed();
 
-	if (ConnectionLine* cL = getSingleConnectionSelected())
-		if (event->buttons() & Qt::LeftButton)
-			if (!(event->modifiers() & Qt::ControlModifier))
-		{
-			auto selectedPair = cL->getConnectedToModuleIds();
+  if (ConnectionLine* cL = getSingleConnectionSelected())
+  {
+    if (event->buttons() & Qt::LeftButton)
+    {
+      if (!(event->modifiers() & Qt::ControlModifier))
+      {
+        auto selectedPair = cL->getConnectedToModuleIds();
 
-			findById(scene_->items(),selectedPair.first)->setSelected(true);
-			findById(scene_->items(),selectedPair.second)->setSelected(true);
-			modulesSelectedByCL_ = true;
-		}
-	QGraphicsView::mouseMoveEvent(event);
+        findById(scene_->items(), selectedPair.first)->setSelected(true);
+        findById(scene_->items(), selectedPair.second)->setSelected(true);
+        modulesSelectedByCL_ = true;
+      }
+    }
+  }
+  QGraphicsView::mouseMoveEvent(event);
 }
 
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
-		if(modulesSelectedByCL_)
-		{
-				unselectConnectionGroup();
-				Q_EMIT modified();
-		}
-		modulesSelectedByCL_ = false;
-	QGraphicsView::mouseReleaseEvent(event);
+  if (modulesSelectedByCL_)
+  {
+    unselectConnectionGroup();
+    Q_EMIT modified();
+  }
+  modulesSelectedByCL_ = false;
+  QGraphicsView::mouseReleaseEvent(event);
 }
 
 ConnectionLine* NetworkEditor::getSingleConnectionSelected()
@@ -903,18 +936,23 @@ namespace
 
 void NetworkEditor::wheelEvent(QWheelEvent* event)
 {
-  setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-
-  if (event->delta() > 0)
+  if (event->modifiers() & Qt::ShiftModifier)
   {
-    zoomIn();
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+    if (event->delta() > 0)
+    {
+      zoomIn();
+    }
+    else
+    {
+      zoomOut();
+    }
+    // Don't call superclass handler here
+    // as wheel is normally used for moving scrollbars
   }
   else
-  {
-    zoomOut();
-  }
-  // Don't call superclass handler here
-  // as wheel is normally used for moving scrollbars
+    QGraphicsView::wheelEvent(event);
 }
 
 void NetworkEditor::zoomIn()
@@ -948,6 +986,48 @@ void NetworkEditor::zoomReset()
 int NetworkEditor::currentZoomPercentage() const
 {
   return static_cast<int>(currentScale_ * 100);
+}
+
+//static QGraphicsTextItem* zoomHelp = 0;
+
+void NetworkEditor::keyPressEvent(QKeyEvent *event)
+{
+  if (event->key() == Qt::Key_Shift)
+  {
+    //TODO
+    //if (!zoomHelp)
+    //  zoomHelp = new QGraphicsTextItem("Network zoom enabled on scroll");
+    //scene()->addItem(zoomHelp);
+    //std::cout << "SHIFT IS ZOOM" << std::endl;
+  }
+  QGraphicsView::keyPressEvent(event);
+}
+
+void NetworkEditor::keyReleaseEvent(QKeyEvent *event)
+{
+  if (event->key() == Qt::Key_Shift)
+  {
+    //TODO
+    //scene()->removeItem(zoomHelp);
+    //std::cout << "DONEZOOM" << std::endl;
+  }
+  QGraphicsView::keyPressEvent(event);
+}
+
+bool NetworkEditor::containsViewScene() const
+{
+  return findFirstByName(scene_->items(), "ViewScene") != nullptr;
+}
+
+void NetworkEditor::setModuleMini(bool mini)
+{
+  ModuleWidget::setGlobalMiniMode(mini);
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->setMiniMode(mini);
+  }
 }
 
 NetworkEditor::~NetworkEditor()

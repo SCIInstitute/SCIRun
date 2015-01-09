@@ -29,6 +29,7 @@
 #include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
 #include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
 
+using namespace SCIRun::Core::Basis;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Thread;
 

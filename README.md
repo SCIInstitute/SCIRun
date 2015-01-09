@@ -34,11 +34,11 @@ For documentation, please see: http://sciinstitute.github.io/SCIRun/
 ### Platform Notes
 #### Build requirements
 * OS X (tested on 10.7 and 10.8)
-  - Apple clang 4.1
+  - Apple clang 5.1
   - Qt 4.8
     + Download from http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg.
 * Windows (tested on Windows 7, 8)
-  - Visual Studio C++ 2010
+  - Visual Studio 2013
   - Qt 4.8 
     + Build from source (see http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:Building_Releases#Installing_Qt_on_your_system_and_building_from_scratch for instructions), but be sure to download http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz.
 * Linux (tested on Ubuntu 12.10)
@@ -54,7 +54,7 @@ For documentation, please see: http://sciinstitute.github.io/SCIRun/
 
 #### CMake Build Generators
 * Windows
-  - Visual Studio 2010 C++
+  - Visual Studio 2013
 * OS X (tested on 10.7 and 10.8)
   - Unix Makefiles (Xcode not currently supported)
 * Linux (tested on Ubuntu 12.10)
