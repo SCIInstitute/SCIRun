@@ -454,6 +454,18 @@ IF(NOT BUILD_HEADLESS)
   ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 ENDIF()
 
+#BENLARSON
+SET(QWT_INCLUDE_DIR CACHE PATH "Qwt include directory")
+IF(NOT QWT_INCLUDE_DIR)
+  MESSAGE(FATAL_ERROR "QWT_INCLUDE_DIR should be set to path like 'qwt-6.0.1/include'")
+ENDIF()
+  INCLUDE_DIRECTORIES(${QWT_INCLUDE_DIR})
+  SET(QWT_LIBRARY CACHE FILEPATH "Qwt library")
+IF(NOT QWT_LIBRARY)
+	MESSAGE(FATAL_ERROR "QWT_LIBRARY should be set to a filepath like 'qwt-6.0.1/lib/libqwt.so'")
+ENDIF()
+SET(qwt_libraries ${QWT_LIBRARY} )
+#END##BENLARSON
 
 ########################################################################
 # Find and configure dl library
