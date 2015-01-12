@@ -56,6 +56,7 @@ SET(Interface_Modules_Fields_FORMS
   ConvertFieldBasis.ui
   swapfielddatawithmatrixentries.ui
   EditMeshBoundingBox.ui
+  ConvertIndicesToFieldData.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -87,6 +88,7 @@ SET(Interface_Modules_Fields_HEADERS
   share.h
   SwapFieldDataWithMatrixEntriesDialog.h
   EditMeshBoundingBoxDialog.h
+  ConvertIndicesToFieldDataDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -117,6 +119,7 @@ SET(Interface_Modules_Fields_SOURCES
   SwapFieldDataWithMatrixEntriesDialog.cc
   RefineMeshDialog.cc
   EditMeshBoundingBoxDialog.cc
+  ConvertIndicesToFieldDataDialog.cc
 )
 
 IF(WITH_TETGEN)

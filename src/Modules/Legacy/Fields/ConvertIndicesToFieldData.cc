@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/FieldData/ConvertIndicesToFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldData.h>
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Ports/FieldPort.h>
