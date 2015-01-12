@@ -72,6 +72,7 @@ int EvaluateLinearAlgebraBinaryDialog::getSelectedOperator() const
 
 void EvaluateLinearAlgebraBinaryDialog::setSelectedOperator(int op) 
 {
+  functionLineEdit_->setEnabled(false);
   switch (op)
   {
   case (int)EvaluateLinearAlgebraBinaryAlgorithm::ADD:
@@ -85,6 +86,7 @@ void EvaluateLinearAlgebraBinaryDialog::setSelectedOperator(int op)
     break;
 	case(int)EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION:
 		functionRadioButton_->setChecked(true);
+    functionLineEdit_->setEnabled(true);
 		break;
   }
 }
