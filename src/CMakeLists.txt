@@ -143,7 +143,7 @@ IF(BUILD_TESTING)
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
   ENDIF()
 
-  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
+  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${SCIRUN_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
 ########################################################################
