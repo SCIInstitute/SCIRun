@@ -32,6 +32,9 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <stdexcept>
 
+#include <Core/Parser/ArrayMathEngine.h> 
+#include <Core/Datatypes/MatrixTypeConversions.h> 
+
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
@@ -40,6 +43,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
 {
   addParameter(Variables::Operator, 0);
   addParameter(Variables::ScalarValue, 0);
+	addParameter(Variables::FunctionString, "x+10"); 
 }
 
 EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
@@ -50,7 +54,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   Operator oper = params.get<0>();
 
   /// @todo: absolutely need matrix move semantics here!!!!!!!
-  switch (oper)
+  switch (oper) 
   {
   case NEGATE:
     result.reset(matrix->clone());
@@ -70,6 +74,28 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
       (*result) *= scalar;
     }
     break;
+	case FUNCTION:
+		{
+				NewArrayMathEngine engine;
+				MatrixHandle matrixInput;
+				matrixInput.reset(matrix->clone());
+			
+				if (!(engine.add_input_fullmatrix("x", matrixInput ) )) ;
+      
+				boost::optional<std::string> func = params.get<2>(); 
+				std::string function_string = func.get(); 
+
+				function_string = "RESULT="+function_string;
+				engine.add_expressions(function_string);
+
+				if(!(engine.add_output_fullmatrix("RESULT",matrixInput))) ;
+				// Actual engine call, which does the dynamic compilation, the creation of the
+				// code for all the objects, as well as inserting the function and looping 
+				// over every data point
+				if (!(engine.run())) ;
+				result = matrix_cast::as_dense(matrixInput);
+		}
+		break;
   default:
     THROW_ALGORITHM_INPUT_ERROR("Unknown operand");
   }
@@ -82,7 +108,9 @@ AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const Algorithm
   auto matrix = input.get<DenseMatrix>(Variables::InputMatrix);
 
   auto scalar = boost::make_optional(get(Variables::ScalarValue).toDouble());
-  auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).toInt()), scalar));
+	auto function = boost::make_optional(get(Variables::FunctionString).toString()); 
+
+  auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).toInt()), scalar, function));
 
   AlgorithmOutput output;
   output[Variables::Result] = result;

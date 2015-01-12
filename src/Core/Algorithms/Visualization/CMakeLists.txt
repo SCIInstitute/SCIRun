@@ -35,7 +35,7 @@ SET(Algorithms_Visualization_HEADERS
   RenderFieldState.h
 )
 
-ADD_LIBRARY(Core_Algorithms_Visualization 
+SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization 
   ${Algorithms_Visualization_HEADERS}
   ${Algorithms_Visualization_SRCS}
 )

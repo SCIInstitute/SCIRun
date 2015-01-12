@@ -311,7 +311,7 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     box_->setScale(bscale); // callback sets box_scale for us.
     box_->setPosition(center, right, down, in);
     box_->setCurrentMode(state->getValue(BoxMode).toInt());
-#ifdef WORKING_ON_EDITMESH_DAN
+#ifdef WORKING_ON_EDITMESH
     box_center_.set(center);
     box_right_.set(right);
     box_down_.set(down);
@@ -321,7 +321,7 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
   }
   else
   {
-#ifdef WORKING_ON_EDITMESH_DAN
+#ifdef WORKING_ON_EDITMESH
     const double l2norm = (box_right_.get().vector() +
       box_down_.get().vector() +
       box_in_.get().vector()).length();
@@ -337,7 +337,7 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     box_->setCurrentMode(box_mode_.get());
 #endif
   }
-#ifdef WORKING_ON_EDITMESH_DAN
+#ifdef WORKING_ON_EDITMESH
   GeomGroup *widget_group = new GeomGroup;
   widget_group->add(box_->GetWidget());
 
@@ -444,14 +444,12 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
       sizex = Vector(state->getValue(OutputSizeX).toDouble(), 0, 0);
       sizey = Vector(0, state->getValue(OutputSizeY).toDouble(), 0);
       sizez = Vector(0, 0, state->getValue(OutputSizeZ).toDouble());
-      //std::cout << "setting size from gui: " << sizex << " " << sizey << " " << sizez << std::endl;
     }
     else
     {
       sizex = (right - center) * 2;
       sizey = (down - center) * 2;
       sizez = (in - center) * 2;
-      //std::cout << "setting size default: " << sizex << " " << sizey << " " << sizez << std::endl;
     }
     if (useOutputCenter)
     {
@@ -511,7 +509,7 @@ void EditMeshBoundingBox::widget_moved(bool last)
     state->setValue(OutputSizeX, (right.x() - center.x())*2.);
     state->setValue(OutputSizeY, (down.y() - center.y())*2.);
     state->setValue(OutputSizeZ, (in.z() - center.z())*2.);
-#ifdef WORKING_ON_EDITMESH_DAN
+#ifdef WORKING_ON_EDITMESH
     state->setValue(BoxMode, box_mode_.set(box_->GetMode());
     box_center_.set(center);
     box_right_.set(right);
@@ -521,7 +519,7 @@ void EditMeshBoundingBox::widget_moved(bool last)
     want_to_execute();
 #endif
   }
-#ifdef WORKING_ON_EDITMESH_DAN
+#ifdef WORKING_ON_EDITMESH
   box_real_scale_.set(box_->GetScale());
 #endif
 }

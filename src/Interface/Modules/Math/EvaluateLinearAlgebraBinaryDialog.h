@@ -51,6 +51,7 @@ public:
   virtual void pull();
 
 private Q_SLOTS:
+	void pushOperationToState(const QString& str); 
   void pushOperationToState();
 private:
   int getSelectedOperator() const;

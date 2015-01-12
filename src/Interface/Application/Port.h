@@ -119,7 +119,7 @@ public:
 
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
-  void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
+  void doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::KeyboardModifiers modifiers);
 
   SCIRun::Dataflow::Networks::PortDataDescriber getPortDataDescriber() const { return portDataDescriber_; }
 
