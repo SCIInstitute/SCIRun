@@ -73,3 +73,13 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, NullInputThrowsException)
 
   EXPECT_THROW(algo.run(DenseMatrixHandle(), EvaluateLinearAlgebraUnaryAlgorithm::NEGATE), AlgorithmInputException);
 }
+
+TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanUseFunction)
+{
+  EvaluateLinearAlgebraUnaryAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1().clone());
+	std::string functionArg = "x+5"; 
+  DenseMatrixHandle result = algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::FUNCTION, 0.0, functionArg));
+  EXPECT_EQ( (m->array()+5).matrix(), *result);
+}

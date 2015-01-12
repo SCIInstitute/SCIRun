@@ -27,6 +27,8 @@
 */
 
 #include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
+#include <Interface/Modules/Math/ui_EvaluateLinearAlgebraBinary.h> 
+#include <Modules/Math/EvaluateLinearAlgebraBinary.h> 
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h> //TODO
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
@@ -36,6 +38,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 
+//typedef SCIRun::Modules::Math::EvaluateLinearAlgebraBinaryModule EvaluateLinearAlgebraBinaryModule; 
+
 EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
@@ -44,10 +48,12 @@ EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
+	addLineEditManager(functionLineEdit_, Variables::FunctionString); 
   connect(addRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(subtractRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(multiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-  buttonBox->setVisible(false);
+	connect(functionRadioButton_,  SIGNAL(clicked()), this, SLOT(pushOperationToState()));
+  //buttonBox->setVisible(false);
 }
 
 int EvaluateLinearAlgebraBinaryDialog::getSelectedOperator() const
@@ -58,6 +64,8 @@ int EvaluateLinearAlgebraBinaryDialog::getSelectedOperator() const
     return (int)EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT;
   if (multiplyRadioButton_->isChecked())
     return (int)EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY;
+	if (functionRadioButton_->isChecked())
+		return (int)EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION;
   else
     return -1;
 }
@@ -75,18 +83,33 @@ void EvaluateLinearAlgebraBinaryDialog::setSelectedOperator(int op)
   case(int)EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY:
     multiplyRadioButton_->setChecked(true);
     break;
+	case(int)EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION:
+		functionRadioButton_->setChecked(true);
+		break;
   }
 }
 
-void EvaluateLinearAlgebraBinaryDialog::pushOperationToState() 
+void EvaluateLinearAlgebraBinaryDialog::pushOperationToState(const QString& str) 
 {
   auto op = (EvaluateLinearAlgebraBinaryAlgorithm::Operator) getSelectedOperator();
+	if(state_->getValue(Variables::Operator).toInt() != op)
+			state_->setValue(Variables::Operator, op);
 
-  state_->setValue(Variables::Operator, op);
+	std::string value = str.toStdString(); 
+	if(state_->getValue(Variables::FunctionString).toString() != value)
+	{
+			state_->setValue(Variables::FunctionString, value); 
+	}
+}
+
+void EvaluateLinearAlgebraBinaryDialog::pushOperationToState()
+{
+		pushOperationToState(functionLineEdit_->text()); 
 }
 
 void EvaluateLinearAlgebraBinaryDialog::pull()
 {
   //TODO convert to new widget managers
   setSelectedOperator(state_->getValue(Variables::Operator).toInt());
+	functionLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::FunctionString).toString())); 
 }
