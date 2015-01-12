@@ -51,18 +51,21 @@ int main(int argc, const char* argv[])
   return ConsoleApplication::run(argc, argv);
 #endif
 }
-#endif
+#endif // End of main for non-Windows.
 
 // If building on WIN32, use this entry point.
 #ifdef WIN32
 #include <windows.h>
-int CALLBACK WinMain(
-  _In_  HINSTANCE hInstance,
-  _In_  HINSTANCE hPrevInstance,
-  _In_  LPSTR lpCmdLine,
-  _In_  int nCmdShow
-)
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+
+#ifdef SCIRUN_SHOW_CONSOLE 
+   AllocConsole();
+   freopen("CONIN$","r",stdin);
+   freopen("CONOUT$","w",stdout);
+   freopen("CONOUT$","w",stderr);  
+#endif
+ 
   const char *argv[] = {GetCommandLine()};
   int argc = 1;
   Application::Instance().readCommandLine(argc, argv);
@@ -75,4 +78,4 @@ int CALLBACK WinMain(
   return ConsoleApplication::run(argc, argv);
 #endif
 }
-#endif
+#endif // End of main for Windows.
