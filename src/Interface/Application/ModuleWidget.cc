@@ -299,6 +299,7 @@ void ModuleWidgetDisplay::setupSpecial()
   optionsButton_->setText("VIEW");
   optionsButton_->setToolTip("View renderer output");
   optionsButton_->resize(100, optionsButton_->height());
+  optionsButton_->setIcon(QIcon());
   executePushButton_->hide();
   progressBar_->setVisible(false);
 }
@@ -387,10 +388,6 @@ void ModuleWidgetDisplayMini::setupProgressBar()
 
 void ModuleWidgetDisplayMini::setupSpecial()
 {
-  optionsButton_->setText("VIEW");
-  optionsButton_->setToolTip("View renderer output");
-  optionsButton_->resize(100, optionsButton_->height());
-  //executePushButton_->hide();
   progressBar_->setVisible(false);
 }
 
@@ -398,7 +395,6 @@ void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
 {
   optionsButton_->setEnabled(hasUI);
   module->connect(expandToolButton_, SIGNAL(clicked()), SLOT(expandToFullMode()));
-  //executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
 void ModuleWidgetDisplayMini::setupIcons()
@@ -509,7 +505,6 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
   int index = addWidget(frame);
 
   setupDisplayWidgets(display, name);
-  display->setupIcons();
 
   addPortLayouts(index);
 
@@ -537,6 +532,7 @@ void ModuleWidget::setupLogging()
 void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name)
 {
   display->setupTitle(name);
+  display->setupIcons();
 
   //TODO: ultra ugly. no other place for this code right now.
   //TODO: to be handled in issue #212
