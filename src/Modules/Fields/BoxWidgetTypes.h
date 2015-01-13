@@ -26,41 +26,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
-#define ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
+#ifndef MODULES_FIELDS_BOXWIDGETTYPES_H
+#define MODULES_FIELDS_BOXWIDGETTYPES_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Algorithms/Math/share.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Modules/Fields/share.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Math {
-  class SCISHARE EvaluateLinearAlgebraBinaryAlgorithm : public AlgorithmBase
+namespace SCIRun 
+{
+
+  class SCISHARE GeometryPortInterface
+  {
+
+  };
+
+  class SCISHARE BoxWidgetInterface
   {
   public:
-    enum Operator
-    {
-      ADD,
-      SUBTRACT,
-      MULTIPLY,
-			FUNCTION
-    };
-
-    /// @todo: idea (type, name)
-    // can generate a subclass of ModuleState with get/set for each.
-    //ALGORITHM_PARAMETER(Operator, OperatorName);
-
-    EvaluateLinearAlgebraBinaryAlgorithm();
-    typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
-    typedef boost::tuple<Operator, boost::optional<std::string> > Parameters;
-    typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
-
-    Outputs run(const Inputs& inputs, const Parameters& params) const;
-
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    virtual ~BoxWidgetInterface() {}
+    //TODO: need conversion to GPI type above, maybe
+    virtual void connect(Dataflow::Networks::OutputPortHandle port) = 0;
+    virtual void setRestrictX(bool restrict) = 0;
+    virtual void setRestrictY(bool restrict) = 0;
+    virtual void setRestrictZ(bool restrict) = 0;
+    virtual void setRestrictR(bool restrict) = 0;
+    virtual void setRestrictD(bool restrict) = 0;
+    virtual void setRestrictI(bool restrict) = 0;
+    virtual void unrestrictTranslation() = 0;
+    virtual void restrictTranslationXYZ() = 0;
+    virtual void restrictTranslationRDI() = 0;
+    virtual void setPosition(const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&) = 0;
+    virtual void getPosition(Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&) const = 0;
+    virtual void setScale(double scale) = 0;
+    virtual void setCurrentMode(int mode) = 0;
   };
-}}}}
+
+}
 
 #endif

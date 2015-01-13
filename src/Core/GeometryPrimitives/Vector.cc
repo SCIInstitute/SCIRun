@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -69,7 +69,6 @@ void
   v2.safe_normalize();
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 std::string
 Vector::get_string() const
 {
@@ -77,8 +76,6 @@ Vector::get_string() const
   oss << "[" << d_[0] << ", "<< d_[1] << ", " << d_[2] << "]";
   return (oss.str());
 }
-
-
 
 bool
 Vector::check_find_orthogonal(Vector& v1, Vector& v2) const
@@ -104,7 +101,7 @@ Vector::normal() const
 {
   Vector v(*this);
   v.normalize();
-  return v;			
+  return v;
 }
 
 Vector
@@ -115,8 +112,6 @@ Vector::safe_normal() const
    return v;
 }
 
-
-
 std::istream& operator>>( std::istream& is, Vector& v)
 {
   double x, y, z;
@@ -125,8 +120,6 @@ std::istream& operator>>( std::istream& is, Vector& v)
   v=Vector(x,y,z);
   return is;
 }
-
-
 
 void
 Vector::rotz90(const int c)
@@ -160,14 +153,13 @@ Vector::rotz90(const int c)
     break;
   }
 }
-#endif
 
 void
 SCIRun::Core::Geometry::Pio(Piostream& stream, Vector& p)
 {
   stream.begin_cheap_delim();
   double x,y,z;
-  if (! stream.reading()) 
+  if (! stream.reading())
   {
     x = p.x();
     y = p.y();
@@ -176,7 +168,7 @@ SCIRun::Core::Geometry::Pio(Piostream& stream, Vector& p)
   Pio(stream, x);
   Pio(stream, y);
   Pio(stream, z);
-  if (stream.reading()) 
+  if (stream.reading())
   {
     p.x(x);
     p.y(y);
@@ -186,8 +178,8 @@ SCIRun::Core::Geometry::Pio(Piostream& stream, Vector& p)
 }
 
 
-const std::string& 
-SCIRun::Vector_get_h_file_path() 
+const std::string&
+SCIRun::Vector_get_h_file_path()
 {
   static const std::string path(TypeDescription::cc_to_h(__FILE__));
   return path;
@@ -202,5 +194,3 @@ const TypeDescription* SCIRun::Core::Geometry::get_type_description(Vector*)
   }
   return td;
 }
-
-

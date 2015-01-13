@@ -45,6 +45,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   dock_(0)
 {
   setModal(false);
+  setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
 
   if (state_)
   {
@@ -525,4 +526,33 @@ private:
 void ModuleDialogGeneric::addCheckableButtonManager(QAbstractButton* checkable, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<CheckableButtonSlotManager>(state_, *this, stateKey, checkable));
+}
+
+class DynamicLabelSlotManager : public WidgetSlotManager
+{
+public:
+  DynamicLabelSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLabel* label) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), label_(label)
+  {
+  }
+  virtual void pull() override
+  {
+    auto newValue = state_->getValue(stateKey_).toString();
+    if (newValue != label_->text().toStdString())
+    {
+      LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);
+      label_->setText(QString::fromStdString(newValue));
+    }
+  }
+  virtual void pushImpl() override
+  {
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QLabel* label_;
+};
+
+void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
 }

@@ -143,7 +143,7 @@ IF(BUILD_TESTING)
     MESSAGE( WARNING "Test resource path does not exist. Please set it correctly to run all the unit and regression tests. Clone this github repo to get all the files: https://github.com/CIBC-Internal/SCIRunTestData" )
   ENDIF()
 
-  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
+  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${SCIRUN_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
 ########################################################################
@@ -327,7 +327,7 @@ CPM_AddModule("gl_platform"
 # ++ MODULE: Arc-Look-At (Autoview Camera)
 CPM_AddModule("look_at"
   GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-arc-look-at"
-  GIT_TAG "origin/master")
+  GIT_TAG "origin/SCIRun")
 
 # ++ MODULE: Entity System
 CPM_AddModule("es"
@@ -368,7 +368,7 @@ CPM_AddModule("es_general"
 # ++ MODULE: Entity System Rendering.
 CPM_AddModule("es_render"
   GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-render"
-  GIT_TAG "origin/master"
+  GIT_TAG "origin/SCIRun"
   USE_EXISTING_VER TRUE)
 
 # ++ MODULE: Acorn

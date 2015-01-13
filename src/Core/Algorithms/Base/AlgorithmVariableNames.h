@@ -52,6 +52,7 @@ public:
   static const AlgorithmParameterName FileTypeList;
   static const AlgorithmParameterName FileExtension;
   static const AlgorithmParameterName FileTypeName;
+	static const AlgorithmParameterName FunctionString; 
   
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmInputName FirstMatrix;
