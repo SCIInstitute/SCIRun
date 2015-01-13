@@ -27,12 +27,14 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
-//#include <Core/Algorithms/Legacy/Forward/BuildBEMatrixAlgo.h>
+#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 //using namespace SCIRun::Core::Algorithms;
 //using namespace SCIRun::Core::Algorithms::Forward;
+
+typedef SCIRun::Modules::Inverse::SolveInverseProblemWithTikhonov SolveInverseProblemWithTikhonovModule;
 
 SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,9 +44,19 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  addDoubleLineEditManager(lCurveLambdaLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaCorner);
+  addSpinBoxManager(lambdaNumberSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaNum);
+  addDoubleSpinBoxManager(lambdaDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaFromDirectEntry);
+  addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMin);
+  addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMax);
+  addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaResolution);
+  addDoubleLineEditManager(lambdaSliderLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaFromScale);
+
+  addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovCase);
 }
 
 void SolveInverseProblemWithTikhonovDialog::pull()
 {
   //todo
+  pull_newVersionToReplaceOld();
 }
