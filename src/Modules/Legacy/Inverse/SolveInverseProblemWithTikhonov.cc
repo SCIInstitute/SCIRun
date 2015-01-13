@@ -136,7 +136,7 @@ void SolveInverseProblemWithTikhonov::update_lcurve_gui(const double lambda, con
   str << "\" \" " << log10(input.rho_[0] / 10.0) << " " << log10(input.eta_[lambda_index]) << " ";
   str << log10(input.rho_[lambda_index]) << " " << log10(input.eta_[lambda_index]) << " ";
   str << log10(input.rho_[lambda_index]) << " " << log10(lower_y) << " \" ";
-  str << lambda << " " << lambda_index << " ; update idletasks";
+  str << lambda << " " << lambda_index << " ; \n";
 
   state->setValue(LCurveText, str.str());
 }
