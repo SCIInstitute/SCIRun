@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Fields {
 
       class SCISHARE ConvertIndicesToFieldData : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
+        public Has2InputPorts<FieldPortTag, MatrixPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
@@ -47,11 +47,10 @@ namespace SCIRun {
         virtual void setStateDefaults();
 
         INPUT_PORT(0, InputField, LegacyField);
+				INPUT_PORT(1, InputMatrix, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
-
-        //static Core::Algorithms::AlgorithmParameterName FunctionString;
-        //static Core::Algorithms::AlgorithmParameterName FormatString;
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+				
+				static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
     }
   }

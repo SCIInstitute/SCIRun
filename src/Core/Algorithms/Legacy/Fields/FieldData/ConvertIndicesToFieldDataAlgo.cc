@@ -34,30 +34,32 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DatatypeFwd.h> 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
+//#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
+//#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry; 
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-ALGORITHM_PARAMETER_DEF(Fields, PreserveScalar)
+ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDataType); 
 
 ConvertIndicesToFieldDataAlgo::ConvertIndicesToFieldDataAlgo()
 {
-  addParameter(Parameters::PreserveScalar, false);
+  add_option(Parameters::OutputFieldDataType, "double,float,char,unsigned char, short, unsigned short, int, unsigned int");
 }
 
 bool
-ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle input_matrix, FieldHandle& output_field, MatrixHandle& output_matrix) const
+ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle input_matrix, FieldHandle& output_field) const
 {
-  ScopedAlgorithmStatusReporter r(this, "SwapFieldDataWithMatrixEntriesAlgo");
+  ScopedAlgorithmStatusReporter r(this, "ConvertIndicesToFieldData");
 
   if (!input_field)
   {
@@ -66,53 +68,184 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
   }
 
   FieldInformation fi(input_field);
-  GetFieldDataAlgo get_algo_;
-  SetFieldDataAlgo set_algo_;
-
-  const bool preserve_scalar = get(Parameters::PreserveScalar).toBool();
   output_field = CreateField(fi);
+	FieldInformation fo(output_field); 
 
-  if (input_matrix)
+ /* if (input_matrix)
   {
-    output_matrix = get_algo_.run(input_field);
-  }
+    output_field = get_algo_.run(input_field);
+  }*/
   FieldHandle field_output_handle;
 
-  if (input_matrix)
-  {
-    if (preserve_scalar)
-    {
-      set_algo_.set_option(set_algo_.keepTypeCheckBox, fi.get_data_type());
-    }
-    size_type numVal = 0;
-    auto denseInput = matrix_convert::to_dense(input_matrix);
-    if (set_algo_.verify_input_data(input_field, denseInput, numVal, fi))
-    {
-      output_field = set_algo_.run(input_field, denseInput);
-    }
-    else
-    {
-      THROW_ALGORITHM_INPUT_ERROR("Matrix dimensions do not match any of the fields dimensions");
-      CopyProperties(*input_field, *output_field);
-    }
-  }
-  else
-  {
-    warning("No input matrix passing the field through");
-    output_field = input_field;
-  }
+	if (fi.is_nonlinear())
+	{
+		error("This function has not yet been defined for non-linear elements");
+		return (false);
+	}
 
-  AlgorithmOutput output;
-  output[Variables::OutputField] = output_field;
+	if (fi.is_nodata())
+	{
+		error("This function has not yet been defined for fields with no data");
+		return (false);
+	}
 
-  return true;
+	if (fi.is_vector() || fi.is_tensor())
+	{
+		error("This function has not yet been defined for fields with vectors or tensors as indices");
+		return (false);
+	}
+
+	size_type nrows = input_matrix->nrows();
+	size_type ncols = input_matrix->ncols();
+
+	std::string algotype;
+
+	if (ncols == 1)
+	{
+		algotype = "Scalar";
+	}
+	else if (ncols == 3)
+	{
+		algotype = "Vector";
+	}
+	else if (ncols == 6 || ncols == 9)
+	{
+		algotype = "Tensor";
+	}
+	else
+	{
+		if (nrows == 1)
+		{
+			algotype = "Scalar";
+		}
+		else if (nrows == 3)
+		{
+			algotype = "Vector";
+		}
+		else if (nrows == 6 || nrows == 9)
+		{
+			algotype = "Tensor";
+		}
+		else
+		{
+			error("Data does not have dimension of 1, 3, 6, or 9");
+			return (false);
+		}
+	}
+
+	if (algotype == "Scalar")
+	{
+		std::string datatype;
+		get_option(Parameters::OutputFieldDataType);
+		fo.set_data_type(get_option(Parameters::OutputFieldDataType));
+	}
+	if (algotype == "Vector") fo.make_vector();
+	if (algotype == "Tensor") fo.make_tensor();
+
+	//--------------------------------
+	// VIRTUAL INTERFACE
+
+	output_field = CreateField(fo, input_field->mesh());
+	VField* vinput = input_field->vfield();
+	VField* voutput = output_field->vfield();
+	voutput->resize_fdata();
+
+	DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(input_matrix));
+	//DenseMatrix * dm = input_matrix->
+	//MatrixHandle dm = dm;
+
+	if (algotype == "Scalar")
+	{
+		int max_index = input_matrix->nrows() * input_matrix->ncols();
+		double *dataptr = dmh->data();
+		//double *dataptr = &dmh[0]; 
+		VMesh::size_type sz = vinput->num_values();
+		for (VMesh::index_type r = 0; r<sz; r++)
+		{
+			int idx;
+			vinput->get_value(idx, r);
+			if ((idx < 0) || (idx >= max_index))
+			{
+				error("Index exceeds matrix dimensions");
+				return (false);
+			}
+			voutput->set_value(dataptr[idx], r);
+		}
+		return (true);
+	}
+	else if (algotype == "Vector")
+	{
+		if (input_matrix->ncols() != 3)
+		{
+			//MatrixHandle temp = dmh;
+			auto dmht = dmh->transpose();
+			DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(dmht));
+			//dmh = dmht->dense();
+		}
+
+		double *dataptr = dmh->data();
+		int max_index = dmh->nrows();
+
+		VMesh::size_type sz = vinput->num_values();
+		for (VMesh::index_type r = 0; r<sz; r++)
+		{
+			int idx;
+			vinput->get_value(idx, r);
+			if ((idx < 0) || (idx >= max_index))
+			{
+				error("Index exceeds matrix dimensions");
+				return (false);
+			}
+			voutput->set_value(Vector(dataptr[3 * idx], dataptr[3 * idx + 1], dataptr[3 * idx + 2]), r);
+		}
+		return (true);
+	}
+	else if (algotype == "Tensor")
+	{
+		if ((input_matrix->ncols() != 6) && (input_matrix->ncols() != 9))
+		{
+			//MatrixHandle temp = dmh;
+			//dmh = dm->make_transpose();
+			auto dmht = dmh->transpose();
+			DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(dmht)); 
+			//dm = dmh->dense();
+		}
+		
+		int max_index = dmh->nrows();
+		double *dataptr = dmh->data();
+		int ncols = dmh->ncols();
+
+		VMesh::size_type sz = vinput->num_values();
+		for (VMesh::index_type r = 0; r<sz; r++)
+		{
+			int idx;
+			vinput->get_value(idx, r);
+			if ((idx < 0) || (idx >= max_index))
+			{
+				error("Index exceeds matrix dimensions");
+				return (false);
+			}
+			if (ncols == 6)
+			{
+				voutput->set_value(Tensor(dataptr[3 * idx], dataptr[3 * idx + 1], dataptr[3 * idx + 2], dataptr[3 * idx + 3], dataptr[3 * idx + 4], dataptr[3 * idx + 5]), r);
+			}
+			else
+			{
+				voutput->set_value(Tensor(dataptr[3 * idx], dataptr[3 * idx + 1], dataptr[3 * idx + 2], dataptr[3 * idx + 4], dataptr[3 * idx + 5], dataptr[3 * idx + 8]), r);
+			}
+		}
+		return (true);
+	}
+
+	// keep the compiler happy:
+	// it seems reasonable to return false if none of the cases apply (AK)
+	return (false);
 }
 
 bool
 ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle input_matrix, FieldHandle& output) const
 {
-  MatrixHandle dummy;
-  return runImpl(input, input_matrix, output, dummy);
+  return runImpl(input, input_matrix, output);
 }
 
 AlgorithmOutput ConvertIndicesToFieldDataAlgo::run_generic(const AlgorithmInput& input) const

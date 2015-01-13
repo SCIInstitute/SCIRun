@@ -38,7 +38,7 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-        ALGORITHM_PARAMETER_DECL(PreserveScalar);
+        ALGORITHM_PARAMETER_DECL(OutputFieldDataType);
 
 				class SCISHARE	ConvertIndicesToFieldDataAlgo : public AlgorithmBase
         {
@@ -47,8 +47,7 @@ namespace SCIRun {
 
           bool runImpl(FieldHandle input_field,
             Datatypes::MatrixHandle input_matrix,
-            FieldHandle& output_field,
-            Datatypes::MatrixHandle& output_matrix)const;
+            FieldHandle& output_field)const;
 
           bool runImpl(FieldHandle input, Datatypes::MatrixHandle input_matrix, FieldHandle& output) const;
 
