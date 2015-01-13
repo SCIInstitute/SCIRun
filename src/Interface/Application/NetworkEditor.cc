@@ -988,32 +988,6 @@ int NetworkEditor::currentZoomPercentage() const
   return static_cast<int>(currentScale_ * 100);
 }
 
-//static QGraphicsTextItem* zoomHelp = 0;
-
-void NetworkEditor::keyPressEvent(QKeyEvent *event)
-{
-  if (event->key() == Qt::Key_Shift)
-  {
-    //TODO
-    //if (!zoomHelp)
-    //  zoomHelp = new QGraphicsTextItem("Network zoom enabled on scroll");
-    //scene()->addItem(zoomHelp);
-    //std::cout << "SHIFT IS ZOOM" << std::endl;
-  }
-  QGraphicsView::keyPressEvent(event);
-}
-
-void NetworkEditor::keyReleaseEvent(QKeyEvent *event)
-{
-  if (event->key() == Qt::Key_Shift)
-  {
-    //TODO
-    //scene()->removeItem(zoomHelp);
-    //std::cout << "DONEZOOM" << std::endl;
-  }
-  QGraphicsView::keyPressEvent(event);
-}
-
 bool NetworkEditor::containsViewScene() const
 {
   return findFirstByName(scene_->items(), "ViewScene") != nullptr;

@@ -1273,3 +1273,21 @@ void SCIRunMainWindow::adjustModuleDock(int state)
   actionPinAllModuleUIs_->setEnabled(dockable);
   Preferences::Instance().modulesAreDockable.setValue(dockable);
 }
+
+void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Shift)
+	{
+		statusBar()->showMessage("Network zoom active");
+	}
+  QMainWindow::keyPressEvent(event);
+}
+
+void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Shift)
+	{
+    statusBar()->showMessage("Network zoom inactive", 1000);
+	}
+  QMainWindow::keyPressEvent(event);
+}
