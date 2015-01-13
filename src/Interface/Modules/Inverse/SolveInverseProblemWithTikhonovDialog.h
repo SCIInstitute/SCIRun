@@ -47,6 +47,12 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
+private Q_SLOTS:
+  void setSpinBoxValue(int value);
+  void setSliderValue(double value);
+  void setSliderMin(double value);
+  void setSliderMax(double value);
+  void setSliderStep(double value);
 private:
   GuiStringTranslationMap lambdaMethod_;
 };

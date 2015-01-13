@@ -52,7 +52,7 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMin);
   addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaMax);
   addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaResolution);
-  addDoubleLineEditManager(lambdaSliderLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaSliderValue);
+  addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaSliderValue);
 
   addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovCase);
   addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovSolutionSubcase);
@@ -60,9 +60,42 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
 
   addComboBoxManager(lambdaMethodComboBox_, SolveInverseProblemWithTikhonovModule::RegularizationMethod, lambdaMethod_);
   //TODO: slider mapping
+
+  connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
+  connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
+  connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
+  connect(lambdaMaxDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMax(double)));
+  connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
 }
 
 void SolveInverseProblemWithTikhonovDialog::pull()
 {
   pull_newVersionToReplaceOld();
 }
+
+void SolveInverseProblemWithTikhonovDialog::setSpinBoxValue(int value)
+{
+  lambdaSliderDoubleSpinBox_->setValue(value);
+}
+
+void SolveInverseProblemWithTikhonovDialog::setSliderValue(double value)
+{
+  if (value <= lambdaSlider_->maximum() && value >= lambdaSlider_->minimum())
+    lambdaSlider_->setValue(static_cast<int>(value));
+}
+
+void SolveInverseProblemWithTikhonovDialog::setSliderMin(double value)
+{
+  lambdaSlider_->setMinimum(static_cast<int>(value));
+}
+
+void SolveInverseProblemWithTikhonovDialog::setSliderMax(double value)
+{
+  lambdaSlider_->setMaximum(static_cast<int>(value));
+}
+
+void SolveInverseProblemWithTikhonovDialog::setSliderStep(double value)
+{
+  lambdaSlider_->setSingleStep(static_cast<int>(value));
+}
+

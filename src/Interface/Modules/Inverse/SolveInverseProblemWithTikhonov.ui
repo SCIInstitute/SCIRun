@@ -144,7 +144,7 @@
        <item row="1" column="0">
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QGridLayout" name="gridLayout_3">
@@ -179,9 +179,18 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lambdaSliderLineEdit_">
+              <widget class="QDoubleSpinBox" name="lambdaSliderDoubleSpinBox_">
                <property name="readOnly">
-                <bool>true</bool>
+                <bool>false</bool>
+               </property>
+               <property name="decimals">
+                <number>8</number>
+               </property>
+               <property name="maximum">
+                <double>999999999.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.000100000000000</double>
                </property>
               </widget>
              </item>
@@ -248,7 +257,7 @@
             </widget>
            </item>
            <item row="1" column="0" colspan="2">
-            <widget class="QSlider" name="horizontalSlider">
+            <widget class="QSlider" name="lambdaSlider_">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
