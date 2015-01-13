@@ -87,8 +87,8 @@ void SolveInverseProblemWithTikhonov::execute()
     
     auto denseForward = matrix_cast::as_dense(forward_matrix_h);
     auto measuredDense = matrix_cast::as_dense(hMatrixMeasDat);
-    auto regMatDense = matrix_cast::as_dense(hMatrixRegMat.value_or(nullptr));
-    auto noiseCovDense = matrix_cast::as_dense(hMatrixNoiseCov.value_or(nullptr));
+    auto regMatDense = matrix_cast::as_dense(hMatrixRegMat.get_value_or(nullptr));
+    auto noiseCovDense = matrix_cast::as_dense(hMatrixNoiseCov.get_value_or(nullptr));
     TikhonovAlgorithmImpl algo(denseForward,
       measuredDense,
       gui_tikhonov_case,

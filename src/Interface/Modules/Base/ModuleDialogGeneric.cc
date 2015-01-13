@@ -569,10 +569,13 @@ public:
   virtual void pull() override
   {
     auto checkedIndex = state_->getValue(stateKey_).toInt();
-    if (!radioButtons_[checkedIndex]->isChecked())
+    if (checkedIndex >= 0 && checkedIndex < radioButtons_.size())
     {
-      LOG_DEBUG("In new version of pull code for radio button group: " << checkedIndex);
-      radioButtons_[checkedIndex]->setChecked(true);
+      if (!radioButtons_[checkedIndex]->isChecked())
+      {
+        LOG_DEBUG("In new version of pull code for radio button group: " << checkedIndex);
+        radioButtons_[checkedIndex]->setChecked(true);
+      }
     }
   }
   virtual void pushImpl() override
