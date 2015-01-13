@@ -26,45 +26,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/NetworkInterface.h>
-#include <boost/foreach.hpp>
-#include <boost/thread.hpp>
+#ifndef MODULES_FIELDS_BOXWIDGETTYPES_H
+#define MODULES_FIELDS_BOXWIDGETTYPES_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Modules/Fields/share.h>
 
-namespace
+namespace SCIRun 
 {
-  struct LinearExecution : public WaitsForStartupInitialization
+
+  class SCISHARE GeometryPortInterface
   {
-    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
-    {
-    }
-    void operator()() const
-    {
-      waitForStartupInit(lookup_);
-      bounds_.executeStarts_();
-      BOOST_FOREACH(const ModuleId& id, order_)
-      {
-        ExecutableObject* obj = lookup_.lookupExecutable(id);
-        if (obj)
-        {
-          obj->execute();
-        }
-      }
-      bounds_.executeFinishes_(lookup_.errorCode());
-    }
-    const ExecutableLookup& lookup_;
-    ModuleExecutionOrder order_;
-    const ExecutionBounds& bounds_;
+
   };
+
+  class SCISHARE BoxWidgetInterface
+  {
+  public:
+    virtual ~BoxWidgetInterface() {}
+    //TODO: need conversion to GPI type above, maybe
+    virtual void connect(Dataflow::Networks::OutputPortHandle port) = 0;
+    virtual void setRestrictX(bool restrict) = 0;
+    virtual void setRestrictY(bool restrict) = 0;
+    virtual void setRestrictZ(bool restrict) = 0;
+    virtual void setRestrictR(bool restrict) = 0;
+    virtual void setRestrictD(bool restrict) = 0;
+    virtual void setRestrictI(bool restrict) = 0;
+    virtual void unrestrictTranslation() = 0;
+    virtual void restrictTranslationXYZ() = 0;
+    virtual void restrictTranslationRDI() = 0;
+    virtual void setPosition(const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&) = 0;
+    virtual void getPosition(Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&) const = 0;
+    virtual void setScale(double scale) = 0;
+    virtual void setCurrentMode(int mode) = 0;
+  };
+
 }
 
-void LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order)
-{
-  LinearExecution runner(context.lookup, order, context.bounds());
-  boost::thread execution(runner);
-}
+#endif

@@ -33,10 +33,16 @@
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
+
+  class BoxWidgetInterface;
+  typedef boost::shared_ptr<BoxWidgetInterface> BoxWidgetPtr;
+
 namespace Modules {
 namespace Fields {
-  
-  class SCISHARE EditMeshBoundingBox : public SCIRun::Dataflow::Networks::Module,
+
+  class EditMeshBoundingBoxImpl;
+
+  class SCISHARE EditMeshBoundingBox : public Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
     public Has3OutputPorts<FieldPortTag, GeometryPortTag, MatrixPortTag>
   {
@@ -45,6 +51,7 @@ namespace Fields {
     virtual void execute();
     virtual void setStateDefaults();
 
+  static const Core::Algorithms::AlgorithmParameterName Resetting;
 	//Input Field Attributes
 	static const Core::Algorithms::AlgorithmParameterName InputCenterX;
 	static const Core::Algorithms::AlgorithmParameterName InputCenterY;
@@ -76,19 +83,28 @@ namespace Fields {
 	static const Core::Algorithms::AlgorithmParameterName RestrictD;
 	static const Core::Algorithms::AlgorithmParameterName RestrictI;
 
+  static const Core::Algorithms::AlgorithmParameterName BoxMode;
+  static const Core::Algorithms::AlgorithmParameterName BoxRealScale;
+
     INPUT_PORT(0, InputField, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
     OUTPUT_PORT(1, Transformation_Widget, GeometryObject);
-    OUTPUT_PORT(2, Transformation_Matrix, Matrix);	
-	
+    OUTPUT_PORT(2, Transformation_Matrix, Matrix);
+
 	static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
   private:
-    void executeImpl();
+    void executeImpl(FieldHandle f);
     void clear_vals();
     void update_input_attributes(FieldHandle);
     void build_widget(FieldHandle, bool reset);
+    bool isBoxEmpty() const;
     void widget_moved(bool);
+    void createBoxWidget();
+    void setBoxRestrictions();
+
+    BoxWidgetPtr box_;
+    boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
   };
 }}}
 

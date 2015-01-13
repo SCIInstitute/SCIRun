@@ -60,6 +60,7 @@ namespace SCIRun {
           MOCK_METHOD0(settings, NetworkGlobalSettings&());
           MOCK_METHOD2(setModuleExecutionState, void(ModuleInterface::ExecutionState, ModuleFilter));
           MOCK_METHOD0(clear, void());
+          MOCK_CONST_METHOD0(containsViewScene, bool());
         };
 
         typedef boost::shared_ptr<MockNetwork> MockNetworkPtr;

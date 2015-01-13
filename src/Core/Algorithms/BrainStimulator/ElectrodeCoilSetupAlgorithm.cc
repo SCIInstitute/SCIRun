@@ -575,7 +575,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
  FieldInformation fieldinfo3("TriSurfMesh", CONSTANTDATA_E, "int");
  FieldInformation fieldinfo4("QuadSurfMesh", CONSTANTDATA_E, "int"); 
  FieldHandle output;
- 
  FieldInformation fi_scalp(scalp); 
  if(fi_scalp.is_trisurfmesh())
   output = CreateField(fieldinfo3);
@@ -585,8 +584,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     else
      {
       THROW_ALGORITHM_PROCESSING_ERROR("Scalp (first module input) should be a triangle- or quadsurfmesh. ");
-     }
-     
+     } 
  VMesh* output_vmesh = output->vmesh(); 
  VField* output_vfld = output->vfield();
  Variable::List new_table;
@@ -594,7 +592,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
  auto tab_values = get(Parameters::TableValues).toVector(); 
  bool flip_normal=false;
  if (tab_values.size()==elc_prototyp_map.size() && elc_thickness.size()==elc_prototyp_map.size() && elc_x.size()==elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size())
- {  
+ {  ; 
   VMesh* scalp_vmesh = scalp->vmesh(); 
   VField* scalp_vfld = scalp->vfield();
   if(!scalp_vmesh || !scalp_vfld)
@@ -606,6 +604,9 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
   {
    if (elc_thickness[i]<=0 || IsNan(elc_thickness[i]))
    { 
+    std::ostringstream ostr3;
+    ostr3 << " Electrode sponge thickness of " << i+1 << " table row is not valid. The thickness should be >0. " << std::endl;
+    remark(ostr3.str());
     continue; 
    }
    double distance=0;
@@ -649,8 +650,9 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     rotation_matrix = boost::make_shared<DenseMatrix>((*rotation_matrix2) * (*rotation_matrix1));
    }   
    FieldHandle prototype = elc_coil_proto[elc_prototyp_map[i]-1];
-   FieldInformation fi(prototype);
-   if(fi.is_trisurfmesh() || fi.is_quadsurfmesh()) 
+   FieldInformation fi(prototype); 
+   //if(fi.is_trisurfmesh() || fi.is_quadsurfmesh()) 
+   if(fi.is_trisurfmesh())
    {
     GetMeshNodesAlgo algo_getfieldnodes;
     DenseMatrixHandle fieldnodes;
@@ -758,7 +760,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      algo_sdf.run(scalp, tmp_tdcs_elc, sdf_output);  
        else
          algo_sdf.run(scalp_linear_data, tmp_tdcs_elc, sdf_output); /// assumed that CalculateSignedDistanceFieldAlgo output has always values defined on nodes
-	 
+    
     VField* tmp_sdf_vfld  = sdf_output->vfield();   
     VMesh*  tmp_sdf_vmsh  = sdf_output->vmesh(); 
     if (!tmp_sdf_vfld || tmp_sdf_vfld->num_values()<=0) 
@@ -767,13 +769,13 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode. Make sure that prototype encapsulated scalp." << std::endl;
      remark(ostr3.str());
      skip_current_iteration=true;
-     continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 	
+     continue;/// in that case go to the next electrode  	
     } 
     
     std::vector<double> tmp_field_bin_values;
     bool found_elc_surf=false;
     tmp_field_bin_values.resize(tmp_sdf_vfld->num_values());
-    for (VMesh::Node::index_type l=0; l<tmp_sdf_vfld->num_values(); l++) /// find out which nodes are inside the 
+    for (VMesh::Node::index_type l=0; l<tmp_sdf_vfld->num_values(); l++) /// find out which nodes are inside the electrode prototype
     {
      double tmp_sdf_fld_val=std::numeric_limits<double>::quiet_NaN(); /// store binary classification of which scalp nodes are inside prototype and which are outside
      tmp_sdf_vfld->get_value(tmp_sdf_fld_val,l);
@@ -792,7 +794,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (after sdf binarization). Make sure that prototype encapsulates scalp." << std::endl;
      remark(ostr3.str());
      skip_current_iteration=true;
-     continue;/// in that case go to the next electrode -> leave the for loop thats iterating over
+     continue;/// in that case go to the next electrode
     }  
 	  
     using namespace SCIRun::Core::Algorithms::Fields::Parameters;  /// convert the data values (zero's) to elements
@@ -810,7 +812,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
      remark(ostr3.str());
      skip_current_iteration=true;
-     continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 
+     continue;/// in that case go to the next electrode  
     }   
      
     final_electrode_sponge_surf_fld->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero   
@@ -827,7 +829,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	found_elc_surf=true;     
       }
         else
-          final_electrode_sponge_surf_fld->set_value(0.0,l); 
+        final_electrode_sponge_surf_fld->set_value(0.0,l); 
      } else
      if (fi_scalp.is_quadsurfmesh())
      {
@@ -850,7 +852,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
      remark(ostr3.str());
      skip_current_iteration=true;
-     continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
+     continue;/// in that case go to the next electrode    
     }
      /// are there multiple not connected scalp surfaces that are inside the prototype
      /// use projected point r (that was projected on scalp surface) to differentiate which surface is the one to use
@@ -882,7 +884,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode (after domainsplit). Make sure that prototype encapsulates scalp." << std::endl;
        remark(ostr3.str());
        found_elc_surf=false;
-       continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
+       continue;/// in that case go to the next electrode    
      }
      
      SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
@@ -908,13 +910,13 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        Point q;
        Vector norm;
        
-       /// create scalp/electrode sponge triangle nodes  
+       /// create scalp/electrode sponge triangle/quad nodes  
        for (VMesh::Node::index_type k=0; k<tmp_fld_msh->num_nodes(); k++) 
        {
         tmp_fld_msh->get_center(p,k);
 	output_vmesh->add_point(p);
        }
-       /// create electrode sponge top triangle nodes
+       /// create electrode sponge top triangle/quad nodes
        long count_pts=0;
        for (VMesh::Node::index_type k=0; k<tmp_fld_msh->num_nodes(); k++) 
        {
@@ -939,27 +941,29 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	 count_pts++;
 	}
        }
-       
        if (fi_scalp.is_quadsurfmesh())
        {
         /// find quad element at electrode center to evaluate if the ordering (normal) is correct to find elements that are not ordered properly.        
 	Point cp;
         VMesh::Elem::index_type cf;
-        tmp_fld_msh->find_closest_elem(distance,cp, cf, elc);
+	tmp_fld_msh->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
+        tmp_fld_msh->find_closest_elem(cp, cf, elc);
         VMesh::Node::array_type onodes(4); 
         tmp_fld_msh->get_nodes(onodes, cf);
 	tmp_fld_msh->get_center(cp,onodes[0]);
 	Vector v1(cp.x(),cp.y(),cp.z());
-	tmp_fld_msh->get_center(p,onodes[1]);
+	tmp_fld_msh->get_center(cp,onodes[1]);
 	Vector v2(cp.x(),cp.y(),cp.z());
 	tmp_fld_msh->get_center(cp,onodes[2]);
 	Vector v3(cp.x(),cp.y(),cp.z());
-	tmp_fld_msh->get_center(p,onodes[3]);
+	tmp_fld_msh->get_center(cp,onodes[3]);
 	Vector v4(cp.x(),cp.y(),cp.z());
+	std::cout << "v1:" << v1.x() << " " << v1.y() << " " << v1.z() << std::endl;
 	Vector square_norm_1 = SCIRun::Core::Geometry::Cross((v2-v1), (v3-v1));
 	Vector square_norm_2 = SCIRun::Core::Geometry::Cross((v1-v2), (v4-v2));
 	Vector square_norm_3 = SCIRun::Core::Geometry::Cross((v1-v3), (v4-v3));
 	Vector square_norm_4 = SCIRun::Core::Geometry::Cross((v3-v4), (v2-v4)); 
+	std::cout << "------" << std::endl;
 	if ( ( square_norm_1[0]!=square_norm_2[0] || square_norm_1[1]!=square_norm_2[1] || square_norm_1[2]!=square_norm_2[2]) ||
 	      (square_norm_1[0]!=square_norm_3[0] || square_norm_1[1]!=square_norm_3[1] || square_norm_1[2]!=square_norm_3[2]) ||
 	      (square_norm_1[0]!=square_norm_4[0] || square_norm_1[1]!=square_norm_4[1] || square_norm_1[2]!=square_norm_4[2])

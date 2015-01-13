@@ -177,6 +177,19 @@ namespace
     }
     return 0;
   }
+
+  ModuleProxyWidget* findFirstByName(const QList<QGraphicsItem*>& list, const std::string& name)
+  {
+    Q_FOREACH(QGraphicsItem* item, list)
+    {
+      if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        if (w->getModuleWidget()->getModuleId().find(name) != std::string::npos)
+          return w;
+      }
+    }
+    return 0;
+  }
 }
 
 void NetworkEditor::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
@@ -258,6 +271,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(snapToModules()), proxy, SLOT(snapToGrid()));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
+  connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
+  connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
@@ -962,6 +977,22 @@ void NetworkEditor::zoomReset()
 int NetworkEditor::currentZoomPercentage() const
 {
   return static_cast<int>(currentScale_ * 100);
+}
+
+bool NetworkEditor::containsViewScene() const
+{
+  return findFirstByName(scene_->items(), "ViewScene") != nullptr;
+}
+
+void NetworkEditor::setModuleMini(bool mini)
+{
+  ModuleWidget::setGlobalMiniMode(mini);
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->setMiniMode(mini);
+  }
 }
 
 NetworkEditor::~NetworkEditor()
