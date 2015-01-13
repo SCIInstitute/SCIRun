@@ -55,6 +55,19 @@ namespace SCIRun {
         OUTPUT_PORT(2, RegInverse, Matrix);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+        static const Core::Algorithms::AlgorithmParameterName LambdaFromDirectEntry;
+        static const Core::Algorithms::AlgorithmParameterName RegularizationMethod;
+        static const Core::Algorithms::AlgorithmParameterName LambdaMin;
+        static const Core::Algorithms::AlgorithmParameterName LambdaMax;
+        static const Core::Algorithms::AlgorithmParameterName LambdaNum;
+        static const Core::Algorithms::AlgorithmParameterName LambdaResolution;
+        static const Core::Algorithms::AlgorithmParameterName LambdaFromScale;
+        static const Core::Algorithms::AlgorithmParameterName TikhonovCase;
+        static const Core::Algorithms::AlgorithmParameterName TikhonovSolutionSubcase;
+        static const Core::Algorithms::AlgorithmParameterName TikhonovResidualSubcase;
+        static const Core::Algorithms::AlgorithmParameterName LogValue;
+        static const Core::Algorithms::AlgorithmParameterName LambdaCorner;
       };
 
     }

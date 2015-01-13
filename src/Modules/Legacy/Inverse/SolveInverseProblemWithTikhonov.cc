@@ -35,6 +35,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Inverse;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 const ModuleLookupInfo SolveInverseProblemWithTikhonov::staticInfo_("SolveInverseProblemWithTikhonov", "Inverse", "SCIRun");
 
@@ -51,7 +52,19 @@ SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(stat
 
 void SolveInverseProblemWithTikhonov::setStateDefaults()
 {
-  //TODO
+  auto state = get_state();
+  state->setValue(LambdaFromDirectEntry, 0.02);
+  state->setValue(RegularizationMethod, std::string("lcurve"));
+  state->setValue(LambdaMin, 1e-2);
+  state->setValue(LambdaMax, 1e6);
+  state->setValue(LambdaNum, 10);
+  state->setValue(LambdaResolution, 1e-6);
+  state->setValue(LambdaFromScale, 0.0);
+  state->setValue(TikhonovCase, 0);
+  state->setValue(TikhonovSolutionSubcase, 0);
+  state->setValue(TikhonovResidualSubcase, 0);
+  state->setValue(LogValue, 0.02);
+  state->setValue(LambdaCorner, 0.0);
 }
 
 void SolveInverseProblemWithTikhonov::execute()
@@ -75,3 +88,16 @@ void SolveInverseProblemWithTikhonov::execute()
     // sendOutput(BEM_Forward_Matrix, transferMatrix);
   }
 }
+
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaFromDirectEntry("LambdaFromDirectEntry");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::RegularizationMethod("RegularizationMethod");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaMin("LambdaMin");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaMax("LambdaMax");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaNum("LambdaNum");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaResolution("LambdaResolution");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaFromScale("LambdaFromScale");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::TikhonovCase("TikhonovCase");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::TikhonovSolutionSubcase("TikhonovSolutionSubcase");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::TikhonovResidualSubcase("TikhonovResidualSubcase");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::LogValue("LogValue");
+const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaCorner("LambdaCorner");

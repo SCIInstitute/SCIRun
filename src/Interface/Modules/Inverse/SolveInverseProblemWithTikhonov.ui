@@ -144,7 +144,7 @@
        <item row="1" column="0">
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QGridLayout" name="gridLayout_3">
@@ -201,7 +201,7 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox">
+               <widget class="QDoubleSpinBox" name="lambdaMinDoubleSpinBox_">
                 <property name="decimals">
                  <number>8</number>
                 </property>
@@ -218,7 +218,7 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+               <widget class="QDoubleSpinBox" name="lambdaResolutionDoubleSpinBox_">
                 <property name="decimals">
                  <number>8</number>
                 </property>
@@ -235,7 +235,7 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+               <widget class="QDoubleSpinBox" name="lambdaMaxDoubleSpinBox_">
                 <property name="decimals">
                  <number>8</number>
                 </property>
@@ -268,7 +268,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox">
+              <widget class="QSpinBox" name="lambdaNumberSpinBox_">
                <property name="maximum">
                 <number>9999999</number>
                </property>
