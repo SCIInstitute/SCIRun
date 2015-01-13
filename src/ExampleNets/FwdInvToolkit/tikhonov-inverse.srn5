@@ -154,7 +154,7 @@
 									<name>OutputCenterX</name>
 									<value>
 										<which>1</which>
-										<value>8.25999999999999980e+000</value>
+										<value>-8.25999999999999980e+000</value>
 									</value>
 								</second>
 							</item>
@@ -178,7 +178,7 @@
 									<name>OutputCenterZ</name>
 									<value>
 										<which>1</which>
-										<value>1.50000000000000000e+001</value>
+										<value>1.50000000000000000e+002</value>
 									</value>
 								</second>
 							</item>

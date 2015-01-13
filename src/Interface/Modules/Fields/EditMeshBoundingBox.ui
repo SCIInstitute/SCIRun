@@ -260,6 +260,15 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="minimum">
+         <double>-999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999.000000000000000</double>
+        </property>
        </widget>
       </item>
       <item row="0" column="2">
@@ -267,12 +276,30 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="minimum">
+         <double>-999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999.000000000000000</double>
+        </property>
        </widget>
       </item>
       <item row="0" column="3">
        <widget class="QDoubleSpinBox" name="outputCenterZSpinBox_">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="minimum">
+         <double>-999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999.000000000000000</double>
         </property>
        </widget>
       </item>
