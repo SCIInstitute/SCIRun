@@ -46,6 +46,19 @@
 namespace BioPSE
 {
   // TODO: this needs to be moved into a SCIRun algorithm class
+  namespace TikhonovAlgorithm
+  { 
+    struct SCISHARE LCurveInput
+    {
+      const std::vector<double> rho_;
+      const std::vector<double> eta_;
+      const std::vector<double> lambdaArray_;
+      const int nLambda_;
+
+      LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda);
+    };
+  }
+  
   class SCISHARE TikhonovAlgorithmImpl : boost::noncopyable
   {
   public:
@@ -79,16 +92,6 @@ namespace BioPSE
     SCIRun::Core::Datatypes::MatrixHandle get_inverse_matrix() const;
     SCIRun::Core::Datatypes::DenseColumnMatrixHandle get_regularization_parameter() const;
 
-    struct SCISHARE LCurveInput
-    {
-      const std::vector<double> rho_;
-      const std::vector<double> eta_;
-      const std::vector<double> lambdaArray_;
-      const int nLambda_;
-
-      LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda);
-    };
-
     struct SCISHARE Input
     {
       std::string regMethod_;
@@ -98,7 +101,7 @@ namespace BioPSE
       double lambdaMin_;
       double lambdaMax_;
 
-      typedef boost::function<void (double lambda, const LCurveInput& input, int lambda_index)> lcurveGuiUpdate;
+      typedef boost::function<void(double lambda, const TikhonovAlgorithm::LCurveInput& input, int lambda_index)> lcurveGuiUpdate;
       lcurveGuiUpdate updateLCurveGui_;
 
       Input(const std::string& regMethod, double lambdaFromTextEntry, double lambdaSlider, int lambdaCount,
@@ -108,8 +111,8 @@ namespace BioPSE
     void run(const Input& input);
     void update_graph(const TikhonovAlgorithmImpl::Input& input, double lambda, int lambda_index, const double epsilon);
 
-    static double FindCorner(const LCurveInput& input, int& lambda_index);
-    static double LambdaLookup(const LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
+    static double FindCorner(const TikhonovAlgorithm::LCurveInput& input, int& lambda_index);
+    static double LambdaLookup(const TikhonovAlgorithm::LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
 
   private:
     const SCIRun::Core::Datatypes::DenseMatrixHandle& forwardMatrix_;
@@ -127,7 +130,7 @@ namespace BioPSE
 
     double lambda_;
     bool computeRegularizedInverse_;
-    boost::shared_ptr<LCurveInput> lcurveInput_handle_;
+    boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput_handle_;
     SCIRun::Core::Logging::LegacyLoggerInterface* pr_;
   };
 }

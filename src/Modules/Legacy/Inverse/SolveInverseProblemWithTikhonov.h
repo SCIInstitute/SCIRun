@@ -33,6 +33,14 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Inverse/share.h>
 
+namespace BioPSE
+{
+  namespace TikhonovAlgorithm
+  {
+    struct LCurveInput;
+  }
+}
+
 namespace SCIRun {
   namespace Modules {
     namespace Inverse {
@@ -62,12 +70,14 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName LambdaMax;
         static const Core::Algorithms::AlgorithmParameterName LambdaNum;
         static const Core::Algorithms::AlgorithmParameterName LambdaResolution;
-        static const Core::Algorithms::AlgorithmParameterName LambdaFromScale;
         static const Core::Algorithms::AlgorithmParameterName TikhonovCase;
         static const Core::Algorithms::AlgorithmParameterName TikhonovSolutionSubcase;
         static const Core::Algorithms::AlgorithmParameterName TikhonovResidualSubcase;
-        static const Core::Algorithms::AlgorithmParameterName LogValue;
+        static const Core::Algorithms::AlgorithmParameterName LambdaSliderValue;
         static const Core::Algorithms::AlgorithmParameterName LambdaCorner;
+        static const Core::Algorithms::AlgorithmParameterName LCurveText;
+      private:
+        void update_lcurve_gui(const double lambda, const BioPSE::TikhonovAlgorithm::LCurveInput& input, const int lambda_index);
       };
 
     }

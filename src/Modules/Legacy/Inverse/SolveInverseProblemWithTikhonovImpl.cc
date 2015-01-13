@@ -44,11 +44,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
 
-//#include <Core/Exceptions/Exception.h>
-//#include <Core/Exceptions/InvalidState.h>
-//#include <Core/Exceptions/DimensionMismatch.h>
-//#include <Core/Exceptions/LapackError.h>
-
 namespace BioPSE
 {
 
@@ -95,57 +90,9 @@ DenseColumnMatrixHandle TikhonovAlgorithmImpl::get_regularization_parameter() co
   return regularizationParameter_;
 }
 
-#if 0
-class SolveInverseProblemWithTikhonov : public Module
-{
-  GuiDouble     lambda_from_textentry_;
-  GuiInt        have_ui_;
-  GuiString     reg_method_;
-  GuiDouble     lambda_min_;
-  GuiDouble     lambda_max_;
-  GuiInt        lambda_num_;
-  GuiDouble     lambda_resolution_;
-  GuiInt        tik_cases_;
-  GuiInt        tik_solution_subcases_;
-  GuiInt        tik_residual_subcases_;
-  GuiDouble     lambda_from_scale_;
-  GuiDouble     log_val_;
-  GuiDouble     lambda_corner_from_scale_;
-  boost::shared_ptr<TikhonovAlgorithmImpl> algo_handle_;
-  boost::shared_ptr<TikhonovAlgorithmImpl::Input> input_handle_;
-
-public:
-  //! Constructor
-  SolveInverseProblemWithTikhonov(GuiContext *context);
-  virtual void execute();
-  virtual void tcl_command(GuiArgs& args, void* userdata);
-  void update_lcurve_gui(const double lambda, const TikhonovAlgorithmImpl::LCurveInput& input, const int lambda_index);
-};
-
-//! Constructor
-SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov(GuiContext *context) :
-Module("SolveInverseProblemWithTikhonov", context, Source, "Inverse", "BioPSE"),
-lambda_from_textentry_(context->subVar("lambda_from_textentry"), 0.02),
-have_ui_(context->subVar("have_ui"), 0),
-reg_method_(context->subVar("reg_method"), "lcurve"),
-lambda_min_(context->subVar("lambda_min"), 1.0e-2),
-lambda_max_(context->subVar("lambda_max"), 1.0e+6),
-lambda_num_(context->subVar("lambda_num"), 10),
-lambda_resolution_(context->subVar("lambda_resolution"), 1.0e-6),
-tik_cases_(context->subVar("tik_cases"), 0),
-tik_solution_subcases_(context->subVar("tik_solution_subcases"), 0),
-tik_residual_subcases_(context->subVar("tik_residual_subcases"), 0),
-lambda_from_scale_(context->subVar("lambda_from_scale"), 0),
-log_val_(context->subVar("log_val"), 0.02),
-lambda_corner_from_scale_(context->subVar("lambda_corner_from_scale", false), 0)
-{
-}
-#endif
-
 //! Find Corner, find the maximal curvature which corresponds to the L-curve corner
-//! changed by Moritz Dannhauer
 double
-TikhonovAlgorithmImpl::FindCorner(const LCurveInput& input, int& lambda_index)
+TikhonovAlgorithmImpl::FindCorner(const TikhonovAlgorithm::LCurveInput& input, int& lambda_index)
 {
   const std::vector<double>& rho = input.rho_;
   const std::vector<double>& eta = input.eta_;
@@ -199,7 +146,7 @@ TikhonovAlgorithmImpl::FindCorner(const LCurveInput& input, int& lambda_index)
 }
 
 double
-TikhonovAlgorithmImpl::LambdaLookup(const LCurveInput& input, double lambda, int& lambda_index, const double epsilon)
+TikhonovAlgorithmImpl::LambdaLookup(const TikhonovAlgorithm::LCurveInput& input, double lambda, int& lambda_index, const double epsilon)
 {
   const std::vector<double>& lambdaArray = input.lambdaArray_;
   int nLambda = input.nLambda_;
@@ -459,7 +406,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
         rho[j] = sqrt(rho[j]);
         eta[j] = sqrt(eta[j]);
       }
-      boost::shared_ptr<LCurveInput> lcurveInput(new LCurveInput(rho, eta, lambdaArray, nLambda));
+      boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput(new TikhonovAlgorithm::LCurveInput(rho, eta, lambdaArray, nLambda));
       lcurveInput_handle_ = lcurveInput;
       lambda = FindCorner(*lcurveInput_handle_, lambda_index);
 
@@ -721,7 +668,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
           rho[j] = sqrt(rho[j]);
           eta[j] = sqrt(eta[j]);
         }
-        boost::shared_ptr<LCurveInput> lcurveInput(new LCurveInput(rho, eta, lambdaArray, nLambda));
+        boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput(new TikhonovAlgorithm::LCurveInput(rho, eta, lambdaArray, nLambda));
         lcurveInput_handle_ = lcurveInput;
         lambda = FindCorner(*lcurveInput_handle_, lambda_index);
 
@@ -800,75 +747,6 @@ void TikhonovAlgorithmImpl::update_graph(const TikhonovAlgorithmImpl::Input& inp
 }
 
 #if 0
-//! Module execution
-void SolveInverseProblemWithTikhonov::execute()
-{
-  // DEFINE MATRIX HANDLES FOR INPUT/OUTPUT PORTS
-  MatrixHandle forward_matrix_h, hMatrixRegMat, hMatrixMeasDat, hMatrixNoiseCov;
-
-  bool computeRegularizedInverse = false;
-
-  if (! get_input_handle("- Forward problem", forward_matrix_h)) return;
-  if (! get_input_handle("- Data vector", hMatrixMeasDat)) return;
-
-  get_input_handle("- Solution constraint", hMatrixRegMat, false);
-  get_input_handle("- Residual constraint", hMatrixNoiseCov, false);
-
-  if (oport_connected("- Regularized inverse"))
-  {
-    computeRegularizedInverse = true;
-  }
-
-  TikhonovAlgorithmImpl::AlgorithmChoice gui_tikhonov_case = static_cast<TikhonovAlgorithmImpl::AlgorithmChoice>(tik_cases_.get());
-  TikhonovAlgorithmImpl::AlgorithmSolutionSubcase gui_tikhonov_solution_subcase = static_cast<TikhonovAlgorithmImpl::AlgorithmSolutionSubcase>(tik_solution_subcases_.get());
-  TikhonovAlgorithmImpl::AlgorithmResidualSubcase gui_tikhonov_residual_subcase = static_cast<TikhonovAlgorithmImpl::AlgorithmResidualSubcase>(tik_residual_subcases_.get());
-
-  try
-  {
-    boost::shared_ptr<TikhonovAlgorithmImpl> algo(new TikhonovAlgorithmImpl(forward_matrix_h,
-                                                                            hMatrixMeasDat,
-                                                                            gui_tikhonov_case,
-                                                                            gui_tikhonov_solution_subcase,
-                                                                            gui_tikhonov_residual_subcase,
-                                                                            hMatrixRegMat,
-                                                                            hMatrixNoiseCov,
-                                                                            computeRegularizedInverse, this));
-    algo_handle_ = algo;
-
-    TikhonovAlgorithmImpl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
-    boost::shared_ptr<TikhonovAlgorithmImpl::Input> input(new TikhonovAlgorithmImpl::Input(reg_method_.get(),
-                                                                                           lambda_from_textentry_.get(),
-                                                                                           log_val_.get(),
-                                                                                           lambda_num_.get(),
-                                                                                           lambda_min_.get(),
-                                                                                           lambda_max_.get(),
-                                                                                           update));
-    input_handle_ = input;
-    algo_handle_->run(*input_handle_);
-
-    if (computeRegularizedInverse)
-    {
-      MatrixHandle inverse_matrix = algo_handle_->get_inverse_matrix();
-      send_output_handle("- Regularized inverse", inverse_matrix);
-    }
-
-    MatrixHandle source_reconstruction_result = algo_handle_->get_inverse_solution();
-    send_output_handle("- Inverse solution", source_reconstruction_result);
-
-    ColumnMatrixHandle RegParameter = algo_handle_->get_regularization_parameter();
-    send_output_handle("- Regularization parameter", RegParameter);
-  }
-  catch (Exception& e)
-  {
-    error(e.message());
-    return;
-  }
-  catch (...)
-  {
-    error("Caught unexpected error. Module execute failed.");
-    return;
-  }
-}
 
 void SolveInverseProblemWithTikhonov::tcl_command(GuiArgs& args, void* userdata)
 {
@@ -889,25 +767,10 @@ void SolveInverseProblemWithTikhonov::tcl_command(GuiArgs& args, void* userdata)
   }
 }
 
-void SolveInverseProblemWithTikhonov::update_lcurve_gui(const double lambda, const TikhonovAlgorithmImpl::LCurveInput& input, const int lambda_index)
-{
-  lambda_corner_from_scale_.send(lambda);
-  //estimate L curve corner
-  const double lower_y = Min(input.eta_[0] / 10.0, input.eta_[input.nLambda_ - 1]);
-  std::ostringstream str;
-  str << get_id() << " plot_graph \" ";
-  for (int i = 0; i < input.nLambda_; i++)
-    str << log10( input.rho_[i] ) << " " << log10( input.eta_[i] ) << " ";
-  str << "\" \" " << log10( input.rho_[0]/10.0 ) << " " << log10( input.eta_[lambda_index] ) << " ";
-  str << log10( input.rho_[lambda_index] ) << " " << log10( input.eta_[lambda_index] ) << " ";
-  str << log10( input.rho_[lambda_index] ) << " " << log10( lower_y ) << " \" ";
-  str << lambda << " " << lambda_index << " ; update idletasks";
 
-  TCLInterface::execute(str.str());
-}
 #endif
 
-TikhonovAlgorithmImpl::LCurveInput::LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, int nLambda)
+TikhonovAlgorithm::LCurveInput::LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, int nLambda)
 : rho_(rho), eta_(eta), lambdaArray_(lambdaArray), nLambda_(nLambda)
 {}
 
