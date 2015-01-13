@@ -31,8 +31,6 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Forward;
 
 typedef SCIRun::Modules::Inverse::SolveInverseProblemWithTikhonov SolveInverseProblemWithTikhonovModule;
 
@@ -44,6 +42,10 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  lambdaMethod_.insert(StringPair("Direct entry", "single"));
+  lambdaMethod_.insert(StringPair("Slider", "slider"));
+  lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
+
   addDoubleLineEditManager(lCurveLambdaLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaCorner);
   addSpinBoxManager(lambdaNumberSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaNum);
   addDoubleSpinBoxManager(lambdaDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaFromDirectEntry);
@@ -53,10 +55,13 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   addDoubleLineEditManager(lambdaSliderLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaFromScale);
 
   addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovCase);
+  addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovSolutionSubcase);
+  addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, SolveInverseProblemWithTikhonovModule::TikhonovResidualSubcase);
+
+  addComboBoxManager(lambdaMethodComboBox_, SolveInverseProblemWithTikhonovModule::RegularizationMethod, lambdaMethod_);
 }
 
 void SolveInverseProblemWithTikhonovDialog::pull()
 {
-  //todo
   pull_newVersionToReplaceOld();
 }
