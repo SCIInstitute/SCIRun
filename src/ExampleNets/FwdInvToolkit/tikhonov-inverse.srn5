@@ -26,7 +26,7 @@
 									<name>SignalToNoiseRatio</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>1</which>
-										<value>1.00000000000000000e+001</value>
+										<value>3.05599999999999990e+001</value>
 									</value>
 								</second>
 							</item>
@@ -154,7 +154,7 @@
 									<name>OutputCenterX</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>8.25999999999999980e+000</value>
 									</value>
 								</second>
 							</item>
@@ -166,7 +166,7 @@
 									<name>OutputCenterY</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>3.35300000000000010e+001</value>
 									</value>
 								</second>
 							</item>
@@ -178,7 +178,7 @@
 									<name>OutputCenterZ</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>1.50000000000000000e+001</value>
 									</value>
 								</second>
 							</item>
@@ -298,7 +298,7 @@
 									<name>UseOutputCenter</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -448,8 +448,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Field File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/tikhonov_inv/25feb97_sock_closed.fld</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -464,8 +488,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Matrix File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/tikhonov_inv/epi_pot_128_fr_170to190.mat</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -480,8 +528,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Matrix File</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/tikhonov_inv/for_mat_128.mat</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
