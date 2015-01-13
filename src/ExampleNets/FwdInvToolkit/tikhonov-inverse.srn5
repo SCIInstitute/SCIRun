@@ -72,7 +72,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>20</count>
+							<count>21</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -82,7 +82,7 @@
 									<name>InputCenterX</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>-8.259999999999998</value>
 									</value>
 								</second>
 							</item>
@@ -94,7 +94,7 @@
 									<name>InputCenterY</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>33.530000000000001</value>
 									</value>
 								</second>
 							</item>
@@ -106,7 +106,7 @@
 									<name>InputCenterZ</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>264.685</value>
 									</value>
 								</second>
 							</item>
@@ -118,7 +118,7 @@
 									<name>InputSizeX</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>76.740000000000009</value>
 									</value>
 								</second>
 							</item>
@@ -130,7 +130,7 @@
 									<name>InputSizeY</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>71.620000000000005</value>
 									</value>
 								</second>
 							</item>
@@ -142,7 +142,7 @@
 									<name>InputSizeZ</name>
 									<value>
 										<which>2</which>
-										<value>---</value>
+										<value>82.610000000000014</value>
 									</value>
 								</second>
 							</item>
@@ -215,6 +215,18 @@
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Resetting</name>
+								</first>
+								<second>
+									<name>Resetting</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
