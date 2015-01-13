@@ -45,11 +45,9 @@ namespace SCIRun {
         public:
 					ConvertIndicesToFieldDataAlgo();
 
-          bool runImpl(FieldHandle input_field,
-            Datatypes::MatrixHandle input_matrix,
-            FieldHandle& output_field)const;
+          bool runImpl(FieldHandle input_field, Datatypes::MatrixHandle input_matrix, FieldHandle& output_field)const;
 
-          bool runImpl(FieldHandle input, Datatypes::MatrixHandle input_matrix, FieldHandle& output) const;
+         // bool runImpl(FieldHandle input, Datatypes::MatrixHandle input_matrix, FieldHandle& output) const;
 
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
         };

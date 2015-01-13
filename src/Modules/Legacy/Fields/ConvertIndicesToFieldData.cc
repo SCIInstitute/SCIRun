@@ -30,30 +30,26 @@
 #include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h> 
 #include <Core/Datatypes/Legacy/Field/Field.h> 
 
-//#include <Dataflow/Network/Ports/MatrixPort.h>
-//#include <Dataflow/Network/Ports/FieldPort.h>
-
 #include <Dataflow/Network/Module.h>
 
 using namespace SCIRun; 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Fields; 
-using namespace SCIRun::Dataflow::Networks; 
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields; 
+using namespace SCIRun::Core::Algorithms; 
 
 /// @class ConvertIndicesToFieldData
 /// @brief Convert a field with indices as data values into a field with values
 /// assigned to each index using a lookup table.
 
-   // SCIRunAlgo::ConvertIndicesToFieldDataAlgo algo_;
-
 const ModuleLookupInfo ConvertIndicesToFieldData::staticInfo_("ConvertIndicesToFieldData", "ChangeFieldData", "SCIRun"); 
-
 
 ConvertIndicesToFieldData::ConvertIndicesToFieldData() : Module(staticInfo_)
 {
 	INITIALIZE_PORT(InputField); 
 	INITIALIZE_PORT(InputMatrix);
+	INITIALIZE_PORT(OutputField); 
 }
 
 void ConvertIndicesToFieldData::setStateDefaults()
@@ -66,20 +62,16 @@ ConvertIndicesToFieldData::execute()
 {
 	auto input = getRequiredInput(InputField); 
 	auto matrixIn = getRequiredInput(InputMatrix); 
-  //FieldHandle input, output;
-  //MatrixHandle data;
-  
-  if (!(get_input_handle("Field",input,true))) return;
-  if (!(get_input_handle("Data",data,true))) return;
-  
-  if (inputs_changed_ || guidatatype_.changed() || !oport_cached("Field"))
-  {
-    update_state(Executing);
-    
-    algo_.set_option("datatype",guidatatype_.get());
-    if (!(algo_.run(input,data,output))) return;
-    
-    send_output_handle("Field", output);
+
+	if (needToExecute())
+	{ 
+		update_state(Executing);
+		setAlgoOptionFromState(Parameters::OutputFieldDataType); 
+		
+		auto inputs = make_input((InputField, input), (InputMatrix, matrixIn)); 
+		auto output = algo().run_generic(inputs); 
+	
+		sendOutputFromAlgorithm(OutputField, output);
   }
 }
 

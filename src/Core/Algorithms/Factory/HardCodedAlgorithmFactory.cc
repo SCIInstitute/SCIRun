@@ -56,6 +56,7 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h> 
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h> 
 #include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
@@ -165,6 +166,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 	  ADD_MODULE_ALGORITHM(FlipSurfaceNormals,FlipSurfaceNormalsAlgo)
 	  ADD_MODULE_ALGORITHM(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(BuildMappingMatrix, BuildMappingMatrixAlgo)
+	  ADD_MODULE_ALGORITHM(ConvertIndicesToFieldData, ConvertIndicesToFieldDataAlgo)
     ;
   }
 }

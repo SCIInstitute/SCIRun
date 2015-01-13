@@ -36,9 +36,6 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-//#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
-//#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
@@ -53,7 +50,7 @@ ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDataType);
 
 ConvertIndicesToFieldDataAlgo::ConvertIndicesToFieldDataAlgo()
 {
-  add_option(Parameters::OutputFieldDataType, "double,float,char,unsigned char, short, unsigned short, int, unsigned int");
+  add_option(Parameters::OutputFieldDataType, "double","double|float|char|unsigned char|short|unsigned short|int|unsigned int");
 }
 
 bool
@@ -70,12 +67,6 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
   FieldInformation fi(input_field);
   output_field = CreateField(fi);
 	FieldInformation fo(output_field); 
-
- /* if (input_matrix)
-  {
-    output_field = get_algo_.run(input_field);
-  }*/
-  FieldHandle field_output_handle;
 
 	if (fi.is_nonlinear())
 	{
@@ -151,14 +142,11 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
 	voutput->resize_fdata();
 
 	DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(input_matrix));
-	//DenseMatrix * dm = input_matrix->
-	//MatrixHandle dm = dm;
 
 	if (algotype == "Scalar")
 	{
 		int max_index = input_matrix->nrows() * input_matrix->ncols();
 		double *dataptr = dmh->data();
-		//double *dataptr = &dmh[0]; 
 		VMesh::size_type sz = vinput->num_values();
 		for (VMesh::index_type r = 0; r<sz; r++)
 		{
@@ -177,10 +165,8 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
 	{
 		if (input_matrix->ncols() != 3)
 		{
-			//MatrixHandle temp = dmh;
 			auto dmht = dmh->transpose();
 			DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(dmht));
-			//dmh = dmht->dense();
 		}
 
 		double *dataptr = dmh->data();
@@ -204,11 +190,8 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
 	{
 		if ((input_matrix->ncols() != 6) && (input_matrix->ncols() != 9))
 		{
-			//MatrixHandle temp = dmh;
-			//dmh = dm->make_transpose();
 			auto dmht = dmh->transpose();
 			DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(dmht)); 
-			//dm = dmh->dense();
 		}
 		
 		int max_index = dmh->nrows();
@@ -234,19 +217,49 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
 				voutput->set_value(Tensor(dataptr[3 * idx], dataptr[3 * idx + 1], dataptr[3 * idx + 2], dataptr[3 * idx + 4], dataptr[3 * idx + 5], dataptr[3 * idx + 8]), r);
 			}
 		}
+		AlgorithmOutput output;
+		output[Variables::OutputField] = output_field;
 		return (true);
 	}
 
 	// keep the compiler happy:
 	// it seems reasonable to return false if none of the cases apply (AK)
 	return (false);
+  //if (input_matrix)
+  //{
+  //  if (PreserveScalar)
+  //  {
+  //    set_algo_.set_option(set_algo_.keepTypeCheckBox, fi.get_data_type());
+  //  }
+  //  size_type numVal = 0;
+  //  auto denseInput = matrix_convert::to_dense(input_matrix);
+  //  if (set_algo_.verify_input_data(input_field, denseInput, numVal, fi))
+  //  {
+  //    output_field = set_algo_.run(input_field, denseInput);
+  //  }
+  //  else
+  //  {
+  //    THROW_ALGORITHM_INPUT_ERROR("Matrix dimensions do not match any of the fields dimensions");
+  //    CopyProperties(*input_field, *output_field);
+  //  }
+  //}
+  //else
+  //{
+  //  warning("No input matrix passing the field through");
+  //  output_field = input_field;
+  //}
+
+  //AlgorithmOutput output;
+  //output[Variables::OutputField] = output_field;
+
+  //return true;
 }
 
-bool
-ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle input_matrix, FieldHandle& output) const
-{
-  return runImpl(input, input_matrix, output);
-}
+//bool
+//ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle input_matrix, FieldHandle& output) const
+//{
+//  return runImpl(input, input_matrix, output);
+//}
 
 AlgorithmOutput ConvertIndicesToFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 {
