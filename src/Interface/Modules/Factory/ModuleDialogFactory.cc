@@ -81,6 +81,7 @@
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
 #include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
 #include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
+#include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
 #include <Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
@@ -171,7 +172,8 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 	  ADD_MODULE_DIALOG(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixDialog)
 		ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
 		ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
-	ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
+	  ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
+    ADD_MODULE_DIALOG(SolveInverseProblemWithTikhonov, SolveInverseProblemWithTikhonovDialog)
   ;
 }
 
