@@ -1,11 +1,9 @@
+
 /*
    For more information, please see: http://software.sci.utah.edu
-
    The MIT License
-
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
-
    License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -13,10 +11,8 @@
    the rights to use, copy, modify, merge, publish, distribute, sublicense,
    and/or sell copies of the Software, and to permit persons to whom the
    Software is furnished to do so, subject to the following conditions:
-
    The above copyright notice and this permission notice shall be included
    in all copies or substantial portions of the Software.
-
    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -50,19 +46,13 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   
   int max_nr_elc=(state_->getValue(Parameters::number_of_electrodes)).toInt();
   
-  electrode_tableWidget->clear();
-  //electrode_tableWidget = new QTableWidget(this);
-  QStringList tableHeader;
-  tableHeader<<"Electrode"<<"Current intensity [mA]"<<"Real Impedance [Ohm*m^2]"<<"Surface Area [m^2]";
-  
   electrode_tableWidget->setColumnCount(4);
-  electrode_tableWidget->setHorizontalHeaderLabels(tableHeader);
-  
-  //electrode_tableWidget = new QTableWidget(this);
   electrode_tableWidget->setRowCount(max_nr_elc);
-  //electrode_tableWidget->setColumnCount(4);
-  
+  QStringList tableHeader;
+  tableHeader << "Electrode" << "Current intensity [mA]" << "Real Impedance [Ohm*m^2]" << "Surface Area [m^2]";
+  electrode_tableWidget->setHorizontalHeaderLabels(tableHeader);
 
+  
   for (int i=0; i<max_nr_elc; i++)
   {
     // setting the name of the electrode
@@ -159,4 +149,3 @@ void SetupRHSforTDCSandTMSDialog::pull()
   state_->setValue(Parameters::ImpedanceTableValues, imp_elc_vals_in_table);
 
 }
-

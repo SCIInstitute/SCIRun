@@ -84,10 +84,14 @@ void SetupTDCS::execute()
   {
     update_state(Executing);
     auto state = get_state();
-    state->setValue(Parameters::refnode, get_state()->getValue(Parameters::refnode).toInt());
-    state->setValue(Parameters::normal_dot_product_bound, get_state()->getValue(Parameters::normal_dot_product_bound).toDouble());
-    state->setValue(Parameters::pointdistancebound, get_state()->getValue(Parameters::pointdistancebound).toDouble());
-        
+    //state->setValue(Parameters::refnode, get_state()->getValue(Parameters::refnode).toInt());
+    //state->setValue(Parameters::normal_dot_product_bound, get_state()->getValue(Parameters::normal_dot_product_bound).toDouble());
+    //state->setValue(Parameters::pointdistancebound, get_state()->getValue(Parameters::pointdistancebound).toDouble());
+    
+    setAlgoIntFromState(Parameters::refnode);   
+    setAlgoDoubleFromState(Parameters::normal_dot_product_bound);
+    setAlgoDoubleFromState(Parameters::pointdistancebound);
+    
     int nr_elec=elc_sponge_location->nrows(); /// get the number of electrodes in the first execution to update the GUI
     if (elc_sponge_location && nr_elec>=2)
     {
