@@ -53,9 +53,9 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
-		dialogErrorControl_->increaseCounter(); 
-		if(dialogErrorControl_->showDialog())
-				QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
+  dialogErrorControl_->increaseCounter();
+  if (dialogErrorControl_->showDialog())
+    QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
 }
 
 ModuleLogger::ModuleLogger(ModuleLogWindow* window)
