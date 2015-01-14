@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>44</count>
+			<count>43</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AddKnownsToLinearSystem:13</first>
@@ -127,46 +127,6 @@
 									<value>
 										<which>2</which>
 										<value>RESULT =  select(INDEX==0,0,nan);</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>CalculateFieldData:25</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>ChangeFieldData</category_name_>
-						<module_name_>CalculateFieldData</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FormatString</name>
-								</first>
-								<second>
-									<name>FormatString</name>
-									<value>
-										<which>2</which>
-										<value>Scalar</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FunctionString</name>
-								</first>
-								<second>
-									<name>FunctionString</name>
-									<value>
-										<which>2</which>
-										<value>RESULT = abs(DATA1);</value>
 									</value>
 								</second>
 							</item>
@@ -2985,7 +2945,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>44</count>
+		<count>43</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:13</first>
@@ -3020,13 +2980,6 @@
 			<second>
 				<first>-836</first>
 				<second>-76</second>
-			</second>
-		</item>
-		<item>
-			<first>CalculateFieldData:25</first>
-			<second>
-				<first>-1520</first>
-				<second>684</second>
 			</second>
 		</item>
 		<item>
