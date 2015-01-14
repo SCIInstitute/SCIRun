@@ -200,6 +200,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  DenseMatrixHandle lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
  
  index_type refnode_number = get(Parameters::refnode).toInt();
+ 
  double normal_dot_product_bound_ = get(Parameters::normal_dot_product_bound).toDouble();
  double identical_node_location_differce = get(Parameters::pointdistancebound).toDouble();
 
@@ -655,7 +656,7 @@ DenseMatrixHandle SetupTDCSAlgorithm::create_rhs(FieldHandle mesh, const std::ve
   }
   
   if (std::fabs(min_current) > electode_current_summation_bound) 
-        remark("Summed electrode current intensities are greater than 1e-6 mA. The sum should be close to zero. ");  
+        THROW_ALGORITHM_INPUT_ERROR("Summed electrode current intensities are greater than 1e-6 mA. The sum should be close to 0 mA !!! ");  
   
   int node_elements  = vfield->vmesh()->num_nodes();
   int total_elements = node_elements + elcs_wanted.size();

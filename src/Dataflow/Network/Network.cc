@@ -244,6 +244,11 @@ void Network::clear()
   modules_.clear();
 }
 
+bool Network::containsViewScene() const
+{
+  return std::find_if(modules_.begin(), modules_.end(), [](ModuleHandle m) { return m->get_module_name() == "ViewScene"; }) != modules_.end();
+}
+
 ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts().at(index)->id())
 {
 }

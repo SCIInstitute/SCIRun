@@ -3565,8 +3565,8 @@
 		<item>
 			<first>ShowField:38</first>
 			<second>
-				<first>-684</first>
-				<second>1064</second>
+				<first>-532</first>
+				<second>228</second>
 			</second>
 		</item>
 		<item>
@@ -3593,15 +3593,15 @@
 		<item>
 			<first>ViewScene:23</first>
 			<second>
-				<first>-760</first>
-				<second>1216</second>
+				<first>-608</first>
+				<second>1140</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:36</first>
 			<second>
-				<first>-1444</first>
-				<second>2052</second>
+				<first>-1596</first>
+				<second>1976</second>
 			</second>
 		</item>
 	</modulePositions>

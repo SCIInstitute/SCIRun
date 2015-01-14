@@ -74,7 +74,6 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, AllInputsTDCS);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ProtoTypeInputComboBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessCheckBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessSpinBox);
-ALGORITHM_PARAMETER_DEF(BrainStimulator, InvertNormalsCheckBox);
 
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::FINAL_ELECTRODES_FIELD("FINAL_ELECTRODES_FIELD");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::MOVED_ELECTRODES_FIELD("MOVED_ELECTRODES_FIELD");
@@ -111,7 +110,6 @@ ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
   addParameter(TableValues, 0);
   addParameter(ProtoTypeInputCheckbox, false);
   addParameter(ProtoTypeInputComboBox, false);
-  addParameter(InvertNormalsCheckBox, false);
   addParameter(AllInputsTDCS, false);
   addParameter(ElectrodethicknessCheckBox, false);
   addParameter(ElectrodethicknessSpinBox, 1.0); 
@@ -573,20 +571,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
  VMesh* tdcs_vmesh = electrode_field->vmesh(); 
  VField* tdcs_vfld  = electrode_field->vfield();
  FieldInformation fieldinfo3("TriSurfMesh", CONSTANTDATA_E, "int");
- FieldInformation fieldinfo4("QuadSurfMesh", CONSTANTDATA_E, "int"); 
- FieldHandle output;
- 
- FieldInformation fi_scalp(scalp); 
- if(fi_scalp.is_trisurfmesh())
-  output = CreateField(fieldinfo3);
-   else
-   if (fi_scalp.is_quadsurfmesh())
-     output = CreateField(fieldinfo4);
-    else
-     {
-      THROW_ALGORITHM_PROCESSING_ERROR("Scalp (first module input) should be a triangle- or quadsurfmesh. ");
-     }
-     
+ FieldHandle output = CreateField(fieldinfo3);
  VMesh* output_vmesh = output->vmesh(); 
  VField* output_vfld = output->vfield();
  Variable::List new_table;
@@ -596,11 +581,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
  if (tab_values.size()==elc_prototyp_map.size() && elc_thickness.size()==elc_prototyp_map.size() && elc_x.size()==elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size())
  {  
   VMesh* scalp_vmesh = scalp->vmesh(); 
-  VField* scalp_vfld = scalp->vfield();
-  if(!scalp_vmesh || !scalp_vfld)
-  {
-   THROW_ALGORITHM_PROCESSING_ERROR("Internal error: scalp field or mesh seems to be empty. ");
-  }
+  VField* scalp_vfld = scalp->vfield(); 
   valid_electrode_definition.resize(elc_prototyp_map.size());
   for (int i=0; i<elc_prototyp_map.size(); i++)
   {
@@ -610,36 +591,35 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
    }
    double distance=0;
    bool skip_current_iteration=false;
-   bool quads_order_sum_positive=false;
-   
    VMesh::Node::index_type didx;
    Point elc(elc_x[i],elc_y[i],elc_z[i]),r;
    scalp_vmesh->synchronize(Mesh::NODE_LOCATE_E);
    scalp_vmesh->find_closest_node(distance,r,didx,elc);  /// project GUI (x,y,z) onto scalp and ...
-   Vector normal;
+   Vector norm;
    scalp_vmesh->synchronize(Mesh::NORMALS_E);
-   scalp_vmesh->get_normal(normal,didx); /// ... get its normal
+   scalp_vmesh->get_normal(norm,didx); /// ... get its normal
    //update GUI table normals
    double nx,ny,nz;
    Variable::List new_row;
-   boost::tie(new_row,nx,ny,nz)=make_table_row(i,elc_x[i],elc_y[i],elc_z[i],normal.x(),normal.y(),normal.z());
+   boost::tie(new_row,nx,ny,nz)=make_table_row(i,elc_x[i],elc_y[i],elc_z[i],norm.x(),norm.y(),norm.z());
    new_table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(i), new_row));  
    if (!(nx==0.0 && ny==0.0 && nz==0.0))
    {
     Vector norm2(nx,ny,nz);
-    double dot_product=Dot(normal, norm2);
-    normal = Vector(nx,ny,nz);  
+    double dot_product=Dot(norm, norm2);
+    norm = Vector(nx,ny,nz);  
     if (dot_product<direction_bound)
     {
       flip_normal=true;
     }   
    } 
+     
    /// move coil prototype to projected location
    /// first, compute the transfer matrices
    std::vector<double> axis;
-   axis.push_back(normal[0]);
-   axis.push_back(normal[1]);
-   axis.push_back(normal[2]);
+   axis.push_back(norm[0]);
+   axis.push_back(norm[1]);
+   axis.push_back(norm[2]);
    double angle=elc_angle_rotation[i];
    DenseMatrixHandle rotation_matrix,rotation_matrix1,rotation_matrix2;
    rotation_matrix1 = make_rotation_matrix(angle, axis);
@@ -650,7 +630,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
    }   
    FieldHandle prototype = elc_coil_proto[elc_prototyp_map[i]-1];
    FieldInformation fi(prototype);
-   if(fi.is_trisurfmesh() || fi.is_quadsurfmesh()) 
+   if(fi.is_trisurfmesh()) 
    {
     GetMeshNodesAlgo algo_getfieldnodes;
     DenseMatrixHandle fieldnodes;
@@ -667,6 +647,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     {
      THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from assigned prototype ");
     }
+
     ///second, subtract the mean of the prototyp positions to center it in origin
     double mean_loc_x=0,mean_loc_y=0,mean_loc_z=0; 
     for(int j=0; j<fieldnodes->nrows(); j++)
@@ -687,6 +668,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      }
     
      DenseMatrixHandle rotated_positions;
+
      for(int j=0; j<fieldnodes->nrows(); j++)
      {
       DenseMatrixHandle pos_vec (boost::make_shared<DenseMatrix>(3,1));
@@ -751,7 +733,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       convert_field_basis.runImpl(scalp, scalp_linear_data);
      }
     }
-
+   
     CalculateSignedDistanceFieldAlgo algo_sdf;
     FieldHandle sdf_output;
     if(scalp_vfld->is_lineardata())
@@ -761,7 +743,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	 
     VField* tmp_sdf_vfld  = sdf_output->vfield();   
     VMesh*  tmp_sdf_vmsh  = sdf_output->vmesh(); 
-    if (!tmp_sdf_vfld || tmp_sdf_vfld->num_values()<=0) 
+    if (!tmp_sdf_vfld || tmp_sdf_vfld->num_values()<=0)
     {
      std::ostringstream ostr3;
      ostr3 << " Electrode sponge/scalp surface could not be found for " << i+1 << ". electrode. Make sure that prototype encapsulated scalp." << std::endl;
@@ -785,7 +767,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        tmp_field_bin_values[l]=0.0;
     }     
     FieldHandle final_electrode_sponge_surf;
-    
+          
     if(!found_elc_surf)
     {
      std::ostringstream ostr3;
@@ -816,34 +798,17 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     final_electrode_sponge_surf_fld->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero   
     for (VMesh::Elem::index_type l=0; l<final_electrode_sponge_surf_msh->num_elems(); l++) 
     {
-    
-     if(fi_scalp.is_trisurfmesh())
-     {
       VMesh::Node::array_type onodes(3); 
       tmp_sdf_vmsh->get_nodes(onodes, l);
       if (tmp_field_bin_values[onodes[0]]==1.0 && tmp_field_bin_values[onodes[1]]==1.0 && tmp_field_bin_values[onodes[2]]==1.0)
       {
         final_electrode_sponge_surf_fld->set_value(1.0,l); 
-	found_elc_surf=true;     
+	found_elc_surf=true;
       }
         else
-          final_electrode_sponge_surf_fld->set_value(0.0,l); 
-     } else
-     if (fi_scalp.is_quadsurfmesh())
-     {
-      VMesh::Node::array_type onodes(4); 
-      tmp_sdf_vmsh->get_nodes(onodes, l);
-      if (tmp_field_bin_values[onodes[0]]==1.0 && tmp_field_bin_values[onodes[1]]==1.0 && tmp_field_bin_values[onodes[2]]==1.0 && tmp_field_bin_values[onodes[3]]==1.0)
-      {
-        final_electrode_sponge_surf_fld->set_value(1.0,l); 
-	found_elc_surf=true;     
-      }
-        else
-          final_electrode_sponge_surf_fld->set_value(0.0,l); 
-     }
-     
+          final_electrode_sponge_surf_fld->set_value(0.0,l);
     } 
-    
+      
     if (!found_elc_surf)
     {
      std::ostringstream ostr3;
@@ -889,7 +854,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
      algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
      std::vector<FieldHandle> result = algo_splitbyconnectedregion.run(find_elc_surf);
-     
      found_elc_surf=false;
      double distance=std::numeric_limits<double>::quiet_NaN();
      VMesh::Node::index_type didx;
@@ -900,7 +864,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
       tmp_fld_msh->synchronize(Mesh::NODE_LOCATE_E); 
       tmp_fld_msh->find_closest_node(distance,p,didx,r);
-      
+ 
       if (distance==0)
       {    
        found_elc_surf=true;
@@ -939,103 +903,17 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	 count_pts++;
 	}
        }
-       
-       if (fi_scalp.is_quadsurfmesh())
-       {
-        /// find quad element at electrode center to evaluate if the ordering (normal) is correct to find elements that are not ordered properly.        
-	Point cp;
-        VMesh::Elem::index_type cf;
-        tmp_fld_msh->find_closest_elem(distance,cp, cf, elc);
-        VMesh::Node::array_type onodes(4); 
-        tmp_fld_msh->get_nodes(onodes, cf);
-	tmp_fld_msh->get_center(cp,onodes[0]);
-	Vector v1(cp.x(),cp.y(),cp.z());
-	tmp_fld_msh->get_center(p,onodes[1]);
-	Vector v2(cp.x(),cp.y(),cp.z());
-	tmp_fld_msh->get_center(cp,onodes[2]);
-	Vector v3(cp.x(),cp.y(),cp.z());
-	tmp_fld_msh->get_center(p,onodes[3]);
-	Vector v4(cp.x(),cp.y(),cp.z());
-	Vector square_norm_1 = SCIRun::Core::Geometry::Cross((v2-v1), (v3-v1));
-	Vector square_norm_2 = SCIRun::Core::Geometry::Cross((v1-v2), (v4-v2));
-	Vector square_norm_3 = SCIRun::Core::Geometry::Cross((v1-v3), (v4-v3));
-	Vector square_norm_4 = SCIRun::Core::Geometry::Cross((v3-v4), (v2-v4)); 
-	if ( ( square_norm_1[0]!=square_norm_2[0] || square_norm_1[1]!=square_norm_2[1] || square_norm_1[2]!=square_norm_2[2]) ||
-	      (square_norm_1[0]!=square_norm_3[0] || square_norm_1[1]!=square_norm_3[1] || square_norm_1[2]!=square_norm_3[2]) ||
-	      (square_norm_1[0]!=square_norm_4[0] || square_norm_1[1]!=square_norm_4[1] || square_norm_1[2]!=square_norm_4[2])
-	    )
-	 {
-	  std::ostringstream ostr_;
-          ostr_ << " The squares in the quadsurf mesh are not flat, which is normal if the surfaces are smoothed or tightening was used. That could be not a problem. Check the quality of module's third output to be sure. " << std::endl;
-          remark(ostr_.str());	 
-	 }
-       double dot_product_quad=Dot(normal, square_norm_1);
-       double area_sum = 0;
-
-	if(dot_product_quad<0)
-	{
-	 area_sum = Dot(normal, SCIRun::Core::Geometry::Cross((v3-v1),(v2-v1)));
-	} else
-	{
-	 area_sum = Dot(normal, SCIRun::Core::Geometry::Cross((v3-v1),(v4-v1)));
-	}
-	if (area_sum<0)
-	   quads_order_sum_positive=false; 
-	     else
-	       quads_order_sum_positive=true;
-        }
-       
        int offset=nr_elc_sponge_triangles_on_scalp;
        for (int iter_tmp=0;iter_tmp<2;iter_tmp++)
        {
         for (VMesh::Elem::index_type k=0; k<tmp_fld_msh->num_elems(); k++) 
-        {	 
-	 if (fi_scalp.is_trisurfmesh())
-	 {
-          VMesh::Node::array_type onodes(3); 
-          tmp_fld_msh->get_nodes(onodes, k);
-          onodes[0]+=offset;
-          onodes[1]+=offset;
-          onodes[2]+=offset;
-          output_vmesh->add_elem(onodes);
-	 } else
-	  if (fi_scalp.is_quadsurfmesh()) /// TODO: invert normals for top part, check and correct ordering
-	   {	    
-	    VMesh::Node::array_type onodes(4); 
-            tmp_fld_msh->get_nodes(onodes, k);
-	    if (iter_tmp==0)
-	    {
-	     Point cp;
-	     tmp_fld_msh->get_center(cp,onodes[0]);
-	     Vector v1(cp.x(),cp.y(),cp.z());
-	     tmp_fld_msh->get_center(cp,onodes[1]);
-	     Vector v2(cp.x(),cp.y(),cp.z());
-	     tmp_fld_msh->get_center(cp,onodes[2]);
-	     Vector v3(cp.x(),cp.y(),cp.z());
-	     tmp_fld_msh->get_center(cp,onodes[3]);
-	     Vector v4(cp.x(),cp.y(),cp.z());
-	     double area_sum = Dot(normal, SCIRun::Core::Geometry::Cross((v3-v1),(v2-v1)));
-	     if (area_sum<0 && quads_order_sum_positive) /// if a quad element is in the wrong order (normal) -> reorder it
-	     {
-	      int i1=0,i2=0,i3=0,i4=0;
-	      i1=onodes[0];
-	      i2=onodes[1];
-	      i3=onodes[2];
-	      i4=onodes[3];
-	      onodes[0]=i1;
-	      onodes[1]=i4;
-	      onodes[2]=i3;
-	      onodes[3]=i2;
-	     }
-	    }
-	    
-            onodes[0]+=offset;
-            onodes[1]+=offset;
-            onodes[2]+=offset;
-	    onodes[3]+=offset;
-	    output_vmesh->add_elem(onodes);
-	   }
-	   
+        {
+         VMesh::Node::array_type onodes(3); 
+         tmp_fld_msh->get_nodes(onodes, k);
+         onodes[0]+=offset;
+         onodes[1]+=offset;
+         onodes[2]+=offset;
+         output_vmesh->add_elem(onodes);
          field_values_elc_on_scalp.push_back(i);
         } 
 	offset+=tmp_fld_msh->num_nodes();
@@ -1043,13 +921,13 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        
        MatrixHandle mapping;
        GetFieldBoundaryAlgo algo_getfldbnd;     
-       FieldHandle boundary;   
+       FieldHandle boundary;       
        algo_getfldbnd.run(tmp_fld, boundary, mapping);
        VMesh* boundary_msh  = boundary->vmesh();
        /// connect electrode sponge surfaces
        if (boundary->vmesh()->is_curvemesh())
        {
-        tmp_fld_msh->synchronize(Mesh::NODE_LOCATE_E);
+         tmp_fld_msh->synchronize(Mesh::NODE_LOCATE_E);
 	VMesh::Edge::iterator meshEdgeIter;
         VMesh::Edge::iterator meshEdgeEnd;
         VMesh::Node::array_type nodesFromEdge(2);
@@ -1081,31 +959,17 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	  }
 	  long i1=(long)idx1, i2=(long)idx2;
 	  long i3=i1+tmp_fld_msh->num_nodes(), i4=i2+tmp_fld_msh->num_nodes();
-	  if (fi_scalp.is_trisurfmesh())
-	  {
-	   VMesh::Node::array_type onodes(3); 
-	   onodes[0]=i3+nr_elc_sponge_triangles_on_scalp;
-	   onodes[1]=i1+nr_elc_sponge_triangles_on_scalp;
-	   onodes[2]=i4+nr_elc_sponge_triangles_on_scalp;
-	   output_vmesh->add_elem(onodes);
-	   field_values_elc_on_scalp.push_back(i);	  
-	   onodes[0]=i4+nr_elc_sponge_triangles_on_scalp;
-	   onodes[1]=i1+nr_elc_sponge_triangles_on_scalp;
-	   onodes[2]=i2+nr_elc_sponge_triangles_on_scalp;
-	   output_vmesh->add_elem(onodes);
-	   field_values_elc_on_scalp.push_back(i);
-	  } else
-	  if (fi_scalp.is_quadsurfmesh())
-	  {
-	   VMesh::Node::array_type onodes(4);
-	   onodes[0]=i1+nr_elc_sponge_triangles_on_scalp; 
-	   onodes[1]=i2+nr_elc_sponge_triangles_on_scalp;
-	   onodes[2]=i4+nr_elc_sponge_triangles_on_scalp;
-	   onodes[3]=i3+nr_elc_sponge_triangles_on_scalp;
-	   output_vmesh->add_elem(onodes);
-	   field_values_elc_on_scalp.push_back(i);
-	  }
-	  
+	  VMesh::Node::array_type onodes(3); 
+	  onodes[0]=i3+nr_elc_sponge_triangles_on_scalp;
+	  onodes[1]=i1+nr_elc_sponge_triangles_on_scalp;
+	  onodes[2]=i4+nr_elc_sponge_triangles_on_scalp;
+	  output_vmesh->add_elem(onodes);
+	  field_values_elc_on_scalp.push_back(i);
+	  onodes[0]=i4+nr_elc_sponge_triangles_on_scalp;
+	  onodes[1]=i1+nr_elc_sponge_triangles_on_scalp;
+	  onodes[2]=i2+nr_elc_sponge_triangles_on_scalp;
+	  output_vmesh->add_elem(onodes);
+	  field_values_elc_on_scalp.push_back(i);
         }   
 	
         nr_elc_sponge_triangles_on_scalp+=tmp_fld_msh->num_nodes()+count_pts; 
@@ -1135,7 +999,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
   output_vfld->set_values(field_values_elc_on_scalp);
   elc_sponge_locations = boost::make_shared<DenseMatrix>(DenseMatrix::Zero(num_valid_electrode_definition,4));
   int count=0;
-  
   for(int j=0;j<valid_electrode_definition.size();j++)
   {
    if(valid_electrode_definition[j]==1)
@@ -1161,7 +1024,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
  VariableHandle table2(new Variable(Name("Table"), new_table));
  
  return boost::make_tuple(elc_sponge_locations, electrode_field, output, table2);
-
 }
 
 boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::run(const FieldHandle scalp, const DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const
@@ -1170,12 +1032,6 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
  DenseMatrixHandle elc_sponge_locations;
  FieldHandle electrodes_field, coils_field, final_electrodes_field;
  auto table = table_output->toVector();
-  
- FieldInformation fi(scalp);
- if (!(fi.is_trisurfmesh() || fi.is_quadsurfmesh()))
- {
-  THROW_ALGORITHM_PROCESSING_ERROR(" SCALP_SURF (first input) needs to be a triangular or quadsurface mesh. "); 
- } 
   
  /// check GUI inputs:
  /// 1) Is there any valid row in the GUI table, so at least one row where both ComboBoxes are set
@@ -1329,6 +1185,16 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
      {
      
      }
+
+     if ( (fieldnodes->nrows()!=fielddata->nrows()) )
+     {      
+      if( !((fieldnodes->nrows()==3 || fieldnodes->nrows()==1) && (fielddata->nrows()==3 || fielddata->nrows()==1)) )
+      { 
+       std::ostringstream ostr_;
+       ostr_ << "Module input " << (c1+2) << " (assigned tms coil prototype) does not contain same number of nodes as data values (linear basis)." << std::endl;
+       THROW_ALGORITHM_PROCESSING_ERROR(ostr_.str());
+      }
+     }
           
      /// get Coil normal from GUI
      /// get NX
@@ -1414,24 +1280,13 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
       elc_x.push_back(c3);
       elc_y.push_back(c4);
       elc_z.push_back(c5); 
-      elc_thickness.push_back(c10);
+      elc_thickness.push_back(c10);; 
      }
     
     } else
     
     if (c2==TMS_stim_type) /// TMS?
-    {  
-    
-     if ( (fieldnodes->nrows()!=fielddata->nrows()) )
-     {      
-      if( !((fieldnodes->nrows()==3 || fieldnodes->nrows()==1) && (fielddata->nrows()==3 || fielddata->nrows()==1)) )
-      { 
-       std::ostringstream ostr_;
-       ostr_ << "Module input " << (c1+2) << " (assigned tms coil) does not contain same number of nodes as data values (linear basis)." << std::endl;
-       THROW_ALGORITHM_PROCESSING_ERROR(ostr_.str());
-      }
-     }
-     
+    {
      if(valid_normal && valid_position)
      {
       coil_prototyp_map.push_back(c1); 

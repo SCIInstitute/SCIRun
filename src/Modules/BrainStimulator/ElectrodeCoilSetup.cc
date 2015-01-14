@@ -57,7 +57,6 @@ void ElectrodeCoilSetupModule::setStateDefaults()
 {
   setStateIntFromAlgo(Parameters::NumberOfPrototypes);
   setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
-  setStateBoolFromAlgo(Parameters::InvertNormalsCheckBox);
   setStateBoolFromAlgo(Parameters::AllInputsTDCS);
   setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
   setStateListFromAlgo(Parameters::TableValues);
@@ -74,7 +73,6 @@ void ElectrodeCoilSetupModule::execute()
  if (needToExecute())  //newStatePresent
  {
    setAlgoBoolFromState(Parameters::ProtoTypeInputCheckbox);
-   setAlgoBoolFromState(Parameters::InvertNormalsCheckBox);
    setAlgoBoolFromState(Parameters::AllInputsTDCS);
    setAlgoIntFromState(Parameters::ProtoTypeInputComboBox);
    setAlgoBoolFromState(Parameters::ElectrodethicknessCheckBox);

@@ -144,9 +144,9 @@ namespace Engine {
   class SCISHARE WaitsForStartupInitialization
   {
   public:
-    void waitForStartupInit() const;
+    void waitForStartupInit(const Networks::ExecutableLookup& lookup) const;
   private:
-    static bool shouldWait_;
+    static bool waitedAlready_;
   };
 
 }}}
