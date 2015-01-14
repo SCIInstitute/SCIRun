@@ -57,7 +57,6 @@ class NetworkEditor;
 class PortWidgetManager;
 class DialogErrorControl;
 
-
 class ModuleWidgetDisplayBase
 {
 public:
