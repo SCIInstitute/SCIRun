@@ -112,6 +112,7 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 	// multi-threaded. It is likely we will run into the same issue in the
 	// future. Kept for future reference.
 	//glLayout->removeWidget(mGLWidget);
+  mGLWidget->close();
 }
 
 //------------------------------------------------------------------------------
@@ -500,10 +501,11 @@ void ViewSceneDialog::addConfigurationButton()
 void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 {
 	showConfiguration_ = false;
-	mConfigurationDock = new QDockWidget(this);
+  mConfigurationDock = new QDockWidget(this);
+  mConfigurationDock->close();
 	QString name = viewName + " Configuration";
 	mConfigurationDock->setWindowTitle(name);
-	mConfigurationDock->setAllowedAreas(Qt::RightDockWidgetArea);
+	mConfigurationDock->setAllowedAreas(Qt::BottomDockWidgetArea);
 	mConfigurationDock->setFloating(true);
 	mConfigurationDock->setMinimumWidth(300);
 	mConfigurationDock->setMinimumHeight(150);
@@ -518,28 +520,32 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 	addShowOrientationCheckbox(viewTab);
 	QPushButton* upButton = new QPushButton(viewTab);
 	upButton->setToolTip("Rotate up");
-	upButton->setText("Up");
+	//upButton->setText("Up");
+  upButton->setText("/\\");
 	upButton->setAutoDefault(false);
 	upButton->setDefault(false);
 	upButton->setGeometry(15, 25, 35, 25);
 	//connect(upButton, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
 	QPushButton* downButton = new QPushButton(viewTab);
 	downButton->setToolTip("Rotate down");
-	downButton->setText("Down");
+	//downButton->setText("Down");
+  downButton->setText("\\/");
 	downButton->setAutoDefault(false);
 	downButton->setDefault(false);
 	downButton->setGeometry(15, 75, 35, 25);
 
 	QPushButton* leftButton = new QPushButton(viewTab);
 	leftButton->setToolTip("Rotate left");
-	leftButton->setText("Left");
+	//leftButton->setText("Left");
+  leftButton->setText("<");
 	leftButton->setAutoDefault(false);
 	leftButton->setDefault(false);
 	leftButton->setGeometry(0, 50, 35, 25);
 
 	QPushButton* rightButton = new QPushButton(viewTab);
 	rightButton->setToolTip("Rotate right");
-	rightButton->setText("Right");
+	//rightButton->setText("Right");
+  rightButton->setText(">");
 	rightButton->setAutoDefault(false);
 	rightButton->setDefault(false);
 	rightButton->setGeometry(35, 50, 35, 25);
@@ -564,7 +570,15 @@ void ViewSceneDialog::addShowOrientationCheckbox(QWidget* widget)
 	connect(showOrientationCheckBox, SIGNAL(clicked(bool)), this, SLOT(showOrientationChecked(bool)));
 }
 
-void ViewSceneDialog::showEvent(QShowEvent *evt)
+void ViewSceneDialog::closeConfigurationDock()
+{
+  if (showConfiguration_)
+  {
+    configurationButtonClicked();
+  }
+}
+
+void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
 	ModuleDialogGeneric::showEvent(evt);
 	if (!shown_)
@@ -572,6 +586,12 @@ void ViewSceneDialog::showEvent(QShowEvent *evt)
 		autoViewClicked();
 		shown_ = true;
 	}
+}
+
+void ViewSceneDialog::hideEvent(QHideEvent* evt)
+{
+  ModuleDialogGeneric::hideEvent(evt);
+  closeConfigurationDock();
 }
 
 ViewSceneItemManager::ViewSceneItemManager() : model_(new QStandardItemModel(3, 1))

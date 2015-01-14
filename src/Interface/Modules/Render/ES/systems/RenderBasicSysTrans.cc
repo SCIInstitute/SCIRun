@@ -105,70 +105,70 @@ public:
     {
       return;
     }
+    
+    if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    {
+      return;
+    }
+    /*
+    // setup vertex buffers
+    std::vector<std::tuple<std::string, size_t, bool>> attributeData;
+    for (const auto& attribData : pass.front().vbo.attributes)
+    {
+    attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
+    }
 
-		if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY))
-		{
-			return;
-		}
-		/*
-		// setup vertex buffers
-		std::vector<std::tuple<std::string, size_t, bool>> attributeData;
-		for (const auto& attribData : pass.front().vbo.attributes)
-		{
-			attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
-		}
+    std::string name = pass.front().vbo.name + "trans";
 
-		std::string name = pass.front().vbo.name + "trans";
+    GLuint vboID = vboMan.front().instance->addInMemoryVBO(pass.front().vbo.data->getBuffer(), pass.front().vbo.data->getBufferSize(),
+    attributeData, name);
 
-		GLuint vboID = vboMan.front().instance->addInMemoryVBO(pass.front().vbo.data->getBuffer(), pass.front().vbo.data->getBufferSize(),
-			attributeData, name);
+    // setup index buffers
 
-		// setup index buffers
+    GLenum primType = GL_UNSIGNED_SHORT;
+    switch (pass.front().ibo.indexSize)
+    {
+    case 1: // 8-bit
+      primType = GL_UNSIGNED_BYTE;
+      break;
 
-		GLenum primType = GL_UNSIGNED_SHORT;
-		switch (pass.front().ibo.indexSize)
-		{
-		case 1: // 8-bit
-			primType = GL_UNSIGNED_BYTE;
-			break;
+    case 2: // 16-bit
+      primType = GL_UNSIGNED_SHORT;
+      break;
 
-		case 2: // 16-bit
-			primType = GL_UNSIGNED_SHORT;
-			break;
+    case 4: // 32-bit
+      primType = GL_UNSIGNED_INT;
+      break;
 
-		case 4: // 32-bit
-			primType = GL_UNSIGNED_INT;
-			break;
+    default:
+      primType = GL_UNSIGNED_INT;
+      throw std::invalid_argument("Unable to determine index buffer depth.");
+      break;
+    }
 
-		default:
-			primType = GL_UNSIGNED_INT;
-			throw std::invalid_argument("Unable to determine index buffer depth.");
-			break;
-		}
+    GLenum primitive = GL_TRIANGLES;
+    switch (pass.front().ibo.prim)
+    {
+    case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
+      primitive = GL_POINTS;
+      break;
 
-		GLenum primitive = GL_TRIANGLES;
-		switch (pass.front().ibo.prim)
-		{
-		case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
-			primitive = GL_POINTS;
-			break;
+    case Core::Datatypes::GeometryObject::SpireIBO::LINES:
+      primitive = GL_LINES;
+      break;
 
-		case Core::Datatypes::GeometryObject::SpireIBO::LINES:
-			primitive = GL_LINES;
-			break;
+    case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
+    default:
+      primitive = GL_TRIANGLES;
+      break;
+    }
 
-		case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
-		default:
-			primitive = GL_TRIANGLES;
-			break;
-		}
+    int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
 
-		int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
+    std::string transIBOName = pass.front().ibo.name + "trans";
 
-		std::string transIBOName = pass.front().ibo.name + "trans";
-
-		GLuint iboID = iboMan.front().instance->addInMemoryIBO(pass.front().ibo.data->getBuffer(), pass.front().ibo.data->getBufferSize(), primitive, primType,
-			numPrimitives, transIBOName);
+    GLuint iboID = iboMan.front().instance->addInMemoryIBO(pass.front().ibo.data->getBuffer(), pass.front().ibo.data->getBufferSize(), primitive, primType,
+      numPrimitives, transIBOName);
 
 
     // Setup *everything*. We don't want to enter multiple conditional
@@ -182,13 +182,13 @@ public:
       // 2) It is more correct than issuing a modify call. The data is used
       //    directly below to render geometry.
       const_cast<RenderBasicGeom&>(geom.front()).attribs.setup(
-          vboID, shader.front().glid, vboMan.front());
+        vboID, shader.front().glid, vboMan.front());
 
       /// \todo Optimize by pulling uniforms only once.
       if (commonUniforms.size() > 0)
       {
         const_cast<ren::CommonUniforms&>(commonUniforms.front()).checkUniformArray(
-            shader.front().glid);
+          shader.front().glid);
       }
 
       if (vecUniforms.size() > 0)
