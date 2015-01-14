@@ -1086,7 +1086,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/BrainStimulator/TestData/Stimulation_Devices/TMS_coils/MickeyMouseToyModel_Figure8_Coil/mickey_tms_coil.fld</value>
+										<value>%SCIRUNDATADIR%/Data/Stimulation_Devices/TMS_coils/MickeyMouseToyModel_Figure8_Coil/mickey_tms_coil.fld</value>
 									</value>
 								</second>
 							</item>
@@ -1126,7 +1126,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/moritz/Desktop/BrainStimulator/TestData/Anatomical_Models/MickeyMouseToyModel/mickey_mesh.fld</value>
+										<value>%SCIRUNDATADIR%/Data/Anatomical_Models/MickeyMouseToyModel/mickey_mesh.fld</value>
 									</value>
 								</second>
 							</item>
@@ -1312,7 +1312,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>8</count>
+							<count>10</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1359,6 +1359,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1424,7 +1448,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>8</count>
+							<count>10</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1471,6 +1495,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1536,7 +1584,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>8</count>
+							<count>10</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1580,6 +1628,30 @@
 								</first>
 								<second>
 									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -1648,7 +1720,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>8</count>
+							<count>10</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1692,6 +1764,30 @@
 								</first>
 								<second>
 									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -1760,7 +1856,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>8</count>
+							<count>10</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1804,6 +1900,30 @@
 								</first>
 								<second>
 									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -1872,7 +1992,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>8</count>
+							<count>10</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1916,6 +2036,30 @@
 								</first>
 								<second>
 									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsPoints</name>
+								</first>
+								<second>
+									<name>NodeAsPoints</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeAsSpheres</name>
+								</first>
+								<second>
+									<name>NodeAsSpheres</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
