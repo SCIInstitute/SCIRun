@@ -26,41 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
-#define ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
+#ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
+#define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Algorithms/Math/share.h>
+#include "Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonov.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Interface/Modules/Inverse/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Math {
-  class SCISHARE EvaluateLinearAlgebraBinaryAlgorithm : public AlgorithmBase
-  {
-  public:
-    enum Operator
-    {
-      ADD,
-      SUBTRACT,
-      MULTIPLY,
-			FUNCTION
-    };
+namespace Gui {
 
-    /// @todo: idea (type, name)
-    // can generate a subclass of ModuleState with get/set for each.
-    //ALGORITHM_PARAMETER(Operator, OperatorName);
+class SCISHARE SolveInverseProblemWithTikhonovDialog : public ModuleDialogGeneric,
+  public Ui::SolveInverseProblemWithTikhonov
+{
+	Q_OBJECT
 
-    EvaluateLinearAlgebraBinaryAlgorithm();
-    typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
-    typedef boost::tuple<Operator, boost::optional<std::string> > Parameters;
-    typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
+public:
+  SolveInverseProblemWithTikhonovDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+private Q_SLOTS:
+  void setSpinBoxValue(int value);
+  void setSliderValue(double value);
+  void setSliderMin(double value);
+  void setSliderMax(double value);
+  void setSliderStep(double value);
+private:
+  GuiStringTranslationMap lambdaMethod_;
+};
 
-    Outputs run(const Inputs& inputs, const Parameters& params) const;
-
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-  };
-}}}}
+}
+}
 
 #endif

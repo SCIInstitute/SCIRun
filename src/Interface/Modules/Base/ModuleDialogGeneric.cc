@@ -45,6 +45,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   dock_(0)
 {
   setModal(false);
+  setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
 
   if (state_)
   {
@@ -554,4 +555,41 @@ private:
 void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
+}
+
+class RadioButtonGroupSlotManager : public WidgetSlotManager
+{
+public:
+  RadioButtonGroupSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, std::initializer_list<QRadioButton*> radioButtons) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), radioButtons_(radioButtons)
+  {
+    for (auto button : radioButtons_)
+      connect(button, SIGNAL(clicked()), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto checkedIndex = state_->getValue(stateKey_).toInt();
+    if (checkedIndex >= 0 && checkedIndex < radioButtons_.size())
+    {
+      if (!radioButtons_[checkedIndex]->isChecked())
+      {
+        LOG_DEBUG("In new version of pull code for radio button group: " << checkedIndex);
+        radioButtons_[checkedIndex]->setChecked(true);
+      }
+    }
+  }
+  virtual void pushImpl() override
+  {
+    auto firstChecked = std::find_if(radioButtons_.begin(), radioButtons_.end(), [](QRadioButton* button) { return button->isChecked(); });
+    int indexOfChecked = firstChecked - radioButtons_.begin();
+    state_->setValue(stateKey_, indexOfChecked);
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  std::vector<QRadioButton*> radioButtons_;
+};
+
+void ModuleDialogGeneric::addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<RadioButtonGroupSlotManager>(state_, *this, stateKey, radioButtons));
 }

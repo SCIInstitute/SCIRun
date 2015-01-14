@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,41 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
-#define ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
+#undef SCISHARE
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Algorithms/Math/share.h>
-
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Math {
-  class SCISHARE EvaluateLinearAlgebraBinaryAlgorithm : public AlgorithmBase
-  {
-  public:
-    enum Operator
-    {
-      ADD,
-      SUBTRACT,
-      MULTIPLY,
-			FUNCTION
-    };
-
-    /// @todo: idea (type, name)
-    // can generate a subclass of ModuleState with get/set for each.
-    //ALGORITHM_PARAMETER(Operator, OperatorName);
-
-    EvaluateLinearAlgebraBinaryAlgorithm();
-    typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
-    typedef boost::tuple<Operator, boost::optional<std::string> > Parameters;
-    typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
-
-    Outputs run(const Inputs& inputs, const Parameters& params) const;
-
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-  };
-}}}}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Interface_Modules_Inverse
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

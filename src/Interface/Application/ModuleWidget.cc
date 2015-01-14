@@ -299,6 +299,7 @@ void ModuleWidgetDisplay::setupSpecial()
   optionsButton_->setText("VIEW");
   optionsButton_->setToolTip("View renderer output");
   optionsButton_->resize(100, optionsButton_->height());
+  optionsButton_->setIcon(QIcon());
   executePushButton_->hide();
   progressBar_->setVisible(false);
 }
@@ -387,10 +388,6 @@ void ModuleWidgetDisplayMini::setupProgressBar()
 
 void ModuleWidgetDisplayMini::setupSpecial()
 {
-  optionsButton_->setText("VIEW");
-  optionsButton_->setToolTip("View renderer output");
-  optionsButton_->resize(100, optionsButton_->height());
-  //executePushButton_->hide();
   progressBar_->setVisible(false);
 }
 
@@ -398,7 +395,6 @@ void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
 {
   optionsButton_->setEnabled(hasUI);
   module->connect(expandToolButton_, SIGNAL(clicked()), SLOT(expandToFullMode()));
-  //executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
 void ModuleWidgetDisplayMini::setupIcons()
@@ -472,7 +468,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   deleting_(false),
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192)),
   fullIndex_(0),
-  miniIndex_(0)
+  miniIndex_(0),
+  isViewScene_(name == "ViewScene")
 {
   setupModuleActions();
   setupLogging();
@@ -508,7 +505,6 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
   int index = addWidget(frame);
 
   setupDisplayWidgets(display, name);
-  display->setupIcons();
 
   addPortLayouts(index);
 
@@ -536,10 +532,11 @@ void ModuleWidget::setupLogging()
 void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name)
 {
   display->setupTitle(name);
+  display->setupIcons();
 
   //TODO: ultra ugly. no other place for this code right now.
   //TODO: to be handled in issue #212
-  if (name == "ViewScene")
+  if (isViewScene_)
   {
     display->setupSpecial();
   }
@@ -620,6 +617,8 @@ void ModuleWidget::setupModuleActions()
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
   connect(actionsMenu_->getAction("Collapse"), SIGNAL(triggered()), this, SLOT(collapseToMiniMode()));
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
+  if (isViewScene_)
+    actionsMenu_->getAction("Duplicate")->setDisabled(true);
 
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
   connectUpdateNote(this);
@@ -1015,7 +1014,8 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
       SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
-      dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
+      if (!isViewScene_)
+        dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
     }
@@ -1066,8 +1066,7 @@ void ModuleWidget::toggleOptionsDialog()
       dockable_->show();
       dockable_->raise();
       dockable_->activateWindow();
-      //TODO--more special viewscene code...
-      if (dialog_->windowTitle().startsWith("ViewScene"))
+      if (isViewScene_)
       {
         dockable_->setFloating(true);
       }

@@ -234,7 +234,7 @@ void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
 
 void PortWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  doMouseRelease(event->button(), event->pos());
+  doMouseRelease(event->button(), event->pos(), event->modifiers());
 }
 
 size_t PortWidget::getIndex() const
@@ -277,9 +277,13 @@ void PortWidget::cancelConnectionsInProgress()
   currentConnection_ = 0;
 }
 
-void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
+void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::KeyboardModifiers modifiers)
 {
-  if (button == Qt::LeftButton)
+  if (!isInput() && (button == Qt::MiddleButton || modifiers & Qt::ControlModifier))
+  {
+    DataInfoDialog::show(getPortDataDescriber(), "Port", moduleId_.id_ + "::" + portId_.toString());
+  }
+  else if (button == Qt::LeftButton)
   {
     toggleLight();
     update();
@@ -292,10 +296,6 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
   else if (button == Qt::RightButton && (!isConnected() || !isInput()))
   {
     showMenu();
-  }
-  else if (button == Qt::MiddleButton && !isInput())
-  {
-    DataInfoDialog::show(getPortDataDescriber(), "Port", portId_.toString());
   }
 }
 

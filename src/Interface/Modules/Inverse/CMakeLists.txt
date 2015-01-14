@@ -27,18 +27,38 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Forward)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Testing)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(BrainStimulator)
-ADD_SUBDIRECTORY(Bundle)
-ADD_SUBDIRECTORY(Matlab)
-ADD_SUBDIRECTORY(Inverse)
+SET(Interface_Modules_Inverse_FORMS
+  SolveInverseProblemWithTikhonov.ui
+)
+
+SET(Interface_Modules_Inverse_HEADERS
+  SolveInverseProblemWithTikhonovDialog.h
+  share.h
+)
+
+SET(Interface_Modules_Inverse_SOURCES 
+  SolveInverseProblemWithTikhonovDialog.cc
+)
+
+QT4_WRAP_UI(Interface_Modules_Inverse_FORMS_HEADERS ${Interface_Modules_Inverse_FORMS})
+QT4_WRAP_CPP(Interface_Modules_Inverse_HEADERS_MOC ${Interface_Modules_Inverse_HEADERS})
+
+SCIRUN_ADD_LIBRARY(Interface_Modules_Inverse
+  ${Interface_Modules_Inverse_HEADERS}
+  ${Interface_Modules_Inverse_FORMS_HEADERS}
+  ${Interface_Modules_Inverse_HEADERS_MOC}
+  ${Interface_Modules_Inverse_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_Inverse 
+  Modules_Legacy_Inverse
+  Interface_Modules_Base
+  ${SCI_BOOST_LIBRARY}
+  ${QT_LIBRARIES}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Inverse)
+ENDIF(BUILD_SHARED_LIBS)
+  
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
