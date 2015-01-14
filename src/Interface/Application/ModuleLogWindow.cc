@@ -43,7 +43,7 @@ ModuleLogWindow::ModuleLogWindow(const QString& moduleName, boost::shared_ptr<SC
 	setModal(false);  
 	setWindowTitle("Log for " + moduleName);
   setVisible(false);
-  buttonBox->button(QDialogButtonBox::Discard)->setText("Foo!");
+  buttonBox->button(QDialogButtonBox::Discard)->setText("Clear");
   connect(buttonBox->button(QDialogButtonBox::Discard), SIGNAL(clicked()), logTextEdit_, SLOT(clear()));
 }
 
