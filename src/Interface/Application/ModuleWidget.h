@@ -164,6 +164,7 @@ Q_SIGNALS:
   void moduleStateUpdated(int state);
   void moduleSelected(bool selected);
   void displayChanged();
+  void requestModuleVisible();
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);

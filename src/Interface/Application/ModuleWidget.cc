@@ -521,6 +521,7 @@ void ModuleWidget::setupLogging()
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
+  connect(logWindow_, SIGNAL(requestModuleVisible()), this, SIGNAL(requestModuleVisible()));
 
   LoggerHandle logger(boost::make_shared<ModuleLogger>(logWindow_));
   theModule_->setLogger(logger);

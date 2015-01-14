@@ -52,6 +52,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   void messageReceived(const QColor& color);
+  void requestModuleVisible();
 	
 private:
   QString moduleName_;
