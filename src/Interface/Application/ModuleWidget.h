@@ -180,7 +180,7 @@ private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
-  bool isMini_;
+  bool isMini_, errored_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 

@@ -457,6 +457,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   deletedFromGui_(true),
   colorLocked_(false),
   isMini_(globalMiniMode_),
+  errored_(false),
   theModule_(theModule),
   moduleId_(theModule->get_id()),
   dialog_(nullptr),
@@ -582,6 +583,11 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
 {
+  if (color == Qt::red)
+  {
+    errored_ = true;
+    updateBackgroundColor(moduleRGBA(237, 67, 55));
+  }
   currentDisplay_->getLogButton()->setStyleSheet(
     QString("* { background-color: %1 }")
     .arg(moduleRGBA(color.red(), color.green(), color.blue())));
@@ -926,6 +932,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
+    errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
     theModule_->do_execute();
@@ -961,7 +968,8 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
     Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
     break;
   case (int)ModuleInterface::Completed:
-    Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    if (!errored_)
+      Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
     break;
   }
 }
