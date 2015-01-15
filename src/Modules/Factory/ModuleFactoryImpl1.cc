@@ -89,6 +89,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
+#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -114,6 +115,7 @@ using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::Forward;
+using namespace SCIRun::Modules::Inverse;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Matlab::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
@@ -185,6 +187,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix", "Math", "SCIRun", "...", "...");
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
+  addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
 
   // insert module desc here
 }

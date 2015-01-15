@@ -31,7 +31,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <boost/optional.hpp>
+//#include <boost/optional.hpp>
 #include <Core/Algorithms/Math/share.h>
 
 /// \addtogroup Algorithms_Math
@@ -85,11 +85,12 @@ namespace Math {
     {
       NEGATE,
       TRANSPOSE,
-      SCALAR_MULTIPLY
+      SCALAR_MULTIPLY,
+			FUNCTION
     };
 
     typedef SCIRun::Core::Datatypes::DenseMatrixConstHandle Inputs;
-    typedef boost::tuple<Operator, boost::optional<double> > Parameters;
+    typedef boost::tuple<Operator, boost::optional<double>, boost::optional<std::string> > Parameters;
     typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
 
     EvaluateLinearAlgebraUnaryAlgorithm();

@@ -26,53 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULELOGWINDOW_H
-#define INTERFACE_APPLICATION_MODULELOGWINDOW_H
+#ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
+#define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
 
-#include "ui_ModuleLogWindow.h"
-
-#include <Core/Logging/LoggerInterface.h>
-#include <Dataflow/Network/NetworkFwd.h>
-
+#include "Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonov.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Interface/Modules/Inverse/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class DialogErrorControl; 
-
-class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
+class SCISHARE SolveInverseProblemWithTikhonovDialog : public ModuleDialogGeneric,
+  public Ui::SolveInverseProblemWithTikhonov
 {
 	Q_OBJECT
-	
-public:
-  explicit ModuleLogWindow(const QString& moduleName, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = 0);
-public Q_SLOTS:
-  void appendMessage(const QString& message, const QColor& color = Qt::black);
-  void popupMessageBox(const QString& message);
 
-Q_SIGNALS:
-  void messageReceived(const QColor& color);
-  void requestModuleVisible();
-	
+public:
+  SolveInverseProblemWithTikhonovDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+private Q_SLOTS:
+  void setSpinBoxValue(int value);
+  void setSliderValue(double value);
+  void setSliderMin(double value);
+  void setSliderMax(double value);
+  void setSliderStep(double value);
 private:
-  QString moduleName_;
-	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
-};
-
-class ModuleLogger : public QObject, public Core::Logging::LegacyLoggerInterface
-{
-  Q_OBJECT
-public:
-  explicit ModuleLogger(ModuleLogWindow* window);
-  virtual void error(const std::string& msg) const;
-  virtual void warning(const std::string& msg) const;
-  virtual void remark(const std::string& msg) const;
-  virtual void status(const std::string& msg) const;
-
-Q_SIGNALS:
-  void logSignal(const QString& message, const QColor& color) const;
-  void alert(const QColor& color) const;
-  void popup(const QString& message) const;
+  GuiStringTranslationMap lambdaMethod_;
 };
 
 }

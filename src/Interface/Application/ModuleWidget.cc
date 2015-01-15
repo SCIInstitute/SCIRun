@@ -299,6 +299,7 @@ void ModuleWidgetDisplay::setupSpecial()
   optionsButton_->setText("VIEW");
   optionsButton_->setToolTip("View renderer output");
   optionsButton_->resize(100, optionsButton_->height());
+  optionsButton_->setIcon(QIcon());
   executePushButton_->hide();
   progressBar_->setVisible(false);
 }
@@ -387,10 +388,6 @@ void ModuleWidgetDisplayMini::setupProgressBar()
 
 void ModuleWidgetDisplayMini::setupSpecial()
 {
-  optionsButton_->setText("VIEW");
-  optionsButton_->setToolTip("View renderer output");
-  optionsButton_->resize(100, optionsButton_->height());
-  //executePushButton_->hide();
   progressBar_->setVisible(false);
 }
 
@@ -398,7 +395,6 @@ void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
 {
   optionsButton_->setEnabled(hasUI);
   module->connect(expandToolButton_, SIGNAL(clicked()), SLOT(expandToFullMode()));
-  //executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
 void ModuleWidgetDisplayMini::setupIcons()
@@ -461,6 +457,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   deletedFromGui_(true),
   colorLocked_(false),
   isMini_(globalMiniMode_),
+  errored_(false),
   theModule_(theModule),
   moduleId_(theModule->get_id()),
   dialog_(nullptr),
@@ -509,7 +506,6 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
   int index = addWidget(frame);
 
   setupDisplayWidgets(display, name);
-  display->setupIcons();
 
   addPortLayouts(index);
 
@@ -526,6 +522,7 @@ void ModuleWidget::setupLogging()
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
+  connect(logWindow_, SIGNAL(requestModuleVisible()), this, SIGNAL(requestModuleVisible()));
 
   LoggerHandle logger(boost::make_shared<ModuleLogger>(logWindow_));
   theModule_->setLogger(logger);
@@ -537,6 +534,7 @@ void ModuleWidget::setupLogging()
 void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name)
 {
   display->setupTitle(name);
+  display->setupIcons();
 
   //TODO: ultra ugly. no other place for this code right now.
   //TODO: to be handled in issue #212
@@ -585,6 +583,11 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
 {
+  if (color == Qt::red)
+  {
+    errored_ = true;
+    updateBackgroundColor(moduleRGBA(237, 67, 55));
+  }
   currentDisplay_->getLogButton()->setStyleSheet(
     QString("* { background-color: %1 }")
     .arg(moduleRGBA(color.red(), color.green(), color.blue())));
@@ -929,6 +932,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
+    errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
     theModule_->do_execute();
@@ -964,7 +968,8 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
     Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
     break;
   case (int)ModuleInterface::Completed:
-    Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    if (!errored_)
+      Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
     break;
   }
 }

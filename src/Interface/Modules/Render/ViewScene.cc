@@ -96,7 +96,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
-	
+
 	addConfigurationDock(QString::fromStdString(name));
 }
 
@@ -372,6 +372,7 @@ void ViewSceneDialog::configurationButtonClicked()
 void ViewSceneDialog::addToolBar()
 {
 	mToolBar = new QToolBar(this);
+	mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
 
 	//addMouseMenu();
 	addAutoViewButton();
@@ -511,7 +512,7 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 
 	QTabWidget* tabs = new QTabWidget(mConfigurationDock);
 	tabs->setFixedSize(300, 150);
-	
+
 	// View Tab
 	QWidget* viewTab = new QWidget();
 	addShowOrientationCheckbox(viewTab);
