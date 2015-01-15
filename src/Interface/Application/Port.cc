@@ -371,6 +371,7 @@ void PortWidget::addConnection(ConnectionLine* c)
 
 void PortWidget::removeConnection(ConnectionLine* c)
 {
+  disconnect(c);
   connections_.erase(c);
   if (connections_.empty())
     setConnected(false);
