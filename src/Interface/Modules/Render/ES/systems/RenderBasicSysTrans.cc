@@ -60,8 +60,8 @@ class RenderBasicSysTrans :
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
-                             ren::StaticVBOMan>
-														 //ren::StaticIBOMan>
+                             ren::StaticVBOMan,
+														 ren::StaticIBOMan>
 {
 public:
 
@@ -76,6 +76,28 @@ public:
                                   ren::VecUniform,
                                   ren::MatUniform>(type);
   }
+
+  class DepthIndex {
+  public:
+    size_t mIndex;
+    double mDepth;
+
+    DepthIndex() :
+      mIndex(0),
+      mDepth(0.0)
+    {}
+
+    DepthIndex(size_t index, double depth) :
+      mIndex(index),
+      mDepth(depth)
+    {}
+
+    bool operator<(const DepthIndex& di) const
+    {
+      return this->mDepth < di.mDepth;
+    }
+
+  };
 
   void groupExecute(
       es::ESCoreBase&, uint64_t /* entityID */,
@@ -96,9 +118,8 @@ public:
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
-      const es::ComponentGroup<ren::StaticVBOMan>& vboMan
-			//const es::ComponentGroup<ren::StaticIBOMan>& iboMan
-			) override
+      const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
+			const es::ComponentGroup<ren::StaticIBOMan>& iboMan) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -110,6 +131,33 @@ public:
     {
       return;
     }
+
+    camera.front().data.projection;
+
+    char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
+    size_t num_triangles = pass.front().ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+    size_t stride_vbo = pass.front().vbo.data->getBufferSize() / (num_triangles * 3);
+
+    std::vector<DepthIndex> rel_depth(num_triangles);
+    Core::Geometry::Vector dir(camera.front().data.worldToView[0][2], camera.front().data.worldToView[1][2], camera.front().data.worldToView[2][2]);
+    
+    for(size_t j = 0; j < num_triangles; j++)
+    {
+      float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (j * 3));
+      Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+
+      float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (j * 3 + 1));
+      Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+      float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (j * 3 + 2));
+      Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+      rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+      rel_depth[j].mIndex = j;
+    }
+
+    std::sort(rel_depth.begin(), rel_depth.end());
+
     /*
     // setup vertex buffers
     std::vector<std::tuple<std::string, size_t, bool>> attributeData;
@@ -122,7 +170,7 @@ public:
 
     GLuint vboID = vboMan.front().instance->addInMemoryVBO(pass.front().vbo.data->getBuffer(), pass.front().vbo.data->getBufferSize(),
     attributeData, name);
-
+    */
     // setup index buffers
 
     GLenum primType = GL_UNSIGNED_SHORT;
@@ -164,12 +212,23 @@ public:
     }
 
     int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
+    
+    std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
+    char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
+    char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
+    size_t tri_size = pass.front().ibo.data->getBufferSize() / num_triangles;
+
+    for (size_t j = 0; j < num_triangles; j++)
+    {
+      memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+    }
+
+    //int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
 
     std::string transIBOName = pass.front().ibo.name + "trans";
 
-    GLuint iboID = iboMan.front().instance->addInMemoryIBO(pass.front().ibo.data->getBuffer(), pass.front().ibo.data->getBufferSize(), primitive, primType,
+    GLuint iboID = iboMan.front().instance->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), primitive, primType,
       numPrimitives, transIBOName);
-
 
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
@@ -182,7 +241,7 @@ public:
       // 2) It is more correct than issuing a modify call. The data is used
       //    directly below to render geometry.
       const_cast<RenderBasicGeom&>(geom.front()).attribs.setup(
-        vboID, shader.front().glid, vboMan.front());
+        vbo.front().glid, shader.front().glid, vboMan.front());
 
       /// \todo Optimize by pulling uniforms only once.
       if (commonUniforms.size() > 0)
@@ -225,8 +284,17 @@ public:
     GL(glUseProgram(shader.front().glid));
 
     // Bind VBO and IBO
-    GL(glBindBuffer(GL_ARRAY_BUFFER, vboID));
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
+
+    bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+    bool cullFace = glIsEnabled(GL_CULL_FACE);
+    bool blend = glIsEnabled(GL_BLEND);
+
+    GL(glDepthMask(GL_FALSE));
+    GL(glDisable(GL_CULL_FACE));
+    GL(glEnable(GL_BLEND));
+    GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
@@ -364,12 +432,21 @@ public:
       }
     }
 
-    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    iboMan.front().instance->removeInMemoryIBO(iboID);
+
+    if (depthMask)
     {
       GL(glDepthMask(GL_TRUE));
+    }
+    if (cullFace)
+    {
       GL(glEnable(GL_CULL_FACE));
     }
-		*/
+    if (!blend)
+    {
+      GL(glDisable(GL_BLEND));
+    }
+    		
     geom.front().attribs.unbind();
 
     // Reapply the default state here -- only do this if static state is
@@ -378,6 +455,7 @@ public:
     {
       defaultGLState.front().state.applyRelative(state.front().state);
     }
+
   }
 };
 

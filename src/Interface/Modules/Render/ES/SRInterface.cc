@@ -90,6 +90,9 @@ namespace SCIRun {
 			// Create default colormaps.
 			generateColormaps();
 
+      showOrientation_ = true;
+      autoRotate_ = false;
+
 			// Construct ESCore. We will need to bootstrap the core. We should also
 			// probably add utility static classes.
 			setupCore();
@@ -397,107 +400,108 @@ namespace SCIRun {
 						}
 					}
 
-					// Lookup the VBOs and IBOs associated with this particular draw list
-					// and add them to our entity in question.
-					std::string assetName = "Assets/sphere.geom";
+          // Lookup the VBOs and IBOs associated with this particular draw list
+          // and add them to our entity in question.
+          std::string assetName = "Assets/sphere.geom";
 
-					if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
-					{
-						assetName = "Assets/sphere.geom";
-					}
+          if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
+          {
+            assetName = "Assets/sphere.geom";
+          }
 
-					addVBOToEntity(entityID, assetName);
-					addIBOToEntity(entityID, assetName);
-					mCore.addComponent(entityID, pass);
-				}
+          addVBOToEntity(entityID, assetName);
+          addIBOToEntity(entityID, assetName);
+        }
 
-				// Load vertex and fragment shader will use an already loaded program.
-				//addShaderToEntity(entityID, pass.programName);
-				shaderMan.loadVertexAndFragmentShader(mCore, entityID, pass.programName);
+        // Load vertex and fragment shader will use an already loaded program.
+        //addShaderToEntity(entityID, pass.programName);
+        shaderMan.loadVertexAndFragmentShader(mCore, entityID, pass.programName);
 
-				// Add transformation
-				gen::Transform trafo;
-				mCore.addComponent(entityID, trafo);
+        // Add transformation
+        gen::Transform trafo;
+        mCore.addComponent(entityID, trafo);
 
-				// Add lighting uniform checks
-				LightingUniforms lightUniforms;
-				mCore.addComponent(entityID, lightUniforms);
+        // Add lighting uniform checks
+        LightingUniforms lightUniforms;
+        mCore.addComponent(entityID, lightUniforms);
 
-				// Add SCIRun render state.
-				SRRenderState state;
-				state.state = pass.renderState;
-				mCore.addComponent(entityID, state);
+        // Add SCIRun render state.
+        SRRenderState state;
+        state.state = pass.renderState;
+        mCore.addComponent(entityID, state);
 
-				// Add appropriate renderer based on the color scheme to use.
-				if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_UNIFORM
-					|| pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_IN_SITU)
-				{
-					RenderBasicGeom geom;
-					mCore.addComponent(entityID, geom);
-				}
-				else if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_MAP
-					&& obj->mColorMap)
-				{
-					RenderColorMapGeom geom;
-					mCore.addComponent(entityID, geom);
+        // Add appropriate renderer based on the color scheme to use.
+        if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_UNIFORM
+          || pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_IN_SITU)
+        {
+          RenderBasicGeom geom;
+          mCore.addComponent(entityID, geom);
+        }
+        else if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_MAP
+          && obj->mColorMap)
+        {
+          RenderColorMapGeom geom;
+          mCore.addComponent(entityID, geom);
 
-					// Construct texture component and add it to our entity for rendering.
-					ren::Texture component;
-					component.textureUnit = 0;
-					component.setUniformName("uTX0");
-					component.textureType = GL_TEXTURE_1D;
+          // Construct texture component and add it to our entity for rendering.
+          ren::Texture component;
+          component.textureUnit = 0;
+          component.setUniformName("uTX0");
+          component.textureType = GL_TEXTURE_1D;
 
-					// Setup appropriate texture to render the color map.
-					if (*obj->mColorMap == "Rainbow")
-					{
-						component.glid = mRainbowCMap;
-					}
-					else
-					{
-						component.glid = mGrayscaleCMap;
-					}
-					mCore.addComponent(entityID, component);
+          // Setup appropriate texture to render the color map.
+          if (*obj->mColorMap == "Rainbow")
+          {
+            component.glid = mRainbowCMap;
+          }
+          else
+          {
+            component.glid = mGrayscaleCMap;
+          }
+          mCore.addComponent(entityID, component);
 
-					// Compare entity and system requirements.
-					//mCore.displayEntityVersusSystemInfo(entityID, getSystemName_RenderColorMap());
-				}
-				else
-				{
-					std::cerr << "Renderer: Unknown color scheme!" << std::endl;
-					RenderBasicGeom geom;
-					mCore.addComponent(entityID, geom);
-				}
+          // Compare entity and system requirements.
+          //mCore.displayEntityVersusSystemInfo(entityID, getSystemName_RenderColorMap());
+        }
+        else
+        {
+          std::cerr << "Renderer: Unknown color scheme!" << std::endl;
+          RenderBasicGeom geom;
+          mCore.addComponent(entityID, geom);
+        }
 
-				// Ensure common uniforms are covered.
-				ren::CommonUniforms commonUniforms;
-				mCore.addComponent(entityID, commonUniforms);
+        // Ensure common uniforms are covered.
+        ren::CommonUniforms commonUniforms;
+        mCore.addComponent(entityID, commonUniforms);
 
-				for (const auto& uniform : pass.mUniforms)
-				{
-					applyUniform(entityID, uniform);
-				}
+        for (const auto& uniform : pass.mUniforms)
+        {
+          applyUniform(entityID, uniform);
+        }
 
-				// Add components associated with entity. We just need a base class which
-				// we can pass in an entity ID, then a derived class which bundles
-				// all associated components (including types) together. We can use
-				// a variadic template for this. This will allow us to place any components
-				// we want on the objects in question in show field. This could lead to
-				// much simpler customization.
+        // Add components associated with entity. We just need a base class which
+        // we can pass in an entity ID, then a derived class which bundles
+        // all associated components (including types) together. We can use
+        // a variadic template for this. This will allow us to place any components
+        // we want on the objects in question in show field. This could lead to
+        // much simpler customization.
 
-				// Add a pass to our local object.
-				elem.mPasses.emplace_back(pass.passName, pass.renderType);
-			}
+        // Add a pass to our local object.
+        elem.mPasses.emplace_back(pass.passName, pass.renderType);
+        mCore.addComponent(entityID, pass);
 
-			// Recalculate scene bounding box. Should only be done when an object is added.
-			mSceneBBox.reset();
-			for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
-			{
-				if (it->mBBox.valid())
-				{
-					mSceneBBox.extend(it->mBBox);
-				}
-			}
-		}
+      }
+
+      // Recalculate scene bounding box. Should only be done when an object is added.
+      mSceneBBox.reset();
+      for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+      {
+        if (it->mBBox.valid())
+        {
+          mSceneBBox.extend(it->mBBox);
+        }
+      }
+    }
 
 		//------------------------------------------------------------------------------
 		void SRInterface::addVBOToEntity(uint64_t entityID, const std::string& vboName)
@@ -1130,7 +1134,6 @@ namespace SCIRun {
 		// Create default colormaps.
 		void SRInterface::generateColormaps()
 		{
-			showOrientation_ = true;
 			size_t rainbowArraySize = sizeof(rainbowRaw) / sizeof(*rainbowRaw);
 
 			std::vector<uint8_t> rainbow;

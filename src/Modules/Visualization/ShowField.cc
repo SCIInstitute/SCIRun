@@ -370,7 +370,7 @@ void ShowFieldModule::renderFacesLinear(
   // Attempt some form of precalculation of iboBuffer and vboBuffer size.
   // This Initial size estimation will be off quite a bit. Each face will
   // have up to 3 nodes associated.
-  uint32_t iboSize = mesh->num_faces() * sizeof(uint32_t);
+  uint32_t iboSize = mesh->num_faces() * sizeof(uint32_t) * 3;
   uint32_t vboSize = mesh->num_faces() * sizeof(float) * 3;
 
   // Construct VBO and IBO that will be used to render the faces. Once again,
@@ -404,14 +404,25 @@ void ShowFieldModule::renderFacesLinear(
       mesh->get_point(points[i], nodes[i]);
     }
 
+    //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals) 
     {
+      Core::Geometry::Vector edge1 = points[1] - points[0];
+      Core::Geometry::Vector edge2 = points[2] - points[1];
+      Core::Geometry::Vector norm = Cross(edge1, edge2);
+
+      for (size_t i = 0; i < nodes.size(); i++)
+      {
+        normals[i] = norm;
+      }
+      /*
       for (size_t i = 0; i < nodes.size(); i++)
       {
         mesh->get_normal(normals[i], nodes[i]);
       }
+      */
     }
-
+   
     // Default color single face no matter the element data.
     if (colorScheme == GeometryObject::COLOR_UNIFORM)
     {
@@ -671,7 +682,7 @@ void ShowFieldModule::renderFacesLinear(
       if (state.get(RenderState::USE_TRANSPARENCY))
       {
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-                "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+          "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.4f)));
       }
       else
       {
@@ -686,7 +697,7 @@ void ShowFieldModule::renderFacesLinear(
       {
         /// \todo Add transparency slider.
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.4f)));
       }
       else
       {

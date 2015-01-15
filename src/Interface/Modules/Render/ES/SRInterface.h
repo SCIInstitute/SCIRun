@@ -212,10 +212,11 @@ namespace SCIRun {
 
 			// Apply uniform.
 			void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
+      
+      bool                            showOrientation_; ///< Whether the coordinate axes will render or not.
+      bool                            autoRotate_;      ///< Whether the scene will continue to rotate.
 
-			bool							showOrientation_; ///< Whether the coordinate axes will render or not.
-
-			MouseMode                       mMouseMode;       ///< Current mouse mode.
+      MouseMode                       mMouseMode;       ///< Current mouse mode.
 
 			size_t                          mScreenWidth;     ///< Screen width in pixels.
 			size_t                          mScreenHeight;    ///< Screen height in pixels.
