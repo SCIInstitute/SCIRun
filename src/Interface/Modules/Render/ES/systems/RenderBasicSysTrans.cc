@@ -287,15 +287,6 @@ public:
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
 
-    bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
-    bool cullFace = glIsEnabled(GL_CULL_FACE);
-    bool blend = glIsEnabled(GL_BLEND);
-
-    GL(glDepthMask(GL_FALSE));
-    GL(glDisable(GL_CULL_FACE));
-    GL(glEnable(GL_BLEND));
-    GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
     {
@@ -314,10 +305,14 @@ public:
 
     // Disable zwrite if we are rendering a transparent object.
     //if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
-    {
-      GL(glDepthMask(GL_FALSE));
-      GL(glDisable(GL_CULL_FACE));
-    }
+    bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+    bool cullFace = glIsEnabled(GL_CULL_FACE);
+    bool blend = glIsEnabled(GL_BLEND);
+
+    GL(glDepthMask(GL_FALSE));
+    GL(glDisable(GL_CULL_FACE));
+    GL(glEnable(GL_BLEND));
+    GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
     if (rlist.size() > 0)
     {
