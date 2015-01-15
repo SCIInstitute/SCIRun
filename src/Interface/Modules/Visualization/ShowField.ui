@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>308</width>
-    <height>539</height>
+    <height>555</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -63,6 +63,9 @@
             <height>324</height>
            </size>
           </property>
+          <property name="styleSheet">
+           <string notr="true">{text-color: white;}</string>
+          </property>
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -107,15 +110,15 @@
                 <property name="title">
                  <string>Node Coloring</string>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_6">
-                 <item>
+                <layout class="QGridLayout" name="gridLayout_5">
+                 <item row="0" column="0">
                   <widget class="QRadioButton" name="defaultNodeColoringButton_">
                    <property name="text">
                     <string>Default</string>
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="1" column="0">
                   <widget class="QRadioButton" name="colormapLookupNodeColoringButton_">
                    <property name="text">
                     <string>Colormap Lookup</string>
@@ -125,7 +128,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="2" column="0">
                   <widget class="QRadioButton" name="conversionRGBNodeColoringButton_">
                    <property name="text">
                     <string>Conversion to RGB</string>
@@ -143,8 +146,8 @@
                 <property name="title">
                  <string>Node Display Type</string>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_15">
-                 <item>
+                <layout class="QGridLayout" name="gridLayout_4">
+                 <item row="0" column="0">
                   <widget class="QRadioButton" name="nodesAsPointsButton_">
                    <property name="text">
                     <string>Points</string>
@@ -154,7 +157,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="1" column="0">
                   <widget class="QRadioButton" name="nodesAsSpheresButton_">
                    <property name="enabled">
                     <bool>true</bool>
