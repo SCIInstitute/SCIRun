@@ -1093,7 +1093,7 @@ void SCIRunMainWindow::setDataDirectoryFromGUI()
 
 bool SCIRunMainWindow::newInterface() const
 {
-  return Core::Application::Instance().parameters()->entireCommandLine().find("--experimentalGUI") != std::string::npos;
+  return Core::Application::Instance().parameters()->entireCommandLine().find("--originalGUI") == std::string::npos;
 }
 
 namespace {
