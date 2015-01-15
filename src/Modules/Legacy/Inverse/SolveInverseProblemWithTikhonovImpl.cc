@@ -693,7 +693,11 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
       }
       if (computeRegularizedInverse_)
       {
-        inverseMatrix_.reset(new DenseMatrix((regForMatrix.inverse() * forward_transpose) * CCtr));
+        if (CCtr.empty())
+          inverseMatrix_.reset(new DenseMatrix((regForMatrix.inverse() * forward_transpose)));
+        else
+          inverseMatrix_.reset(new DenseMatrix((regForMatrix.inverse() * forward_transpose) * CCtr));
+
         inverseSolution_.reset(new DenseMatrix(*inverseMatrix_ * *measuredData_));
       }
       else
