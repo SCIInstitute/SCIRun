@@ -261,6 +261,12 @@ IF(DISABLE_ExternalProject_UPDATE)
 ENDIF()
 
 ########################################################################
+# Download external data sources
+
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
+EXTERNAL_TOOLKITS()
+
+########################################################################
 # Configure zlib external project
 
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ZlibConfig.cmake)
