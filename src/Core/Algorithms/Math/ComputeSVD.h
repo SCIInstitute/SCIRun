@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Math/share.h>
@@ -35,19 +34,18 @@ namespace SCIRun {
 	namespace Core {
 		namespace Algorithms {
 			namespace Math {
-class SCISHARE ComputeSVDAlgorithm : public AlgorithmBase
-{
-	public:
-		ComputeSVDAlgorithm()
-		{};
+			
+			class SCISHARE ComputeSVDAlgo : public AlgorithmBase
+			{
+				public:
+					ComputeSVDAlgo() {}
+					
+					static AlgorithmInputName InputMatrix;
+					static AlgorithmOutputName LeftSingularMatrix;
+					static AlgorithmOutputName SingularValues;
+					static AlgorithmOutputName RightSingularMatrix;
+					void run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle LeftSingMat, Datatypes::DenseColumnMatrixHandle SingVals, Datatypes::DenseMatrixHandle RightSingMat) const;
+					AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+			};
 		
-		static AlgorithmInputName InputMatrix;
-		static AlgorithmOutputName LeftSingularMatrix;
-		static AlgorithmOutputName SingularValues;
-		static AlgorithmOutputName RightSingularMatrix;
-		void run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle LeftSingMat, Datatypes::DenseMatrixHandle RightSingMat, Datatypes::DenseColumnMatrixHandle SingVals) const;
-		AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-};
-
 }}}}

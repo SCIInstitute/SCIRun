@@ -158,7 +158,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
 	  ADD_MODULE_ALGORITHM(FlipSurfaceNormals,FlipSurfaceNormalsAlgo)
 	  ADD_MODULE_ALGORITHM(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixAlgorithm)
-	  ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgorithm);
+	  ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo);
     ;
   }
 }

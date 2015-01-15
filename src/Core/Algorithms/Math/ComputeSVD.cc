@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2010 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -27,141 +27,76 @@
 */
 
 #include <Core/Algorithms/Math/ComputeSVD.h>
-
-#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Eigen/Dense>
 #include <Eigen/SVD>
-//#include <Externals/eigen/Eigen/src/SVD/JacobiSVD.h>
-//#include <Core/Datatypes/MatrixFwd.h>
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
 
-void  ComputeSVDAlgorithm::run(MatrixHandle output_matrix, DenseMatrixHandle LeftSingMat, DenseMatrixHandle RightSingMat, DenseColumnMatrixHandle SingVals) const
+void ComputeSVDAlgo::run(MatrixHandle input_matrix, DenseMatrixHandle LeftSingMat, DenseColumnMatrixHandle SingVals, DenseMatrixHandle RightSingMat) const
 {
-	// Make sure that input is a dense matrix.
-	if(matrix_is::sparse(output_matrix))
-		matrix_convert::to_dense(output_matrix);
-		
-	int numRows = output_matrix->nrows();
-	int numCols = output_matrix->ncols();
+	if(matrix_is::sparse(input_matrix))
+		matrix_convert::to_dense(input_matrix);
 	
-	//Eigen::JacobiSVD<Eigen::MatrixXf> temp(numRows
-	Eigen::JacobiSVD<DenseMatrixGeneric<double>::EigenBase> temp(output_matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
-
-	DenseMatrix test1 = temp.matrixV();
+	int numRows, numCols;
+	Eigen::JacobiSVD<DenseMatrixGeneric<double>::EigenBase> svd_mat(input_matrix, Eigen::ComputeFullU | Eigen::ComputeFullV);
 	
-	numRows = test1.nrows();
-	numCols = test1.ncols();
-	
+	DenseMatrix temp_mat = svd_mat.matrixU();
+	numRows = temp_mat.nrows();
+	numCols = temp_mat.ncols();
 	for(int r = 0; r < numRows; r++) {
 		for(int c = 0; c < numCols; c++) {
-			double value = test1.get(r, c);
+			double value = temp_mat.get(r,c);
 			LeftSingMat->put(r, c, value);
 		}
 	}
 	
-	test1 = temp.matrixU();
+	temp_mat = svd_mat.matrixV();
+	numRows = temp_mat.nrows();
+	numCols = temp_mat.ncols();
 	for(int r = 0; r < numRows; r++) {
 		for(int c = 0; c < numCols; c++) {
-			double value = test1.get(r, c);
+			double value = temp_mat.get(r,c);
 			RightSingMat->put(r, c, value);
 		}
 	}
 	
-	DenseColumnMatrix test2 = temp.singularValues();
+	DenseColumnMatrix temp_vect = svd_mat.singularValues();
+	numRows = temp_vect.nrows();
+	numCols = temp_vect.ncols();
 	for(int r = 0; r < numRows; r++) {
-		for(int c = 0; c < numCols; c++) {
-			double value = test1.get(r, c);
+		for(int c = 0; c < numRows; c++) {
+			double value = temp_vect.get(r, c);
 			SingVals->put(r, c, value);
 		}
 	}
 	
-	
-	
-	 //matrix_convert::to_dense(test1);
-	
-	//matrix_convert::to_dense(temp);
-	//matrix_cast::to<DenseMatrix>(temp);
-	
-	//LeftSingMat = matrix_convert::to_dense(temp.matrixU());
-	//test2 = temp.matrixV();
-	//test3 = temp.singularValues();
-	
-	int x = temp.rows();
-	int y = temp.cols();
-	
-	//std::cout << temp.get(1,2) << std::endl;
-	
-	//DenseMatrixHandle k = ;
-    auto p = output_matrix;
-	p->MatrixBase::put(1,2,4);
-	p->MatrixBase::get(1,2);
-	
-	//Eigen::JacobiSVD(output_matrix);
-	
-	
-	for(int r = 0; r < numRows; r++) {
-		for(int c = 0; c < numCols; c++) {
-			double value = output_matrix->get(r,c);
-			//temp.DenseMatrixGeneric<double>::put(r,c,value);
-		}
-	}
-	DenseMatrixGeneric<double>::EigenBase test = temp.matrixU();
-	
-	
-	
-	
-	
-	/*
-	SVD_matrix = SVD_matrix.compute(temp, ComputeFullU | ComputeFullV);
-	
-	MatrixHandle return_matrix;
-	
-	numRows = SVD_matrix.rows();
-	numCols = SVD_matrix.cols();
-	
-	for(int r = 0; r < numRows; r++) {
-		for(int c = 0; c < numCols; c++) {
-			return_matrix->put(
-	*/
-	
 }
 
-
-AlgorithmOutput ComputeSVDAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ComputeSVDAlgo::run_generic(const AlgorithmInput& input) const
 {
 	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
 	
-	auto output_matrix = input_matrix;
+	matrix_convert::to_dense(input_matrix);
 	
 	DenseMatrixHandle LeftSingMat, RightSingMat;
 	DenseColumnMatrixHandle SingVals;
 	
-	run(output_matrix, LeftSingMat, RightSingMat, SingVals);
+	run(input_matrix, LeftSingMat, SingVals, RightSingMat);
 	
 	AlgorithmOutput output;
-	output[Variables::LeftSingularMatrix] = LeftSingMat;
-	output[Variables::RightSingularMatrix] = RightSingMat;
-	output[Variables::SingularValues] = SingVals;
+	
+	output[LeftSingularMatrix] = LeftSingMat;
+	output[SingularValues] = SingVals;
+	output[RightSingularMatrix] = RightSingMat;
 	
 	return output;
 }
-
-
-
-
-
-
-
-
-
-
-

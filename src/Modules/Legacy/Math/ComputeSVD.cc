@@ -28,20 +28,24 @@
 
 
 #include <Modules/Legacy/Math/ComputeSVD.h>
-#include <Core/Algorithms/Math/ComputeSVD.h>
+//#include <Core/Algorithms/Math/ComputeSVD.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
+//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
+//using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-ComputeSVD::ComputeSVD : Module(ModuleLoopupInfo("ComputeSVD", "Math", "SCIRun"),false);
+
+ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun"),false)
 {
 	INITIALIZE_PORT(InputMatrix);
+	//INITIALIZE_PORT(ResultMatrix);
 	INITIALIZE_PORT(LeftSingularMatrix);
 	INITIALIZE_PORT(SingularValues);
 	INITIALIZE_PORT(RightSingularMatrix);
@@ -55,7 +59,7 @@ void ComputeSVD::execute()
 	{
 		update_state(Executing);
 		
-		auto output = algo().run_generic(withInputData((InputMatrix. input_matrix)));
+		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
 		
 		sendOutputFromAlgorithm(LeftSingularMatrix, output);
 		sendOutputFromAlgorithm(SingularValues, output);
