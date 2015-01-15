@@ -57,7 +57,6 @@ class NetworkEditor;
 class PortWidgetManager;
 class DialogErrorControl;
 
-
 class ModuleWidgetDisplayBase
 {
 public:
@@ -164,6 +163,7 @@ Q_SIGNALS:
   void moduleStateUpdated(int state);
   void moduleSelected(bool selected);
   void displayChanged();
+  void requestModuleVisible();
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
@@ -179,7 +179,7 @@ private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
-  bool isMini_;
+  bool isMini_, errored_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 

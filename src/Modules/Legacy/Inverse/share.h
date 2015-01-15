@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,46 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_FORWARD_BUILDBEMATRIXDIALOG_H
-#define INTERFACE_MODULES_FORWARD_BUILDBEMATRIXDIALOG_H
+#undef SCISHARE
 
-#include "Interface/Modules/Forward/ui_BuildBEMatrix.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
-#include <Interface/Modules/Forward/share.h>
-
-namespace SCIRun {
-namespace Gui {
-
-class SCISHARE BuildBEMatrixDialog : public ModuleDialogGeneric,
-  public Ui::BuildBEMatrix
-{
-	Q_OBJECT
-
-public:
-  BuildBEMatrixDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-public Q_SLOTS:
-  virtual void updateFromPortChange(int numPorts) override;
-  virtual void pull() override;
-private Q_SLOTS:
-  void pullNames();
-  void pullFieldTypes();
-  void pullBoundaryConditions();
-  void pullInsides();
-  void pullOutsides();
-  void pushTable(int,int);
-  void pushNames();
-  void pushBoundaryConditions();
-  void pushInsides();
-  void pushOutsides();
-private:
-  QComboBox* makeComboBoxItem(int i) const;
-  QDoubleSpinBox* makeDoubleEntryItem(int row, int col) const;
-};
-
-}
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_Legacy_Inverse
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

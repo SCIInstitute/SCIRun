@@ -80,7 +80,31 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
   if (newInterface())
-    setStyleSheet("background-color: rgb(66,66,69); color: white; selection-color: yellow; selection-background-color: blue; border: 5px;");
+    setStyleSheet(
+      "background-color: rgb(66,66,69);"
+      "color: white;"
+      "selection-color: yellow;"
+      "selection-background-color: blue;"
+      //"border: 1px solid white;"
+      //"border-radius: 3px;"
+      "QPushButton {"
+      "    border: 2px solid #8f8f91;"
+      "  border - radius: 6px;"
+      "  background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+      "  stop : 0 #f6f7fa, stop: 1 #dadbde);"
+      "  min - width: 80px;"
+      "}"
+      "QPushButton:pressed{"
+      "background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+      "stop : 0 #dadbde, stop: 1 #f6f7fa);"
+      "}"
+      "QPushButton:flat{"
+      "          border: none; /* no border for a flat push button */"
+      "}"
+      "QPushButton:default {"
+      "border - color: navy; /* make the default button prominent */"
+      "}"
+      );
 
   dialogErrorControl_.reset(new DialogErrorControl(this));
   setupNetworkEditor();
@@ -1272,4 +1296,22 @@ void SCIRunMainWindow::adjustModuleDock(int state)
   bool dockable = dockableModulesCheckBox_->isChecked();
   actionPinAllModuleUIs_->setEnabled(dockable);
   Preferences::Instance().modulesAreDockable.setValue(dockable);
+}
+
+void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Shift)
+	{
+		statusBar()->showMessage("Network zoom active");
+	}
+  QMainWindow::keyPressEvent(event);
+}
+
+void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+	if (event->key() == Qt::Key_Shift)
+	{
+    statusBar()->showMessage("Network zoom inactive", 1000);
+	}
+  QMainWindow::keyPressEvent(event);
 }

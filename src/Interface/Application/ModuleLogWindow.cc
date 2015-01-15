@@ -43,6 +43,7 @@ ModuleLogWindow::ModuleLogWindow(const QString& moduleName, boost::shared_ptr<SC
 	setModal(false);  
 	setWindowTitle("Log for " + moduleName);
   setVisible(false);
+  buttonBox->button(QDialogButtonBox::Discard)->setText("Clear");
   connect(buttonBox->button(QDialogButtonBox::Discard), SIGNAL(clicked()), logTextEdit_, SLOT(clear()));
 }
 
@@ -53,9 +54,20 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
-		dialogErrorControl_->increaseCounter(); 
-		if(dialogErrorControl_->showDialog())
-				QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
+  dialogErrorControl_->increaseCounter();
+  if (dialogErrorControl_->showDialog())
+  {
+    QMessageBox* msgBox = new QMessageBox(parentWidget());
+    msgBox->setIcon(QMessageBox::Critical);
+    msgBox->setAttribute(Qt::WA_DeleteOnClose);
+    msgBox->setStandardButtons(QMessageBox::Ok);
+    auto showButton = msgBox->addButton("Show Module", QMessageBox::ApplyRole);
+    connect(showButton, SIGNAL(clicked()), this, SIGNAL(requestModuleVisible()));
+    msgBox->setWindowTitle(windowTitle());
+    msgBox->setText("Error in " + moduleName_ + "\n" + message);
+    msgBox->setModal(false);
+    msgBox->show();
+  }
 }
 
 ModuleLogger::ModuleLogger(ModuleLogWindow* window)

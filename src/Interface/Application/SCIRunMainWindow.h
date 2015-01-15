@@ -76,7 +76,9 @@ public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
 protected:
-  virtual void closeEvent(QCloseEvent* event);
+  virtual void closeEvent(QCloseEvent* event) override;
+  virtual void keyPressEvent(QKeyEvent *event) override;
+  virtual void keyReleaseEvent(QKeyEvent *event) override;
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
