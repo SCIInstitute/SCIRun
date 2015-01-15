@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-ComputeSVD::ComputeSVD : Module(ModuleLoopupInfo("ComputeSVD", "Math", "SCIRun"));
+ComputeSVD::ComputeSVD : Module(ModuleLoopupInfo("ComputeSVD", "Math", "SCIRun"),false);
 {
 	INITIALIZE_PORT(InputMatrix);
 	INITIALIZE_PORT(LeftSingularMatrix);
