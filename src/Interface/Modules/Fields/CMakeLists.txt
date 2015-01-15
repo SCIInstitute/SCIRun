@@ -50,13 +50,13 @@ SET(Interface_Modules_Fields_FORMS
   calculatedistancetofield.ui #TODO: fix case
   calculatedistancetofieldboundary.ui #TODO: fix case
   MapFieldDataOntoElems.ui
+  ConvertIndicesToFieldData.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
   RefineMesh.ui
   ConvertFieldBasis.ui
   swapfielddatawithmatrixentries.ui
   EditMeshBoundingBox.ui
-  ConvertIndicesToFieldData.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS

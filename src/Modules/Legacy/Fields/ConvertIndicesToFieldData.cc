@@ -29,6 +29,9 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h>
 #include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h> 
 #include <Core/Datatypes/Legacy/Field/Field.h> 
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 #include <Dataflow/Network/Module.h>
 
@@ -60,16 +63,15 @@ void ConvertIndicesToFieldData::setStateDefaults()
 void
 ConvertIndicesToFieldData::execute()
 {
-	auto input = getRequiredInput(InputField); 
-	auto matrixIn = getRequiredInput(InputMatrix); 
+	auto input_field = getRequiredInput(InputField); 
+	auto input_matrix = getRequiredInput(InputMatrix); 
 
 	if (needToExecute())
 	{ 
 		update_state(Executing);
 		setAlgoOptionFromState(Parameters::OutputFieldDataType); 
 		
-		auto inputs = make_input((InputField, input), (InputMatrix, matrixIn)); 
-		auto output = algo().run_generic(inputs); 
+		auto output = algo().run_generic(withInputData((InputField, input_field)(InputMatrix, input_matrix)));
 	
 		sendOutputFromAlgorithm(OutputField, output);
   }

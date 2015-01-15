@@ -40,8 +40,7 @@ ConvertIndicesToFieldDataDialog::ConvertIndicesToFieldDataDialog(const std::stri
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  addCheckBoxManager( dataTypeComboBox_, Parameters::OutputFieldDataType);
+  addComboBoxManager( dataTypeComboBox_, Parameters::OutputFieldDataType);
 }
 
 void ConvertIndicesToFieldDataDialog::pull()

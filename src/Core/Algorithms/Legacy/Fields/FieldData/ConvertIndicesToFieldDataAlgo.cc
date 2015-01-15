@@ -54,7 +54,7 @@ ConvertIndicesToFieldDataAlgo::ConvertIndicesToFieldDataAlgo()
 }
 
 bool
-ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle input_matrix, FieldHandle& output_field) const
+ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandle input_matrix, FieldHandle& output_field) const
 {
   ScopedAlgorithmStatusReporter r(this, "ConvertIndicesToFieldData");
 
@@ -166,7 +166,7 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
 		if (input_matrix->ncols() != 3)
 		{
 			auto dmht = dmh->transpose();
-			DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(dmht));
+			dmh.reset(new DenseMatrix(dmht)); 
 		}
 
 		double *dataptr = dmh->data();
@@ -191,7 +191,7 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
 		if ((input_matrix->ncols() != 6) && (input_matrix->ncols() != 9))
 		{
 			auto dmht = dmh->transpose();			
-			DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(dmht)); 
+			dmh.reset(new DenseMatrix(dmht));
 		}
 		
 		int max_index = dmh->nrows();
@@ -225,46 +225,12 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
 	// keep the compiler happy:
 	// it seems reasonable to return false if none of the cases apply (AK)
 	return (false);
-  //if (input_matrix)
-  //{
-  //  if (PreserveScalar)
-  //  {
-  //    set_algo_.set_option(set_algo_.keepTypeCheckBox, fi.get_data_type());
-  //  }
-  //  size_type numVal = 0;
-  //  auto denseInput = matrix_convert::to_dense(input_matrix);
-  //  if (set_algo_.verify_input_data(input_field, denseInput, numVal, fi))
-  //  {
-  //    output_field = set_algo_.run(input_field, denseInput);
-  //  }
-  //  else
-  //  {
-  //    THROW_ALGORITHM_INPUT_ERROR("Matrix dimensions do not match any of the fields dimensions");
-  //    CopyProperties(*input_field, *output_field);
-  //  }
-  //}
-  //else
-  //{
-  //  warning("No input matrix passing the field through");
-  //  output_field = input_field;
-  //}
-
-  //AlgorithmOutput output;
-  //output[Variables::OutputField] = output_field;
-
-  //return true;
 }
-
-//bool
-//ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input, MatrixHandle input_matrix, FieldHandle& output) const
-//{
-//  return runImpl(input, input_matrix, output);
-//}
 
 AlgorithmOutput ConvertIndicesToFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
-  auto inputmatrix = input.get<Matrix>(Variables::InputMatrix);
+  auto inputmatrix = input.get<DenseMatrix>(Variables::InputMatrix);
 
   FieldHandle output_field;
   if (!runImpl(field, inputmatrix, output_field))
