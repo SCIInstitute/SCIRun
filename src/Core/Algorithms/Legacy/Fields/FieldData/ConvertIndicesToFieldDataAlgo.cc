@@ -86,7 +86,7 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 		return (false);
 	}
 
-	size_type nrows = input_matrix->nrows();
+ 	size_type nrows = input_matrix->nrows();
 	size_type ncols = input_matrix->ncols();
 
 	std::string algotype;
@@ -141,12 +141,10 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 	VField* voutput = output_field->vfield();
 	voutput->resize_fdata();
 
-	DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(input_matrix));
-
 	if (algotype == "Scalar")
 	{
 		int max_index = input_matrix->nrows() * input_matrix->ncols();
-		double *dataptr = dmh->data();
+		const double *dataptr = input_matrix->data();
 		VMesh::size_type sz = vinput->num_values();
 		for (VMesh::index_type r = 0; r<sz; r++)
 		{
@@ -165,12 +163,11 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 	{
 		if (input_matrix->ncols() != 3)
 		{
-			auto dmht = dmh->transpose();
-			dmh.reset(new DenseMatrix(dmht)); 
+			input_matrix.reset(new DenseMatrix(input_matrix->transpose())); 
 		}
 
-		double *dataptr = dmh->data();
-		int max_index = dmh->nrows();
+		const double *dataptr = input_matrix->data();
+		int max_index = input_matrix->nrows();
 
 		VMesh::size_type sz = vinput->num_values();
 		for (VMesh::index_type r = 0; r<sz; r++)
@@ -190,13 +187,12 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 	{
 		if ((input_matrix->ncols() != 6) && (input_matrix->ncols() != 9))
 		{
-			auto dmht = dmh->transpose();			
-			dmh.reset(new DenseMatrix(dmht));
+			input_matrix.reset(new DenseMatrix(input_matrix->transpose())); 
 		}
 		
-		int max_index = dmh->nrows();
-		double *dataptr = dmh->data();
-		int ncols = dmh->ncols();
+		int max_index = input_matrix->nrows(); 
+		const double *dataptr = input_matrix->data(); 
+		int ncols = input_matrix->ncols(); 
 
 		VMesh::size_type sz = vinput->num_values();
 		for (VMesh::index_type r = 0; r<sz; r++)
