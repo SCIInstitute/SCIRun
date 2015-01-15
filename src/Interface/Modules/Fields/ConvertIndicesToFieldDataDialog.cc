@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Fields/ConvertIndicesToFieldDataDialog.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataDialog.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -41,7 +41,7 @@ ConvertIndicesToFieldDataDialog::ConvertIndicesToFieldDataDialog(const std::stri
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  addCheckBoxManager( dataTypeComboBox_, ConvertIndicesToFieldDataDialog::OutputFieldTypeData);
+  addCheckBoxManager( dataTypeComboBox_, Parameters::OutputFieldDataType);
 }
 
 void ConvertIndicesToFieldDataDialog::pull()

@@ -172,8 +172,8 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 	  ADD_MODULE_DIALOG(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixDialog)
 		ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
 		ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
-	ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
-	ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
+		ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
+		ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
   ;
 }
 

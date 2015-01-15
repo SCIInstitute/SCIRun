@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CONVERTINDICESTOFIELDDATADIALOG_H
-#define INTERFACE_MODULES_CONVERTINDICESTOFIELDDATADIALOG_H
+#ifndef INTERFACE_MODULES_CONVERT_INDICES_TO_FIELD_DATA_DIALOG_H
+#define INTERFACE_MODULES_CONVERT_INDICES_TO_FIELD_DATA_DIALOG_H
 
 #include "Interface/Modules/Fields/ui_ConvertIndicesToFieldData.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -37,7 +37,7 @@ namespace SCIRun {
 namespace Gui {
   
 class SCISHARE ConvertIndicesToFieldDataDialog : public ModuleDialogGeneric, 
-  public Ui::ConvertIndicesToFieldData
+	public Ui::ConvertIndicesToFieldData
 {
 	Q_OBJECT
 	

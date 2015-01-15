@@ -190,7 +190,7 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, MatrixHandle inp
 	{
 		if ((input_matrix->ncols() != 6) && (input_matrix->ncols() != 9))
 		{
-			auto dmht = dmh->transpose();
+			auto dmht = dmh->transpose();			
 			DenseMatrixHandle dmh(boost::make_shared<DenseMatrix>(dmht)); 
 		}
 		
