@@ -1070,13 +1070,14 @@ void SCIRunMainWindow::displayAcknowledgement()
 
 void SCIRunMainWindow::setDataDirectory(const QString& dir)
 {
-  scirunDataLineEdit_->setText(dir);
-  scirunDataLineEdit_->setToolTip(dir);
   if (!dir.isEmpty())
-	{
+  {
+    scirunDataLineEdit_->setText(dir);
+    scirunDataLineEdit_->setToolTip(dir);
+
     RemembersFileDialogDirectory::setStartingDir(dir);
-		Core::Preferences::Instance().setDataDirectory(dir.toStdString());
-	}
+    Core::Preferences::Instance().setDataDirectory(dir.toStdString());
+  }
 }
 
 QString SCIRunMainWindow::dataDirectory() const
