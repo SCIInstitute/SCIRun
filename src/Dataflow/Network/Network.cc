@@ -236,12 +236,10 @@ void Network::setModuleExecutionState(ModuleInterface::ExecutionState state, Mod
   if (settings().value("networkStateUpdateThread") == "yes")
   {
     boost::thread t(update);
-    std::cout << "threaded state update" << std::endl;
   }
   else // for now, just run in this thread
   {
     update();
-    std::cout << "non-threaded state update" << std::endl;
   }
 }
 
