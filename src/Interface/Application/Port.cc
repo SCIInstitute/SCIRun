@@ -75,7 +75,7 @@ namespace SCIRun {
         BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
         {
           const std::string& categoryName = category.first;
-          auto c = new QMenu(QString::fromStdString(categoryName), menu);
+          QList<QAction*> actions;
 
           BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
           {
@@ -84,13 +84,15 @@ namespace SCIRun {
               const std::string& moduleName = module.first;
               auto m = new QAction(QString::fromStdString(moduleName), menu);
               hookup(m);
-              c->addAction(m);
+              actions.append(m);
             }
           }
-          if (c->actions().count() > 0)
-            p->addMenu(c);
-          else
-            delete c;
+          if (!actions.empty())
+          {
+            auto m = new QMenu(QString::fromStdString(categoryName), menu);
+            m->addActions(actions);
+            p->addMenu(m);
+          }
         }
         menu->addSeparator();
       }
