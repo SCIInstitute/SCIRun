@@ -22,11 +22,7 @@
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticIBOMan.hpp>
 
-#include <bserialize/BSerialize.hpp>
-
-#include <Core/Datatypes/Geometry.h>
-
-#include "../comp/RenderBasicGeom.h"
+#include "../comp/RenderColorMapGeom.h"
 #include "../comp/SRRenderState.h"
 #include "../comp/RenderList.h"
 #include "../comp/StaticWorldLight.h"
@@ -41,9 +37,9 @@ namespace shaders = CPM_GL_SHADERS_NS;
 namespace SCIRun {
 namespace Render {
 
-class RenderBasicSysTrans :
+class RenderColorMapSysTrans :
     public es::GenericSystem<true,
-                             RenderBasicGeom,   // TAG class
+                             RenderColorMapGeom,   // TAG class
                              SRRenderState,
                              RenderList,
                              LightingUniforms,
@@ -51,21 +47,22 @@ class RenderBasicSysTrans :
                              gen::StaticGlobalTime,
                              ren::VBO,
                              ren::IBO,
+                             ren::Texture,
                              ren::CommonUniforms,
                              ren::VecUniform,
                              ren::MatUniform,
                              ren::Shader,
-														 ren::GLState,
-														 Core::Datatypes::GeometryObject::SpireSubPass,
+                             ren::GLState,
+                             Core::Datatypes::GeometryObject::SpireSubPass,
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
                              ren::StaticVBOMan,
-														 ren::StaticIBOMan>
+                             ren::StaticIBOMan>
 {
 public:
 
-  static const char* getName() {return "RenderBasicSysTrans";}
+  static const char* getName() {return "RenderColorMapSysTrans";}
 
   bool isComponentOptional(uint64_t type) override
   {
@@ -76,7 +73,7 @@ public:
                                   ren::VecUniform,
                                   ren::MatUniform>(type);
   }
-
+  
   class DepthIndex {
   public:
     size_t mIndex;
@@ -100,7 +97,7 @@ public:
 
   void groupExecute(
       es::ESCoreBase&, uint64_t /* entityID */,
-      const es::ComponentGroup<RenderBasicGeom>& geom,
+      const es::ComponentGroup<RenderColorMapGeom>& geom,
       const es::ComponentGroup<SRRenderState>& srstate,
       const es::ComponentGroup<RenderList>& rlist,
       const es::ComponentGroup<LightingUniforms>& lightUniforms,
@@ -108,24 +105,25 @@ public:
       const es::ComponentGroup<gen::StaticGlobalTime>& time,
       const es::ComponentGroup<ren::VBO>& vbo,
       const es::ComponentGroup<ren::IBO>& ibo,
+      const es::ComponentGroup<ren::Texture>& textures,
       const es::ComponentGroup<ren::CommonUniforms>& commonUniforms,
       const es::ComponentGroup<ren::VecUniform>& vecUniforms,
       const es::ComponentGroup<ren::MatUniform>& matUniforms,
       const es::ComponentGroup<ren::Shader>& shader,
-			const es::ComponentGroup<ren::GLState>& state,
-			const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
+      const es::ComponentGroup<ren::GLState>& state,
+      const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
-			const es::ComponentGroup<ren::StaticIBOMan>& iboMan) override
+      const es::ComponentGroup<ren::StaticIBOMan>& iboMan) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
       return;
     }
-    
+
     if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY))
     {
       return;
@@ -139,8 +137,8 @@ public:
 
     std::vector<DepthIndex> rel_depth(num_triangles);
     Core::Geometry::Vector dir(camera.front().data.worldToView[0][2], camera.front().data.worldToView[1][2], camera.front().data.worldToView[2][2]);
-    
-    for(size_t j = 0; j < num_triangles; j++)
+
+    for (size_t j = 0; j < num_triangles; j++)
     {
       float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (j * 3));
       Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
@@ -157,19 +155,6 @@ public:
 
     std::sort(rel_depth.begin(), rel_depth.end());
 
-    /*
-    // setup vertex buffers
-    std::vector<std::tuple<std::string, size_t, bool>> attributeData;
-    for (const auto& attribData : pass.front().vbo.attributes)
-    {
-    attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
-    }
-
-    std::string name = pass.front().vbo.name + "trans";
-
-    GLuint vboID = vboMan.front().instance->addInMemoryVBO(pass.front().vbo.data->getBuffer(), pass.front().vbo.data->getBufferSize(),
-    attributeData, name);
-    */
     // setup index buffers
 
     GLenum primType = GL_UNSIGNED_SHORT;
@@ -211,7 +196,7 @@ public:
     }
 
     int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
-    
+
     std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
     char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
     char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
@@ -239,14 +224,14 @@ public:
       //    actual simulation state.
       // 2) It is more correct than issuing a modify call. The data is used
       //    directly below to render geometry.
-      const_cast<RenderBasicGeom&>(geom.front()).attribs.setup(
-        vbo.front().glid, shader.front().glid, vboMan.front());
+      const_cast<RenderColorMapGeom&>(geom.front()).attribs.setup(
+          vbo.front().glid, shader.front().glid, vboMan.front());
 
       /// \todo Optimize by pulling uniforms only once.
       if (commonUniforms.size() > 0)
       {
         const_cast<ren::CommonUniforms&>(commonUniforms.front()).checkUniformArray(
-          shader.front().glid);
+            shader.front().glid);
       }
 
       if (vecUniforms.size() > 0)
@@ -293,17 +278,30 @@ public:
           trafo.front().transform, camera.front().data, time.front().globalTime);
     }
 
+    for (const ren::Texture& tex : textures)
+    {
+      if (tex.isSetUp() == false)
+      {
+        const_cast<ren::Texture&>(tex).checkUniform(shader.front().glid);
+        if (tex.isSetUp() == false)
+        {
+          return;
+        }
+      }
+    }
+
+    // Apply textures
+    for (const ren::Texture& tex : textures) { tex.applyUniform(); }
+
     // Apply vector uniforms (if any).
-    for (const ren::VecUniform& unif : vecUniforms) {unif.applyUniform();}
+    for (const ren::VecUniform& unif : vecUniforms) { unif.applyUniform(); }
     lightUniforms.front().applyUniform(worldLight.front().lightDir);
 
     // Apply matrix uniforms (if any).
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}
 
     geom.front().attribs.bind();
-
-    // Disable zwrite if we are rendering a transparent object.
-    //if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    
     bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
     bool cullFace = glIsEnabled(GL_CULL_FACE);
     bool blend = glIsEnabled(GL_BLEND);
@@ -315,12 +313,14 @@ public:
 
     if (rlist.size() > 0)
     {
+      // Render a color mapped list of VBOs/IBOs. We will be using the VBO and
+      // IBO attached to this object as the basic rendering primitive.
       glm::mat4 rlistTrafo = trafo.front().transform;
 
       GLint uniformColorLoc = 0;
       for (const ren::VecUniform& unif : vecUniforms)
       {
-        if (std::string(unif.uniformName) == "uColor")
+        if (std::string(unif.uniformName) == "uFieldData")
         {
           uniformColorLoc = unif.uniformLocation;
         }
@@ -334,11 +334,11 @@ public:
       CPM_BSERIALIZE_NS::BSerialize posDeserialize(
           rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
-      CPM_BSERIALIZE_NS::BSerialize colorDeserialize(
+      CPM_BSERIALIZE_NS::BSerialize dataDeserialize(
           rlist.front().data->getBuffer(), rlist.front().data->getBufferSize()); 
 
       int64_t posSize     = 0;
-      int64_t colorSize   = 0;
+      int64_t dataSize    = 0;
       int64_t stride      = 0;  // Stride of entire attributes buffer.
 
       // Determine stride for our buffer. Also determine appropriate position
@@ -351,17 +351,17 @@ public:
           if (stride != 0) {posDeserialize.readBytes(stride);}
           posSize = attrib.sizeInBytes;
         }
-        else if (attrib.name == "aColor")
+        else if (attrib.name == "aFieldData")
         {
-          if (stride != 0) {colorDeserialize.readBytes(stride);}
-          colorSize = attrib.sizeInBytes;
+          if (stride != 0) {dataDeserialize.readBytes(stride);}
+          dataSize = attrib.sizeInBytes;
         }
 
         stride += attrib.sizeInBytes;
       }
 
-      int64_t posStride   = stride - posSize;
-      int64_t colorStride = stride - colorSize;
+      int64_t posStride  = stride - posSize;
+      int64_t dataStride = stride - dataSize;
 
       // Render using a draw list. We will be using the VBO and IBO attached
       // to this object as the basic rendering primitive.
@@ -374,17 +374,14 @@ public:
         posDeserialize.readBytes(posStride);
 
         // Read color if available.
-        if (colorSize > 0)
+        if (dataSize > 0)
         {
-          float r = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
-          float g = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
-          float b = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
-          float a = static_cast<float>(colorDeserialize.read<uint8_t>()) / 255.0f;
-          if (colorDeserialize.getBytesLeft() > colorStride)
+          float data = dataDeserialize.read<float>();
+          if (dataDeserialize.getBytesLeft() > dataStride)
           {
-            colorDeserialize.readBytes(colorStride);
+            dataDeserialize.readBytes(dataStride);
           }
-          GL(glUniform4f(uniformColorLoc, r, g, b, a));
+          GL(glUniform1f(uniformColorLoc, data));
         }
 
         // Update transform.
@@ -426,8 +423,6 @@ public:
       }
     }
 
-    iboMan.front().instance->removeInMemoryIBO(iboID);
-
     if (depthMask)
     {
       GL(glDepthMask(GL_TRUE));
@@ -440,7 +435,7 @@ public:
     {
       GL(glDisable(GL_BLEND));
     }
-    		
+
     geom.front().attribs.unbind();
 
     // Reapply the default state here -- only do this if static state is
@@ -449,18 +444,17 @@ public:
     {
       defaultGLState.front().state.applyRelative(state.front().state);
     }
-
   }
 };
 
-void registerSystem_RenderBasicTransGeom(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_RenderColorMapTrans(CPM_ES_ACORN_NS::Acorn& core)
 {
-	core.registerSystem<RenderBasicSysTrans>();
+  core.registerSystem<RenderColorMapSysTrans>();
 }
 
-const char* getSystemName_RenderBasicTransGeom()
+const char* getSystemName_RenderColorMapTrans()
 {
-	return RenderBasicSysTrans::getName();
+  return RenderColorMapSysTrans::getName();
 }
 
 } // namespace Render
