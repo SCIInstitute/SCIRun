@@ -45,6 +45,7 @@ ModuleLogWindow::ModuleLogWindow(const QString& moduleName, boost::shared_ptr<SC
   setVisible(false);
   buttonBox->button(QDialogButtonBox::Discard)->setText("Clear");
   connect(buttonBox->button(QDialogButtonBox::Discard), SIGNAL(clicked()), logTextEdit_, SLOT(clear()));
+  logTextEdit_->setStyleSheet("background-color: lightgray;");
 }
 
 void ModuleLogWindow::appendMessage(const QString& message, const QColor& color /* = Qt::black */)

@@ -64,7 +64,7 @@
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">{text-color: white;}</string>
+           <string notr="true"/>
           </property>
           <property name="currentIndex">
            <number>0</number>

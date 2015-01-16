@@ -586,7 +586,7 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
   if (color == Qt::red)
   {
     errored_ = true;
-    updateBackgroundColor(moduleRGBA(237, 67, 55));
+    updateBackgroundColor(moduleRGBA(176, 23, 31));
   }
   currentDisplay_->getLogButton()->setStyleSheet(
     QString("* { background-color: %1 }")
