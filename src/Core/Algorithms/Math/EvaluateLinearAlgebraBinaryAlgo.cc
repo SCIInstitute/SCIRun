@@ -57,14 +57,20 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   switch (oper)
   {
   case ADD:
+    if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
+      THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to add matrices.");
     result.reset(lhs->clone());
     *result += *rhs;
     break;
   case SUBTRACT:
+    if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
+      THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to subtract matrices.");
     result.reset(lhs->clone());
     *result -= *rhs;
     break;
   case MULTIPLY:
+    if (lhs->ncols() != rhs->nrows())
+      THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to multiply matrices.");
     result.reset(lhs->clone());
     *result *= *rhs;
     break;

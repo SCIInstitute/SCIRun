@@ -36,11 +36,15 @@ using namespace SCIRun::Core::Algorithms::Forward;
 
 namespace TableColumns
 {
+  const int MinColumn = 0;
+  
   const int FieldName = 0;
   const int FieldType = 1;
   const int BoundaryCondition = 2;
   const int InsideConductivity = 3;
   const int OutsideConductivity = 4;
+
+  const int MaxColumn = OutsideConductivity + 1;
 };
 
 BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHandle state,
@@ -74,6 +78,7 @@ void BuildBEMatrixDialog::updateFromPortChange(int numPorts)
     // type is readonly
     auto type = tableWidget->item(i, FieldType);
     type->setFlags(type->flags() & ~Qt::ItemIsEditable);
+    pushTableRow(i);
   }
   pull();
   tableWidget->resizeColumnsToContents();
@@ -86,7 +91,7 @@ QComboBox* BuildBEMatrixDialog::makeComboBoxItem(int i) const
   bcList << "Measurement (Neumann)" << "Source (Dirichlet)";
   QComboBox* bcBox = new QComboBox();
   bcBox->addItems(bcList);
-  bcBox->setCurrentIndex(i == 0 ? 0 : 1);
+  bcBox->setCurrentIndex(i == 0 ? 1 : 0);
   connect(bcBox, SIGNAL(currentIndexChanged(int)), this, SLOT(pushBoundaryConditions()));
   return bcBox;
 }
@@ -111,6 +116,13 @@ void BuildBEMatrixDialog::pushTable(int row, int col)
     pushInsides();
   else if (OutsideConductivity == col)
     pushOutsides();
+}
+
+void BuildBEMatrixDialog::pushTableRow(int row)
+{
+  using namespace TableColumns;
+  for (int col = MinColumn; col < MaxColumn; ++col)
+    pushTable(row, col);
 }
 
 void BuildBEMatrixDialog::pushNames()
@@ -175,7 +187,6 @@ void BuildBEMatrixDialog::pushOutsides()
 
 void BuildBEMatrixDialog::pull()
 {
-  //std::cout << "BE pull" << std::endl;
   pullNames();
   pullFieldTypes();
   pullBoundaryConditions();

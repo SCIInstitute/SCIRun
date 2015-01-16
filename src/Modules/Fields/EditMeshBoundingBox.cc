@@ -44,49 +44,61 @@ const ModuleLookupInfo EditMeshBoundingBox::staticInfo_("EditMeshBoundingBox", "
 class BoxWidgetNull : public BoxWidgetInterface
 {
 public:
+  BoxWidgetNull(bool print = false) : print_(print) {}
   virtual void connect(OutputPortHandle port) override
   {
-    std::cout << "BoxWidgetNull::connect called" << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::connect called" << std::endl;
   }
   virtual void setRestrictX(bool restrict) override
   {
-    std::cout << "BoxWidgetNull::setRestrictX called with " << restrict << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::setRestrictX called with " << restrict << std::endl;
   }
   virtual void setRestrictY(bool restrict) override
   {
-    std::cout << "BoxWidgetNull::setRestrictY called with " << restrict << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::setRestrictY called with " << restrict << std::endl;
   }
   virtual void setRestrictZ(bool restrict) override
   {
-    std::cout << "BoxWidgetNull::setRestrictZ called with " << restrict << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::setRestrictZ called with " << restrict << std::endl;
   }
   virtual void setRestrictR(bool restrict) override
   {
-    std::cout << "BoxWidgetNull::setRestrictR called with " << restrict << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::setRestrictR called with " << restrict << std::endl;
   }
   virtual void setRestrictD(bool restrict) override
   {
-    std::cout << "BoxWidgetNull::setRestrictD called with " << restrict << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::setRestrictD called with " << restrict << std::endl;
   }
   virtual void setRestrictI(bool restrict) override
   {
-    std::cout << "BoxWidgetNull::setRestrictI called with " << restrict << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::setRestrictI called with " << restrict << std::endl;
   }
   virtual void unrestrictTranslation() override
   {
-    std::cout << "BoxWidgetNull::unrestrictTranslation called" << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::unrestrictTranslation called" << std::endl;
   }
   virtual void restrictTranslationXYZ() override
   {
-    std::cout << "BoxWidgetNull::restrictTranslationXYZ called" << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::restrictTranslationXYZ called" << std::endl;
   }
   virtual void restrictTranslationRDI() override
   {
-    std::cout << "BoxWidgetNull::restrictTranslationRDI called" << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::restrictTranslationRDI called" << std::endl;
   }
   virtual void setPosition(const Point& center, const Point& right, const Point& down, const Point& in) override
   {
-    std::cout << "BoxWidgetNull::setPosition called: " << center << " " << right << " " << down << " " << in << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::setPosition called: " << center << " " << right << " " << down << " " << in << std::endl;
     center_ = center;
     right_ = right;
     down_ = down;
@@ -94,7 +106,8 @@ public:
   }
   virtual void getPosition(Point& center, Point& right, Point& down, Point& in) const override
   {
-    std::cout << "BoxWidgetNull::getPosition called: " << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::getPosition called: " << std::endl;
     center = center_;
     right = right_;
     down = down_;
@@ -102,15 +115,18 @@ public:
   }
   virtual void setScale(double scale) override
   {
-    std::cout << "BoxWidgetNull::setScale called with " << scale << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::setScale called with " << scale << std::endl;
   }
   virtual void setCurrentMode(int mode) override
   {
-    std::cout << "BoxWidgetNull::setCurrentMode called with " << mode << std::endl;
+    if (print_)
+      std::cout << "BoxWidgetNull::setCurrentMode called with " << mode << std::endl;
   }
 
 private:
   Point center_, right_, down_, in_;
+  bool print_;
 };
 
 class WidgetFactory

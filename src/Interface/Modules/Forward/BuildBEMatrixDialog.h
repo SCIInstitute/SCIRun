@@ -56,6 +56,7 @@ private Q_SLOTS:
   void pullInsides();
   void pullOutsides();
   void pushTable(int,int);
+  void pushTableRow(int row);
   void pushNames();
   void pushBoundaryConditions();
   void pushInsides();

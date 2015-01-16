@@ -78,7 +78,6 @@ void BuildBEMatrix::execute()
     auto insideConds = state->getValue(Parameters::InsideConductivityList).toVector();
 
     BuildBEMatrixImpl impl(fieldNames, boundaryConditions, outsideConds, insideConds, this);
-    std::cout << "BEM" << std::endl;
     MatrixHandle transferMatrix = impl.executeImpl(inputs);
     auto fieldTypes = impl.getInputTypes();
     state->setTransientValue(Parameters::FieldTypeList, fieldTypes);
