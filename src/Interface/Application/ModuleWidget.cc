@@ -489,8 +489,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   resize(currentWidget()->size());
 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
-  theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::moduleStateUpdated, this, state)); });
-  connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
+  theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
+  //connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
@@ -611,12 +611,15 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
 
+  //TODO: very slow code, action disabled anyway--turning off for now
+#if 0
   auto replaceWith = actionsMenu_->getAction("Replace With");
   auto menu = new QMenu(this);
   replaceWith->setMenu(menu);
   fillReplaceWithMenu();
   connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+#endif
 
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));

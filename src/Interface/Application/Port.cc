@@ -65,6 +65,7 @@ namespace SCIRun {
         [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); });
     }
 
+    //TODO: lots of duplicated filtering here. Make smarter logic to cache based on port type, since it's the same menu for each type--just need to copy an existing one.
     void fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup)
     {
       BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
