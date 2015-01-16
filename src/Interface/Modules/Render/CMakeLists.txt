@@ -29,11 +29,13 @@
 
 SET(Interface_Modules_Render_FORMS
   ViewScene.ui
+  ViewSceneControls.ui
 )
 
 SET(Interface_Modules_Render_HEADERS
   share.h
   ViewScene.h
+  ViewSceneControlsDock.h
   GLWidget.h
   GLContext.h
   GLContextPlatformCompatibility.h
@@ -55,6 +57,7 @@ SET(Interface_Modules_Render_HEADERS
 
 SET(Interface_Modules_Render_SOURCES 
   ViewScene.cc
+  ViewSceneControlsDock.cc
   GLWidget.cc
   GLContext.cc
   QtGLContext.cc
