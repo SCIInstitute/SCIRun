@@ -158,9 +158,9 @@ namespace Datatypes {
           programName(program),
           renderState(state),
           renderType(renType),
-          mColorScheme(scheme),
 					vbo(vbo),
-					ibo(ibo)
+					ibo(ibo),
+          mColorScheme(scheme)
       {}
 
 			static const char* getName() { return "SpireSubPass"; }
