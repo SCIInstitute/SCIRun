@@ -42,11 +42,13 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 ALGORITHM_PARAMETER_DEF(Math, IsSliceColumn);
 ALGORITHM_PARAMETER_DEF(Math, SliceIndex);
+ALGORITHM_PARAMETER_DEF(Math, PlayMode);
 
 GetMatrixSliceAlgo::GetMatrixSliceAlgo()
 {
   addParameter(Parameters::IsSliceColumn, true);
   addParameter(Parameters::SliceIndex, 0);
+  addParameter(Parameters::PlayMode, false);
 }
 
 AlgorithmOutput GetMatrixSliceAlgo::run_generic(const AlgorithmInput& input) const

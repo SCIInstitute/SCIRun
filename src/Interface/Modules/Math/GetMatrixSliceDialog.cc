@@ -54,6 +54,9 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   connect(firstIndexButton_, SIGNAL(clicked()), this, SLOT(selectFirstIndex()));
   lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
   connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
+
+  playButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  connect(playButton_, SIGNAL(clicked()), this, SLOT(initiatePlay()));
 }
 
 void GetMatrixSliceDialog::pull()
@@ -82,4 +85,11 @@ void GetMatrixSliceDialog::selectFirstIndex()
 void GetMatrixSliceDialog::selectLastIndex()
 {
   std::cout << "end--needs requirements" << std::endl;
+}
+
+void GetMatrixSliceDialog::initiatePlay()
+{
+  std::cout << "play--needs requirements" << std::endl;
+  state_->setValue(Parameters::PlayMode, true);
+  Q_EMIT executeActionTriggered();
 }

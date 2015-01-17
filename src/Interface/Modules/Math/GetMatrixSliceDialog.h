@@ -35,14 +35,14 @@
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE GetMatrixSliceDialog : public ModuleDialogGeneric, 
+
+class SCISHARE GetMatrixSliceDialog : public ModuleDialogGeneric,
   public Ui::GetMatrixSlice
 {
 	Q_OBJECT
-	
+
 public:
-  GetMatrixSliceDialog(const std::string& name, 
+  GetMatrixSliceDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
@@ -51,6 +51,7 @@ private Q_SLOTS:
   void decrementIndex();
   void selectFirstIndex();
   void selectLastIndex();
+  void initiatePlay();
 };
 
 }
