@@ -96,7 +96,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
-
+	
 	addConfigurationDock(QString::fromStdString(name));
 }
 
@@ -365,9 +365,9 @@ void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::configurationButtonClicked()
 {
-	showConfiguration_ = !mConfigurationDock->isVisible();
-	mConfigurationDock->setEnabled(showConfiguration_);
-	mConfigurationDock->setVisible(showConfiguration_);
+  showConfiguration_ = !mConfigurationDock->isVisible();
+  mConfigurationDock->setEnabled(showConfiguration_);
+  mConfigurationDock->setVisible(showConfiguration_);
 }
 
 //------------------------------------------------------------------------------
@@ -376,24 +376,10 @@ void ViewSceneDialog::addToolBar()
 	mToolBar = new QToolBar(this);
 	mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
 
-	//addMouseMenu();
 	addAutoViewButton();
 	addObjectToggleMenu();
 
 	glLayout->addWidget(mToolBar);
-}
-
-void ViewSceneDialog::addMouseMenu(QWidget* widget)
-{
-	auto menu = new QComboBox(this);
-	menu->setToolTip("Change Mouse Controls");
-	menu->addItem("Legacy Mouse Control");
-	menu->addItem("New Mouse Control");
-	connect(menu, SIGNAL(currentIndexChanged(int)), this, SLOT(menuMouseControlChanged(int)));
-	menu->setCurrentIndex(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? 1 : 0);
-	menu->setParent(widget);
-	//mToolBar->addWidget(menu);
-	//mToolBar->addSeparator();
 }
 
 void ViewSceneDialog::addAutoViewButton()
@@ -501,78 +487,16 @@ void ViewSceneDialog::addConfigurationButton()
 
 void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 {
-	showConfiguration_ = false;
-  mConfigurationDock = new QDockWidget(this);
+  QString name = viewName + " Configuration";
+  mConfigurationDock = new ViewSceneControlsDock(name, this);
   mConfigurationDock->close();
-	QString name = viewName + " Configuration";
-	mConfigurationDock->setWindowTitle(name);
-	mConfigurationDock->setAllowedAreas(Qt::BottomDockWidgetArea);
-	mConfigurationDock->setFloating(true);
-	mConfigurationDock->setMinimumWidth(300);
-	mConfigurationDock->setMinimumHeight(150);
-	mConfigurationDock->setVisible(false);
-	mConfigurationDock->setEnabled(false);
 
-	QTabWidget* tabs = new QTabWidget(mConfigurationDock);
-	tabs->setFixedSize(300, 150);
-
-	// View Tab
-	QWidget* viewTab = new QWidget();
-	addShowOrientationCheckbox(viewTab);
-	QPushButton* upButton = new QPushButton(viewTab);
-	upButton->setToolTip("Rotate up");
-	//upButton->setText("Up");
-  upButton->setText("/\\");
-	upButton->setAutoDefault(false);
-	upButton->setDefault(false);
-	upButton->setGeometry(15, 25, 35, 25);
-	//connect(upButton, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-	QPushButton* downButton = new QPushButton(viewTab);
-	downButton->setToolTip("Rotate down");
-	//downButton->setText("Down");
-  downButton->setText("\\/");
-	downButton->setAutoDefault(false);
-	downButton->setDefault(false);
-	downButton->setGeometry(15, 75, 35, 25);
-
-	QPushButton* leftButton = new QPushButton(viewTab);
-	leftButton->setToolTip("Rotate left");
-	//leftButton->setText("Left");
-  leftButton->setText("<");
-	leftButton->setAutoDefault(false);
-	leftButton->setDefault(false);
-	leftButton->setGeometry(0, 50, 35, 25);
-
-	QPushButton* rightButton = new QPushButton(viewTab);
-	rightButton->setToolTip("Rotate right");
-	//rightButton->setText("Right");
-  rightButton->setText(">");
-	rightButton->setAutoDefault(false);
-	rightButton->setDefault(false);
-	rightButton->setGeometry(35, 50, 35, 25);
-
-	tabs->addTab(viewTab, "View");
-
-	// Control Tab
-	QWidget* controlTab = new QWidget();
-	addMouseMenu(controlTab);
-	tabs->addTab(controlTab, "Controls");
-
-
-}
-
-void ViewSceneDialog::addShowOrientationCheckbox(QWidget* widget)
-{
-	QCheckBox* showOrientationCheckBox = new QCheckBox(widget);
-	showOrientationCheckBox->setText("Orientation");
-	showOrientationCheckBox->setToolTip("Toggle Orientation Axes");
-	showOrientationCheckBox->setChecked(true);
-
-	connect(showOrientationCheckBox, SIGNAL(clicked(bool)), this, SLOT(showOrientationChecked(bool)));
+	showConfiguration_ = false; 
 }
 
 void ViewSceneDialog::closeConfigurationDock()
 {
+  showConfiguration_ = mConfigurationDock->isVisible();
   if (showConfiguration_)
   {
     configurationButtonClicked();

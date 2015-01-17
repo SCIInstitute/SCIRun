@@ -39,6 +39,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
+#include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/share.h>
 
@@ -56,6 +57,7 @@ namespace SCIRun {
   namespace Gui {
 
     class GLWidget;
+    class ViewSceneControlsDock;
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric,
       public Ui::ViewScene
@@ -89,7 +91,6 @@ namespace SCIRun {
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
       void addToolBar();
-      void addMouseMenu(QWidget* widget);
       void addAutoViewButton();
       void addObjectToggleMenu();
       void addViewBarButton();
@@ -97,7 +98,6 @@ namespace SCIRun {
       void addViewOptions();
       void addConfigurationButton();
       void addConfigurationDock(const QString& viewName);
-      void addShowOrientationCheckbox(QWidget* widget);
       void closeConfigurationDock();
 
       void lookDownAxisX(int upIndex, glm::vec3& up);
@@ -110,13 +110,14 @@ namespace SCIRun {
       QToolBar*                             mViewBar;             ///< Tool bar for view options.
       QComboBox*                            mDownViewBox;         ///< Combo box for Down axis options.
       QComboBox*                            mUpVectorBox;         ///< Combo box for Up Vector options.
-      QDockWidget*                          mConfigurationDock;   ///< Dock holding configuration functions
-      
+      ViewSceneControlsDock*                mConfigurationDock;   ///< Dock holding configuration functions               mConfigurationDialog; ///< Menu holding configuration functions
+
       bool shown_;
       bool hideViewBar_;
       bool showConfiguration_;
       std::shared_ptr<class ViewSceneItemManager> itemManager_;
 
+      friend class ViewSceneControlsDock;
 		};
 
 		class ViewSceneItemManager : public QObject

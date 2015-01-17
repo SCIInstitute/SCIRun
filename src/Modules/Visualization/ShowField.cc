@@ -618,7 +618,7 @@ void ShowFieldModule::renderFacesLinear(
 
     if (state.get(RenderState::USE_TRANSPARENCY))
     {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(0.75f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(0.4f)));
     }
     else
     {
