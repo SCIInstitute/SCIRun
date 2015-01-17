@@ -40,6 +40,7 @@
 #include "systems/RenderBasicSys.h"
 #include "systems/RenderBasicSysTrans.h"
 #include "systems/RenderColorMapSys.h"
+#include "systems/RenderColorMapSysTrans.h"
 
 namespace SCIRun {
 namespace Render {
@@ -52,6 +53,7 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
   registerSystem_RenderBasicGeom(core);
 	registerSystem_RenderBasicTransGeom(core);
   registerSystem_RenderColorMap(core);
+  registerSystem_RenderColorMapTrans(core);
 
   // Register components
   core.registerComponent<StaticSRInterface>();
