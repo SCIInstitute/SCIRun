@@ -1023,9 +1023,11 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
 
 static void printInfo(const DenseMatrix& m, const std::string& name)
 {
+#if 0
   std::cout << name << ": " << m.rows() << " x " << m.cols() << std::endl;
   std::cout << name << " min: " << m.minCoeff() << std::endl;
   std::cout << name << " max: " << m.maxCoeff() << std::endl;
+#endif
 }
 
 MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
@@ -1128,14 +1130,14 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       if (i == sourcefieldindices[j])
       {
         auto block = EJ.blockRef(i,j);
-        std::cout << "EJ block auto " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
+        //std::cout << "EJ block auto " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
 
         make_auto_G_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }
       else
       {
         auto block = EJ.blockRef(i,j);
-        std::cout << "EJ block cross " << i << "," << j << " is size " << block.rows() << " x " << block.cols()/* << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
+        //std::cout << "EJ block cross " << i << "," << j << " is size " << block.rows() << " x " << block.cols()/* << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
 
         make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }

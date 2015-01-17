@@ -481,17 +481,14 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   currentDisplay_ = isMini_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
   setCurrentIndex(isMini_ ? miniIndex_ : fullIndex_);
 
+  makeOptionsDialog();
   createPorts(*theModule_);
   addPorts(currentIndex());
 
-  //std::cout << "current widget size: " << currentWidget()->size().width() << " " << currentWidget()->size().height() << std::endl;
   resize(currentWidget()->size());
 
-  makeOptionsDialog();
-
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
-  theModule_->connectExecutionStateChanged(boost::bind(&ModuleWidget::moduleStateUpdated, this, _1));
-  connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
+  theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
@@ -586,7 +583,7 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
   if (color == Qt::red)
   {
     errored_ = true;
-    updateBackgroundColor(moduleRGBA(237, 67, 55));
+    updateBackgroundColor(moduleRGBA(176, 23, 31));
   }
   currentDisplay_->getLogButton()->setStyleSheet(
     QString("* { background-color: %1 }")
@@ -612,12 +609,15 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
 
+  //TODO: very slow code, action disabled anyway--turning off for now
+#if 0
   auto replaceWith = actionsMenu_->getAction("Replace With");
   auto menu = new QMenu(this);
   replaceWith->setMenu(menu);
   fillReplaceWithMenu();
   connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+#endif
 
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));

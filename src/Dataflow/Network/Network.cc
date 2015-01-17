@@ -233,9 +233,14 @@ void Network::setModuleExecutionState(ModuleInterface::ExecutionState state, Mod
   };
 
   //TODO: possible fix for network execute delay. Need to test with users.
-  //boost::thread t(update);
-  // for now, just run in this thread
-  update();
+  if (settings().value("networkStateUpdateThread") == "yes")
+  {
+    boost::thread t(update);
+  }
+  else // for now, just run in this thread
+  {
+    update();
+  }
 }
 
 void Network::clear()

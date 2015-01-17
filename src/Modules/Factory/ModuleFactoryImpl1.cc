@@ -83,6 +83,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/FlipSurfaceNormals.h>
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h>
+#include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h> 
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
@@ -185,6 +186,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
   addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix", "Math", "SCIRun", "...", "...");
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
+  addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
 
   // insert module desc here

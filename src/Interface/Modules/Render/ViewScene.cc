@@ -374,6 +374,7 @@ void ViewSceneDialog::configurationButtonClicked()
 void ViewSceneDialog::addToolBar()
 {
 	mToolBar = new QToolBar(this);
+	mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
 
 	addAutoViewButton();
 	addObjectToggleMenu();

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,37 +24,37 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#include <QApplication>
-#include <QMessageBox>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
 
-using namespace SCIRun::Gui;
+#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTINDICESTOFIELDDATAALGO_H
+#define CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTINDICESTOFIELDDATAALGO_H 1
 
-int GuiApplication::run(int argc, const char* argv[])
-{
-  try
-  {
-    QApplication app(argc, const_cast<char**>(argv));
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
+        ALGORITHM_PARAMETER_DECL(OutputFieldDataType);
 
-    return app.exec();
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return 1;
-  }
-  catch (...)
-  {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return 1;
+				class SCISHARE	ConvertIndicesToFieldDataAlgo : public AlgorithmBase
+        {
+        public:
+					ConvertIndicesToFieldDataAlgo();
+
+          bool runImpl(FieldHandle input_field, Datatypes::DenseMatrixHandle input_matrix, FieldHandle& output_field)const;
+
+         // bool runImpl(FieldHandle input, Datatypes::MatrixHandle input_matrix, FieldHandle& output) const;
+
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
+      }
+    }
   }
 }
+
+#endif
+

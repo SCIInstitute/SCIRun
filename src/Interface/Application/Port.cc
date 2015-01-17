@@ -65,6 +65,7 @@ namespace SCIRun {
         [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); });
     }
 
+    //TODO: lots of duplicated filtering here. Make smarter logic to cache based on port type, since it's the same menu for each type--just need to copy an existing one.
     void fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup)
     {
       BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
@@ -75,7 +76,7 @@ namespace SCIRun {
         BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
         {
           const std::string& categoryName = category.first;
-          auto c = new QMenu(QString::fromStdString(categoryName), menu);
+          QList<QAction*> actions;
 
           BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
           {
@@ -84,13 +85,15 @@ namespace SCIRun {
               const std::string& moduleName = module.first;
               auto m = new QAction(QString::fromStdString(moduleName), menu);
               hookup(m);
-              c->addAction(m);
+              actions.append(m);
             }
           }
-          if (c->actions().count() > 0)
-            p->addMenu(c);
-          else
-            delete c;
+          if (!actions.empty())
+          {
+            auto m = new QMenu(QString::fromStdString(categoryName), menu);
+            m->addActions(actions);
+            p->addMenu(m);
+          }
         }
         menu->addSeparator();
       }
@@ -371,6 +374,7 @@ void PortWidget::addConnection(ConnectionLine* c)
 
 void PortWidget::removeConnection(ConnectionLine* c)
 {
+  disconnect(c);
   connections_.erase(c);
   if (connections_.empty())
     setConnected(false);

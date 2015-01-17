@@ -26,35 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <QMessageBox>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#include <Interface/Modules/Fields/ConvertIndicesToFieldDataDialog.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-int GuiApplication::run(int argc, const char* argv[])
+ConvertIndicesToFieldDataDialog::ConvertIndicesToFieldDataDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  try
-  {
-    QApplication app(argc, const_cast<char**>(argv));
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addComboBoxManager( dataTypeComboBox_, Parameters::OutputFieldDataType);
+}
 
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-
-    return app.exec();
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return 1;
-  }
-  catch (...)
-  {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return 1;
-  }
+void ConvertIndicesToFieldDataDialog::pull()
+{
+  pull_newVersionToReplaceOld();
 }

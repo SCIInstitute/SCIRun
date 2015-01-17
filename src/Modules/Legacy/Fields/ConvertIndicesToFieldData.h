@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <QMessageBox>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#ifndef MODULES_LEGACY_FIELDS_CONVERTINDICESTOFIELDDATA_H__
+#define MODULES_LEGACY_FIELDS_CONVERTINDICESTOFIELDDATA_H__
 
-using namespace SCIRun::Gui;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-int GuiApplication::run(int argc, const char* argv[])
-{
-  try
-  {
-    QApplication app(argc, const_cast<char**>(argv));
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+      class SCISHARE ConvertIndicesToFieldData : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, MatrixPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ConvertIndicesToFieldData();
 
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
+        virtual void execute();
+        virtual void setStateDefaults();
 
-    return app.exec();
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return 1;
-  }
-  catch (...)
-  {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return 1;
+        INPUT_PORT(0, InputField, LegacyField);
+				INPUT_PORT(1, InputMatrix, Matrix);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+				
+				static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
   }
 }
+
+#endif

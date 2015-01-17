@@ -44,6 +44,7 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //TODO: remove
 #include <Dataflow/Network/NetworkSettings.h> //TODO: push
 #include <Core/Application/Preferences/Preferences.h>
+#include <Core/Application/Application.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
@@ -127,6 +128,10 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
     connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
       this, SLOT(connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+
+    //TODO: duplication
+    const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
+    controller_->getSettings().setValue("networkStateUpdateThread", value);
   }
 }
 
@@ -818,6 +823,10 @@ SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork() const
 void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
   controller_->loadNetwork(xml);
+
+  //TODO: duplication
+  const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
+  controller_->getSettings().setValue("networkStateUpdateThread", value);
 }
 
 size_t NetworkEditor::numModules() const

@@ -126,7 +126,8 @@ namespace SCIRun {
   {
 	  // Generate synchronous filesystem, manually add its static component,
 	  // then mark it as non-serializable.
-	  std::string filesystemRoot = ""; // Should set this to the relative path containing static data.
+    std::string filesystemRoot = SCIRun::Core::Application::Instance().executablePath().string();
+    filesystemRoot += boost::filesystem::path::preferred_separator;
 	  fs::StaticFS fileSystem(
 		  std::shared_ptr<fs::FilesystemSync>(new fs::FilesystemSync(filesystemRoot)));
 	  mCore.addStaticComponent(fileSystem);
