@@ -485,12 +485,10 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   createPorts(*theModule_);
   addPorts(currentIndex());
 
-  //std::cout << "current widget size: " << currentWidget()->size().width() << " " << currentWidget()->size().height() << std::endl;
   resize(currentWidget()->size());
 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
-  //connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
