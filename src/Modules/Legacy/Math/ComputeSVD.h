@@ -38,8 +38,7 @@ namespace SCIRun {
 		
 		class SCISHARE ComputeSVD : public Dataflow::Networks::Module,
 			public Has1InputPort<MatrixPortTag>,
-			//public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-			public Has1OutputPort<MatrixPortTag>
+			public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
 			{
 				public:
 					ComputeSVD();
@@ -47,9 +46,9 @@ namespace SCIRun {
 					virtual void execute();
 					
 					INPUT_PORT(0, InputMatrix, Matrix);
-					OUTPUT_PORT(0, LeftSingularMatrix, DenseMatrix);
-					OUTPUT_PORT(1, SingularValues, DenseMatrix);
-					OUTPUT_PORT(2, RightSingularMatrix, DenseColumnMatrix);
+					OUTPUT_PORT(0, ResultMatrix, DenseMatrix);
+					OUTPUT_PORT(1, Result, DenseMatrix);
+					OUTPUT_PORT(2, OutputMatrix, DenseColumnMatrix);
 			
 			};
 			

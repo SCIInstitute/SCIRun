@@ -45,30 +45,45 @@ void ComputeSVDAlgo::run(MatrixHandle input_matrix, DenseMatrixHandle LeftSingMa
 {
 	if(matrix_is::sparse(input_matrix))
 		matrix_convert::to_dense(input_matrix);
+		
+	std::cout << "Before SVD initialization" << std::endl;
+	std::cin.get();
 	
 	int numRows, numCols;
 	Eigen::JacobiSVD<DenseMatrixGeneric<double>::EigenBase> svd_mat(input_matrix, Eigen::ComputeFullU | Eigen::ComputeFullV);
 	
-	DenseMatrix temp_mat = svd_mat.matrixU();
-	numRows = temp_mat.nrows();
-	numCols = temp_mat.ncols();
+	std::cout << "About to compute matrixU" << std::endl;
+	std::cin.get();
+	DenseMatrixGeneric<double>::EigenBase temp_mat = svd_mat.matrixU();
+	std::cout << "Initializing rows." << std::endl;
+	std::cin.get();
+	numRows = temp_mat.rows();
+	numCols = temp_mat.cols();
+	std::cout << "Converting matrix" << std::endl;
+	std::cin.get();
+	/*
 	for(int r = 0; r < numRows; r++) {
 		for(int c = 0; c < numCols; c++) {
 			double value = temp_mat.get(r,c);
 			LeftSingMat->put(r, c, value);
 		}
 	}
-	
+	*/
+	std::cout << "About to compute matrixV" << std::endl;
+	std::cin.get();
 	temp_mat = svd_mat.matrixV();
-	numRows = temp_mat.nrows();
-	numCols = temp_mat.ncols();
+	numRows = temp_mat.rows();
+	numCols = temp_mat.cols();
+	/*
 	for(int r = 0; r < numRows; r++) {
 		for(int c = 0; c < numCols; c++) {
 			double value = temp_mat.get(r,c);
 			RightSingMat->put(r, c, value);
 		}
 	}
-	
+	*/
+	std::cout << "About to compute singular values" << std::endl;
+	std::cin.get();
 	DenseColumnMatrix temp_vect = svd_mat.singularValues();
 	numRows = temp_vect.nrows();
 	numCols = temp_vect.ncols();
@@ -80,6 +95,10 @@ void ComputeSVDAlgo::run(MatrixHandle input_matrix, DenseMatrixHandle LeftSingMa
 	}
 	
 }
+
+//AlgorithmInput ComputeSVDAlgo::LeftSingularMatrix("LeftSingularMatrix");
+//AlgorithmInput ComputeSVDAlgo::SingularValues("SingularValues");
+//AlgorithmInput ComputeSVDAlgo::RightSingularMatrix("RightSingularMatrix");
 
 AlgorithmOutput ComputeSVDAlgo::run_generic(const AlgorithmInput& input) const
 {
@@ -94,9 +113,9 @@ AlgorithmOutput ComputeSVDAlgo::run_generic(const AlgorithmInput& input) const
 	
 	AlgorithmOutput output;
 	
-	output[LeftSingularMatrix] = LeftSingMat;
-	output[SingularValues] = SingVals;
-	output[RightSingularMatrix] = RightSingMat;
+	output[Variables::ResultMatrix] = LeftSingMat;
+	output[Variables::Result] = SingVals;
+	output[Variables::OutputMatrix] = RightSingMat;
 	
 	return output;
 }

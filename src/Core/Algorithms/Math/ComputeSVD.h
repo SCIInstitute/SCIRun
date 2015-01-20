@@ -41,11 +41,11 @@ namespace SCIRun {
 					ComputeSVDAlgo() {}
 					
 					static AlgorithmInputName InputMatrix;
-					static AlgorithmOutputName LeftSingularMatrix;
-					static AlgorithmOutputName SingularValues;
-					static AlgorithmOutputName RightSingularMatrix;
+					static AlgorithmOutputName ResultMatrix;
+					static AlgorithmOutputName Result;
+					static AlgorithmOutputName OutputMatrix;
 					void run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle LeftSingMat, Datatypes::DenseColumnMatrixHandle SingVals, Datatypes::DenseMatrixHandle RightSingMat) const;
-					AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+					virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 			};
 		
 }}}}

@@ -46,9 +46,9 @@ ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun
 {
 	INITIALIZE_PORT(InputMatrix);
 	//INITIALIZE_PORT(ResultMatrix);
-	INITIALIZE_PORT(LeftSingularMatrix);
-	INITIALIZE_PORT(SingularValues);
-	INITIALIZE_PORT(RightSingularMatrix);
+	INITIALIZE_PORT(ResultMatrix);
+	INITIALIZE_PORT(Result);
+	INITIALIZE_PORT(OutputMatrix);
 }
 
 void ComputeSVD::execute()
@@ -61,9 +61,9 @@ void ComputeSVD::execute()
 		
 		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
 		
-		sendOutputFromAlgorithm(LeftSingularMatrix, output);
-		sendOutputFromAlgorithm(SingularValues, output);
-		sendOutputFromAlgorithm(RightSingularMatrix, output);
+		sendOutputFromAlgorithm(ResultMatrix, output);
+		sendOutputFromAlgorithm(Result, output);
+		sendOutputFromAlgorithm(OutputMatrix, output);
 		
 	}
 }
