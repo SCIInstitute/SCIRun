@@ -70,6 +70,6 @@ void main()
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
   spec              = pow(spec, uSpecularPower);
-  gl_FragColor      = diffuse * spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor;
+  gl_FragColor      = vec4((diffuse * spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor).rgb, uDiffuseColor.a);
 }
 
