@@ -68,8 +68,9 @@ DEALINGS IN THE SOFTWARE.
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "systems/RenderBasicSys.h"
-#include "systems/RenderBasicSysTrans.h"
 #include "systems/RenderColorMapSys.h"
+#include "systems/RenderTransBasicSys.h"
+#include "systems/RenderTransColorMapSys.h"
 
 using namespace std::placeholders;
 
