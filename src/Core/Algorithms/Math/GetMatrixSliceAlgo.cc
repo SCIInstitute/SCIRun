@@ -81,7 +81,7 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
       auto sparse = matrix_cast::as_sparse(matrix);
       if (sparse)
         return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->col(index)), max);
-      return nullptr;
+      return boost::make_tuple(nullptr, 0);
     }
   }
   else
@@ -98,7 +98,7 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
       auto sparse = matrix_cast::as_sparse(matrix);
       if (sparse)
         return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->row(index)), max);
-      return nullptr;
+      return boost::make_tuple(nullptr, 0);
     }
   }
 }
