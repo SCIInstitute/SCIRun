@@ -75,6 +75,8 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
   state->setValue(NodeAsPoints, true);
   state->setValue(NodeAsSpheres, false);
+  state->setValue(FaceTransparency, 0.75f);
+  transparencyValue_ = 0.75f;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
@@ -150,6 +152,8 @@ RenderState ShowFieldModule::getFaceRenderState(
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool());
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+
+  transparencyValue_ = (float)(state->getValue(ShowFieldModule::FaceTransparencyValue).toDouble());
 
   if (colorMap)
   {
@@ -618,7 +622,7 @@ void ShowFieldModule::renderFacesLinear(
 
     if (state.get(RenderState::USE_TRANSPARENCY))
     {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(0.4f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(transparencyValue_)));
     }
     else
     {
@@ -682,7 +686,7 @@ void ShowFieldModule::renderFacesLinear(
       if (state.get(RenderState::USE_TRANSPARENCY))
       {
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-          "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.4f)));
+          "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), transparencyValue_)));
       }
       else
       {
@@ -697,7 +701,7 @@ void ShowFieldModule::renderFacesLinear(
       {
         /// \todo Add transparency slider.
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.4f)));
+          "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), transparencyValue_)));
       }
       else
       {
@@ -1662,6 +1666,7 @@ AlgorithmParameterName ShowFieldModule::FaceInvertNormals("FaceInvertNormals");
 AlgorithmParameterName ShowFieldModule::NodeAsPoints("NodeAsPoints");
 AlgorithmParameterName ShowFieldModule::NodeAsSpheres("NodeAsSpheres");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
+AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
 
 
 
