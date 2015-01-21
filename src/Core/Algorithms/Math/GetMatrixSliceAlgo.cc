@@ -42,6 +42,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 ALGORITHM_PARAMETER_DEF(Math, IsSliceColumn);
 ALGORITHM_PARAMETER_DEF(Math, SliceIndex);
+ALGORITHM_PARAMETER_DEF(Math, MaxIndex);
 ALGORITHM_PARAMETER_DEF(Math, PlayMode);
 
 GetMatrixSliceAlgo::GetMatrixSliceAlgo()
@@ -57,43 +58,46 @@ AlgorithmOutput GetMatrixSliceAlgo::run_generic(const AlgorithmInput& input) con
   auto outputMatrix = runImpl(inputMatrix, get(Parameters::SliceIndex).toInt(), get(Parameters::IsSliceColumn).toBool());
 
   AlgorithmOutput output;
-  output[Variables::OutputMatrix] = outputMatrix;
+  output[Variables::OutputMatrix] = outputMatrix.get<0>();
+  output.setAdditionalAlgoOutput(boost::make_shared<Variable>(Name("maxIndex"), outputMatrix.get<1>()));
 
   return output;
 }
 
-MatrixHandle GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, int index, bool getColumn) const
+boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix, int index, bool getColumn) const
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(matrix, "Input matrix");
   if (getColumn)
   {
     checkIndex(index, matrix->ncols());
+    auto max = matrix->ncols() - 1;
 
     // dense case only now
     auto dense = matrix_cast::as_dense(matrix);
     if (dense)
-      return boost::make_shared<DenseMatrix>(dense->col(index));
+      return boost::make_tuple(boost::make_shared<DenseMatrix>(dense->col(index)), max);
     else
     {
       auto sparse = matrix_cast::as_sparse(matrix);
       if (sparse)
-        return boost::make_shared<SparseRowMatrix>(sparse->col(index));
+        return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->col(index)), max);
       return nullptr;
     }
   }
   else
   {
     checkIndex(index, matrix->nrows());
+    auto max = matrix->nrows() - 1;
 
     // dense case only now
     auto dense = matrix_cast::as_dense(matrix);
     if (dense)
-      return boost::make_shared<DenseMatrix>(dense->row(index));
+      return boost::make_tuple(boost::make_shared<DenseMatrix>(dense->row(index)), max);
     else
     {
       auto sparse = matrix_cast::as_sparse(matrix);
       if (sparse)
-        return boost::make_shared<SparseRowMatrix>(sparse->row(index));
+        return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->row(index)), max);
       return nullptr;
     }
   }

@@ -55,13 +55,22 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
   connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
 
+  connect(indexSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeActionTriggered()));
+
   playButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
-  connect(playButton_, SIGNAL(clicked()), this, SLOT(initiatePlay()));
+  connect(playButton_, SIGNAL(clicked()), this, SLOT(startPlay()));
+  pauseButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPause));
+  connect(pauseButton_, SIGNAL(clicked()), this, SLOT(stopPlay()));
+
+  playButton_->setDisabled(true);
+  pauseButton_->setDisabled(true);
 }
 
 void GetMatrixSliceDialog::pull()
 {
   pull_newVersionToReplaceOld();
+  Pulling p(this);
+  indexSlider_->setMaximum(state_->getValue(Parameters::MaxIndex).toInt());
 }
 
 void GetMatrixSliceDialog::incrementIndex()
@@ -84,12 +93,20 @@ void GetMatrixSliceDialog::selectFirstIndex()
 
 void GetMatrixSliceDialog::selectLastIndex()
 {
-  std::cout << "end--needs requirements" << std::endl;
+  indexSpinBox_->setValue(indexSlider_->maximum());
+  Q_EMIT executeActionTriggered();
 }
 
-void GetMatrixSliceDialog::initiatePlay()
+void GetMatrixSliceDialog::startPlay()
 {
   std::cout << "play--needs requirements" << std::endl;
   state_->setValue(Parameters::PlayMode, true);
+  Q_EMIT executeActionTriggered();
+}
+
+void GetMatrixSliceDialog::stopPlay()
+{
+  std::cout << "pause--needs requirements" << std::endl;
+  state_->setValue(Parameters::PlayMode, false);
   Q_EMIT executeActionTriggered();
 }

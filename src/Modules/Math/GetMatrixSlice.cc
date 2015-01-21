@@ -60,6 +60,7 @@ void GetMatrixSlice::execute()
     setAlgoIntFromState(Parameters::SliceIndex);
     auto output = algo().run(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(OutputMatrix, output);
+    get_state()->setValue(Parameters::MaxIndex, output.additionalAlgoOutput()->toInt());
 
     /*
     auto playMode = get_state()->getValue(Parameters::PlayMode).toBool();

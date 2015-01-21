@@ -51,7 +51,8 @@ private Q_SLOTS:
   void decrementIndex();
   void selectFirstIndex();
   void selectLastIndex();
-  void initiatePlay();
+  void startPlay();
+  void stopPlay();
 };
 
 }
