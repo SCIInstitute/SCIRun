@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Application/version.h>
+#include <Core/Application/Version.h>
 
-const std::string GIT_VERSION_TAG = "@VERSION_TAG@";
-const std::string GIT_COMMIT_SHA = "@VERSION_HASHVAR@";
+const std::string VersionInfo::GIT_VERSION_TAG = "@VERSION_TAG@";
+const std::string VersionInfo::GIT_COMMIT_SHA = "@VERSION_HASHVAR@";

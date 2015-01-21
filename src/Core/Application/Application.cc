@@ -173,7 +173,7 @@ std::string Application::commandHelpString() const
 
 std::string Application::version() const
 {
-  return GIT_VERSION_TAG.empty() ? "5.0.0 developer version" : GIT_VERSION_TAG;
+  return VersionInfo::GIT_VERSION_TAG.empty() ? "5.0.0 developer version" : VersionInfo::GIT_VERSION_TAG;
 }
 
 boost::filesystem::path Application::configDirectory() const

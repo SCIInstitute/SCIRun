@@ -24,14 +24,19 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #ifndef SCIRUN_GIT_VERSION_H
 #define SCIRUN_GIT_VERSION_H
 
 #include <string>
+#include <Core/Application/share.h>
 
-extern const std::string GIT_VERSION_TAG;
-extern const std::string GIT_COMMIT_SHA;
+class SCISHARE VersionInfo
+{
+public:
+  static const std::string GIT_VERSION_TAG;
+  static const std::string GIT_COMMIT_SHA;
+};
 
 #endif

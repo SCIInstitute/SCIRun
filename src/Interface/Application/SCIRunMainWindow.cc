@@ -58,6 +58,7 @@
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
+#include <Core/Application/Version.h>
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -295,6 +296,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   provenanceWindow_->hide();
 
   hideNonfunctioningWidgets();
+
+  statusBar()->addPermanentWidget(new QLabel("Version: " + QString::fromStdString(VersionInfo::GIT_VERSION_TAG)));
 
   //parseStyleXML();
 }
