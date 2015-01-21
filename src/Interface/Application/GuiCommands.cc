@@ -68,6 +68,7 @@ bool QuitAfterExecuteCommandGui::execute()
 bool QuitCommandGui::execute()
 {
   SCIRunMainWindow::Instance()->quit();
+  exit(0);
   return true;
 }
 
