@@ -43,7 +43,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
 {
   addParameter(Variables::Operator, 0);
   addParameter(Variables::ScalarValue, 0);
-	addParameter(Variables::FunctionString, "x+10");
+	addParameter(Variables::FunctionString, std::string("x+10"));
 }
 
 EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const

@@ -41,7 +41,7 @@ using namespace SCIRun;
 EvaluateLinearAlgebraBinaryAlgorithm::EvaluateLinearAlgebraBinaryAlgorithm()
 {
   addParameter(Variables::Operator, 0);
-	addParameter(Variables::FunctionString, "x+y");
+	addParameter(Variables::FunctionString, std::string("x+y"));
 }
 
 EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
