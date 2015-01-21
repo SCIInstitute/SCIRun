@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
-    <height>375</height>
+    <width>396</width>
+    <height>531</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -266,29 +266,42 @@
           </layout>
          </widget>
          <widget class="QWidget" name="page_3">
-          <layout class="QFormLayout" name="formLayout_2">
+          <layout class="QGridLayout" name="gridLayout_5">
            <item row="0" column="0">
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Number of Points:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="lambdaNumberSpinBox_">
-               <property name="maximum">
-                <number>9999999</number>
-               </property>
-               <property name="value">
-                <number>10</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Number of Points:</string>
+             </property>
+            </widget>
            </item>
            <item row="2" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Lambda Maximum:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Lambda Minimum:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="lCurveMinDoubleSpinBox_">
+             <property name="decimals">
+              <number>9</number>
+             </property>
+             <property name="minimum">
+              <double>-99999999.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>99999999.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="2">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QLabel" name="label_7">
@@ -306,10 +319,33 @@
              </item>
             </layout>
            </item>
-           <item row="1" column="0">
+           <item row="3" column="0" colspan="2">
             <widget class="QTextEdit" name="lCurveTextEdit_">
              <property name="readOnly">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QDoubleSpinBox" name="lCurveMaxDoubleSpinBox_">
+             <property name="decimals">
+              <number>9</number>
+             </property>
+             <property name="minimum">
+              <double>-99999999.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>999999999.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="lambdaNumberSpinBox_">
+             <property name="maximum">
+              <number>9999999</number>
+             </property>
+             <property name="value">
+              <number>10</number>
              </property>
             </widget>
            </item>
