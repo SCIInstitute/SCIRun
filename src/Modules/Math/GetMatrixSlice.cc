@@ -61,6 +61,7 @@ void GetMatrixSlice::execute()
     auto output = algo().run(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(OutputMatrix, output);
 
+    /*
     auto playMode = get_state()->getValue(Parameters::PlayMode).toBool();
     if (playMode)
     {
@@ -76,5 +77,6 @@ void GetMatrixSlice::execute()
         enqueueExecuteAgain();
       }
     }
+    */
   }
 }
