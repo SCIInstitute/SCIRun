@@ -489,7 +489,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   /// use SplitFieldByDomainAlgo to find only labeled (based on elc. normal criteria) surfaces
   VMesh::Elem::index_type c_ind=0;
   SplitFieldByDomainAlgo algo2;
-  algo2.setUpdaterFunc(getUpdaterFunc());
   algo2.setLogger(getLogger());
   FieldList output;  
   algo2.set(SplitFieldByDomainAlgo::SortBySize, true);
