@@ -440,7 +440,7 @@ void SCIRunMainWindow::setupQuitAfterExecute()
 void SCIRunMainWindow::exitApplication(int code)
 {
   close();
-  /*qApp->*/exit(code);
+  qApp->exit(code);
 }
 
 void SCIRunMainWindow::quit()
