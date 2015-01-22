@@ -30,7 +30,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Modules/Fields/BoxWidgetTypes.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -220,21 +219,34 @@ void EditMeshBoundingBox::clear_vals()
   state->setValue(InputSizeZ, cleared);
 }
 
+// Borrowed from SCIRun4 -- Float to Byte
+static uint8_t COLOR_FTOB(double v)
+{
+    const int inter = static_cast<int>(v * 255 + 0.5);
+    if (inter > 255) return 255;
+    if (inter < 0) return 0;
+    return static_cast<uint8_t>(inter);
+}
+
 void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 {
   Point center;
   Vector size;
 
-  BBox bbox = f->vmesh()->get_bounding_box();
+  bbox_ = f->vmesh()->get_bounding_box();
 
-  if (!bbox.valid())
+  if (!bbox_.valid())
   {
     warning("Input field is empty -- using unit cube.");
-    bbox.extend(Point(0, 0, 0));
-    bbox.extend(Point(1, 1, 1));
+    bbox_.extend(Point(0, 0, 0));
+    bbox_.extend(Point(1, 1, 1));
   }
-  size = bbox.diagonal();
-  center = bbox.center();
+  size = bbox_.diagonal();
+  center = bbox_.center();
+  box_->setPosition(center,
+                    center + Vector(size.x() / 2., 0, 0),
+                    center + Vector(0, size.y() / 2., 0),
+                    center + Vector(0, 0, size.z() / 2.));
 
   auto state = get_state();
   state->setValue(InputCenterX, boost::lexical_cast<std::string>(center.x()));
@@ -247,15 +259,143 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 
 bool EditMeshBoundingBox::isBoxEmpty() const
 {
-  //TODO
-  return true;
-  /*
-  reset || box_scale_.get() <= 0 ||
-    (box_center_.get() == Point(0.0, 0.0, 0.0) &&
-    box_right_.get() == Point(0.0, 0.0, 0.0) &&
-    box_down_.get() == Point(0.0, 0.0, 0.0) &&
-    box_in_.get() == Point(0.0, 0.0, 0.0)))
-    */
+  Point c,r,d,b;
+  box_->getPosition(c,r,d,b);
+  return (c == r) || (c == d) || (c == b);
+}
+
+Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
+    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
+    /// \todo Cylinder edge rendering.
+    
+    GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
+        
+    ColorRGB vcol0(1,1,1);
+    
+    // Attempt some form of precalculation of iboBuffer and vboBuffer size.
+    int iboSize = 24 * sizeof(uint32_t);
+    int vboSize = 8 * sizeof(float) * 7;
+
+    
+    /// \todo To reduce memory requirements, we can use a 16bit index buffer.
+    
+    /// \todo To further reduce a large amount of memory, get rid of the index
+    ///       buffer and use glDrawArrays to render without an IBO. An IBO is
+    ///       a waste of space.
+    ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
+    
+    /// \todo Switch to unique_ptrs and move semantics.
+    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
+                                                                new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
+                                                                new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
+    
+    // Accessing the pointers like this is contrived. We only do this for
+    // speed since we will be using the pointers in a tight inner loop.
+    CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
+    CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+    
+    int64_t numVBOElements = 12;
+    std::vector<std::pair<Point,Point>> bounding_edges;
+    //get all the bbox edges
+    Point c,r,d,b;
+    box_->getPosition(c,r,d,b);
+    Vector x = r - c, y = d - c, z = b - c;
+    std::vector<Point> points;
+    points.resize(8);
+    points.at(0) = c+x+y+z;
+    points.at(1) = c+x+y-z;
+    points.at(2) = c+x-y+z;
+    points.at(3) = c+x-y-z;
+    points.at(4) = c-x+y+z;
+    points.at(5) = c-x+y-z;
+    points.at(6) = c-x-y+z;
+    points.at(7) = c-x-y-z;
+    uint32_t indicies[] = {
+        0,1,0,2,0,4,
+        7,6,7,5,7,3,
+        4,5,4,6,5,1,
+        3,2,3,1,6,2
+    };
+    for(size_t i = 0; i < 24; i++) iboBuffer->write(indicies[i]);
+    
+    for (Point p : points)
+    {
+        // Write first point on line
+        vboBuffer->write(static_cast<float>(p.x()));
+        vboBuffer->write(static_cast<float>(p.y()));
+        vboBuffer->write(static_cast<float>(p.z()));
+        // Writes uint8_t out to the VBO. A total of 4 bytes.
+        vboBuffer->write(COLOR_FTOB(vcol0.r()));
+        vboBuffer->write(COLOR_FTOB(vcol0.g()));
+        vboBuffer->write(COLOR_FTOB(vcol0.b()));
+        vboBuffer->write(COLOR_FTOB(1.0));
+    }
+    
+    std::string uniqueNodeID = "bounding_edge";
+    std::string vboName      = uniqueNodeID + "VBO";
+    std::string iboName      = uniqueNodeID + "IBO";
+    std::string passName     = uniqueNodeID + "Pass";
+    
+    // NOTE: Attributes will depend on the color scheme. We will want to
+    // normalize the colors if the color scheme is COLOR_IN_SITU.
+    
+    // Construct VBO.
+    std::string shader = "Shaders/UniformColor";
+    std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+    GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
+    
+    // If true, then the VBO will be placed on the GPU. We don't want to place
+    // VBOs on the GPU when we are generating rendering lists.
+    bool vboOnGPU = true;
+    
+    std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+    
+    /// \todo Use cylinders...
+    // if (state.get(RenderState::USE_SPHERE))
+    // {
+    //   renderType = GeometryObject::RENDER_RLIST_SPHERE;
+    //   vboOnGPU = false;
+    // }
+    
+    GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+                                                                numVBOElements, bbox_, vboOnGPU);
+    
+    geom->mVBOs.push_back(geomVBO);
+    
+    // Construct IBO.
+    
+    GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
+    
+    geom->mIBOs.push_back(geomIBO);
+    //render state
+    RenderState renState;
+    
+    renState.set(RenderState::IS_ON, true);
+    renState.set(RenderState::USE_TRANSPARENCY, false);
+    
+    renState.set(RenderState::USE_SPHERE, false);
+    
+    renState.defaultColor = ColorRGB(vcol0);
+    
+    renState.defaultColor = vcol0;
+    
+    // Construct Pass.
+    // Build pass for the edges.
+    /// \todo Find an appropriate place to put program names like UniformColor.
+    GeometryObject::SpireSubPass pass =
+    GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+                                 colorScheme, renState, renderType, geomVBO, geomIBO);
+    
+    // Add all uniforms generated above to the pass.
+    for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
+
+    geom->mPasses.push_back(pass);
+    
+    /// \todo Add spheres and other glyphs as display lists. Will want to
+    ///       build up to geometry / tesselation shaders if support is present.
+    return geom;
 }
 
 void
@@ -362,6 +502,8 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
   widgetid_ = ogport->addObj(widget_group, "EditMeshBoundingBox Transform widget", &widget_lock_);
   ogport->flushViews();
 #endif
+    GeometryHandle geom = buildGeometryObject();
+    sendOutput(Transformation_Widget, geom);
 }
 
 void EditMeshBoundingBox::setBoxRestrictions()

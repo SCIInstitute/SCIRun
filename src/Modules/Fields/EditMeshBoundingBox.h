@@ -31,6 +31,8 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/share.h>
+#include <Modules/Fields/BoxWidgetTypes.h>
+#include <Core/Datatypes/Geometry.h>
 
 namespace SCIRun {
 
@@ -102,6 +104,8 @@ namespace Fields {
     void widget_moved(bool);
     void createBoxWidget();
     void setBoxRestrictions();
+    Core::Datatypes::GeometryHandle buildGeometryObject();
+    SCIRun::Core::Geometry::BBox bbox_;
 
     BoxWidgetPtr box_;
     boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
