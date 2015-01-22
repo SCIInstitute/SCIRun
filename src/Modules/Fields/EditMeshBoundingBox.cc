@@ -219,15 +219,6 @@ void EditMeshBoundingBox::clear_vals()
   state->setValue(InputSizeZ, cleared);
 }
 
-// Borrowed from SCIRun4 -- Float to Byte
-static uint8_t COLOR_FTOB(double v)
-{
-    const int inter = static_cast<int>(v * 255 + 0.5);
-    if (inter > 255) return 255;
-    if (inter < 0) return 0;
-    return static_cast<uint8_t>(inter);
-}
-
 void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 {
   Point center;
@@ -268,7 +259,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
     /// \todo Cylinder edge rendering.
     
-    GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
+    GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_IN_SITU);
         
     ColorRGB vcol0(1,1,1);
     
@@ -326,10 +317,10 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
         vboBuffer->write(static_cast<float>(p.y()));
         vboBuffer->write(static_cast<float>(p.z()));
         // Writes uint8_t out to the VBO. A total of 4 bytes.
-        vboBuffer->write(COLOR_FTOB(vcol0.r()));
-        vboBuffer->write(COLOR_FTOB(vcol0.g()));
-        vboBuffer->write(COLOR_FTOB(vcol0.b()));
-        vboBuffer->write(COLOR_FTOB(1.0));
+        vboBuffer->write(static_cast<float>(vcol0.r()));
+        vboBuffer->write(static_cast<float>(vcol0.g()));
+        vboBuffer->write(static_cast<float>(vcol0.b()));
+        vboBuffer->write(static_cast<float>(1.0));
     }
     
     std::string uniqueNodeID = "bounding_edge";
@@ -341,9 +332,10 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     // normalize the colors if the color scheme is COLOR_IN_SITU.
     
     // Construct VBO.
-    std::string shader = "Shaders/UniformColor";
+    std::string shader = "Shaders/InSituColor";
     std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
     GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
     
     // If true, then the VBO will be placed on the GPU. We don't want to place
