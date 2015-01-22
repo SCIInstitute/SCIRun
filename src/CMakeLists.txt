@@ -77,9 +77,37 @@ IF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 ENDIF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
 
+########################################################################
+# Git revision details
+
+# Appends the cmake/modules path to MAKE_MODULE_PATH variable.
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules ${CMAKE_MODULE_PATH})
+
+# Make a version file containing the current version from git.
+include(GetGitRevisionDescription)
+git_describe(VERSION_TAG --tag)
+git_describe(VERSION_BRANCH --all)
+get_git_head_revision(VERSION_REFSPEC VERSION_HASHVAR)
+
+MESSAGE(STATUS "Git version tag: " "${VERSION_TAG}")
+MESSAGE(STATUS "Git version branch: " "${VERSION_BRANCH}")
+MESSAGE(STATUS "Git version commit hash: " "${VERSION_HASHVAR}")
+
+#TODO: parse the version information into pieces.
+#string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${VERSION}")
+#string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${VERSION}")
+#string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" VERSION_PATCH "${VERSION}")
+#string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${VERSION}")
+#set(VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules/Version.cc.in
+ ${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc)
+set(version_file "${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc")
+
 
 ########################################################################
 # SCIRUN version number.
+# TODO: update using parsed tag from above
 
 SET(SCIRUN_VERSION_MAJOR "5")
 SET(SCIRUN_VERSION_MINOR "0")
@@ -290,10 +318,11 @@ IF(WITH_TETGEN)
   ADD_DEFINITIONS(-DWITH_TETGEN)
 ENDIF(WITH_TETGEN)
 
-
 ########################################################################
 # Configure CPM and Spire - http://github.com/iauns/cpm
 # Configure CPM and Spire - http://github.com/CIBC-Internal/cpm
+
+MESSAGE(STATUS "Configuring CPMs")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -316,7 +345,7 @@ endif()
 include(${CPM_DIR}/CPM.cmake)
 
 # TODO: Add tags for *all* of the CPM modules. This will allow upstream
-# flexibility. Once all versions are appopriately tagged, I will be able
+# flexibility. Once all versions are appropriately tagged, I will be able
 # to untag upstream and keep it moving forward.
 
 # ++ MODULE: GL Platform
@@ -390,6 +419,8 @@ CPM_AddModule("bserialize"
   USE_EXISTING_VER TRUE)
 
 CPM_Finish()
+
+MESSAGE(STATUS "Done configuring CPMs")
 
 ########################################################################
 # Copy Spire-SCIRun specific assets and shaders
@@ -774,8 +805,6 @@ ENDIF()
 
 ########################################################################
 # Custom CMake settings for CPack
-
-SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules")
 
 ########################################################################
 # CPack

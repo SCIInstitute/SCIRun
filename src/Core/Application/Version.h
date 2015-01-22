@@ -24,38 +24,19 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#ifndef INTERFACE_MODULES_MATH_GETMATRIXSLICE_H
-#define INTERFACE_MODULES_MATH_GETMATRIXSLICE_H
+#ifndef SCIRUN_GIT_VERSION_H
+#define SCIRUN_GIT_VERSION_H
 
-#include "Interface/Modules/Math/ui_GetMatrixSlice.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <string>
+#include <Core/Application/share.h>
 
-namespace SCIRun {
-namespace Gui {
-
-class SCISHARE GetMatrixSliceDialog : public ModuleDialogGeneric,
-  public Ui::GetMatrixSlice
+class SCISHARE VersionInfo
 {
-	Q_OBJECT
-
 public:
-  GetMatrixSliceDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
-private Q_SLOTS:
-  void incrementIndex();
-  void decrementIndex();
-  void selectFirstIndex();
-  void selectLastIndex();
-  void startPlay();
-  void stopPlay();
+  static const std::string GIT_VERSION_TAG;
+  static const std::string GIT_COMMIT_SHA;
 };
-
-}
-}
 
 #endif

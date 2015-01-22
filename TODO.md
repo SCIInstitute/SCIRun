@@ -8,39 +8,38 @@ User Requests
 
     + better network parameter editing
     + maybe a network wizard?
-    + show what files are being used, network file name 
+    + show what files are being used, network file name
     + better network parameter editing
 
   - more example nets
   - more documentation, more sample networks (very useful for demonstrating module functionality)
-  - undo
   - must work with clipboard (through Qt support?)
   - search modules, networks for keywords
 
     + see Matlab descriptors at the top of source files as an example
-    + when searching for modules, can we have the option of searching within the module text (i.e. search module GUI component names, variable names etc.) 
+    + when searching for modules, can we have the option of searching within the module text (i.e. search module GUI component names, variable names etc.)
 
   - error reporting should not kill SCIRun
 
-    + For example, if you end up with an empty field in your network, and you have a bounding box displayed for that field, the bounding box calculation asserts that the diagonal is zero and aborts the program, which is bad. Instead, an error should be displayed and the user should be able to change the network to fix the problem. 
+    + For example, if you end up with an empty field in your network, and you have a bounding box displayed for that field, the bounding box calculation asserts that the diagonal is zero and aborts the program, which is bad. Instead, an error should be displayed and the user should be able to change the network to fix the problem.
 
   - port colors: change intensities, not just colors
 
-    + get updated palette from Nathan 
+    + get updated palette from Nathan
 
   - standardize field names etc.
 
-    + i.e. interpolation: source -> target, object -> target, source -> object 
+    + i.e. interpolation: source -> target, object -> target, source -> object
 
   - support for transparent background in images or movies (image library)
   - image or movie resolution options (can we generate higher resolution images than displayed?)
-  - first time use window 
-  - Nifti reader for SCIRun	
+  - first time use window
+  - Nifti reader for SCIRun
   - STL file support
   - Add preset location for saving SCIRun network files
   - Parser modules need better error reporting
   - Actually implement ColorMap2DSemantics module
-  - list field properties	
+  - list field properties
   - if statement module
   - SCIRun should be able to read "obj" format meshes
   - Simple importer for 1D colormaps
@@ -54,24 +53,24 @@ User Requests
   - hover or hot key to expose some module parameters
   - side pane to expose some module parameters
 
-    + expose important dataset parameters too (size, dims, data info etc.) 
+    + expose important dataset parameters too (size, dims, data info etc.)
 
   - easier way to do notes
 
     + copy notes with modules
     + easy way to edit or clear notes
     + easy way to manipulate note location
-    + render text on top of pipes 
+    + render text on top of pipes
 
   - better graph layout algorithms?
 
     + look into graphviz, others?
     + line up modules
-    + expose-like (OS X) 
+    + expose-like (OS X)
 
-  - Change exponential widget behavior to be more intuitive	
+  - Change exponential widget behavior to be more intuitive
   - Add GUI element for indicating result of "Clear Output" button of module CollectMatrices
-  - Add string port to Read / Write Nrrd	
+  - Add string port to Read / Write Nrrd
   - Add support for newer Matlab file format
   - Add cylinder to vector glyph types
   - ShowMatrix module should detect matrix dimensions
@@ -82,7 +81,7 @@ User Requests
 * Networks
 
   - halt network without killing SCIRun
-  - stop module in network 
+  - stop module in network
 
 * Subnets
 
@@ -93,22 +92,22 @@ User Requests
   - import network into other network
 
     + choice to import as subnet or register network
-    + choice to save subnet as separate file 
+    + choice to save subnet as separate file
 
   - 'Duplicate' should work on multiply-selected modules
-  
-Qt Migration 
+
+Qt Migration
 ============
 
 * Basic GUI Redesign
 
   - Determine overall look and feel.
-  
+
     + Background color of network editor
-    + Placement of main window widgets--match current design at first? 
-     
+    + Placement of main window widgets--match current design at first?
+
   - Redesigning major parts of the main window.
-  
+
     + Menu bar
     + Context menus
     + Toolbars
@@ -118,92 +117,92 @@ Qt Migration
     + Module progress indicators
     + Module general settings: port caching, info on ports, general info: available in "drawer" subwidget
     + Tooltips
-    + Command window 
-     
-  - CIBC:Documentation:SCIRun:DevTasks:SCIRunGuiFeatureList 
+    + Command window
 
-* Major Development Milestones 
+  - CIBC:Documentation:SCIRun:DevTasks:SCIRunGuiFeatureList
 
-  - All menu options/preferences work 
+* Major Development Milestones
+
+  - All menu options/preferences work
   - Can walk through entire SCIRun tutorial!
-  - At this point, all essential modules should be converted. Can begin converting other individual modules. 
+  - At this point, all essential modules should be converted. Can begin converting other individual modules.
 
 * Core
 
   - Discuss memory model for Matrix/Arrays/etc.
   - Move namespace SCIRunAlgo into SCIRun::Algo to remove need for using directives in headers.
   - Replace Thread library with Boost.
-  - Boost threading notes. 
+  - Boost threading notes.
 
 * IO
 
   - is there a way we can display a brief blurb describing file importer and exporter plugin information (i.e. show a short description of the file types supported, file extensions etc.)?
-  - change file importer and exporter plugin function pointer table to functors 
+  - change file importer and exporter plugin function pointer table to functors
 
 * Dataflow
 
-  - Execute all button in network editor: triggers execution even if network is currently executing. Queue (or block?) request for execution until current execution is done. 
+  - Execute all button in network editor: triggers execution even if network is currently executing. Queue (or block?) request for execution until current execution is done.
 
 * Graphics and Visualization
 
-  - Be able to select or click on objects in renderer and get information i.e. node index, position etc. 
+  - Be able to select or click on objects in renderer and get information i.e. node index, position etc.
 
 * OpenGL
 
-  - move all OpenGL code into Core (and intermediate layer as needed) 
+  - move all OpenGL code into Core (and intermediate layer as needed)
 
 * Externals
 
   - verify that libpng and zlib are still needed, if so, update
-  - better XML parsing library (libxml2 is overly complex and buggy) 
+  - better XML parsing library (libxml2 is overly complex and buggy)
 
 * Boost
 
   - Boost is an external project in the CMake build
-  - In case Boost needs to be built outside of SCIRun: Boost build notes 
+  - In case Boost needs to be built outside of SCIRun: Boost build notes
 
 * Build
 
-  - merge all generated headers into a single generated header file 
+  - merge all generated headers into a single generated header file
 
 * Testing
 
-  - Add regression testing feature to diff numerical output, either through text files or of matrix objects directly. 
+  - Add regression testing feature to diff numerical output, either through text files or of matrix objects directly.
 
 * Core
 
-  - Isosurface algorithm is very slow and should be rewritten 
+  - Isosurface algorithm is very slow and should be rewritten
 
 * Error Handling and Exceptions
 
   - SCIRun exceptions could use an overhaul.
   - SCIRun assertions could also use an overhaul.
   - The same kind of assertions need to be used throughout the code. Currently, we're using:
-  
+
     + assert from cassert
     + SCIRun's custom ASSERT macros
-    + Boost static assert (perhaps it would be best to replace all other asserts with Boost assert utilities?) 
+    + Boost static assert (perhaps it would be best to replace all other asserts with Boost assert utilities?)
 
 * Modules
 
   - Possible Problem Modules
-  
+
     + ShowMatrix: this module should be completely rewritten
     + CreateMatrix: bug #327
     + GeneratePointSamplesFromFieldOrWidget: spinner boxes in both tabs are not editable. This is really annoying if one wants to generate a large number of samples.
     + GeneratePointSamplesFromField: The execution pattern for this module should be improved. Also, SCIRun test networks are using GeneratePointSamplesFromFieldOrWidget, so there are no tests for this module.
-    + CreateAndEditColorMap: the GUI is not very usable and can be difficult to navigate. 
+    + CreateAndEditColorMap: the GUI is not very usable and can be difficult to navigate.
 
   - Module Improvements
-  
-    + See if it's possible to encapsulate common functionality in Matlab Importer modules in a parent class. Same with Exporter modules. 
+
+    + See if it's possible to encapsulate common functionality in Matlab Importer modules in a parent class. Same with Exporter modules.
 
 Known Bugs
 ==========
 
-* Duplicated modules in networks	
+* Duplicated modules in networks
 * Adjusting current displayed slice in ShowTextureSlices
-* Connecting module after disabling and enabling can crash SCIRun	
+* Connecting module after disabling and enabling can crash SCIRun
 * Row indices not displayed for newly created rows in CreateMatrix
 * Error reading fields created using older SCIRun versions
 * BioTensor crashes on Windows
@@ -234,14 +233,13 @@ Known Bugs
 * CreateAndEditColormap SegFault
 * Segfault caused by key/button click on widget
 * Matlab file text field gets cleared on execute in ExportDatatypesToMatlab
-* Transparency not supported in ExtractIsosurface geometry output	
+* Transparency not supported in ExtractIsosurface geometry output
 * RemoveZerosFromMatrix module is broken
 * RemoveZeroRowsAndColumns module does not remove zero columns
 * GenerateLinearSegments output field has geometry size 0
 * CreateAndEditColorMap hangs on execution
 * ExtractIsosurface module geometry ignores opacity
 * SolveLinearSystem Jacobi method does not converge when used with AddKnownsToLinearSystem
-* JoinFields crashes when Merge duplicate elements is selected
 * ShowField crashes if attempting to display data value text in a field with no data
 * ShowTextureSlices crashes when its output port is used more than once.
 * InsertHexVolSheet creates invalid elements
@@ -262,7 +260,7 @@ Resolved Bugs
 =============
 
 * SCIRun crashes when you write a movie to a directory where you do not have the permission to.
-* libxml2 does not resolve local DTD path	
+* libxml2 does not resolve local DTD path
 * SCIRun module GeneratePlanarElectrode causes SCIRun to crash when loading.
 * ShowAndEditCameraWidget UI is broken
 * Changing spaces in OS X 10.6.3 logs user out
@@ -274,7 +272,7 @@ Resolved Bugs
 * Record movie causes SCIRun to hang
 * Memory leaks in BuildFEGridMapping algorithm
 * CollectMatrices does not detect new inputs
-* Missing parser documentation in CreateFieldData	Medium	
+* Missing parser documentation in CreateFieldData	Medium
 * String port input does not update parser module expression
 * Deleting CreateAndEditColorMap2D from network crashes SCIRun.
 * SolveLinearSystem graph does not show the current iteration
@@ -288,5 +286,5 @@ Resolved Bugs
 * Closing rendering window crashes X11 in XQuartz 2.7.x
 * Crash when displaying text in LatVol (duplicate)
 * SparseRowMatrix::put cannot put values in matrix if number of non-zero values 0
-* Visualization test networks hang on Ubuntu when executed on startup 
+* Visualization test networks hang on Ubuntu when executed on startup
 * TriSurf mesh get_edges with nodes argument broken

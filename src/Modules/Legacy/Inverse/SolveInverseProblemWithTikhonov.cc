@@ -86,7 +86,7 @@ void SolveInverseProblemWithTikhonov::execute()
     auto gui_tikhonov_residual_subcase = static_cast<TikhonovAlgorithmImpl::AlgorithmResidualSubcase>(state->getValue(TikhonovResidualSubcase).toInt());
     
     auto denseForward = matrix_cast::as_dense(forward_matrix_h);
-    auto measuredDense = matrix_cast::as_dense(hMatrixMeasDat);
+    auto measuredDense = matrix_convert::to_dense(hMatrixMeasDat);
     auto regMatDense = matrix_cast::as_dense(hMatrixRegMat.get_value_or(nullptr));
     auto noiseCovDense = matrix_cast::as_dense(hMatrixNoiseCov.get_value_or(nullptr));
     TikhonovAlgorithmImpl algo(denseForward,
