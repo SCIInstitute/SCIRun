@@ -291,7 +291,7 @@
               <item>
                <widget class="QGroupBox" name="groupBox_7">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="title">
                  <string>Edge Display Type</string>
@@ -310,7 +310,7 @@
                  <item>
                   <widget class="QRadioButton" name="edgesAsCylindersButton_">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="text">
                     <string>Cylinders</string>

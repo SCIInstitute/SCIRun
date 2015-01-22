@@ -67,6 +67,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 	connect(nodesAsSpheresButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
 
 	pushNodeType();
+  pushEdgeType();
 	pushColor();
   pushTransparencyValue();
 }
@@ -111,6 +112,12 @@ void ShowFieldDialog::pushNodeType()
 {
 	state_->setValue(ShowFieldModule::NodeAsPoints, nodesAsPointsButton_->isChecked());
 	state_->setValue(ShowFieldModule::NodeAsSpheres, nodesAsSpheresButton_->isChecked());
+}
+
+void ShowFieldDialog::pushEdgeType()
+{
+  state_->setValue(ShowFieldModule::EdgesAsLines, edgesAsLinesButton_->isChecked());
+  state_->setValue(ShowFieldModule::EdgesAsCylinders, edgesAsCylindersButton_->isChecked());
 }
 
 void ShowFieldDialog::pushTransparencyValue()

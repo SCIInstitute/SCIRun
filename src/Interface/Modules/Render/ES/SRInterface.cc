@@ -411,6 +411,11 @@ namespace SCIRun {
             assetName = "Assets/sphere.geom";
           }
 
+          if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_CYLINDER)
+          {
+            assetName = "Assests/arrow.geom";
+          }
+
           addVBOToEntity(entityID, assetName);
           addIBOToEntity(entityID, assetName);
         }

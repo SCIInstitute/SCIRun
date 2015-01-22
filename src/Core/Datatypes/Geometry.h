@@ -70,6 +70,7 @@ namespace Datatypes {
     {
       RENDER_VBO_IBO,
       RENDER_RLIST_SPHERE,
+      RENDER_RLIST_CYLINDER,
     };
 
     explicit GeometryObject(DatatypeConstHandle dh);
