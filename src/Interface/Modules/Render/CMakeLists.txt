@@ -51,9 +51,9 @@ SET(Interface_Modules_Render_HEADERS
   ES/comp/StaticWorldLight.h
   ES/comp/LightingUniforms.h
   ES/systems/RenderBasicSys.h
-  ES/systems/RenderBasicSysTrans.h
   ES/systems/RenderColorMapSys.h
-  ES/systems/RenderColorMapSysTrans.h
+  ES/systems/RenderTransBasicSys.h
+  ES/systems/RenderTransColorMapSys.h
 )
 
 SET(Interface_Modules_Render_SOURCES 
@@ -71,9 +71,9 @@ SET(Interface_Modules_Render_SOURCES
   ES/AssetBootstrap.cc
   ES/comp/LightingUniforms.cc
   ES/systems/RenderBasicSys.cc
-  ES/systems/RenderBasicSysTrans.cc
   ES/systems/RenderColorMapSys.cc
-  ES/systems/RenderColorMapSysTrans.cc
+  ES/systems/RenderTransBasicSys.cc
+  ES/systems/RenderTransColorMapSys.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})

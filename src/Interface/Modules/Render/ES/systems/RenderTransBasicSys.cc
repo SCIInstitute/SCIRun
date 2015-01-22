@@ -65,7 +65,7 @@ class RenderBasicSysTrans :
 {
 public:
 
-  static const char* getName() {return "RenderBasicSysTrans";}
+  static const char* getName() {return "RenderTransBasicSys";}
 
   bool isComponentOptional(uint64_t type) override
   {

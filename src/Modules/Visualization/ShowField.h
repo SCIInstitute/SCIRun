@@ -57,7 +57,10 @@ namespace Visualization {
     static Core::Algorithms::AlgorithmParameterName FaceInvertNormals;
     static Core::Algorithms::AlgorithmParameterName NodeAsPoints;
     static Core::Algorithms::AlgorithmParameterName NodeAsSpheres;
+    static Core::Algorithms::AlgorithmParameterName EdgesAsLines;
+    static Core::Algorithms::AlgorithmParameterName EdgesAsCylinders;
     static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
+    static Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
 
     INPUT_PORT(0, Field, LegacyField);
     INPUT_PORT(1, ColorMapObject, ColorMap);
@@ -137,6 +140,8 @@ namespace Visualization {
 
     void applyColorMapScaling(boost::shared_ptr<SCIRun::Field> field,
                               Core::Datatypes::GeometryObject::SpireSubPass& pass);
+
+    float transparencyValue_;
 
   };
 

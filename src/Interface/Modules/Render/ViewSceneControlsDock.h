@@ -54,7 +54,7 @@ namespace SCIRun {
       ~ViewSceneControlsDock();
 
     private:
-      ViewSceneDialog* scene_;
+      //ViewSceneDialog* scene_;
 
     };
 

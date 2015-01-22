@@ -62,7 +62,7 @@ class RenderColorMapSysTrans :
 {
 public:
 
-  static const char* getName() {return "RenderColorMapSysTrans";}
+  static const char* getName() {return "RenderTransColorMapSys";}
 
   bool isComponentOptional(uint64_t type) override
   {

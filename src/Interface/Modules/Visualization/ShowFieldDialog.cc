@@ -53,6 +53,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 	addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
 	addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
 	addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
+  addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
   connectButtonToExecuteSignal(showNodesCheckBox_);
   connectButtonToExecuteSignal(showEdgesCheckBox_);
   connectButtonToExecuteSignal(showFacesCheckBox_);
@@ -66,7 +67,9 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 	connect(nodesAsSpheresButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
 
 	pushNodeType();
+  pushEdgeType();
 	pushColor();
+  pushTransparencyValue();
 }
 
 void ShowFieldDialog::push()
@@ -111,3 +114,13 @@ void ShowFieldDialog::pushNodeType()
 	state_->setValue(ShowFieldModule::NodeAsSpheres, nodesAsSpheresButton_->isChecked());
 }
 
+void ShowFieldDialog::pushEdgeType()
+{
+  state_->setValue(ShowFieldModule::EdgesAsLines, edgesAsLinesButton_->isChecked());
+  state_->setValue(ShowFieldModule::EdgesAsCylinders, edgesAsCylindersButton_->isChecked());
+}
+
+void ShowFieldDialog::pushTransparencyValue()
+{
+  state_->setValue(ShowFieldModule::FaceTransparencyValue, 0.50f);
+}

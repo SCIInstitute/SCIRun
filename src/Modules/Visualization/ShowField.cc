@@ -75,6 +75,10 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
   state->setValue(NodeAsPoints, true);
   state->setValue(NodeAsSpheres, false);
+  state->setValue(EdgesAsLines, true);
+  state->setValue(EdgesAsCylinders, false);
+  state->setValue(FaceTransparencyValue, 0.50f);
+  transparencyValue_ = 0.50f;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
@@ -126,6 +130,8 @@ RenderState ShowFieldModule::getEdgeRenderState(
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
 
+  renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toBool());
+
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
 
   if (colorMap)
@@ -150,6 +156,8 @@ RenderState ShowFieldModule::getFaceRenderState(
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool());
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+
+  transparencyValue_ = (float)(state->getValue(ShowFieldModule::FaceTransparencyValue).toDouble());
 
   if (colorMap)
   {
@@ -618,7 +626,7 @@ void ShowFieldModule::renderFacesLinear(
 
     if (state.get(RenderState::USE_TRANSPARENCY))
     {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(0.4f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(transparencyValue_)));
     }
     else
     {
@@ -682,7 +690,7 @@ void ShowFieldModule::renderFacesLinear(
       if (state.get(RenderState::USE_TRANSPARENCY))
       {
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-          "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.4f)));
+          "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), transparencyValue_)));
       }
       else
       {
@@ -697,7 +705,7 @@ void ShowFieldModule::renderFacesLinear(
       {
         /// \todo Add transparency slider.
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.4f)));
+          "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), transparencyValue_)));
       }
       else
       {
@@ -1567,28 +1575,28 @@ void ShowFieldModule::renderEdges(
     ColorRGB defaultColor = state.defaultColor;
 
     /// \todo Use cylinders...
-    // if (state.get(RenderState::USE_SPHERE))
-    // {
-    //   shader = "Shaders/DirPhong";
-    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-    //                                                            glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-    //                                                            glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    //
-    //   if (state.get(RenderState::USE_TRANSPARENCY))
-    //   {
-    //     uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-    //             "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
-    //   }
-    //   else
-    //   {
-    //     uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-    //             "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
-    //   }
-    // }
-    // else
-    // {
+     if (state.get(RenderState::USE_CYLINDER))
+     {
+       shader = "Shaders/DirPhong";
+       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                                glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                                glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+    
+       if (state.get(RenderState::USE_TRANSPARENCY))
+       {
+         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                 "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+       }
+       else
+       {
+         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                 "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+       }
+     }
+     else
+     {
       shader = "Shaders/UniformColor";
 
       if (state.get(RenderState::USE_TRANSPARENCY))
@@ -1602,15 +1610,15 @@ void ShowFieldModule::renderEdges(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
                 "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
       }
-    // }
+    }
   }
 
   /// \todo Use cylinders...
-  // if (state.get(RenderState::USE_SPHERE))
-  // {
-  //   renderType = GeometryObject::RENDER_RLIST_SPHERE;
-  //   vboOnGPU = false;
-  // }
+  if (state.get(RenderState::USE_CYLINDER))
+  {
+    renderType = GeometryObject::RENDER_RLIST_CYLINDER;
+    vboOnGPU = false;
+  }
 
 	GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
 		numVBOElements, mesh->get_bounding_box(), vboOnGPU);
@@ -1661,7 +1669,10 @@ AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
 AlgorithmParameterName ShowFieldModule::FaceInvertNormals("FaceInvertNormals");
 AlgorithmParameterName ShowFieldModule::NodeAsPoints("NodeAsPoints");
 AlgorithmParameterName ShowFieldModule::NodeAsSpheres("NodeAsSpheres");
+AlgorithmParameterName ShowFieldModule::EdgesAsLines("EdgesAsLines");
+AlgorithmParameterName ShowFieldModule::EdgesAsCylinders("EdgesAsCylinders");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
+AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
 
 
 
