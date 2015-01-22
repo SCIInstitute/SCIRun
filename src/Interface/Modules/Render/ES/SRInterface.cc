@@ -711,6 +711,14 @@ namespace SCIRun {
 			GL(glBindBuffer(GL_ARRAY_BUFFER, arrowVBO));
 			GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, arrowIBO));
 
+      bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+      bool cullFace = glIsEnabled(GL_CULL_FACE);
+      bool blend = glIsEnabled(GL_BLEND);
+
+      GL(glDepthMask(GL_TRUE));
+      GL(glDisable(GL_CULL_FACE));
+      GL(glDisable(GL_BLEND));
+
 			// Note that we can pull aspect ratio from the screen dimensions static
 			// variable.
 			gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
@@ -874,6 +882,19 @@ namespace SCIRun {
   }
 
 			mArrowAttribs.unbind();
+
+      if (!depthMask)
+      {
+        GL(glDepthMask(GL_FALSE));
+      }
+      if (cullFace)
+      {
+        GL(glEnable(GL_CULL_FACE));
+      }
+      if (blend)
+      {
+        GL(glEnable(GL_BLEND));
+      }
 		}
 
 		// Manually update the StaticCamera.
