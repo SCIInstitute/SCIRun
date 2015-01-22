@@ -36,10 +36,10 @@ using namespace SCIRun::Gui;
 
 int GuiApplication::run(int argc, const char* argv[])
 {
+  QApplication app(argc, const_cast<char**>(argv));
+
   try
   {
-    QApplication app(argc, const_cast<char**>(argv));
-
     SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
 
     mainWin->setController(Core::Application::Instance().controller());
