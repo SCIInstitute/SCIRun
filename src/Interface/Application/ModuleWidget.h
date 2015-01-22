@@ -35,6 +35,7 @@
 #include <QStackedWidget>
 #include <set>
 #include <deque>
+#include <atomic>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/HasNotes.h>
 #include <Interface/Application/PositionProvider.h>
