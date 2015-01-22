@@ -77,8 +77,8 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(NodeAsSpheres, false);
   state->setValue(EdgesAsLines, true);
   state->setValue(EdgesAsCylinders, false);
-  state->setValue(FaceTransparency, 0.75f);
-  transparencyValue_ = 0.75f;
+  state->setValue(FaceTransparencyValue, 0.50f);
+  transparencyValue_ = 0.50f;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT

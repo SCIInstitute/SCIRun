@@ -458,7 +458,7 @@
              <rect>
               <x>10</x>
               <y>10</y>
-              <width>79</width>
+              <width>171</width>
               <height>17</height>
              </rect>
             </property>
@@ -497,6 +497,9 @@
               <height>20</height>
              </rect>
             </property>
+            <property name="toolTip">
+             <string>Set Transparency Alpha</string>
+            </property>
             <property name="maximum">
              <double>1.000000000000000</double>
             </property>
@@ -512,7 +515,7 @@
              <rect>
               <x>11</x>
               <y>35</y>
-              <width>123</width>
+              <width>171</width>
               <height>17</height>
              </rect>
             </property>

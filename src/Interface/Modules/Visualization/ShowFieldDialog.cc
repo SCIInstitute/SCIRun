@@ -122,5 +122,5 @@ void ShowFieldDialog::pushEdgeType()
 
 void ShowFieldDialog::pushTransparencyValue()
 {
-  state_->setValue(ShowFieldModule::FaceTransparencyValue, transparencyDoubleSpinBox_->value());
+  state_->setValue(ShowFieldModule::FaceTransparencyValue, 0.50f);
 }

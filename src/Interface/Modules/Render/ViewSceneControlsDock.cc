@@ -35,7 +35,7 @@ using namespace SCIRun::Render;
 ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent) : QDockWidget(parent)
 {
   setupUi(this);
-  scene_ = parent;
+  //scene_ = parent;
   
   close();
   setWindowTitle(name);
@@ -44,10 +44,10 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   setVisible(false);
   setEnabled(false);
 
-  scene_->menuMouseControlChanged(mouseControlComboBox_->currentIndex());
+  parent->menuMouseControlChanged(mouseControlComboBox_->currentIndex());
 
-  connect(orientationCheckBox_, SIGNAL(clicked(bool)), scene_, SLOT(showOrientationChecked(bool)));
-  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), scene_, SLOT(menuMouseControlChanged(int)));
+  connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
+  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
 
 }
 
