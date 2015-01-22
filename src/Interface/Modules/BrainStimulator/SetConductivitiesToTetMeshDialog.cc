@@ -42,7 +42,7 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
+	tabStyle(this->tabWidget); 
   using namespace Parameters;
   addDoubleSpinBoxManager(Skin_,        Skin);
   addDoubleSpinBoxManager(SoftBone_,    SoftBone);

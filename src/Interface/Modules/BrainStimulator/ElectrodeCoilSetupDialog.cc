@@ -48,6 +48,8 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+	tableHeaderStyle(this->electrode_coil_tableWidget); 
+	tabStyle(this->tabWidget);
   electrode_coil_tableWidget->setRowCount(1);
   electrode_coil_tableWidget->setColumnCount(ElectrodeCoilSetupAlgorithm::number_of_columns);
   electrode_coil_tableWidget->setItem(0, 0, new QTableWidgetItem(" "));

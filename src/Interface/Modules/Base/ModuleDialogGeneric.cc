@@ -593,3 +593,19 @@ void ModuleDialogGeneric::addRadioButtonGroupManager(std::initializer_list<QRadi
 {
   addWidgetSlotManager(boost::make_shared<RadioButtonGroupSlotManager>(state_, *this, stateKey, radioButtons));
 }
+
+void ModuleDialogGeneric::tabStyle(QTabWidget* tabs)
+{
+	tabs->setStyleSheet(
+		"QTabBar::tab::selected, QTabBar::tab::hover         {color:black; background-color: #F0F0F0; border: 1px solid rgb(66,66,69); min-width:2ex; padding: 5px 10px;} "
+		"QTabBar::tab:!selected {color: white; background-color: rgb(66,66,69); border: 1px solid #FFFFFF; min-width:2ex; padding: 5px 10px; }"
+		"QTabBar::tab:selected  {color:black; background-color: #F0F0F0; border: 1px solid rgb(66,66,69); min-width:2ex; padding: 5px 10px;}"
+		);
+}
+
+void ModuleDialogGeneric::tableHeaderStyle(QTableWidget* tableHeader)
+{
+	tableHeader->setStyleSheet(
+		"QHeaderView::section {background: rgb(66,66,69);}"
+		); 
+}
