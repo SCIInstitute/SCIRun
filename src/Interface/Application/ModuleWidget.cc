@@ -399,7 +399,7 @@ void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
 
 void ModuleWidgetDisplayMini::setupIcons()
 {
-  
+
 }
 
 QAbstractButton* ModuleWidgetDisplayMini::getOptionsButton() const
@@ -1006,7 +1006,7 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialog_)
     {
       if (!dialogFactory_)
-        dialogFactory_.reset(new ModuleDialogFactory(0));
+        dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();
