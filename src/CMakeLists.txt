@@ -100,7 +100,7 @@ MESSAGE(STATUS "Git version commit hash: " "${VERSION_HASHVAR}")
 #string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${VERSION}")
 #set(VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Version.cc.in
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules/Version.cc.in
  ${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc)
 set(version_file "${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc")
 
