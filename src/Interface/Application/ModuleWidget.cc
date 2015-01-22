@@ -989,7 +989,7 @@ void fillColorStateLookup(const QString& background)
   }
 }
 
-//primitive state machine
+//primitive state machine: will be replaced next week.
 //TODO: slot should set previousModuleState_
 void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
