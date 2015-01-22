@@ -182,6 +182,7 @@ private:
   bool isMini_, errored_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
+  std::atomic<int> previousModuleState_;
 
   void addPorts(int index);
   void createPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
@@ -223,7 +224,7 @@ private:
   bool deleting_;
   const QString defaultBackgroundColor_;
   int fullIndex_, miniIndex_;
-  bool isViewScene_; //TODO: lots of special logic around this case. 
+  bool isViewScene_; //TODO: lots of special logic around this case.
 
   static bool globalMiniMode_;
 };
