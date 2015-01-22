@@ -54,6 +54,7 @@ namespace SCIRun {
 			void push();
 			void pushColor();
 			void pushNodeType();
+      void pushEdgeType();
       void pushTransparencyValue();
 			void assignDefaultMeshColor();
 		private:

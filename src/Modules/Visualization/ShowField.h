@@ -57,6 +57,8 @@ namespace Visualization {
     static Core::Algorithms::AlgorithmParameterName FaceInvertNormals;
     static Core::Algorithms::AlgorithmParameterName NodeAsPoints;
     static Core::Algorithms::AlgorithmParameterName NodeAsSpheres;
+    static Core::Algorithms::AlgorithmParameterName EdgesAsLines;
+    static Core::Algorithms::AlgorithmParameterName EdgesAsCylinders;
     static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
     static Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
 
