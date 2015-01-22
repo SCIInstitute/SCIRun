@@ -77,41 +77,40 @@ using namespace SCIRun::Core::Algorithms;
 
 SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 {
-  setupUi(this);
-  setAttribute(Qt::WA_DeleteOnClose);
-  if (newInterface())
-    setStyleSheet(
-      "background-color: rgb(66,66,69);"
-      "color: white;"
-      "selection-color: yellow;"
-      "selection-background-color: blue;"
-      //"QMenuBar::item { background-color: rgb(66,66,69); color: black }"
-      "QToolBar {        background-color: rgb(66,66,69); border: 1px solid black; color: black     }"
-      "QProgressBar {        background-color: rgb(66,66,69); border: 0px solid black; color: black     }"
-      "QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
+	setupUi(this);
+	setAttribute(Qt::WA_DeleteOnClose);
+	if (newInterface())
+		setStyleSheet(
+		"background-color: rgb(66,66,69);"
+		"color: white;"
+		"selection-color: yellow;"
+		"selection-background-color: blue;"//336699 lighter blue
+		"QToolBar {        background-color: rgb(66,66,69); border: 1px solid black; color: black;     }"
+		"QProgressBar {        background-color: rgb(66,66,69); border: 0px solid black; color: black  ;   }"
+		"QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69); }"
+		//"border: 1px solid white;"
+		//"border-radius: 3px;"
 
-      //"border: 1px solid white;"
-      //"border-radius: 3px;"
-      "QPushButton {"
-      "    border: 2px solid #8f8f91;"
-      "  border - radius: 6px;"
-      "  background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
-      "  stop : 0 #f6f7fa, stop: 1 #dadbde);"
-      "  min - width: 80px;"
-      "}"
-      "QPushButton:pressed{"
-      "background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
-      "stop : 0 #dadbde, stop: 1 #f6f7fa);"
-      "}"
-      "QPushButton:flat{"
-      "          border: none; /* no border for a flat push button */"
-      "}"
-      "QPushButton:default {"
-      "border - color: navy; /* make the default button prominent */"
-      "}"
-      );
-
-  dialogErrorControl_.reset(new DialogErrorControl(this));
+		"QPushButton {"
+		"  border: 2px solid #8f8f91;"
+		"  border - radius: 6px;"
+		"  background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+		"  stop : 0 #f6f7fa, stop: 1 #dadbde);"
+		"  min - width: 80px;"
+		"}"
+		"QPushButton:pressed{"
+		"background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+		"stop : 0 #dadbde, stop: 1 #f6f7fa);"
+		"}"
+		"QPushButton:flat{"
+		"          border: none; /* no border for a flat push button */"
+		"}"
+		"QPushButton:default {"
+		"border - color: navy; /* make the default button prominent */"
+		"}"
+		);
+	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } "); 
+	dialogErrorControl_.reset(new DialogErrorControl(this));
   setupNetworkEditor();
 
   setTipsAndWhatsThis();
@@ -148,7 +147,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   setActionIcons();
 
   QToolBar* standardBar = addToolBar("Standard");
-  standardBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
+  standardBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
+		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
   standardBar->setObjectName("StandardToolBar");
   standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
@@ -178,7 +178,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
   executeBar->addActions(networkProgressBar_->actions());
-  executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
+  executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
+		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
+		);
   //executeBar->setStyleSheet(styleSheet());
   executeBar->setAutoFillBackground(true);
   connect(actionExecute_All_, SIGNAL(triggered()), networkProgressBar_.get(), SLOT(resetModulesDone()));
@@ -290,7 +292,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionModule_Selector->setChecked(!moduleSelectorDockWidget_->isHidden());
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
 
-  moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }");
+	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
+		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
+		"QHeaderView::section { background: rgb(66,66,69);} "
+		);
 
   provenanceWindow_->hide();
 

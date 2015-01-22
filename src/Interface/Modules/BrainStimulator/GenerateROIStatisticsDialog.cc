@@ -46,6 +46,8 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+	tabStyle(this->tabWidget);
+	tableHeaderStyle(this->SpecifyROI_tabWidget);
 
   QStringList tableHeader1;  /// set default GUI parameter for upper table
   tableHeader1<<" ROI "<<" Avr. " << " Std. " << " Min. " << " Max. " << " # ";
