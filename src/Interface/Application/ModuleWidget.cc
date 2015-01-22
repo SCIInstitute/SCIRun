@@ -949,10 +949,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
-    //qDebug() << "executing()";
     errored_ = false;
-    //previousModuleState_ = (int)ModuleInterface::Completed;
-    //std::cout << "execute() prev = " << previousModuleState_ << std::endl;
     //colorLocked_ = true; //TODO
     timer_.restart();
     theModule_->do_execute();
@@ -993,8 +990,6 @@ void fillColorStateLookup(const QString& background)
 //TODO: slot should set previousModuleState_
 void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
-  //qDebug() << "updateColor to " << moduleState;
-  //std::cout << "update prev = " << previousModuleState_ << std::endl;
   switch (moduleState)
   {
   case (int)ModuleInterface::Waiting:
@@ -1010,7 +1005,6 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
     }
     break;
   case (int)ModuleInterface::Completed:
-    //if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Executing)
     {
       if (!errored_)
         Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
@@ -1021,16 +1015,13 @@ void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 
 void ModuleWidget::updateBackgroundColor(const QString& color)
 {
-  //std::cout << "color set to: " << color.toStdString() << std::endl;
   if (!colorLocked_)
   {
     QString rounded;
     if (SCIRunMainWindow::Instance()->newInterface())
       rounded = "color: white; border-radius: 7px;";
     setStyleSheet(rounded + " background-color: " + color);
-    //qDebug() << "looking up color: " << color << "\n";
     previousModuleState_ = colorStateLookup.left.at(color);
-    //qDebug() << "state set to: " << previousModuleState_;
   }
 }
 
