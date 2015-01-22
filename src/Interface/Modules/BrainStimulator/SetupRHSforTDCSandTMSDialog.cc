@@ -39,7 +39,8 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+	tabStyle(this->tabWidget);
+	tableHeaderStyle(this->electrode_tableWidget);
   addSpinBoxManager(refnode_, Parameters::refnode); 
   addDoubleSpinBoxManager(pointdistancebound_, Parameters::pointdistancebound);
   addDoubleSpinBoxManager(normal_dot_product_bound_, Parameters::normal_dot_product_bound);
