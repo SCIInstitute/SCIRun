@@ -31,22 +31,23 @@
 
 #include "Interface/Modules/BrainStimulator/ui_ElectrodeCoilSetupDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Core/Algorithms/Base/Variable.h>
 #include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE ElectrodeCoilSetupDialog : public ModuleDialogGeneric, 
+
+class SCISHARE ElectrodeCoilSetupDialog : public ModuleDialogGeneric,
   public Ui::ElectrodeCoilSetupDialog
 {
 	Q_OBJECT
-	
+
 public:
-  ElectrodeCoilSetupDialog(const std::string& name, 
+  ElectrodeCoilSetupDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  
-  
+
+
 private Q_SLOTS:
   void pull();
   void push();
@@ -64,7 +65,7 @@ private:
   bool comboBoxesSetup_;
   bool pushTableFlag_;
   std::vector<QWidget*> inputPortsVector_;
-  std::vector<QWidget*> stimTypeVector_;  
+  std::vector<QWidget*> stimTypeVector_;
   void initialize_comboboxes(int i, std::vector<Core::Algorithms::AlgorithmParameter>&  row);
   std::vector<Core::Algorithms::Variable> validate_numerical_input(int i);
   std::vector<Core::Algorithms::Variable> saved_all_elc_values;

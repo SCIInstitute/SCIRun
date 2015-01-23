@@ -39,26 +39,26 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-	tabStyle(this->tabWidget);
-	tableHeaderStyle(this->electrode_tableWidget);
-  addSpinBoxManager(refnode_, Parameters::refnode); 
+  WidgetStyleMixin::tabStyle(this->tabWidget);
+  WidgetStyleMixin::tableHeaderStyle(this->electrode_tableWidget);
+  addSpinBoxManager(refnode_, Parameters::refnode);
   addDoubleSpinBoxManager(pointdistancebound_, Parameters::pointdistancebound);
   addDoubleSpinBoxManager(normal_dot_product_bound_, Parameters::normal_dot_product_bound);
-  
+
   int max_nr_elc=(state_->getValue(Parameters::number_of_electrodes)).toInt();
-  
+
   electrode_tableWidget->setColumnCount(4);
   electrode_tableWidget->setRowCount(max_nr_elc);
   QStringList tableHeader;
   tableHeader << "Electrode" << "Current intensity [mA]" << "Real Impedance [Ohm*m^2]" << "Surface Area [m^2]";
   electrode_tableWidget->setHorizontalHeaderLabels(tableHeader);
 
-  
+
   for (int i=0; i<max_nr_elc; i++)
   {
     // setting the name of the electrode
     electrode_tableWidget->setItem(i, 0, new QTableWidgetItem("elc"+QString::number(i)));
-    
+
     // seting the inital values of the electrodes
     if (i == 0)
     {
@@ -79,7 +79,7 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
        electrode_tableWidget->setItem(i, 3, new QTableWidgetItem(QString("")));
       }
   }
-  
+
   // connecting all table cell positions (int = row, int = col)
   connect(electrode_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }
@@ -92,7 +92,7 @@ void SetupRHSforTDCSandTMSDialog::push()
     int rows = electrode_tableWidget->rowCount();
     std::vector<AlgorithmParameter> elc_vals_in_table;
     std::vector<AlgorithmParameter> imp_elc_vals_in_table;
-    
+
     for (int i=0; i<rows; i++)
     {
       AlgorithmParameter elc_i(Name("elc" + boost::lexical_cast<std::string>(i)), electrode_tableWidget->item(i,1)->text().toDouble());
@@ -116,12 +116,12 @@ void SetupRHSforTDCSandTMSDialog::pull()
     electrode_tableWidget->setRowCount(static_cast<int>(nr_elc));
     rows = nr_elc;
   } else
-  { 
+  {
     rows = electrode_tableWidget->rowCount();
   }
-   
+
   auto surface_areas = (state_->getValue(Parameters::SurfaceAreaValues)).toVector();
-   
+
   // obtaining initial values, pulling hasn't been set
   std::vector<AlgorithmParameter> elc_vals_in_table; //electrical electrode charges
   std::vector<AlgorithmParameter> imp_elc_vals_in_table; //electrode impedances
@@ -134,12 +134,12 @@ void SetupRHSforTDCSandTMSDialog::pull()
     if (surface_areas.size() == rows)
     {
      double tmp = (surface_areas[i]).toDouble();
-     
+
      QString text = QString::number(tmp);
      QDoubleValidator validator;
      int index;
      if (validator.validate(text, index) == QValidator::Acceptable)
-     { 
+     {
       electrode_tableWidget->blockSignals(true);
       electrode_tableWidget->item(i, 3)->setText(text);
       electrode_tableWidget->blockSignals(false);

@@ -44,6 +44,14 @@ namespace
   {
     return QString::fromStdString(ap.name().name());
   }
+
+  QStringList convertPathList(const std::vector<boost::filesystem::path>& paths)
+  {
+    QStringList strs;
+    for (const auto& path : paths)
+      strs << QString::fromStdString(path.string());
+    return strs;
+  }
 }
 
 void SCIRunMainWindow::readSettings()
@@ -162,6 +170,14 @@ void SCIRunMainWindow::readSettings()
     setDataDirectory(dataDir);
   }
 
+  const QString dataPath = "dataPath";
+  if (settings.contains(dataPath))
+  {
+    auto path = settings.value(dataPath).toStringList().join(";");
+    GuiLogger::Instance().log("Setting read: dataPath = " + path);
+    setDataPath(path);
+  }
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -185,7 +201,8 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
   settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
-  settings.setValue("dataDirectory", dataDirectory());
+  settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
+  settings.setValue("dataPath", convertPathList(prefs.dataPath()));
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());
