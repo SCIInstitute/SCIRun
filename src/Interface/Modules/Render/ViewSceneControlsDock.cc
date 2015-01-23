@@ -36,7 +36,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 {
   setupUi(this);
   //scene_ = parent;
-  
+
   close();
   setWindowTitle(name);
   setAllowedAreas(Qt::BottomDockWidgetArea);
@@ -49,6 +49,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
 
+  WidgetStyleMixin::tabStyle(tabWidget);
 }
 
 ViewSceneControlsDock::~ViewSceneControlsDock()
