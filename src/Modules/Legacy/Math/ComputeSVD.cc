@@ -26,17 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #include <Modules/Legacy/Math/ComputeSVD.h>
-//#include <Core/Algorithms/Math/ComputeSVD.h>
+#include <Core/Algorithms/Math/ComputeSVD.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
@@ -45,10 +43,9 @@ using namespace SCIRun;
 ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun"),false)
 {
 	INITIALIZE_PORT(InputMatrix);
-	//INITIALIZE_PORT(ResultMatrix);
-	INITIALIZE_PORT(ResultMatrix);
-	INITIALIZE_PORT(Result);
-	INITIALIZE_PORT(OutputMatrix);
+	INITIALIZE_PORT(LeftSingularMatrix);
+	INITIALIZE_PORT(SingularValues);
+	INITIALIZE_PORT(RightSingularMatrix);
 }
 
 void ComputeSVD::execute()
@@ -61,9 +58,9 @@ void ComputeSVD::execute()
 		
 		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
 		
-		sendOutputFromAlgorithm(ResultMatrix, output);
-		sendOutputFromAlgorithm(Result, output);
-		sendOutputFromAlgorithm(OutputMatrix, output);
+		sendOutputFromAlgorithm(LeftSingularMatrix, output);
+		sendOutputFromAlgorithm(SingularValues, output);
+		sendOutputFromAlgorithm(RightSingularMatrix, output);
 		
 	}
 }

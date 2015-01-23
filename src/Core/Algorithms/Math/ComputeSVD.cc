@@ -26,96 +26,66 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/ComputeSVD.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Eigen/Dense>
 #include <Eigen/SVD>
 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
-void ComputeSVDAlgo::run(MatrixHandle input_matrix, DenseMatrixHandle LeftSingMat, DenseColumnMatrixHandle SingVals, DenseMatrixHandle RightSingMat) const
+void ComputeSVDAlgo::run(MatrixHandle input_matrix, DenseMatrixHandle& LeftSingMat, DenseMatrixHandle& SingVals, DenseMatrixHandle& RightSingMat) const
 {
 	if(matrix_is::sparse(input_matrix))
 		matrix_convert::to_dense(input_matrix);
-		
-	std::cout << "Before SVD initialization" << std::endl;
-	std::cin.get();
 	
 	int numRows, numCols;
-	Eigen::JacobiSVD<DenseMatrixGeneric<double>::EigenBase> svd_mat(input_matrix, Eigen::ComputeFullU | Eigen::ComputeFullV);
+	numRows = input_matrix->nrows();
+	numCols = input_matrix->ncols();
 	
-	std::cout << "About to compute matrixU" << std::endl;
-	std::cin.get();
-	DenseMatrixGeneric<double>::EigenBase temp_mat = svd_mat.matrixU();
-	std::cout << "Initializing rows." << std::endl;
-	std::cin.get();
-	numRows = temp_mat.rows();
-	numCols = temp_mat.cols();
-	std::cout << "Converting matrix" << std::endl;
-	std::cin.get();
-	/*
+	// JacobiSVD requires an Eigen matrix in order to run. With a SCIRun matrix, the program crashes at run time.
+	DenseMatrixGeneric<double> input(numRows, numCols);
 	for(int r = 0; r < numRows; r++) {
 		for(int c = 0; c < numCols; c++) {
-			double value = temp_mat.get(r,c);
-			LeftSingMat->put(r, c, value);
-		}
-	}
-	*/
-	std::cout << "About to compute matrixV" << std::endl;
-	std::cin.get();
-	temp_mat = svd_mat.matrixV();
-	numRows = temp_mat.rows();
-	numCols = temp_mat.cols();
-	/*
-	for(int r = 0; r < numRows; r++) {
-		for(int c = 0; c < numCols; c++) {
-			double value = temp_mat.get(r,c);
-			RightSingMat->put(r, c, value);
-		}
-	}
-	*/
-	std::cout << "About to compute singular values" << std::endl;
-	std::cin.get();
-	DenseColumnMatrix temp_vect = svd_mat.singularValues();
-	numRows = temp_vect.nrows();
-	numCols = temp_vect.ncols();
-	for(int r = 0; r < numRows; r++) {
-		for(int c = 0; c < numRows; c++) {
-			double value = temp_vect.get(r, c);
-			SingVals->put(r, c, value);
+			input.put(r, c, input_matrix->get(r,c));
 		}
 	}
 	
+	Eigen::JacobiSVD<DenseMatrixGeneric<double>::EigenBase> svd_mat(input, Eigen::ComputeFullU | Eigen::ComputeFullV);
+		
+	LeftSingMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
+	
+	SingVals = boost::make_shared<DenseMatrix>(svd_mat.singularValues());
+	
+	RightSingMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
 }
 
-//AlgorithmInput ComputeSVDAlgo::LeftSingularMatrix("LeftSingularMatrix");
-//AlgorithmInput ComputeSVDAlgo::SingularValues("SingularValues");
-//AlgorithmInput ComputeSVDAlgo::RightSingularMatrix("RightSingularMatrix");
 
 AlgorithmOutput ComputeSVDAlgo::run_generic(const AlgorithmInput& input) const
 {
 	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
-	
-	matrix_convert::to_dense(input_matrix);
-	
-	DenseMatrixHandle LeftSingMat, RightSingMat;
-	DenseColumnMatrixHandle SingVals;
+		
+	DenseMatrixHandle LeftSingMat;
+	DenseMatrixHandle RightSingMat;
+	DenseMatrixHandle SingVals;
 	
 	run(input_matrix, LeftSingMat, SingVals, RightSingMat);
 	
 	AlgorithmOutput output;
 	
-	output[Variables::ResultMatrix] = LeftSingMat;
-	output[Variables::Result] = SingVals;
-	output[Variables::OutputMatrix] = RightSingMat;
+	output[LeftSingularMatrix] = LeftSingMat;
+	output[SingularValues] = SingVals;
+	output[RightSingularMatrix] = RightSingMat;
 	
 	return output;
 }
+
+AlgorithmOutputName ComputeSVDAlgo::LeftSingularMatrix("LeftSingularMatrix");
+AlgorithmOutputName ComputeSVDAlgo::SingularValues("SingularValues");
+AlgorithmOutputName ComputeSVDAlgo::RightSingularMatrix("RightSingularMatrix");
