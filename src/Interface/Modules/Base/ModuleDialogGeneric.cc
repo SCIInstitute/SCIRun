@@ -30,6 +30,7 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
 #include <boost/foreach.hpp>
+#include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -598,7 +599,7 @@ void ModuleDialogGeneric::addRadioButtonGroupManager(std::initializer_list<QRadi
   addWidgetSlotManager(boost::make_shared<RadioButtonGroupSlotManager>(state_, *this, stateKey, radioButtons));
 }
 
-void ModuleDialogGeneric::tabStyle(QTabWidget* tabs)
+void WidgetStyleMixin::tabStyle(QTabWidget* tabs)
 {
 	tabs->setStyleSheet(
 		"QTabBar::tab::selected, QTabBar::tab::hover         {color:black; background-color: #F0F0F0; border: 1px solid rgb(66,66,69); min-width:2ex; padding: 5px 10px;} "
@@ -607,7 +608,7 @@ void ModuleDialogGeneric::tabStyle(QTabWidget* tabs)
 		);
 }
 
-void ModuleDialogGeneric::tableHeaderStyle(QTableWidget* tableHeader)
+void WidgetStyleMixin::tableHeaderStyle(QTableWidget* tableHeader)
 {
 	tableHeader->setStyleSheet(
 		"QHeaderView::section {background: rgb(66,66,69);}"

@@ -45,7 +45,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
-	tabStyle(this->displayOptionsTabs_);
+	WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
 	addCheckBoxManager(showNodesCheckBox_, ShowFieldModule::ShowNodes);
 	addCheckBoxManager(showEdgesCheckBox_, ShowFieldModule::ShowEdges);
 	addCheckBoxManager(showFacesCheckBox_, ShowFieldModule::ShowFaces);

@@ -37,7 +37,7 @@ using namespace SCIRun::Core::Algorithms::Forward;
 namespace TableColumns
 {
   const int MinColumn = 0;
-  
+
   const int FieldName = 0;
   const int FieldType = 1;
   const int BoundaryCondition = 2;
@@ -54,7 +54,7 @@ BuildBEMatrixDialog::BuildBEMatrixDialog(const std::string& name, ModuleStateHan
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-	tableHeaderStyle(this->tableWidget); 
+  WidgetStyleMixin::tableHeaderStyle(this->tableWidget); 
   tableWidget->resizeColumnsToContents();
 
   connect(tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(pushTable(int,int)));

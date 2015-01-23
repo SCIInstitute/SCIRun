@@ -30,7 +30,7 @@
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
 #include <Interface/Modules/Base/WidgetSlotManagers.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h> //TODO: split up this header!
+#include <Core/Algorithms/Base/Name.h>
 #include <QtGui>
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
@@ -44,6 +44,14 @@ namespace Gui {
   typedef std::function<void(QWidget*)> ExecutionDisablingServiceFunction;
   typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
   typedef GuiStringTranslationMap::value_type StringPair;
+
+  //TODO: pull into separate header; figure out how to automatically style child widgets of these types
+  class SCISHARE WidgetStyleMixin
+  {
+  public:
+    static void tabStyle(QTabWidget* tabs);
+    static void tableHeaderStyle(QTableWidget* tableHeader);
+  };
 
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
@@ -87,9 +95,7 @@ namespace Gui {
       ~Pulling() { m_->pulling_ = false; }
       ModuleDialogGeneric* m_;
     };
-		void tabStyle(QTabWidget* tabs);
-		void tableHeaderStyle(QTableWidget* tableHeader);
-    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+		void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap);
     void addTextEditManager(QTextEdit* textEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
