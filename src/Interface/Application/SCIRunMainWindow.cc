@@ -1328,7 +1328,9 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     dataSetGroupBox_ <<
     optionsGroupBox_ <<
     networkEditorMiniViewLabel_ <<
-    miniviewTextLabel_;
+    miniviewTextLabel_ << 
+    scirunDataPathTextEdit_ <<
+    addToPathButton_;
 
   Q_FOREACH(QAction* a, nonfunctioningActions)
     a->setVisible(false);
