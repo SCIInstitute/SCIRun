@@ -161,7 +161,8 @@ namespace Datatypes {
           renderType(renType),
 					vbo(vbo),
 					ibo(ibo),
-          mColorScheme(scheme)
+          mColorScheme(scheme),
+          scalar(1.0)
       {}
 
 			static const char* getName() { return "SpireSubPass"; }
@@ -180,6 +181,7 @@ namespace Datatypes {
       RenderType    renderType;
 			SpireVBO			vbo;
 			SpireIBO			ibo;
+      double        scalar;
 
       struct Uniform
       {

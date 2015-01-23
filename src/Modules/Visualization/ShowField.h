@@ -61,6 +61,7 @@ namespace Visualization {
     static Core::Algorithms::AlgorithmParameterName EdgesAsCylinders;
     static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
     static Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
+    static Core::Algorithms::AlgorithmParameterName SphereScaleValue;
 
     INPUT_PORT(0, Field, LegacyField);
     INPUT_PORT(1, ColorMapObject, ColorMap);
@@ -141,7 +142,8 @@ namespace Visualization {
     void applyColorMapScaling(boost::shared_ptr<SCIRun::Field> field,
                               Core::Datatypes::GeometryObject::SpireSubPass& pass);
 
-    float transparencyValue_;
+    double sphereScalar_;
+    float faceTransparencyValue_;
 
   };
 
