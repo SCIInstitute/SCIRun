@@ -46,10 +46,13 @@ namespace Algorithms {
     static boost::filesystem::path dataDir();
     static void setDataDirPlaceholder(const std::string& str);
     static std::string dataDirPlaceholder();
+    static std::vector<boost::filesystem::path> dataPath();
+    static void setDataPath(const std::vector<boost::filesystem::path>& paths);
     static Thread::Mutex lock_;
   private:
     static boost::filesystem::path dataDir_;
     static std::string dataDirPlaceholder_;
+    static std::vector<boost::filesystem::path> paths_;
   };
 
 }}}
