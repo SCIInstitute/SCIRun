@@ -415,20 +415,41 @@ void ShowFieldModule::renderFacesLinear(
     //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals) 
     {
-      Core::Geometry::Vector edge1 = points[1] - points[0];
-      Core::Geometry::Vector edge2 = points[2] - points[1];
-      Core::Geometry::Vector norm = Cross(edge1, edge2);
+      if (points.size() == 4)
+      {
+        Core::Geometry::Vector edge1 = points[1] - points[0];
+        Core::Geometry::Vector edge2 = points[2] - points[1];
+        Core::Geometry::Vector edge3 = points[3] - points[2];
+        Core::Geometry::Vector edge4 = points[0] - points[3];
 
-      for (size_t i = 0; i < nodes.size(); i++)
-      {
-        normals[i] = norm;
+        Core::Geometry::Vector norm = Cross(edge1, edge2) + Cross(edge2, edge3) + Cross(edge3, edge4) + Cross(edge4, edge1);
+        
+        norm.normalize();
+
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+          normals[i] = norm;
+        }
       }
-      /*
-      for (size_t i = 0; i < nodes.size(); i++)
+      else
       {
+        Core::Geometry::Vector edge1 = points[1] - points[0];
+        Core::Geometry::Vector edge2 = points[2] - points[1];
+        Core::Geometry::Vector norm = Cross(edge1, edge2);
+
+        norm.normalize();
+
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+          normals[i] = norm;
+        }
+        /*
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
         mesh->get_normal(normals[i], nodes[i]);
+        }
+        */
       }
-      */
     }
    
     // Default color single face no matter the element data.
