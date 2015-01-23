@@ -46,7 +46,7 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   lambdaMethod_.insert(StringPair("Slider", "slider"));
   lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
 
-  tabStyle(inputTabWidget_);
+  WidgetStyleMixin::tabStyle(inputTabWidget_);
 
   addDoubleLineEditManager(lCurveLambdaLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaCorner);
   addSpinBoxManager(lambdaNumberSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaNum);
@@ -103,4 +103,3 @@ void SolveInverseProblemWithTikhonovDialog::setSliderStep(double value)
 {
   lambdaSlider_->setSingleStep(static_cast<int>(value));
 }
-

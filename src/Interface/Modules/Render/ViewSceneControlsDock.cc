@@ -37,7 +37,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 {
   setupUi(this);
   //scene_ = parent;
-  
+
   close();
   setWindowTitle(name);
   setAllowedAreas(Qt::BottomDockWidgetArea);
@@ -51,6 +51,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
   connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignDefaultMeshColor()));
 
+  WidgetStyleMixin::tabStyle(tabWidget);
 }
 
 ViewSceneControlsDock::~ViewSceneControlsDock()

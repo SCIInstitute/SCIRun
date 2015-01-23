@@ -96,7 +96,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
-	
+
 	addConfigurationDock(QString::fromStdString(name));
 }
 
@@ -480,6 +480,7 @@ void ViewSceneDialog::addViewOptions()
 	mDownViewBox->addItem("-X");
 	mDownViewBox->addItem("-Y");
 	mDownViewBox->addItem("-Z");
+	WidgetStyleMixin::toolbarStyle(mViewBar);
 	connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
 	mViewBar->addWidget(mDownViewBox);
 	mViewBar->addSeparator();
@@ -514,7 +515,7 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
   mConfigurationDock = new ViewSceneControlsDock(name, this);
   mConfigurationDock->close();
 
-	showConfiguration_ = false; 
+	showConfiguration_ = false;
 }
 
 void ViewSceneDialog::closeConfigurationDock()

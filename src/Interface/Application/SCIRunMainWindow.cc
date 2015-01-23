@@ -51,6 +51,7 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
@@ -110,7 +111,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 		"border - color: navy; /* make the default button prominent */"
 		"}"
 		);
-	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } "); 
+	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 	dialogErrorControl_.reset(new DialogErrorControl(this));
   setupNetworkEditor();
 
@@ -148,8 +149,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   setActionIcons();
 
   QToolBar* standardBar = addToolBar("Standard");
-  standardBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
-		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+	WidgetStyleMixin::toolbarStyle(standardBar);
   standardBar->setObjectName("StandardToolBar");
   standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
@@ -269,6 +269,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
     networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
 
   connect(scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
+	connect(addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
@@ -304,7 +305,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   statusBar()->addPermanentWidget(new QLabel("Version: " + QString::fromStdString(VersionInfo::GIT_VERSION_TAG)));
 
-  //parseStyleXML();
+	WidgetStyleMixin::tabStyle(optionsTabWidget_);
 }
 
 void SCIRunMainWindow::initialize()
@@ -1097,15 +1098,43 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
   }
 }
 
-QString SCIRunMainWindow::dataDirectory() const
+void SCIRunMainWindow::setDataPath(const QString& dirs)
 {
-  return scirunDataLineEdit_->text();
+	if (!dirs.isEmpty())
+	{
+		scirunDataPathTextEdit_->setPlainText(dirs);
+		scirunDataPathTextEdit_->setToolTip(dirs);
+
+		Core::Preferences::Instance().setDataPath(dirs.toStdString());
+	}
+}
+
+void SCIRunMainWindow::addToDataDirectory(const QString& dir)
+{
+	if (!dir.isEmpty())
+	{
+		auto text = scirunDataPathTextEdit_->toPlainText();
+		if (!text.isEmpty())
+			text += ";\n";
+		text += dir;
+		scirunDataPathTextEdit_->setPlainText(text);
+		scirunDataPathTextEdit_->setToolTip(scirunDataPathTextEdit_->toPlainText());
+
+		RemembersFileDialogDirectory::setStartingDir(dir);
+		Core::Preferences::Instance().addToDataPath(dir.toStdString());
+	}
 }
 
 void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
   QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
   setDataDirectory(dir);
+}
+
+void SCIRunMainWindow::addToPathFromGUI()
+{
+	QString dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
+	addToDataDirectory(dir);
 }
 
 bool SCIRunMainWindow::newInterface() const
