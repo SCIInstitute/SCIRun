@@ -75,6 +75,10 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
   state->setValue(NodeAsPoints, true);
   state->setValue(NodeAsSpheres, false);
+  state->setValue(EdgesAsLines, true);
+  state->setValue(EdgesAsCylinders, false);
+  state->setValue(FaceTransparencyValue, 0.50f);
+  transparencyValue_ = 0.50f;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
@@ -126,6 +130,8 @@ RenderState ShowFieldModule::getEdgeRenderState(
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
 
+  renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toBool());
+
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
 
   if (colorMap)
@@ -150,6 +156,8 @@ RenderState ShowFieldModule::getFaceRenderState(
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool());
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+
+  transparencyValue_ = (float)(state->getValue(ShowFieldModule::FaceTransparencyValue).toDouble());
 
   if (colorMap)
   {
@@ -217,7 +225,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
   if (showEdges)
   {
-    renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, id);
+		renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, id);
   }
 
   // Set value ranges for color mapping fields. We should use uniforms for
@@ -370,7 +378,7 @@ void ShowFieldModule::renderFacesLinear(
   // Attempt some form of precalculation of iboBuffer and vboBuffer size.
   // This Initial size estimation will be off quite a bit. Each face will
   // have up to 3 nodes associated.
-  uint32_t iboSize = mesh->num_faces() * sizeof(uint32_t);
+  uint32_t iboSize = mesh->num_faces() * sizeof(uint32_t) * 3;
   uint32_t vboSize = mesh->num_faces() * sizeof(float) * 3;
 
   // Construct VBO and IBO that will be used to render the faces. Once again,
@@ -389,6 +397,7 @@ void ShowFieldModule::renderFacesLinear(
 
   uint32_t iboIndex = 0;
   int64_t numVBOElements = 0;
+	
   while (fiter != fiterEnd) 
   {
     mesh->get_nodes(nodes, *fiter);
@@ -396,19 +405,53 @@ void ShowFieldModule::renderFacesLinear(
     std::vector<Core::Geometry::Point> points(nodes.size());
     std::vector<Core::Geometry::Vector> normals(nodes.size());
 
+	//std::cout << "Node Size: " << nodes.size() << std::endl;
+
     for (size_t i = 0; i < nodes.size(); i++)
     {
       mesh->get_point(points[i], nodes[i]);
     }
 
+    //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals) 
     {
-      for (size_t i = 0; i < nodes.size(); i++)
+      if (points.size() == 4)
       {
+        Core::Geometry::Vector edge1 = points[1] - points[0];
+        Core::Geometry::Vector edge2 = points[2] - points[1];
+        Core::Geometry::Vector edge3 = points[3] - points[2];
+        Core::Geometry::Vector edge4 = points[0] - points[3];
+
+        Core::Geometry::Vector norm = Cross(edge1, edge2) + Cross(edge2, edge3) + Cross(edge3, edge4) + Cross(edge4, edge1);
+        
+        norm.normalize();
+
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+          normals[i] = norm;
+        }
+      }
+      else
+      {
+        Core::Geometry::Vector edge1 = points[1] - points[0];
+        Core::Geometry::Vector edge2 = points[2] - points[1];
+        Core::Geometry::Vector norm = Cross(edge1, edge2);
+
+        norm.normalize();
+
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
+          normals[i] = norm;
+        }
+        /*
+        for (size_t i = 0; i < nodes.size(); i++)
+        {
         mesh->get_normal(normals[i], nodes[i]);
+        }
+        */
       }
     }
-
+   
     // Default color single face no matter the element data.
     if (colorScheme == GeometryObject::COLOR_UNIFORM)
     {
@@ -540,7 +583,7 @@ void ShowFieldModule::renderFacesLinear(
     ++fiter;
     ++numVBOElements;
   }
-
+ 
   std::string uniqueNodeID = id + "face";
   std::string vboName      = uniqueNodeID + "VBO";
   std::string iboName      = uniqueNodeID + "IBO";
@@ -604,7 +647,7 @@ void ShowFieldModule::renderFacesLinear(
 
     if (state.get(RenderState::USE_TRANSPARENCY))
     {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(0.75f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(transparencyValue_)));
     }
     else
     {
@@ -668,7 +711,7 @@ void ShowFieldModule::renderFacesLinear(
       if (state.get(RenderState::USE_TRANSPARENCY))
       {
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-                "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+          "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), transparencyValue_)));
       }
       else
       {
@@ -683,7 +726,7 @@ void ShowFieldModule::renderFacesLinear(
       {
         /// \todo Add transparency slider.
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+          "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), transparencyValue_)));
       }
       else
       {
@@ -693,19 +736,23 @@ void ShowFieldModule::renderFacesLinear(
     }
   }
 
-  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                 numVBOElements, mesh->get_bounding_box(), true));
+	GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+		numVBOElements, mesh->get_bounding_box(), true);
+
+  geom->mVBOs.push_back(geomVBO);
 
   // Construct IBO.
-  geom->mIBOs.push_back(
-      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr));
+
+	GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+
+	geom->mIBOs.push_back(geomIBO);
 
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-                                   colorScheme, state, GeometryObject::RENDER_VBO_IBO);
+                                   colorScheme, state, GeometryObject::RENDER_VBO_IBO, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -856,7 +903,6 @@ void ShowFieldModule::addFaceGeom(
 
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
-        writeVBOScalarValue(scols[1]);
         if (!doubleSided) {writeVBOScalarValue(scols[1]);}
         else              {writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]);}
 
@@ -1273,19 +1319,23 @@ void ShowFieldModule::renderNodes(
     vboOnGPU = false;
   }
 
-  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                 numVBOElements, mesh->get_bounding_box(), vboOnGPU));
+	GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+		numVBOElements, mesh->get_bounding_box(), vboOnGPU);
+
+	geom->mVBOs.push_back(geomVBO);
 
   // Construct IBO.
-  geom->mIBOs.push_back(
-      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::POINTS, sizeof(uint32_t), iboBufferSPtr));
+
+	GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::POINTS, sizeof(uint32_t), iboBufferSPtr);
+
+	geom->mIBOs.push_back(geomIBO);
 
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-                                   colorScheme, state, renderType);
+				colorScheme, state, renderType, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -1546,28 +1596,28 @@ void ShowFieldModule::renderEdges(
     ColorRGB defaultColor = state.defaultColor;
 
     /// \todo Use cylinders...
-    // if (state.get(RenderState::USE_SPHERE))
-    // {
-    //   shader = "Shaders/DirPhong";
-    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-    //                                                            glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-    //                                                            glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
-    //   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    //
-    //   if (state.get(RenderState::USE_TRANSPARENCY))
-    //   {
-    //     uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-    //             "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
-    //   }
-    //   else
-    //   {
-    //     uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-    //             "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
-    //   }
-    // }
-    // else
-    // {
+     if (state.get(RenderState::USE_CYLINDER))
+     {
+       shader = "Shaders/DirPhong";
+       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                                glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                                glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+    
+       if (state.get(RenderState::USE_TRANSPARENCY))
+       {
+         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                 "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+       }
+       else
+       {
+         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+                 "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
+       }
+     }
+     else
+     {
       shader = "Shaders/UniformColor";
 
       if (state.get(RenderState::USE_TRANSPARENCY))
@@ -1581,29 +1631,33 @@ void ShowFieldModule::renderEdges(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
                 "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
       }
-    // }
+    }
   }
 
   /// \todo Use cylinders...
-  // if (state.get(RenderState::USE_SPHERE))
-  // {
-  //   renderType = GeometryObject::RENDER_RLIST_SPHERE;
-  //   vboOnGPU = false;
-  // }
+  if (state.get(RenderState::USE_CYLINDER))
+  {
+    renderType = GeometryObject::RENDER_RLIST_CYLINDER;
+    vboOnGPU = false;
+  }
 
-  geom->mVBOs.push_back(GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                 numVBOElements, mesh->get_bounding_box(), vboOnGPU));
+	GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+		numVBOElements, mesh->get_bounding_box(), vboOnGPU);
+
+	geom->mVBOs.push_back(geomVBO);
 
   // Construct IBO.
-  geom->mIBOs.push_back(
-      GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr));
+
+	GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
+
+	geom->mIBOs.push_back(geomIBO);
 
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
       GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-                                   colorScheme, state, renderType);
+					colorScheme, state, renderType, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -1636,7 +1690,10 @@ AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
 AlgorithmParameterName ShowFieldModule::FaceInvertNormals("FaceInvertNormals");
 AlgorithmParameterName ShowFieldModule::NodeAsPoints("NodeAsPoints");
 AlgorithmParameterName ShowFieldModule::NodeAsSpheres("NodeAsSpheres");
+AlgorithmParameterName ShowFieldModule::EdgesAsLines("EdgesAsLines");
+AlgorithmParameterName ShowFieldModule::EdgesAsCylinders("EdgesAsCylinders");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
+AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
 
 
 

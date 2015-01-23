@@ -195,3 +195,8 @@ void OutputPort::attach(Connection* conn)
 
   Port::attach(conn);
 }
+
+PortDataDescriber OutputPort::getPortDataDescriber() const
+{
+  return [this]() { return source_->describeData(); };
+}

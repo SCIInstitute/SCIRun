@@ -49,6 +49,8 @@ namespace SCIRun {
         INPUT_PORT(0, LHS, DenseMatrix);
         INPUT_PORT(1, RHS, DenseMatrix);
         OUTPUT_PORT(0, Result, DenseMatrix);
+
+			//	static Core::Algorithms::AlgorithmParamterName FunctionString; 
       };
 }
 }}

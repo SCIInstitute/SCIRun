@@ -25,86 +25,74 @@
   <property name="windowTitle">
    <string>Preferences</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <widget class="QToolBox" name="toolBox">
      <widget class="QWidget" name="toolBoxPage1">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>482</width>
-        <height>228</height>
+        <width>476</width>
+        <height>208</height>
        </rect>
       </property>
       <attribute name="label">
        <string>General</string>
       </attribute>
-      <widget class="QCheckBox" name="saveBeforeExecuteCheckBox_">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>70</y>
-         <width>151</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Auto-save before execute</string>
-       </property>
-      </widget>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="saveBeforeExecuteCheckBox_">
+         <property name="text">
+          <string>Auto-save before execute</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="toolBoxPage2">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>482</width>
-        <height>228</height>
+        <width>476</width>
+        <height>208</height>
        </rect>
       </property>
       <attribute name="label">
        <string>Advanced</string>
       </attribute>
-      <layout class="QFormLayout" name="formLayout_2">
+      <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
-        <layout class="QFormLayout" name="formLayout">
-         <item row="0" column="0">
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Regression test data directory:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="regressionTestDataDirLineEdit_">
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="regressionTestDataButton_">
-             <property name="text">
-              <string>Browse...</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="moduleErrorDialogDisableCheckbox_">
-           <property name="text">
-            <string>Disable Module Error dialogs</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Regression test data directory:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="regressionTestDataDirLineEdit_">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="regressionTestDataButton_">
+         <property name="text">
+          <string>Browse...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QCheckBox" name="moduleErrorDialogDisableCheckbox_">
+         <property name="text">
+          <string>Disable Module Error dialogs</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

@@ -89,7 +89,7 @@ public:
   }
 };
 
-ModuleTest::ModuleTest() : factory_(new HardCodedModuleFactory)
+ModuleTestBase::ModuleTestBase() : factory_(new HardCodedModuleFactory)
 {
   Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
   Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
@@ -101,12 +101,12 @@ ModuleTest::ModuleTest() : factory_(new HardCodedModuleFactory)
   Core::Logging::Log::get().setVerbose(true);
 }
 
-ModuleHandle ModuleTest::makeModule(const std::string& name)
+ModuleHandle ModuleTestBase::makeModule(const std::string& name)
 {
   return CreateModuleFromUniqueName(*factory_, name);
 }
 
-void ModuleTest::stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
+void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
 {
   //TODO: this doesn't work with dynamic ports beyond 1
   if (portNum < module->num_input_ports())
@@ -118,7 +118,7 @@ void ModuleTest::stubPortNWithThisData(ModuleHandle module, size_t portNum, Data
   }
 }
 
-DatatypeHandle ModuleTest::getDataOnThisOutputPort(ModuleHandle module, size_t portNum)
+DatatypeHandle ModuleTestBase::getDataOnThisOutputPort(ModuleHandle module, size_t portNum)
 {
   if (portNum < module->num_output_ports())
   {
@@ -129,7 +129,7 @@ DatatypeHandle ModuleTest::getDataOnThisOutputPort(ModuleHandle module, size_t p
   return DatatypeHandle();
 }
 
-void ModuleTest::connectDummyOutputConnection(Dataflow::Networks::ModuleHandle module, size_t portNum)
+void ModuleTestBase::connectDummyOutputConnection(Dataflow::Networks::ModuleHandle module, size_t portNum)
 {
   if (portNum < module->num_output_ports())
   {
@@ -140,13 +140,18 @@ void ModuleTest::connectDummyOutputConnection(Dataflow::Networks::ModuleHandle m
 
 FieldHandle SCIRun::Testing::CreateEmptyLatVol()
 {
+  size_type sizex = 3, sizey = 4, sizez = 5;
+  return CreateEmptyLatVol(sizex, sizey, sizez);
+}
+
+FieldHandle SCIRun::Testing::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez)
+{
   FieldInformation lfi("LatVolMesh", 1, "double");
 
-  size_type sizex = 3, sizey = 4, sizez = 5;
   Point minb(-1.0, -1.0, -1.0);
   Point maxb(1.0, 1.0, 1.0);
-  MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
-  FieldHandle ofh = CreateField(lfi,mesh);
+  MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
+  FieldHandle ofh = CreateField(lfi, mesh);
   ofh->vfield()->clear_all_values();
   return ofh;
 }

@@ -85,6 +85,7 @@ namespace SCIRun {
           MOCK_METHOD1(addPortConnection, void(const boost::signals2::connection&));
           MOCK_CONST_METHOD0(getReexecutionStrategy, ModuleReexecutionStrategyHandle());
           MOCK_METHOD1(setReexecutionStrategy, void(ModuleReexecutionStrategyHandle));
+          MOCK_METHOD0(enqueueExecuteAgain, void());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

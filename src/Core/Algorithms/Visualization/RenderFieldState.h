@@ -58,6 +58,7 @@ public:
     USE_SPHERE,
 
     // Edge flags
+    USE_CYLINDER,
 
     // Face flags
     USE_NORMALS,

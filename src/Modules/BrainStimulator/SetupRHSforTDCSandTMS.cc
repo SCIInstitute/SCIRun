@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
-SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookupInfo("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun"))
+SetupTDCS::SetupTDCS() : Module(ModuleLookupInfo("SetupTDCS", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(MESH);
  INITIALIZE_PORT(SCALP_TRI_SURF_MESH);
@@ -56,7 +56,7 @@ SetupRHSforTDCSandTMSModule::SetupRHSforTDCSandTMSModule() : Module(ModuleLookup
  INITIALIZE_PORT(SELECTMATRIXINDECES);
 }
 
-void SetupRHSforTDCSandTMSModule::setStateDefaults()
+void SetupTDCS::setStateDefaults()
 {
   auto state = get_state();
   setStateIntFromAlgo(Parameters::refnode);
@@ -65,7 +65,7 @@ void SetupRHSforTDCSandTMSModule::setStateDefaults()
   setStateIntFromAlgo(Parameters::number_of_electrodes);
 }
 
-void SetupRHSforTDCSandTMSModule::execute()
+void SetupTDCS::execute()
 { 
   auto mesh = getRequiredInput(MESH);
   auto scalp_tri_surf = getRequiredInput(SCALP_TRI_SURF_MESH);
@@ -84,10 +84,14 @@ void SetupRHSforTDCSandTMSModule::execute()
   {
     update_state(Executing);
     auto state = get_state();
-    state->setValue(Parameters::refnode, get_state()->getValue(Parameters::refnode).toInt());
-    state->setValue(Parameters::normal_dot_product_bound, get_state()->getValue(Parameters::normal_dot_product_bound).toDouble());
-    state->setValue(Parameters::pointdistancebound, get_state()->getValue(Parameters::pointdistancebound).toDouble());
-        
+    //state->setValue(Parameters::refnode, get_state()->getValue(Parameters::refnode).toInt());
+    //state->setValue(Parameters::normal_dot_product_bound, get_state()->getValue(Parameters::normal_dot_product_bound).toDouble());
+    //state->setValue(Parameters::pointdistancebound, get_state()->getValue(Parameters::pointdistancebound).toDouble());
+    
+    setAlgoIntFromState(Parameters::refnode);   
+    setAlgoDoubleFromState(Parameters::normal_dot_product_bound);
+    setAlgoDoubleFromState(Parameters::pointdistancebound);
+    
     int nr_elec=elc_sponge_location->nrows(); /// get the number of electrodes in the first execution to update the GUI
     if (elc_sponge_location && nr_elec>=2)
     {
@@ -95,6 +99,11 @@ void SetupRHSforTDCSandTMSModule::execute()
     }
     
     auto output = algo().run_generic(make_input((MESH, mesh)(SCALP_TRI_SURF_MESH, scalp_tri_surf)(ELECTRODE_TRI_SURF_MESH, elc_tri_surf)(ELECTRODE_SPONGE_LOCATION_AVR, elc_sponge_location)));
+    
+    auto table = output.additionalAlgoOutput(); /// get the two outputs, the third table column and the container that establishes data transfer between GUI/Algo via state  
+    if (table)
+      get_state()->setValue(Parameters::SurfaceAreaValues, table->value());
+    
     sendOutputFromAlgorithm(LHS_KNOWNS, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT, output);
     sendOutputFromAlgorithm(ELECTRODE_ELEMENT_TYPE, output);

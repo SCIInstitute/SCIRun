@@ -28,7 +28,6 @@
 
 #include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Math/ConvertMatrixType.h>
 
 
@@ -45,11 +44,12 @@ ConvertMatrixTypeDialog::ConvertMatrixTypeDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  //TODO: map to enum on algo level
-  addCheckableButtonManager(PassThrough_, ConvertMatrixTypeAlgorithm::PassThrough());
-  addCheckableButtonManager(ConvertToColumnMatrix_, ConvertMatrixTypeAlgorithm::ConvertToColumnMatrix());
-  addCheckableButtonManager(ConvertToDenseMatrix_, ConvertMatrixTypeAlgorithm::ConvertToDenseMatrix());
-  addCheckableButtonManager(ConvertToSparseRowMatrix_, ConvertMatrixTypeAlgorithm::ConvertToSparseRowMatrix());
+  map_.insert(StringPair("Same (pass-through)", "passThrough"));
+  map_.insert(StringPair("DenseMatrix", "dense"));
+  map_.insert(StringPair("ColumnMatrix", "column"));
+  map_.insert(StringPair("SparseRowMatrix", "sparse"));
+
+  addComboBoxManager(matrixTypeComboBox_, Parameters::OutputMatrixType, map_);
 }
 
 void ConvertMatrixTypeDialog::pull()

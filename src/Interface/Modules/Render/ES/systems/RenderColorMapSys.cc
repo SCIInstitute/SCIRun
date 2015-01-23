@@ -98,6 +98,11 @@ public:
       return;
     }
 
+    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    {
+      return;
+    }
+
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
     // setup (including uniforms) if the simple geom hasn't been setup.
@@ -186,11 +191,13 @@ public:
 
     geom.front().attribs.bind();
 
-    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
-    {
-      GL(glDepthMask(GL_FALSE));
-      GL(glDisable(GL_CULL_FACE));
-    }
+    bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+    bool cullFace = glIsEnabled(GL_CULL_FACE);
+    bool blend = glIsEnabled(GL_BLEND);
+
+    GL(glDepthMask(GL_TRUE));
+    GL(glDisable(GL_CULL_FACE));
+    GL(glDisable(GL_BLEND));
 
     if (rlist.size() > 0)
     {
@@ -304,10 +311,17 @@ public:
       }
     }
 
-    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    if (!depthMask)
     {
-      GL(glDepthMask(GL_TRUE));
+      GL(glDepthMask(GL_FALSE));
+    }
+    if (cullFace)
+    {
       GL(glEnable(GL_CULL_FACE));
+    }
+    if (blend)
+    {
+      GL(glEnable(GL_BLEND));
     }
 
     geom.front().attribs.unbind();

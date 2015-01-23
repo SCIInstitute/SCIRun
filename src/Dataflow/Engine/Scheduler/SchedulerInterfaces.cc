@@ -56,15 +56,15 @@ const ExecutionBounds& ExecutionContext::bounds() const
   return executionBounds_;
 }
 
-bool WaitsForStartupInitialization::shouldWait_(true);
+bool WaitsForStartupInitialization::waitedAlready_(false);
 
-void WaitsForStartupInitialization::waitForStartupInit() const
+void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& lookup) const
 {
-  if (shouldWait_)
+  if (!waitedAlready_ && lookup.containsViewScene())
   {
     std::cout << "Waiting for rendering system initialization...." << std::endl;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(450));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(600));
     std::cout << "Done waiting." << std::endl;
-    shouldWait_ = false;
+    waitedAlready_ = true;
   }
 }

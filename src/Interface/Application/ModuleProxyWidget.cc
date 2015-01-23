@@ -124,10 +124,18 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
+  connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureVisible()));
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+}
+
+void ModuleProxyWidget::ensureVisible()
+{
+  auto views = scene()->views();
+  if (!views.isEmpty())
+    views[0]->ensureVisible(this);
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
@@ -179,7 +187,7 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
   if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
-    p->doMouseRelease(event->button(), mapToScene(event->pos()));
+    p->doMouseRelease(event->button(), mapToScene(event->pos()), event->modifiers());
     return;
   }
   if (grabbedByWidget_)
@@ -241,6 +249,9 @@ void ModuleProxyWidget::highlightIfSelected()
 
 QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
 {
+  if (pos() != QPointF(0,0))
+    cachedPosition_ = pos();
+
   if (change == ItemPositionHasChanged)
   {
     module_->trackConnections();
@@ -248,6 +259,7 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
   }
   return QGraphicsItem::itemChange(change, value);
 }
+
 void ModuleProxyWidget::createPortPositionProviders()
 {
   //std::cout << "create PPPs" << std::endl;
@@ -259,6 +271,10 @@ void ModuleProxyWidget::createPortPositionProviders()
 
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
     p->setPositionObject(pp);
+  }
+  if (pos() == QPointF(0, 0) && cachedPosition_ != pos())
+  {
+    setPos(cachedPosition_);
   }
 }
 

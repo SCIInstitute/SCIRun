@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>308</width>
-    <height>539</height>
+    <height>555</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -63,8 +63,11 @@
             <height>324</height>
            </size>
           </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="nodesTab_">
            <attribute name="title">
@@ -107,15 +110,15 @@
                 <property name="title">
                  <string>Node Coloring</string>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_6">
-                 <item>
+                <layout class="QGridLayout" name="gridLayout_5">
+                 <item row="0" column="0">
                   <widget class="QRadioButton" name="defaultNodeColoringButton_">
                    <property name="text">
                     <string>Default</string>
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="1" column="0">
                   <widget class="QRadioButton" name="colormapLookupNodeColoringButton_">
                    <property name="text">
                     <string>Colormap Lookup</string>
@@ -125,7 +128,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="2" column="0">
                   <widget class="QRadioButton" name="conversionRGBNodeColoringButton_">
                    <property name="text">
                     <string>Conversion to RGB</string>
@@ -143,8 +146,8 @@
                 <property name="title">
                  <string>Node Display Type</string>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_15">
-                 <item>
+                <layout class="QGridLayout" name="gridLayout_4">
+                 <item row="0" column="0">
                   <widget class="QRadioButton" name="nodesAsPointsButton_">
                    <property name="text">
                     <string>Points</string>
@@ -154,7 +157,7 @@
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="1" column="0">
                   <widget class="QRadioButton" name="nodesAsSpheresButton_">
                    <property name="enabled">
                     <bool>true</bool>
@@ -171,13 +174,16 @@
                <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
                  <widget class="QLabel" name="label_4">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="text">
                    <string>Sphere Scale</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox">
+                 <widget class="QDoubleSpinBox" name="scaleSphereDoubleSpinBox">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -189,13 +195,16 @@
                <layout class="QHBoxLayout" name="horizontalLayout_2">
                 <item>
                  <widget class="QLabel" name="label_5">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
                   <property name="text">
                    <string>Resolution</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QSpinBox" name="spinBox">
+                 <widget class="QSpinBox" name="resolutionSpinBox">
                   <property name="enabled">
                    <bool>false</bool>
                   </property>
@@ -282,7 +291,7 @@
               <item>
                <widget class="QGroupBox" name="groupBox_7">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="title">
                  <string>Edge Display Type</string>
@@ -301,7 +310,7 @@
                  <item>
                   <widget class="QRadioButton" name="edgesAsCylindersButton_">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="text">
                     <string>Cylinders</string>
@@ -367,92 +376,159 @@
            <attribute name="title">
             <string>Faces</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_9">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_10">
-              <item>
-               <widget class="QCheckBox" name="showFacesCheckBox_">
-                <property name="text">
-                 <string>Show Faces</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="enableTransparencyFacesCheckBox_">
-                <property name="text">
-                 <string>Enable Transparency</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="groupBox_5">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="title">
-                 <string>Face Coloring</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_16">
-                 <item>
-                  <widget class="QRadioButton" name="defaultNodeColoringButton_2">
-                   <property name="text">
-                    <string>Default</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="colormapLookupNodeColoringButton_2">
-                   <property name="text">
-                    <string>Colormap Lookup</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="conversionRGBNodeColoringButton_2">
-                   <property name="text">
-                    <string>Conversion to RGB</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="invertNormalsCheckBox">
-                <property name="text">
-                 <string>Invert Normals</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Use Face Normals</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="checkBox_2">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Render Images as a texture (Colormap Only)</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
+           <widget class="QCheckBox" name="checkBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>186</y>
+              <width>107</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Use Face Normals</string>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="invertNormalsCheckBox">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>163</y>
+              <width>94</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Invert Normals</string>
+            </property>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_5">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>61</y>
+              <width>241</width>
+              <height>96</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="title">
+             <string>Face Coloring</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_16">
+             <item>
+              <widget class="QRadioButton" name="defaultNodeColoringButton_2">
+               <property name="text">
+                <string>Default</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="colormapLookupNodeColoringButton_2">
+               <property name="text">
+                <string>Colormap Lookup</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="conversionRGBNodeColoringButton_2">
+               <property name="text">
+                <string>Conversion to RGB</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QCheckBox" name="showFacesCheckBox_">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>10</y>
+              <width>171</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Show Faces</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="checkBox_2">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>209</y>
+              <width>239</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Render Images as a texture (Colormap Only)</string>
+            </property>
+           </widget>
+           <widget class="QDoubleSpinBox" name="transparencyDoubleSpinBox_">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>190</x>
+              <y>31</y>
+              <width>53</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="toolTip">
+             <string>Set Transparency Alpha</string>
+            </property>
+            <property name="maximum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.750000000000000</double>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="enableTransparencyFacesCheckBox_">
+            <property name="geometry">
+             <rect>
+              <x>11</x>
+              <y>35</y>
+              <width>171</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Enable Transparency</string>
+            </property>
+           </widget>
           </widget>
           <widget class="QWidget" name="textTab_">
            <attribute name="title">

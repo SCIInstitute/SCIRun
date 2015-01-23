@@ -39,9 +39,31 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
+TEST(MeshFactoryTests, CanCreateLatticeVolumeMeshLinear)
 {
   FieldInformation lfi("LatVolMesh", LINEARDATA_E, "double");
+  int sizex,sizey,sizez;
+  sizex = sizey = sizez = 4;
+  Point minb(0,0,0);
+  Point maxb(4,4,4);
+  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+  ASSERT_TRUE(mesh);
+}
+
+TEST(MeshFactoryTests, CanCreateLatticeVolumeMeshConstant)
+{
+  FieldInformation lfi("LatVolMesh", CONSTANTDATA_E, "double");
+  int sizex,sizey,sizez;
+  sizex = sizey = sizez = 4;
+  Point minb(0,0,0);
+  Point maxb(4,4,4);
+  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+  ASSERT_TRUE(mesh);
+}
+
+TEST(MeshFactoryTests, CanCreateLatticeVolumeMeshNoData)
+{
+  FieldInformation lfi("LatVolMesh", NODATA_E, "double");
   int sizex,sizey,sizez;
   sizex = sizey = sizez = 4;
   Point minb(0,0,0);
@@ -56,6 +78,16 @@ TEST(MeshFactoryTests, CreateTriSurfMeshWithString)
   MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
   ASSERT_TRUE(mesh);
 
+  auto vmeshHandle = mesh->vmesh();
+  ASSERT_TRUE(vmeshHandle);
+}
+
+TEST(MeshFactoryTests, CreateTriSurfMeshWithString)
+{
+  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
+  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
+  ASSERT_TRUE(mesh);
+  
   auto vmeshHandle = mesh->vmesh();
   ASSERT_TRUE(vmeshHandle);
 }

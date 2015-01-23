@@ -31,7 +31,6 @@
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 #include <Core/Logging/Log.h>
 #include <Core/Math/MiscMath.h>
-#include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -44,12 +43,11 @@ namespace SCIRun {
     public:
       MapFieldDataFromSourceToDestinationDialogImpl()
       {
-        typedef boost::bimap<std::string, std::string>::value_type strPair;
-        mappingNameLookup_.insert(strPair("Linear (\"weighted\")", "interpolateddata"));
-        mappingNameLookup_.insert(strPair("Constant mapping: each destination gets nearest source value", "closestdata"));
-        mappingNameLookup_.insert(strPair("Constant mapping: each source projects to just one destination", "singledestination"));
+        mappingNameLookup_.insert(StringPair("Linear (\"weighted\")", "interpolateddata"));
+        mappingNameLookup_.insert(StringPair("Constant mapping: each destination gets nearest source value", "closestdata"));
+        mappingNameLookup_.insert(StringPair("Constant mapping: each source projects to just one destination", "singledestination"));
       }
-      boost::bimap<std::string, std::string> mappingNameLookup_;
+      GuiStringTranslationMap mappingNameLookup_;
     };
   }}
 
@@ -72,6 +70,7 @@ MapFieldDataFromSourceToDestinationDialog::MapFieldDataFromSourceToDestinationDi
 void MapFieldDataFromSourceToDestinationDialog::pull()
 {
   pull_newVersionToReplaceOld();
+  Pulling p(this);
   if (IsNan(state_->getValue(Parameters::DefaultValue).toDouble()))
   {
     useNanForUnassignedValuesCheckBox_->setChecked(true);
@@ -84,12 +83,18 @@ void MapFieldDataFromSourceToDestinationDialog::pull()
 
 void MapFieldDataFromSourceToDestinationDialog::setNoMaximumValue(int state)
 {
-  if (0 != state)
-    state_->setValue(Parameters::MaxDistance, -1.0);
+  if (!pulling_)
+  {
+    if (0 != state)
+      state_->setValue(Parameters::MaxDistance, -1.0);
+  }
 }
 
 void MapFieldDataFromSourceToDestinationDialog::setUseNanForUnassignedValues(int state)
 {
-  if (0 != state)
-    state_->setValue(Parameters::DefaultValue, std::numeric_limits<double>::quiet_NaN());
+  if (!pulling_)
+  {
+    if (0 != state)
+      state_->setValue(Parameters::DefaultValue, std::numeric_limits<double>::quiet_NaN());
+  }
 }

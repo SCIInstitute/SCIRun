@@ -30,18 +30,25 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
 #include <boost/foreach.hpp>
+#include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
+
+ExecutionDisablingServiceFunction ModuleDialogGeneric::disabler_;
 
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
   pulling_(false),
   executeAction_(0),
+  shrinkAction_(0),
+  collapsed_(false),
   dock_(0)
 {
   setModal(false);
+  setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
 
   if (state_)
   {
@@ -51,10 +58,18 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   }
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();
+  createShrinkAction();
 }
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
 {
+}
+
+void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
+{
+  connect(button, SIGNAL(clicked()), this, SIGNAL(executeActionTriggered()));
+  if (disabler_)
+    disabler_(button);
 }
 
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
@@ -82,10 +97,50 @@ void ModuleDialogGeneric::createExecuteAction()
   connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
 }
 
+void ModuleDialogGeneric::createShrinkAction()
+{
+  shrinkAction_ = new QAction(this);
+  shrinkAction_->setText("Collapse");
+  //shrinkAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  connect(shrinkAction_, SIGNAL(triggered()), this, SLOT(toggleCollapse()));
+}
+
+void ModuleDialogGeneric::toggleCollapse()
+{
+  if (collapsed_)
+  {
+    shrinkAction_->setText("Collapse");
+  }
+  else
+  {
+    shrinkAction_->setText("Expand");
+  }
+  collapsed_ = !collapsed_;
+  doCollapse();
+}
+
+void ModuleDialogGeneric::doCollapse()
+{
+  if (collapsed_)
+  {
+    oldSize_ = size();
+    const int h = std::min(40, oldSize_.height());
+    const int w = std::min(400, oldSize_.width());
+    setFixedSize(w, h);
+    dock_->setFixedSize(w, h);
+  }
+  else
+  {
+    setFixedSize(oldSize_);
+    dock_->setFixedSize(oldSize_);
+  }
+}
+
 void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e)
 {
   QMenu menu(this);
   menu.addAction(executeAction_);
+  menu.addAction(shrinkAction_);
   menu.exec(e->globalPos());
 
   QDialog::contextMenuEvent(e);
@@ -134,8 +189,12 @@ public:
     const GuiStringTranslationMap& stringMap) :
   WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), stringMap_(stringMap)
   {
-    fromLabelConverter_ = [this](const QString& qstr) { return stringMap_.left.at(qstr.toStdString()); };
-    toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(stringMap_.right.at(str)); };
+    if (stringMap_.empty())
+    {
+      THROW_INVALID_ARGUMENT("empty combo box string mapping");
+    }
+    fromLabelConverter_ = [this](const QString& qstr) { return findOrFirst(stringMap_.left, qstr.toStdString()); };
+    toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(findOrFirst(stringMap_.right, str)); };
     connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
   }
   virtual void pull() override
@@ -163,7 +222,36 @@ private:
   FromQStringConverter fromLabelConverter_;
   ToQStringConverter toLabelConverter_;
   GuiStringTranslationMap stringMap_;
+
+  template <class Map>
+  std::string findOrFirst(const Map& map, const std::string& key) const
+  {
+    auto iter = map.find(key);
+    if (iter == map.end())
+    {
+      const std::string& first = map.begin()->second;
+      Log::get() << NOTICE << "Combo box state error: key not found (" << key << "), replacing with " << first << std::endl;
+      return first;
+    }
+    return iter->second;
+  }
 };
+
+#if 0
+//Interesting idea but hard to manage lifetime of Widget pointers, if they live in a dynamic table. This will need to be melded into the TableWidget subclass.
+template <class Manager, class Widget>
+class CompositeSlotManager : public WidgetSlotManager
+{
+public:
+  CompositeSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, const std::vector<Widget*>& widgets)
+    : WidgetSlotManager(state, dialog)
+  {
+    std::transform(widgets.begin(), widgets.end(), std::back_inserter(managers_), [&](Widget* w) { return boost::make_shared<Manager>(state, dialog, stateKey, w); });
+  }
+private:
+  std::vector<boost::shared_ptr<Manager>> managers_;
+};
+#endif
 
 void ModuleDialogGeneric::addComboBoxManager(QComboBox* comboBox, const AlgorithmParameterName& stateKey)
 {
@@ -297,7 +385,15 @@ public:
       virtual void pushImpl() override
       {
         LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
-        state_->setValue(stateKey_, boost::lexical_cast<double>(lineEdit_->text().toStdString()));
+        try
+        {
+          auto value = boost::lexical_cast<double>(lineEdit_->text().toStdString());
+          state_->setValue(stateKey_, value);
+        }
+        catch (boost::bad_lexical_cast&)
+        {
+          // ignore for now
+        }
       }
 private:
   AlgorithmParameterName stateKey_;
@@ -435,4 +531,92 @@ private:
 void ModuleDialogGeneric::addCheckableButtonManager(QAbstractButton* checkable, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<CheckableButtonSlotManager>(state_, *this, stateKey, checkable));
+}
+
+class DynamicLabelSlotManager : public WidgetSlotManager
+{
+public:
+  DynamicLabelSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLabel* label) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), label_(label)
+  {
+  }
+  virtual void pull() override
+  {
+    auto newValue = state_->getValue(stateKey_).toString();
+    if (newValue != label_->text().toStdString())
+    {
+      LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);
+      label_->setText(QString::fromStdString(newValue));
+    }
+  }
+  virtual void pushImpl() override
+  {
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QLabel* label_;
+};
+
+void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
+}
+
+class RadioButtonGroupSlotManager : public WidgetSlotManager
+{
+public:
+  RadioButtonGroupSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, std::initializer_list<QRadioButton*> radioButtons) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), radioButtons_(radioButtons)
+  {
+    for (auto button : radioButtons_)
+      connect(button, SIGNAL(clicked()), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto checkedIndex = state_->getValue(stateKey_).toInt();
+    if (checkedIndex >= 0 && checkedIndex < radioButtons_.size())
+    {
+      if (!radioButtons_[checkedIndex]->isChecked())
+      {
+        LOG_DEBUG("In new version of pull code for radio button group: " << checkedIndex);
+        radioButtons_[checkedIndex]->setChecked(true);
+      }
+    }
+  }
+  virtual void pushImpl() override
+  {
+    auto firstChecked = std::find_if(radioButtons_.begin(), radioButtons_.end(), [](QRadioButton* button) { return button->isChecked(); });
+    int indexOfChecked = firstChecked - radioButtons_.begin();
+    state_->setValue(stateKey_, indexOfChecked);
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  std::vector<QRadioButton*> radioButtons_;
+};
+
+void ModuleDialogGeneric::addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<RadioButtonGroupSlotManager>(state_, *this, stateKey, radioButtons));
+}
+
+void WidgetStyleMixin::tabStyle(QTabWidget* tabs)
+{
+	tabs->setStyleSheet(
+		"QTabBar::tab::selected, QTabBar::tab::hover         {color:black; background-color: #F0F0F0; border: 1px solid rgb(66,66,69); min-width:2ex; padding: 5px 10px;} "
+		"QTabBar::tab:!selected {color: white; background-color: rgb(66,66,69); border: 1px solid #FFFFFF; min-width:2ex; padding: 5px 10px; }"
+		"QTabBar::tab:selected  {color:black; background-color: #F0F0F0; border: 1px solid rgb(66,66,69); min-width:2ex; padding: 5px 10px;}"
+		);
+}
+
+void WidgetStyleMixin::tableHeaderStyle(QTableWidget* tableHeader)
+{
+	tableHeader->setStyleSheet(
+		"QHeaderView::section {background: rgb(66,66,69);}"
+		);
+}
+
+void WidgetStyleMixin::toolbarStyle(QToolBar* toolbar)
+{
+  toolbar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
+    "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
 }

@@ -31,6 +31,7 @@
 #define CORE_ALGORTIHMS_FIELDS_MAPPING_BUILDMAPPINGMATRIX_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -47,8 +48,6 @@ class SCISHARE BuildMappingMatrixAlgo : public AlgorithmBase
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 
     static const AlgorithmOutputName Mapping;
-    static const AlgorithmParameterName MaxDistance;
-    static const AlgorithmParameterName Method;
 };
 
 }}}}

@@ -46,7 +46,10 @@ namespace SCIRun
     {
     public:
       typedef boost::signals2::signal<void(typename Var::value_type)> ValueChangedSignal;
-      boost::signals2::connection connectValueChanged(typename ValueChangedSignal::slot_type subscriber);
+      boost::signals2::connection connectValueChanged(typename ValueChangedSignal::slot_type subscriber)
+      {
+        return valueChanged_.connect(subscriber);
+      }
 
       TrackedVariable(const std::string& name, const typename Var::value_type& value) : Var(name, value) {}
 
@@ -76,7 +79,7 @@ namespace SCIRun
       BooleanVariable saveBeforeExecute;
       BooleanVariable useNewViewSceneMouseControls;
       BooleanVariable modulesSnapToGrid;
-      BooleanVariable modulesAreDockable;
+      TrackedVariable<BooleanVariable> modulesAreDockable;
       StringVariable networkBackgroundColor;
 
       std::string dataDirectoryPlaceholder() const;
@@ -84,11 +87,18 @@ namespace SCIRun
       boost::filesystem::path dataDirectory() const;
       void setDataDirectory(const boost::filesystem::path& path);
 
+      std::vector<boost::filesystem::path> dataPath() const;
+      void addToDataPath(const boost::filesystem::path& path);
+      void setDataPath(const std::string& dirs); // ;-delimited
+      //TODO: remove path entry
+
+
 	    //void save_state();
 
     private:
 	    //void initialize_states();
 	    boost::filesystem::path dataDir_;
+      std::vector<boost::filesystem::path> dataPath_;
     };
 
 }}
