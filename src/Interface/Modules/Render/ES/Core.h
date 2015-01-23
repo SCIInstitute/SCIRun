@@ -43,6 +43,7 @@ public:
   virtual ~ESCore();
 
   void execute(double currentTime, double constantFrameTime);
+  void setBackgroundColor(float r, float g, float b, float a);
   
 private:
 
@@ -52,6 +53,8 @@ private:
 
   float                     mFPS;             ///< Actual FPS of system.
   float                     mLastRealTime;    ///< Last realtime passed into the core.
+
+  float r_, g_, b_, a_;
 };
 
 } // namespace Render

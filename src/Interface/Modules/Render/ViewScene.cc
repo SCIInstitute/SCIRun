@@ -125,12 +125,12 @@ void ViewSceneDialog::newGeometryValue()
 	LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
 	itemManager_->removeAll();
-
+  /*
   std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
   if (spire == nullptr)
     return;
   spire->removeAllGeomObjects();
-
+  */
 	// Grab the geomData transient value.
 	auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
 	if (geomDataTransient && !geomDataTransient->empty())
@@ -149,23 +149,23 @@ void ViewSceneDialog::newGeometryValue()
 		}
 
 		int port = 0;
-		//std::vector<std::string> validObjects;
+		std::vector<std::string> validObjects;
 		for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
 		{
 			boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
 			spire->handleGeomObject(obj, port);
-			//validObjects.push_back(obj->objectName);
+			validObjects.push_back(obj->objectName);
 			itemManager_->addItem(QString::fromStdString(obj->objectName));
 		}
-		//spire->gcInvalidObjects(validObjects);
-  }/*
+		spire->gcInvalidObjects(validObjects);
+  }
 	else
 	{
 		std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
 		if (spire == nullptr)
 			return;
 		spire->removeAllGeomObjects();
-	}*/
+	}
 	//TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
 	//state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
@@ -374,6 +374,23 @@ void ViewSceneDialog::configurationButtonClicked()
   showConfiguration_ = !mConfigurationDock->isVisible();
   mConfigurationDock->setEnabled(showConfiguration_);
   mConfigurationDock->setVisible(showConfiguration_);
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::assignBackgroundColor()
+{
+  QColor bgColor = Qt::black;
+  auto newColor = QColorDialog::getColor(bgColor, this, "Choose background color");
+  if (newColor.isValid())
+  {
+    bgColor = newColor;
+    mConfigurationDock->setSampleColor(bgColor);
+    //TODO: set color of button to this color
+    //defaultMeshColorButton_->set
+    //state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    spire->setBackgroundColor(bgColor);
+  }
 }
 
 //------------------------------------------------------------------------------

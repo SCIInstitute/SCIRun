@@ -56,6 +56,7 @@ namespace SCIRun {
 			void pushNodeType();
       void pushEdgeType();
       void pushTransparencyValue();
+      void pushScaleValues();
 			void assignDefaultMeshColor();
 		private:
 			QColor defaultMeshColor_;
