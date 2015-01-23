@@ -151,14 +151,15 @@ namespace SCIRun
   }
 }
 
-
-EditMeshBoundingBox::EditMeshBoundingBox() : Module(staticInfo_),
+EditMeshBoundingBox::EditMeshBoundingBox()
+: Module(staticInfo_),
+  cylinder_scale_(1.0),
   impl_(new EditMeshBoundingBoxImpl)
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-  INITIALIZE_PORT(Transformation_Widget);
-  INITIALIZE_PORT(Transformation_Matrix);
+    INITIALIZE_PORT(InputField);
+    INITIALIZE_PORT(OutputField);
+    INITIALIZE_PORT(Transformation_Widget);
+    INITIALIZE_PORT(Transformation_Matrix);
 }
 
 void EditMeshBoundingBox::createBoxWidget()
@@ -185,6 +186,7 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(OutputSizeX, 0.0);
   state->setValue(OutputSizeY, 0.0);
   state->setValue(OutputSizeZ, 0.0);
+  state->setValue(Scale, 1.0);
 
   //TODO
 
@@ -239,13 +241,20 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
                     center + Vector(0, size.y() / 2., 0),
                     center + Vector(0, 0, size.z() / 2.));
 
-  auto state = get_state();
-  state->setValue(InputCenterX, boost::lexical_cast<std::string>(center.x()));
-  state->setValue(InputCenterY, boost::lexical_cast<std::string>(center.y()));
-  state->setValue(InputCenterZ, boost::lexical_cast<std::string>(center.z()));
-  state->setValue(InputSizeX, boost::lexical_cast<std::string>(size.x()));
-  state->setValue(InputSizeY, boost::lexical_cast<std::string>(size.y()));
-  state->setValue(InputSizeZ, boost::lexical_cast<std::string>(size.z()));
+    auto state = get_state();
+    char s[32];
+    sprintf(s, "%8.4f",center.x());
+    state->setValue(InputCenterX, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",center.y());
+    state->setValue(InputCenterY, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",center.z());
+    state->setValue(InputCenterZ, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",size.x());
+    state->setValue(InputSizeX, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",size.y());
+    state->setValue(InputSizeY, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",size.z());
+    state->setValue(InputSizeZ, boost::lexical_cast<std::string>(s));
 }
 
 bool EditMeshBoundingBox::isBoxEmpty() const
@@ -256,17 +265,75 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 }
 
 Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
-    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
-    /// \todo Cylinder edge rendering.
     
-    GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_IN_SITU);
-        
-    ColorRGB vcol0(1,1,1);
+    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
+    
+    GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
+    int64_t numVBOElements = 0;
+    int num_strips = 50;
+    std::vector<std::pair<Point,Point>> bounding_edges;
+    //get all the bbox edges
+    Point c,r,d,b;
+    box_->getPosition(c,r,d,b);
+    Vector x = r - c, y = d - c, z = b - c;
+    std::vector<Point> points;
+    points.resize(8);
+    points.at(0) = c+x+y+z;
+    points.at(1) = c+x+y-z;
+    points.at(2) = c+x-y+z;
+    points.at(3) = c+x-y-z;
+    points.at(4) = c-x+y+z;
+    points.at(5) = c-x+y-z;
+    points.at(6) = c-x-y+z;
+    points.at(7) = c-x-y-z;
+    uint32_t point_indicies[] = {
+        0,1,0,2,0,4,
+        7,6,7,5,7,3,
+        4,5,4,6,5,1,
+        3,2,3,1,6,2
+    };
+    auto state = get_state();
+    double scale = state->getValue(Scale).toDouble();
+    std::cout << scale << std::endl;
+    std::vector<Vector> tri_points;
+    std::vector<Vector> tri_normals;
+    std::vector<uint32_t> tri_indices;
+    //generate triangles for the cylinders.
+    for (int edge = 0; edge < 24; edge +=2) {
+        Vector c1,c2;
+        c1 = Vector(points[point_indicies[edge]]);
+        c2 = Vector(points[point_indicies[edge+1]]);
+        Vector n(c1 - c2);
+        n.normalize();
+        Vector u = Cross(Vector(1,0,0),n);
+        Vector crx = Cross(u,n);
+        Vector p;
+        for(int strips = 0; strips <= num_strips; strips++) {
+            uint32_t offset = (uint32_t)numVBOElements;
+            p = std::cos(2. * M_PI * (double)strips / (double)num_strips) * u +
+            std::sin(2. * M_PI * (double)strips / (double)num_strips) * crx;
+            tri_points.push_back(scale * p + c1);
+            numVBOElements++;
+            tri_points.push_back(scale * p + c2);
+            numVBOElements++;
+            tri_normals.push_back(p);
+            tri_normals.push_back(p);
+            if (strips < num_strips) {
+                tri_indices.push_back( 0 + offset);
+                tri_indices.push_back( 1 + offset);
+                tri_indices.push_back( 2 + offset);
+                tri_indices.push_back( 2 + offset);
+                tri_indices.push_back( 1 + offset);
+                tri_indices.push_back( 3 + offset);
+            }
+        }
+    }
+    
     
     // Attempt some form of precalculation of iboBuffer and vboBuffer size.
-    int iboSize = 24 * sizeof(uint32_t);
-    int vboSize = 8 * sizeof(float) * 7;
-
+    size_t iboSize = tri_indices.size() * sizeof(uint32_t);
+    size_t vboSize = tri_points.size() * 2 * sizeof(float);
+    
     
     /// \todo To reduce memory requirements, we can use a 16bit index buffer.
     
@@ -286,107 +353,73 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
     CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
     
-    int64_t numVBOElements = 12;
-    std::vector<std::pair<Point,Point>> bounding_edges;
-    //get all the bbox edges
-    Point c,r,d,b;
-    box_->getPosition(c,r,d,b);
-    Vector x = r - c, y = d - c, z = b - c;
-    std::vector<Point> points;
-    points.resize(8);
-    points.at(0) = c+x+y+z;
-    points.at(1) = c+x+y-z;
-    points.at(2) = c+x-y+z;
-    points.at(3) = c+x-y-z;
-    points.at(4) = c-x+y+z;
-    points.at(5) = c-x+y-z;
-    points.at(6) = c-x-y+z;
-    points.at(7) = c-x-y-z;
-    uint32_t indicies[] = {
-        0,1,0,2,0,4,
-        7,6,7,5,7,3,
-        4,5,4,6,5,1,
-        3,2,3,1,6,2
-    };
-    for(size_t i = 0; i < 24; i++) iboBuffer->write(indicies[i]);
     
-    for (Point p : points)
+    
+    for(uint32_t i : tri_indices) iboBuffer->write(i);
+    
+    for (size_t i = 0; i < tri_points.size(); i++)
     {
         // Write first point on line
-        vboBuffer->write(static_cast<float>(p.x()));
-        vboBuffer->write(static_cast<float>(p.y()));
-        vboBuffer->write(static_cast<float>(p.z()));
-        // Writes uint8_t out to the VBO. A total of 4 bytes.
-        vboBuffer->write(static_cast<float>(vcol0.r()));
-        vboBuffer->write(static_cast<float>(vcol0.g()));
-        vboBuffer->write(static_cast<float>(vcol0.b()));
-        vboBuffer->write(static_cast<float>(1.0));
+        vboBuffer->write(static_cast<float>(tri_points.at(i).x()));
+        vboBuffer->write(static_cast<float>(tri_points.at(i).y()));
+        vboBuffer->write(static_cast<float>(tri_points.at(i).z()));
+        // Write normal
+        vboBuffer->write(static_cast<float>(tri_normals.at(i).x()));
+        vboBuffer->write(static_cast<float>(tri_normals.at(i).y()));
+        vboBuffer->write(static_cast<float>(tri_normals.at(i).z()));
     }
     
-    std::string uniqueNodeID = "bounding_edge";
+    std::string uniqueNodeID = "bounding_edge_face";
     std::string vboName      = uniqueNodeID + "VBO";
     std::string iboName      = uniqueNodeID + "IBO";
     std::string passName     = uniqueNodeID + "Pass";
     
-    // NOTE: Attributes will depend on the color scheme. We will want to
-    // normalize the colors if the color scheme is COLOR_IN_SITU.
-    
     // Construct VBO.
-    std::string shader = "Shaders/InSituColor";
+    std::string shader = "Shaders/DirPhong";
     std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
     GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
     
     // If true, then the VBO will be placed on the GPU. We don't want to place
     // VBOs on the GPU when we are generating rendering lists.
-    bool vboOnGPU = true;
-    
-    std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
-    
-    /// \todo Use cylinders...
-    // if (state.get(RenderState::USE_SPHERE))
-    // {
-    //   renderType = GeometryObject::RENDER_RLIST_SPHERE;
-    //   vboOnGPU = false;
-    // }
-    
     GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                                numVBOElements, bbox_, vboOnGPU);
-    
+                                                                numVBOElements, bbox_, true);
     geom->mVBOs.push_back(geomVBO);
     
     // Construct IBO.
-    
-    GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
-    
+    GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName,
+                                                                GeometryObject::SpireIBO::TRIANGLES,
+                                                                sizeof(uint32_t), iboBufferSPtr);
     geom->mIBOs.push_back(geomIBO);
-    //render state
+    
     RenderState renState;
     
     renState.set(RenderState::IS_ON, true);
     renState.set(RenderState::USE_TRANSPARENCY, false);
     
-    renState.set(RenderState::USE_SPHERE, false);
-    
-    renState.defaultColor = ColorRGB(vcol0);
-    
-    renState.defaultColor = vcol0;
+    renState.defaultColor = ColorRGB(1,1,1);
+    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+    renState.set(RenderState::USE_NORMALS, true);
     
     // Construct Pass.
-    // Build pass for the edges.
-    /// \todo Find an appropriate place to put program names like UniformColor.
     GeometryObject::SpireSubPass pass =
     GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
                                  colorScheme, renState, renderType, geomVBO, geomIBO);
-    
     // Add all uniforms generated above to the pass.
+    std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                             glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
+                                                             glm::vec4(1.f, 1.f, 1.f, 1.f)));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                             glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
+    
     geom->mPasses.push_back(pass);
     
-    /// \todo Add spheres and other glyphs as display lists. Will want to
-    ///       build up to geometry / tesselation shaders if support is present.
+    
     return geom;
 }
 
@@ -459,43 +492,7 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     box_->setScale(bscale); // callback sets box_scale for us.
     box_->setPosition(center, right, down, in);
     box_->setCurrentMode(state->getValue(BoxMode).toInt());
-#ifdef WORKING_ON_EDITMESH
-    box_center_.set(center);
-    box_right_.set(right);
-    box_down_.set(down);
-    box_in_.set(in);
-    box_scale_.set(-1.0);
-#endif
   }
-  else
-  {
-#ifdef WORKING_ON_EDITMESH
-    const double l2norm = (box_right_.get().vector() +
-      box_down_.get().vector() +
-      box_in_.get().vector()).length();
-    const double newscale = l2norm * 0.015;
-    double bscale = box_real_scale_.get();
-    if (bscale < newscale * 1e-2 || bscale > newscale * 1e2)
-    {
-      bscale = newscale;
-    }
-    box_->setScale(bscale); // callback sets box_scale for us.
-    box_->setPosition(box_center_.get(), box_right_.get(),
-      box_down_.get(), box_in_.get());
-    box_->setCurrentMode(box_mode_.get());
-#endif
-  }
-#ifdef WORKING_ON_EDITMESH
-  GeomGroup *widget_group = new GeomGroup;
-  widget_group->add(box_->GetWidget());
-
-  GeometryOPortHandle ogport;
-  get_oport_handle("Transformation Widget", ogport);
-  widgetid_ = ogport->addObj(widget_group, "EditMeshBoundingBox Transform widget", &widget_lock_);
-  ogport->flushViews();
-#endif
-    GeometryHandle geom = buildGeometryObject();
-    sendOutput(Transformation_Widget, geom);
 }
 
 void EditMeshBoundingBox::setBoxRestrictions()
@@ -644,6 +641,7 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
   // Convert the transform into a matrix and send it out.
   MatrixHandle mh(new DenseMatrix(t));
   sendOutput(Transformation_Matrix, mh);
+  sendOutput(Transformation_Widget, buildGeometryObject());
 }
 
 void EditMeshBoundingBox::widget_moved(bool last)
@@ -659,19 +657,7 @@ void EditMeshBoundingBox::widget_moved(bool last)
     state->setValue(OutputSizeX, (right.x() - center.x())*2.);
     state->setValue(OutputSizeY, (down.y() - center.y())*2.);
     state->setValue(OutputSizeZ, (in.z() - center.z())*2.);
-#ifdef WORKING_ON_EDITMESH
-    state->setValue(BoxMode, box_mode_.set(box_->GetMode());
-    box_center_.set(center);
-    box_right_.set(right);
-    box_down_.set(down);
-    box_in_.set(in);
-    box_scale_.set(1.0);
-    want_to_execute();
-#endif
   }
-#ifdef WORKING_ON_EDITMESH
-  box_real_scale_.set(box_->GetScale());
-#endif
 }
 
 BoxWidgetPtr WidgetFactory::createBox()
@@ -697,10 +683,7 @@ const AlgorithmParameterName EditMeshBoundingBox::OutputSizeX("OutputSizeX");
 const AlgorithmParameterName EditMeshBoundingBox::OutputSizeY("OutputSizeY");
 const AlgorithmParameterName EditMeshBoundingBox::OutputSizeZ("OutputSizeZ");
 //Widget Scale/Mode
-const AlgorithmParameterName EditMeshBoundingBox::DoubleScaleUp("DoubleScaleUp");
-const AlgorithmParameterName EditMeshBoundingBox::ScaleUp("ScaleUp");
-const AlgorithmParameterName EditMeshBoundingBox::ScaleDown("ScaleDown");
-const AlgorithmParameterName EditMeshBoundingBox::DoubleScaleDown("DoubleScaleDown");
+const AlgorithmParameterName EditMeshBoundingBox::Scale("Scale");
 const AlgorithmParameterName EditMeshBoundingBox::NoTranslation("NoTranslation");
 const AlgorithmParameterName EditMeshBoundingBox::XYZTranslation("XYZTranslation");
 const AlgorithmParameterName EditMeshBoundingBox::RDITranslation("RDITranslation");

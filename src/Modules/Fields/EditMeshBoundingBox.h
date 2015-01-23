@@ -71,10 +71,7 @@ namespace Fields {
 	static const Core::Algorithms::AlgorithmParameterName OutputSizeY;
 	static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
 	//Widgeconst t Scale/Mode
-	static const Core::Algorithms::AlgorithmParameterName DoubleScaleUp;
-	static const Core::Algorithms::AlgorithmParameterName ScaleUp;
-	static const Core::Algorithms::AlgorithmParameterName ScaleDown;
-	static const Core::Algorithms::AlgorithmParameterName DoubleScaleDown;
+	static const Core::Algorithms::AlgorithmParameterName Scale;
 	static const Core::Algorithms::AlgorithmParameterName NoTranslation;
 	static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
 	static const Core::Algorithms::AlgorithmParameterName RDITranslation;
@@ -94,7 +91,7 @@ namespace Fields {
     OUTPUT_PORT(2, Transformation_Matrix, Matrix);
 
 	static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
+      
   private:
     void executeImpl(FieldHandle f);
     void clear_vals();
@@ -108,6 +105,7 @@ namespace Fields {
     SCIRun::Core::Geometry::BBox bbox_;
 
     BoxWidgetPtr box_;
+    double cylinder_scale_;
     boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
   };
 }}}

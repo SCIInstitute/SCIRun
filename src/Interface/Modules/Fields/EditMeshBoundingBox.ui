@@ -334,7 +334,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="font">
       <font>
@@ -357,6 +357,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="doubleUpScaleToolButton_">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>++</string>
           </property>
@@ -458,4 +461,10 @@
  </widget>
  <resources/>
  <connections/>
+ <slots>
+  <slot>ScaleUpPush()</slot>
+  <slot>ScaleDoubleUpPush()</slot>
+  <slot>ScaleDownPush()</slot>
+  <slot>ScaleDoubleDownPush()</slot>
+ </slots>
 </ui>
