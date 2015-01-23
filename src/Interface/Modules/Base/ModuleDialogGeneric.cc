@@ -614,3 +614,9 @@ void WidgetStyleMixin::tableHeaderStyle(QTableWidget* tableHeader)
 		"QHeaderView::section {background: rgb(66,66,69);}"
 		);
 }
+
+void WidgetStyleMixin::toolbarStyle(QToolBar* toolbar)
+{
+  toolbar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
+    "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+}

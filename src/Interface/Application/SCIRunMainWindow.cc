@@ -51,6 +51,7 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
@@ -148,8 +149,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   setActionIcons();
 
   QToolBar* standardBar = addToolBar("Standard");
-  standardBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
-		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+	WidgetStyleMixin::toolbarStyle(standardBar);
   standardBar->setObjectName("StandardToolBar");
   standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
@@ -304,6 +304,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   hideNonfunctioningWidgets();
 
   statusBar()->addPermanentWidget(new QLabel("Version: " + QString::fromStdString(VersionInfo::GIT_VERSION_TAG)));
+
+	WidgetStyleMixin::tabStyle(optionsTabWidget_);
 }
 
 void SCIRunMainWindow::initialize()

@@ -51,6 +51,7 @@ namespace Gui {
   public:
     static void tabStyle(QTabWidget* tabs);
     static void tableHeaderStyle(QTableWidget* tableHeader);
+    static void toolbarStyle(QToolBar* toolbar);
   };
 
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
