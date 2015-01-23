@@ -270,7 +270,6 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     
     GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
     int64_t numVBOElements = 0;
-    int num_strips = 10;
     std::vector<std::pair<Point,Point>> bounding_edges;
     //get all the bbox edges
     Point c,r,d,b;
@@ -295,7 +294,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     auto state = get_state();
     double scale = state->getValue(Scale).toDouble();
     if (scale < 0) scale *= -1.;
-    std::cout << scale << std::endl;
+    int num_strips = int(10. * scale);
     std::vector<Vector> tri_points;
     std::vector<Vector> tri_normals;
     std::vector<uint32_t> tri_indices;
