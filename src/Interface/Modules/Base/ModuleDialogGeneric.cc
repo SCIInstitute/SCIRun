@@ -68,8 +68,8 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
   connect(button, SIGNAL(clicked()), this, SIGNAL(executeActionTriggered()));
-  if (disabler_)
-    disabler_(button);
+  //if (disabler_)
+  //  disabler_(button);
 }
 
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
