@@ -88,6 +88,7 @@ std::vector<boost::filesystem::path> Preferences::dataPath() const
 void Preferences::addToDataPath(const boost::filesystem::path& path)
 {
   dataPath_.push_back(path);
+  AlgorithmParameterHelper::setDataPath(dataPath_);
 }
 
 void Preferences::setDataPath(const std::string& dirs)
@@ -95,6 +96,7 @@ void Preferences::setDataPath(const std::string& dirs)
   std::vector<std::string> paths;
   boost::split(paths, dirs, boost::is_any_of(";"));
   std::transform(paths.begin(), paths.end(), std::back_inserter(dataPath_), [](const std::string& p) { return boost::filesystem::path(p); });
+  AlgorithmParameterHelper::setDataPath(dataPath_);
 }
 
 
