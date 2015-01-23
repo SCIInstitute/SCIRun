@@ -97,6 +97,8 @@ namespace Networks {
     virtual void setExecutionState(ExecutionState state);
     virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber);
 
+    virtual void enqueueExecuteAgain();
+
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
     virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id);

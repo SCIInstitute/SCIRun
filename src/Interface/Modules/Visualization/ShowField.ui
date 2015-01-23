@@ -67,7 +67,7 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="nodesTab_">
            <attribute name="title">
@@ -175,7 +175,7 @@
                 <item>
                  <widget class="QLabel" name="label_4">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>Sphere Scale</string>
@@ -183,9 +183,12 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="scaleSphereDoubleSpinBox">
+                 <widget class="QDoubleSpinBox" name="scaleSphereDoubleSpinBox_">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.100000000000000</double>
                   </property>
                  </widget>
                 </item>
@@ -458,7 +461,7 @@
              <rect>
               <x>10</x>
               <y>10</y>
-              <width>79</width>
+              <width>171</width>
               <height>17</height>
              </rect>
             </property>
@@ -497,6 +500,9 @@
               <height>20</height>
              </rect>
             </property>
+            <property name="toolTip">
+             <string>Set Transparency Alpha</string>
+            </property>
             <property name="maximum">
              <double>1.000000000000000</double>
             </property>
@@ -512,7 +518,7 @@
              <rect>
               <x>11</x>
               <y>35</y>
-              <width>123</width>
+              <width>171</width>
               <height>17</height>
              </rect>
             </property>

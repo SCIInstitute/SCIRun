@@ -24,39 +24,19 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#include <QApplication>
-#include <QMessageBox>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#ifndef SCIRUN_GIT_VERSION_H
+#define SCIRUN_GIT_VERSION_H
 
-using namespace SCIRun::Gui;
+#include <string>
+#include <Core/Application/share.h>
 
-int GuiApplication::run(int argc, const char* argv[])
+class SCISHARE VersionInfo
 {
-  QApplication app(argc, const_cast<char**>(argv));
+public:
+  static const std::string GIT_VERSION_TAG;
+  static const std::string GIT_COMMIT_SHA;
+};
 
-  try
-  {
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-
-    return app.exec();
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    std::cerr << "Unhandled exception: " << e.what() << std::endl;
-    return 1;
-  }
-  catch (...)
-  {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    std::cerr << "Unhandled exception: Unknown" << std::endl;
-    return 1;
-  }
-}
+#endif

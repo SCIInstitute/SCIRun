@@ -180,9 +180,9 @@ TikhonovAlgorithmImpl::LambdaLookup(const TikhonovAlgorithm::LCurveInput& input,
 
 namespace LinearAlgebra
 {
-  void solve_lapack(const DenseMatrix&, const DenseColumnMatrix&, DenseColumnMatrix&)
+  void solve_lapack(const DenseMatrix& A, const DenseColumnMatrix& b, DenseColumnMatrix& x)
   {
-    //TODO obviously
+    x = A.lu().solve(b).eval();
   }
 
   class LapackError : public std::exception {};
@@ -444,7 +444,7 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     {
       try
       {
-        LinearAlgebra::solve_lapack(regForMatrix, *measuredDataRef,solution);
+        LinearAlgebra::solve_lapack(regForMatrix, *measuredDataRef, solution);
       }
       catch (LinearAlgebra::LapackError&)
       {

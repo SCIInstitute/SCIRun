@@ -111,8 +111,8 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     error("This algorithm does not support point or prism meshes");
     return(false);
   }
-    
-  if ((!(fi.is_scalar()))&&(addCon != "all"))
+
+  if ((!(fi.is_scalar())) && (addCon != "all"))
   {
     error("Field data needs to be of scalar type");
     return (false);
@@ -122,40 +122,39 @@ RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   {
     RefineMeshQuadSurfAlgoV algo;
     algo.setUpdaterFunc(getUpdaterFunc());
-    return(algo.runImpl(input,output,addCon,isoVal));
+    return(algo.runImpl(input, output, addCon, isoVal));
   }
-  
+
   if (fi.is_hex_element())
   {
-		bool convex = false; 
-		convex = rMethod == "Expand refinement volume to improve element quality"; 
+    bool convex = false;
+    convex = rMethod == "Expand refinement volume to improve element quality";
     RefineMeshHexVolAlgoV algo;
     algo.setUpdaterFunc(getUpdaterFunc());
-		return(algo.runImpl(input,output,convex,addCon,isoVal));
+    return(algo.runImpl(input, output, convex, addCon, isoVal));
   }
 
   if (fi.is_crv_element())
   {
-			RefineMeshCurveAlgoV algo; 
-      algo.setUpdaterFunc(getUpdaterFunc());
-			return(algo.runImpl(input,output,addCon,isoVal));
+    RefineMeshCurveAlgoV algo;
+    algo.setUpdaterFunc(getUpdaterFunc());
+    return(algo.runImpl(input, output, addCon, isoVal));
   }
-  
+
   if (fi.is_tri_element())
-  { 
-			RefineMeshTriSurfAlgoV algo; 
-      algo.setUpdaterFunc(getUpdaterFunc());
-			return(algo.runImpl(input,output,addCon,isoVal));
+  {
+    RefineMeshTriSurfAlgoV algo;
+    algo.setUpdaterFunc(getUpdaterFunc());
+    return(algo.runImpl(input, output, addCon, isoVal));
   }
-  
+
   if (fi.is_tet_element())
   {
-			RefineMeshTetVolAlgoV algo; 
-      algo.setUpdaterFunc(getUpdaterFunc());
-			return(algo.runImpl(input,output,addCon,isoVal));
+    RefineMeshTetVolAlgoV algo;
+    algo.setUpdaterFunc(getUpdaterFunc());
+    return(algo.runImpl(input, output, addCon, isoVal));
   }
 
   error("No refinement method has been implemented for this type of mesh");
   return (false);
-}                           
-     
+}

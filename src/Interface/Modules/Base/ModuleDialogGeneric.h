@@ -41,6 +41,7 @@
 namespace SCIRun {
 namespace Gui {
 
+  typedef std::function<void(QWidget*)> ExecutionDisablingServiceFunction;
   typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
   typedef GuiStringTranslationMap::value_type StringPair;
 
@@ -53,6 +54,7 @@ namespace Gui {
     QAction* getExecuteAction() { return executeAction_; }
     void setDockable(QDockWidget* dock) { dock_ = dock; } // to enable title changes
     void updateWindowTitle(const QString& title);
+    static void setExecutionDisablingServiceFunction(ExecutionDisablingServiceFunction disabler) { disabler_ = disabler; }
 
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
@@ -85,7 +87,8 @@ namespace Gui {
       ~Pulling() { m_->pulling_ = false; }
       ModuleDialogGeneric* m_;
     };
-
+		void tabStyle(QTabWidget* tabs);
+		void tableHeaderStyle(QTableWidget* tableHeader);
     void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap);
     void addTextEditManager(QTextEdit* textEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
@@ -111,6 +114,7 @@ namespace Gui {
     QString windowTitle_;
     QDockWidget* dock_;
     QSize oldSize_;
+    static ExecutionDisablingServiceFunction disabler_;
   };
 
 }

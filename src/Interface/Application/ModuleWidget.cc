@@ -399,7 +399,7 @@ void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
 
 void ModuleWidgetDisplayMini::setupIcons()
 {
-  
+
 }
 
 QAbstractButton* ModuleWidgetDisplayMini::getOptionsButton() const
@@ -447,6 +447,20 @@ void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
   // #endif
 }
 
+static const int UNSET = -1;
+static const int SELECTED = -50;
+static const int ERRORED = -100;
+static bool isUnsetOrSelected(int state)
+{
+  return UNSET == state || SELECTED == state;
+}
+
+typedef boost::bimap<QString, int> ColorStateLookup;
+typedef ColorStateLookup::value_type ColorStatePair;
+static ColorStateLookup colorStateLookup;
+void fillColorStateLookup(const QString& background);
+
+
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
@@ -459,6 +473,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   isMini_(globalMiniMode_),
   errored_(false),
   theModule_(theModule),
+  previousModuleState_(UNSET),
   moduleId_(theModule->get_id()),
   dialog_(nullptr),
   dockable_(nullptr),
@@ -472,6 +487,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   miniIndex_(0),
   isViewScene_(name == "ViewScene")
 {
+  fillColorStateLookup(defaultBackgroundColor_);
+
   setupModuleActions();
   setupLogging();
 
@@ -957,19 +974,41 @@ boost::signals2::connection ModuleWidget::connectErrorListener(const ErrorSignal
   return theModule_->connectErrorListener(subscriber);
 }
 
+void fillColorStateLookup(const QString& background)
+{
+  if (colorStateLookup.empty())
+  {
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), (int)ModuleInterface::Waiting));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(170,204,170), (int)ModuleInterface::Executing));
+    colorStateLookup.insert(ColorStatePair(background, (int)ModuleInterface::Completed));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(0,255,255), SELECTED));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), ERRORED));
+  }
+}
+
+//primitive state machine: will be replaced next week.
+//TODO: slot should set previousModuleState_
 void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
   switch (moduleState)
   {
   case (int)ModuleInterface::Waiting:
-    Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
+    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Completed)
+    {
+      Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
+    }
     break;
   case (int)ModuleInterface::Executing:
-    Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
+    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Waiting)
+    {
+      Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
+    }
     break;
   case (int)ModuleInterface::Completed:
-    if (!errored_)
-      Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    {
+      if (!errored_)
+        Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    }
     break;
   }
 }
@@ -982,6 +1021,7 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
     if (SCIRunMainWindow::Instance()->newInterface())
       rounded = "color: white; border-radius: 7px;";
     setStyleSheet(rounded + " background-color: " + color);
+    previousModuleState_ = colorStateLookup.left.at(color);
   }
 }
 
@@ -1006,7 +1046,7 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialog_)
     {
       if (!dialogFactory_)
-        dialogFactory_.reset(new ModuleDialogFactory(0));
+        dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();
