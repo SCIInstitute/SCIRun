@@ -65,8 +65,9 @@ public:
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
-  void setDataDirectory(const QString& scriptFileName);
-  QString dataDirectory() const;
+  void setDataDirectory(const QString& dir);
+  void setDataPath(const QString& dirs);
+  void addToDataDirectory(const QString& dir);
 
   bool newInterface() const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }

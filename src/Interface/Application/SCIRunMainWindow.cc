@@ -304,10 +304,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   hideNonfunctioningWidgets();
 
   statusBar()->addPermanentWidget(new QLabel("Version: " + QString::fromStdString(VersionInfo::GIT_VERSION_TAG)));
-
-	scirunDataPathTextEdit_->setText(QString::fromStdString(Core::Preferences::Instance().dataDirectory().string()));
-
-  //parseStyleXML();
 }
 
 void SCIRunMainWindow::initialize()
@@ -1100,9 +1096,30 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
   }
 }
 
-QString SCIRunMainWindow::dataDirectory() const
+void SCIRunMainWindow::setDataPath(const QString& dirs)
 {
-  return scirunDataLineEdit_->text();
+	if (!dirs.isEmpty())
+	{
+		scirunDataPathTextEdit_->setPlainText(dirs);
+		scirunDataPathTextEdit_->setToolTip(dirs);
+
+		Core::Preferences::Instance().setDataPath(dirs.toStdString());
+	}
+}
+
+void SCIRunMainWindow::addToDataDirectory(const QString& dir)
+{
+	if (!dir.isEmpty())
+	{
+		auto text = scirunDataPathTextEdit_->toPlainText();
+		if (!text.isEmpty())
+			text += ";\n";
+		text += dir;
+		scirunDataPathTextEdit_->setPlainText(text);
+
+		RemembersFileDialogDirectory::setStartingDir(dir);
+		Core::Preferences::Instance().addToDataPath(dir.toStdString());
+	}
 }
 
 void SCIRunMainWindow::setDataDirectoryFromGUI()
@@ -1114,9 +1131,7 @@ void SCIRunMainWindow::setDataDirectoryFromGUI()
 void SCIRunMainWindow::addToPathFromGUI()
 {
 	QString dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
-	scirunDataPathTextEdit_->setPlainText(scirunDataPathTextEdit_->toPlainText() + ";\n" + dir);
-	//TODO next
-	//setDataDirectory(dir);
+	addToDataDirectory(dir);
 }
 
 bool SCIRunMainWindow::newInterface() const

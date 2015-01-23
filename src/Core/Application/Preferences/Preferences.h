@@ -87,11 +87,18 @@ namespace SCIRun
       boost::filesystem::path dataDirectory() const;
       void setDataDirectory(const boost::filesystem::path& path);
 
+      std::vector<boost::filesystem::path> dataPath() const;
+      void addToDataPath(const boost::filesystem::path& path);
+      void setDataPath(const std::string& dirs); // ;-delimited
+      //TODO: remove path entry
+
+
 	    //void save_state();
 
     private:
 	    //void initialize_states();
 	    boost::filesystem::path dataDir_;
+      std::vector<boost::filesystem::path> dataPath_;
     };
 
 }}

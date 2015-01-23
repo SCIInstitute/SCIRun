@@ -77,6 +77,21 @@ std::string Preferences::dataDirectoryPlaceholder() const
   return "%SCIRUNDATADIR%";
 }
 
+std::vector<boost::filesystem::path> Preferences::dataPath() const
+{
+  return dataPath_;
+}
+
+void Preferences::addToDataPath(const boost::filesystem::path& path)
+{
+  dataPath_.push_back(path);
+}
+
+void Preferences::setDataPath(const std::string& dirs)
+{
+  //TODO #787
+}
+
 
 /// @todo
 //void PreferencesManager::initialize()
