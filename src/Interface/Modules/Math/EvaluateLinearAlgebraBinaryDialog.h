@@ -30,8 +30,6 @@
 #define INTERFACE_MODULES_EVALUATELINEARALGEBRABINARYDIALOG_H
 
 #include "Interface/Modules/Math/ui_EvaluateLinearAlgebraBinary.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 
@@ -39,7 +37,6 @@ namespace SCIRun {
 namespace Gui {
   
 class SCISHARE EvaluateLinearAlgebraBinaryDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
   public Ui::EvaluateLinearAlgebraBinary
 {
 	Q_OBJECT
@@ -49,13 +46,6 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
-
-private Q_SLOTS:
-	void pushOperationToState(const QString& str); 
-  void pushOperationToState();
-private:
-  int getSelectedOperator() const;
-  void setSelectedOperator(int op);
 };
 
 }
