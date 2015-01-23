@@ -93,12 +93,18 @@ MESSAGE(STATUS "Git version tag: " "${VERSION_TAG}")
 MESSAGE(STATUS "Git version branch: " "${VERSION_BRANCH}")
 MESSAGE(STATUS "Git version commit hash: " "${VERSION_HASHVAR}")
 
-#TODO: parse the version information into pieces.
-#string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${VERSION}")
-#string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${VERSION}")
-#string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" VERSION_PATCH "${VERSION}")
+#parse the version information into pieces.
+string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${VERSION_TAG}")
+string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${VERSION_TAG}")
+#TODO: make generic 
+string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\-(alpha.[A-Z]+)\\-.*" "\\1" VERSION_PATCH "${VERSION_TAG}")
+#TODO: parse SHA 
 #string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${VERSION}")
 #set(VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
+#MESSAGE(STATUS "Git version major: " "${VERSION_MAJOR}")
+#MESSAGE(STATUS "Git version minor: " "${VERSION_MINOR}")
+#MESSAGE(STATUS "Git version patch name: " "${VERSION_PATCH}")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules/Version.cc.in
  ${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc)
@@ -107,11 +113,10 @@ set(version_file "${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc")
 
 ########################################################################
 # SCIRUN version number.
-# TODO: update using parsed tag from above
 
-SET(SCIRUN_VERSION_MAJOR "5")
-SET(SCIRUN_VERSION_MINOR "0")
-SET(SCIRUN_VERSION_PATCH "0")
+SET(SCIRUN_VERSION_MAJOR "${VERSION_MAJOR}")
+SET(SCIRUN_VERSION_MINOR "${VERSION_MINOR}")
+SET(SCIRUN_VERSION_PATCH "${VERSION_PATCH}")
 
 SET(SCIRUN_VERSION_STRING "${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
 
@@ -215,6 +220,8 @@ IF(UNIX)
 ENDIF()
 
 IF(APPLE)
+  SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+  SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -ftemplate-depth=256")
   SET(CMAKE_CXX_FLAGS_DEBUG "-Wshorten-64-to-32 ${CMAKE_CXX_FLAGS_DEBUG}")
 

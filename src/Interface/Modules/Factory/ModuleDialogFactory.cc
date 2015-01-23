@@ -101,10 +101,11 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace boost::assign;
 
-ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse) : parentToUse_(parentToUse)
+ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse, ExecutionDisablingServiceFunction disabler) : parentToUse_(parentToUse)
 {
   addDialogsToMakerMap1();
   addDialogsToMakerMap2();
+  ModuleDialogGeneric::setExecutionDisablingServiceFunction(disabler);
 }
 
 void ModuleDialogFactory::addDialogsToMakerMap1()

@@ -46,6 +46,8 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   lambdaMethod_.insert(StringPair("Slider", "slider"));
   lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
 
+  tabStyle(inputTabWidget_);
+
   addDoubleLineEditManager(lCurveLambdaLineEdit_, SolveInverseProblemWithTikhonovModule::LambdaCorner);
   addSpinBoxManager(lambdaNumberSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaNum);
   addDoubleSpinBoxManager(lambdaDoubleSpinBox_, SolveInverseProblemWithTikhonovModule::LambdaFromDirectEntry);

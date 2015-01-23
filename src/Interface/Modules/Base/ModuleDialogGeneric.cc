@@ -36,6 +36,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
+ExecutionDisablingServiceFunction ModuleDialogGeneric::disabler_;
+
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
   pulling_(false),
@@ -65,6 +67,8 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
   connect(button, SIGNAL(clicked()), this, SIGNAL(executeActionTriggered()));
+  if (disabler_)
+    disabler_(button);
 }
 
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
@@ -239,7 +243,7 @@ class CompositeSlotManager : public WidgetSlotManager
 {
 public:
   CompositeSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, const std::vector<Widget*>& widgets)
-    : WidgetSlotManager(state, dialog) 
+    : WidgetSlotManager(state, dialog)
   {
     std::transform(widgets.begin(), widgets.end(), std::back_inserter(managers_), [&](Widget* w) { return boost::make_shared<Manager>(state, dialog, stateKey, w); });
   }
@@ -380,7 +384,7 @@ public:
       virtual void pushImpl() override
       {
         LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
-        try 
+        try
         {
           auto value = boost::lexical_cast<double>(lineEdit_->text().toStdString());
           state_->setValue(stateKey_, value);
@@ -607,5 +611,5 @@ void ModuleDialogGeneric::tableHeaderStyle(QTableWidget* tableHeader)
 {
 	tableHeader->setStyleSheet(
 		"QHeaderView::section {background: rgb(66,66,69);}"
-		); 
+		);
 }
