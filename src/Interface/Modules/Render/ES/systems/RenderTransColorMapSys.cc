@@ -423,6 +423,8 @@ public:
       }
     }
 
+    iboMan.front().instance->removeInMemoryIBO(iboID);
+
     if (depthMask)
     {
       GL(glDepthMask(GL_TRUE));
