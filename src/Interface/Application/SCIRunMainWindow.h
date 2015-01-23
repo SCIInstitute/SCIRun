@@ -152,6 +152,7 @@ private Q_SLOTS:
   void makeModulesLargeSize();
   void makeModulesSmallSize();
   void setDataDirectoryFromGUI();
+  void addToPathFromGUI();
   void displayAcknowledgement();
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();

@@ -110,7 +110,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 		"border - color: navy; /* make the default button prominent */"
 		"}"
 		);
-	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } "); 
+	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 	dialogErrorControl_.reset(new DialogErrorControl(this));
   setupNetworkEditor();
 
@@ -269,6 +269,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
     networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
 
   connect(scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
+	connect(addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
@@ -303,6 +304,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   hideNonfunctioningWidgets();
 
   statusBar()->addPermanentWidget(new QLabel("Version: " + QString::fromStdString(VersionInfo::GIT_VERSION_TAG)));
+
+	scirunDataPathTextEdit_->setText(QString::fromStdString(Core::Preferences::Instance().dataDirectory().string()));
 
   //parseStyleXML();
 }
@@ -1106,6 +1109,14 @@ void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
   QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
   setDataDirectory(dir);
+}
+
+void SCIRunMainWindow::addToPathFromGUI()
+{
+	QString dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
+	scirunDataPathTextEdit_->setPlainText(scirunDataPathTextEdit_->toPlainText() + ";\n" + dir);
+	//TODO next
+	//setDataDirectory(dir);
 }
 
 bool SCIRunMainWindow::newInterface() const
