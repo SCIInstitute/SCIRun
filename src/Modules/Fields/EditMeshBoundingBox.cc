@@ -270,7 +270,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     
     GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
     int64_t numVBOElements = 0;
-    int num_strips = 50;
+    int num_strips = 10;
     std::vector<std::pair<Point,Point>> bounding_edges;
     //get all the bbox edges
     Point c,r,d,b;
@@ -288,12 +288,13 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     points.at(7) = c-x-y-z;
     uint32_t point_indicies[] = {
         0,1,0,2,0,4,
-        7,6,7,5,7,3,
-        4,5,4,6,5,1,
-        3,2,3,1,6,2
+        7,6,7,5,3,7,
+        4,5,4,6,1,5,
+        3,2,3,1,2,6
     };
     auto state = get_state();
     double scale = state->getValue(Scale).toDouble();
+    if (scale < 0) scale *= -1.;
     std::cout << scale << std::endl;
     std::vector<Vector> tri_points;
     std::vector<Vector> tri_normals;
@@ -303,9 +304,12 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
         Vector c1,c2;
         c1 = Vector(points[point_indicies[edge]]);
         c2 = Vector(points[point_indicies[edge+1]]);
-        Vector n(c1 - c2);
+        Vector n(c1 - c2), u = Vector(1,0,0);
         n.normalize();
-        Vector u = Cross(Vector(1,0,0),n);
+        if (n == u)
+            u = Vector(0,1,0);
+        if (n == u)
+            u = Vector(0,0,1);
         Vector crx = Cross(u,n);
         Vector p;
         for(int strips = 0; strips <= num_strips; strips++) {
@@ -331,8 +335,8 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     
     
     // Attempt some form of precalculation of iboBuffer and vboBuffer size.
-    size_t iboSize = tri_indices.size() * sizeof(uint32_t);
-    size_t vboSize = tri_points.size() * 2 * sizeof(float);
+    uint32_t iboSize = (uint32_t)(tri_indices.size() * sizeof(uint32_t));
+    uint32_t vboSize = (uint32_t)(tri_points.size() * 2 * 3 * sizeof(float));
     
     
     /// \todo To reduce memory requirements, we can use a 16bit index buffer.
@@ -354,8 +358,9 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
     
     
-    
-    for(uint32_t i : tri_indices) iboBuffer->write(i);
+    //write to the IBO/VBOs
+    for(size_t i = 0; i < tri_indices.size(); i++)
+        iboBuffer->write(tri_indices[i]);
     
     for (size_t i = 0; i < tri_points.size(); i++)
     {
