@@ -234,6 +234,12 @@ namespace SCIRun {
 			showOrientation_ = value;
 		}
 
+    //------------------------------------------------------------------------------
+    void SRInterface::setBackgroundColor(QColor color)
+    {
+      mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+    }
+
 		//------------------------------------------------------------------------------
 		void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
 		{
@@ -426,6 +432,14 @@ namespace SCIRun {
 
         // Add transformation
         gen::Transform trafo;
+
+        if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
+        {
+          double scale = pass.scalar;
+          trafo.transform[0].x = scale;
+          trafo.transform[1].y = scale;
+          trafo.transform[2].z = scale;
+        }
         mCore.addComponent(entityID, trafo);
 
         // Add lighting uniform checks
