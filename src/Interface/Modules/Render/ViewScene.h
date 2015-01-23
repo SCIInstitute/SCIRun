@@ -83,6 +83,7 @@ namespace SCIRun {
       void viewAxisSelected(int index);
       void viewVectorSelected(int index);
       void configurationButtonClicked();
+      void assignDefaultMeshColor();
 
     protected:
       virtual void closeEvent(QCloseEvent* evt) override;

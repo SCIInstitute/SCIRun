@@ -234,6 +234,12 @@ namespace SCIRun {
 			showOrientation_ = value;
 		}
 
+    //------------------------------------------------------------------------------
+    void SRInterface::setBackgroundColor(QColor color)
+    {
+      mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+    }
+
 		//------------------------------------------------------------------------------
 		void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
 		{

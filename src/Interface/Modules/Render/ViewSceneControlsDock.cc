@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
+#include "qbrush.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
@@ -48,9 +49,18 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
+  connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignDefaultMeshColor()));
 
 }
 
 ViewSceneControlsDock::~ViewSceneControlsDock()
 {
+}
+
+void ViewSceneControlsDock::setSampleColor(QColor color)
+{
+  QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
+    QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
+    
+  currentBackgroundLabel_->setStyleSheet(styleSheet);
 }

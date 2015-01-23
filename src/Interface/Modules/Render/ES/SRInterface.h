@@ -134,6 +134,9 @@ namespace SCIRun {
 			/// Toggle Orientation Axes
 			void showOrientation(bool value);
 
+      /// Set the Background Color
+      void setBackgroundColor(QColor color);
+
 		private:
 
 			class SRObject
@@ -170,14 +173,14 @@ namespace SCIRun {
 					Core::Datatypes::GeometryObject::RenderType renderType;
 				};
 
-				std::string           mName;
-				glm::mat4             mObjectToWorld;
-				std::list<SRPass>     mPasses;
-				Core::Geometry::BBox  mBBox;          ///< Objects bounding box (calculated from VBO).
+				std::string                     mName;
+				glm::mat4                       mObjectToWorld;
+				std::list<SRPass>               mPasses;
+				Core::Geometry::BBox            mBBox;          ///< Objects bounding box (calculated from VBO).
 
 				boost::optional<std::string>    mColorMap;
 
-				int										mPort;
+				int										          mPort;
 			};
 
 			// Sets up ESCore.
