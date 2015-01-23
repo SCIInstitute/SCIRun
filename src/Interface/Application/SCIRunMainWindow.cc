@@ -1116,6 +1116,7 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
 			text += ";\n";
 		text += dir;
 		scirunDataPathTextEdit_->setPlainText(text);
+		scirunDataPathTextEdit_->setToolTip(scirunDataPathTextEdit_->toPlainText());
 
 		RemembersFileDialogDirectory::setStartingDir(dir);
 		Core::Preferences::Instance().addToDataPath(dir.toStdString());

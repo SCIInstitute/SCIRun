@@ -30,6 +30,9 @@
 #include <Core/Logging/Log.h>
 #include <Core/Algorithms/Base/AlgorithmParameterHelper.h>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -89,7 +92,9 @@ void Preferences::addToDataPath(const boost::filesystem::path& path)
 
 void Preferences::setDataPath(const std::string& dirs)
 {
-  //TODO #787
+  std::vector<std::string> paths;
+  boost::split(paths, dirs, boost::is_any_of(";"));
+  std::transform(paths.begin(), paths.end(), std::back_inserter(dataPath_), [](const std::string& p) { return boost::filesystem::path(p); });
 }
 
 

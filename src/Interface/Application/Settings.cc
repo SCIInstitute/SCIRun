@@ -47,8 +47,10 @@ namespace
 
   QStringList convertPathList(const std::vector<boost::filesystem::path>& paths)
   {
-    //TODO #787
-    return QStringList();
+    QStringList strs;
+    for (const auto& path : paths)
+      strs << QString::fromStdString(path.string());
+    return strs;
   }
 }
 
