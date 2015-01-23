@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>15</count>
+			<count>16</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BuildNoiseColumnMatrix:5</first>
@@ -36,6 +36,34 @@
 			</item>
 			<item>
 				<first>CreateStandardColorMap:14</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
+										<which>2</which>
+										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateStandardColorMap:15</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -604,7 +632,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>12</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -632,6 +660,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -639,6 +691,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -728,7 +792,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>12</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -756,6 +820,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -763,6 +851,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1061,19 +1161,19 @@
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:12</moduleId2_>
+				<moduleId2_>ShowField:13</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateStandardColorMap:14</moduleId1_>
+				<moduleId1_>CreateStandardColorMap:15</moduleId1_>
 				<port1_>
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:13</moduleId2_>
+				<moduleId2_>ShowField:12</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -1274,7 +1374,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>15</count>
+		<count>16</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>BuildNoiseColumnMatrix:5</first>
@@ -1287,6 +1387,13 @@
 			<first>CreateStandardColorMap:14</first>
 			<second>
 				<first>-8.36000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:15</first>
+			<second>
+				<first>0.00000000000000000e+000</first>
 				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
