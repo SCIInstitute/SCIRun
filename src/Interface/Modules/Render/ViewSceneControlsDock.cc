@@ -49,7 +49,9 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
-  connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignDefaultMeshColor()));
+  connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
+
+  setSampleColor(Qt::black);
 
   WidgetStyleMixin::tabStyle(tabWidget);
 }

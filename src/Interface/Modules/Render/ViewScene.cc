@@ -377,7 +377,7 @@ void ViewSceneDialog::configurationButtonClicked()
 }
 
 //------------------------------------------------------------------------------
-void ViewSceneDialog::assignDefaultMeshColor()
+void ViewSceneDialog::assignBackgroundColor()
 {
   QColor bgColor = Qt::black;
   auto newColor = QColorDialog::getColor(bgColor, this, "Choose background color");
