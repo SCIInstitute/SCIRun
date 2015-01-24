@@ -84,9 +84,26 @@ void Variable::setValue(const Value& val)
     if (boost::get<std::string>(&val))
     {
       auto stringPath = toString();
-      if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDir().string(), AlgorithmParameterHelper::dataDirPlaceholder()))
-        value_ = stringPath;
-      return;
+      {
+        // TODO #787
+        // loop through all paths in path list, checking if file in each dir; if one found replace and return
+        if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDir().string(), AlgorithmParameterHelper::dataDirPlaceholder()))
+        {
+          value_ = stringPath;
+          return;
+        }
+
+        for (const auto& path : AlgorithmParameterHelper::dataPath())
+        {
+          if (SCIRun::Core::replaceSubstring(stringPath, path.string(), AlgorithmParameterHelper::dataDirPlaceholder()))
+          {
+            value_ = stringPath;
+            return;
+          }
+        }
+
+        return;
+      }
     }
   }
 
@@ -142,7 +159,18 @@ boost::filesystem::path AlgorithmParameter::toFilename() const
   {
     // TODO #787
     // loop through all paths in path list, checking if file exists each time. return first one that exists.
-    return AlgorithmParameterHelper::dataDir() / stringPath;
+    auto initialPath = AlgorithmParameterHelper::dataDir() / stringPath;
+    if (boost::filesystem::exists(initialPath))
+      return initialPath;
+
+    for (const auto& path : AlgorithmParameterHelper::dataPath())
+    {
+      auto nextPath = path / stringPath;
+      if (boost::filesystem::exists(nextPath))
+        return nextPath;
+    }
+    //nothing found, let module deal with it.
+    return initialPath;
   }
 
   boost::filesystem::path p(stringPath);
@@ -197,7 +225,18 @@ std::string AlgorithmParameterHelper::dataDirPlaceholder()
   return dataDirPlaceholder_;
 }
 
+void AlgorithmParameterHelper::setDataPath(const std::vector<boost::filesystem::path>& paths)
+{
+  paths_ = paths;
+}
+
+std::vector<boost::filesystem::path> AlgorithmParameterHelper::dataPath()
+{
+  return paths_;
+}
+
 boost::filesystem::path AlgorithmParameterHelper::dataDir_;
+std::vector<boost::filesystem::path> AlgorithmParameterHelper::paths_;
 std::string AlgorithmParameterHelper::dataDirPlaceholder_;
 Mutex AlgorithmParameterHelper::lock_("fsbug");
 
