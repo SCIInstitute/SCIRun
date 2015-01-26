@@ -63,7 +63,8 @@ namespace Gui {
     QAction* getExecuteAction() { return executeAction_; }
     void setDockable(QDockWidget* dock) { dock_ = dock; } // to enable title changes
     void updateWindowTitle(const QString& title);
-    static void setExecutionDisablingServiceFunction(ExecutionDisablingServiceFunction disabler) { disabler_ = disabler; }
+    static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
+    static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
 
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
@@ -121,7 +122,9 @@ namespace Gui {
     QString windowTitle_;
     QDockWidget* dock_;
     QSize oldSize_;
-    static ExecutionDisablingServiceFunction disabler_;
+    std::vector<QAbstractButton*> needToRemoveFromDisabler_;
+    static ExecutionDisablingServiceFunction disablerAdd_;
+    static ExecutionDisablingServiceFunction disablerRemove_;
   };
 
 }

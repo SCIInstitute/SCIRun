@@ -41,7 +41,8 @@ namespace SCIRun
     class SCISHARE ModuleDialogFactory
     {
     public:
-      ModuleDialogFactory(QWidget* parentToUse, ExecutionDisablingServiceFunction disabler);
+      ModuleDialogFactory(QWidget* parentToUse, ExecutionDisablingServiceFunction disablerAdd,
+        ExecutionDisablingServiceFunction disablerRemove);
       ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state);
     private:
       QWidget* parentToUse_;

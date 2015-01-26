@@ -1046,7 +1046,7 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialog_)
     {
       if (!dialogFactory_)
-        dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList));
+        dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();
