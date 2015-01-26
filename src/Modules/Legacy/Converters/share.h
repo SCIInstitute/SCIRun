@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,36 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MODULEDIALOGFACTORY_H
-#define INTERFACE_MODULES_MODULEDIALOGFACTORY_H
+#undef SCISHARE
 
-#include <QWidget>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Interface/Modules/Factory/share.h>
-
-namespace SCIRun
-{
-  namespace Gui
-  {
-    class SCISHARE ModuleDialogFactory
-    {
-    public:
-      ModuleDialogFactory(QWidget* parentToUse, ExecutionDisablingServiceFunction disablerAdd,
-        ExecutionDisablingServiceFunction disablerRemove);
-      ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state);
-    private:
-      QWidget* parentToUse_;
-      typedef boost::function<ModuleDialogGeneric*(const std::string&, SCIRun::Dataflow::Networks::ModuleStateHandle, QWidget*)> DialogMaker;
-      typedef std::map<std::string, DialogMaker> DialogMakerMap;
-      DialogMakerMap dialogMakerMap_;
-      ExecutionDisablingServiceFunction disabler_;
-      void addDialogsToMakerMap1();
-      void addDialogsToMakerMap2();
-    };
-  }
-}
-
-#define ADD_MODULE_DIALOG(module, dialog) (#module, boost::factory<dialog*>())
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_Legacy_Converters
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

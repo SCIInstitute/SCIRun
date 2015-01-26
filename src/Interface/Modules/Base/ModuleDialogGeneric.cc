@@ -37,7 +37,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
-ExecutionDisablingServiceFunction ModuleDialogGeneric::disabler_;
+ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
+ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
 
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
@@ -63,13 +64,20 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
 {
+  if (disablerAdd_ && disablerRemove_)
+  {
+    std::for_each(needToRemoveFromDisabler_.begin(), needToRemoveFromDisabler_.end(), disablerRemove_);
+  }
 }
 
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
   connect(button, SIGNAL(clicked()), this, SIGNAL(executeActionTriggered()));
-  //if (disabler_)
-  //  disabler_(button);
+  if (disablerAdd_ && disablerRemove_)
+  {
+    disablerAdd_(button);
+    needToRemoveFromDisabler_.push_back(button);
+  }
 }
 
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)

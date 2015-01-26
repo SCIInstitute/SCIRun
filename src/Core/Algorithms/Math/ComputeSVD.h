@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2010 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,41 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Math/ComputeSVD.h>
-#include <Core/Algorithms/Math/ComputeSVD.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Math/share.h>
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
-
-
-ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun"),false)
-{
-	INITIALIZE_PORT(InputMatrix);
-	INITIALIZE_PORT(LeftSingularMatrix);
-	INITIALIZE_PORT(SingularValues);
-	INITIALIZE_PORT(RightSingularMatrix);
-}
-
-void ComputeSVD::execute()
-{
-	auto input_matrix = getRequiredInput(InputMatrix);
-	
-	if(needToExecute())
-	{
-		update_state(Executing);
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+			namespace Math {
+			
+			class SCISHARE ComputeSVDAlgo : public AlgorithmBase
+			{
+				public:
+					ComputeSVDAlgo() {}
+					
+					static AlgorithmOutputName LeftSingularMatrix;
+					static AlgorithmOutputName SingularValues;
+					static AlgorithmOutputName RightSingularMatrix;
+					void run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle& LeftSingMat, Datatypes::DenseMatrixHandle& SingVals, Datatypes::DenseMatrixHandle& RightSingMat) const;
+					virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+			};
 		
-		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
-		
-		sendOutputFromAlgorithm(LeftSingularMatrix, output);
-		sendOutputFromAlgorithm(SingularValues, output);
-		sendOutputFromAlgorithm(RightSingularMatrix, output);
-		
-	}
-}
+}}}}

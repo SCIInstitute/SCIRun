@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,13 +26,45 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-#ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Forward)
-ADD_SUBDIRECTORY(Inverse)
-#ADD_SUBDIRECTORY(String)
-#ADD_SUBDIRECTORY(Converters)
-ADD_SUBDIRECTORY(Bundle)
-ADD_SUBDIRECTORY(Matlab)
+# CMakeLists.txt forc Dataflow/Modules/Converters
+
+SET(Modules_Legacy_Converters_HEADERS
+  #ConvertMatrixToString.h
+  #ConvertMatrixToField.h
+  #ConvertBundleToField.h
+  share.h
+)
+
+SET(Modules_Legacy_Converters_SRCS
+  ConvertMatrixToString.cc
+  #ConvertMatrixToField.cc
+  #ConvertBundleToField.cc
+)
+
+SCIRUN_ADD_LIBRARY(Modules_Legacy_Converters 
+  ${Modules_Legacy_Converters_HEADERS}
+  ${Modules_Legacy_Converters_SRCS})
+
+TARGET_LINK_LIBRARIES(Modules_Legacy_Converters
+  Core_Datatypes
+  Dataflow_Network
+  Core_Persistent
+  Core_Util
+  Core_Exceptions
+  Core_Thread
+  Dataflow_GuiInterface
+  Core_Geom
+  Core_Datatypes
+  Core_Geometry
+  Core_GeomInterface
+  Dataflow_TkExtensions
+  Core_Algorithms_Converter
+  Core_Algorithms_Fields
+  ${TK_LIBRARY}
+  ${GL_LIBRARY}
+  ${M_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Converters)
+ENDIF(BUILD_SHARED_LIBS)

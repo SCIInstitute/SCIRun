@@ -26,41 +26,50 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Math/ComputeSVD.h>
-#include <Core/Algorithms/Math/ComputeSVD.h>
-#include <Core/Datatypes/MatrixFwd.h>
+
+#include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/String.h>
+#include <Dataflow/Network/Ports/MatrixPort.h>
+#include <Dataflow/Network/Ports/StringPort.h>
+#include <Core/Algorithms/Converter/ConverterAlgo.h>
+#include <Core/Datatypes/MatrixTypeConverter.h>
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+namespace SCIRun {
+
+class ConvertMatrixToString : public Module {
+public:
+  ConvertMatrixToString(GuiContext*);
+  virtual void execute();
+};
 
 
-ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun"),false)
+DECLARE_MAKER(ConvertMatrixToString)
+ConvertMatrixToString::ConvertMatrixToString(GuiContext* ctx)
+  : Module("ConvertMatrixToString", ctx, Source, "Converters", "SCIRun")
 {
-	INITIALIZE_PORT(InputMatrix);
-	INITIALIZE_PORT(LeftSingularMatrix);
-	INITIALIZE_PORT(SingularValues);
-	INITIALIZE_PORT(RightSingularMatrix);
 }
 
-void ComputeSVD::execute()
+void ConvertMatrixToString::execute()
 {
-	auto input_matrix = getRequiredInput(InputMatrix);
-	
-	if(needToExecute())
-	{
-		update_state(Executing);
-		
-		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
-		
-		sendOutputFromAlgorithm(LeftSingularMatrix, output);
-		sendOutputFromAlgorithm(SingularValues, output);
-		sendOutputFromAlgorithm(RightSingularMatrix, output);
-		
-	}
+  // Define local handles of data objects:
+  MatrixHandle Mat;
+  StringHandle Str;
+
+  // Get the new input data:  
+  get_input_handle("Matrix",Mat,true);
+  
+  // Only reexecute if the input changed. SCIRun uses simple scheduling
+  // that executes every module downstream even if no data has changed:  
+  if (inputs_changed_ || !oport_cached("String"))
+  {
+    update_state(Executing);  
+    SCIRunAlgo::ConverterAlgo algo(this);
+    if (!(algo.MatrixToString(Mat,Str))) return;
+
+    // send new output if there is any:    
+    send_output_handle("String",Str);
+  }
 }
+
+} // End namespace SCIRun
