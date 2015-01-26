@@ -40,30 +40,24 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
-void ComputeSVDAlgo::run(MatrixHandle input_matrix, DenseMatrixHandle& LeftSingMat, DenseMatrixHandle& SingVals, DenseMatrixHandle& RightSingMat) const
+void ComputeSVDAlgo::run(MatrixHandle input, DenseMatrixHandle& LeftSingMat, DenseMatrixHandle& SingVals, DenseMatrixHandle& RightSingMat) const
 {
-	if(matrix_is::sparse(input_matrix))
-		matrix_convert::to_dense(input_matrix);
-	
-	int numRows, numCols;
-	numRows = input_matrix->nrows();
-	numCols = input_matrix->ncols();
-	
-	// JacobiSVD requires an Eigen matrix in order to run. With a SCIRun matrix, the program crashes at run time.
-	DenseMatrixGeneric<double> input(numRows, numCols);
-	for(int r = 0; r < numRows; r++) {
-		for(int c = 0; c < numCols; c++) {
-			input.put(r, c, input_matrix->get(r,c));
-		}
-	}
-	
-	Eigen::JacobiSVD<DenseMatrixGeneric<double>::EigenBase> svd_mat(input, Eigen::ComputeFullU | Eigen::ComputeFullV);
-		
-	LeftSingMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
-	
-	SingVals = boost::make_shared<DenseMatrix>(svd_mat.singularValues());
-	
-	RightSingMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
+  if (matrix_is::dense(input))
+  {
+    auto denseInput = matrix_cast::as_dense(input);
+
+    Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(*denseInput, Eigen::ComputeFullU | Eigen::ComputeFullV);
+
+    LeftSingMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
+
+    SingVals = boost::make_shared<DenseMatrix>(svd_mat.singularValues());
+
+    RightSingMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
+  }
+  else
+  {
+    THROW_ALGORITHM_INPUT_ERROR("ComputeSVD works for dense matrix input only.");
+  }
 }
 
 

@@ -191,7 +191,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
-  addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
 
   // insert module desc here
 }
