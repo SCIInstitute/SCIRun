@@ -101,8 +101,6 @@ namespace SCIRun {
 
           void operator()() const
           {
-            ScopedExecutionBoundsSignaller signaller(bounds_, [=]() { return lookup_->errorCode(); });
-
             if (shouldLog_)
               log_ << Core::Logging::DEBUG_LOG << "Producer started" << std::endl;
 
