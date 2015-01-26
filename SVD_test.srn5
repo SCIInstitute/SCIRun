@@ -63,8 +63,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>All Files</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>Filename</name>
@@ -73,7 +85,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/SCIRun/mid.txt</value>
+										<value>C:/SCI/mid.txt</value>
 									</value>
 								</second>
 							</item>
@@ -91,8 +103,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>All Files</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>Filename</name>
@@ -101,7 +125,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/SCIRun/rhs.txt</value>
+										<value>C:/SCI/rhs.txt</value>
 									</value>
 								</second>
 							</item>
@@ -119,8 +143,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>All Files</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>Filename</name>
@@ -129,7 +165,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/SCIRun/original.txt</value>
+										<value>C:/SCI/original.txt</value>
 									</value>
 								</second>
 							</item>
@@ -147,8 +183,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeName</name>
+								</first>
+								<second>
+									<name>FileTypeName</name>
+									<value>
+										<which>2</which>
+										<value>All Files</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>Filename</name>
@@ -157,7 +205,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/SCIRun/lhs.txt</value>
+										<value>C:/SCI/lhs.txt</value>
 									</value>
 								</second>
 							</item>
