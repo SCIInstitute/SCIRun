@@ -25,34 +25,41 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
 
-#include <Interface/Modules/Visualization/ShowColorMapDialog.h>
-#include <Modules/Visualization/ShowColorMap.h> 
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#ifndef MODULES_VISUALIZATION_SHOWCOLORMAP_H
+#define MODULES_VISUALIZATION_SHOWCOLORMAP_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Modules::Visualization;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Visualization/share.h>
 
-ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-	addRadioButtonGroupManager({ leftRadioButton_, bottomRadioButton_ }, ShowColorMapModule::DisplaySide);
-	addRadioButtonGroupManager({ firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_}, ShowColorMapModule::DisplayLength);
-	addRadioButtonGroupManager();
-	addLineEditManager();
-	addLineEditManager();
-	addLineEditManager();
-	addLineEditManager();
-	addCheckBoxManager(); 
-}
+namespace SCIRun {
+namespace Modules {
+namespace Visualization {
 
-void ShowColorMapDialog::pull()
-{
-  pull_newVersionToReplaceOld();
-}
+	class SCISHARE ShowColorMap : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<ColorMapPortTag>, 
+    public Has1OutputPort<GeometryPortTag>
+  {
+  public:
+		ShowColorMap();
+    virtual void execute();
+
+		static Core::Algorithms::AlgorithmParameterName DisplaySide;
+		static Core::Algorithms::AlgorithmParameterName DisplayLength;
+		static Core::Algorithms::AlgorithmParameterName TextSize;
+		static Core::Algorithms::AlgorithmParameterName TextColor;
+		static Core::Algorithms::AlgorithmParameterName Labels;
+		static Core::Algorithms::AlgorithmParameterName Scale;
+		static Core::Algorithms::AlgorithmParameterName Units;
+		static Core::Algorithms::AlgorithmParameterName SignificantDigits;
+		static Core::Algorithms::AlgorithmParameterName AddExtraSpace; 
+
+		virtual void setStateDefaults();
+    INPUT_PORT(0, ColorMapObject, ColorMap);
+		OUTPUT_PORT(0, GeometryOutput, GeometryObject); 
+
+  };
+}}}
+
+#endif

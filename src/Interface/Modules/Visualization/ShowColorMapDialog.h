@@ -37,7 +37,7 @@ namespace SCIRun {
 namespace Gui {
   
 class SCISHARE ShowColorMapDialog : public ModuleDialogGeneric, 
-  public Ui::ShowColorMap
+	public Ui::ShowColorMap
 {
 	Q_OBJECT
 	

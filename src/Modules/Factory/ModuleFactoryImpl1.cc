@@ -100,7 +100,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/CreateBasicColorMap.h>
-#include <Modules/Visualization/ShowColorMap.h>
+#include <Modules/Visualization/ShowColorMapModule.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
@@ -154,7 +154,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   //addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress: two color maps available", "...");
+	addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress: two color maps available", "...");
+	addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization","SCIRun", "Real ported module","...");
   addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
@@ -189,8 +190,6 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
-	addModuleDesc<ShowColorMap>("Real ported module", "..."); 
-
   // insert module desc here
 }
 
