@@ -56,7 +56,7 @@ namespace SCIRun {
           bounds_(&context.bounds()),
           work_(new DynamicExecutor::ModuleWorkQueue(numModules)),
           producer_(new DynamicExecutor::ModuleProducer(context.addAdditionalFilter(ModuleWaitingFilter::Instance()),
-            lookup_, context.bounds(), network, lock, work_, numModules)),
+            network, lock, work_, numModules)),
             consumer_(new DynamicExecutor::ModuleConsumer(work_, lookup_, producer_)),
           network_(network)
         {

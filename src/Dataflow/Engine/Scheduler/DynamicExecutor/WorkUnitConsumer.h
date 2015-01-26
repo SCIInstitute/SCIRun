@@ -34,7 +34,7 @@
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkUnitExecutor.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Logging/Log.h>
-#include <boost/thread.hpp>
+#include <boost/thread/thread.hpp>
 
 #include <Dataflow/Engine/Scheduler/share.h>
 
@@ -86,7 +86,7 @@ namespace DynamicExecutor {
 
             ModuleExecutor executor(unit, lookup_, producer_);
             /// @todo: thread pool
-            boost::thread t(boost::bind(&ModuleExecutor::run, executor));
+            threads_.create_thread(boost::bind(&ModuleExecutor::run, executor));
           }
           else
           {
@@ -107,6 +107,8 @@ namespace DynamicExecutor {
     ModuleWorkQueuePtr work_;
     ProducerInterfacePtr producer_;
     const Networks::ExecutableLookup* lookup_;
+    mutable boost::thread_group threads_;
+
     static Core::Logging::Log& log_;
     bool shouldLog_;
   };
