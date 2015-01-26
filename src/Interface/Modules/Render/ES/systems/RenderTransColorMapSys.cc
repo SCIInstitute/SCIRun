@@ -129,24 +129,29 @@ public:
       return;
     }
 
-    camera.front().data.projection;
-
     char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
+    uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.front().ibo.data->getBuffer());
     size_t num_triangles = pass.front().ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
-    size_t stride_vbo = pass.front().vbo.data->getBufferSize() / (num_triangles * 3);
+    
+    size_t stride_vbo = 0;
+    for (auto a : pass.front().vbo.attributes)
+        stride_vbo += a.sizeInBytes;
 
     std::vector<DepthIndex> rel_depth(num_triangles);
-    Core::Geometry::Vector dir(camera.front().data.worldToView[0][2], camera.front().data.worldToView[1][2], camera.front().data.worldToView[2][2]);
+    Core::Geometry::Vector dir(
+    camera.front().data.worldToView[0][2],
+    camera.front().data.worldToView[1][2],
+    camera.front().data.worldToView[2][2]);
 
     for (size_t j = 0; j < num_triangles; j++)
     {
-      float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (j * 3));
+      float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j*3]));
       Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
 
-      float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (j * 3 + 1));
+      float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j*3+1]));
       Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
 
-      float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (j * 3 + 2));
+      float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j*3+2]));
       Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
 
       rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
