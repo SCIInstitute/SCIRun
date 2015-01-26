@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2010 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,41 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Math/ComputeSVD.h>
-#include <Core/Algorithms/Math/ComputeSVD.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#ifndef MODULES_LEGACY_MATH_COMPUTESVD_H_
+#define MODLES_LEGACY_MATH_COMPUTESVD_H_ 1
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Math/share.h>
 
-
-ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun"),false)
-{
-	INITIALIZE_PORT(InputMatrix);
-	INITIALIZE_PORT(LeftSingularMatrix);
-	INITIALIZE_PORT(SingularValues);
-	INITIALIZE_PORT(RightSingularMatrix);
-}
-
-void ComputeSVD::execute()
-{
-	auto input_matrix = getRequiredInput(InputMatrix);
-	
-	if(needToExecute())
-	{
-		update_state(Executing);
+namespace SCIRun {
+	namespace Modules {
+		namespace Math {
 		
-		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
-		
-		sendOutputFromAlgorithm(LeftSingularMatrix, output);
-		sendOutputFromAlgorithm(SingularValues, output);
-		sendOutputFromAlgorithm(RightSingularMatrix, output);
-		
-	}
-}
+		class SCISHARE ComputeSVD : public Dataflow::Networks::Module,
+			public Has1InputPort<MatrixPortTag>,
+			public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+			{
+				public:
+					ComputeSVD();
+					virtual void setStateDefaults() {}
+					virtual void execute();
+					
+					INPUT_PORT(0, InputMatrix, Matrix);
+					OUTPUT_PORT(0, LeftSingularMatrix, DenseMatrix);
+					OUTPUT_PORT(1, SingularValues, DenseMatrix);
+					OUTPUT_PORT(2, RightSingularMatrix, DenseMatrix);
+			
+			};
+			
+}}};
+
+#endif
