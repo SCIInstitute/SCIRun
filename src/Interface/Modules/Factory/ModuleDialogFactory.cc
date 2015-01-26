@@ -88,6 +88,7 @@
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
 #include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
+#include <Interface/Modules/Visualization/ShowColorMapDialog.h> 
 #include <Interface/Modules/Matlab/ImportDatatypesFromMatlabDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
@@ -177,6 +178,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 		ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
 		ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
     ADD_MODULE_DIALOG(SolveInverseProblemWithTikhonov, SolveInverseProblemWithTikhonovDialog)
+		ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog)
   ;
 }
 

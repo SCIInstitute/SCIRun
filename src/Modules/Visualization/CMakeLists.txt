@@ -31,6 +31,7 @@ SET(Modules_Visualization_SRCS
   MatrixAsVectorField.cc
   ShowField.cc
   ShowString.cc
+  ShowColorMap.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -38,6 +39,7 @@ SET(Modules_Visualization_HEADERS
   MatrixAsVectorField.h
   ShowField.h
   ShowString.h
+  ShowColorMap.h
   share.h
 )
 

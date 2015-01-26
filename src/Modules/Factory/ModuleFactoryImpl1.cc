@@ -100,6 +100,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/CreateBasicColorMap.h>
+#include <Modules/Visualization/ShowColorMap.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
@@ -188,6 +189,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
+	addModuleDesc<ShowColorMap>("Real ported module", "..."); 
 
   // insert module desc here
 }
