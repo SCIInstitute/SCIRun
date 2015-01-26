@@ -47,8 +47,11 @@ namespace DynamicExecutor {
   class SCISHARE ModuleConsumer : boost::noncopyable
   {
   public:
-    explicit ModuleConsumer(ModuleWorkQueuePtr workQueue, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) :
-    work_(workQueue), producer_(producer), lookup_(lookup), shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
+    explicit ModuleConsumer(ModuleWorkQueuePtr workQueue, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer,
+      boost::thread_group& executeThreadGroup) :
+    work_(workQueue), producer_(producer), lookup_(lookup),
+    executeThreadGroup_(executeThreadGroup),
+    shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
     {
       log_.setVerbose(shouldLog_);
       if (shouldLog_)
@@ -86,7 +89,7 @@ namespace DynamicExecutor {
 
             ModuleExecutor executor(unit, lookup_, producer_);
             /// @todo: thread pool
-            threads_.create_thread(boost::bind(&ModuleExecutor::run, executor));
+            executeThreadGroup_.create_thread(boost::bind(&ModuleExecutor::run, executor));
           }
           else
           {
@@ -107,7 +110,7 @@ namespace DynamicExecutor {
     ModuleWorkQueuePtr work_;
     ProducerInterfacePtr producer_;
     const Networks::ExecutableLookup* lookup_;
-    mutable boost::thread_group threads_;
+    boost::thread_group& executeThreadGroup_;
 
     static Core::Logging::Log& log_;
     bool shouldLog_;

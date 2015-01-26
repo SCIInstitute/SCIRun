@@ -52,12 +52,13 @@ namespace SCIRun {
       {
       public:
         DynamicMultithreadedNetworkExecutorImpl(const ExecutionContext& context, const NetworkInterface* network, Mutex* lock, size_t numModules) :
+          executeThreads_(new boost::thread_group),
           lookup_(&context.lookup),
           bounds_(&context.bounds()),
           work_(new DynamicExecutor::ModuleWorkQueue(numModules)),
           producer_(new DynamicExecutor::ModuleProducer(context.addAdditionalFilter(ModuleWaitingFilter::Instance()),
             network, lock, work_, numModules)),
-            consumer_(new DynamicExecutor::ModuleConsumer(work_, lookup_, producer_)),
+            consumer_(new DynamicExecutor::ModuleConsumer(work_, lookup_, producer_, *executeThreads_)),
           network_(network)
         {
         }
@@ -71,8 +72,10 @@ namespace SCIRun {
           boost::thread produce(boost::ref(*producer_));
           consume.join();
           produce.join();
+          executeThreads_->join_all();
         }
       private:
+        mutable boost::shared_ptr<boost::thread_group> executeThreads_;
         const Networks::ExecutableLookup* lookup_;
         const ExecutionBounds* bounds_;
         DynamicExecutor::ModuleWorkQueuePtr work_;
