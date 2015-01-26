@@ -54,7 +54,7 @@
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:10</first>
+				<first>WriteMatrix:6</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -63,8 +63,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeList</name>
+								</first>
+								<second>
+									<name>FileTypeList</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>FileTypeName</name>
@@ -73,7 +85,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>All Files</value>
+										<value>SimpleTextFile</value>
 									</value>
 								</second>
 							</item>
@@ -85,7 +97,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/SCI/mid.txt</value>
+										<value>C:/SCI/SCIRun/rhs.txt</value>
 									</value>
 								</second>
 							</item>
@@ -94,7 +106,7 @@
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:11</first>
+				<first>WriteMatrix:7</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -103,8 +115,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeList</name>
+								</first>
+								<second>
+									<name>FileTypeList</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>FileTypeName</name>
@@ -113,7 +137,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>All Files</value>
+										<value>SimpleTextFile</value>
 									</value>
 								</second>
 							</item>
@@ -125,7 +149,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/SCI/rhs.txt</value>
+										<value>C:/SCI/SCIRun/original.txt</value>
 									</value>
 								</second>
 							</item>
@@ -143,8 +167,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeList</name>
+								</first>
+								<second>
+									<name>FileTypeList</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>FileTypeName</name>
@@ -153,7 +189,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>All Files</value>
+										<value>SimpleTextFile</value>
 									</value>
 								</second>
 							</item>
@@ -165,7 +201,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/SCI/original.txt</value>
+										<value>C:/SCI/SCIRun/lhs.txt</value>
 									</value>
 								</second>
 							</item>
@@ -183,8 +219,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FileTypeList</name>
+								</first>
+								<second>
+									<name>FileTypeList</name>
+									<value>
+										<which>2</which>
+										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>FileTypeName</name>
@@ -193,7 +241,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>All Files</value>
+										<value>SimpleTextFile</value>
 									</value>
 								</second>
 							</item>
@@ -205,7 +253,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/SCI/lhs.txt</value>
+										<value>C:/SCI/SCIRun/mid.txt</value>
 									</value>
 								</second>
 							</item>
@@ -223,7 +271,7 @@
 					<name>LeftSingularMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:9</moduleId2_>
+				<moduleId2_>WriteMatrix:8</moduleId2_>
 				<port2_>
 					<name>MatrixToWrite</name>
 					<id>0</id>
@@ -235,7 +283,7 @@
 					<name>RightSingularMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:11</moduleId2_>
+				<moduleId2_>WriteMatrix:6</moduleId2_>
 				<port2_>
 					<name>MatrixToWrite</name>
 					<id>0</id>
@@ -247,7 +295,7 @@
 					<name>SingularValues</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:10</moduleId2_>
+				<moduleId2_>WriteMatrix:9</moduleId2_>
 				<port2_>
 					<name>MatrixToWrite</name>
 					<id>0</id>
@@ -271,7 +319,7 @@
 					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:8</moduleId2_>
+				<moduleId2_>WriteMatrix:7</moduleId2_>
 				<port2_>
 					<name>MatrixToWrite</name>
 					<id>0</id>
@@ -297,31 +345,31 @@
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:10</first>
+			<first>WriteMatrix:6</first>
 			<second>
-				<first>-1.59600000000000000e+003</first>
-				<second>-9.12000000000000000e+002</second>
+				<first>-1.36800000000000000e+003</first>
+				<second>-9.88000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:11</first>
-			<second>
-				<first>-1.29200000000000000e+003</first>
-				<second>-9.12000000000000000e+002</second>
-			</second>
-		</item>
-		<item>
-			<first>WriteMatrix:8</first>
+			<first>WriteMatrix:7</first>
 			<second>
 				<first>-1.82400000000000000e+003</first>
 				<second>-1.14000000000000000e+003</second>
 			</second>
 		</item>
 		<item>
+			<first>WriteMatrix:8</first>
+			<second>
+				<first>-1.97600000000000000e+003</first>
+				<second>-9.88000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
 			<first>WriteMatrix:9</first>
 			<second>
-				<first>-1.90000000000000000e+003</first>
-				<second>-9.12000000000000000e+002</second>
+				<first>-1.67200000000000000e+003</first>
+				<second>-9.88000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
