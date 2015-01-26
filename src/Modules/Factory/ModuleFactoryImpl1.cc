@@ -185,7 +185,9 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
-  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix", "Math", "SCIRun", "...", "...");
+  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
+  addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
+  
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
