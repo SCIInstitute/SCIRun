@@ -68,6 +68,7 @@
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Math/BuildNoiseColumnMatrix.h>
+#include <Core/Algorithms/Math/ComputeSVD.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
@@ -167,6 +168,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 	  ADD_MODULE_ALGORITHM(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(BuildMappingMatrix, BuildMappingMatrixAlgo)
 	  ADD_MODULE_ALGORITHM(ConvertIndicesToFieldData, ConvertIndicesToFieldDataAlgo)
+	  ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo)
     ;
   }
 }
