@@ -121,7 +121,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -132,6 +132,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxIndex</name>
+								</first>
+								<second>
+									<name>MaxIndex</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -161,7 +173,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -172,6 +184,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxIndex</name>
+								</first>
+								<second>
+									<name>MaxIndex</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
