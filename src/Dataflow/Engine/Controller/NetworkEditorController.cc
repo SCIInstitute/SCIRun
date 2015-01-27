@@ -334,26 +334,19 @@ void NetworkEditorController::clear()
 }
 
 // TODO:
-// - [ ] refactor duplication
+// - [X] refactor duplication
 // - [ ] set up execution context queue
 // - [ ] separate threads for looping through queue: another producer/consumer pair
 
 void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
-  initExecutor();
-
-  ExecuteAllModules filter;
-  auto context = createExecutionContext(lookup, filter);
-  currentExecutor_->execute(*context);
+  executeGeneric(lookup, ExecuteAllModules::Instance());
 }
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup)
 {
-  initExecutor();
-
   ExecuteSingleModule filter(module, *theNetwork_);
-  auto context = createExecutionContext(lookup, filter);
-  currentExecutor_->execute(*context);
+  executeGeneric(lookup, filter);
 }
 
 void NetworkEditorController::initExecutor()
@@ -368,6 +361,13 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(const Exe
 {
   theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
   return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
+}
+
+void NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+{
+  initExecutor();
+  auto context = createExecutionContext(lookup, filter);
+  currentExecutor_->execute(*context);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const
