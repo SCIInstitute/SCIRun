@@ -294,7 +294,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     auto state = get_state();
     double scale = state->getValue(Scale).toDouble();
     if (scale < 0) scale *= -1.;
-    int num_strips = int(10. * scale);
+    int num_strips = int(30. * scale);
     std::vector<Vector> tri_points;
     std::vector<Vector> tri_normals;
     std::vector<uint32_t> tri_indices;
@@ -328,6 +328,32 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
                 tri_indices.push_back( 2 + offset);
                 tri_indices.push_back( 1 + offset);
                 tri_indices.push_back( 3 + offset);
+            }
+        }
+    }
+    //generate triangles for the spheres
+    Vector p1,p2;
+    double theta_inc = 2. * M_PI / double(num_strips), phi_inc = M_PI / double(num_strips);
+    for (auto a : points) {
+        for (double phi = 0.; phi <= M_PI; phi += phi_inc ) {
+            for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) {
+                uint32_t offset = (uint32_t)numVBOElements;
+                p1 = Vector(sin(theta) * cos(phi),sin(theta) * sin(phi),cos(theta));
+                p2 = Vector(sin(theta) * cos(phi+phi_inc),sin(theta) * sin(phi+phi_inc),cos(theta));
+                tri_points.push_back(scale * p1 + Vector(a));
+                numVBOElements++;
+                tri_points.push_back(scale * p2 + Vector(a));
+                numVBOElements++;
+                tri_normals.push_back(p1);
+                tri_normals.push_back(p2);
+                if (theta+theta_inc < 2. * M_PI) {
+                    tri_indices.push_back( 0 + offset);
+                    tri_indices.push_back( 1 + offset);
+                    tri_indices.push_back( 2 + offset);
+                    tri_indices.push_back( 2 + offset);
+                    tri_indices.push_back( 1 + offset);
+                    tri_indices.push_back( 3 + offset);
+                }
             }
         }
     }
