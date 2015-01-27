@@ -41,9 +41,6 @@ ReportFieldInfoDialog::ReportFieldInfoDialog(const std::string& name, ModuleStat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  fixSize();
-
-  buttonBox->setVisible(false);
 }
 
 void ReportFieldInfoDialog::pullAndDisplayInfo() 

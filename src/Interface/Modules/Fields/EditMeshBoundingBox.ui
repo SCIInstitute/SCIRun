@@ -260,6 +260,15 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="minimum">
+         <double>-999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999.000000000000000</double>
+        </property>
        </widget>
       </item>
       <item row="0" column="2">
@@ -267,12 +276,30 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="minimum">
+         <double>-999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999.000000000000000</double>
+        </property>
        </widget>
       </item>
       <item row="0" column="3">
        <widget class="QDoubleSpinBox" name="outputCenterZSpinBox_">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="minimum">
+         <double>-999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -307,7 +334,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="font">
       <font>
@@ -330,6 +357,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="doubleUpScaleToolButton_">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>++</string>
           </property>
@@ -431,4 +461,10 @@
  </widget>
  <resources/>
  <connections/>
+ <slots>
+  <slot>ScaleUpPush()</slot>
+  <slot>ScaleDoubleUpPush()</slot>
+  <slot>ScaleDownPush()</slot>
+  <slot>ScaleDoubleDownPush()</slot>
+ </slots>
 </ui>

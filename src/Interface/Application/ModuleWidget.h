@@ -35,6 +35,7 @@
 #include <QStackedWidget>
 #include <set>
 #include <deque>
+#include <atomic>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/HasNotes.h>
 #include <Interface/Application/PositionProvider.h>
@@ -56,7 +57,6 @@ class PositionProvider;
 class NetworkEditor;
 class PortWidgetManager;
 class DialogErrorControl;
-
 
 class ModuleWidgetDisplayBase
 {
@@ -164,6 +164,7 @@ Q_SIGNALS:
   void moduleStateUpdated(int state);
   void moduleSelected(bool selected);
   void displayChanged();
+  void requestModuleVisible();
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
@@ -179,9 +180,10 @@ private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
-  bool isMini_;
+  bool isMini_, errored_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
+  std::atomic<int> previousModuleState_;
 
   void addPorts(int index);
   void createPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
@@ -223,7 +225,7 @@ private:
   bool deleting_;
   const QString defaultBackgroundColor_;
   int fullIndex_, miniIndex_;
-  bool isViewScene_; //TODO: lots of special logic around this case. 
+  bool isViewScene_; //TODO: lots of special logic around this case.
 
   static bool globalMiniMode_;
 };

@@ -124,10 +124,18 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
+  connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureVisible()));
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+}
+
+void ModuleProxyWidget::ensureVisible()
+{
+  auto views = scene()->views();
+  if (!views.isEmpty())
+    views[0]->ensureVisible(this);
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)

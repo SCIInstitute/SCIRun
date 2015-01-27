@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
-#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -42,7 +42,7 @@ SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
+  WidgetStyleMixin::tabStyle(this->tabWidget); 
   using namespace Parameters;
   addDoubleSpinBoxManager(Skin_,        Skin);
   addDoubleSpinBoxManager(SoftBone_,    SoftBone);
@@ -58,4 +58,3 @@ void SetConductivitiesToTetMeshDialog::pull()
 {
   pull_newVersionToReplaceOld();
 }
-

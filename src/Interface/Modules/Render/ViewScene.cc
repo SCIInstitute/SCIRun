@@ -46,7 +46,8 @@ using namespace SCIRun::Render;
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent /* = 0 */)
-	: ModuleDialogGeneric(state, parent), shown_(false), itemManager_(new ViewSceneItemManager)
+	: ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false),
+	itemManager_(new ViewSceneItemManager)
 {
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
@@ -63,7 +64,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 	fmt.setDoubleBuffer(true);
 	fmt.setDepthBufferSize(24);
 
-	mGLWidget = new GLWidget(new QtGLContext(fmt));
+	mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
 
 	if (mGLWidget->isValid())
 	{
@@ -96,25 +97,18 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
-	
-	addConfigurationDock(QString::fromStdString(name));
 }
 
-//------------------------------------------------------------------------------
-ViewSceneDialog::~ViewSceneDialog()
-{
-}
-
-//------------------------------------------------------------------------------
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 {
 	// NOTE: At one point this was required because the renderer was
 	// multi-threaded. It is likely we will run into the same issue in the
 	// future. Kept for future reference.
 	//glLayout->removeWidget(mGLWidget);
+  mGLWidget->close();
+	ModuleDialogGeneric::closeEvent(evt);
 }
 
-//------------------------------------------------------------------------------
 void ViewSceneDialog::newGeometryValue()
 {
 	LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
@@ -124,6 +118,12 @@ void ViewSceneDialog::newGeometryValue()
 	LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
 	itemManager_->removeAll();
+  /*
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  if (spire == nullptr)
+    return;
+  spire->removeAllGeomObjects();
+  */
 	// Grab the geomData transient value.
 	auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
 	if (geomDataTransient && !geomDataTransient->empty())
@@ -141,16 +141,17 @@ void ViewSceneDialog::newGeometryValue()
 			return;
 		}
 
+		int port = 0;
 		std::vector<std::string> validObjects;
-		for (auto it = geomData->begin(); it != geomData->end(); ++it)
+		for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
 		{
 			boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
-			spire->handleGeomObject(obj);
+			spire->handleGeomObject(obj, port);
 			validObjects.push_back(obj->objectName);
 			itemManager_->addItem(QString::fromStdString(obj->objectName));
 		}
 		spire->gcInvalidObjects(validObjects);
-	}
+  }
 	else
 	{
 		std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
@@ -363,34 +364,41 @@ void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::configurationButtonClicked()
 {
-	showConfiguration_ = !mConfigurationDock->isVisible();
-	mConfigurationDock->setEnabled(showConfiguration_);
-	mConfigurationDock->setVisible(showConfiguration_);
+	if (!mConfigurationDock)
+		addConfigurationDock(windowTitle());
+
+  showConfiguration_ = !mConfigurationDock->isVisible();
+  mConfigurationDock->setEnabled(showConfiguration_);
+  mConfigurationDock->setVisible(showConfiguration_);
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::assignBackgroundColor()
+{
+  QColor bgColor = Qt::black;
+  auto newColor = QColorDialog::getColor(bgColor, this, "Choose background color");
+  if (newColor.isValid())
+  {
+    bgColor = newColor;
+    mConfigurationDock->setSampleColor(bgColor);
+    //TODO: set color of button to this color
+    //defaultMeshColorButton_->set
+    //state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    spire->setBackgroundColor(bgColor);
+  }
 }
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar()
 {
 	mToolBar = new QToolBar(this);
+	mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
 
-	//addMouseMenu();
 	addAutoViewButton();
 	addObjectToggleMenu();
 
 	glLayout->addWidget(mToolBar);
-}
-
-void ViewSceneDialog::addMouseMenu(QWidget* widget)
-{
-	auto menu = new QComboBox(this);
-	menu->setToolTip("Change Mouse Controls");
-	menu->addItem("Legacy Mouse Control");
-	menu->addItem("New Mouse Control");
-	connect(menu, SIGNAL(currentIndexChanged(int)), this, SLOT(menuMouseControlChanged(int)));
-	menu->setCurrentIndex(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? 1 : 0);
-	menu->setParent(widget);
-	//mToolBar->addWidget(menu);
-	//mToolBar->addSeparator();
 }
 
 void ViewSceneDialog::addAutoViewButton()
@@ -429,7 +437,7 @@ void ViewSceneDialog::addObjectToggleMenu()
 
 void ViewSceneDialog::addViewBarButton()
 {
-	QPushButton* viewBarBtn = new QPushButton(this);
+	QPushButton* viewBarBtn = new QPushButton();
 	viewBarBtn->setToolTip("Show View Options");
 	viewBarBtn->setText("Views");
 	viewBarBtn->setAutoDefault(false);
@@ -468,6 +476,7 @@ void ViewSceneDialog::addViewOptions()
 	mDownViewBox->addItem("-X");
 	mDownViewBox->addItem("-Y");
 	mDownViewBox->addItem("-Z");
+	WidgetStyleMixin::toolbarStyle(mViewBar);
 	connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
 	mViewBar->addWidget(mDownViewBox);
 	mViewBar->addSeparator();
@@ -486,7 +495,7 @@ void ViewSceneDialog::addViewOptions()
 
 void ViewSceneDialog::addConfigurationButton()
 {
-	QPushButton* configurationButton = new QPushButton(this);
+	QPushButton* configurationButton = new QPushButton();
 	configurationButton->setToolTip("Open/Close Configuration Menu");
 	configurationButton->setText("Configure");
 	configurationButton->setAutoDefault(false);
@@ -498,79 +507,39 @@ void ViewSceneDialog::addConfigurationButton()
 
 void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 {
+  QString name = viewName + " Configuration";
+  mConfigurationDock = new ViewSceneControlsDock(name, this);
+  mConfigurationDock->setVisible(false);
+
 	showConfiguration_ = false;
-	mConfigurationDock = new QDockWidget(this);
-	QString name = viewName + " Configuration";
-	mConfigurationDock->setWindowTitle(name);
-	mConfigurationDock->setAllowedAreas(Qt::RightDockWidgetArea);
-	mConfigurationDock->setFloating(true);
-	mConfigurationDock->setMinimumWidth(300);
-	mConfigurationDock->setMinimumHeight(150);
-	mConfigurationDock->setVisible(false);
-	mConfigurationDock->setEnabled(false);
-
-	QTabWidget* tabs = new QTabWidget(mConfigurationDock);
-	tabs->setFixedSize(300, 150);
-	
-	// View Tab
-	QWidget* viewTab = new QWidget();
-	addShowOrientationCheckbox(viewTab);
-	QPushButton* upButton = new QPushButton(viewTab);
-	upButton->setToolTip("Rotate up");
-	upButton->setText("Up");
-	upButton->setAutoDefault(false);
-	upButton->setDefault(false);
-	upButton->setGeometry(15, 25, 35, 25);
-	//connect(upButton, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-	QPushButton* downButton = new QPushButton(viewTab);
-	downButton->setToolTip("Rotate down");
-	downButton->setText("Down");
-	downButton->setAutoDefault(false);
-	downButton->setDefault(false);
-	downButton->setGeometry(15, 75, 35, 25);
-
-	QPushButton* leftButton = new QPushButton(viewTab);
-	leftButton->setToolTip("Rotate left");
-	leftButton->setText("Left");
-	leftButton->setAutoDefault(false);
-	leftButton->setDefault(false);
-	leftButton->setGeometry(0, 50, 35, 25);
-
-	QPushButton* rightButton = new QPushButton(viewTab);
-	rightButton->setToolTip("Rotate right");
-	rightButton->setText("Right");
-	rightButton->setAutoDefault(false);
-	rightButton->setDefault(false);
-	rightButton->setGeometry(35, 50, 35, 25);
-
-	tabs->addTab(viewTab, "View");
-
-	// Control Tab
-	QWidget* controlTab = new QWidget();
-	addMouseMenu(controlTab);
-	tabs->addTab(controlTab, "Controls");
-
-
 }
 
-void ViewSceneDialog::addShowOrientationCheckbox(QWidget* widget)
+void ViewSceneDialog::hideConfigurationDock()
 {
-	QCheckBox* showOrientationCheckBox = new QCheckBox(widget);
-	showOrientationCheckBox->setText("Orientation");
-	showOrientationCheckBox->setToolTip("Toggle Orientation Axes");
-	showOrientationCheckBox->setChecked(true);
-
-	connect(showOrientationCheckBox, SIGNAL(clicked(bool)), this, SLOT(showOrientationChecked(bool)));
+	if (mConfigurationDock)
+	{
+  	showConfiguration_ = mConfigurationDock->isVisible();
+  	if (showConfiguration_)
+  	{
+    	configurationButtonClicked();
+  	}
+	}
 }
 
-void ViewSceneDialog::showEvent(QShowEvent *evt)
+void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
-	ModuleDialogGeneric::showEvent(evt);
 	if (!shown_)
 	{
 		autoViewClicked();
 		shown_ = true;
 	}
+	ModuleDialogGeneric::showEvent(evt);
+}
+
+void ViewSceneDialog::hideEvent(QHideEvent* evt)
+{
+	hideConfigurationDock();
+	ModuleDialogGeneric::hideEvent(evt);
 }
 
 ViewSceneItemManager::ViewSceneItemManager() : model_(new QStandardItemModel(3, 1))

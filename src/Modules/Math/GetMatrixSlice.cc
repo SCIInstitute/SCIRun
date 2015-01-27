@@ -60,5 +60,24 @@ void GetMatrixSlice::execute()
     setAlgoIntFromState(Parameters::SliceIndex);
     auto output = algo().run(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(OutputMatrix, output);
+    get_state()->setValue(Parameters::MaxIndex, output.additionalAlgoOutput()->toInt());
+
+    /*
+    auto playMode = get_state()->getValue(Parameters::PlayMode).toBool();
+    if (playMode)
+    {
+      auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + 1;
+      auto maxIndex = algo().get(Parameters::IsSliceColumn).toBool() && input ? input->ncols() : input->nrows();
+      if (nextIndex >= maxIndex)
+      {
+        get_state()->setValue(Parameters::PlayMode, false);
+      }
+      else
+      {
+        get_state()->setValue(Parameters::SliceIndex, nextIndex);
+        enqueueExecuteAgain();
+      }
+    }
+    */
   }
 }

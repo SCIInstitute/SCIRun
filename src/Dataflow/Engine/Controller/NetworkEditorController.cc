@@ -333,6 +333,11 @@ void NetworkEditorController::clear()
   LOG_DEBUG("NetworkEditorController::clear()" << std::endl);
 }
 
+// TODO:
+// - [ ] refactor duplication
+// - [ ] set up execution context queue
+// - [ ] separate threads for looping through queue: another producer/consumer pair
+
 void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
   if (!currentExecutor_)

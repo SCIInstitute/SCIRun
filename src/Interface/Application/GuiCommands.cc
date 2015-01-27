@@ -68,6 +68,7 @@ bool QuitAfterExecuteCommandGui::execute()
 bool QuitCommandGui::execute()
 {
   SCIRunMainWindow::Instance()->quit();
+  exit(0);
   return true;
 }
 
@@ -99,7 +100,7 @@ bool ShowSplashScreenGui::execute()
 
 void ShowSplashScreenGui::initSplashScreen()
 {
-  splash_ = new QSplashScreen(0, QPixmap(":/gear/splash-scirun.png").scaled(990, 490),  Qt::WindowStaysOnTopHint);
+  splash_ = new QSplashScreen(0, QPixmap(":/general/Resources/scirun_5_0_alpha.png"), Qt::WindowStaysOnTopHint);
   splashTimer_ = new QTimer;
   splashTimer_->setSingleShot( true );
   splashTimer_->setInterval( 5000 );

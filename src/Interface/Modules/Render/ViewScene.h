@@ -39,6 +39,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
+#include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/share.h>
 
@@ -51,69 +52,72 @@ class QStandardItem;
 
 namespace SCIRun {
 
-	namespace Render { class SRInterface; }
+  namespace Render { class SRInterface; }
 
-	namespace Gui {
+  namespace Gui {
 
-		class GLWidget;
+    class GLWidget;
+    class ViewSceneControlsDock;
 
-		class SCISHARE ViewSceneDialog : public ModuleDialogGeneric,
-			public Ui::ViewScene
-		{
-			Q_OBJECT
+    class SCISHARE ViewSceneDialog : public ModuleDialogGeneric,
+      public Ui::ViewScene
+    {
+      Q_OBJECT
 
-		public:
-			ViewSceneDialog(const std::string& name,
-				SCIRun::Dataflow::Networks::ModuleStateHandle state,
-				QWidget* parent = 0);
-			~ViewSceneDialog();
-			virtual void pull() {}
+    public:
+      ViewSceneDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = 0);
+      virtual void pull() {}
 
-		Q_SIGNALS:
-			void newGeometryValueForwarder();
+    Q_SIGNALS:
+      void newGeometryValueForwarder();
 
-			protected Q_SLOTS:
-			void menuMouseControlChanged(int index);
-			void autoViewClicked();
-			void newGeometryValue();
-			void showOrientationChecked(bool value);
-			void viewBarButtonClicked();
-			void viewAxisSelected(int index);
-			void viewVectorSelected(int index);
-			void configurationButtonClicked();
+      protected Q_SLOTS:
+      void menuMouseControlChanged(int index);
+      void autoViewClicked();
+      void newGeometryValue();
+      void showOrientationChecked(bool value);
+      void viewBarButtonClicked();
+      void viewAxisSelected(int index);
+      void viewVectorSelected(int index);
+      void configurationButtonClicked();
+      void assignBackgroundColor();
 
-		protected:
-			virtual void closeEvent(QCloseEvent *evt) override;
-			virtual void showEvent(QShowEvent* event) override;
-			virtual void contextMenuEvent(QContextMenuEvent* e) override {}
-		private:
-			void addToolBar();
-			void addMouseMenu(QWidget* widget);
-			void addAutoViewButton();
-			void addObjectToggleMenu();
-			void addViewBarButton();
-			void addViewBar();
-			void addViewOptions();
-			void addConfigurationButton();
-			void addConfigurationDock(const QString& viewName);
-			void addShowOrientationCheckbox(QWidget* widget);
+    protected:
+      virtual void closeEvent(QCloseEvent* evt) override;
+      virtual void showEvent(QShowEvent* evt) override;
+      virtual void hideEvent(QHideEvent* evt) override;
+      virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
+    private:
+      void addToolBar();
+      void addAutoViewButton();
+      void addObjectToggleMenu();
+      void addViewBarButton();
+      void addViewBar();
+      void addViewOptions();
+      void addConfigurationButton();
+      void addConfigurationDock(const QString& viewName);
+      void hideConfigurationDock();
 
-			void lookDownAxisX(int upIndex, glm::vec3& up);
-			void lookDownAxisY(int upIndex, glm::vec3& up);
-			void lookDownAxisZ(int upIndex, glm::vec3& up);
+      void lookDownAxisX(int upIndex, glm::vec3& up);
+      void lookDownAxisY(int upIndex, glm::vec3& up);
+      void lookDownAxisZ(int upIndex, glm::vec3& up);
 
-			GLWidget*                             mGLWidget;				///< GL widget containing context.
-			std::weak_ptr<Render::SRInterface>    mSpire;					///< Instance of Spire.
-			QToolBar*                             mToolBar;					///< Tool bar.
-			QToolBar*                             mViewBar;					///< Tool bar for view options.
-			QComboBox*                            mDownViewBox;				///< Combo box for Down axis options.
-			QComboBox*                            mUpVectorBox;				///< Combo box for Up Vector options.
-			QDockWidget*						  mConfigurationDock;		///< Dock holding configuration functions
+      GLWidget*                             mGLWidget;            ///< GL widget containing context.
+      std::weak_ptr<Render::SRInterface>    mSpire;               ///< Instance of Spire.
+      QToolBar*                             mToolBar;             ///< Tool bar.
+      QToolBar*                             mViewBar;             ///< Tool bar for view options.
+      QComboBox*                            mDownViewBox;         ///< Combo box for Down axis options.
+      QComboBox*                            mUpVectorBox;         ///< Combo box for Up Vector options.
+      ViewSceneControlsDock*                mConfigurationDock;   ///< Dock holding configuration functions               mConfigurationDialog; ///< Menu holding configuration functions
 
-			bool shown_;
-			bool hideViewBar_;
-			bool showConfiguration_;
-			std::shared_ptr<class ViewSceneItemManager> itemManager_;
+      bool shown_;
+      bool hideViewBar_;
+      bool showConfiguration_;
+      std::shared_ptr<class ViewSceneItemManager> itemManager_;
+
+      friend class ViewSceneControlsDock;
 		};
 
 		class ViewSceneItemManager : public QObject

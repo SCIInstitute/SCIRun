@@ -30,11 +30,15 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
 #include <boost/foreach.hpp>
+#include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+
+ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
+ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
 
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
@@ -60,11 +64,20 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
 {
+  if (disablerAdd_ && disablerRemove_)
+  {
+    std::for_each(needToRemoveFromDisabler_.begin(), needToRemoveFromDisabler_.end(), disablerRemove_);
+  }
 }
 
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
   connect(button, SIGNAL(clicked()), this, SIGNAL(executeActionTriggered()));
+  if (disablerAdd_ && disablerRemove_)
+  {
+    disablerAdd_(button);
+    needToRemoveFromDisabler_.push_back(button);
+  }
 }
 
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
@@ -239,7 +252,7 @@ class CompositeSlotManager : public WidgetSlotManager
 {
 public:
   CompositeSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, const std::vector<Widget*>& widgets)
-    : WidgetSlotManager(state, dialog) 
+    : WidgetSlotManager(state, dialog)
   {
     std::transform(widgets.begin(), widgets.end(), std::back_inserter(managers_), [&](Widget* w) { return boost::make_shared<Manager>(state, dialog, stateKey, w); });
   }
@@ -380,7 +393,7 @@ public:
       virtual void pushImpl() override
       {
         LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
-        try 
+        try
         {
           auto value = boost::lexical_cast<double>(lineEdit_->text().toStdString());
           state_->setValue(stateKey_, value);
@@ -555,4 +568,63 @@ private:
 void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
+}
+
+class RadioButtonGroupSlotManager : public WidgetSlotManager
+{
+public:
+  RadioButtonGroupSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, std::initializer_list<QRadioButton*> radioButtons) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), radioButtons_(radioButtons)
+  {
+    for (auto button : radioButtons_)
+      connect(button, SIGNAL(clicked()), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto checkedIndex = state_->getValue(stateKey_).toInt();
+    if (checkedIndex >= 0 && checkedIndex < radioButtons_.size())
+    {
+      if (!radioButtons_[checkedIndex]->isChecked())
+      {
+        LOG_DEBUG("In new version of pull code for radio button group: " << checkedIndex);
+        radioButtons_[checkedIndex]->setChecked(true);
+      }
+    }
+  }
+  virtual void pushImpl() override
+  {
+    auto firstChecked = std::find_if(radioButtons_.begin(), radioButtons_.end(), [](QRadioButton* button) { return button->isChecked(); });
+    int indexOfChecked = firstChecked - radioButtons_.begin();
+    state_->setValue(stateKey_, indexOfChecked);
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  std::vector<QRadioButton*> radioButtons_;
+};
+
+void ModuleDialogGeneric::addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<RadioButtonGroupSlotManager>(state_, *this, stateKey, radioButtons));
+}
+
+void WidgetStyleMixin::tabStyle(QTabWidget* tabs)
+{
+	tabs->setStyleSheet(
+		"QTabBar::tab::selected, QTabBar::tab::hover         {color:black; background-color: #F0F0F0; border: 1px solid rgb(66,66,69); min-width:2ex; padding: 5px 10px;} "
+		"QTabBar::tab:!selected {color: white; background-color: rgb(66,66,69); border: 1px solid #FFFFFF; min-width:2ex; padding: 5px 10px; }"
+		"QTabBar::tab:selected  {color:black; background-color: #F0F0F0; border: 1px solid rgb(66,66,69); min-width:2ex; padding: 5px 10px;}"
+		);
+}
+
+void WidgetStyleMixin::tableHeaderStyle(QTableWidget* tableHeader)
+{
+	tableHeader->setStyleSheet(
+		"QHeaderView::section {background: rgb(66,66,69);}"
+		);
+}
+
+void WidgetStyleMixin::toolbarStyle(QToolBar* toolbar)
+{
+  toolbar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
+    "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
 }

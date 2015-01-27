@@ -30,7 +30,7 @@
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
 #include <Interface/Modules/Base/WidgetSlotManagers.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h> //TODO: split up this header!
+#include <Core/Algorithms/Base/Name.h>
 #include <QtGui>
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
@@ -41,8 +41,18 @@
 namespace SCIRun {
 namespace Gui {
 
+  typedef std::function<void(QWidget*)> ExecutionDisablingServiceFunction;
   typedef boost::bimap<std::string,std::string> GuiStringTranslationMap;
   typedef GuiStringTranslationMap::value_type StringPair;
+
+  //TODO: pull into separate header; figure out how to automatically style child widgets of these types
+  class SCISHARE WidgetStyleMixin
+  {
+  public:
+    static void tabStyle(QTabWidget* tabs);
+    static void tableHeaderStyle(QTableWidget* tableHeader);
+    static void toolbarStyle(QToolBar* toolbar);
+  };
 
   class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
@@ -53,6 +63,8 @@ namespace Gui {
     QAction* getExecuteAction() { return executeAction_; }
     void setDockable(QDockWidget* dock) { dock_ = dock; } // to enable title changes
     void updateWindowTitle(const QString& title);
+    static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
+    static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
 
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
@@ -85,8 +97,7 @@ namespace Gui {
       ~Pulling() { m_->pulling_ = false; }
       ModuleDialogGeneric* m_;
     };
-
-    void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
+		void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap);
     void addTextEditManager(QTextEdit* textEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
@@ -97,6 +108,7 @@ namespace Gui {
     void addCheckableButtonManager(QAbstractButton* checkable, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addDynamicLabelManager(QLabel* label, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const Core::Algorithms::AlgorithmParameterName& stateKey);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
@@ -110,6 +122,9 @@ namespace Gui {
     QString windowTitle_;
     QDockWidget* dock_;
     QSize oldSize_;
+    std::vector<QAbstractButton*> needToRemoveFromDisabler_;
+    static ExecutionDisablingServiceFunction disablerAdd_;
+    static ExecutionDisablingServiceFunction disablerRemove_;
   };
 
 }

@@ -46,6 +46,9 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  WidgetStyleMixin::tabStyle(this->tabWidget);
+  WidgetStyleMixin::tableHeaderStyle(this->SpecifyROI_tabWidget);
+  WidgetStyleMixin::tableHeaderStyle(this->StatisticsOutput_tableWidget);
 
   QStringList tableHeader1;  /// set default GUI parameter for upper table
   tableHeader1<<" ROI "<<" Avr. " << " Std. " << " Min. " << " Max. " << " # ";
@@ -67,19 +70,19 @@ GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name
   SpecifyROI_tabWidget->setItem(0, 4, new QTableWidgetItem(" 0 "));
 
   connect(StatisticsOutput_tableWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
-  connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));  
+  connect(SpecifyROI_tabWidget, SIGNAL(cellChanged(int,int)), this, SLOT(push()));
 }
 
 void GenerateROIStatisticsDialog::push()
 {
 
   if (!pulling_)
-  {    
+  {
     QPalette* palette = new QPalette();
     palette->setColor(QPalette::Text,Qt::red);
     StatisticsTableGroupBox->setPalette(*palette);
 
-    /// get user specified ROI data, put it in a DenseMatrix and ship it to state  
+    /// get user specified ROI data, put it in a DenseMatrix and ship it to state
     auto X = SpecifyROI_tabWidget->item(0,0)->text().toDouble();
     auto Y = SpecifyROI_tabWidget->item(0,1)->text().toDouble();
     auto Z = SpecifyROI_tabWidget->item(0,2)->text().toDouble();
@@ -140,4 +143,3 @@ void GenerateROIStatisticsDialog::pull()
     ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));
   }
 }
-

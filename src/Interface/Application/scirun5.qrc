@@ -1,7 +1,6 @@
 <RCC>
   <qresource prefix="/gear">
     <file>Gear.png</file>
-    <file>splash-scirun.png</file>
   </qresource>
   <qresource prefix="/general">
     <file>Resources/load.png</file>
@@ -41,5 +40,6 @@
     <file>Resources/new/modules/options.png</file>
     <file>Resources/new/modules/run.png</file>
     <file>Resources/new/modules/settings.png</file>
+    <file>Resources/scirun_5_0_alpha.png</file>
   </qresource>
 </RCC>

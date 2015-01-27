@@ -365,7 +365,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
   if (action && action->text() == deleteAction)
   {
     scene()->removeItem(this);
-    destroy();
+    destroy(); //TODO: another place to hook up deleteLater()
   }
   else if (action && action->text() == editNotesAction)
   {

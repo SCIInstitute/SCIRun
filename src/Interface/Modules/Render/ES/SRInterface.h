@@ -114,7 +114,7 @@ namespace SCIRun {
 			void gcInvalidObjects(const std::vector<std::string>& validObjects);
 
 			/// Handles a new geometry object.
-			void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object);
+			void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object, int port);
 
 			/// Performs a frame.
 			void doFrame(double currentTime, double constantDeltaTime);
@@ -134,17 +134,21 @@ namespace SCIRun {
 			/// Toggle Orientation Axes
 			void showOrientation(bool value);
 
+      /// Set the Background Color
+      void setBackgroundColor(QColor color);
+
 		private:
 
 			class SRObject
 			{
 			public:
 				SRObject(const std::string& name, const glm::mat4& objToWorld,
-					const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap) :
+					const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
 					mName(name),
 					mObjectToWorld(objToWorld),
 					mBBox(bbox),
-					mColorMap(colorMap)
+					mColorMap(colorMap),
+					mPort(port)
 				{}
 
 				// Different types of uniform transformations that are associated
@@ -169,12 +173,14 @@ namespace SCIRun {
 					Core::Datatypes::GeometryObject::RenderType renderType;
 				};
 
-				std::string           mName;
-				glm::mat4             mObjectToWorld;
-				std::list<SRPass>     mPasses;
-				Core::Geometry::BBox  mBBox;          ///< Objects bounding box (calculated from VBO).
+				std::string                     mName;
+				glm::mat4                       mObjectToWorld;
+				std::list<SRPass>               mPasses;
+				Core::Geometry::BBox            mBBox;          ///< Objects bounding box (calculated from VBO).
 
 				boost::optional<std::string>    mColorMap;
+
+				int										          mPort;
 			};
 
 			// Sets up ESCore.
@@ -195,7 +201,7 @@ namespace SCIRun {
 			// Simple hash function. Modify if hash collisions occur due to string
 			// hashing. The simplest approach would be to have all names placed in a
 			// hash multimap with a list which assigns ids to names.
-			uint64_t getEntityIDForName(const std::string& name);
+			uint64_t getEntityIDForName(const std::string& name, int port);
 
 			// Adds a VBO to the given entityID.
 			void addVBOToEntity(uint64_t entityID, const std::string& vboName);
@@ -209,10 +215,11 @@ namespace SCIRun {
 
 			// Apply uniform.
 			void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
+      
+      bool                            showOrientation_; ///< Whether the coordinate axes will render or not.
+      bool                            autoRotate_;      ///< Whether the scene will continue to rotate.
 
-			bool							showOrientation_; ///< Whether the coordinate axes will render or not.
-
-			MouseMode                       mMouseMode;       ///< Current mouse mode.
+      MouseMode                       mMouseMode;       ///< Current mouse mode.
 
 			size_t                          mScreenWidth;     ///< Screen width in pixels.
 			size_t                          mScreenHeight;    ///< Screen height in pixels.

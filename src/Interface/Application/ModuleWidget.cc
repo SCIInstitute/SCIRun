@@ -299,6 +299,7 @@ void ModuleWidgetDisplay::setupSpecial()
   optionsButton_->setText("VIEW");
   optionsButton_->setToolTip("View renderer output");
   optionsButton_->resize(100, optionsButton_->height());
+  optionsButton_->setIcon(QIcon());
   executePushButton_->hide();
   progressBar_->setVisible(false);
 }
@@ -387,10 +388,6 @@ void ModuleWidgetDisplayMini::setupProgressBar()
 
 void ModuleWidgetDisplayMini::setupSpecial()
 {
-  optionsButton_->setText("VIEW");
-  optionsButton_->setToolTip("View renderer output");
-  optionsButton_->resize(100, optionsButton_->height());
-  //executePushButton_->hide();
   progressBar_->setVisible(false);
 }
 
@@ -398,12 +395,11 @@ void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
 {
   optionsButton_->setEnabled(hasUI);
   module->connect(expandToolButton_, SIGNAL(clicked()), SLOT(expandToFullMode()));
-  //executePushButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
 void ModuleWidgetDisplayMini::setupIcons()
 {
-  
+
 }
 
 QAbstractButton* ModuleWidgetDisplayMini::getOptionsButton() const
@@ -451,6 +447,20 @@ void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
   // #endif
 }
 
+static const int UNSET = -1;
+static const int SELECTED = -50;
+static const int ERRORED = -100;
+static bool isUnsetOrSelected(int state)
+{
+  return UNSET == state || SELECTED == state;
+}
+
+typedef boost::bimap<QString, int> ColorStateLookup;
+typedef ColorStateLookup::value_type ColorStatePair;
+static ColorStateLookup colorStateLookup;
+void fillColorStateLookup(const QString& background);
+
+
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
@@ -461,7 +471,9 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   deletedFromGui_(true),
   colorLocked_(false),
   isMini_(globalMiniMode_),
+  errored_(false),
   theModule_(theModule),
+  previousModuleState_(UNSET),
   moduleId_(theModule->get_id()),
   dialog_(nullptr),
   dockable_(nullptr),
@@ -475,6 +487,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   miniIndex_(0),
   isViewScene_(name == "ViewScene")
 {
+  fillColorStateLookup(defaultBackgroundColor_);
+
   setupModuleActions();
   setupLogging();
 
@@ -484,17 +498,14 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   currentDisplay_ = isMini_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
   setCurrentIndex(isMini_ ? miniIndex_ : fullIndex_);
 
+  makeOptionsDialog();
   createPorts(*theModule_);
   addPorts(currentIndex());
 
-  //std::cout << "current widget size: " << currentWidget()->size().width() << " " << currentWidget()->size().height() << std::endl;
   resize(currentWidget()->size());
 
-  makeOptionsDialog();
-
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
-  theModule_->connectExecutionStateChanged(boost::bind(&ModuleWidget::moduleStateUpdated, this, _1));
-  connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
+  theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
@@ -509,7 +520,6 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
   int index = addWidget(frame);
 
   setupDisplayWidgets(display, name);
-  display->setupIcons();
 
   addPortLayouts(index);
 
@@ -526,6 +536,7 @@ void ModuleWidget::setupLogging()
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
+  connect(logWindow_, SIGNAL(requestModuleVisible()), this, SIGNAL(requestModuleVisible()));
 
   LoggerHandle logger(boost::make_shared<ModuleLogger>(logWindow_));
   theModule_->setLogger(logger);
@@ -537,6 +548,7 @@ void ModuleWidget::setupLogging()
 void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name)
 {
   display->setupTitle(name);
+  display->setupIcons();
 
   //TODO: ultra ugly. no other place for this code right now.
   //TODO: to be handled in issue #212
@@ -585,6 +597,11 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
 {
+  if (color == Qt::red)
+  {
+    errored_ = true;
+    updateBackgroundColor(moduleRGBA(176, 23, 31));
+  }
   currentDisplay_->getLogButton()->setStyleSheet(
     QString("* { background-color: %1 }")
     .arg(moduleRGBA(color.red(), color.green(), color.blue())));
@@ -609,12 +626,15 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
 
+  //TODO: very slow code, action disabled anyway--turning off for now
+#if 0
   auto replaceWith = actionsMenu_->getAction("Replace With");
   auto menu = new QMenu(this);
   replaceWith->setMenu(menu);
   fillReplaceWithMenu();
   connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+#endif
 
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
@@ -929,6 +949,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
+    errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
     theModule_->do_execute();
@@ -953,18 +974,41 @@ boost::signals2::connection ModuleWidget::connectErrorListener(const ErrorSignal
   return theModule_->connectErrorListener(subscriber);
 }
 
+void fillColorStateLookup(const QString& background)
+{
+  if (colorStateLookup.empty())
+  {
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), (int)ModuleInterface::Waiting));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(170,204,170), (int)ModuleInterface::Executing));
+    colorStateLookup.insert(ColorStatePair(background, (int)ModuleInterface::Completed));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(0,255,255), SELECTED));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), ERRORED));
+  }
+}
+
+//primitive state machine: will be replaced next week.
+//TODO: slot should set previousModuleState_
 void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
   switch (moduleState)
   {
   case (int)ModuleInterface::Waiting:
-    Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
+    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Completed)
+    {
+      Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
+    }
     break;
   case (int)ModuleInterface::Executing:
-    Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
+    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Waiting)
+    {
+      Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
+    }
     break;
   case (int)ModuleInterface::Completed:
-    Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    {
+      if (!errored_)
+        Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    }
     break;
   }
 }
@@ -977,6 +1021,7 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
     if (SCIRunMainWindow::Instance()->newInterface())
       rounded = "color: white; border-radius: 7px;";
     setStyleSheet(rounded + " background-color: " + color);
+    previousModuleState_ = colorStateLookup.left.at(color);
   }
 }
 
@@ -1001,7 +1046,7 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialog_)
     {
       if (!dialogFactory_)
-        dialogFactory_.reset(new ModuleDialogFactory(0));
+        dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();

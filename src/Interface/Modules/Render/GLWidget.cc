@@ -28,7 +28,7 @@
 
 /// \author James Hughes
 /// \date   September 2012
-/// \brief  Not sure this file should go in Modules/Render. But it is an 
+/// \brief  Not sure this file should go in Modules/Render. But it is an
 ///         auxiliary file to the ViewScene render module.
 
 #include <Interface/Modules/Render/GLWidget.h>
@@ -45,8 +45,8 @@ namespace Gui {
 const int RendererUpdateInMS = 35;
 
 //------------------------------------------------------------------------------
-GLWidget::GLWidget(QtGLContext* context) :
-    QGLWidget(context),
+GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
+    QGLWidget(context, parent),
     mContext(new GLContext(this)),
     mCurrentTime(0.0)
 {
@@ -58,7 +58,7 @@ GLWidget::GLWidget(QtGLContext* context) :
 
   // Call gl platform init.
   CPM_GL_PLATFORM_NS::glPlatformInit();
-  
+
   auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
   shaderSearchDirs.push_back(shadersInBinDirectory.string());
 
@@ -98,7 +98,7 @@ SCIRun::Render::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* e
     btn = Render::SRInterface::MOUSE_RIGHT;
   else if (event->buttons() & Qt::MidButton)
     btn = Render::SRInterface::MOUSE_MIDDLE;
-  
+
   return btn;
 }
 
@@ -140,7 +140,7 @@ void GLWidget::resizeGL(int width, int height)
 //------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
-  qDebug() << "Close event for window.";
+  //qDebug() << "Close event for window.";
   if (mGraphics != nullptr)
   {
     //std::cout << "Terminating spire." << std::endl;
@@ -167,4 +167,3 @@ void GLWidget::updateRenderer()
 
 } // namespace Gui
 } // namespace SCIRun
-
