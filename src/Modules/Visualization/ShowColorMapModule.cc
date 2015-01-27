@@ -31,6 +31,7 @@
 #include <Modules/Visualization/ShowColorMapModule.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/ColorMap.h>
+#include <Core/Datatypes/Color.h> 
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
@@ -49,7 +50,7 @@ void ShowColorMapModule::setStateDefaults()
   state->setValue(DisplaySide, 0);
 	state->setValue(DisplayLength, 0);
 	state->setValue(TextSize, 0);
-	state->setValue(TextColor, "");
+	state->setValue(TextColor, ColorRGB(255, 255, 255).toString());//this is a guess
 	state->setValue(Labels, "5");
 	state->setValue(Scale, "1.0");
 	state->setValue(Units,"");
@@ -244,3 +245,13 @@ void ShowColorMapModule::execute()
  //	}
  // sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
 }
+
+AlgorithmParameterName ShowColorMapModule::DisplaySide("DisplaySide"); 
+AlgorithmParameterName ShowColorMapModule::DisplayLength("DisplayLength");
+AlgorithmParameterName ShowColorMapModule::TextSize("TextSize"); 
+AlgorithmParameterName ShowColorMapModule::TextColor("TextColor"); 
+AlgorithmParameterName ShowColorMapModule::Labels("Labels");
+AlgorithmParameterName ShowColorMapModule::Scale("Scale");
+AlgorithmParameterName ShowColorMapModule::Units("Units");
+AlgorithmParameterName ShowColorMapModule::SignificantDigits("SignificantDigits");
+AlgorithmParameterName ShowColorMapModule::AddExtraSpace("AddExtraSpace"); 
