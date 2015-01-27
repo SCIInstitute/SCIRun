@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -91,14 +91,14 @@
 												<name></name>
 												<value>
 													<which>1</which>
-													<value>0.00000000000000000e+000</value>
+													<value>0</value>
 												</value>
 											</item>
 											<item>
 												<name></name>
 												<value>
 													<which>1</which>
-													<value>1.00000000000000000e+000</value>
+													<value>1</value>
 												</value>
 											</item>
 										</value>
@@ -120,14 +120,14 @@
 												<name></name>
 												<value>
 													<which>1</which>
-													<value>1.00000000000000000e+000</value>
+													<value>1</value>
 												</value>
 											</item>
 											<item>
 												<name></name>
 												<value>
 													<which>1</which>
-													<value>0.00000000000000000e+000</value>
+													<value>0</value>
 												</value>
 											</item>
 										</value>
@@ -258,7 +258,7 @@
 									<name>OutputCenterX</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -270,7 +270,7 @@
 									<name>OutputCenterY</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -282,7 +282,7 @@
 									<name>OutputCenterZ</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -294,7 +294,7 @@
 									<name>OutputSizeX</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -306,7 +306,7 @@
 									<name>OutputSizeY</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -318,7 +318,7 @@
 									<name>OutputSizeZ</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -824,7 +824,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -852,6 +852,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -859,6 +883,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>0.5</value>
 									</value>
 								</second>
 							</item>
@@ -931,6 +967,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -948,7 +996,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -976,6 +1024,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -983,6 +1055,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>0.5</value>
 									</value>
 								</second>
 							</item>
@@ -1055,6 +1139,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1072,7 +1168,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1100,6 +1196,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -1107,6 +1227,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>0.5</value>
 									</value>
 								</second>
 							</item>
@@ -1179,6 +1311,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1610,148 +1754,148 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>BuildBEMatrix:6</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-1.21600000000000000e+003</first>
-				<second>-7.60000000000000000e+002</second>
+				<first>-1216</first>
+				<second>-760</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:18</first>
 			<second>
-				<first>-6.08000000000000000e+002</first>
-				<second>0.00000000000000000e+000</second>
+				<first>-608</first>
+				<second>0</second>
 			</second>
 		</item>
 		<item>
 			<first>EditMeshBoundingBox:24</first>
 			<second>
-				<first>-1.52000000000000000e+003</first>
-				<second>-1.29200000000000000e+003</second>
+				<first>-1520</first>
+				<second>-1292</second>
 			</second>
 		</item>
 		<item>
 			<first>EvaluateLinearAlgebraBinary:7</first>
 			<second>
-				<first>-1.14000000000000000e+003</first>
-				<second>-6.08000000000000000e+002</second>
+				<first>-1140</first>
+				<second>-608</second>
 			</second>
 		</item>
 		<item>
 			<first>FlipSurfaceNormals:4</first>
 			<second>
-				<first>-2.28000000000000000e+002</first>
-				<second>-1.29200000000000000e+003</second>
+				<first>-228</first>
+				<second>-1292</second>
 			</second>
 		</item>
 		<item>
 			<first>FlipSurfaceNormals:5</first>
 			<second>
-				<first>-1.52000000000000000e+003</first>
-				<second>-1.14000000000000000e+003</second>
+				<first>-1520</first>
+				<second>-1140</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:14</first>
 			<second>
-				<first>7.60000000000000000e+001</first>
-				<second>-7.60000000000000000e+001</second>
+				<first>76</first>
+				<second>-76</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:3</first>
 			<second>
-				<first>-1.06400000000000000e+003</first>
-				<second>-9.88000000000000000e+002</second>
+				<first>-1064</first>
+				<second>-988</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:8</first>
 			<second>
-				<first>-1.14000000000000000e+003</first>
-				<second>-4.56000000000000000e+002</second>
+				<first>-1140</first>
+				<second>-456</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>-2.28000000000000000e+002</first>
-				<second>-1.44400000000000000e+003</second>
+				<first>-228</first>
+				<second>-1444</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>-1.52000000000000000e+003</first>
-				<second>-1.44400000000000000e+003</second>
+				<first>-1520</first>
+				<second>-1444</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:12</first>
 			<second>
-				<first>-2.28000000000000000e+002</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-228</first>
+				<second>-228</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:11</first>
 			<second>
-				<first>7.60000000000000000e+001</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>76</first>
+				<second>-228</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:2</first>
 			<second>
-				<first>-1.06400000000000000e+003</first>
-				<second>-1.14000000000000000e+003</second>
+				<first>-1064</first>
+				<second>-1140</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:15</first>
 			<second>
-				<first>-2.28000000000000000e+002</first>
-				<second>2.28000000000000000e+002</second>
+				<first>-228</first>
+				<second>228</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:16</first>
 			<second>
-				<first>-7.60000000000000000e+002</first>
-				<second>2.28000000000000000e+002</second>
+				<first>-760</first>
+				<second>228</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:17</first>
 			<second>
-				<first>-1.29200000000000000e+003</first>
-				<second>2.28000000000000000e+002</second>
+				<first>-1292</first>
+				<second>228</second>
 			</second>
 		</item>
 		<item>
 			<first>SwapFieldDataWithMatrixEntries:10</first>
 			<second>
-				<first>-7.60000000000000000e+002</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-760</first>
+				<second>-228</second>
 			</second>
 		</item>
 		<item>
 			<first>SwapFieldDataWithMatrixEntries:13</first>
 			<second>
-				<first>-1.52000000000000000e+002</first>
-				<second>7.60000000000000000e+001</second>
+				<first>-152</first>
+				<second>76</second>
 			</second>
 		</item>
 		<item>
 			<first>SwapFieldDataWithMatrixEntries:9</first>
 			<second>
-				<first>-1.59600000000000000e+003</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-1596</first>
+				<second>-228</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:19</first>
 			<second>
-				<first>-9.12000000000000000e+002</first>
-				<second>3.80000000000000000e+002</second>
+				<first>-912</first>
+				<second>380</second>
 			</second>
 		</item>
 	</modulePositions>
