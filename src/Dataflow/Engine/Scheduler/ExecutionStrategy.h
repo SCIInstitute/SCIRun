@@ -32,6 +32,7 @@
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkQueue.h>
 #include <boost/thread.hpp>
+#include <boost/atomic.hpp>
 #include <Core/Thread/ConditionVariable.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
