@@ -52,6 +52,8 @@ SET(Interface_Modules_Math_HEADERS
   SolveLinearSystemDialog.h
   ConvertMatrixTypeDialog.h
   BuildNoiseColumnMatrixDialog.h
+  qwt_global.h
+  qwt_plot.h
 )
 
 SET(Interface_Modules_Math_SOURCES 
@@ -81,8 +83,10 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Algorithms_Math
   Modules_Math
   Interface_Modules_Base
+  
   ${SCI_BOOST_LIBRARY}
-  ${QT_LIBRARIES})
+  ${QT_LIBRARIES}
+  ${qwt_libraries})
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Math)
