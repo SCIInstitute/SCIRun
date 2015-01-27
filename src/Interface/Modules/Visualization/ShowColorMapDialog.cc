@@ -27,12 +27,12 @@
 */
 
 #include <Interface/Modules/Visualization/ShowColorMapDialog.h>
-#include <Modules/Visualization/ShowColorMap.h> 
+#include <Modules/Visualization/ShowColorMapModule.h> 
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Visualization;
 
 ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandle state,
@@ -43,13 +43,13 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 	addRadioButtonGroupManager({ leftRadioButton_, bottomRadioButton_ }, ShowColorMapModule::DisplaySide);
-	addRadioButtonGroupManager({ firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_}, ShowColorMapModule::DisplayLength);
-	addRadioButtonGroupManager();
-	addLineEditManager();
-	addLineEditManager();
-	addLineEditManager();
-	addLineEditManager();
-	addCheckBoxManager(); 
+	addRadioButtonGroupManager({ firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_ }, ShowColorMapModule::DisplayLength);
+	addRadioButtonGroupManager({ LRadioButton_, MRadioButton_, SRadioButton_, TRadioButton_, XLRadioButton_ }, ShowColorMapModule::TextSize);
+	addLineEditManager(labelsLineEdit_, ShowColorMapModule::Labels);
+	addLineEditManager(scaleLineEdit_, ShowColorMapModule::Scale);
+	addLineEditManager(unitsLineEdit_, ShowColorMapModule::Units);
+	addLineEditManager(sigDigitsLineEdit_, ShowColorMapModule::SignificantDigits);
+	addCheckBoxManager(addExtraSpaceCheckBox_, ShowColorMapModule::AddExtraSpace);
 }
 
 void ShowColorMapDialog::pull()

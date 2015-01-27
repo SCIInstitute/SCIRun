@@ -27,8 +27,8 @@
 */
 /// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
 
-#ifndef MODULES_VISUALIZATION_SHOWCOLORMAP_H
-#define MODULES_VISUALIZATION_SHOWCOLORMAP_H
+#ifndef MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
+#define MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Visualization/share.h>
@@ -37,12 +37,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Visualization {
 
-	class SCISHARE ShowColorMap : public SCIRun::Dataflow::Networks::Module,
+	class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<ColorMapPortTag>, 
     public Has1OutputPort<GeometryPortTag>
   {
   public:
-		ShowColorMap();
+		ShowColorMapModule();
     virtual void execute();
 
 		static Core::Algorithms::AlgorithmParameterName DisplaySide;
