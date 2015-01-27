@@ -54,7 +54,7 @@ void GetMatrixSlice::setStateDefaults()
 void GetMatrixSlice::execute()
 {
   auto input = getRequiredInput(InputMatrix);
-  if (needToExecute())
+  if (needToExecute() || playing_)
   {
     setAlgoBoolFromState(Parameters::IsSliceColumn);
     setAlgoIntFromState(Parameters::SliceIndex);
@@ -63,20 +63,17 @@ void GetMatrixSlice::execute()
     auto maxIndex = output.additionalAlgoOutput()->toInt();
     get_state()->setValue(Parameters::MaxIndex, maxIndex);
 
-    std::cout << "checking play mode" << std::endl;
     auto playMode = optional_any_cast_or_default<int>(get_state()->getTransientValue(Parameters::PlayMode));
     if (playMode == 1)
     {
-      std::cout << "checking play mode: " << playMode << std::endl;
       auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + 1;
-      std::cout << "setting index to " << nextIndex % (maxIndex + 1) << std::endl;
       get_state()->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
+      playing_ = true;
       enqueueExecuteAgain();
-      std::cout << "execute enqueued " << std::endl;
     }
     else if (playMode == 2)
     {
-      std::cout << "execute paused" << std::endl;
+      playing_ = false;
     }
   }
 }

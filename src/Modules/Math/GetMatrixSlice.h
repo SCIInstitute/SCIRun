@@ -48,6 +48,8 @@ namespace Math {
     OUTPUT_PORT(0, OutputMatrix, Matrix);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  private:
+    bool playing_;
   };
 }}}
 

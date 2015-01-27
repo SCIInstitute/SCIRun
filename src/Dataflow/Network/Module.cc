@@ -700,7 +700,6 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
 
 void Module::enqueueExecuteAgain()
 {
-  std::cout << "Module " << get_id() << " needs to execute again, signalling now" << std::endl;
   executionSelfRequested_();
 }
 
