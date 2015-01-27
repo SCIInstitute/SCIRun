@@ -30,6 +30,8 @@
 #define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkQueue.h>
+#include <boost/thread.hpp>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
@@ -64,6 +66,22 @@ namespace Engine {
 
   typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
 
+
+  class SCISHARE ExecutionQueueManager
+  {
+  public:
+    explicit ExecutionQueueManager(ExecutionStrategyHandle& currentExecutor);
+    void enqueueContext(ExecutionContextHandle context);
+  private:
+    typedef DynamicExecutor::WorkQueue<ExecutionContextHandle>::Impl ExecutionContextQueue;
+    ExecutionContextQueue contexts_;
+
+    ExecutionStrategyHandle& currentExecutor_;
+
+    boost::thread executionLaunchThread_;
+
+    void executeTopContext();
+  };
 }
 }}
 
