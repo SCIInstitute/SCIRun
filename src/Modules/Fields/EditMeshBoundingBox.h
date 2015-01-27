@@ -30,9 +30,9 @@
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
 #include <Modules/Fields/BoxWidgetTypes.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Modules/Fields/share.h>
 
 namespace SCIRun {
 
