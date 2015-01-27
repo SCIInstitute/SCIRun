@@ -296,7 +296,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       {
         ModuleHandle module = theNetwork_->module(i);
         moduleAdded_(module->get_module_name(), module, modulesDone);
-        networkDoneLoading_(i);
+        networkDoneLoading_(static_cast<int>(i));
       }
 
       {
@@ -340,28 +340,34 @@ void NetworkEditorController::clear()
 
 void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
-  if (!currentExecutor_)
-  {
-    currentExecutor_ = executorFactory_->createDefault();
-  }
+  initExecutor();
 
   ExecuteAllModules filter;
-  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
-  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
-  currentExecutor_->execute(context);
+  auto context = createExecutionContext(lookup, filter);
+  currentExecutor_->execute(*context);
 }
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup)
+{
+  initExecutor();
+
+  ExecuteSingleModule filter(module, *theNetwork_);
+  auto context = createExecutionContext(lookup, filter);
+  currentExecutor_->execute(*context);
+}
+
+void NetworkEditorController::initExecutor()
 {
   if (!currentExecutor_)
   {
     currentExecutor_ = executorFactory_->createDefault();
   }
+}
 
-  ExecuteSingleModule filter(module, *theNetwork_);
+ExecutionContextHandle NetworkEditorController::createExecutionContext(const ExecutableLookup* lookup, ModuleFilter filter)
+{
   theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
-  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
-  currentExecutor_->execute(context);
+  return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const

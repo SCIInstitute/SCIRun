@@ -145,6 +145,9 @@ namespace Engine {
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const std::string& moduleName);
+    void initExecutor();
+    ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
+
     Networks::NetworkHandle theNetwork_;
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
