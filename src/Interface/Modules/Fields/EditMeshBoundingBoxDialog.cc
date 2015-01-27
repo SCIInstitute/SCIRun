@@ -34,9 +34,10 @@ using namespace SCIRun::Dataflow::Networks;
 
 EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+: ModuleDialogGeneric(state, parent), scale_(1.0)
 {
   setupUi(this);
+  //custom value for cylinder size
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
@@ -58,7 +59,29 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   addDynamicLabelManager(inputSizeXLabel_, EditMeshBoundingBoxModule::InputSizeX);
   addDynamicLabelManager(inputSizeYLabel_, EditMeshBoundingBoxModule::InputSizeY);
   addDynamicLabelManager(inputSizeZLabel_, EditMeshBoundingBoxModule::InputSizeZ);
+    
+    addDoubleSpinBoxManager(&spinner_scale_, EditMeshBoundingBoxModule::Scale);
+    connectButtonToExecuteSignal(downScaleToolButton_);
+    connectButtonToExecuteSignal(upScaleToolButton_);
+    connectButtonToExecuteSignal(doubleDownScaleToolButton_);
+    connectButtonToExecuteSignal(doubleUpScaleToolButton_);
+    
+
+    
+    
+    connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleUpPush()));
+    connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleUpPush()));
+    connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDownPush()));
+    connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleDownPush()));
+
+    
+    
 }
+
+void EditMeshBoundingBoxDialog::ScaleUpPush() { scale_*=1.25; spinner_scale_.setValue(scale_); }
+void EditMeshBoundingBoxDialog::ScaleDoubleUpPush() { scale_*=1.5625; spinner_scale_.setValue(scale_); }
+void EditMeshBoundingBoxDialog::ScaleDownPush() { scale_*=0.8; spinner_scale_.setValue(scale_); }
+void EditMeshBoundingBoxDialog::ScaleDoubleDownPush() { scale_*=0.64; spinner_scale_.setValue(scale_); }
 
 void EditMeshBoundingBoxDialog::pull()
 {

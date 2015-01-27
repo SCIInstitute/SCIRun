@@ -1642,12 +1642,13 @@ void ShowFieldModule::renderEdges(
       }
     }
   }
-
+    GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
   /// \todo Use cylinders...
   if (state.get(RenderState::USE_CYLINDER))
   {
-    renderType = GeometryObject::RENDER_RLIST_CYLINDER;
-    vboOnGPU = false;
+      renderType = GeometryObject::RENDER_RLIST_CYLINDER;
+      primIn = GeometryObject::SpireIBO::TRIANGLES;
+      vboOnGPU = true;
   }
 
 	GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
@@ -1657,7 +1658,7 @@ void ShowFieldModule::renderEdges(
 
   // Construct IBO.
 
-	GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::LINES, sizeof(uint32_t), iboBufferSPtr);
+	GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
 
 	geom->mIBOs.push_back(geomIBO);
 

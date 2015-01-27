@@ -55,8 +55,9 @@ For documentation, please see: http://sciinstitute.github.io/SCIRun/
 #### CMake Build Generators
 * Windows
   - Visual Studio 2013
-* OS X (tested on 10.7 and 10.8)
-  - Unix Makefiles (Xcode not currently supported)
+* OS X (tested on 10.7 and 10.8 and 10.10)
+  - Unix Makefiles 
+  - Xcode 
 * Linux (tested on Ubuntu 12.10)
   - Unix Makefiles
 
