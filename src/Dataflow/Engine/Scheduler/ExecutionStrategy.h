@@ -38,7 +38,7 @@
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-  
+
   class SCISHARE ExecutionStrategy
   {
   public:
@@ -82,6 +82,7 @@ namespace Engine {
     boost::thread executionLaunchThread_;
     Core::Thread::Mutex executionMutex_;
     Core::Thread::ConditionVariable somethingToExecute_;
+    boost::atomic<int> contextCount_; // need certain member function on spsc_queue, need to check boost version...
 
     void executeTopContext();
   };

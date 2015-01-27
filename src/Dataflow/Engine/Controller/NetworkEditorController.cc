@@ -381,14 +381,21 @@ ExecutionQueueManager::ExecutionQueueManager(ExecutionStrategyHandle& currentExe
 
 void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
-  Guard g(executionMutex_.get());
-  if (contexts_.push(context))
+  bool contextReady = false;
   {
-    std::cout << "ctx queued" << std::endl;
+    Guard g(executionMutex_.get());
+    contextReady = contexts_.push(context);
+  }
+  if (contextReady)
+  {
+    contextCount_.fetch_add(1);
+    //std::cout << "ctx queued" << std::endl;
     somethingToExecute_.conditionBroadcast();
   }
   else
-    std::cout << "ctx queue is full" << std::endl;
+  {
+    //std::cout << "ctx queue is full" << std::endl;
+  }
 }
 
 void ExecutionQueueManager::executeTopContext()
@@ -396,11 +403,12 @@ void ExecutionQueueManager::executeTopContext()
   while (true)
   {
     UniqueLock lock(executionMutex_.get());
-    while (0 == contexts_.read_available())
+    while (0 == contextCount_)
     {
       somethingToExecute_.wait(lock);
     }
     contexts_.consume_one([&](ExecutionContextHandle ctx) { currentExecutor_->execute(*ctx); });
+    contextCount_.fetch_sub(1);
   }
 }
 
