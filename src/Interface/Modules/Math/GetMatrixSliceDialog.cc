@@ -99,13 +99,11 @@ void GetMatrixSliceDialog::selectLastIndex()
 
 void GetMatrixSliceDialog::startPlay()
 {
-  //std::cout << "play--needs requirements" << std::endl;
-  state_->setTransientValue(Parameters::PlayMode, 1);
+  state_->setTransientValue(Parameters::PlayMode, GetMatrixSliceAlgo::PLAY);
   Q_EMIT executeActionTriggered();
 }
 
 void GetMatrixSliceDialog::stopPlay()
 {
-  std::cout << "pause--needs requirements" << std::endl;
-  state_->setTransientValue(Parameters::PlayMode, 2);
+  state_->setTransientValue(Parameters::PlayMode, GetMatrixSliceAlgo::PAUSE);
 }

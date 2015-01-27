@@ -30,6 +30,7 @@
 
 #include <Modules/Math/GetMatrixSlice.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
 
 using namespace SCIRun::Modules::Math;
@@ -43,6 +44,8 @@ GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(Current_Index);
+  INITIALIZE_PORT(Selected_Index);
 }
 
 void GetMatrixSlice::setStateDefaults()
@@ -54,24 +57,31 @@ void GetMatrixSlice::setStateDefaults()
 void GetMatrixSlice::execute()
 {
   auto input = getRequiredInput(InputMatrix);
+  auto index = getOptionalInput(Current_Index);
   if (needToExecute() || playing_)
   {
+    auto state = get_state();
     setAlgoBoolFromState(Parameters::IsSliceColumn);
+    if (index && *index)
+    {
+      state->setValue(Parameters::SliceIndex, (*index)->value());
+    }
     setAlgoIntFromState(Parameters::SliceIndex);
     auto output = algo().run(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(OutputMatrix, output);
+    sendOutput(Selected_Index, boost::make_shared<Int32>(get_state()->getValue(Parameters::SliceIndex).toInt()));
     auto maxIndex = output.additionalAlgoOutput()->toInt();
-    get_state()->setValue(Parameters::MaxIndex, maxIndex);
+    state->setValue(Parameters::MaxIndex, maxIndex);
 
     auto playMode = optional_any_cast_or_default<int>(get_state()->getTransientValue(Parameters::PlayMode));
-    if (playMode == 1)
+    if (playMode == GetMatrixSliceAlgo::PLAY)
     {
       auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + 1;
-      get_state()->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
+      state->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
       playing_ = true;
       enqueueExecuteAgain();
     }
-    else if (playMode == 2)
+    else if (playMode == GetMatrixSliceAlgo::PAUSE)
     {
       playing_ = false;
     }
