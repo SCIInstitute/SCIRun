@@ -46,7 +46,8 @@ using namespace SCIRun::Render;
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent /* = 0 */)
-	: ModuleDialogGeneric(state, parent), shown_(false), itemManager_(new ViewSceneItemManager)
+	: ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false),
+	itemManager_(new ViewSceneItemManager)
 {
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
@@ -63,7 +64,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 	fmt.setDoubleBuffer(true);
 	fmt.setDepthBufferSize(24);
 
-	mGLWidget = new GLWidget(new QtGLContext(fmt));
+	mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
 
 	if (mGLWidget->isValid())
 	{
@@ -96,16 +97,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
-
-	addConfigurationDock(QString::fromStdString(name));
 }
 
-//------------------------------------------------------------------------------
-ViewSceneDialog::~ViewSceneDialog()
-{
-}
-
-//------------------------------------------------------------------------------
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 {
 	// NOTE: At one point this was required because the renderer was
@@ -113,9 +106,9 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 	// future. Kept for future reference.
 	//glLayout->removeWidget(mGLWidget);
   mGLWidget->close();
+	ModuleDialogGeneric::closeEvent(evt);
 }
 
-//------------------------------------------------------------------------------
 void ViewSceneDialog::newGeometryValue()
 {
 	LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
@@ -371,6 +364,9 @@ void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::configurationButtonClicked()
 {
+	if (!mConfigurationDock)
+		addConfigurationDock(windowTitle());
+
   showConfiguration_ = !mConfigurationDock->isVisible();
   mConfigurationDock->setEnabled(showConfiguration_);
   mConfigurationDock->setVisible(showConfiguration_);
@@ -441,7 +437,7 @@ void ViewSceneDialog::addObjectToggleMenu()
 
 void ViewSceneDialog::addViewBarButton()
 {
-	QPushButton* viewBarBtn = new QPushButton(this);
+	QPushButton* viewBarBtn = new QPushButton();
 	viewBarBtn->setToolTip("Show View Options");
 	viewBarBtn->setText("Views");
 	viewBarBtn->setAutoDefault(false);
@@ -499,7 +495,7 @@ void ViewSceneDialog::addViewOptions()
 
 void ViewSceneDialog::addConfigurationButton()
 {
-	QPushButton* configurationButton = new QPushButton(this);
+	QPushButton* configurationButton = new QPushButton();
 	configurationButton->setToolTip("Open/Close Configuration Menu");
 	configurationButton->setText("Configure");
 	configurationButton->setAutoDefault(false);
@@ -513,34 +509,37 @@ void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 {
   QString name = viewName + " Configuration";
   mConfigurationDock = new ViewSceneControlsDock(name, this);
-  mConfigurationDock->close();
+  mConfigurationDock->setVisible(false);
 
 	showConfiguration_ = false;
 }
 
-void ViewSceneDialog::closeConfigurationDock()
+void ViewSceneDialog::hideConfigurationDock()
 {
-  showConfiguration_ = mConfigurationDock->isVisible();
-  if (showConfiguration_)
-  {
-    configurationButtonClicked();
-  }
+	if (mConfigurationDock)
+	{
+  	showConfiguration_ = mConfigurationDock->isVisible();
+  	if (showConfiguration_)
+  	{
+    	configurationButtonClicked();
+  	}
+	}
 }
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
-	ModuleDialogGeneric::showEvent(evt);
 	if (!shown_)
 	{
 		autoViewClicked();
 		shown_ = true;
 	}
+	ModuleDialogGeneric::showEvent(evt);
 }
 
 void ViewSceneDialog::hideEvent(QHideEvent* evt)
 {
-  ModuleDialogGeneric::hideEvent(evt);
-  closeConfigurationDock();
+	hideConfigurationDock();
+	ModuleDialogGeneric::hideEvent(evt);
 }
 
 ViewSceneItemManager::ViewSceneItemManager() : model_(new QStandardItemModel(3, 1))
