@@ -32,6 +32,7 @@ SET(Interface_Modules_Visualization_FORMS
   MatrixAsVectorField.ui
   ShowField.ui
   ShowString.ui
+  ShowColorMap.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
@@ -40,6 +41,7 @@ SET(Interface_Modules_Visualization_HEADERS
   share.h
   ShowFieldDialog.h
   ShowStringDialog.h
+  ShowColorMapDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES 
@@ -47,6 +49,7 @@ SET(Interface_Modules_Visualization_SOURCES
   MatrixAsVectorFieldDialog.cc
   ShowFieldDialog.cc
   ShowStringDialog.cc
+  ShowColorMapDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS ${Interface_Modules_Visualization_FORMS})
