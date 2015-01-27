@@ -139,6 +139,27 @@ namespace SCIRun {
 
 		private:
 
+      class DepthIndex {
+      public:
+        size_t mIndex;
+        double mDepth;
+
+        DepthIndex() :
+          mIndex(0),
+          mDepth(0.0)
+        {}
+
+        DepthIndex(size_t index, double depth) :
+          mIndex(index),
+          mDepth(depth)
+        {}
+
+        bool operator<(const DepthIndex& di) const
+        {
+          return this->mDepth < di.mDepth;
+        }
+      };
+
 			class SRObject
 			{
 			public:
@@ -208,6 +229,8 @@ namespace SCIRun {
 
 			// Adds an IBO to the given entityID.
 			void addIBOToEntity(uint64_t entityID, const std::string& iboName);
+
+      void reorderIBO(Core::Datatypes::GeometryObject::SpireSubPass& pass);
 
 			// Adds a shader to the given entityID. Represents different materials
 			// associated with different passes.

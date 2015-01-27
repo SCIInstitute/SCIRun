@@ -118,12 +118,12 @@ void ViewSceneDialog::newGeometryValue()
 	LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
 	itemManager_->removeAll();
-  /*
+  
   std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
   if (spire == nullptr)
     return;
   spire->removeAllGeomObjects();
-  */
+  
 	// Grab the geomData transient value.
 	auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
 	if (geomDataTransient && !geomDataTransient->empty())

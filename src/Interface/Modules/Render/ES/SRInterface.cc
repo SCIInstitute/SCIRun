@@ -385,7 +385,8 @@ namespace SCIRun {
 				uint64_t entityID = getEntityIDForName(pass.passName, port);
 
 				if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
-				{
+				{   
+          reorderIBO(pass);
 					addVBOToEntity(entityID, pass.vboName);
 					addIBOToEntity(entityID, pass.iboName);
 				}
@@ -550,6 +551,55 @@ namespace SCIRun {
 
 			mCore.addComponent(entityID, ibo);
 		}
+
+    //------------------------------------------------------------------------------
+    void SRInterface::reorderIBO(Core::Datatypes::GeometryObject::SpireSubPass& pass)
+    { 
+      char* vbo_buffer = reinterpret_cast<char*>(pass.vbo.data->getBuffer());
+      uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.ibo.data->getBuffer());
+      size_t num_triangles = pass.ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+      size_t stride_vbo = 0;
+      for (auto a : pass.vbo.attributes)
+        stride_vbo += a.sizeInBytes;
+
+      std::vector<DepthIndex> rel_depth(num_triangles);
+      Core::Geometry::Vector dir(mCamera->getViewToWorld()[0][2], mCamera->getViewToWorld()[1][2], mCamera->getViewToWorld()[2][2]);
+
+      for (size_t j = 0; j < num_triangles; j++)
+      {
+        float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
+        Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+
+        float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 1]));
+        Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+        float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 2]));
+        Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+        rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+        rel_depth[j].mIndex = j;
+      }
+
+      std::sort(rel_depth.begin(), rel_depth.end());
+
+      int numPrimitives = pass.ibo.data->getBufferSize() / pass.ibo.indexSize;
+
+      std::vector<char> sorted_buffer(pass.ibo.data->getBufferSize());
+      char* ibuffer = reinterpret_cast<char*>(pass.ibo.data->getBuffer());
+      char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
+      size_t tri_size = pass.ibo.data->getBufferSize() / num_triangles;
+
+      for (size_t j = 0; j < num_triangles; j++)
+      {
+        memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+      }
+
+      ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
+
+      auto iboData = iboMan.getIBOData(pass.iboName);
+
+      iboMan.addInMemoryIBO(sbuffer, pass.ibo.data->getBufferSize(), iboData.primMode, iboData.primType, iboData.numPrims, pass.iboName);
+    }
 
 		//------------------------------------------------------------------------------
 		void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)

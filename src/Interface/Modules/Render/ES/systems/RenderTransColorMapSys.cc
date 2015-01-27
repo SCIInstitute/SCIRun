@@ -129,6 +129,7 @@ public:
       return;
     }
 
+    /*
     char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
     uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.front().ibo.data->getBuffer());
     size_t num_triangles = pass.front().ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
@@ -138,10 +139,7 @@ public:
         stride_vbo += a.sizeInBytes;
 
     std::vector<DepthIndex> rel_depth(num_triangles);
-    Core::Geometry::Vector dir(
-    camera.front().data.worldToView[0][2],
-    camera.front().data.worldToView[1][2],
-    camera.front().data.worldToView[2][2]);
+    Core::Geometry::Vector dir(camera.front().data.worldToView[0][2], camera.front().data.worldToView[1][2], camera.front().data.worldToView[2][2]);
 
     for (size_t j = 0; j < num_triangles; j++)
     {
@@ -218,7 +216,7 @@ public:
 
     GLuint iboID = iboMan.front().instance->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), primitive, primType,
       numPrimitives, transIBOName);
-
+    */
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
     // setup (including uniforms) if the simple geom hasn't been setup.
@@ -274,7 +272,7 @@ public:
 
     // Bind VBO and IBO
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo.front().glid));
 
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
@@ -429,7 +427,7 @@ public:
       }
     }
 
-    iboMan.front().instance->removeInMemoryIBO(iboID);
+    //iboMan.front().instance->removeInMemoryIBO(iboID);
 
     if (depthMask)
     {
