@@ -50,7 +50,7 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
 	addLineEditManager(scaleLineEdit_, ShowColorMapModule::Scale);
 	addLineEditManager(unitsLineEdit_, ShowColorMapModule::Units);
 	addLineEditManager(sigDigitsLineEdit_, ShowColorMapModule::SignificantDigits);
-	addCheckBoxManager(addExtraSpaceCheckBox_, ShowColorMapModule::AddExtraSpace); 
+	addCheckBoxManager(addExtraSpaceCheckBox_, ShowColorMapModule::AddExtraSpace);
 }
 
 void ShowColorMapDialog::pull()
