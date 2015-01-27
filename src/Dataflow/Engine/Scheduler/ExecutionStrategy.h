@@ -32,6 +32,7 @@
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkQueue.h>
 #include <boost/thread.hpp>
+#include <Core/Thread/ConditionVariable.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
@@ -79,6 +80,8 @@ namespace Engine {
     ExecutionStrategyHandle& currentExecutor_;
 
     boost::thread executionLaunchThread_;
+    Core::Thread::Mutex executionMutex_;
+    Core::Thread::ConditionVariable somethingToExecute_;
 
     void executeTopContext();
   };

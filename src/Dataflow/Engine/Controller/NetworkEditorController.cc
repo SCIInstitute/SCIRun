@@ -373,14 +373,20 @@ void NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, Mod
 }
 
 ExecutionQueueManager::ExecutionQueueManager(ExecutionStrategyHandle& currentExecutor) : contexts_(1), currentExecutor_(currentExecutor),
-  executionLaunchThread_([this]() {executeTopContext(); } )
+  executionLaunchThread_([this]() {executeTopContext(); } ),
+  executionMutex_("executionQueue"),
+  somethingToExecute_("executionQueue")
 {
 }
 
 void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
+  Guard g(executionMutex_.get());
   if (contexts_.push(context))
+  {
     std::cout << "ctx queued" << std::endl;
+    somethingToExecute_.conditionBroadcast();
+  }
   else
     std::cout << "ctx queue is full" << std::endl;
 }
@@ -389,9 +395,12 @@ void ExecutionQueueManager::executeTopContext()
 {
   while (true)
   {
-    if (contexts_.read_available())
-      contexts_.consume_one([&](ExecutionContextHandle ctx) { currentExecutor_->execute(*ctx); });
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+    UniqueLock lock(executionMutex_.get());
+    while (0 == contexts_.read_available())
+    {
+      somethingToExecute_.wait(lock);
+    }
+    contexts_.consume_one([&](ExecutionContextHandle ctx) { currentExecutor_->execute(*ctx); });
   }
 }
 
