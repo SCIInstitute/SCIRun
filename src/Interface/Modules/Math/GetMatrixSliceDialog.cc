@@ -62,8 +62,8 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   pauseButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPause));
   connect(pauseButton_, SIGNAL(clicked()), this, SLOT(stopPlay()));
 
-  playButton_->setDisabled(true);
-  pauseButton_->setDisabled(true);
+  //playButton_->setDisabled(true);
+  //pauseButton_->setDisabled(true);
 }
 
 void GetMatrixSliceDialog::pull()
@@ -99,14 +99,13 @@ void GetMatrixSliceDialog::selectLastIndex()
 
 void GetMatrixSliceDialog::startPlay()
 {
-  std::cout << "play--needs requirements" << std::endl;
-  state_->setValue(Parameters::PlayMode, true);
+  //std::cout << "play--needs requirements" << std::endl;
+  state_->setTransientValue(Parameters::PlayMode, 1);
   Q_EMIT executeActionTriggered();
 }
 
 void GetMatrixSliceDialog::stopPlay()
 {
   std::cout << "pause--needs requirements" << std::endl;
-  state_->setValue(Parameters::PlayMode, false);
-  Q_EMIT executeActionTriggered();
+  state_->setTransientValue(Parameters::PlayMode, 2);
 }

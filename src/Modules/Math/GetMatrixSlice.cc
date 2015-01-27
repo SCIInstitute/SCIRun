@@ -60,24 +60,23 @@ void GetMatrixSlice::execute()
     setAlgoIntFromState(Parameters::SliceIndex);
     auto output = algo().run(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(OutputMatrix, output);
-    get_state()->setValue(Parameters::MaxIndex, output.additionalAlgoOutput()->toInt());
+    auto maxIndex = output.additionalAlgoOutput()->toInt();
+    get_state()->setValue(Parameters::MaxIndex, maxIndex);
 
-    /*
-    auto playMode = get_state()->getValue(Parameters::PlayMode).toBool();
-    if (playMode)
+    std::cout << "checking play mode" << std::endl;
+    auto playMode = optional_any_cast_or_default<int>(get_state()->getTransientValue(Parameters::PlayMode));
+    if (playMode == 1)
     {
+      std::cout << "checking play mode: " << playMode << std::endl;
       auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + 1;
-      auto maxIndex = algo().get(Parameters::IsSliceColumn).toBool() && input ? input->ncols() : input->nrows();
-      if (nextIndex >= maxIndex)
-      {
-        get_state()->setValue(Parameters::PlayMode, false);
-      }
-      else
-      {
-        get_state()->setValue(Parameters::SliceIndex, nextIndex);
-        enqueueExecuteAgain();
-      }
+      std::cout << "setting index to " << nextIndex % (maxIndex + 1) << std::endl;
+      get_state()->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
+      enqueueExecuteAgain();
+      std::cout << "execute enqueued " << std::endl;
     }
-    */
+    else if (playMode == 2)
+    {
+      std::cout << "execute paused" << std::endl;
+    }
   }
 }

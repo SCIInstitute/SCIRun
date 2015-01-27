@@ -372,7 +372,7 @@ void NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, Mod
   executionManager_.enqueueContext(context);
 }
 
-ExecutionQueueManager::ExecutionQueueManager(ExecutionStrategyHandle& currentExecutor) : contexts_(1), currentExecutor_(currentExecutor),
+ExecutionQueueManager::ExecutionQueueManager(ExecutionStrategyHandle& currentExecutor) : contexts_(2), currentExecutor_(currentExecutor),
   executionLaunchThread_([this]() {executeTopContext(); } ),
   executionMutex_("executionQueue"),
   somethingToExecute_("executionQueue")
