@@ -71,8 +71,8 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 	QwtPlotCurve *curve1 = new QwtPlotCurve("Current Target");
 	QwtPlotCurve *curve2 = new QwtPlotCurve("Target Error");
 	QwtPlotCurve *curve3 = new QwtPlotCurve("CurrentError");
-	double x[5] = { 0, 10, 15, 20, 25 };
-	double y[5] = { 0, 2, 4, 16, 64 };
+	double y[6] = { 0, 10, 15, 20, 25, 30 };
+	double x[6] = { 0, 2, 4, 16, 64, 70 };
 	
 	curve1->setSamples(&x[0], &y[0], (size_t)5);
 	curve1->setPen(Qt::blue);
