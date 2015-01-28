@@ -54,9 +54,10 @@ ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
 }
 
 ExecutionQueueManager::ExecutionQueueManager() : 
-  contexts_(2), 
+  contexts_(10), 
   executionMutex_("executionQueue"),
-  somethingToExecute_("executionQueue")
+  somethingToExecute_("executionQueue"),
+  contextCount_(0)
 {
 }
 
@@ -70,8 +71,6 @@ void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
 {
   if (!currentExecutor_ && factory)
     currentExecutor_ = factory->createDefault();
-  if (!executionLaunchThread_)
-    start();
 }
 
 void ExecutionQueueManager::start()
@@ -85,10 +84,13 @@ void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
   {
     Guard g(executionMutex_.get());
     contextReady = contexts_.push(context);
+    if (contextReady)
+      contextCount_.fetch_add(1);
   }
   if (contextReady)
   {
-    contextCount_.fetch_add(1);
+    if (!executionLaunchThread_)
+      start();
     //std::cout << "ctx queued" << std::endl;
     somethingToExecute_.conditionBroadcast();
   }
@@ -105,10 +107,14 @@ void ExecutionQueueManager::executeTopContext()
     UniqueLock lock(executionMutex_.get());
     while (0 == contextCount_)
     {
+      //std::cout << "waiting on launch thread lock " << boost::this_thread::get_id() << std::endl;
       somethingToExecute_.wait(lock);
     }
-    contexts_.consume_one([&](ExecutionContextHandle ctx) { if (currentExecutor_) currentExecutor_->execute(*ctx); });
-    contextCount_.fetch_sub(1);
+    //std::cout << "consuming on launch thread " << boost::this_thread::get_id() << std::endl;
+    if (contexts_.consume_one([&](ExecutionContextHandle ctx) { if (currentExecutor_) currentExecutor_->execute(*ctx); }))
+      contextCount_.fetch_sub(1);
+    //std::cout << "sleeping on launch thread " << boost::this_thread::get_id() << std::endl;
+    //boost::this_thread::sleep(boost::posix_time::milliseconds(500));
   }
 }
 
