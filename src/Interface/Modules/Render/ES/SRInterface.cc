@@ -300,13 +300,11 @@ namespace SCIRun {
 			}
 
 			// Add vertex buffer objects.
-      //-----------------------------------------------------------------
-      char* vbo_buffer = 0;
-      size_t stride_vbo = 0;
-      //-----------------------------------------------------------------
+      std::vector<char*> vbo_buffer;
+      std::vector<size_t> stride_vbo;
       
 			int nameIndex = 0;
-			for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+			for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
 			{
 				const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
 
@@ -322,17 +320,21 @@ namespace SCIRun {
 					GLuint vboID = vboMan.addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(),
 						attributeData, vbo.name);
 				}
-        //-----------------------------------------------------------------
-        vbo_buffer = reinterpret_cast<char*>(vbo.data->getBuffer());
+
+        vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
+        size_t stride = 0;
         for (auto a : vbo.attributes)
-          stride_vbo += a.sizeInBytes;
-        //-----------------------------------------------------------------
+          stride += a.sizeInBytes; 
+        stride_vbo.push_back(stride);
+
 				bbox.extend(vbo.boundingBox);
 			}
 
+      std::cout << "VBO passes: " << nameIndex << std::endl;
+
 			// Add index buffer objects.
 			nameIndex = 0;
-			for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
+			for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
 			{
 				const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
 				GLenum primType = GL_UNSIGNED_SHORT;
@@ -373,13 +375,12 @@ namespace SCIRun {
 					break;
 				}
         /// Create sorted lists of Buffers for transparency in each direction of the axis
-        //----------------------------------------------------------------
         uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
         size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
         Core::Geometry::Vector dir(0.0, 0.0, 0.0);
 
         std::vector<DepthIndex> rel_depth(num_triangles);
-        for (int i = 0; i <= 6; ++i)
+        for (int i = 0; i < 6; ++i)
         {
           std::string name = ibo.name;
           
@@ -413,22 +414,16 @@ namespace SCIRun {
             dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
             name += "NegZ";
           }
-          else if (i == 6)
-          {
-            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-            iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
-            break;
-          }
 
           for (size_t j = 0; j < num_triangles; j++)
           {
-            float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
+            float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
             Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
 
-            float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 1]));
+            float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
             Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
 
-            float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 2]));
+            float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
             Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
 
             rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
@@ -450,13 +445,10 @@ namespace SCIRun {
           }
 
           iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
-        }
-        //----------------------------------------------------------------
-       
-				//int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-
-				//iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+        }        
 			}
+
+      std::cout << "IBO passes: " << nameIndex << std::endl;
 
 			// Add default identity transform to the object globally (instead of per-pass)
 			glm::mat4 xform;
@@ -476,20 +468,20 @@ namespace SCIRun {
 				{   
           //reorderIBO(pass);
 					addVBOToEntity(entityID, pass.vboName);
-          for (int i = 0; i <= 6; ++i)
+          for (int i = 0; i < 6; ++i)
           {
             std::string name = pass.iboName;
-            if (i == 1)
+            if (i == 0)
               name += "X";
-            if (i == 2)
+            if (i == 1)
               name += "Y";
-            if (i == 3)
+            if (i == 2)
               name += "Z";
-            if (i == 4)
+            if (i == 3)
               name += "NegX";
-            if (i == 5)
+            if (i == 4)
               name += "NegY";
-            if (i == 6)
+            if (i == 5)
               name += "NegZ";
 
             addIBOToEntity(entityID, name);

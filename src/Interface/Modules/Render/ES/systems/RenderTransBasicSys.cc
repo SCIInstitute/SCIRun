@@ -117,17 +117,17 @@ public:
     int index = 0;
     for (auto it = ibo.begin(); it != ibo.end(); ++it, ++index)
     {
-      if (index == 1)
+      if (index == 0)
         iboXID = it->glid;
-      if (index == 2)
+      if (index == 1)
         iboYID = it->glid;
-      if (index == 3)
+      if (index == 2)
         iboZID = it->glid;
-      if (index == 4)
+      if (index == 3)
         iboNegXID = it->glid;
-      if (index == 5)
+      if (index == 4)
         iboNegYID = it->glid;
-      if (index == 6)
+      if (index == 5)
         iboNegZID = it->glid;
     }
 
@@ -144,21 +144,15 @@ public:
 
     if (orZ == absDir.x())
     {
-      iboID = iboXID;
-      if (currentDir.x() < orZ)
-        iboID = iboNegXID;
+      iboID = currentDir.x() < orZ ? iboNegXID : iboXID;
     }
     if (orZ == absDir.y())
     {
-      iboID = iboYID;
-      if (currentDir.y() < orZ)
-        iboID = iboNegYID;
+      iboID = currentDir.y() < orZ ? iboNegYID : iboYID;
     }
     if (orZ == absDir.z())
     {
-      iboID = iboZID;
-      if (currentDir.z() < orZ)
-        iboID = iboNegZID;
+      iboID = currentDir.z() < orZ ? iboNegZID : iboZID;
     }
 
     // Setup *everything*. We don't want to enter multiple conditional
@@ -216,7 +210,7 @@ public:
 
     // Bind VBO and IBO
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo.front().glid));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
 
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
