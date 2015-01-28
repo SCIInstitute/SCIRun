@@ -372,14 +372,14 @@ namespace SCIRun {
 					primitive = GL_TRIANGLES;
 					break;
 				}
-
+        /// Create sorted lists of Buffers for transparency in each direction of the axis
         //----------------------------------------------------------------
         uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
         size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
         Core::Geometry::Vector dir(0.0, 0.0, 0.0);
 
         std::vector<DepthIndex> rel_depth(num_triangles);
-        for (int i = 0; i <= 3; ++i)
+        for (int i = 0; i <= 6; ++i)
         {
           std::string name = ibo.name;
           
@@ -399,6 +399,21 @@ namespace SCIRun {
             name += "Z";
           }
           else if (i == 3)
+          {
+            dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
+            name += "NegX";
+          }
+          else if (i == 4)
+          {
+            dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
+            name += "NegY";
+          }
+          else if (i == 5)
+          {
+            dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
+            name += "NegZ";
+          }
+          else if (i == 6)
           {
             int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
             iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
@@ -461,7 +476,7 @@ namespace SCIRun {
 				{   
           //reorderIBO(pass);
 					addVBOToEntity(entityID, pass.vboName);
-          for (int i = 0; i <= 3; ++i)
+          for (int i = 0; i <= 6; ++i)
           {
             std::string name = pass.iboName;
             if (i == 1)
@@ -470,6 +485,12 @@ namespace SCIRun {
               name += "Y";
             if (i == 3)
               name += "Z";
+            if (i == 4)
+              name += "NegX";
+            if (i == 5)
+              name += "NegY";
+            if (i == 6)
+              name += "NegZ";
 
             addIBOToEntity(entityID, name);
           }
