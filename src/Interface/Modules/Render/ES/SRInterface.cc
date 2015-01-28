@@ -378,7 +378,7 @@ namespace SCIRun {
         Core::Geometry::Vector dir(0.0, 0.0, 0.0);
 
         std::vector<DepthIndex> rel_depth(num_triangles);
-        for (int i = 0; i < 6; ++i)
+        for (int i = 0; i <= 6; ++i)
         {
           std::string name = ibo.name;
           
@@ -387,62 +387,69 @@ namespace SCIRun {
             dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
             name += "X";
           }
-          else if (i == 1)
+          if (i == 1)
           {
             dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
             name += "Y";
           }
-          else if (i == 2)
+          if (i == 2)
           {
             dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
             name += "Z";
           }
-          else if (i == 3)
+          if (i == 3)
           {
             dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
             name += "NegX";
           }
-          else if (i == 4)
+          if (i == 4)
           {
             dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
             name += "NegY";
           }
-          else if (i == 5)
+          if (i == 5)
           {
             dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
             name += "NegZ";
           }
-
-          for (size_t j = 0; j < num_triangles; j++)
+          if (i < 6)
           {
-            float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
-            Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+            for (size_t j = 0; j < num_triangles; j++)
+            {
+              float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
+              Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
 
-            float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
-            Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+              float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
+              Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
 
-            float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
-            Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+              float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
+              Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
 
-            rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
-            rel_depth[j].mIndex = j;
+              rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+              rel_depth[j].mIndex = j;
+            }
+
+            std::sort(rel_depth.begin(), rel_depth.end());
+
+            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+
+            std::vector<char> sorted_buffer(ibo.data->getBufferSize());
+            char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
+            char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
+            size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+
+            for (size_t j = 0; j < num_triangles; j++)
+            {
+              memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+            }
+
+            iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
           }
-
-          std::sort(rel_depth.begin(), rel_depth.end());
-
-          int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-
-          std::vector<char> sorted_buffer(ibo.data->getBufferSize());
-          char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
-          char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
-          size_t tri_size = ibo.data->getBufferSize() / num_triangles;
-
-          for (size_t j = 0; j < num_triangles; j++)
+          else
           {
-            memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+            iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
           }
-
-          iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
         }        
 			}
 
@@ -464,7 +471,7 @@ namespace SCIRun {
 				{   
           //reorderIBO(pass);
 					addVBOToEntity(entityID, pass.vboName);
-          for (int i = 0; i < 6; ++i)
+          for (int i = 0; i <= 6; ++i)
           {
             std::string name = pass.iboName;
             if (i == 0)
