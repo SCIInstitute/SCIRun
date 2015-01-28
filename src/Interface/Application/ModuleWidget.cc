@@ -931,6 +931,8 @@ ModuleWidget::~ModuleWidget()
 
     if (dockable_)
     {
+      if (isViewScene_) // see bug #808
+        dockable_->setFloating(false);
       SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
       delete dockable_;
     }
