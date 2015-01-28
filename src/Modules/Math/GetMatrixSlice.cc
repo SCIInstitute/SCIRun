@@ -85,5 +85,10 @@ void GetMatrixSlice::execute()
     {
       playing_ = false;
     }
+    else if (playMode != 0)
+    {
+      playing_ = false;
+      remark("Logical error: received invalid play mode value");
+    }
   }
 }

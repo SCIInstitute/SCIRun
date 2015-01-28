@@ -99,11 +99,11 @@ void GetMatrixSliceDialog::selectLastIndex()
 
 void GetMatrixSliceDialog::startPlay()
 {
-  state_->setTransientValue(Parameters::PlayMode, GetMatrixSliceAlgo::PLAY);
+  state_->setTransientValue(Parameters::PlayMode, static_cast<int>(GetMatrixSliceAlgo::PLAY));
   Q_EMIT executeActionTriggered();
 }
 
 void GetMatrixSliceDialog::stopPlay()
 {
-  state_->setTransientValue(Parameters::PlayMode, GetMatrixSliceAlgo::PAUSE);
+  state_->setTransientValue(Parameters::PlayMode, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
 }
