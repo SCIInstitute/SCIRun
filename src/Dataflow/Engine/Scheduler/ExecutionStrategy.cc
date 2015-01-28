@@ -91,12 +91,7 @@ void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
   {
     if (!executionLaunchThread_)
       start();
-    //std::cout << "ctx queued" << std::endl;
     somethingToExecute_.conditionBroadcast();
-  }
-  else
-  {
-    //std::cout << "ctx queue is full" << std::endl;
   }
 }
 
@@ -107,14 +102,10 @@ void ExecutionQueueManager::executeTopContext()
     UniqueLock lock(executionMutex_.get());
     while (0 == contextCount_)
     {
-      //std::cout << "waiting on launch thread lock " << boost::this_thread::get_id() << std::endl;
       somethingToExecute_.wait(lock);
     }
-    //std::cout << "consuming on launch thread " << boost::this_thread::get_id() << std::endl;
     if (contexts_.consume_one([&](ExecutionContextHandle ctx) { if (currentExecutor_) currentExecutor_->execute(*ctx); }))
       contextCount_.fetch_sub(1);
-    //std::cout << "sleeping on launch thread " << boost::this_thread::get_id() << std::endl;
-    //boost::this_thread::sleep(boost::posix_time::milliseconds(500));
   }
 }
 
