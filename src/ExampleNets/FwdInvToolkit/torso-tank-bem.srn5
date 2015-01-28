@@ -1432,7 +1432,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>26</count>
+			<count>28</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>BuildBEMatrix:6</moduleId1_>
@@ -1575,6 +1575,30 @@
 				<moduleId2_>SwapFieldDataWithMatrixEntries:9</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetMatrixSlice:3</moduleId1_>
+				<port1_>
+					<name>Selected_Index</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetMatrixSlice:14</moduleId2_>
+				<port2_>
+					<name>Current_Index</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetMatrixSlice:3</moduleId1_>
+				<port1_>
+					<name>Selected_Index</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetMatrixSlice:8</moduleId2_>
+				<port2_>
+					<name>Current_Index</name>
 					<id>0</id>
 				</port2_>
 			</item>
