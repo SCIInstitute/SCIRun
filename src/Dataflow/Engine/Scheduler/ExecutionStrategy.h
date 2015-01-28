@@ -72,15 +72,19 @@ namespace Engine {
   class SCISHARE ExecutionQueueManager
   {
   public:
-    explicit ExecutionQueueManager(ExecutionStrategyHandle& currentExecutor);
+    ExecutionQueueManager();
+    void initExecutor(ExecutionStrategyFactoryHandle factory);
+    void setExecutionStrategy(ExecutionStrategyHandle exec);
     void enqueueContext(ExecutionContextHandle context);
+    void start();
+    void stop();
   private:
     typedef DynamicExecutor::WorkQueue<ExecutionContextHandle>::Impl ExecutionContextQueue;
     ExecutionContextQueue contexts_;
 
-    ExecutionStrategyHandle& currentExecutor_;
+    ExecutionStrategyHandle currentExecutor_;
 
-    boost::thread executionLaunchThread_;
+    boost::shared_ptr<boost::thread> executionLaunchThread_;
     Core::Thread::Mutex executionMutex_;
     Core::Thread::ConditionVariable somethingToExecute_;
     boost::atomic<int> contextCount_; // need certain member function on spsc_queue, need to check boost version...

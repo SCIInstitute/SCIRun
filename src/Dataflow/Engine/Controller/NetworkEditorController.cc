@@ -64,7 +64,6 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   reexFactory_(reex),
   executorFactory_(executorFactory),
   serializationManager_(nesm),
-  executionManager_(currentExecutor_), //TODO: pass in factory instead
   signalSwitch_(true)
 {
   dynamicPortManager_.reset(new DynamicPortManager(connectionAdded_, connectionRemoved_, this));
@@ -77,7 +76,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 }
 
 NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
-  : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm), executionManager_(currentExecutor_) //TODO: pass in factory instead
+  : theNetwork_(network), executorFactory_(executorFactory), serializationManager_(nesm)
 {
 }
 
@@ -352,10 +351,7 @@ void NetworkEditorController::executeModule(const ModuleHandle& module, const Ex
 
 void NetworkEditorController::initExecutor()
 {
-  if (!currentExecutor_)
-  {
-    currentExecutor_ = executorFactory_->createDefault();
-  }
+  executionManager_.initExecutor(executorFactory_);
 }
 
 ExecutionContextHandle NetworkEditorController::createExecutionContext(const ExecutableLookup* lookup, ModuleFilter filter)
@@ -370,46 +366,6 @@ void NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, Mod
   auto context = createExecutionContext(lookup, filter);
 
   executionManager_.enqueueContext(context);
-}
-
-ExecutionQueueManager::ExecutionQueueManager(ExecutionStrategyHandle& currentExecutor) : contexts_(2), currentExecutor_(currentExecutor),
-  executionLaunchThread_([this]() {executeTopContext(); } ),
-  executionMutex_("executionQueue"),
-  somethingToExecute_("executionQueue")
-{
-}
-
-void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
-{
-  bool contextReady = false;
-  {
-    Guard g(executionMutex_.get());
-    contextReady = contexts_.push(context);
-  }
-  if (contextReady)
-  {
-    contextCount_.fetch_add(1);
-    //std::cout << "ctx queued" << std::endl;
-    somethingToExecute_.conditionBroadcast();
-  }
-  else
-  {
-    //std::cout << "ctx queue is full" << std::endl;
-  }
-}
-
-void ExecutionQueueManager::executeTopContext()
-{
-  while (true)
-  {
-    UniqueLock lock(executionMutex_.get());
-    while (0 == contextCount_)
-    {
-      somethingToExecute_.wait(lock);
-    }
-    contexts_.consume_one([&](ExecutionContextHandle ctx) { currentExecutor_->execute(*ctx); });
-    contextCount_.fetch_sub(1);
-  }
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const
@@ -430,7 +386,7 @@ NetworkGlobalSettings& NetworkEditorController::getSettings()
 
 void NetworkEditorController::setExecutorType(int type)
 {
-  currentExecutor_ = executorFactory_->create((ExecutionStrategy::Type)type);
+  executionManager_.setExecutionStrategy(executorFactory_->create((ExecutionStrategy::Type)type));
 }
 
 const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const
