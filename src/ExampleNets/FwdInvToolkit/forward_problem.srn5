@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>25</count>
+			<count>27</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AddKnownsToLinearSystem:12</first>
@@ -941,6 +941,254 @@
 				</second>
 			</item>
 			<item>
+				<first>ShowColorMap:146</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>9</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AddExtraSpace</name>
+								</first>
+								<second>
+									<name>AddExtraSpace</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplayLength</name>
+								</first>
+								<second>
+									<name>DisplayLength</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplaySide</name>
+								</first>
+								<second>
+									<name>DisplaySide</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Labels</name>
+								</first>
+								<second>
+									<name>Labels</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Scale</name>
+								</first>
+								<second>
+									<name>Scale</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SignificantDigits</name>
+								</first>
+								<second>
+									<name>SignificantDigits</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextColor</name>
+								</first>
+								<second>
+									<name>TextColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(255,255,255)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextSize</name>
+								</first>
+								<second>
+									<name>TextSize</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Units</name>
+								</first>
+								<second>
+									<name>Units</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowColorMap:147</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>9</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AddExtraSpace</name>
+								</first>
+								<second>
+									<name>AddExtraSpace</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplayLength</name>
+								</first>
+								<second>
+									<name>DisplayLength</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplaySide</name>
+								</first>
+								<second>
+									<name>DisplaySide</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Labels</name>
+								</first>
+								<second>
+									<name>Labels</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Scale</name>
+								</first>
+								<second>
+									<name>Scale</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SignificantDigits</name>
+								</first>
+								<second>
+									<name>SignificantDigits</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextColor</name>
+								</first>
+								<second>
+									<name>TextColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(255,255,255)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextSize</name>
+								</first>
+								<second>
+									<name>TextSize</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Units</name>
+								</first>
+								<second>
+									<name>Units</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ShowField:17</first>
 				<second>
 					<module>
@@ -1378,7 +1626,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>31</count>
+			<count>35</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>AddKnownsToLinearSystem:12</moduleId1_>
@@ -1485,6 +1733,30 @@
 				<moduleId2_>BuildFEMatrix:6</moduleId2_>
 				<port2_>
 					<name>Conductivity_Table</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateStandardColorMap:9</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowColorMap:146</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateStandardColorMap:9</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowColorMap:147</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1717,6 +1989,30 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>ShowColorMap:146</moduleId1_>
+				<port1_>
+					<name>GeometryOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:18</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>2</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowColorMap:147</moduleId1_>
+				<port1_>
+					<name>GeometryOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:18</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>3</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>ShowField:17</moduleId1_>
 				<port1_>
 					<name>SceneGraph</name>
@@ -1755,7 +2051,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>25</count>
+		<count>27</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>AddKnownsToLinearSystem:12</first>
@@ -1802,8 +2098,8 @@
 		<item>
 			<first>CreateStandardColorMap:9</first>
 			<second>
-				<first>-1.06400000000000000e+003</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-1.31730000000000000e+003</first>
+				<second>-2.34899999999999980e+002</second>
 			</second>
 		</item>
 		<item>
@@ -1905,9 +2201,23 @@
 			</second>
 		</item>
 		<item>
+			<first>ShowColorMap:146</first>
+			<second>
+				<first>-1.29200000000000000e+003</first>
+				<second>7.60000000000000000e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowColorMap:147</first>
+			<second>
+				<first>-9.88000000000000000e+002</first>
+				<second>0.00000000000000000e+000</second>
+			</second>
+		</item>
+		<item>
 			<first>ShowField:17</first>
 			<second>
-				<first>-1.36800000000000000e+003</first>
+				<first>-1.29200000000000000e+003</first>
 				<second>2.28000000000000000e+002</second>
 			</second>
 		</item>
