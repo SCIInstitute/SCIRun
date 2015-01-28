@@ -56,7 +56,8 @@ class RenderColorMapSysTrans :
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
-                             ren::StaticVBOMan>
+                             ren::StaticVBOMan,
+                             ren::StaticIBOMan>
 {
 public:
 
@@ -91,7 +92,8 @@ public:
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
-      const es::ComponentGroup<ren::StaticVBOMan>& vboMan) override
+      const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
+      const es::ComponentGroup<ren::StaticIBOMan>& iboMan) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -103,6 +105,39 @@ public:
     {
       return;
     }
+
+    GLuint iboID = ibo.front().glid;
+    GLuint iboXID = ibo.front().glid;
+    GLuint iboYID = ibo.front().glid;
+    GLuint iboZID = ibo.front().glid;
+
+    int index = 0;
+    for (auto it = ibo.begin(); it != ibo.end(); ++it, ++index)
+    {
+      if (index == 1)
+        iboXID = it->glid;
+      if (index == 2)
+        iboYID = it->glid;
+      if (index == 3)
+        iboZID = it->glid;
+    } 
+    
+    Core::Geometry::Vector currentDir(camera.front().data.worldToView[0][2],
+                                      camera.front().data.worldToView[1][2],
+                                      camera.front().data.worldToView[2][2]);
+
+
+    std::cout << "CurrentDir: " << currentDir << std::endl;
+
+    currentDir.normalize();
+
+    std::cout << "CurrentDirNormalize: " << currentDir << std::endl;
+
+    currentDir.safe_normalize();
+
+    std::cout << "CurrentDirSafeNormalize: " << currentDir << std::endl;
+
+    iboID = iboXID;
 
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
@@ -159,7 +194,7 @@ public:
 
     // Bind VBO and IBO
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo.front().glid));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
 
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
@@ -196,7 +231,6 @@ public:
     bool cullFace = glIsEnabled(GL_CULL_FACE);
     bool blend = glIsEnabled(GL_BLEND);
       
-    GL(glEnable(GL_DEPTH_TEST));
     GL(glDepthMask(GL_FALSE));
     GL(glDisable(GL_CULL_FACE));
     GL(glEnable(GL_BLEND));

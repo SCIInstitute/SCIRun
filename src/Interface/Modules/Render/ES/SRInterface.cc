@@ -300,6 +300,11 @@ namespace SCIRun {
 			}
 
 			// Add vertex buffer objects.
+      //-----------------------------------------------------------------
+      char* vbo_buffer = 0;
+      size_t stride_vbo = 0;
+      //-----------------------------------------------------------------
+      
 			int nameIndex = 0;
 			for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
 			{
@@ -317,7 +322,11 @@ namespace SCIRun {
 					GLuint vboID = vboMan.addInMemoryVBO(vbo.data->getBuffer(), vbo.data->getBufferSize(),
 						attributeData, vbo.name);
 				}
-
+        //-----------------------------------------------------------------
+        vbo_buffer = reinterpret_cast<char*>(vbo.data->getBuffer());
+        for (auto a : vbo.attributes)
+          stride_vbo += a.sizeInBytes;
+        //-----------------------------------------------------------------
 				bbox.extend(vbo.boundingBox);
 			}
 
@@ -364,10 +373,74 @@ namespace SCIRun {
 					break;
 				}
 
-				int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+        //----------------------------------------------------------------
+        uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
+        size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+        Core::Geometry::Vector dir(0.0, 0.0, 0.0);
 
-				iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType,
-					numPrimitives, ibo.name);
+        std::vector<DepthIndex> rel_depth(num_triangles);
+        for (int i = 0; i <= 3; ++i)
+        {
+          std::string name = ibo.name;
+          
+          if (i == 0)
+          {
+            dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
+            name += "X";
+          }
+          else if (i == 1)
+          {
+            dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
+            name += "Y";
+          }
+          else if (i == 2)
+          {
+            dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
+            name += "Z";
+          }
+          else if (i == 3)
+          {
+            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+            iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
+            break;
+          }
+
+          for (size_t j = 0; j < num_triangles; j++)
+          {
+            float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
+            Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+
+            float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 1]));
+            Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+            float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 2]));
+            Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+            rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+            rel_depth[j].mIndex = j;
+          }
+
+          std::sort(rel_depth.begin(), rel_depth.end());
+
+          int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+
+          std::vector<char> sorted_buffer(ibo.data->getBufferSize());
+          char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
+          char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
+          size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+
+          for (size_t j = 0; j < num_triangles; j++)
+          {
+            memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+          }
+
+          iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
+        }
+        //----------------------------------------------------------------
+       
+				//int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+
+				//iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
 			}
 
 			// Add default identity transform to the object globally (instead of per-pass)
@@ -386,9 +459,20 @@ namespace SCIRun {
 
 				if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
 				{   
-          reorderIBO(pass);
+          //reorderIBO(pass);
 					addVBOToEntity(entityID, pass.vboName);
-					addIBOToEntity(entityID, pass.iboName);
+          for (int i = 0; i <= 3; ++i)
+          {
+            std::string name = pass.iboName;
+            if (i == 1)
+              name += "X";
+            if (i == 2)
+              name += "Y";
+            if (i == 3)
+              name += "Z";
+
+            addIBOToEntity(entityID, name);
+          }
 				}
 				else
 				{
@@ -547,7 +631,7 @@ namespace SCIRun {
 			ibo.primType = iboData.primType;
 			ibo.primMode = iboData.primMode;
 			ibo.numPrims = iboData.numPrims;
-
+      
 			mCore.addComponent(entityID, ibo);
 		}
 
@@ -563,7 +647,7 @@ namespace SCIRun {
 
       std::vector<DepthIndex> rel_depth(num_triangles);
       Core::Geometry::Vector dir(mCamera->getViewToWorld()[0][2], mCamera->getViewToWorld()[1][2], mCamera->getViewToWorld()[2][2]);
-
+      
       for (size_t j = 0; j < num_triangles; j++)
       {
         float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
@@ -590,14 +674,14 @@ namespace SCIRun {
 
       for (size_t j = 0; j < num_triangles; j++)
       {
-        memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+        memcpy(sbuffer + j * tri_size, pass.ibo.data->getBuffer() + rel_depth[j].mIndex * tri_size, tri_size);
       }
 
-      ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
+      //ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
 
-      auto iboData = iboMan.getIBOData(pass.iboName);
+     // auto iboData = iboMan.getIBOData(pass.iboName);
 
-      iboMan.addInMemoryIBO(sbuffer, pass.ibo.data->getBufferSize(), iboData.primMode, iboData.primType, iboData.numPrims, pass.iboName);
+      //iboMan.addInMemoryIBO(sbuffer, pass.ibo.data->getBufferSize(), iboData.primMode, iboData.primType, iboData.numPrims, pass.iboName);
     }
 
 		//------------------------------------------------------------------------------
