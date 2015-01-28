@@ -423,6 +423,7 @@ namespace SCIRun {
             assetName = "Assests/arrow.geom";
           }
 
+          //reorderIBO(pass);
           addVBOToEntity(entityID, assetName);
           addIBOToEntity(entityID, assetName);
         }
@@ -510,8 +511,6 @@ namespace SCIRun {
 
         // Add a pass to our local object.
         elem.mPasses.emplace_back(pass.passName, pass.renderType);
-        mCore.addComponent(entityID, pass);
-
       }
 
       // Recalculate scene bounding box. Should only be done when an object is added.
