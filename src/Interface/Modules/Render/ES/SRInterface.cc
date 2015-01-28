@@ -330,8 +330,6 @@ namespace SCIRun {
 				bbox.extend(vbo.boundingBox);
 			}
 
-      std::cout << "VBO passes: " << nameIndex << std::endl;
-
 			// Add index buffer objects.
 			nameIndex = 0;
 			for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
@@ -447,8 +445,6 @@ namespace SCIRun {
           iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
         }        
 			}
-
-      std::cout << "IBO passes: " << nameIndex << std::endl;
 
 			// Add default identity transform to the object globally (instead of per-pass)
 			glm::mat4 xform;

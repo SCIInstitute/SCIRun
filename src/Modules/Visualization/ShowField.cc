@@ -77,9 +77,9 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(NodeAsSpheres, false);
   state->setValue(EdgesAsLines, true);
   state->setValue(EdgesAsCylinders, false);
-  state->setValue(FaceTransparencyValue, 0.50f);
+  state->setValue(FaceTransparencyValue, 0.65f);
   state->setValue(SphereScaleValue, 1.0);
-  faceTransparencyValue_ = 0.50f;
+  faceTransparencyValue_ = 0.65f;
   sphereScalar_ = 1.0;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
@@ -411,8 +411,6 @@ void ShowFieldModule::renderFacesLinear(
 
     std::vector<Core::Geometry::Point> points(nodes.size());
     std::vector<Core::Geometry::Vector> normals(nodes.size());
-
-	//std::cout << "Node Size: " << nodes.size() << std::endl;
 
     for (size_t i = 0; i < nodes.size(); i++)
     {
