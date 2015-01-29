@@ -1802,8 +1802,8 @@
 		<item>
 			<first>CreateStandardColorMap:9</first>
 			<second>
-				<first>-1.06400000000000000e+003</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-1.31730000000000000e+003</first>
+				<second>-2.34899999999999980e+002</second>
 			</second>
 		</item>
 		<item>
@@ -1900,14 +1900,14 @@
 		<item>
 			<first>SetFieldData:3</first>
 			<second>
-				<first>-1.00600000000000000e+003</first>
-				<second>-9.80000000000000000e+002</second>
+				<first>-9.88000000000000000e+002</first>
+				<second>-9.12000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:17</first>
 			<second>
-				<first>-1.36800000000000000e+003</first>
+				<first>-1.29200000000000000e+003</first>
 				<second>2.28000000000000000e+002</second>
 			</second>
 		</item>
@@ -1971,7 +1971,7 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Choose time step&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Choose time step</noteText>
-				<position>4</position>
+				<position>5</position>
 				<fontSize>8</fontSize>
 			</second>
 		</item>
