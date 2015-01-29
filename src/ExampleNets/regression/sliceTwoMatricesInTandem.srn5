@@ -1,80 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ConvertMatrixType:3</first>
+				<first>CreateMatrix:2</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Math</category_name_>
-						<module_name_>ConvertMatrixType</module_name_>
+						<module_name_>CreateMatrix</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>5</count>
+							<count>1</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>ConvertToColumnMatrix</name>
+									<name>TextEntry</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>ConvertToColumnMatrix</name>
+									<name>TextEntry</name>
 									<value class_id="11" tracking_level="0" version="0">
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ConvertToDenseMatrix</name>
-								</first>
-								<second>
-									<name>ConvertToDenseMatrix</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ConvertToSparseRowMatrix</name>
-								</first>
-								<second>
-									<name>ConvertToSparseRowMatrix</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>OutputMatrixType</name>
-								</first>
-								<second>
-									<name>OutputMatrixType</name>
-									<value>
 										<which>2</which>
-										<value>sparse</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>PassThrough</name>
-								</first>
-								<second>
-									<name>PassThrough</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
+										<value>1 2 3
+4 5 6</value>
 									</value>
 								</second>
 							</item>
@@ -83,27 +36,50 @@
 				</second>
 			</item>
 			<item>
-				<first>CreateMatrix:2</first>
+				<first>EvaluateLinearAlgebraUnary:4</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Math</category_name_>
-						<module_name_>CreateMatrix</module_name_>
+						<module_name_>EvaluateLinearAlgebraUnary</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>TextEntry</name>
+									<name>FunctionString</name>
 								</first>
 								<second>
-									<name>TextEntry</name>
+									<name>FunctionString</name>
 									<value>
 										<which>2</which>
-										<value>1 2 3
-4 5 6</value>
+										<value>x+10</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Operator</name>
+								</first>
+								<second>
+									<name>Operator</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScalarValue</name>
+								</first>
+								<second>
+									<name>ScalarValue</name>
+									<value>
+										<which>1</which>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -155,7 +131,7 @@
 									<name>SliceIndex</name>
 									<value>
 										<which>0</which>
-										<value>2</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -164,7 +140,7 @@
 				</second>
 			</item>
 			<item>
-				<first>GetMatrixSlice:4</first>
+				<first>GetMatrixSlice:3</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -183,31 +159,31 @@
 									<name>IsSliceColumn</name>
 									<value>
 										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxIndex</name>
+								</first>
+								<second>
+									<name>MaxIndex</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SliceIndex</name>
+								</first>
+								<second>
+									<name>SliceIndex</name>
+									<value>
+										<which>0</which>
 										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>MaxIndex</name>
-								</first>
-								<second>
-									<name>MaxIndex</name>
-									<value>
-										<which>0</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>SliceIndex</name>
-								</first>
-								<second>
-									<name>SliceIndex</name>
-									<value>
-										<which>0</which>
-										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -249,27 +225,15 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ConvertMatrixType:3</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>ResultMatrix</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GetMatrixSlice:4</moduleId2_>
-				<port2_>
-					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
 				<moduleId1_>CreateMatrix:2</moduleId1_>
-				<port1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
 					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ConvertMatrixType:3</moduleId2_>
+				<moduleId2_>EvaluateLinearAlgebraUnary:4</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
@@ -288,6 +252,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>EvaluateLinearAlgebraUnary:4</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetMatrixSlice:3</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>GetMatrixSlice:0</moduleId1_>
 				<port1_>
 					<name>OutputMatrix</name>
@@ -300,7 +276,19 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GetMatrixSlice:4</moduleId1_>
+				<moduleId1_>GetMatrixSlice:0</moduleId1_>
+				<port1_>
+					<name>Selected_Index</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetMatrixSlice:3</moduleId2_>
+				<port2_>
+					<name>Current_Index</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetMatrixSlice:3</moduleId1_>
 				<port1_>
 					<name>OutputMatrix</name>
 					<id>0</id>
@@ -317,45 +305,45 @@
 		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>ConvertMatrixType:3</first>
+			<first>CreateMatrix:2</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1.67200000000000000e+003</first>
-				<second>-1.21600000000000000e+003</second>
+				<first>-1900</first>
+				<second>-1596</second>
 			</second>
 		</item>
 		<item>
-			<first>CreateMatrix:2</first>
+			<first>EvaluateLinearAlgebraUnary:4</first>
 			<second>
-				<first>-1.90000000000000000e+003</first>
-				<second>-1.36800000000000000e+003</second>
+				<first>-1672</first>
+				<second>-1444</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:0</first>
 			<second>
-				<first>-1.97600000000000000e+003</first>
-				<second>-1.06400000000000000e+003</second>
+				<first>-1900</first>
+				<second>-1216</second>
 			</second>
 		</item>
 		<item>
-			<first>GetMatrixSlice:4</first>
+			<first>GetMatrixSlice:3</first>
 			<second>
-				<first>-1.67200000000000000e+003</first>
-				<second>-1.06400000000000000e+003</second>
+				<first>-1520</first>
+				<second>-1216</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:1</first>
 			<second>
-				<first>-1.97600000000000000e+003</first>
-				<second>-9.12000000000000000e+002</second>
+				<first>-1900</first>
+				<second>-1064</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:5</first>
 			<second>
-				<first>-1.67200000000000000e+003</first>
-				<second>-9.12000000000000000e+002</second>
+				<first>-1520</first>
+				<second>-1064</second>
 			</second>
 		</item>
 	</modulePositions>

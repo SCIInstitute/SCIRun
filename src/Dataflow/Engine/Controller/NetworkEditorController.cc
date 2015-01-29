@@ -296,7 +296,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       {
         ModuleHandle module = theNetwork_->module(i);
         moduleAdded_(module->get_module_name(), module, modulesDone);
-        networkDoneLoading_(i);
+        networkDoneLoading_(static_cast<int>(i));
       }
 
       {
@@ -334,34 +334,38 @@ void NetworkEditorController::clear()
 }
 
 // TODO:
-// - [ ] refactor duplication
+// - [X] refactor duplication
 // - [ ] set up execution context queue
 // - [ ] separate threads for looping through queue: another producer/consumer pair
 
 void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
-  if (!currentExecutor_)
-  {
-    currentExecutor_ = executorFactory_->createDefault();
-  }
-
-  ExecuteAllModules filter;
-  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
-  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
-  currentExecutor_->execute(context);
+  executeGeneric(lookup, ExecuteAllModules::Instance());
 }
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup)
 {
-  if (!currentExecutor_)
-  {
-    currentExecutor_ = executorFactory_->createDefault();
-  }
-
   ExecuteSingleModule filter(module, *theNetwork_);
+  executeGeneric(lookup, filter);
+}
+
+void NetworkEditorController::initExecutor()
+{
+  executionManager_.initExecutor(executorFactory_);
+}
+
+ExecutionContextHandle NetworkEditorController::createExecutionContext(const ExecutableLookup* lookup, ModuleFilter filter)
+{
   theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
-  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
-  currentExecutor_->execute(context);
+  return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
+}
+
+void NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+{
+  initExecutor();
+  auto context = createExecutionContext(lookup, filter);
+
+  executionManager_.enqueueContext(context);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const
@@ -382,7 +386,7 @@ NetworkGlobalSettings& NetworkEditorController::getSettings()
 
 void NetworkEditorController::setExecutorType(int type)
 {
-  currentExecutor_ = executorFactory_->create((ExecutionStrategy::Type)type);
+  executionManager_.setExecutionStrategy(executorFactory_->create((ExecutionStrategy::Type)type));
 }
 
 const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const

@@ -45,7 +45,6 @@ SET(Core_Thread_Legacy_SRCS
   ThreadGroup.cc 
   Thread_unix.cc 
   ThreadPool.cc 
-  WorkQueue.cc 
 )
 
 SET(Core_Thread_Legacy_HEADERS
@@ -79,7 +78,6 @@ SET(Core_Thread_Legacy_HEADERS
   ThreadPool.h
   Time.h  
   UsedWithLockingHandle.h
-  WorkQueue.h
 )
 
 IF(WIN32)

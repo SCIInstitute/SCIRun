@@ -91,6 +91,8 @@ namespace Engine {
     static ExecutionBounds executionBounds_;
   };
 
+  typedef boost::shared_ptr<ExecutionContext> ExecutionContextHandle;
+
   template <class OrderType>
   class NetworkExecutor
   {
