@@ -50,6 +50,13 @@ namespace SCIRun {
           GetMatrixSliceAlgo();
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
           boost::tuple<Datatypes::MatrixHandle, int> runImpl(Datatypes::MatrixHandle matrix, int index, bool getColumn) const;
+
+					enum PlayMode
+					{
+						PLAY = 1,
+						PAUSE = 2
+					};
+
         private:
           void checkIndex(int index, int max) const;
         };

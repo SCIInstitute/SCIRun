@@ -26,45 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
+#ifndef INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
+#define INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include "Interface/Modules/Visualization/ui_ShowColorMap.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
-ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE ShowColorMapDialog : public ModuleDialogGeneric, 
+	public Ui::ShowColorMap
 {
-  bounds_->executeStarts_();
+	Q_OBJECT
+	
+public:
+  ShowColorMapDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
+
+}
 }
 
-ScopedExecutionBoundsSignaller::~ScopedExecutionBoundsSignaller()
-{
-  bounds_->executeFinishes_(errorCodeRetriever_());
-}
-
-const ExecuteAllModules& ExecuteAllModules::Instance()
-{
-  static ExecuteAllModules instance_;
-  return instance_;
-}
-
-ExecutionContext::ExecutionContext(const NetworkInterface& net) : network(net), lookup(net) {}
-
-const ExecutionBounds& ExecutionContext::bounds() const
-{
-  return executionBounds_;
-}
-
-bool WaitsForStartupInitialization::waitedAlready_(false);
-
-void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& lookup) const
-{
-  if (!waitedAlready_ && lookup.containsViewScene())
-  {
-    std::cout << "Waiting for rendering system initialization...." << std::endl;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(600));
-    std::cout << "Done waiting." << std::endl;
-    waitedAlready_ = true;
-  }
-}
+#endif

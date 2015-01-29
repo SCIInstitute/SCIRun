@@ -25,46 +25,28 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
 
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
+#ifndef MODULES_VISUALIZATION_SHOWCOLORMAP_H
+#define MODULES_VISUALIZATION_SHOWCOLORMAP_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Visualization/share.h>
 
-ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
-{
-  bounds_->executeStarts_();
-}
+namespace SCIRun {
+namespace Modules {
+namespace Visualization {
 
-ScopedExecutionBoundsSignaller::~ScopedExecutionBoundsSignaller()
-{
-  bounds_->executeFinishes_(errorCodeRetriever_());
-}
-
-const ExecuteAllModules& ExecuteAllModules::Instance()
-{
-  static ExecuteAllModules instance_;
-  return instance_;
-}
-
-ExecutionContext::ExecutionContext(const NetworkInterface& net) : network(net), lookup(net) {}
-
-const ExecutionBounds& ExecutionContext::bounds() const
-{
-  return executionBounds_;
-}
-
-bool WaitsForStartupInitialization::waitedAlready_(false);
-
-void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& lookup) const
-{
-  if (!waitedAlready_ && lookup.containsViewScene())
+	class SCISHARE ShowColorMap : public SCIRun::Dataflow::Networks::Module,
+    public HasNoInputPorts,
+    public Has1OutputPort<ColorMapPortTag>
   {
-    std::cout << "Waiting for rendering system initialization...." << std::endl;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(600));
-    std::cout << "Done waiting." << std::endl;
-    waitedAlready_ = true;
-  }
-}
+  public:
+		ShowColorMap();
+    virtual void execute();
+    virtual void setStateDefaults();
+    OUTPUT_PORT(0, ColorMapObject, ColorMap);
+  };
+}}}
+
+#endif

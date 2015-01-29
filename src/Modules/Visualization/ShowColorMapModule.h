@@ -25,46 +25,41 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
 
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
+#ifndef MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
+#define MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Visualization/share.h>
 
-ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
-{
-  bounds_->executeStarts_();
-}
+namespace SCIRun {
+namespace Modules {
+namespace Visualization {
 
-ScopedExecutionBoundsSignaller::~ScopedExecutionBoundsSignaller()
-{
-  bounds_->executeFinishes_(errorCodeRetriever_());
-}
-
-const ExecuteAllModules& ExecuteAllModules::Instance()
-{
-  static ExecuteAllModules instance_;
-  return instance_;
-}
-
-ExecutionContext::ExecutionContext(const NetworkInterface& net) : network(net), lookup(net) {}
-
-const ExecutionBounds& ExecutionContext::bounds() const
-{
-  return executionBounds_;
-}
-
-bool WaitsForStartupInitialization::waitedAlready_(false);
-
-void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& lookup) const
-{
-  if (!waitedAlready_ && lookup.containsViewScene())
+	class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<ColorMapPortTag>, 
+    public Has1OutputPort<GeometryPortTag>
   {
-    std::cout << "Waiting for rendering system initialization...." << std::endl;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(600));
-    std::cout << "Done waiting." << std::endl;
-    waitedAlready_ = true;
-  }
-}
+  public:
+		ShowColorMapModule();
+    virtual void execute();
+
+		static Core::Algorithms::AlgorithmParameterName DisplaySide;
+		static Core::Algorithms::AlgorithmParameterName DisplayLength;
+		static Core::Algorithms::AlgorithmParameterName TextSize;
+		static Core::Algorithms::AlgorithmParameterName TextColor;
+		static Core::Algorithms::AlgorithmParameterName Labels;
+		static Core::Algorithms::AlgorithmParameterName Scale;
+		static Core::Algorithms::AlgorithmParameterName Units;
+		static Core::Algorithms::AlgorithmParameterName SignificantDigits;
+		static Core::Algorithms::AlgorithmParameterName AddExtraSpace; 
+
+		virtual void setStateDefaults();
+    INPUT_PORT(0, ColorMapObject, ColorMap);
+		OUTPUT_PORT(0, GeometryOutput, GeometryObject); 
+
+  };
+}}}
+
+#endif

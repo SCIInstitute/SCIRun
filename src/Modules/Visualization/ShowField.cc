@@ -56,7 +56,7 @@ using namespace SCIRun;
 
 ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
 
-ShowFieldModule::ShowFieldModule() : 
+ShowFieldModule::ShowFieldModule() :
     Module(staticInfo_)
 {
   INITIALIZE_PORT(Field);
@@ -92,8 +92,11 @@ void ShowFieldModule::execute()
 {
   boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
-  GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), get_id());
-  sendOutput(SceneGraph, geom);
+  if (needToExecute())
+  {
+    GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), get_id());
+    sendOutput(SceneGraph, geom);
+  }
 }
 
 RenderState ShowFieldModule::getNodeRenderState(
@@ -106,9 +109,9 @@ RenderState ShowFieldModule::getNodeRenderState(
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).toBool());
 
   renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).toBool());
-  
+
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
-  
+
   sphereScalar_ = state->getValue(ShowFieldModule::SphereScaleValue).toDouble();
 
   if (colorMap)
@@ -179,7 +182,7 @@ RenderState ShowFieldModule::getFaceRenderState(
 GeometryHandle ShowFieldModule::buildGeometryObject(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-    ModuleStateHandle state, 
+    ModuleStateHandle state,
     const std::string& id)
 {
   // Function for reporting progress.
@@ -274,12 +277,12 @@ void ShowFieldModule::applyColorMapScaling(
   {
     std::cerr << "Input field is not a scalar or vector field." << std::endl;
     return;
-  } 
+  }
 
   pass.addUniform("uMinVal", minv);
   pass.addUniform("uMaxVal", maxv);
 
-  // if ( gui_make_symmetric_.get() ) 
+  // if ( gui_make_symmetric_.get() )
   // {
   //   float biggest = Max(Abs(minmax_.first), Abs(minmax_.second));
   //   minmax_.first  = -biggest;
@@ -290,7 +293,7 @@ void ShowFieldModule::applyColorMapScaling(
 void ShowFieldModule::renderFaces(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-    RenderState state, Core::Datatypes::GeometryHandle geom, 
+    RenderState state, Core::Datatypes::GeometryHandle geom,
     unsigned int approxDiv,
     const std::string& id)
 {
@@ -321,7 +324,7 @@ void ShowFieldModule::renderFacesLinear(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
     RenderState state,
-    Core::Datatypes::GeometryHandle geom, 
+    Core::Datatypes::GeometryHandle geom,
     unsigned int approxDiv,
     const std::string& id)
 {
@@ -402,11 +405,11 @@ void ShowFieldModule::renderFacesLinear(
 
   uint32_t iboIndex = 0;
   int64_t numVBOElements = 0;
-	
-  while (fiter != fiterEnd) 
+
+  while (fiter != fiterEnd)
   {
     mesh->get_nodes(nodes, *fiter);
- 
+
     std::vector<Core::Geometry::Point> points(nodes.size());
     std::vector<Core::Geometry::Vector> normals(nodes.size());
 
@@ -418,7 +421,7 @@ void ShowFieldModule::renderFacesLinear(
     }
 
     //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
-    if (withNormals) 
+    if (withNormals)
     {
       if (points.size() == 4)
       {
@@ -428,7 +431,7 @@ void ShowFieldModule::renderFacesLinear(
         Core::Geometry::Vector edge4 = points[0] - points[3];
 
         Core::Geometry::Vector norm = Cross(edge1, edge2) + Cross(edge2, edge3) + Cross(edge3, edge4) + Cross(edge4, edge1);
-        
+
         norm.normalize();
 
         for (size_t i = 0; i < nodes.size(); i++)
@@ -456,7 +459,7 @@ void ShowFieldModule::renderFacesLinear(
         */
       }
     }
-   
+
     // Default color single face no matter the element data.
     if (colorScheme == GeometryObject::COLOR_UNIFORM)
     {
@@ -468,11 +471,11 @@ void ShowFieldModule::renderFacesLinear(
     {
       VMesh::Elem::array_type cells;
       mesh->get_elems(cells, *fiter);
-      
+
       if (fld->is_scalar())
       {
         fld->get_value(svals[0], cells[0]);
-        
+
         if (cells.size() > 1)
         {
           fld->get_value(svals[1], cells[1]);
@@ -481,14 +484,14 @@ void ShowFieldModule::renderFacesLinear(
         {
           svals[1] = svals[0];
         }
-        
+
         valueToColor( colorScheme, svals[0], scols[0], vcols[0] );
         valueToColor( colorScheme, svals[1], scols[1], vcols[1] );
       }
       else if (fld->is_vector())
       {
         fld->get_value(vvals[0], cells[0]);
-        
+
         if (cells.size() > 1)
         {
           fld->get_value(vvals[1], cells[1]);
@@ -497,14 +500,14 @@ void ShowFieldModule::renderFacesLinear(
         {
           svals[1] = svals[0];
         }
-        
+
         valueToColor( colorScheme, vvals[0], scols[0], vcols[0] );
         valueToColor( colorScheme, vvals[1], scols[1], vcols[1] );
       }
       else if (fld->is_tensor())
       {
         fld->get_value(tvals[0], cells[0]);
-        
+
         if (cells.size() > 1)
         {
           fld->get_value(tvals[1], cells[1]);
@@ -513,7 +516,7 @@ void ShowFieldModule::renderFacesLinear(
         {
           svals[1] = svals[0];
         }
-        
+
         valueToColor( colorScheme, tvals[0], scols[0], vcols[0] );
         valueToColor( colorScheme, tvals[1], scols[1], vcols[1] );
       }
@@ -548,7 +551,7 @@ void ShowFieldModule::renderFacesLinear(
         scols[i] = scols[0];
         vcols[i] = vcols[0];
       }
-      
+
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
                   colorScheme, scols, vcols, state);
     }
@@ -571,7 +574,7 @@ void ShowFieldModule::renderFacesLinear(
           fld->get_value(vvals[i], nodes[i]);
           valueToColor( colorScheme, vvals[i], scols[i], vcols[i] );
         }
-      }      
+      }
       else if (fld->is_tensor())
       {
         for (size_t i=0; i<nodes.size(); i++)
@@ -580,7 +583,7 @@ void ShowFieldModule::renderFacesLinear(
           valueToColor( colorScheme, tvals[i], scols[i], vcols[i] );
         }
       }
-      
+
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
                   colorScheme, scols, vcols, state);
     }
@@ -588,7 +591,7 @@ void ShowFieldModule::renderFacesLinear(
     ++fiter;
     ++numVBOElements;
   }
- 
+
   std::string uniqueNodeID = id + "face";
   std::string vboName      = uniqueNodeID + "VBO";
   std::string iboName      = uniqueNodeID + "IBO";
@@ -891,7 +894,7 @@ void ShowFieldModule::addFaceGeom(
         }
       }
       iboIndex += points.size();
-    }    
+    }
   }
   else if (colorScheme == GeometryObject::COLOR_MAP)
   {
@@ -1107,7 +1110,7 @@ void ShowFieldModule::renderNodes(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
     RenderState state,
-    Core::Datatypes::GeometryHandle geom, 
+    Core::Datatypes::GeometryHandle geom,
     const std::string& id)
 {
   VField* fld   = field->vfield();
@@ -1366,9 +1369,17 @@ void ShowFieldModule::renderEdges(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
     RenderState state,
+<<<<<<< HEAD
     Core::Datatypes::GeometryHandle geom, 
     const std::string& id) {
     
+=======
+    Core::Datatypes::GeometryHandle geom,
+    const std::string& id)
+{
+  /// \todo Cylinder edge rendering.
+
+>>>>>>> master
   VField* fld   = field->vfield();
   VMesh*  mesh  = field->vmesh();
 
@@ -1490,10 +1501,10 @@ void ShowFieldModule::renderEdges(
         else //if (mesh->dimensionality() == 1)
         {
           fld->get_value(sval0, *eiter);
-          
+
           sval1 = sval0;
         }
-        
+
         valueToColor(colorScheme, sval0, scol0, vcol0);
         valueToColor(colorScheme, sval1, scol1, vcol1);
       }
@@ -1525,7 +1536,7 @@ void ShowFieldModule::renderEdges(
           fld->get_value(tval0, *eiter);
           tval1 = tval0;
         }
-        
+
         valueToColor(colorScheme, tval0, scol0, vcol0);
         valueToColor(colorScheme, tval1, scol1, vcol1);
       }
@@ -1636,14 +1647,6 @@ void ShowFieldModule::renderEdges(
   ///       build up to geometry / tesselation shaders if support is present.
 }
 
-
-
-
-
-
-
-
-
 AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
 AlgorithmParameterName ShowFieldModule::ShowEdges("ShowEdges");
 AlgorithmParameterName ShowFieldModule::ShowFaces("ShowFaces");
@@ -1658,6 +1661,3 @@ AlgorithmParameterName ShowFieldModule::EdgesAsCylinders("EdgesAsCylinders");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
 AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
 AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue");
-
-
-

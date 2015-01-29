@@ -62,10 +62,10 @@ namespace Engine {
   class SCISHARE ScopedExecutionBoundsSignaller
   {
   public:
-    ScopedExecutionBoundsSignaller(const ExecutionBounds& bounds, boost::function<int()> errorCodeRetriever);
+    ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever);
     ~ScopedExecutionBoundsSignaller();
   private:
-    const ExecutionBounds& bounds_;
+    const ExecutionBounds* bounds_;
     boost::function<int()> errorCodeRetriever_;
   };
 
@@ -90,6 +90,8 @@ namespace Engine {
     static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
     static ExecutionBounds executionBounds_;
   };
+
+  typedef boost::shared_ptr<ExecutionContext> ExecutionContextHandle;
 
   template <class OrderType>
   class NetworkExecutor

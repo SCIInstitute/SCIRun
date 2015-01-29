@@ -80,7 +80,9 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
     {
       auto sparse = matrix_cast::as_sparse(matrix);
       if (sparse)
-        return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->col(index)), max);
+      {
+        THROW_ALGORITHM_PROCESSING_ERROR("TODO: need a fix for slicing a column from SparseRowMatrix. Direct Eigen call is buggy. Waiting on an Eigen upgrade");
+      }
       return boost::make_tuple(nullptr, 0);
     }
   }
@@ -89,7 +91,6 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
     checkIndex(index, matrix->nrows());
     auto max = matrix->nrows() - 1;
 
-    // dense case only now
     auto dense = matrix_cast::as_dense(matrix);
     if (dense)
       return boost::make_tuple(boost::make_shared<DenseMatrix>(dense->row(index)), max);

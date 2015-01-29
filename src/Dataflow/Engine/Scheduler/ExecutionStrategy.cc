@@ -30,6 +30,7 @@
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Thread;
 
 ExecutionBounds ExecutionContext::executionBounds_;
 
@@ -50,4 +51,66 @@ ModuleFilter ExecutionContext::addAdditionalFilter(ModuleFilter filter) const
     return filter;
 
   return boost::bind(filter, _1) && boost::bind(additionalFilter, _1);
+}
+
+ExecutionQueueManager::ExecutionQueueManager() : 
+  contexts_(10), 
+  executionMutex_("executionQueue"),
+  somethingToExecute_("executionQueue"),
+  contextCount_(0)
+{
+}
+
+void ExecutionQueueManager::setExecutionStrategy(ExecutionStrategyHandle exec)
+{ 
+  Guard g(executionMutex_.get());
+  currentExecutor_ = exec; 
+}
+
+void ExecutionQueueManager::initExecutor(ExecutionStrategyFactoryHandle factory)
+{
+  if (!currentExecutor_ && factory)
+    currentExecutor_ = factory->createDefault();
+}
+
+void ExecutionQueueManager::start()
+{
+  executionLaunchThread_.reset(new boost::thread([this]() { executeTopContext(); }));
+}
+
+void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+{
+  bool contextReady = false;
+  {
+    Guard g(executionMutex_.get());
+    contextReady = contexts_.push(context);
+    if (contextReady)
+      contextCount_.fetch_add(1);
+  }
+  if (contextReady)
+  {
+    if (!executionLaunchThread_)
+      start();
+    somethingToExecute_.conditionBroadcast();
+  }
+}
+
+void ExecutionQueueManager::executeTopContext()
+{
+  while (true)
+  {
+    UniqueLock lock(executionMutex_.get());
+    while (0 == contextCount_)
+    {
+      somethingToExecute_.wait(lock);
+    }
+    if (contexts_.consume_one([&](ExecutionContextHandle ctx) { if (currentExecutor_) currentExecutor_->execute(*ctx); }))
+      contextCount_.fetch_sub(1);
+  }
+}
+
+void ExecutionQueueManager::stop()
+{
+  executionLaunchThread_->interrupt();
+  executionLaunchThread_.reset();
 }

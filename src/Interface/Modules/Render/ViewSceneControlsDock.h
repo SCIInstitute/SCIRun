@@ -51,9 +51,8 @@ namespace SCIRun {
 
     public:
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
-      ~ViewSceneControlsDock();
 
-      void setSampleColor(QColor color);
+      void setSampleColor(const QColor& color);
 
     private:
       //ViewSceneDialog* scene_;

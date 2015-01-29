@@ -26,45 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
+/// @todo Documentation Modules/Visualization/CreateBasicColorMap.cc
 
-using namespace SCIRun::Dataflow::Engine;
+#include <Modules/Visualization/ShowColorMap.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/ColorMap.h>
+
+using namespace SCIRun::Modules::Visualization;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
+ShowColorMap::ShowColorMap() : Module(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
 {
-  bounds_->executeStarts_();
+  INITIALIZE_PORT(ColorMapObject);
 }
 
-ScopedExecutionBoundsSignaller::~ScopedExecutionBoundsSignaller()
+void ShowColorMap::setStateDefaults()
 {
-  bounds_->executeFinishes_(errorCodeRetriever_());
+  auto state = get_state();
+  //state->setValue(Variables::ColorMapName, std::string("Rainbow"));
 }
 
-const ExecuteAllModules& ExecuteAllModules::Instance()
+void ShowColorMap::execute()
 {
-  static ExecuteAllModules instance_;
-  return instance_;
-}
-
-ExecutionContext::ExecutionContext(const NetworkInterface& net) : network(net), lookup(net) {}
-
-const ExecutionBounds& ExecutionContext::bounds() const
-{
-  return executionBounds_;
-}
-
-bool WaitsForStartupInitialization::waitedAlready_(false);
-
-void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& lookup) const
-{
-  if (!waitedAlready_ && lookup.containsViewScene())
-  {
-    std::cout << "Waiting for rendering system initialization...." << std::endl;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(600));
-    std::cout << "Done waiting." << std::endl;
-    waitedAlready_ = true;
-  }
+  sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
 }

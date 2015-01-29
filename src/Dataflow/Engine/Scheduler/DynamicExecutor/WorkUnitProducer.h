@@ -48,10 +48,8 @@ namespace SCIRun {
         {
         public:
           ModuleProducer(const Networks::ModuleFilter& filter,
-            const Networks::ExecutableLookup* lookup, const ExecutionBounds& bounds, 
             const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
-          scheduler_(filter),
-          lookup_(lookup), bounds_(bounds), network_(network), lock_(lock),
+            scheduler_(filter), network_(network), lock_(lock),
             work_(work), doneCount_(0), shouldLog_(SCIRun::Core::Logging::Log::get().verbose()), numModules_(numModules)
           {
             log_.setVerbose(shouldLog_);
@@ -79,7 +77,7 @@ namespace SCIRun {
                 {
                   if (shouldLog_)
                     log_ << Core::Logging::DEBUG_LOG << "Producer pushing module " << mod.second << std::endl;
-                  
+
                   if (doneIds_.find(mod.second) != doneIds_.end())
                   {
                     if (shouldLog_)
@@ -101,8 +99,6 @@ namespace SCIRun {
 
           void operator()() const
           {
-            ScopedExecutionBoundsSignaller signaller(bounds_, [=]() { return lookup_->errorCode(); });
-
             if (shouldLog_)
               log_ << Core::Logging::DEBUG_LOG << "Producer started" << std::endl;
 
@@ -115,14 +111,12 @@ namespace SCIRun {
               log_ << Core::Logging::DEBUG_LOG << "Producer is done." << std::endl;
           }
 
-          bool isDone() const 
+          bool isDone() const
           {
             return doneCount_ >= numModules_;
           }
         private:
           BoostGraphParallelScheduler scheduler_;
-          const Networks::ExecutableLookup* lookup_;
-          const ExecutionBounds& bounds_;
           const Networks::NetworkInterface* network_;
           Core::Thread::Mutex* lock_;
           ModuleWorkQueuePtr work_;
