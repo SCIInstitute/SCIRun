@@ -52,9 +52,13 @@ SET(Interface_Modules_Math_HEADERS
   SolveLinearSystemDialog.h
   ConvertMatrixTypeDialog.h
   BuildNoiseColumnMatrixDialog.h
-  qwt_global.h
-  qwt_plot.h
 )
+
+IF(WITH_QWT_WIDGETS)
+  SET(Interface_Modules_Math_HEADERS ${Interface_Modules_Math_HEADERS}
+    qwt_global.h
+    qwt_plot.h)
+ENDIF()
 
 SET(Interface_Modules_Math_SOURCES 
   SelectSubMatrixDialog.cc

@@ -30,9 +30,12 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/Log.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+
+#if 0 //TODO: make compiler symbol for WITH_QWT_WIDGETS
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_legend.h>
+#endif
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -66,6 +69,8 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   addSpinBoxManager(maxIterationsSpinBox_, Variables::MaxIterations);
   addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
 
+#if 0 //TODO: make compiler symbol for WITH_QWT_WIDGETS
+  //TODO: fix parenting, all these objects leak 
 	QwtPlot *myPlot = this->qwtPlot;
 	QwtLegend *myLegend = new QwtLegend;
 	QwtPlotCurve *curve1 = new QwtPlotCurve("Current Target");
@@ -95,6 +100,7 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 	curve1->attach(myPlot);
 	myPlot->replot();
 	myPlot->show();
+#endif
 
   addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
   addComboBoxManager(methodComboBox_, Variables::Method, impl_->solverNameLookup_);

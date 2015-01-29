@@ -492,16 +492,24 @@ IF(NOT BUILD_HEADLESS)
   ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 ENDIF()
 
-SET(QWT_INCLUDE_DIR CACHE PATH "Qwt include directory")
-IF(NOT QWT_INCLUDE_DIR)
-  MESSAGE(FATAL_ERROR "QWT_INCLUDE_DIR should be set to path like 'qwt-6.0.1/include'")
-ENDIF()
+########################################################################
+# Find and configure Qwt custom widgets
+
+OPTION(WITH_QWT_WIDGETS "Qwt Custom Widgets" OFF)
+MARK_AS_ADVANCED(WITH_QWT_WIDGETS)
+
+IF(WITH_QWT_WIDGETS)
+  SET(QWT_INCLUDE_DIR CACHE PATH "Qwt include directory")
+  IF(NOT QWT_INCLUDE_DIR)
+    MESSAGE(FATAL_ERROR "QWT_INCLUDE_DIR should be set to path like 'qwt-6.0.1/include'")
+  ENDIF()
   INCLUDE_DIRECTORIES(${QWT_INCLUDE_DIR})
   SET(QWT_LIBRARY CACHE FILEPATH "Qwt library")
-IF(NOT QWT_LIBRARY)
-	MESSAGE(FATAL_ERROR "QWT_LIBRARY should be set to a filepath like 'qwt-6.0.1/lib/libqwt.so'")
+  IF(NOT QWT_LIBRARY)
+  	MESSAGE(FATAL_ERROR "QWT_LIBRARY should be set to a filepath like 'qwt-6.0.1/lib/libqwt.so'")
+  ENDIF()
+  SET(qwt_libraries ${QWT_LIBRARY} )
 ENDIF()
-SET(qwt_libraries ${QWT_LIBRARY} )
 
 ########################################################################
 # Find and configure dl library
