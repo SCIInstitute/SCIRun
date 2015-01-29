@@ -83,7 +83,7 @@ public:
   /// Default camera settings
   /// @{
   static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
-  static float getDefaultZNear()  {return 0.1f;}
+  static float getDefaultZNear()  {return 0.001f;}
   static float getDefaultZFar()   {return 100000.0f;}
   /// @}
 
