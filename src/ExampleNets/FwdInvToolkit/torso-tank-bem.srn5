@@ -538,7 +538,7 @@
 									<name>SliceIndex</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>84</value>
 									</value>
 								</second>
 							</item>
@@ -1468,7 +1468,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>26</count>
+			<count>28</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>BuildBEMatrix:6</moduleId1_>
@@ -1615,6 +1615,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>GetMatrixSlice:3</moduleId1_>
+				<port1_>
+					<name>Selected_Index</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetMatrixSlice:8</moduleId2_>
+				<port2_>
+					<name>Current_Index</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>GetMatrixSlice:8</moduleId1_>
 				<port1_>
 					<name>OutputMatrix</name>
@@ -1623,6 +1635,18 @@
 				<moduleId2_>SwapFieldDataWithMatrixEntries:10</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetMatrixSlice:8</moduleId1_>
+				<port1_>
+					<name>Selected_Index</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetMatrixSlice:14</moduleId2_>
+				<port2_>
+					<name>Current_Index</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1790,7 +1814,7 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>BuildBEMatrix:6</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-1216</first>
+				<first>-1368</first>
 				<second>-760</second>
 			</second>
 		</item>
@@ -1868,14 +1892,14 @@
 			<first>ReadField:12</first>
 			<second>
 				<first>-228</first>
-				<second>-228</second>
+				<second>-304</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:11</first>
 			<second>
 				<first>76</first>
-				<second>-228</second>
+				<second>-304</second>
 			</second>
 		</item>
 		<item>
