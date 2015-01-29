@@ -20,7 +20,6 @@
 #include <es-render/comp/MatUniform.hpp>
 #include <es-render/comp/StaticGLState.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
-#include <es-render/comp/StaticIBOMan.hpp>
 
 #include <bserialize/BSerialize.hpp>
 
@@ -57,8 +56,7 @@ class RenderBasicSysTrans :
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
-                             ren::StaticVBOMan,
-                             ren::StaticIBOMan>
+                             ren::StaticVBOMan>
 {
 public:
 
@@ -92,8 +90,7 @@ public:
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
-      const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
-      const es::ComponentGroup<ren::StaticIBOMan>& iboMan) override
+      const es::ComponentGroup<ren::StaticVBOMan>& vboMan) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -351,8 +348,6 @@ public:
                           ibo.front().primType, 0));
       }
     }
-
-    //iboMan.front().instance->removeInMemoryIBO(iboID);
 
     if (depthMask)
     {
