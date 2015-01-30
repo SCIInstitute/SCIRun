@@ -550,7 +550,7 @@
 									<name>SliceIndex</name>
 									<value>
 										<which>0</which>
-										<value>84</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -568,7 +568,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -608,13 +608,25 @@
 							</item>
 							<item>
 								<first>
+									<name>SliceIncrement</name>
+								</first>
+								<second>
+									<name>SliceIncrement</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>SliceIndex</name>
 								</first>
 								<second>
 									<name>SliceIndex</name>
 									<value>
 										<which>0</which>
-										<value>84</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -678,7 +690,7 @@
 									<name>SliceIndex</name>
 									<value>
 										<which>0</which>
-										<value>84</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
