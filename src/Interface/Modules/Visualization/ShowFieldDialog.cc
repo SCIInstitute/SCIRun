@@ -57,8 +57,10 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
     addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
     addDoubleSpinBoxManager(cylinder_rad_spin, ShowFieldModule::CylinderRadius);
     addSpinBoxManager(cylinder_res_spin, ShowFieldModule::CylinderResolution);
-    addCheckableButtonManager(edgesAsCylindersButton_, ShowFieldModule::EdgesAsCylinders);
-    addCheckableButtonManager(edgesAsLinesButton_, ShowFieldModule::EdgesAsLines);
+    addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowFieldModule::EdgesAsCylinders);
+    addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_}, ShowFieldModule::NodeAsSpheres);
+    
+    //TODO: make enumerable version of function
     connectButtonToExecuteSignal(showNodesCheckBox_);
     connectButtonToExecuteSignal(showEdgesCheckBox_);
     connectButtonToExecuteSignal(showFacesCheckBox_);
@@ -66,16 +68,14 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
     connectButtonToExecuteSignal(enableTransparencyEdgesCheckBox_);
     connectButtonToExecuteSignal(enableTransparencyFacesCheckBox_);
     connectButtonToExecuteSignal(invertNormalsCheckBox);
+    connectButtonToExecuteSignal(edgesAsLinesButton_);
+    connectButtonToExecuteSignal(edgesAsCylindersButton_);
+    connectButtonToExecuteSignal(nodesAsPointsButton_);
+    connectButtonToExecuteSignal(nodesAsSpheresButton_);
 
     connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
-    connect(nodesAsPointsButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
-    connect(nodesAsSpheresButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
 
-    pushNodeType();
-    pushEdgeType();
     pushColor();
-    pushTransparencyValue();
-    pushScaleValues();
 }
 
 void ShowFieldDialog::push()
@@ -112,26 +112,4 @@ void ShowFieldDialog::assignDefaultMeshColor()
 void ShowFieldDialog::pushColor()
 {
 	state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
-}
-
-void ShowFieldDialog::pushNodeType()
-{
-	state_->setValue(ShowFieldModule::NodeAsPoints, nodesAsPointsButton_->isChecked());
-	state_->setValue(ShowFieldModule::NodeAsSpheres, nodesAsSpheresButton_->isChecked());
-}
-
-void ShowFieldDialog::pushEdgeType()
-{
-  state_->setValue(ShowFieldModule::EdgesAsLines, edgesAsLinesButton_->isChecked());
-  state_->setValue(ShowFieldModule::EdgesAsCylinders, edgesAsCylindersButton_->isChecked());
-}
-
-void ShowFieldDialog::pushTransparencyValue()
-{
-  state_->setValue(ShowFieldModule::FaceTransparencyValue, 0.50f);
-}
-
-void ShowFieldDialog::pushScaleValues()
-{
-  state_->setValue(ShowFieldModule::SphereScaleValue, 1.0);
 }

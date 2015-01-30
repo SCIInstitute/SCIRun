@@ -75,12 +75,14 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
   state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
-  state->setValue(NodeAsPoints, true);
-  state->setValue(NodeAsSpheres, false);
-  state->setValue(EdgesAsLines, true);
-  state->setValue(EdgesAsCylinders, false);
+  //state->setValue(NodeAsPoints, true); //not used
+  state->setValue(NodeAsSpheres, 0);
+  //state->setValue(EdgesAsLines, true); //not used
+  state->setValue(EdgesAsCylinders, 0);
   state->setValue(FaceTransparencyValue, 0.50f);
   state->setValue(SphereScaleValue, 1.0);
+  state->setValue(CylinderRadius, 0.05);
+  state->setValue(CylinderResolution, 8);
   faceTransparencyValue_ = 0.50f;
   sphereScalar_ = 1.0;
 
@@ -109,7 +111,7 @@ RenderState ShowFieldModule::getNodeRenderState(
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).toBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).toBool());
 
-  renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).toBool());
+  renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).toInt() == 1);
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
 
@@ -138,8 +140,7 @@ RenderState ShowFieldModule::getEdgeRenderState(
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
-  bool test = state->getValue(ShowFieldModule::EdgesAsCylinders).toBool();
-  renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toBool());
+  renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toInt() == 1);
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
 
