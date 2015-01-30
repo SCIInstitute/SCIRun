@@ -61,6 +61,7 @@ namespace Visualization {
     static Core::Algorithms::AlgorithmParameterName EdgesAsCylinders;
     static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
     static Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
+    static Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
     static Core::Algorithms::AlgorithmParameterName SphereScaleValue;
 
     INPUT_PORT(0, Field, LegacyField);
@@ -144,6 +145,7 @@ namespace Visualization {
 
     double sphereScalar_;
     float faceTransparencyValue_;
+    float edgeTransparencyValue_;
 
   };
 

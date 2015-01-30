@@ -54,6 +54,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 	addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
 	addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
   addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
+  addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, ShowFieldModule::EdgeTransparencyValue);
   addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
   connectButtonToExecuteSignal(showNodesCheckBox_);
   connectButtonToExecuteSignal(showEdgesCheckBox_);
@@ -124,7 +125,8 @@ void ShowFieldDialog::pushEdgeType()
 
 void ShowFieldDialog::pushTransparencyValue()
 {
-  state_->setValue(ShowFieldModule::FaceTransparencyValue, 0.50f);
+  state_->setValue(ShowFieldModule::FaceTransparencyValue, 0.65f);
+  state_->setValue(ShowFieldModule::EdgeTransparencyValue, 0.65f);
 }
 
 void ShowFieldDialog::pushScaleValues()

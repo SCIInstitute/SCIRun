@@ -77,9 +77,11 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(NodeAsSpheres, false);
   state->setValue(EdgesAsLines, true);
   state->setValue(EdgesAsCylinders, false);
-  state->setValue(FaceTransparencyValue, 0.50f);
+  state->setValue(FaceTransparencyValue, 0.65f);
+  state->setValue(EdgeTransparencyValue, 0.65f);
   state->setValue(SphereScaleValue, 1.0);
-  faceTransparencyValue_ = 0.50f;
+  faceTransparencyValue_ = 0.65f;
+  edgeTransparencyValue_ = 0.65f;
   sphereScalar_ = 1.0;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
@@ -140,6 +142,8 @@ RenderState ShowFieldModule::getEdgeRenderState(
   renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toBool());
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+
+  edgeTransparencyValue_ = (float)(state->getValue(ShowFieldModule::EdgeTransparencyValue).toDouble());
 
   if (colorMap)
   {
@@ -1591,7 +1595,7 @@ void ShowFieldModule::renderEdges(
 
     if (state.get(RenderState::USE_TRANSPARENCY))
     {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(0.75f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(edgeTransparencyValue_)));
     }
     else
     {
@@ -1620,7 +1624,7 @@ void ShowFieldModule::renderEdges(
        if (state.get(RenderState::USE_TRANSPARENCY))
        {
          uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-                 "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+                 "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), edgeTransparencyValue_)));
        }
        else
        {
@@ -1636,7 +1640,7 @@ void ShowFieldModule::renderEdges(
       {
         /// \todo Add transparency slider.
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 0.7f)));
+                "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), edgeTransparencyValue_)));
       }
       else
       {
@@ -1707,4 +1711,5 @@ AlgorithmParameterName ShowFieldModule::EdgesAsLines("EdgesAsLines");
 AlgorithmParameterName ShowFieldModule::EdgesAsCylinders("EdgesAsCylinders");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
 AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
+AlgorithmParameterName ShowFieldModule::EdgeTransparencyValue("EdgeTransparencyValue");
 AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue");
