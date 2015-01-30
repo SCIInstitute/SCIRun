@@ -28,10 +28,12 @@
 
 SET(Core_Application_SRCS
   Application.cc
+  ${version_file}
 )
 
 SET(Core_Application_HEADERS
   Application.h
+  Version.h
   share.h
 )
 

@@ -344,7 +344,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -372,6 +372,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -379,6 +403,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>0.5</value>
 									</value>
 								</second>
 							</item>
@@ -451,6 +487,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -468,7 +516,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -496,6 +544,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -503,6 +575,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>0.5</value>
 									</value>
 								</second>
 							</item>
@@ -575,6 +659,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -592,7 +688,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -620,6 +716,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -627,6 +747,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>0.5</value>
 									</value>
 								</second>
 							</item>
@@ -699,6 +831,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>

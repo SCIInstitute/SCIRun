@@ -68,7 +68,6 @@ namespace SCIRun {
       ViewSceneDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = 0);
-      ~ViewSceneDialog();
       virtual void pull() {}
 
     Q_SIGNALS:
@@ -83,6 +82,7 @@ namespace SCIRun {
       void viewAxisSelected(int index);
       void viewVectorSelected(int index);
       void configurationButtonClicked();
+      void assignBackgroundColor();
 
     protected:
       virtual void closeEvent(QCloseEvent* evt) override;
@@ -98,7 +98,7 @@ namespace SCIRun {
       void addViewOptions();
       void addConfigurationButton();
       void addConfigurationDock(const QString& viewName);
-      void closeConfigurationDock();
+      void hideConfigurationDock();
 
       void lookDownAxisX(int upIndex, glm::vec3& up);
       void lookDownAxisY(int upIndex, glm::vec3& up);

@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
+#include "qbrush.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
@@ -35,22 +36,29 @@ using namespace SCIRun::Render;
 ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent) : QDockWidget(parent)
 {
   setupUi(this);
-  scene_ = parent;
-  
-  close();
+
   setWindowTitle(name);
   setAllowedAreas(Qt::BottomDockWidgetArea);
   setFloating(true);
   setVisible(false);
   setEnabled(false);
+  setStyleSheet(parent->styleSheet());
 
-  scene_->menuMouseControlChanged(mouseControlComboBox_->currentIndex());
+  parent->menuMouseControlChanged(mouseControlComboBox_->currentIndex());
 
-  connect(orientationCheckBox_, SIGNAL(clicked(bool)), scene_, SLOT(showOrientationChecked(bool)));
-  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), scene_, SLOT(menuMouseControlChanged(int)));
+  connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
+  connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
+  connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
 
+  setSampleColor(Qt::black);
+
+  WidgetStyleMixin::tabStyle(tabWidget);
 }
 
-ViewSceneControlsDock::~ViewSceneControlsDock()
+void ViewSceneControlsDock::setSampleColor(const QColor& color)
 {
+  QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
+    QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
+
+  currentBackgroundLabel_->setStyleSheet(styleSheet);
 }

@@ -70,6 +70,7 @@ namespace Datatypes {
     {
       RENDER_VBO_IBO,
       RENDER_RLIST_SPHERE,
+      RENDER_RLIST_CYLINDER,
     };
 
     explicit GeometryObject(DatatypeConstHandle dh);
@@ -158,9 +159,10 @@ namespace Datatypes {
           programName(program),
           renderState(state),
           renderType(renType),
-          mColorScheme(scheme),
 					vbo(vbo),
-					ibo(ibo)
+					ibo(ibo),
+          mColorScheme(scheme),
+          scalar(1.0)
       {}
 
 			static const char* getName() { return "SpireSubPass"; }
@@ -179,6 +181,7 @@ namespace Datatypes {
       RenderType    renderType;
 			SpireVBO			vbo;
 			SpireIBO			ibo;
+      double        scalar;
 
       struct Uniform
       {

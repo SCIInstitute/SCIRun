@@ -29,7 +29,6 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_DATA_CONVERSIONS_H
 #define CORE_ALGORITHMS_VISUALIZATION_DATA_CONVERSIONS_H
 
-#include <Core/Algorithms/Visualization/share.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
@@ -38,6 +37,8 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+
+#include <Core/Algorithms/Visualization/share.h>
 
 namespace SCIRun {
 

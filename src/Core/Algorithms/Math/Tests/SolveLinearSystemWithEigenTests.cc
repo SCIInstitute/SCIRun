@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <fstream>
 #include <boost/filesystem.hpp>
@@ -56,7 +56,7 @@ using namespace ::testing;
 
 #if 0
 TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystemWithEigenClasses)
-{ 
+{
   int n = 3;
   DenseMatrix m1(n,n);
   m1 << 2,-1,0,
@@ -70,12 +70,12 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystemWith
 
   auto rhs = m1*v;
   std::cout << "rhs = \n" << rhs << std::endl;
- 
+
   VectorXd x(n);
   x.setZero();
 
   std::cout << "matrix to solve: \n" << m1 << std::endl;
-  
+
   ConjugateGradient<DenseMatrix::EigenBase> cg;
   cg.compute(m1);
 
@@ -89,7 +89,7 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystemWith
   int i = 0;
   do {
     x = cg.solveWithGuess(rhs, x);
-    
+
     std::cout << i << " : " << cg.error() << std::endl;
     ++i;
   } while (cg.info() != Success && i < 2000);
@@ -240,11 +240,11 @@ TEST(SparseMatrixReadTest, DISABLED_RegexOfScirun4Format)
 #ifndef WIN32
   newline += "\r";
 #endif
-  
+
   EXPECT_EQ("2 3 4 {8 0 2 4 }{8 0 2 0 1 }{1 3.5 -1 2 }}" + newline, contents);
 
   auto rawOpt = converter.parseSparseMatrixString(contents);
-  ASSERT_TRUE(rawOpt);
+  ASSERT_TRUE(static_cast<bool>(rawOpt));
   auto raw = rawOpt.get();
 
   EXPECT_EQ("2", raw.get<0>());
@@ -334,11 +334,11 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
 
   std::cout << A->nrows() << " x " << A->ncols() << std::endl;
 
-  auto b = converter.make(rhsFile.string()); 
+  auto b = converter.make(rhsFile.string());
   ASSERT_TRUE(b.get() != nullptr);
   std::cout << b->nrows() << " x " << b->ncols() << std::endl;
   auto bCol = matrix_convert::to_column(b);
-  
+
   SolveLinearSystemAlgorithm::Outputs x;
   {
     ScopedTimer t("using algorithm object");

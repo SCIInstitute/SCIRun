@@ -28,7 +28,7 @@
 /// @todo Documentation Dataflow/Network/ModuleInterface.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_INTERFACE_H
-#define DATAFLOW_NETWORK_MODULE_INTERFACE_H 
+#define DATAFLOW_NETWORK_MODULE_INTERFACE_H
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
@@ -72,7 +72,7 @@ namespace Networks {
     virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const = 0;
     virtual size_t num_input_ports() const = 0;
     virtual std::vector<InputPortHandle> inputPorts() const = 0;
-    
+
     virtual std::string get_module_name() const = 0;
     virtual ModuleId get_id() const = 0;
     virtual bool has_ui() const = 0;
@@ -80,7 +80,7 @@ namespace Networks {
     virtual bool hasDynamicPorts() const = 0;
   };
 
-  class SCISHARE ModuleDisplayInterface 
+  class SCISHARE ModuleDisplayInterface
   {
   public:
     virtual ~ModuleDisplayInterface() {}
@@ -88,7 +88,7 @@ namespace Networks {
   };
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);
-  
+
   typedef boost::function<void(bool)> UiToggleFunc;
 
   class SCISHARE ModuleReexecutionStrategy
@@ -111,7 +111,7 @@ namespace Networks {
 
     virtual bool do_execute() = 0;
 
-    enum ExecutionState 
+    enum ExecutionState
     {
       NotExecuted,
       Waiting,
@@ -125,6 +125,9 @@ namespace Networks {
     virtual void setExecutionState(ExecutionState state) = 0;
     virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
 
+    typedef boost::signals2::signal<void()> ExecutionSelfRequestSignalType;
+    virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
+
     /// @todo for deserialization
     virtual void set_id(const std::string& id) = 0;
     virtual void set_state(ModuleStateHandle state) = 0;
@@ -135,7 +138,7 @@ namespace Networks {
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
-    
+
     /// @todo functions
     virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const = 0;
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
@@ -147,7 +150,7 @@ namespace Networks {
     virtual void preDestruction() {}
 
     /// @todo:
-    // need to hook up input ports for new data coming in, and output ports for cached state.
+    // need to hook up output ports for cached state.
     virtual bool needToExecute() const = 0;
 
     virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const = 0;
@@ -156,10 +159,12 @@ namespace Networks {
     virtual void setStateDefaults() = 0;
 
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const = 0;
-  
+
     virtual void portAddedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
     virtual void portRemovedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
     virtual void addPortConnection(const boost::signals2::connection& con) = 0;
+
+    virtual void enqueueExecuteAgain() = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

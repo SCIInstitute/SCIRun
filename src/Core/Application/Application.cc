@@ -41,6 +41,7 @@
 #include <Core/IEPlugin/IEPluginInit.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
+#include <Core/Application/Version.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -172,9 +173,7 @@ std::string Application::commandHelpString() const
 
 std::string Application::version() const
 {
-	/// @todo:
-  ///return CORE_APPLICATION_VERSION;
-  return "5.0.0 developer version";
+  return VersionInfo::GIT_VERSION_TAG.empty() ? "5.0.0 developer version" : VersionInfo::GIT_VERSION_TAG;
 }
 
 boost::filesystem::path Application::configDirectory() const

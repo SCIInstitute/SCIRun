@@ -50,6 +50,7 @@ SET(Interface_Modules_Fields_FORMS
   calculatedistancetofield.ui #TODO: fix case
   calculatedistancetofieldboundary.ui #TODO: fix case
   MapFieldDataOntoElems.ui
+  ConvertIndicesToFieldData.ui
   MapFieldDataOntoNodes.ui
   ClipFieldByFunction.ui
   RefineMesh.ui
@@ -87,6 +88,7 @@ SET(Interface_Modules_Fields_HEADERS
   share.h
   SwapFieldDataWithMatrixEntriesDialog.h
   EditMeshBoundingBoxDialog.h
+  ConvertIndicesToFieldDataDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -117,6 +119,7 @@ SET(Interface_Modules_Fields_SOURCES
   SwapFieldDataWithMatrixEntriesDialog.cc
   RefineMeshDialog.cc
   EditMeshBoundingBoxDialog.cc
+  ConvertIndicesToFieldDataDialog.cc
 )
 
 IF(WITH_TETGEN)

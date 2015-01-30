@@ -68,8 +68,9 @@ DEALINGS IN THE SOFTWARE.
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "systems/RenderBasicSys.h"
-#include "systems/RenderBasicSysTrans.h"
 #include "systems/RenderColorMapSys.h"
+#include "systems/RenderTransBasicSys.h"
+#include "systems/RenderTransColorMapSys.h"
 
 using namespace std::placeholders;
 
@@ -126,7 +127,8 @@ namespace SCIRun {
   {
 	  // Generate synchronous filesystem, manually add its static component,
 	  // then mark it as non-serializable.
-	  std::string filesystemRoot = ""; // Should set this to the relative path containing static data.
+    std::string filesystemRoot = SCIRun::Core::Application::Instance().executablePath().string();
+    filesystemRoot += boost::filesystem::path::preferred_separator;
 	  fs::StaticFS fileSystem(
 		  std::shared_ptr<fs::FilesystemSync>(new fs::FilesystemSync(filesystemRoot)));
 	  mCore.addStaticComponent(fileSystem);
@@ -178,8 +180,8 @@ namespace SCIRun {
 			float aspect = static_cast<float>(width) / static_cast<float>(height);
 
 			float perspFOVY = 0.59f;
-			float perspZNear = 1.0f;
-			float perspZFar = 2000.0f;
+			float perspZNear = 0.01f;
+			float perspZFar = 20000.0f;
 			glm::mat4 proj = glm::perspective(perspFOVY, aspect, perspZNear, perspZFar);
 			cam->data.setProjection(proj, perspFOVY, aspect, perspZNear, perspZFar);
 
@@ -231,6 +233,12 @@ namespace SCIRun {
 		{
 			showOrientation_ = value;
 		}
+
+    //------------------------------------------------------------------------------
+    void SRInterface::setBackgroundColor(QColor color)
+    {
+      mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+    }
 
 		//------------------------------------------------------------------------------
 		void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
@@ -409,6 +417,11 @@ namespace SCIRun {
             assetName = "Assets/sphere.geom";
           }
 
+          if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_CYLINDER)
+          {
+            assetName = "Assests/arrow.geom";
+          }
+
           addVBOToEntity(entityID, assetName);
           addIBOToEntity(entityID, assetName);
         }
@@ -419,6 +432,14 @@ namespace SCIRun {
 
         // Add transformation
         gen::Transform trafo;
+
+        if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_RLIST_SPHERE)
+        {
+          double scale = pass.scalar;
+          trafo.transform[0].x = scale;
+          trafo.transform[1].y = scale;
+          trafo.transform[2].z = scale;
+        }
         mCore.addComponent(entityID, trafo);
 
         // Add lighting uniform checks
@@ -704,6 +725,14 @@ namespace SCIRun {
 			GL(glBindBuffer(GL_ARRAY_BUFFER, arrowVBO));
 			GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, arrowIBO));
 
+      bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
+      bool cullFace = glIsEnabled(GL_CULL_FACE);
+      bool blend = glIsEnabled(GL_BLEND);
+
+      GL(glDepthMask(GL_TRUE));
+      GL(glDisable(GL_CULL_FACE));
+      GL(glDisable(GL_BLEND));
+
 			// Note that we can pull aspect ratio from the screen dimensions static
 			// variable.
 			gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
@@ -867,6 +896,19 @@ namespace SCIRun {
   }
 
 			mArrowAttribs.unbind();
+
+      if (!depthMask)
+      {
+        GL(glDepthMask(GL_FALSE));
+      }
+      if (cullFace)
+      {
+        GL(glEnable(GL_CULL_FACE));
+      }
+      if (blend)
+      {
+        GL(glEnable(GL_BLEND));
+      }
 		}
 
 		// Manually update the StaticCamera.

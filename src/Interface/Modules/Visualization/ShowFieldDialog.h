@@ -30,8 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #define INTERFACE_MODULES_SHOW_FIELD_H
 
 #include "Interface/Modules/Visualization/ui_ShowField.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Visualization/share.h>
 
@@ -39,7 +37,6 @@ namespace SCIRun {
 	namespace Gui {
 
 		class SCISHARE ShowFieldDialog : public ModuleDialogGeneric,
-			//public SCIRun::State::SendScalarState, 
 			public Ui::ShowFieldDialog
 		{
 			Q_OBJECT
@@ -53,7 +50,6 @@ namespace SCIRun {
 			private Q_SLOTS:
 			void push();
 			void pushColor();
-			void pushNodeType();
 			void assignDefaultMeshColor();
 		private:
 			QColor defaultMeshColor_;

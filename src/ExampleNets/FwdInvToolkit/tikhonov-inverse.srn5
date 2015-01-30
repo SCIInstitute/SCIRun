@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>15</count>
+			<count>16</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BuildNoiseColumnMatrix:5</first>
@@ -63,6 +63,34 @@
 				</second>
 			</item>
 			<item>
+				<first>CreateStandardColorMap:15</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
+										<which>2</which>
+										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>EditMeshBoundingBox:11</first>
 				<second>
 					<module>
@@ -82,7 +110,7 @@
 									<name>InputCenterX</name>
 									<value>
 										<which>2</which>
-										<value>-8.259999999999998</value>
+										<value> -8.2600</value>
 									</value>
 								</second>
 							</item>
@@ -94,7 +122,7 @@
 									<name>InputCenterY</name>
 									<value>
 										<which>2</which>
-										<value>33.530000000000001</value>
+										<value> 33.5300</value>
 									</value>
 								</second>
 							</item>
@@ -106,7 +134,7 @@
 									<name>InputCenterZ</name>
 									<value>
 										<which>2</which>
-										<value>264.685</value>
+										<value>264.6850</value>
 									</value>
 								</second>
 							</item>
@@ -118,7 +146,7 @@
 									<name>InputSizeX</name>
 									<value>
 										<which>2</which>
-										<value>76.740000000000009</value>
+										<value> 76.7400</value>
 									</value>
 								</second>
 							</item>
@@ -130,7 +158,7 @@
 									<name>InputSizeY</name>
 									<value>
 										<which>2</which>
-										<value>71.620000000000005</value>
+										<value> 71.6200</value>
 									</value>
 								</second>
 							</item>
@@ -142,7 +170,7 @@
 									<name>InputSizeZ</name>
 									<value>
 										<which>2</which>
-										<value>82.610000000000014</value>
+										<value> 82.6100</value>
 									</value>
 								</second>
 							</item>
@@ -420,7 +448,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>4</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -428,6 +456,30 @@
 								</first>
 								<second>
 									<name>IsSliceColumn</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxIndex</name>
+								</first>
+								<second>
+									<name>MaxIndex</name>
+									<value>
+										<which>0</which>
+										<value>20</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlayMode</name>
+								</first>
+								<second>
+									<name>PlayMode</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
@@ -580,7 +632,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -608,6 +660,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -615,6 +691,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -687,6 +775,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -704,7 +804,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>13</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -732,6 +832,30 @@
 							</item>
 							<item>
 								<first>
+									<name>EdgesAsCylinders</name>
+								</first>
+								<second>
+									<name>EdgesAsCylinders</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesAsLines</name>
+								</first>
+								<second>
+									<name>EdgesAsLines</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>FaceTransparency</name>
 								</first>
 								<second>
@@ -739,6 +863,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparencyValue</name>
+								</first>
+								<second>
+									<name>FaceTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -811,6 +947,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -828,7 +976,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -838,7 +986,7 @@
 									<name>LCurveText</name>
 									<value>
 										<which>2</which>
-										<value>SolveInverseProblemWithTikhonov:0 plot_graph &quot; 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 2.12879 1.22987 &quot; &quot; 1.12879 1.22987 2.12879 1.22987 2.12879 0.229873 &quot; -1 0 ; 
+										<value>SolveInverseProblemWithTikhonov:0 plot_graph &quot; 1.74693 6.23525 1.74693 6.23402 1.74694 6.23258 1.74694 6.2309 1.74694 6.22893 1.74695 6.22663 1.74695 6.22395 1.74696 6.22082 1.74697 6.21718 1.74698 6.21295 1.747 6.20805 1.74703 6.20238 1.74706 6.19583 1.74711 6.18829 1.74717 6.17965 1.74724 6.16976 1.74733 6.15851 1.74745 6.14574 1.7476 6.13134 1.74779 6.11517 1.74801 6.09712 1.74827 6.07708 1.74858 6.05498 1.74894 6.03076 1.74935 6.00439 1.74981 5.97589 1.75031 5.94528 1.75085 5.91266 1.75143 5.87813 1.75204 5.84183 1.75266 5.80393 1.7533 5.76461 1.75394 5.7241 1.75457 5.68259 1.7552 5.64031 1.75581 5.59747 1.7564 5.55429 1.75697 5.51096 1.75752 5.46766 1.75804 5.42454 1.75854 5.38174 1.75902 5.33936 1.75948 5.29749 1.75992 5.25615 1.76033 5.21539 1.76074 5.1752 1.76112 5.13556 1.7615 5.09646 1.76186 5.05789 1.76221 5.01983 1.76255 4.9823 1.76289 4.94536 1.76321 4.90907 1.76353 4.87354 1.76383 4.8389 1.76413 4.80529 1.76443 4.77286 1.76471 4.74176 1.76499 4.71211 1.76526 4.68401 1.76552 4.65753 1.76577 4.63269 1.76603 4.60946 1.76628 4.58777 1.76653 4.56751 1.76678 4.54854 1.76703 4.53071 1.76729 4.51385 1.76756 4.49781 1.76784 4.48245 1.76814 4.46769 1.76845 4.45346 1.76879 4.43975 1.76914 4.42656 1.76952 4.41395 1.76991 4.40196 1.77032 4.39065 1.77076 4.38009 1.7712 4.37029 1.77167 4.36128 1.77214 4.35305 1.77264 4.34556 1.77314 4.33876 1.77366 4.3326 1.77421 4.327 1.77477 4.32188 1.77537 4.31719 1.776 4.31285 1.77668 4.30879 1.77743 4.30495 1.77824 4.30128 1.77915 4.29774 1.78018 4.29426 1.78135 4.29082 1.78269 4.28738 1.78426 4.2839 1.78608 4.28037 1.78822 4.27676 1.79073 4.27305 1.79367 4.26924 1.79712 4.26532 1.80116 4.26127 1.80587 4.2571 1.81136 4.25278 1.81773 4.24831 1.82511 4.24367 1.83364 4.23884 1.84345 4.23379 1.8547 4.2285 1.86752 4.22294 1.88204 4.21708 1.89833 4.21092 1.91643 4.20443 1.93632 4.1976 1.95789 4.19044 1.98102 4.18296 2.00551 4.17517 2.03116 4.16709 2.05776 4.15875 2.08511 4.15016 2.11304 4.14134 2.14141 4.13229 2.17013 4.12303 2.19912 4.11355 2.22834 4.10384 2.25775 4.09389 2.2873 4.08368 2.31699 4.0732 2.34677 4.06244 2.37662 4.05136 2.40654 4.03995 2.43654 4.02818 2.46663 4.01598 2.49686 4.00331 2.52729 3.99006 2.55798 3.97614 2.58899 3.96142 2.62034 3.94574 2.65202 3.92895 2.68396 3.9109 2.71604 3.89141 2.74807 3.87036 2.77983 3.84761 2.81106 3.82309 2.84151 3.79674 2.87092 3.76858 2.89908 3.73864 2.9258 3.70706 2.95095 3.67399 2.97445 3.63967 2.99627 3.60435 3.01642 3.56834 3.03496 3.53194 3.05199 3.49547 3.06761 3.45916 3.08198 3.42323 3.09526 3.38777 3.10759 3.35281 3.11916 3.31826 3.1301 3.28395 3.14055 3.24966 3.15063 3.21513 3.16042 3.18008 3.16997 3.14428 3.17931 3.10753 3.18844 3.06967 3.19734 3.03065 3.20596 2.99049 3.21425 2.94928 3.22216 2.9072 3.22966 2.86454 3.2367 2.82161 3.24326 2.77883 3.24934 2.7366 3.25495 2.69534 3.26012 2.65541 3.26488 2.61707 3.26928 2.58048 3.27338 2.54561 3.27725 2.51229 3.28095 2.48023 3.28455 2.449 3.28812 2.41813 3.29172 2.38712 3.2954 2.35549 3.29919 2.32279 3.3031 2.28863 3.30715 2.2527 3.31132 2.21476 3.31556 2.17464 3.31983 2.13222 3.32409 2.08747 3.32827 2.0404 3.33231 1.99107 3.33618 1.93957 3.33983 1.88602 3.34323 1.83056 3.34636 1.77335 3.34923 1.71452 3.35182 1.65425 &quot; &quot; 0.746932 4.27676 1.78822 4.27676 1.78822 1.65425 &quot; 0.00258262 97 ; 
 </value>
 									</value>
 								</second>
@@ -851,7 +999,31 @@
 									<name>LambdaCorner</name>
 									<value>
 										<which>1</which>
-										<value>-1.00000000000000000e+000</value>
+										<value>2.58261876068270180e-003</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LambdaMax</name>
+								</first>
+								<second>
+									<name>LambdaMax</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LambdaMin</name>
+								</first>
+								<second>
+									<name>LambdaMin</name>
+									<value>
+										<which>1</which>
+										<value>9.99999999999999950e-007</value>
 									</value>
 								</second>
 							</item>
@@ -1013,19 +1185,19 @@
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:12</moduleId2_>
+				<moduleId2_>ShowField:13</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateStandardColorMap:14</moduleId1_>
+				<moduleId1_>CreateStandardColorMap:15</moduleId1_>
 				<port1_>
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:13</moduleId2_>
+				<moduleId2_>ShowField:12</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -1226,7 +1398,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>15</count>
+		<count>16</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>BuildNoiseColumnMatrix:5</first>
@@ -1243,6 +1415,13 @@
 			</second>
 		</item>
 		<item>
+			<first>CreateStandardColorMap:15</first>
+			<second>
+				<first>0.00000000000000000e+000</first>
+				<second>1.52000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
 			<first>EditMeshBoundingBox:11</first>
 			<second>
 				<first>-4.56000000000000000e+002</first>
@@ -1252,8 +1431,8 @@
 		<item>
 			<first>EvaluateLinearAlgebraBinary:4</first>
 			<second>
-				<first>-7.60000000000000000e+002</first>
-				<second>-5.32000000000000000e+002</second>
+				<first>-1.06400000000000000e+003</first>
+				<second>-6.08000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
@@ -1273,7 +1452,7 @@
 		<item>
 			<first>ReadField:9</first>
 			<second>
-				<first>-3.04000000000000000e+002</first>
+				<first>-2.28000000000000000e+002</first>
 				<second>-6.84000000000000000e+002</second>
 			</second>
 		</item>
@@ -1301,7 +1480,7 @@
 		<item>
 			<first>ShowField:13</first>
 			<second>
-				<first>-4.56000000000000000e+002</first>
+				<first>-6.08000000000000000e+002</first>
 				<second>3.04000000000000000e+002</second>
 			</second>
 		</item>
@@ -1315,8 +1494,8 @@
 		<item>
 			<first>SwapFieldDataWithMatrixEntries:7</first>
 			<second>
-				<first>-3.80000000000000000e+002</first>
-				<second>0.00000000000000000e+000</second>
+				<first>-4.56000000000000000e+002</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
@@ -1335,8 +1514,165 @@
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>0</count>
+		<count>11</count>
 		<item_version>0</item_version>
+		<item class_id="19" tracking_level="0" version="0">
+			<first>BuildNoiseColumnMatrix:5</first>
+			<second class_id="20" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Generate Noise&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Generate Noise</noteText>
+				<position>6</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:4</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Apply Forward Solution&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Apply Forward Solution</noteText>
+				<position>6</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:6</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Add Noise to Forward Solution&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Add Noise to Forward Solution</noteText>
+				<position>6</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>GetMatrixSlice:3</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Choose a column&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;(single time instant) &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;from data matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Choose a column
+(single time instant) 
+from data matrix</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ReadMatrix:1</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Load Epicardial Potential Data Matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Load Epicardial Potential Data Matrix</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ReadMatrix:2</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Load Forward&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt; Solution Matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Load Forward
+ Solution Matrix</noteText>
+				<position>6</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ShowField:13</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Visualize Solution &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;to Inverse Problem&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Visualize Solution 
+to Inverse Problem</noteText>
+				<position>5</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>SolveInverseProblemWithTikhonov:0</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Solve Inverse Problem&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Solve Inverse Problem</noteText>
+				<position>6</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>SwapFieldDataWithMatrixEntries:7</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Assign Solution Matrix Values&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;to Epicardial Geometry&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Assign Solution Matrix Values
+to Epicardial Geometry</noteText>
+				<position>6</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>SwapFieldDataWithMatrixEntries:8</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Assign Data Matrix values&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;to Epicardial Geometry&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Assign Data Matrix values
+to Epicardial Geometry</noteText>
+				<position>6</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>ViewScene:15</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Show Visualizations of True&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;and Inverse Solution Potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Show Visualizations of True
+and Inverse Solution Potentials</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>
