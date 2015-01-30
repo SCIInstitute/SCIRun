@@ -26,12 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Math/GetMatrixSlice.cc
-
 #include <Modules/Math/GetMatrixSlice.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
@@ -53,7 +52,7 @@ void GetMatrixSlice::setStateDefaults()
   setStateBoolFromAlgo(Parameters::IsSliceColumn);
   setStateIntFromAlgo(Parameters::SliceIndex);
   setStateIntFromAlgo(Parameters::SliceIncrement);
-  setStateDoubleFromAlgo(Parameters::PlayModeDelay);
+  setStateIntFromAlgo(Parameters::PlayModeDelay);
   setStateStringFromAlgoOption(Parameters::PlayModeType);
 }
 
@@ -84,9 +83,7 @@ void GetMatrixSlice::execute()
       auto playModeType = state->getValue(Parameters::PlayModeType).toString();
       if (playModeType == "loopforever")
       {
-        state->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
-        playing_ = true;
-        enqueueExecuteAgain();
+        playAgain(nextIndex % (maxIndex + 1));
       }
       else if (playModeType == "looponce")
       {
@@ -97,9 +94,7 @@ void GetMatrixSlice::execute()
         }
         else
         {
-          state->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
-          playing_ = true;
-          enqueueExecuteAgain();
+          playAgain(nextIndex % (maxIndex + 1));
         }
       }
     }
@@ -113,4 +108,15 @@ void GetMatrixSlice::execute()
       remark("Logical error: received invalid play mode value");
     }
   }
+}
+
+void GetMatrixSlice::playAgain(int nextIndex)
+{
+  auto state = get_state();
+  state->setValue(Parameters::SliceIndex, nextIndex);
+  playing_ = true;
+  int delay = state->getValue(Parameters::PlayModeDelay).toInt();
+  //std::cout << "delaying here for " << delay << " milliseconds" << std::endl;
+  boost::this_thread::sleep(boost::posix_time::milliseconds(delay));
+  enqueueExecuteAgain();
 }

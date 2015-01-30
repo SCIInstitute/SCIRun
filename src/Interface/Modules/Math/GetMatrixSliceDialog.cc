@@ -46,7 +46,7 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   addSpinBoxManager(indexSpinBox_, Parameters::SliceIndex);
   addTwoChoiceBooleanComboBoxManager(rowColumnComboBox_, Parameters::IsSliceColumn);
   addSpinBoxManager(indexIncrementSpinBox_, Parameters::SliceIncrement);
-  addDoubleSpinBoxManager(executionDelayDoubleSpinBox_, Parameters::PlayModeDelay);
+  addSpinBoxManager(executionDelaySpinBox_, Parameters::PlayModeDelay);
   
   playModeMap_.insert(StringPair("Loop once", "looponce"));
   playModeMap_.insert(StringPair("Loop forever (EXPERIMENTAL)", "loopforever"));

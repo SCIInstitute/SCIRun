@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>263</width>
+    <width>301</width>
     <height>311</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>263</width>
+    <width>301</width>
     <height>311</height>
    </size>
   </property>
@@ -252,23 +252,7 @@
       <item row="2" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Delay (s)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="executionDelayDoubleSpinBox_">
-        <property name="minimum">
-         <double>0.100000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>1000.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.100000000000000</double>
-        </property>
-        <property name="value">
-         <double>0.500000000000000</double>
+         <string>Step Delay (ms)</string>
         </property>
        </widget>
       </item>
@@ -291,6 +275,16 @@
           <string>Loop forever (EXPERIMENTAL)</string>
          </property>
         </item>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="executionDelaySpinBox_">
+        <property name="maximum">
+         <number>99999999</number>
+        </property>
+        <property name="singleStep">
+         <number>10</number>
+        </property>
        </widget>
       </item>
      </layout>
