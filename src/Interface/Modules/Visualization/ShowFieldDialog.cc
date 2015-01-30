@@ -72,6 +72,26 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 	pushColor();
   pushTransparencyValue();
   pushScaleValues();
+
+  /////Set unused widgets to be not visible
+  //Nodes Tab
+  resolutionSpinBox->setVisible(false);
+  label_5->setVisible(false); //resolution label
+  groupBox_3->setVisible(false); //Node coloring
+
+  //Edges Tab
+  enableTransparencyEdgesCheckBox_->setVisible(false);
+  label_9->setVisible(false); //resolution label
+  spinBox_2->setVisible(false); //resolution spinbox
+  label_8->setVisible(false); //scale label
+  doubleSpinBox_2->setVisible(false); //cylinder scale spinbox
+  groupBox_6->setVisible(false); //edge coloring
+
+  //Faces Tab
+  groupBox_5->setVisible(false); //face coloring
+  checkBox->setVisible(false); //Use Face Normal box
+  checkBox_2->setVisible(false); //Images as texture box
+
 }
 
 void ShowFieldDialog::push()
