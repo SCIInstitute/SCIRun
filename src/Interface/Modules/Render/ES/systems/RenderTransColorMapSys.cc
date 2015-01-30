@@ -110,6 +110,7 @@ public:
     GLuint iboNegXID = ibo.front().glid;
     GLuint iboNegYID = ibo.front().glid;
     GLuint iboNegZID = ibo.front().glid;
+    GLuint iboLinesID = ibo.front().glid;
 
     int index = 0;
     for (auto it = ibo.begin(); it != ibo.end(); ++it, ++index)
@@ -126,30 +127,39 @@ public:
         iboNegYID = it->glid;
       if (index == 5)
         iboNegZID = it->glid;
-    } 
-
-    Core::Geometry::Vector currentDir(camera.front().data.worldToView[0][2],
-                                      camera.front().data.worldToView[1][2],
-                                      camera.front().data.worldToView[2][2]);
-    
-    Core::Geometry::Vector absDir(abs(camera.front().data.worldToView[0][2]),
-                                      abs(camera.front().data.worldToView[1][2]),
-                                      abs(camera.front().data.worldToView[2][2]));
-
-    double xORy = absDir.x() > absDir.y() ? absDir.x() : absDir.y();
-    double orZ = absDir.z() > xORy ? absDir.z() : xORy;
-
-    if (orZ == absDir.x())
-    {
-      iboID = currentDir.x() < orZ ? iboNegXID : iboXID;
+      if (index == 6)
+        iboLinesID = it->glid;
     }
-    if (orZ == absDir.y())
+
+    if (ibo.front().primMode == Core::Datatypes::GeometryObject::SpireIBO::LINES)
     {
-      iboID = currentDir.y() < orZ ? iboNegYID : iboYID;
+      iboID = iboLinesID;
     }
-    if (orZ == absDir.z())
+    else
     {
-      iboID = currentDir.z() < orZ ? iboNegZID : iboZID;
+      Core::Geometry::Vector currentDir(camera.front().data.worldToView[0][2],
+        camera.front().data.worldToView[1][2],
+        camera.front().data.worldToView[2][2]);
+
+      Core::Geometry::Vector absDir(abs(camera.front().data.worldToView[0][2]),
+        abs(camera.front().data.worldToView[1][2]),
+        abs(camera.front().data.worldToView[2][2]));
+
+      double xORy = absDir.x() > absDir.y() ? absDir.x() : absDir.y();
+      double orZ = absDir.z() > xORy ? absDir.z() : xORy;
+
+      if (orZ == absDir.x())
+      {
+        iboID = currentDir.x() < orZ ? iboNegXID : iboXID;
+      }
+      if (orZ == absDir.y())
+      {
+        iboID = currentDir.y() < orZ ? iboNegYID : iboYID;
+      }
+      if (orZ == absDir.z())
+      {
+        iboID = currentDir.z() < orZ ? iboNegZID : iboZID;
+      }
     }
 
     // Setup *everything*. We don't want to enter multiple conditional
