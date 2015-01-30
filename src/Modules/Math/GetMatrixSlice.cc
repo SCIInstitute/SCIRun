@@ -30,6 +30,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Math;
@@ -69,11 +70,21 @@ void GetMatrixSlice::execute()
       state->setValue(Parameters::SliceIndex, (*index)->value());
     }
     setAlgoIntFromState(Parameters::SliceIndex);
-    auto output = algo().run(withInputData((InputMatrix, input)));
-    sendOutputFromAlgorithm(OutputMatrix, output);
-    sendOutput(Selected_Index, boost::make_shared<Int32>(state->getValue(Parameters::SliceIndex).toInt()));
-    auto maxIndex = output.additionalAlgoOutput()->toInt();
-    state->setValue(Parameters::MaxIndex, maxIndex);
+    int maxIndex;
+    try
+    {
+      auto output = algo().run(withInputData((InputMatrix, input)));
+      sendOutputFromAlgorithm(OutputMatrix, output);
+      sendOutput(Selected_Index, boost::make_shared<Int32>(state->getValue(Parameters::SliceIndex).toInt()));
+      maxIndex = output.additionalAlgoOutput()->toInt();
+      state->setValue(Parameters::MaxIndex, maxIndex);
+    }
+    catch (const Core::Algorithms::AlgorithmInputException&)
+    {
+      state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+      throw;
+    }
+    
 
     auto playMode = optional_any_cast_or_default<int>(state->getTransientValue(Parameters::PlayModeActive));
     if (playMode == GetMatrixSliceAlgo::PLAY)

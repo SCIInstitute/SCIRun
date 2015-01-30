@@ -34,6 +34,7 @@
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Thread;
 
 namespace SCIRun {
 namespace Dataflow {
@@ -42,9 +43,9 @@ namespace Engine {
   class SerialExecutionStrategyPrivate
   {
   public:
-    void execute(const ExecutionContext& context)
+    void execute(const ExecutionContext& context, Mutex& executionLock)
     {
-      executeWithCycleCheck(scheduler_, executor_, context);
+      executeWithCycleCheck(scheduler_, executor_, context, executionLock);
     }
   private:
     BoostGraphSerialScheduler scheduler_;
@@ -57,7 +58,7 @@ SerialExecutionStrategy::SerialExecutionStrategy() : impl_(new SerialExecutionSt
 {
 }
 
-void SerialExecutionStrategy::execute(const ExecutionContext& context)
+void SerialExecutionStrategy::execute(const ExecutionContext& context, Mutex& executionLock)
 {
-  impl_->execute(context);
+  impl_->execute(context, executionLock);
 }

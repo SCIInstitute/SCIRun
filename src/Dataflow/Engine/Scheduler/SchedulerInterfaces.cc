@@ -49,11 +49,16 @@ const ExecuteAllModules& ExecuteAllModules::Instance()
   return instance_;
 }
 
-ExecutionContext::ExecutionContext(const NetworkInterface& net) : network(net), lookup(net) {}
+ExecutionContext::ExecutionContext(NetworkInterface& net) : network(net), lookup(net) {}
 
 const ExecutionBounds& ExecutionContext::bounds() const
 {
   return executionBounds_;
+}
+
+void ExecutionContext::preexecute()
+{
+  network.setModuleExecutionState(ModuleInterface::Waiting, additionalFilter);
 }
 
 bool WaitsForStartupInitialization::waitedAlready_(false);

@@ -34,6 +34,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 #include <boost/signals2.hpp>
+#include <Core/Thread/Mutex.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
@@ -71,14 +72,15 @@ namespace Engine {
 
   struct SCISHARE ExecutionContext : boost::noncopyable
   {
-    explicit ExecutionContext(const Networks::NetworkInterface& net);
-    ExecutionContext(const Networks::NetworkInterface& net,
+    explicit ExecutionContext(Networks::NetworkInterface& net);
+    ExecutionContext(Networks::NetworkInterface& net,
                      const Networks::ExecutableLookup& lkp) : network(net), lookup(lkp) {}
 
-    ExecutionContext(const Networks::NetworkInterface& net,
-                     const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter) : network(net), lookup(lkp), additionalFilter(filter) {}
+    ExecutionContext(Networks::NetworkInterface& net,
+      const Networks::ExecutableLookup& lkp, Networks::ModuleFilter filter) : network(net), lookup(lkp), additionalFilter(filter) {}
 
-    const Networks::NetworkInterface& network;
+    void preexecute();
+    Networks::NetworkInterface& network;
     const Networks::ExecutableLookup& lookup;
     Networks::ModuleFilter additionalFilter;
 
@@ -99,14 +101,14 @@ namespace Engine {
   public:
     virtual ~NetworkExecutor() {}
     //NOTE: OrderType passed by value so it can be copied across threads--it's more temporary than the network and the bounds objects
-    virtual void execute(const ExecutionContext& context, OrderType order) = 0;
+    virtual void execute(const ExecutionContext& context, OrderType order, Core::Thread::Mutex& executionLock) = 0;
   };
 
   class ModuleExecutionOrder;
   typedef boost::shared_ptr<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
 
   template <class OrderType>
-  void executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor, const ExecutionContext& context)
+  void executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor, const ExecutionContext& context, Core::Thread::Mutex& executionLock)
   {
     OrderType order;
     try
@@ -119,7 +121,7 @@ namespace Engine {
       SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::ERROR_LOG << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
       return;
     }
-    executor.execute(context, order);
+    executor.execute(context, order, executionLock);
   }
 
   struct SCISHARE ExecuteAllModules
