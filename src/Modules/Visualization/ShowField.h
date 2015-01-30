@@ -62,6 +62,8 @@ namespace Visualization {
     static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
     static Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
     static Core::Algorithms::AlgorithmParameterName SphereScaleValue;
+    static Core::Algorithms::AlgorithmParameterName CylinderResolution;
+    static Core::Algorithms::AlgorithmParameterName CylinderRadius;
 
     INPUT_PORT(0, Field, LegacyField);
     INPUT_PORT(1, ColorMapObject, ColorMap);

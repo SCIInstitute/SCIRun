@@ -137,7 +137,7 @@ RenderState ShowFieldModule::getEdgeRenderState(
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
-
+  bool test = state->getValue(ShowFieldModule::EdgesAsCylinders).toBool();
   renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toBool());
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
@@ -1369,17 +1369,9 @@ void ShowFieldModule::renderEdges(
     boost::shared_ptr<SCIRun::Field> field,
     boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
     RenderState state,
-<<<<<<< HEAD
     Core::Datatypes::GeometryHandle geom, 
     const std::string& id) {
-    
-=======
-    Core::Datatypes::GeometryHandle geom,
-    const std::string& id)
-{
-  /// \todo Cylinder edge rendering.
 
->>>>>>> master
   VField* fld   = field->vfield();
   VMesh*  mesh  = field->vmesh();
 
@@ -1469,16 +1461,19 @@ void ShowFieldModule::renderEdges(
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
   // Use cylinders...
   if (state.get(RenderState::USE_CYLINDER)) {
-      renderType = GeometryObject::RENDER_RLIST_CYLINDER;
+      renderType = GeometryObject::RENDER_VBO_IBO;
       primIn = GeometryObject::SpireIBO::TRIANGLES;
       vboOnGPU = true;
   }
-  
-  std::vector<Point> points;
+  auto my_state = this->get_state();
+  double num_strips = double(my_state->getValue(CylinderResolution).toInt());
+  double radius = my_state->getValue(CylinderRadius).toDouble();
+  if (num_strips < 0) num_strips = 50.;
+  if (radius < 0) radius = 1.;
+  std::vector<Vector> points;
   std::vector<Vector> normals;
   std::vector<ColorRGB> colors;
   std::vector<uint32_t> indices;
-
   uint32_t index = 0;
   int64_t numVBOElements = 0;
   while (eiter != eiter_end) {
@@ -1542,27 +1537,93 @@ void ShowFieldModule::renderEdges(
       }
     }
     //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_CYLINDER)) {
-      //TODO
+    if (state.get(RenderState::USE_CYLINDER) && p0 != p1) {
+        //generate triangles for the cylinders.
+        Vector n((p0 - p1).normal()), u = (n + Vector(10,10,10)).normal();
+        Vector crx = Cross(u,n).normal();
+        Vector p;
+        for(double strips = 0.; strips <= num_strips; strips+=1.) {
+            uint32_t offset = (uint32_t)numVBOElements;
+            p = std::cos(2. * M_PI * strips / num_strips) * u +
+            std::sin(2. * M_PI * strips / num_strips) * crx;
+            p.normalize();
+            points.push_back(radius * p + Vector(p0));
+            if (colorScheme == GeometryObject::COLOR_MAP)
+                colors.push_back(ColorRGB(scol0, scol0, scol0));
+            else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+                colors.push_back(vcol0.diffuse);
+            numVBOElements++;
+            points.push_back(radius * p + Vector(p1));
+            if (colorScheme == GeometryObject::COLOR_MAP)
+                colors.push_back(ColorRGB(scol1, scol1, scol1));
+            else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+                colors.push_back(vcol1.diffuse);
+            numVBOElements++;
+            normals.push_back(p);
+            normals.push_back(p);
+            indices.push_back( 0 + offset);
+            indices.push_back( 1 + offset);
+            indices.push_back( 2 + offset);
+            indices.push_back( 2 + offset);
+            indices.push_back( 1 + offset);
+            indices.push_back( 3 + offset);
+        }
+        for (int jj = 0; jj < 6; jj++) indices.pop_back();
+        //generate triangles for the spheres
+        Vector pp1,pp2;
+        double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
+        std::vector<Point> epts = {{p0,p1}};
+        for (auto a : epts) {
+            double col = a==p0?scol0:scol1;
+            Material rgbcol = a==p0?vcol0:vcol1;
+            for (double phi = 0.; phi <= M_PI; phi += phi_inc ) {
+                for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) {
+                    uint32_t offset = (uint32_t)numVBOElements;
+                    pp1 = Vector(sin(theta) * cos(phi),sin(theta) * sin(phi),cos(theta));
+                    pp2 = Vector(sin(theta) * cos(phi+phi_inc),sin(theta) * sin(phi+phi_inc),cos(theta));
+                    points.push_back(radius * pp1 + Vector(a));
+                    if (colorScheme == GeometryObject::COLOR_MAP)
+                        colors.push_back(ColorRGB(col, col, col));
+                    else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+                        colors.push_back(rgbcol.diffuse);
+                    numVBOElements++;
+                    points.push_back(radius * pp2 + Vector(a));
+                    if (colorScheme == GeometryObject::COLOR_MAP)
+                        colors.push_back(ColorRGB(col, col, col));
+                    else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+                        colors.push_back(rgbcol.diffuse);
+                    numVBOElements++;
+                    normals.push_back(pp1);
+                    normals.push_back(pp2);
+                    indices.push_back( 0 + offset);
+                    indices.push_back( 1 + offset);
+                    indices.push_back( 2 + offset);
+                    indices.push_back( 2 + offset);
+                    indices.push_back( 1 + offset);
+                    indices.push_back( 3 + offset);
+                }
+            for (int jj = 0; jj < 6; jj++) indices.pop_back();
+            }
+        }
     } else {
-      points.push_back(p0);
+      points.push_back(Vector(p0));
       if (colorScheme == GeometryObject::COLOR_MAP)
         colors.push_back(ColorRGB(scol0, scol0, scol0));
       else if (colorScheme == GeometryObject::COLOR_IN_SITU)
         colors.push_back(vcol0.diffuse);
       indices.push_back(index);
       ++index;
-      points.push_back(p1);
+      points.push_back(Vector(p1));
       if (colorScheme == GeometryObject::COLOR_MAP)
         colors.push_back(ColorRGB(scol1, scol1, scol1));
       else if (colorScheme == GeometryObject::COLOR_IN_SITU)
         colors.push_back(vcol1.diffuse);
       indices.push_back(index);
       ++index;
+      ++numVBOElements;
     }
 
     ++eiter;
-    ++numVBOElements;
   }
   
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
@@ -1622,16 +1683,15 @@ void ShowFieldModule::renderEdges(
 
   // Construct IBO.
 
-	GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
+  GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
 
-	geom->mIBOs.push_back(geomIBO);
+  geom->mIBOs.push_back(geomIBO);
 
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass =
-      GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
-					colorScheme, state, renderType, geomVBO, geomIBO);
+      GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -1642,9 +1702,6 @@ void ShowFieldModule::renderEdges(
   }
 
   geom->mPasses.push_back(pass);
-
-  /// \todo Add spheres and other glyphs as display lists. Will want to
-  ///       build up to geometry / tesselation shaders if support is present.
 }
 
 AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
@@ -1661,3 +1718,5 @@ AlgorithmParameterName ShowFieldModule::EdgesAsCylinders("EdgesAsCylinders");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
 AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
 AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue");
+AlgorithmParameterName ShowFieldModule::CylinderRadius("CylinderRadius");
+AlgorithmParameterName ShowFieldModule::CylinderResolution("CylinderResolution");
