@@ -39,6 +39,7 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath.h>
 #include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 
