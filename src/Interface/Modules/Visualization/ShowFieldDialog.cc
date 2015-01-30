@@ -42,36 +42,40 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 	: ModuleDialogGeneric(state, parent),
 	defaultMeshColor_(Qt::gray)
 {
-	setupUi(this);
-	setWindowTitle(QString::fromStdString(name));
-	fixSize();
-	WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
-	addCheckBoxManager(showNodesCheckBox_, ShowFieldModule::ShowNodes);
-	addCheckBoxManager(showEdgesCheckBox_, ShowFieldModule::ShowEdges);
-	addCheckBoxManager(showFacesCheckBox_, ShowFieldModule::ShowFaces);
-	addCheckBoxManager(enableTransparencyNodesCheckBox_, ShowFieldModule::NodeTransparency);
-	addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
-	addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
-	addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
-  addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
-  addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
-  connectButtonToExecuteSignal(showNodesCheckBox_);
-  connectButtonToExecuteSignal(showEdgesCheckBox_);
-  connectButtonToExecuteSignal(showFacesCheckBox_);
-  connectButtonToExecuteSignal(enableTransparencyNodesCheckBox_);
-  connectButtonToExecuteSignal(enableTransparencyEdgesCheckBox_);
-  connectButtonToExecuteSignal(enableTransparencyFacesCheckBox_);
-  connectButtonToExecuteSignal(invertNormalsCheckBox);
+    setupUi(this);
+    setWindowTitle(QString::fromStdString(name));
+    fixSize();
+    WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
+    addCheckBoxManager(showNodesCheckBox_, ShowFieldModule::ShowNodes);
+    addCheckBoxManager(showEdgesCheckBox_, ShowFieldModule::ShowEdges);
+    addCheckBoxManager(showFacesCheckBox_, ShowFieldModule::ShowFaces);
+    addCheckBoxManager(enableTransparencyNodesCheckBox_, ShowFieldModule::NodeTransparency);
+    addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
+    addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
+    addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
+    addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
+    addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
+    addDoubleSpinBoxManager(cylinder_rad_spin, ShowFieldModule::CylinderRadius);
+    addSpinBoxManager(cylinder_res_spin, ShowFieldModule::CylinderResolution);
+    addCheckableButtonManager(edgesAsCylindersButton_, ShowFieldModule::EdgesAsCylinders);
+    addCheckableButtonManager(edgesAsLinesButton_, ShowFieldModule::EdgesAsLines);
+    connectButtonToExecuteSignal(showNodesCheckBox_);
+    connectButtonToExecuteSignal(showEdgesCheckBox_);
+    connectButtonToExecuteSignal(showFacesCheckBox_);
+    connectButtonToExecuteSignal(enableTransparencyNodesCheckBox_);
+    connectButtonToExecuteSignal(enableTransparencyEdgesCheckBox_);
+    connectButtonToExecuteSignal(enableTransparencyFacesCheckBox_);
+    connectButtonToExecuteSignal(invertNormalsCheckBox);
 
-	connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
-	connect(nodesAsPointsButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
-	connect(nodesAsSpheresButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
+    connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+    connect(nodesAsPointsButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
+    connect(nodesAsSpheresButton_, SIGNAL(clicked()), this, SLOT(pushNodeType()));
 
-	pushNodeType();
-  pushEdgeType();
-	pushColor();
-  pushTransparencyValue();
-  pushScaleValues();
+    pushNodeType();
+    pushEdgeType();
+    pushColor();
+    pushTransparencyValue();
+    pushScaleValues();
 }
 
 void ShowFieldDialog::push()

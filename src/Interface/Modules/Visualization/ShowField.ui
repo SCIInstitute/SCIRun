@@ -67,7 +67,7 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="nodesTab_">
            <attribute name="title">
@@ -333,9 +333,18 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+                 <widget class="QDoubleSpinBox" name="cylinder_rad_spin">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
+                  </property>
+                  <property name="minimum">
+                   <double>0.010000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>100.000000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>1.000000000000000</double>
                   </property>
                  </widget>
                 </item>
@@ -351,21 +360,21 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QSpinBox" name="spinBox_2">
+                 <widget class="QSpinBox" name="cylinder_res_spin">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="prefix">
                    <string/>
                   </property>
                   <property name="minimum">
-                   <number>3</number>
+                   <number>5</number>
                   </property>
                   <property name="maximum">
-                   <number>20</number>
+                   <number>100</number>
                   </property>
                   <property name="value">
-                   <number>6</number>
+                   <number>50</number>
                   </property>
                  </widget>
                 </item>
