@@ -52,6 +52,9 @@ void GetMatrixSlice::setStateDefaults()
 {
   setStateBoolFromAlgo(Parameters::IsSliceColumn);
   setStateIntFromAlgo(Parameters::SliceIndex);
+  setStateIntFromAlgo(Parameters::SliceIncrement);
+  setStateDoubleFromAlgo(Parameters::PlayModeDelay);
+  setStateStringFromAlgoOption(Parameters::PlayModeType);
 }
 
 void GetMatrixSlice::execute()
@@ -69,17 +72,36 @@ void GetMatrixSlice::execute()
     setAlgoIntFromState(Parameters::SliceIndex);
     auto output = algo().run(withInputData((InputMatrix, input)));
     sendOutputFromAlgorithm(OutputMatrix, output);
-    sendOutput(Selected_Index, boost::make_shared<Int32>(get_state()->getValue(Parameters::SliceIndex).toInt()));
+    sendOutput(Selected_Index, boost::make_shared<Int32>(state->getValue(Parameters::SliceIndex).toInt()));
     auto maxIndex = output.additionalAlgoOutput()->toInt();
     state->setValue(Parameters::MaxIndex, maxIndex);
 
-    auto playMode = optional_any_cast_or_default<int>(get_state()->getTransientValue(Parameters::PlayMode));
+    auto playMode = optional_any_cast_or_default<int>(state->getTransientValue(Parameters::PlayModeActive));
     if (playMode == GetMatrixSliceAlgo::PLAY)
     {
-      auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + 1;
-      state->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
-      playing_ = true;
-      enqueueExecuteAgain();
+      auto sliceIncrement = state->getValue(Parameters::SliceIncrement).toInt();
+      auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + sliceIncrement;
+      auto playModeType = state->getValue(Parameters::PlayModeType).toString();
+      if (playModeType == "loopforever")
+      {
+        state->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
+        playing_ = true;
+        enqueueExecuteAgain();
+      }
+      else if (playModeType == "looponce")
+      {
+        if (nextIndex >= (maxIndex + 1))
+        {
+          playing_ = false;
+          state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+        }
+        else
+        {
+          state->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
+          playing_ = true;
+          enqueueExecuteAgain();
+        }
+      }
     }
     else if (playMode == GetMatrixSliceAlgo::PAUSE)
     {
