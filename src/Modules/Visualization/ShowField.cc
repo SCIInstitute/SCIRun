@@ -75,10 +75,10 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
   state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
-  state->setValue(NodeAsPoints, true);
-  state->setValue(NodeAsSpheres, false);
-  state->setValue(EdgesAsLines, true);
-  state->setValue(EdgesAsCylinders, false);
+  //state->setValue(NodeAsPoints, true); //not used
+  state->setValue(NodeAsSpheres, 0);
+  //state->setValue(EdgesAsLines, true); //not used
+  state->setValue(EdgesAsCylinders, 0);
   state->setValue(FaceTransparencyValue, 0.65f);
   state->setValue(EdgeTransparencyValue, 0.65f);
   state->setValue(SphereScaleValue, 1.0);
