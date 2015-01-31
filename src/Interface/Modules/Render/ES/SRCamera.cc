@@ -114,7 +114,6 @@ void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton bt
       break;
 
     case SRInterface::MOUSE_NEWSCIRUN:
-      std::cout << "x: " << pos.x << "," << " y: " << pos.y << std::endl;
       if (btn == SRInterface::MOUSE_LEFT)    mArcLookAt->doRotation(screenSpace);
       if (btn == SRInterface::MOUSE_RIGHT)   mArcLookAt->doPan(screenSpace);
       break;
@@ -143,12 +142,6 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 
   /// \todo Use real FOV-Y when we allow the user to change the FOV.
   mArcLookAt->autoview(aabb, getDefaultFOVY());
-}
-
-//------------------------------------------------------------------------------
-void SRCamera::doAutoRotate(glm::ivec2 pos)
-{
-
 }
 
 //------------------------------------------------------------------------------

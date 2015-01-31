@@ -74,9 +74,6 @@ public:
   /// Handle mouse wheel event.
   void mouseWheelEvent(int32_t delta);
 
-  /// Perform autorotation.
-  void doAutoRotate(glm::ivec2 pos);
-
   /// Perform autoview.
   void doAutoView(const Core::Geometry::BBox& bbox);
 
