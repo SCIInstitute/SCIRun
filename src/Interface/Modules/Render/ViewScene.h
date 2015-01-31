@@ -83,6 +83,8 @@ namespace SCIRun {
       void viewVectorSelected(int index);
       void configurationButtonClicked();
       void assignBackgroundColor();
+      void handleUnselectedItem(const QString& name);
+      void handleSelectedItem(const QString& name);
 
     protected:
       virtual void closeEvent(QCloseEvent* evt) override;
@@ -90,6 +92,7 @@ namespace SCIRun {
       virtual void hideEvent(QHideEvent* evt) override;
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
+      bool isObjectUnselected(std::string name);
       void addToolBar();
       void addAutoViewButton();
       void addObjectToggleMenu();
@@ -116,6 +119,7 @@ namespace SCIRun {
       bool hideViewBar_;
       bool showConfiguration_;
       std::shared_ptr<class ViewSceneItemManager> itemManager_;
+      std::vector<std::string> unselectedObjectNames_;
 
       friend class ViewSceneControlsDock;
 		};
@@ -124,10 +128,11 @@ namespace SCIRun {
 		{
 			Q_OBJECT
 		public:
-			ViewSceneItemManager();
+      ViewSceneItemManager(SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        ViewSceneDialog* parent = 0);
 			QStandardItemModel* model() { return model_; }
 			public Q_SLOTS:
-			void addItem(const QString& name);
+			void addItem(const QString& name, bool checked);
 			void removeItem(const QString& name);
 			void removeAll();
 		Q_SIGNALS:
