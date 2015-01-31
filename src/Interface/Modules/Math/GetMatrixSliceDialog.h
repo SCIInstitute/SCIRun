@@ -53,6 +53,8 @@ private Q_SLOTS:
   void selectLastIndex();
   void startPlay();
   void stopPlay();
+private:
+  GuiStringTranslationMap playModeMap_;
 };
 
 }

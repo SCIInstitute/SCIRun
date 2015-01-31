@@ -42,7 +42,10 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(IsSliceColumn);
         ALGORITHM_PARAMETER_DECL(SliceIndex);
         ALGORITHM_PARAMETER_DECL(MaxIndex);
-				ALGORITHM_PARAMETER_DECL(PlayMode);
+				ALGORITHM_PARAMETER_DECL(PlayModeActive);
+        ALGORITHM_PARAMETER_DECL(PlayModeType);
+        ALGORITHM_PARAMETER_DECL(SliceIncrement);
+        ALGORITHM_PARAMETER_DECL(PlayModeDelay);
 
         class SCISHARE GetMatrixSliceAlgo : public AlgorithmBase
         {

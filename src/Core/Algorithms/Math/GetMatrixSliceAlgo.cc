@@ -43,13 +43,20 @@ using namespace SCIRun::Core::Algorithms::Math;
 ALGORITHM_PARAMETER_DEF(Math, IsSliceColumn);
 ALGORITHM_PARAMETER_DEF(Math, SliceIndex);
 ALGORITHM_PARAMETER_DEF(Math, MaxIndex);
-ALGORITHM_PARAMETER_DEF(Math, PlayMode);
+ALGORITHM_PARAMETER_DEF(Math, PlayModeActive);
+ALGORITHM_PARAMETER_DEF(Math, PlayModeType);
+ALGORITHM_PARAMETER_DEF(Math, SliceIncrement);
+ALGORITHM_PARAMETER_DEF(Math, PlayModeDelay);
 
 GetMatrixSliceAlgo::GetMatrixSliceAlgo()
 {
   addParameter(Parameters::IsSliceColumn, true);
   addParameter(Parameters::SliceIndex, 0);
-  addParameter(Parameters::PlayMode, false);
+  addParameter(Parameters::PlayModeActive, false);
+  //TODO DAN: make overload to handle const char*
+  add_option(Parameters::PlayModeType, "looponce", "looponce|loopforever"); //TODO add more play options
+  addParameter(Parameters::SliceIncrement, 1);
+  addParameter(Parameters::PlayModeDelay, 0);
 }
 
 AlgorithmOutput GetMatrixSliceAlgo::run_generic(const AlgorithmInput& input) const

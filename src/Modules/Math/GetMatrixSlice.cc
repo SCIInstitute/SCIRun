@@ -26,12 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Math/GetMatrixSlice.cc
-
 #include <Modules/Math/GetMatrixSlice.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
@@ -52,6 +52,9 @@ void GetMatrixSlice::setStateDefaults()
 {
   setStateBoolFromAlgo(Parameters::IsSliceColumn);
   setStateIntFromAlgo(Parameters::SliceIndex);
+  setStateIntFromAlgo(Parameters::SliceIncrement);
+  setStateIntFromAlgo(Parameters::PlayModeDelay);
+  setStateStringFromAlgoOption(Parameters::PlayModeType);
 }
 
 void GetMatrixSlice::execute()
@@ -67,19 +70,44 @@ void GetMatrixSlice::execute()
       state->setValue(Parameters::SliceIndex, (*index)->value());
     }
     setAlgoIntFromState(Parameters::SliceIndex);
-    auto output = algo().run(withInputData((InputMatrix, input)));
-    sendOutputFromAlgorithm(OutputMatrix, output);
-    sendOutput(Selected_Index, boost::make_shared<Int32>(get_state()->getValue(Parameters::SliceIndex).toInt()));
-    auto maxIndex = output.additionalAlgoOutput()->toInt();
-    state->setValue(Parameters::MaxIndex, maxIndex);
+    int maxIndex;
+    try
+    {
+      auto output = algo().run(withInputData((InputMatrix, input)));
+      sendOutputFromAlgorithm(OutputMatrix, output);
+      sendOutput(Selected_Index, boost::make_shared<Int32>(state->getValue(Parameters::SliceIndex).toInt()));
+      maxIndex = output.additionalAlgoOutput()->toInt();
+      state->setValue(Parameters::MaxIndex, maxIndex);
+    }
+    catch (const Core::Algorithms::AlgorithmInputException&)
+    {
+      state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+      throw;
+    }
+    
 
-    auto playMode = optional_any_cast_or_default<int>(get_state()->getTransientValue(Parameters::PlayMode));
+    auto playMode = optional_any_cast_or_default<int>(state->getTransientValue(Parameters::PlayModeActive));
     if (playMode == GetMatrixSliceAlgo::PLAY)
     {
-      auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + 1;
-      state->setValue(Parameters::SliceIndex, nextIndex % (maxIndex + 1));
-      playing_ = true;
-      enqueueExecuteAgain();
+      auto sliceIncrement = state->getValue(Parameters::SliceIncrement).toInt();
+      auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + sliceIncrement;
+      auto playModeType = state->getValue(Parameters::PlayModeType).toString();
+      if (playModeType == "loopforever")
+      {
+        playAgain(nextIndex % (maxIndex + 1));
+      }
+      else if (playModeType == "looponce")
+      {
+        if (nextIndex >= (maxIndex + 1))
+        {
+          playing_ = false;
+          state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+        }
+        else
+        {
+          playAgain(nextIndex % (maxIndex + 1));
+        }
+      }
     }
     else if (playMode == GetMatrixSliceAlgo::PAUSE)
     {
@@ -91,4 +119,15 @@ void GetMatrixSlice::execute()
       remark("Logical error: received invalid play mode value");
     }
   }
+}
+
+void GetMatrixSlice::playAgain(int nextIndex)
+{
+  auto state = get_state();
+  state->setValue(Parameters::SliceIndex, nextIndex);
+  playing_ = true;
+  int delay = state->getValue(Parameters::PlayModeDelay).toInt();
+  //std::cout << "delaying here for " << delay << " milliseconds" << std::endl;
+  boost::this_thread::sleep(boost::posix_time::milliseconds(delay));
+  enqueueExecuteAgain();
 }

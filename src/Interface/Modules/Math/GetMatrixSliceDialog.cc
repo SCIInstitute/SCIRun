@@ -45,6 +45,12 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
 
   addSpinBoxManager(indexSpinBox_, Parameters::SliceIndex);
   addTwoChoiceBooleanComboBoxManager(rowColumnComboBox_, Parameters::IsSliceColumn);
+  addSpinBoxManager(indexIncrementSpinBox_, Parameters::SliceIncrement);
+  addSpinBoxManager(executionDelaySpinBox_, Parameters::PlayModeDelay);
+  
+  playModeMap_.insert(StringPair("Loop once", "looponce"));
+  playModeMap_.insert(StringPair("Loop forever (EXPERIMENTAL)", "loopforever"));
+  addComboBoxManager(playModeComboBox_, Parameters::PlayModeType, playModeMap_);
 
   nextIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSkipForward));
   connect(nextIndexButton_, SIGNAL(clicked()), this, SLOT(incrementIndex()));
@@ -62,8 +68,11 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   pauseButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPause));
   connect(pauseButton_, SIGNAL(clicked()), this, SLOT(stopPlay()));
 
-  //playButton_->setDisabled(true);
-  //pauseButton_->setDisabled(true);
+  //TODO: add convenience function at ModuleDialogGeneric level
+  for (QToolButton* b : { nextIndexButton_, previousIndexButton_, firstIndexButton_, lastIndexButton_, playButton_, pauseButton_ })
+  {
+    b->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+  }
 }
 
 void GetMatrixSliceDialog::pull()
@@ -71,17 +80,20 @@ void GetMatrixSliceDialog::pull()
   pull_newVersionToReplaceOld();
   Pulling p(this);
   indexSlider_->setMaximum(state_->getValue(Parameters::MaxIndex).toInt());
+  indexSlider_->setMinimum(0);
 }
 
 void GetMatrixSliceDialog::incrementIndex()
 {
-  indexSpinBox_->stepUp();
+  for (int i = 0; i < indexIncrementSpinBox_->value(); ++i)
+    indexSpinBox_->stepUp();
   Q_EMIT executeActionTriggered();
 }
 
 void GetMatrixSliceDialog::decrementIndex()
 {
-  indexSpinBox_->stepDown();
+  for (int i = 0; i < indexIncrementSpinBox_->value(); ++i)
+    indexSpinBox_->stepDown();
   Q_EMIT executeActionTriggered();
 }
 
@@ -99,11 +111,11 @@ void GetMatrixSliceDialog::selectLastIndex()
 
 void GetMatrixSliceDialog::startPlay()
 {
-  state_->setTransientValue(Parameters::PlayMode, static_cast<int>(GetMatrixSliceAlgo::PLAY));
+  state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PLAY));
   Q_EMIT executeActionTriggered();
 }
 
 void GetMatrixSliceDialog::stopPlay()
 {
-  state_->setTransientValue(Parameters::PlayMode, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+  state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
 }
