@@ -38,78 +38,79 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 
 ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle state,
-	QWidget* parent /* = 0 */)
-	: ModuleDialogGeneric(state, parent),
-	defaultMeshColor_(Qt::gray)
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent),
+  defaultMeshColor_(Qt::gray)
 {
-    setupUi(this);
-    setWindowTitle(QString::fromStdString(name));
-    fixSize();
-    WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
-    addCheckBoxManager(showNodesCheckBox_, ShowFieldModule::ShowNodes);
-    addCheckBoxManager(showEdgesCheckBox_, ShowFieldModule::ShowEdges);
-    addCheckBoxManager(showFacesCheckBox_, ShowFieldModule::ShowFaces);
-    addCheckBoxManager(enableTransparencyNodesCheckBox_, ShowFieldModule::NodeTransparency);
-    addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
-    addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
-    addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
-    addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
-    addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
-    addDoubleSpinBoxManager(cylinder_rad_spin, ShowFieldModule::CylinderRadius);
-    addSpinBoxManager(cylinder_res_spin, ShowFieldModule::CylinderResolution);
-    addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowFieldModule::EdgesAsCylinders);
-    addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_}, ShowFieldModule::NodeAsSpheres);
-    
-    //TODO: make enumerable version of function
-    connectButtonToExecuteSignal(showNodesCheckBox_);
-    connectButtonToExecuteSignal(showEdgesCheckBox_);
-    connectButtonToExecuteSignal(showFacesCheckBox_);
-    connectButtonToExecuteSignal(enableTransparencyNodesCheckBox_);
-    connectButtonToExecuteSignal(enableTransparencyEdgesCheckBox_);
-    connectButtonToExecuteSignal(enableTransparencyFacesCheckBox_);
-    connectButtonToExecuteSignal(invertNormalsCheckBox);
-    connectButtonToExecuteSignal(edgesAsLinesButton_);
-    connectButtonToExecuteSignal(edgesAsCylindersButton_);
-    connectButtonToExecuteSignal(nodesAsPointsButton_);
-    connectButtonToExecuteSignal(nodesAsSpheresButton_);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
+  addCheckBoxManager(showNodesCheckBox_, ShowFieldModule::ShowNodes);
+  addCheckBoxManager(showEdgesCheckBox_, ShowFieldModule::ShowEdges);
+  addCheckBoxManager(showFacesCheckBox_, ShowFieldModule::ShowFaces);
+  addCheckBoxManager(enableTransparencyNodesCheckBox_, ShowFieldModule::NodeTransparency);
+  addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
+  addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
+  addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
+  addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
+  addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, ShowFieldModule::EdgeTransparencyValue);
+  addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
+  addDoubleSpinBoxManager(cylinder_rad_spin, ShowFieldModule::CylinderRadius);
+  addSpinBoxManager(cylinder_res_spin, ShowFieldModule::CylinderResolution);
+  addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowFieldModule::EdgesAsCylinders);
+  addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_ }, ShowFieldModule::NodeAsSpheres);
 
-    connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  //TODO: make enumerable version of function
+  connectButtonToExecuteSignal(showNodesCheckBox_);
+  connectButtonToExecuteSignal(showEdgesCheckBox_);
+  connectButtonToExecuteSignal(showFacesCheckBox_);
+  connectButtonToExecuteSignal(enableTransparencyNodesCheckBox_);
+  connectButtonToExecuteSignal(enableTransparencyEdgesCheckBox_);
+  connectButtonToExecuteSignal(enableTransparencyFacesCheckBox_);
+  connectButtonToExecuteSignal(invertNormalsCheckBox);
+  connectButtonToExecuteSignal(edgesAsLinesButton_);
+  connectButtonToExecuteSignal(edgesAsCylindersButton_);
+  connectButtonToExecuteSignal(nodesAsPointsButton_);
+  connectButtonToExecuteSignal(nodesAsSpheresButton_);
 
-    pushColor();
+  connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+
+  pushColor();
 }
 
 void ShowFieldDialog::push()
 {
-	if (!pulling_)
-	{
-		pushColor();
-	}
+  if (!pulling_)
+  {
+    pushColor();
+  }
 }
 
 void ShowFieldDialog::pull()
 {
-	pull_newVersionToReplaceOld();
-	Pulling p(this);
-	ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).toString());
-	defaultMeshColor_ = QColor(
-		static_cast<int>(color.r() * 255.0),
-		static_cast<int>(color.g() * 255.0),
-		static_cast<int>(color.b() * 255.0));
+  pull_newVersionToReplaceOld();
+  Pulling p(this);
+  ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  defaultMeshColor_ = QColor(
+    static_cast<int>(color.r() * 255.0),
+    static_cast<int>(color.g() * 255.0),
+    static_cast<int>(color.b() * 255.0));
 }
 
 void ShowFieldDialog::assignDefaultMeshColor()
 {
-	auto newColor = QColorDialog::getColor(defaultMeshColor_, this, "Choose default mesh color");
-	if (newColor.isValid())
-	{
-		defaultMeshColor_ = newColor;
-		//TODO: set color of button to this color
-		//defaultMeshColorButton_->set
-		pushColor();
-	}
+  auto newColor = QColorDialog::getColor(defaultMeshColor_, this, "Choose default mesh color");
+  if (newColor.isValid())
+  {
+    defaultMeshColor_ = newColor;
+    //TODO: set color of button to this color
+    //defaultMeshColorButton_->set
+    pushColor();
+  }
 }
 
 void ShowFieldDialog::pushColor()
 {
-	state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
+  state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
 }
