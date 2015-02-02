@@ -47,39 +47,40 @@ using namespace SCIRun::Render;
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent /* = 0 */)
 	: ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false),
-	itemManager_(new ViewSceneItemManager(state, this))
+	itemManager_(new ViewSceneItemManager)
 {
-	setupUi(this);
-	setWindowTitle(QString::fromStdString(name));
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
 
-	addToolBar();
-	addViewBar();
-	addConfigurationButton();
+  addToolBar();
+  addViewBar();
+  addConfigurationButton();
+  itemManager_->SetupConnections(this);
 
-	// Setup Qt OpenGL widget.
-	QGLFormat fmt;
-	fmt.setAlpha(true);
-	fmt.setRgba(true);
-	fmt.setDepth(true);
-	fmt.setDoubleBuffer(true);
-	fmt.setDepthBufferSize(24);
+  // Setup Qt OpenGL widget.
+  QGLFormat fmt;
+  fmt.setAlpha(true);
+  fmt.setRgba(true);
+  fmt.setDepth(true);
+  fmt.setDoubleBuffer(true);
+  fmt.setDepthBufferSize(24);
 
-	mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
+  mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
 
-	if (mGLWidget->isValid())
-	{
-		// Hook up the GLWidget
-		glLayout->addWidget(mGLWidget);
-		glLayout->update();
+  if (mGLWidget->isValid())
+  {
+    // Hook up the GLWidget
+    glLayout->addWidget(mGLWidget);
+    glLayout->update();
 
-		// Set spire transient value (should no longer be used).
-		mSpire = std::weak_ptr<Render::SRInterface>(mGLWidget->getSpire());
-	}
-	else
-	{
-		/// \todo Display dialog.
-		delete mGLWidget;
-	}
+    // Set spire transient value (should no longer be used).
+    mSpire = std::weak_ptr<Render::SRInterface>(mGLWidget->getSpire());
+  }
+  else
+  {
+    /// \todo Display dialog.
+    delete mGLWidget;
+  }
 
   {
 	  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
@@ -413,17 +414,9 @@ void ViewSceneDialog::handleSelectedItem(const QString& name)
 }
 
 //------------------------------------------------------------------------------
-bool ViewSceneDialog::isObjectUnselected(std::string name)
+bool ViewSceneDialog::isObjectUnselected(std::string& name)
 {
-  for (auto it = unselectedObjectNames_.begin(); it != unselectedObjectNames_.end(); ++it)
-  {
-    std::string objName = *it;
-    if (objName == name)
-    {
-      return true;
-    }
-  }
-  return false;
+  return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
 }
 
 void ViewSceneDialog::addToolBar()
@@ -578,14 +571,11 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
 	ModuleDialogGeneric::hideEvent(evt);
 }
 
-ViewSceneItemManager::ViewSceneItemManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ViewSceneDialog* parent) 
+ViewSceneItemManager::ViewSceneItemManager() 
   : model_(new QStandardItemModel(3, 1))
 {
 	model_->setItem(0, 0, new QStandardItem(QString("Object Selection")));
 	connect(model_, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(slotChanged(const QModelIndex&, const QModelIndex&)));
-
-  connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
-  connect(this, SIGNAL(itemSelected(const QString&)), parent, SLOT(handleSelectedItem(const QString&)));
 
 #if 0
 	//fill with dummy items for testing:
@@ -600,6 +590,12 @@ ViewSceneItemManager::ViewSceneItemManager(SCIRun::Dataflow::Networks::ModuleSta
 		model_->setItem(r + 1, item);
 	}
 #endif
+}
+
+void ViewSceneItemManager::SetupConnections(ViewSceneDialog* slotHolder)
+{
+  connect(this, SIGNAL(itemUnselected(const QString&)), slotHolder, SLOT(handleUnselectedItem(const QString&)));
+  connect(this, SIGNAL(itemSelected(const QString&)), slotHolder, SLOT(handleSelectedItem(const QString&)));
 }
 
 void ViewSceneItemManager::addItem(const QString& name, bool checked)

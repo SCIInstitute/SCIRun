@@ -92,7 +92,7 @@ namespace SCIRun {
       virtual void hideEvent(QHideEvent* evt) override;
       virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
-      bool isObjectUnselected(std::string name);
+      bool isObjectUnselected(std::string& name);
       void addToolBar();
       void addAutoViewButton();
       void addObjectToggleMenu();
@@ -128,9 +128,9 @@ namespace SCIRun {
 		{
 			Q_OBJECT
 		public:
-      ViewSceneItemManager(SCIRun::Dataflow::Networks::ModuleStateHandle state,
-        ViewSceneDialog* parent = 0);
+      ViewSceneItemManager();
 			QStandardItemModel* model() { return model_; }
+      void SetupConnections(ViewSceneDialog* slotHolder);
 			public Q_SLOTS:
 			void addItem(const QString& name, bool checked);
 			void removeItem(const QString& name);
