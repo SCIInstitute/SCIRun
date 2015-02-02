@@ -104,8 +104,19 @@ void ExecutionQueueManager::executeTopContext()
     {
       somethingToExecute_.wait(lock);
     }
-    if (contexts_.consume_one([&](ExecutionContextHandle ctx) { if (currentExecutor_) currentExecutor_->execute(*ctx); }))
+    if (contexts_.consume_one([&](ExecutionContextHandle ctx) { executeImpl(ctx); }))
+    {
       contextCount_.fetch_sub(1);
+    }
+  }
+}
+
+void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
+{
+  if (currentExecutor_ && ctx)
+  {
+    ctx->preexecute();
+    currentExecutor_->execute(*ctx, executionMutex_);
   }
 }
 

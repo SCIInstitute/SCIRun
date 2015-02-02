@@ -52,6 +52,7 @@ namespace Math {
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
   private:
     bool playing_;
+    void playAgain(int nextIndex);
   };
 }}}
 

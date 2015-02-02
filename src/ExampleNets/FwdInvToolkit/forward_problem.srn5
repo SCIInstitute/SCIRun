@@ -490,7 +490,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>4</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -513,6 +513,18 @@
 									<value>
 										<which>0</which>
 										<value>562</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlayModeType</name>
+								</first>
+								<second>
+									<name>PlayModeType</name>
+									<value>
+										<which>2</which>
+										<value>looponce</value>
 									</value>
 								</second>
 							</item>
@@ -1761,28 +1773,28 @@
 			<first>AddKnownsToLinearSystem:12</first>
 			<second class_id="17" tracking_level="0" version="0">
 				<first>-1.90000000000000000e+003</first>
-				<second>-3.04000000000000000e+002</second>
+				<second>0.00000000000000000e+000</second>
 			</second>
 		</item>
 		<item>
 			<first>BuildFEMatrix:6</first>
 			<second>
 				<first>-1.90000000000000000e+003</first>
-				<second>-4.56000000000000000e+002</second>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ClipFieldByFunction:21</first>
 			<second>
 				<first>-2.12800000000000000e+003</first>
-				<second>-8.36000000000000000e+002</second>
+				<second>-7.60000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ClipFieldByFunction:22</first>
 			<second>
 				<first>-2.12800000000000000e+003</first>
-				<second>-7.60000000000000000e+002</second>
+				<second>-6.08000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
@@ -1795,43 +1807,43 @@
 		<item>
 			<first>CreateMatrix:5</first>
 			<second>
-				<first>-1.97600000000000000e+003</first>
-				<second>-6.08000000000000000e+002</second>
+				<first>-1.90000000000000000e+003</first>
+				<second>-4.56000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:9</first>
 			<second>
-				<first>-1.31730000000000000e+003</first>
-				<second>-2.34899999999999980e+002</second>
+				<first>-1.29200000000000000e+003</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>FairMesh:16</first>
 			<second>
 				<first>-1.59600000000000000e+003</first>
-				<second>7.60000000000000000e+001</second>
+				<second>5.32000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetDomainBoundary:7</first>
 			<second>
 				<first>-1.36800000000000000e+003</first>
-				<second>-8.36000000000000000e+002</second>
+				<second>-7.60000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:15</first>
 			<second>
 				<first>-1.59600000000000000e+003</first>
-				<second>0.00000000000000000e+000</second>
+				<second>3.80000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:11</first>
 			<second>
 				<first>-1.44400000000000000e+003</first>
-				<second>-4.56000000000000000e+002</second>
+				<second>-1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
@@ -1845,35 +1857,35 @@
 			<first>MapFieldDataFromElemToNode:10</first>
 			<second>
 				<first>-1.44400000000000000e+003</first>
-				<second>-5.32000000000000000e+002</second>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataFromSourceToDestination:23</first>
 			<second>
 				<first>-1.44400000000000000e+003</first>
-				<second>-6.08000000000000000e+002</second>
+				<second>-4.56000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataFromSourceToDestination:25</first>
 			<second>
-				<first>-1.44400000000000000e+003</first>
-				<second>-6.84000000000000000e+002</second>
+				<first>-1.29200000000000000e+003</first>
+				<second>-6.08000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>MapFieldDataOntoElems:20</first>
 			<second>
 				<first>-2.12800000000000000e+003</first>
-				<second>-9.88000000000000000e+002</second>
+				<second>-9.12000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
 				<first>-2.12800000000000000e+003</first>
-				<second>-1.14000000000000000e+003</second>
+				<second>-1.21600000000000000e+003</second>
 			</second>
 		</item>
 		<item>
@@ -1887,14 +1899,14 @@
 			<first>ReadMatrix:1</first>
 			<second>
 				<first>-1.36800000000000000e+003</first>
-				<second>-1.14000000000000000e+003</second>
+				<second>-1.21600000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>SetFieldData:14</first>
 			<second>
-				<first>-1.59600000000000000e+003</first>
-				<second>-7.60000000000000000e+001</second>
+				<first>-1.57800000000000000e+003</first>
+				<second>2.75000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
@@ -1908,28 +1920,28 @@
 			<first>ShowField:17</first>
 			<second>
 				<first>-1.29200000000000000e+003</first>
-				<second>2.28000000000000000e+002</second>
+				<second>6.84000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:8</first>
 			<second>
-				<first>-9.88000000000000000e+002</first>
-				<second>-7.60000000000000000e+001</second>
+				<first>-9.70000000000000000e+002</first>
+				<second>2.75000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>SolveLinearSystem:13</first>
 			<second>
 				<first>-1.90000000000000000e+003</first>
-				<second>-2.28000000000000000e+002</second>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:18</first>
 			<second>
 				<first>-1.06400000000000000e+003</first>
-				<second>3.80000000000000000e+002</second>
+				<second>8.36000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>

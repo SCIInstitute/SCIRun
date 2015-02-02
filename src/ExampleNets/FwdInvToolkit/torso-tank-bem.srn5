@@ -186,7 +186,7 @@
 									<name>InputCenterX</name>
 									<value>
 										<which>2</which>
-										<value>-15.170000000000002</value>
+										<value>-15.1700</value>
 									</value>
 								</second>
 							</item>
@@ -198,7 +198,7 @@
 									<name>InputCenterY</name>
 									<value>
 										<which>2</which>
-										<value>44.325000000000003</value>
+										<value> 44.3250</value>
 									</value>
 								</second>
 							</item>
@@ -210,7 +210,7 @@
 									<name>InputCenterZ</name>
 									<value>
 										<which>2</which>
-										<value>287.85000000000002</value>
+										<value>287.8500</value>
 									</value>
 								</second>
 							</item>
@@ -222,7 +222,7 @@
 									<name>InputSizeX</name>
 									<value>
 										<which>2</which>
-										<value>100.52000000000001</value>
+										<value>100.5200</value>
 									</value>
 								</second>
 							</item>
@@ -234,7 +234,7 @@
 									<name>InputSizeY</name>
 									<value>
 										<which>2</which>
-										<value>100.87</value>
+										<value>100.8700</value>
 									</value>
 								</second>
 							</item>
@@ -246,7 +246,7 @@
 									<name>InputSizeZ</name>
 									<value>
 										<which>2</which>
-										<value>158.83999999999997</value>
+										<value>158.8400</value>
 									</value>
 								</second>
 							</item>
@@ -504,7 +504,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>4</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -515,6 +515,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MaxIndex</name>
+								</first>
+								<second>
+									<name>MaxIndex</name>
+									<value>
+										<which>0</which>
+										<value>509</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlayModeType</name>
+								</first>
+								<second>
+									<name>PlayModeType</name>
+									<value>
+										<which>2</which>
+										<value>looponce</value>
 									</value>
 								</second>
 							</item>
@@ -544,7 +568,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -560,13 +584,49 @@
 							</item>
 							<item>
 								<first>
+									<name>MaxIndex</name>
+								</first>
+								<second>
+									<name>MaxIndex</name>
+									<value>
+										<which>0</which>
+										<value>509</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlayModeType</name>
+								</first>
+								<second>
+									<name>PlayModeType</name>
+									<value>
+										<which>2</which>
+										<value>looponce</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SliceIncrement</name>
+								</first>
+								<second>
+									<name>SliceIncrement</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>SliceIndex</name>
 								</first>
 								<second>
 									<name>SliceIndex</name>
 									<value>
 										<which>0</which>
-										<value>84</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -584,7 +644,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>4</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -600,13 +660,37 @@
 							</item>
 							<item>
 								<first>
+									<name>MaxIndex</name>
+								</first>
+								<second>
+									<name>MaxIndex</name>
+									<value>
+										<which>0</which>
+										<value>509</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlayModeType</name>
+								</first>
+								<second>
+									<name>PlayModeType</name>
+									<value>
+										<which>2</which>
+										<value>looponce</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>SliceIndex</name>
 								</first>
 								<second>
 									<name>SliceIndex</name>
 									<value>
 										<which>0</which>
-										<value>84</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1432,7 +1516,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>26</count>
+			<count>28</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>BuildBEMatrix:6</moduleId1_>
@@ -1579,6 +1663,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>GetMatrixSlice:3</moduleId1_>
+				<port1_>
+					<name>Selected_Index</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetMatrixSlice:8</moduleId2_>
+				<port2_>
+					<name>Current_Index</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>GetMatrixSlice:8</moduleId1_>
 				<port1_>
 					<name>OutputMatrix</name>
@@ -1587,6 +1683,18 @@
 				<moduleId2_>SwapFieldDataWithMatrixEntries:10</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetMatrixSlice:8</moduleId1_>
+				<port1_>
+					<name>Selected_Index</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GetMatrixSlice:14</moduleId2_>
+				<port2_>
+					<name>Current_Index</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1754,7 +1862,7 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>BuildBEMatrix:6</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-1.21600000000000000e+003</first>
+				<first>-1.36800000000000000e+003</first>
 				<second>-7.60000000000000000e+002</second>
 			</second>
 		</item>
@@ -1832,14 +1940,14 @@
 			<first>ReadField:12</first>
 			<second>
 				<first>-2.28000000000000000e+002</first>
-				<second>-2.28000000000000000e+002</second>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:11</first>
 			<second>
 				<first>7.60000000000000000e+001</first>
-				<second>-2.28000000000000000e+002</second>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
@@ -1894,8 +2002,8 @@
 		<item>
 			<first>ViewScene:19</first>
 			<second>
-				<first>-9.76802499999999780e+002</first>
-				<second>3.87935000000000060e+002</second>
+				<first>-9.88000000000000000e+002</first>
+				<second>4.56000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1983,7 +2091,7 @@ p, li { white-space: pre-wrap; }
 time instant from
 the input data
 (inner surface)</noteText>
-				<position>0</position>
+				<position>5</position>
 				<fontSize>8</fontSize>
 			</second>
 		</item>
