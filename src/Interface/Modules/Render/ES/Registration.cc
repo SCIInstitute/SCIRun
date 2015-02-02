@@ -64,7 +64,7 @@ void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core)
   core.registerComponent<RenderColorMapGeom>();
   core.registerComponent<SRRenderState>();
   core.registerComponent<RenderList>();
-  //core.registerComponent<SpireSubPass>();
+  core.registerComponent<Core::Datatypes::GeometryObject::SpireSubPass>();
 }
 
 } // namespace Render
