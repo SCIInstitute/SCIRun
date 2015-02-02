@@ -30,17 +30,21 @@
 #define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkQueue.h>
+#include <boost/thread.hpp>
+#include <boost/atomic.hpp>
+#include <Core/Thread/ConditionVariable.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-  
+
   class SCISHARE ExecutionStrategy
   {
   public:
     virtual ~ExecutionStrategy() {}
-    virtual void execute(const ExecutionContext& context) = 0;
+    virtual void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) = 0;
 
     enum Type
     {
@@ -64,6 +68,30 @@ namespace Engine {
 
   typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
 
+
+  class SCISHARE ExecutionQueueManager
+  {
+  public:
+    ExecutionQueueManager();
+    void initExecutor(ExecutionStrategyFactoryHandle factory);
+    void setExecutionStrategy(ExecutionStrategyHandle exec);
+    void enqueueContext(ExecutionContextHandle context);
+    void start();
+    void stop();
+  private:
+    void executeImpl(ExecutionContextHandle context);
+    typedef DynamicExecutor::WorkQueue<ExecutionContextHandle>::Impl ExecutionContextQueue;
+    ExecutionContextQueue contexts_;
+
+    ExecutionStrategyHandle currentExecutor_;
+
+    boost::shared_ptr<boost::thread> executionLaunchThread_;
+    Core::Thread::Mutex executionMutex_;
+    Core::Thread::ConditionVariable somethingToExecute_;
+    boost::atomic<int> contextCount_; // need certain member function on spsc_queue, need to check boost version...
+
+    void executeTopContext();
+  };
 }
 }}
 

@@ -42,7 +42,7 @@ namespace Engine {
   {
   public:
     explicit DynamicMultithreadedNetworkExecutor(const Networks::NetworkInterface& network);
-    virtual void execute(const ExecutionContext& context, ParallelModuleExecutionOrder order) override;
+    virtual void execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Core::Thread::Mutex& executionLock) override;
   private:
     const Networks::NetworkInterface& network_;
   };

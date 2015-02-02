@@ -227,19 +227,9 @@ NetworkGlobalSettings& Network::settings()
 
 void Network::setModuleExecutionState(ModuleInterface::ExecutionState state, ModuleFilter filter)
 {
-  auto update = [=]() {
   BOOST_FOREACH(ModuleHandle module, modules_ | boost::adaptors::filtered(filter))
+  {
     module->setExecutionState(state);
-  };
-
-  //TODO: possible fix for network execute delay. Need to test with users.
-  if (settings().value("networkStateUpdateThread") == "yes")
-  {
-    boost::thread t(update);
-  }
-  else // for now, just run in this thread
-  {
-    update();
   }
 }
 

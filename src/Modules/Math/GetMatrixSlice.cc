@@ -26,11 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Math/GetMatrixSlice.cc
-
 #include <Modules/Math/GetMatrixSlice.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Scalar.h>
 #include <Core/Algorithms/Math/GetMatrixSliceAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
@@ -43,41 +44,90 @@ GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(Current_Index);
+  INITIALIZE_PORT(Selected_Index);
 }
 
 void GetMatrixSlice::setStateDefaults()
 {
   setStateBoolFromAlgo(Parameters::IsSliceColumn);
   setStateIntFromAlgo(Parameters::SliceIndex);
+  setStateIntFromAlgo(Parameters::SliceIncrement);
+  setStateIntFromAlgo(Parameters::PlayModeDelay);
+  setStateStringFromAlgoOption(Parameters::PlayModeType);
 }
 
 void GetMatrixSlice::execute()
 {
   auto input = getRequiredInput(InputMatrix);
-  if (needToExecute())
+  auto index = getOptionalInput(Current_Index);
+  if (needToExecute() || playing_)
   {
+    auto state = get_state();
     setAlgoBoolFromState(Parameters::IsSliceColumn);
-    setAlgoIntFromState(Parameters::SliceIndex);
-    auto output = algo().run(withInputData((InputMatrix, input)));
-    sendOutputFromAlgorithm(OutputMatrix, output);
-    get_state()->setValue(Parameters::MaxIndex, output.additionalAlgoOutput()->toInt());
-
-    /*
-    auto playMode = get_state()->getValue(Parameters::PlayMode).toBool();
-    if (playMode)
+    if (index && *index)
     {
-      auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + 1;
-      auto maxIndex = algo().get(Parameters::IsSliceColumn).toBool() && input ? input->ncols() : input->nrows();
-      if (nextIndex >= maxIndex)
+      state->setValue(Parameters::SliceIndex, (*index)->value());
+    }
+    setAlgoIntFromState(Parameters::SliceIndex);
+    int maxIndex;
+    try
+    {
+      auto output = algo().run(withInputData((InputMatrix, input)));
+      sendOutputFromAlgorithm(OutputMatrix, output);
+      sendOutput(Selected_Index, boost::make_shared<Int32>(state->getValue(Parameters::SliceIndex).toInt()));
+      maxIndex = output.additionalAlgoOutput()->toInt();
+      state->setValue(Parameters::MaxIndex, maxIndex);
+    }
+    catch (const Core::Algorithms::AlgorithmInputException&)
+    {
+      state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+      throw;
+    }
+    
+
+    auto playMode = optional_any_cast_or_default<int>(state->getTransientValue(Parameters::PlayModeActive));
+    if (playMode == GetMatrixSliceAlgo::PLAY)
+    {
+      auto sliceIncrement = state->getValue(Parameters::SliceIncrement).toInt();
+      auto nextIndex = algo().get(Parameters::SliceIndex).toInt() + sliceIncrement;
+      auto playModeType = state->getValue(Parameters::PlayModeType).toString();
+      if (playModeType == "loopforever")
       {
-        get_state()->setValue(Parameters::PlayMode, false);
+        playAgain(nextIndex % (maxIndex + 1));
       }
-      else
+      else if (playModeType == "looponce")
       {
-        get_state()->setValue(Parameters::SliceIndex, nextIndex);
-        enqueueExecuteAgain();
+        if (nextIndex >= (maxIndex + 1))
+        {
+          playing_ = false;
+          state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+        }
+        else
+        {
+          playAgain(nextIndex % (maxIndex + 1));
+        }
       }
     }
-    */
+    else if (playMode == GetMatrixSliceAlgo::PAUSE)
+    {
+      playing_ = false;
+    }
+    else if (playMode != 0)
+    {
+      playing_ = false;
+      remark("Logical error: received invalid play mode value");
+    }
   }
+}
+
+void GetMatrixSlice::playAgain(int nextIndex)
+{
+  auto state = get_state();
+  state->setValue(Parameters::SliceIndex, nextIndex);
+  playing_ = true;
+  int delay = state->getValue(Parameters::PlayModeDelay).toInt();
+  //std::cout << "delaying here for " << delay << " milliseconds" << std::endl;
+  boost::this_thread::sleep(boost::posix_time::milliseconds(delay));
+  enqueueExecuteAgain();
 }

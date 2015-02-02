@@ -30,7 +30,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Modules/Fields/BoxWidgetTypes.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -152,14 +151,15 @@ namespace SCIRun
   }
 }
 
-
-EditMeshBoundingBox::EditMeshBoundingBox() : Module(staticInfo_),
+EditMeshBoundingBox::EditMeshBoundingBox()
+: Module(staticInfo_),
+  cylinder_scale_(1.0),
   impl_(new EditMeshBoundingBoxImpl)
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-  INITIALIZE_PORT(Transformation_Widget);
-  INITIALIZE_PORT(Transformation_Matrix);
+    INITIALIZE_PORT(InputField);
+    INITIALIZE_PORT(OutputField);
+    INITIALIZE_PORT(Transformation_Widget);
+    INITIALIZE_PORT(Transformation_Matrix);
 }
 
 void EditMeshBoundingBox::createBoxWidget()
@@ -186,6 +186,7 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(OutputSizeX, 0.0);
   state->setValue(OutputSizeY, 0.0);
   state->setValue(OutputSizeZ, 0.0);
+  state->setValue(Scale, 1.0);
 
   //TODO
 
@@ -196,12 +197,12 @@ void EditMeshBoundingBox::setStateDefaults()
 void EditMeshBoundingBox::execute()
 {
   //TODO: need version to pass a func for ifNull case--fancy but useful. For now just reset each time.
-  clear_vals();
   setBoxRestrictions();
   auto field = getRequiredInput(InputField);
 
   if (needToExecute())
   {
+    clear_vals();
     update_state(Executing);
     update_input_attributes(field);
     executeImpl(field);
@@ -225,37 +226,233 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
   Point center;
   Vector size;
 
-  BBox bbox = f->vmesh()->get_bounding_box();
+  bbox_ = f->vmesh()->get_bounding_box();
 
-  if (!bbox.valid())
+  if (!bbox_.valid())
   {
     warning("Input field is empty -- using unit cube.");
-    bbox.extend(Point(0, 0, 0));
-    bbox.extend(Point(1, 1, 1));
+    bbox_.extend(Point(0, 0, 0));
+    bbox_.extend(Point(1, 1, 1));
   }
-  size = bbox.diagonal();
-  center = bbox.center();
+  size = bbox_.diagonal();
+  center = bbox_.center();
+  box_->setPosition(center,
+                    center + Vector(size.x() / 2., 0, 0),
+                    center + Vector(0, size.y() / 2., 0),
+                    center + Vector(0, 0, size.z() / 2.));
 
-  auto state = get_state();
-  state->setValue(InputCenterX, boost::lexical_cast<std::string>(center.x()));
-  state->setValue(InputCenterY, boost::lexical_cast<std::string>(center.y()));
-  state->setValue(InputCenterZ, boost::lexical_cast<std::string>(center.z()));
-  state->setValue(InputSizeX, boost::lexical_cast<std::string>(size.x()));
-  state->setValue(InputSizeY, boost::lexical_cast<std::string>(size.y()));
-  state->setValue(InputSizeZ, boost::lexical_cast<std::string>(size.z()));
+    auto state = get_state();
+    char s[32];
+    sprintf(s, "%8.4f",center.x());
+    state->setValue(InputCenterX, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",center.y());
+    state->setValue(InputCenterY, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",center.z());
+    state->setValue(InputCenterZ, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",size.x());
+    state->setValue(InputSizeX, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",size.y());
+    state->setValue(InputSizeY, boost::lexical_cast<std::string>(s));
+    sprintf(s, "%8.4f",size.z());
+    state->setValue(InputSizeZ, boost::lexical_cast<std::string>(s));
 }
 
 bool EditMeshBoundingBox::isBoxEmpty() const
 {
-  //TODO
-  return true;
-  /*
-  reset || box_scale_.get() <= 0 ||
-    (box_center_.get() == Point(0.0, 0.0, 0.0) &&
-    box_right_.get() == Point(0.0, 0.0, 0.0) &&
-    box_down_.get() == Point(0.0, 0.0, 0.0) &&
-    box_in_.get() == Point(0.0, 0.0, 0.0)))
-    */
+  Point c,r,d,b;
+  box_->getPosition(c,r,d,b);
+  return (c == r) || (c == d) || (c == b);
+}
+
+Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
+
+    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
+
+    GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
+    int64_t numVBOElements = 0;
+    std::vector<std::pair<Point,Point>> bounding_edges;
+    //get all the bbox edges
+    Point c,r,d,b;
+    box_->getPosition(c,r,d,b);
+    Vector x = r - c, y = d - c, z = b - c;
+    std::vector<Point> points;
+    points.resize(8);
+    points.at(0) = c+x+y+z;
+    points.at(1) = c+x+y-z;
+    points.at(2) = c+x-y+z;
+    points.at(3) = c+x-y-z;
+    points.at(4) = c-x+y+z;
+    points.at(5) = c-x+y-z;
+    points.at(6) = c-x-y+z;
+    points.at(7) = c-x-y-z;
+    uint32_t point_indicies[] = {
+        0,1,0,2,0,4,
+        7,6,7,5,3,7,
+        4,5,4,6,1,5,
+        3,2,3,1,2,6
+    };
+    auto state = get_state();
+    double scale = state->getValue(Scale).toDouble();
+    if (scale < 0) scale *= -1.;
+    int num_strips = int(30. * scale);
+    std::vector<Vector> tri_points;
+    std::vector<Vector> tri_normals;
+    std::vector<uint32_t> tri_indices;
+    //generate triangles for the cylinders.
+    for (int edge = 0; edge < 24; edge +=2) {
+        Vector c1,c2;
+        c1 = Vector(points[point_indicies[edge]]);
+        c2 = Vector(points[point_indicies[edge+1]]);
+        Vector n(c1 - c2), u = Vector(1,0,0);
+        n.normalize();
+        if (n == u)
+            u = Vector(0,1,0);
+        if (n == u)
+            u = Vector(0,0,1);
+        Vector crx = Cross(u,n);
+        Vector p;
+        for(int strips = 0; strips <= num_strips; strips++) {
+            uint32_t offset = (uint32_t)numVBOElements;
+            p = std::cos(2. * M_PI * (double)strips / (double)num_strips) * u +
+            std::sin(2. * M_PI * (double)strips / (double)num_strips) * crx;
+            tri_points.push_back(scale * p + c1);
+            numVBOElements++;
+            tri_points.push_back(scale * p + c2);
+            numVBOElements++;
+            tri_normals.push_back(p);
+            tri_normals.push_back(p);
+            if (strips < num_strips) {
+                tri_indices.push_back( 0 + offset);
+                tri_indices.push_back( 1 + offset);
+                tri_indices.push_back( 2 + offset);
+                tri_indices.push_back( 2 + offset);
+                tri_indices.push_back( 1 + offset);
+                tri_indices.push_back( 3 + offset);
+            }
+        }
+    }
+    //generate triangles for the spheres
+    Vector p1,p2;
+    double theta_inc = 2. * M_PI / double(num_strips), phi_inc = M_PI / double(num_strips);
+    for (auto a : points) {
+        for (double phi = 0.; phi <= M_PI; phi += phi_inc ) {
+            for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) {
+                uint32_t offset = (uint32_t)numVBOElements;
+                p1 = Vector(sin(theta) * cos(phi),sin(theta) * sin(phi),cos(theta));
+                p2 = Vector(sin(theta) * cos(phi+phi_inc),sin(theta) * sin(phi+phi_inc),cos(theta));
+                tri_points.push_back(scale * p1 + Vector(a));
+                numVBOElements++;
+                tri_points.push_back(scale * p2 + Vector(a));
+                numVBOElements++;
+                tri_normals.push_back(p1);
+                tri_normals.push_back(p2);
+                if (theta+theta_inc < 2. * M_PI) {
+                    tri_indices.push_back( 0 + offset);
+                    tri_indices.push_back( 1 + offset);
+                    tri_indices.push_back( 2 + offset);
+                    tri_indices.push_back( 2 + offset);
+                    tri_indices.push_back( 1 + offset);
+                    tri_indices.push_back( 3 + offset);
+                }
+            }
+        }
+    }
+
+
+    // Attempt some form of precalculation of iboBuffer and vboBuffer size.
+    uint32_t iboSize = (uint32_t)(tri_indices.size() * sizeof(uint32_t));
+    uint32_t vboSize = (uint32_t)(tri_points.size() * 2 * 3 * sizeof(float));
+
+
+    /// \todo To reduce memory requirements, we can use a 16bit index buffer.
+
+    /// \todo To further reduce a large amount of memory, get rid of the index
+    ///       buffer and use glDrawArrays to render without an IBO. An IBO is
+    ///       a waste of space.
+    ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
+
+    /// \todo Switch to unique_ptrs and move semantics.
+    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
+                                                                new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
+                                                                new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
+
+    // Accessing the pointers like this is contrived. We only do this for
+    // speed since we will be using the pointers in a tight inner loop.
+    CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
+    CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+
+
+    //write to the IBO/VBOs
+    for(size_t i = 0; i < tri_indices.size(); i++)
+        iboBuffer->write(tri_indices[i]);
+
+    for (size_t i = 0; i < tri_points.size(); i++)
+    {
+        // Write first point on line
+        vboBuffer->write(static_cast<float>(tri_points.at(i).x()));
+        vboBuffer->write(static_cast<float>(tri_points.at(i).y()));
+        vboBuffer->write(static_cast<float>(tri_points.at(i).z()));
+        // Write normal
+        vboBuffer->write(static_cast<float>(tri_normals.at(i).x()));
+        vboBuffer->write(static_cast<float>(tri_normals.at(i).y()));
+        vboBuffer->write(static_cast<float>(tri_normals.at(i).z()));
+    }
+
+    std::string uniqueNodeID = "bounding_edge_face";
+    std::string vboName      = uniqueNodeID + "VBO";
+    std::string iboName      = uniqueNodeID + "IBO";
+    std::string passName     = uniqueNodeID + "Pass";
+
+    // Construct VBO.
+    std::string shader = "Shaders/DirPhong";
+    std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
+    GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
+
+    // If true, then the VBO will be placed on the GPU. We don't want to place
+    // VBOs on the GPU when we are generating rendering lists.
+    GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+                                                                numVBOElements, bbox_, true);
+    geom->mVBOs.push_back(geomVBO);
+
+    // Construct IBO.
+    GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName,
+                                                                GeometryObject::SpireIBO::TRIANGLES,
+                                                                sizeof(uint32_t), iboBufferSPtr);
+    geom->mIBOs.push_back(geomIBO);
+
+    RenderState renState;
+
+    renState.set(RenderState::IS_ON, true);
+    renState.set(RenderState::USE_TRANSPARENCY, false);
+
+    renState.defaultColor = ColorRGB(1,1,1);
+    renState.set(RenderState::USE_DEFAULT_COLOR, true);
+    renState.set(RenderState::USE_NORMALS, true);
+
+    // Construct Pass.
+    GeometryObject::SpireSubPass pass =
+    GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+                                 colorScheme, renState, renderType, geomVBO, geomIBO);
+    // Add all uniforms generated above to the pass.
+    std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+                                                             glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
+                                                             glm::vec4(1.f, 1.f, 1.f, 1.f)));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+                                                             glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+    for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
+
+    geom->objectName = get_id();
+
+    geom->mPasses.push_back(pass);
+
+
+    return geom;
 }
 
 void
@@ -266,7 +463,7 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     Point center;
     Vector size;
     BBox bbox = f->vmesh()->get_bounding_box();
-    if (!bbox.valid()) 
+    if (!bbox.valid())
     {
       warning("Input field is empty -- using unit cube.");
       bbox.extend(Point(0, 0, 0));
@@ -327,41 +524,7 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     box_->setScale(bscale); // callback sets box_scale for us.
     box_->setPosition(center, right, down, in);
     box_->setCurrentMode(state->getValue(BoxMode).toInt());
-#ifdef WORKING_ON_EDITMESH
-    box_center_.set(center);
-    box_right_.set(right);
-    box_down_.set(down);
-    box_in_.set(in);
-    box_scale_.set(-1.0);
-#endif
   }
-  else
-  {
-#ifdef WORKING_ON_EDITMESH
-    const double l2norm = (box_right_.get().vector() +
-      box_down_.get().vector() +
-      box_in_.get().vector()).length();
-    const double newscale = l2norm * 0.015;
-    double bscale = box_real_scale_.get();
-    if (bscale < newscale * 1e-2 || bscale > newscale * 1e2)
-    {
-      bscale = newscale;
-    }
-    box_->setScale(bscale); // callback sets box_scale for us.
-    box_->setPosition(box_center_.get(), box_right_.get(),
-      box_down_.get(), box_in_.get());
-    box_->setCurrentMode(box_mode_.get());
-#endif
-  }
-#ifdef WORKING_ON_EDITMESH
-  GeomGroup *widget_group = new GeomGroup;
-  widget_group->add(box_->GetWidget());
-
-  GeometryOPortHandle ogport;
-  get_oport_handle("Transformation Widget", ogport);
-  widgetid_ = ogport->addObj(widget_group, "EditMeshBoundingBox Transform widget", &widget_lock_);
-  ogport->flushViews();
-#endif
 }
 
 void EditMeshBoundingBox::setBoxRestrictions()
@@ -510,6 +673,7 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
   // Convert the transform into a matrix and send it out.
   MatrixHandle mh(new DenseMatrix(t));
   sendOutput(Transformation_Matrix, mh);
+  sendOutput(Transformation_Widget, buildGeometryObject());
 }
 
 void EditMeshBoundingBox::widget_moved(bool last)
@@ -525,19 +689,7 @@ void EditMeshBoundingBox::widget_moved(bool last)
     state->setValue(OutputSizeX, (right.x() - center.x())*2.);
     state->setValue(OutputSizeY, (down.y() - center.y())*2.);
     state->setValue(OutputSizeZ, (in.z() - center.z())*2.);
-#ifdef WORKING_ON_EDITMESH
-    state->setValue(BoxMode, box_mode_.set(box_->GetMode());
-    box_center_.set(center);
-    box_right_.set(right);
-    box_down_.set(down);
-    box_in_.set(in);
-    box_scale_.set(1.0);
-    want_to_execute();
-#endif
   }
-#ifdef WORKING_ON_EDITMESH
-  box_real_scale_.set(box_->GetScale());
-#endif
 }
 
 BoxWidgetPtr WidgetFactory::createBox()
@@ -563,10 +715,7 @@ const AlgorithmParameterName EditMeshBoundingBox::OutputSizeX("OutputSizeX");
 const AlgorithmParameterName EditMeshBoundingBox::OutputSizeY("OutputSizeY");
 const AlgorithmParameterName EditMeshBoundingBox::OutputSizeZ("OutputSizeZ");
 //Widget Scale/Mode
-const AlgorithmParameterName EditMeshBoundingBox::DoubleScaleUp("DoubleScaleUp");
-const AlgorithmParameterName EditMeshBoundingBox::ScaleUp("ScaleUp");
-const AlgorithmParameterName EditMeshBoundingBox::ScaleDown("ScaleDown");
-const AlgorithmParameterName EditMeshBoundingBox::DoubleScaleDown("DoubleScaleDown");
+const AlgorithmParameterName EditMeshBoundingBox::Scale("Scale");
 const AlgorithmParameterName EditMeshBoundingBox::NoTranslation("NoTranslation");
 const AlgorithmParameterName EditMeshBoundingBox::XYZTranslation("XYZTranslation");
 const AlgorithmParameterName EditMeshBoundingBox::RDITranslation("RDITranslation");
@@ -579,4 +728,3 @@ const AlgorithmParameterName EditMeshBoundingBox::RestrictI("RestrictI");
 
 const AlgorithmParameterName EditMeshBoundingBox::BoxMode("BoxMode");
 const AlgorithmParameterName EditMeshBoundingBox::BoxRealScale("BoxRealScale");
-

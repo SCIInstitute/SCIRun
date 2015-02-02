@@ -507,6 +507,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
+  theModule_->connectExecuteSelfRequest([this]() { executeButtonPushed(); });
+
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
   //TODO: doh, how do i destroy myself?
@@ -929,6 +931,8 @@ ModuleWidget::~ModuleWidget()
 
     if (dockable_)
     {
+      if (isViewScene_) // see bug #808
+        dockable_->setFloating(false);
       SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
       delete dockable_;
     }
@@ -1046,7 +1050,7 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialog_)
     {
       if (!dialogFactory_)
-        dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList));
+        dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       dialog_->pull();

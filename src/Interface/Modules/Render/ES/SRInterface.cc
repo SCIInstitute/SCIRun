@@ -180,8 +180,8 @@ namespace SCIRun {
 			float aspect = static_cast<float>(width) / static_cast<float>(height);
 
 			float perspFOVY = 0.59f;
-			float perspZNear = 1.0f;
-			float perspZFar = 2000.0f;
+			float perspZNear = 0.01f;
+			float perspZFar = 20000.0f;
 			glm::mat4 proj = glm::perspective(perspFOVY, aspect, perspZNear, perspZFar);
 			cam->data.setProjection(proj, perspFOVY, aspect, perspZNear, perspZFar);
 

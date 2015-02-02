@@ -43,13 +43,20 @@ using namespace SCIRun::Core::Algorithms::Math;
 ALGORITHM_PARAMETER_DEF(Math, IsSliceColumn);
 ALGORITHM_PARAMETER_DEF(Math, SliceIndex);
 ALGORITHM_PARAMETER_DEF(Math, MaxIndex);
-ALGORITHM_PARAMETER_DEF(Math, PlayMode);
+ALGORITHM_PARAMETER_DEF(Math, PlayModeActive);
+ALGORITHM_PARAMETER_DEF(Math, PlayModeType);
+ALGORITHM_PARAMETER_DEF(Math, SliceIncrement);
+ALGORITHM_PARAMETER_DEF(Math, PlayModeDelay);
 
 GetMatrixSliceAlgo::GetMatrixSliceAlgo()
 {
   addParameter(Parameters::IsSliceColumn, true);
   addParameter(Parameters::SliceIndex, 0);
-  addParameter(Parameters::PlayMode, false);
+  addParameter(Parameters::PlayModeActive, false);
+  //TODO DAN: make overload to handle const char*
+  add_option(Parameters::PlayModeType, "looponce", "looponce|loopforever"); //TODO add more play options
+  addParameter(Parameters::SliceIncrement, 1);
+  addParameter(Parameters::PlayModeDelay, 0);
 }
 
 AlgorithmOutput GetMatrixSliceAlgo::run_generic(const AlgorithmInput& input) const
@@ -80,7 +87,9 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
     {
       auto sparse = matrix_cast::as_sparse(matrix);
       if (sparse)
-        return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->col(index)), max);
+      {
+        THROW_ALGORITHM_PROCESSING_ERROR("TODO: need a fix for slicing a column from SparseRowMatrix. Direct Eigen call is buggy. Waiting on an Eigen upgrade");
+      }
       return boost::make_tuple(nullptr, 0);
     }
   }
@@ -89,7 +98,6 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
     checkIndex(index, matrix->nrows());
     auto max = matrix->nrows() - 1;
 
-    // dense case only now
     auto dense = matrix_cast::as_dense(matrix);
     if (dense)
       return boost::make_tuple(boost::make_shared<DenseMatrix>(dense->row(index)), max);

@@ -35,17 +35,20 @@
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Thread;
 
 namespace
 {
   struct LinearExecution : public WaitsForStartupInitialization
   {
-    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
+    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock) 
+      : lookup_(lookup), order_(order), bounds_(bounds), executionLock_(executionLock)
     {
     }
     void operator()() const
     {
       waitForStartupInit(lookup_);
+      Guard g(executionLock_->get());
       bounds_.executeStarts_();
       BOOST_FOREACH(const ModuleId& id, order_)
       {
@@ -60,11 +63,12 @@ namespace
     const ExecutableLookup& lookup_;
     ModuleExecutionOrder order_;
     const ExecutionBounds& bounds_;
+    Mutex* executionLock_;
   };
 }
 
-void LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order)
+void LinearSerialNetworkExecutor::execute(const ExecutionContext& context, ModuleExecutionOrder order, Mutex& executionLock)
 {
-  LinearExecution runner(context.lookup, order, context.bounds());
+  LinearExecution runner(context.lookup, order, context.bounds(), &executionLock);
   boost::thread execution(runner);
 }

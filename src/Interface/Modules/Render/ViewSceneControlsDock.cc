@@ -36,14 +36,13 @@ using namespace SCIRun::Render;
 ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent) : QDockWidget(parent)
 {
   setupUi(this);
-  //scene_ = parent;
 
-  close();
   setWindowTitle(name);
   setAllowedAreas(Qt::BottomDockWidgetArea);
   setFloating(true);
   setVisible(false);
   setEnabled(false);
+  setStyleSheet(parent->styleSheet());
 
   parent->menuMouseControlChanged(mouseControlComboBox_->currentIndex());
 
@@ -56,14 +55,10 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   WidgetStyleMixin::tabStyle(tabWidget);
 }
 
-ViewSceneControlsDock::~ViewSceneControlsDock()
-{
-}
-
-void ViewSceneControlsDock::setSampleColor(QColor color)
+void ViewSceneControlsDock::setSampleColor(const QColor& color)
 {
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(color.red()) + "," +
     QString::number(color.green()) + "," + QString::number(color.blue()) + "); }";
-    
+
   currentBackgroundLabel_->setStyleSheet(styleSheet);
 }

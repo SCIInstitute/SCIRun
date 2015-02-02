@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>421</width>
-    <height>357</height>
+    <width>482</width>
+    <height>359</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -320,13 +320,34 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="outputSizeXSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="outputSizeXSpinBox_">
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="outputSizeYSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="outputSizeYSpinBox_">
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QDoubleSpinBox" name="outputSizeZSpinBox_"/>
+       <widget class="QDoubleSpinBox" name="outputSizeZSpinBox_">
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -334,7 +355,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="font">
       <font>
@@ -357,6 +378,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="doubleUpScaleToolButton_">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>++</string>
           </property>
@@ -458,4 +482,10 @@
  </widget>
  <resources/>
  <connections/>
+ <slots>
+  <slot>ScaleUpPush()</slot>
+  <slot>ScaleDoubleUpPush()</slot>
+  <slot>ScaleDownPush()</slot>
+  <slot>ScaleDoubleDownPush()</slot>
+ </slots>
 </ui>

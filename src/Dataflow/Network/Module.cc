@@ -39,12 +39,14 @@
 #include <Dataflow/Network/NullModuleState.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Mutex.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
 
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
@@ -124,6 +126,7 @@ size_t Module::num_output_ports() const
 bool Module::do_execute() throw()
 {
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
+  //std::cout << "executing module: " << id_ << std::endl;
   executeBegins_(id_);
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
@@ -532,8 +535,11 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
 
 bool Module::needToExecute() const
 {
+  static Mutex needToExecuteLock("buh");
   if (reexecute_)
   {
+    //Test fix for reexecute problem. Seems like it could be a race condition, but not sure.
+    Guard g(needToExecuteLock.get());
     auto val = reexecute_->needToExecute();
     //Log::get() << DEBUG_LOG << id_ << " Using real needToExecute strategy object, value is: " << val << std::endl;
     return val;
@@ -700,5 +706,10 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
 
 void Module::enqueueExecuteAgain()
 {
-  std::cout << "TODO: Module needs to execute again" << std::endl;
+  executionSelfRequested_();
+}
+
+boost::signals2::connection Module::connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber)
+{
+  return executionSelfRequested_.connect(subscriber);
 }
