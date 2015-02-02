@@ -58,6 +58,7 @@ namespace Datatypes {
     StandardColorMapFactory();
     static ColorMap rainbow_;
     static ColorMap grayscale_;
+    static ColorMap blackbody_;
   };
 
 }}}

@@ -184,6 +184,7 @@ namespace SCIRun {
 			float perspZFar = 20000.0f;
 			glm::mat4 proj = glm::perspective(perspFOVY, aspect, perspZNear, perspZFar);
 			cam->data.setProjection(proj, perspFOVY, aspect, perspZNear, perspZFar);
+            cam->data.winWidth = static_cast<float>(width);
 
 			// Setup default ortho camera projection
 			float orthoZNear = -1000.0f;
@@ -193,6 +194,7 @@ namespace SCIRun {
 				/*bottom*/ -1.0f,      /*top*/   1.0f,
 				/*znear*/  orthoZNear, /*zfar*/  orthoZFar);
 			orthoCam->data.setOrthoProjection(orthoProj, aspect, 2.0f, 2.0f, orthoZNear, orthoZFar);
+            orthoCam->data.winWidth = static_cast<float>(width);
 		}
 
 		//------------------------------------------------------------------------------

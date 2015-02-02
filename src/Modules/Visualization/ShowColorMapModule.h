@@ -31,6 +31,7 @@
 #define MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Geometry.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -43,7 +44,10 @@ namespace Visualization {
   {
   public:
 		ShowColorMapModule();
-    virtual void execute();
+        virtual void execute();
+        Core::Datatypes::GeometryHandle buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap> cm,
+                                            Dataflow::Networks::ModuleStateHandle state,
+                                            const std::string& id);
 
 		static Core::Algorithms::AlgorithmParameterName DisplaySide;
 		static Core::Algorithms::AlgorithmParameterName DisplayLength;
@@ -56,7 +60,7 @@ namespace Visualization {
 		static Core::Algorithms::AlgorithmParameterName AddExtraSpace; 
 
 		virtual void setStateDefaults();
-    INPUT_PORT(0, ColorMapObject, ColorMap);
+        INPUT_PORT(0, ColorMapObject, ColorMap);
 		OUTPUT_PORT(0, GeometryOutput, GeometryObject); 
 
   };

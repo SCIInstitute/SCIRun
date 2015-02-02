@@ -87,6 +87,7 @@ namespace Gui {
     virtual void contextMenuEvent(QContextMenuEvent* e) override;
     void fixSize();
     void connectButtonToExecuteSignal(QAbstractButton* button);
+    void connectComboToExecuteSignal(QComboBox* box);
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
 
     //TODO: need a better push/pull model
@@ -122,7 +123,7 @@ namespace Gui {
     QString windowTitle_;
     QDockWidget* dock_;
     QSize oldSize_;
-    std::vector<QAbstractButton*> needToRemoveFromDisabler_;
+    std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;
     static ExecutionDisablingServiceFunction disablerRemove_;
   };

@@ -41,6 +41,11 @@
         </item>
         <item>
          <property name="text">
+          <string>Blackbody</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>Rainbow</string>
          </property>
         </item>

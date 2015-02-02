@@ -47,8 +47,11 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name)
     return ColorMapHandle(rainbow_.clone());
   if (name == "Gray")
     return ColorMapHandle(grayscale_.clone());
+  if (name == "Blackbody")
+    return ColorMapHandle(blackbody_.clone());
   THROW_INVALID_ARGUMENT("Unknown standard colormap name: " + name);
 }
 
 ColorMap StandardColorMapFactory::rainbow_("Rainbow");
 ColorMap StandardColorMapFactory::grayscale_("Grayscale");
+ColorMap StandardColorMapFactory::blackbody_("Blackbody");

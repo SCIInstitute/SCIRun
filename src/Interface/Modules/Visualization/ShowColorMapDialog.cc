@@ -51,6 +51,12 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
 	addLineEditManager(unitsLineEdit_, ShowColorMapModule::Units);
 	addLineEditManager(sigDigitsLineEdit_, ShowColorMapModule::SignificantDigits);
 	addCheckBoxManager(addExtraSpaceCheckBox_, ShowColorMapModule::AddExtraSpace);
+    connectButtonToExecuteSignal(addExtraSpaceCheckBox_);
+    connectButtonToExecuteSignal(leftRadioButton_);
+    connectButtonToExecuteSignal(bottomRadioButton_);
+    connectButtonToExecuteSignal(firstHalfRadioButton_);
+    connectButtonToExecuteSignal(fullRadioButton_);
+    connectButtonToExecuteSignal(secondHalfRadioButton_);
 }
 
 void ShowColorMapDialog::pull()

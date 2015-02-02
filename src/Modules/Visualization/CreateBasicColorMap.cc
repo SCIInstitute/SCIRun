@@ -50,5 +50,6 @@ void CreateBasicColorMap::setStateDefaults()
 
 void CreateBasicColorMap::execute()
 {
+  std::string tmp = get_state()->getValue(Variables::ColorMapName).toString();
   sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
 }

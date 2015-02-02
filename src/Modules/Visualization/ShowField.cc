@@ -50,7 +50,6 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
 
@@ -137,7 +136,6 @@ RenderState ShowFieldModule::getEdgeRenderState(
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
-  bool test = state->getValue(ShowFieldModule::EdgesAsCylinders).toBool();
   renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toBool());
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
@@ -193,12 +191,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).toBool();
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
-  bool invertNormals = state->getValue(ShowFieldModule::FaceInvertNormals).toBool();
-  //bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
   const ColorRGB meshColor(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
-  float meshRed   = static_cast<float>(meshColor.r() / 255.0f);
-  float meshGreen = static_cast<float>(meshColor.g() / 255.0f);
-  float meshBlue  = static_cast<float>(meshColor.b() / 255.0f);
 
   // Resultant geometry type (representing a spire object and a number of passes).
   GeometryHandle geom(new GeometryObject(field));
@@ -1387,7 +1380,7 @@ void ShowFieldModule::renderEdges(
   if (fld->basis_order() < 0 ||
       (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
       state.get(RenderState::USE_DEFAULT_COLOR))
-    colorScheme = GeometryObject::COLOR_UNIFORM;
+      colorScheme = GeometryObject::COLOR_UNIFORM;
   else if (state.get(RenderState::USE_COLORMAP))
     colorScheme = GeometryObject::COLOR_MAP;
   else
@@ -1552,12 +1545,14 @@ void ShowFieldModule::renderEdges(
                 colors.push_back(ColorRGB(scol0, scol0, scol0));
             else if (colorScheme == GeometryObject::COLOR_IN_SITU)
                 colors.push_back(vcol0.diffuse);
+            else  colors.push_back(state.defaultColor);
             numVBOElements++;
             points.push_back(radius * p + Vector(p1));
             if (colorScheme == GeometryObject::COLOR_MAP)
                 colors.push_back(ColorRGB(scol1, scol1, scol1));
             else if (colorScheme == GeometryObject::COLOR_IN_SITU)
                 colors.push_back(vcol1.diffuse);
+            else  colors.push_back(state.defaultColor);
             numVBOElements++;
             normals.push_back(p);
             normals.push_back(p);
@@ -1586,12 +1581,14 @@ void ShowFieldModule::renderEdges(
                         colors.push_back(ColorRGB(col, col, col));
                     else if (colorScheme == GeometryObject::COLOR_IN_SITU)
                         colors.push_back(rgbcol.diffuse);
+                    else  colors.push_back(state.defaultColor);
                     numVBOElements++;
                     points.push_back(radius * pp2 + Vector(a));
                     if (colorScheme == GeometryObject::COLOR_MAP)
                         colors.push_back(ColorRGB(col, col, col));
                     else if (colorScheme == GeometryObject::COLOR_IN_SITU)
                         colors.push_back(rgbcol.diffuse);
+                    else  colors.push_back(state.defaultColor);
                     numVBOElements++;
                     normals.push_back(pp1);
                     normals.push_back(pp2);
@@ -1611,6 +1608,7 @@ void ShowFieldModule::renderEdges(
         colors.push_back(ColorRGB(scol0, scol0, scol0));
       else if (colorScheme == GeometryObject::COLOR_IN_SITU)
         colors.push_back(vcol0.diffuse);
+      else  colors.push_back(state.defaultColor);
       indices.push_back(index);
       ++index;
       points.push_back(Vector(p1));
@@ -1618,6 +1616,7 @@ void ShowFieldModule::renderEdges(
         colors.push_back(ColorRGB(scol1, scol1, scol1));
       else if (colorScheme == GeometryObject::COLOR_IN_SITU)
         colors.push_back(vcol1.diffuse);
+      else  colors.push_back(state.defaultColor);
       indices.push_back(index);
       ++index;
       ++numVBOElements;
@@ -1667,7 +1666,7 @@ void ShowFieldModule::renderEdges(
     }
     if (colorScheme == GeometryObject::COLOR_MAP)
       vboBuffer->write(static_cast<float>(colors.at(i).r()));
-    else if (colorScheme == GeometryObject::COLOR_IN_SITU) {
+    else {
       // Writes uint8_t out to the VBO. A total of 4 bytes.
       vboBuffer->write(COLOR_FTOB(colors.at(i).r()));
       vboBuffer->write(COLOR_FTOB(colors.at(i).g()));
