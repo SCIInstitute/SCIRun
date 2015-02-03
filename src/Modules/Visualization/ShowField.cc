@@ -629,7 +629,7 @@ void ShowFieldModule::renderFacesLinear(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
@@ -649,7 +649,7 @@ void ShowFieldModule::renderFacesLinear(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
@@ -680,7 +680,7 @@ void ShowFieldModule::renderFacesLinear(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
@@ -699,7 +699,7 @@ void ShowFieldModule::renderFacesLinear(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
           glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-          glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
       }
       else
@@ -719,7 +719,7 @@ void ShowFieldModule::renderFacesLinear(
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
 
       if (state.get(RenderState::USE_TRANSPARENCY))
@@ -1262,7 +1262,7 @@ void ShowFieldModule::renderNodes(
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     }
     else
@@ -1295,7 +1295,7 @@ void ShowFieldModule::renderNodes(
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
 
       if (state.get(RenderState::USE_TRANSPARENCY))
@@ -1447,7 +1447,7 @@ void ShowFieldModule::renderEdges(
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
         glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     }
     else {
@@ -1463,7 +1463,7 @@ void ShowFieldModule::renderEdges(
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
       glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f)));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-      glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+      glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
   }
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
