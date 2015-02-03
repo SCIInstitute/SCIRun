@@ -37,7 +37,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateStandardColorMap", "Visualization", "SCIRun")) 
+CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateStandardColorMap", "Visualization", "SCIRun"))
 {
   INITIALIZE_PORT(ColorMapObject);
 }
@@ -50,6 +50,8 @@ void CreateBasicColorMap::setStateDefaults()
 
 void CreateBasicColorMap::execute()
 {
-  std::string tmp = get_state()->getValue(Variables::ColorMapName).toString();
-  sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
+  if (needToExecute())
+  {
+    sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
+  }
 }

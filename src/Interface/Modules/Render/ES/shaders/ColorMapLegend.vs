@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,23 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_LINEARSERIALNETWORKEXECUTOR_H
-#define ENGINE_SCHEDULER_LINEARSERIALNETWORKEXECUTOR_H
+// Uniforms
+uniform float    uAspectRatio  ;      
+uniform float    uWindowWidth  ;
+uniform float    uExtraSpace   ;
+uniform float    uDisplaySide  ;
+uniform float    uDisplayLength;
 
-#include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Engine/Scheduler/share.h>
+// Attributes
+attribute vec3  aPos;
+attribute vec4  aColorFloat;
 
-namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
+// Outputs to the fragment shader.
+varying vec4    fColor;
 
-  class SCISHARE LinearSerialNetworkExecutor : public NetworkExecutor<ModuleExecutionOrder>
-  {
-  public:
-    virtual void execute(const ExecutionContext& context, ModuleExecutionOrder order, Core::Thread::Mutex& executionLock) override;
-  };
-
-}}}
-
-#endif
+void main( void )
+{
+  bool ex = uExtraSpace == 1.;
+  bool ds = uDisplaySide == 0.;
+  bool full = uDisplayLength == 1.;
+  bool half1 = uDisplayLength == 0.;
+  vec3 newPos = ds?vec3(aPos.x, aPos.y, aPos.z):vec3(aPos.y,aPos.x,aPos.z);
+  float x_scale = ds?(30.0 / uWindowWidth):(full?1.8:0.9);
+  float y_scale = ds?(full?1.8:0.9):(30. * uAspectRatio / uWindowWidth);
+  float x_trans = ds?(-1.+(ex?(30. / uWindowWidth):0.)):(full?-0.9:
+                  (half1?(ex?(30. / uWindowWidth - 1.):-1.):(ex?0.05:0.1)));
+  float y_trans = (!ds)?(-1.+(ex?(30. * uAspectRatio / uWindowWidth):0.)):
+                  (full?-0.9:(half1?(ex?(30. * uAspectRatio / uWindowWidth - 1.):
+                  -1.):(ex?0.05:0.1)));
+  gl_Position = vec4(newPos.x * x_scale + x_trans, 
+                     newPos.y * y_scale + y_trans, newPos.z, 1.0);
+  fColor      = aColorFloat;
+}

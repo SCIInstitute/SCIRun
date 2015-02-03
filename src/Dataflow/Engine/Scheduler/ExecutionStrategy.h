@@ -44,7 +44,7 @@ namespace Engine {
   {
   public:
     virtual ~ExecutionStrategy() {}
-    virtual void execute(const ExecutionContext& context) = 0;
+    virtual void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) = 0;
 
     enum Type
     {
@@ -79,6 +79,7 @@ namespace Engine {
     void start();
     void stop();
   private:
+    void executeImpl(ExecutionContextHandle context);
     typedef DynamicExecutor::WorkQueue<ExecutionContextHandle>::Impl ExecutionContextQueue;
     ExecutionContextQueue contexts_;
 
