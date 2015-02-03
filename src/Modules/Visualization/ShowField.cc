@@ -99,7 +99,9 @@ void ShowFieldModule::execute()
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
   if (needToExecute())
   {
-    GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), get_id());
+    std::ostringstream ostr;
+    ostr << get_id() << "_" << this;
+    GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), ostr.str());
     sendOutput(SceneGraph, geom);
   }
 }
