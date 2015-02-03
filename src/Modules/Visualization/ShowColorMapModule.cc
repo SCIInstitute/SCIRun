@@ -106,7 +106,7 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
                                         const std::string& id) {
   //set up geometry
   Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
-  
+  geom->objectName = "Show Color Map";
   std::vector<Vector> points;
   std::vector<ColorRGB> colors;
   std::vector<uint32_t> indices;
