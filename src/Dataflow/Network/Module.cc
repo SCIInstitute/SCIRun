@@ -31,6 +31,7 @@
 #include <numeric>
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
+#include <atomic>
 
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -53,10 +54,29 @@ std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
   return m.get_module_name() + " [" + m.get_id().id_ + "]";
 }
 
-/*static*/ int Module::instanceCount_ = 0;
-/*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
+namespace detail
+{
+  class InstanceCountIdGenerator : public ModuleIdGenerator
+  {
+  public:
+    InstanceCountIdGenerator() : instanceCount_(0) {}
+    virtual int makeId() override final
+    {
+      return instanceCount_++;
+    }
+    virtual void reset() override final
+    {
+      instanceCount_ = 0;
+    }
+  private:
+    std::atomic<int> instanceCount_;
+  };
+}
 
-/*static*/ void Module::resetInstanceCount() { instanceCount_ = 0; }
+/*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
+/*static*/ ModuleIdGeneratorHandle Module::idGenerator_(new detail::InstanceCountIdGenerator);
+
+/*static*/ void Module::resetIdGenerator() { idGenerator_->reset(); }
 
 Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
@@ -65,7 +85,7 @@ Module::Module(const ModuleLookupInfo& info,
   ReexecuteStrategyFactoryHandle reexFactory,
   const std::string& version)
   : info_(info),
-  id_(info_.module_name_, instanceCount_++),
+  id_(info_.module_name_, idGenerator_->makeId()),
   inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),

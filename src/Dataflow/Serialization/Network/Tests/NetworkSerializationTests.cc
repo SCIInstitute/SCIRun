@@ -181,7 +181,7 @@ TEST(SerializeNetworkTest, RoundTripObject)
 
 TEST(SerializeNetworkTest, FullTestWithModuleState)
 {
-  Module::resetInstanceCount();
+  Module::resetIdGenerator();
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));

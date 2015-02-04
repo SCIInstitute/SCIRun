@@ -71,7 +71,7 @@ namespace Networks {
     virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
 
     //for unit testing. Need to restrict access somehow.
-    static void resetInstanceCount();
+    static void resetIdGenerator();
 
     bool has_ui() const { return has_ui_; }
     void setUiVisible(bool visible);
@@ -227,7 +227,7 @@ namespace Networks {
     static ReexecuteStrategyFactoryHandle defaultReexFactory_;
 
   protected:
-    ModuleLookupInfo info_;
+    const ModuleLookupInfo info_;
     ModuleId id_;
 
     Core::Algorithms::AlgorithmBase& algo();
@@ -290,8 +290,8 @@ namespace Networks {
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
     UiToggleFunc uiToggleFunc_;
-    static int instanceCount_;
     static SCIRun::Core::Logging::LoggerHandle defaultLogger_;
+    static ModuleIdGeneratorHandle idGenerator_;
   };
 
   template <class T>
