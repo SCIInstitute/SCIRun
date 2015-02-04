@@ -29,11 +29,13 @@
 # CMakeLists.txt for Dataflow/Modules/Inverse
 
 SET(Modules_Legacy_Inverse_HEADERS
+  BuildSurfaceLaplacianMatrix.h
   SolveInverseProblemWithTikhonov.h
   SolveInverseProblemWithTikhonovImpl.h
 )
 
 SET(Modules_Legacy_Inverse_SRCS
+  BuildSurfaceLaplacianMatrix.cc
   SolveInverseProblemWithTikhonov.cc
   SolveInverseProblemWithTikhonovImpl.cc
 )

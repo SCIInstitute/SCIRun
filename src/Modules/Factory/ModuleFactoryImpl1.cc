@@ -86,11 +86,11 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h> 
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
-#include <Modules/Legacy/Math/ComputeSVD.h>
 #include <Modules/Legacy/Matlab/DataIO/ImportDatatypesFromMatlab.h>
 #include <Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h>
 #include <Modules/Legacy/Forward/BuildBEMatrix.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
+#include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -101,7 +101,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/CreateBasicColorMap.h>
-#include <Modules/Visualization/ShowColorMapModule.h> 
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
@@ -186,13 +185,11 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<BuildMappingMatrix>("Real ported module", "...");
   //addModuleDesc<ImportDatatypesFromMatlab>("Improved version of Matlab importer", "work in progress"); //not ready yet
   addModuleDesc<FlipSurfaceNormals>("FlipSurfaceNormals","ChangeMesh","SCIRun","...","...");
-  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix","Math","SCIRun","...","...");
-  addModuleDesc<ComputeSVD>("ComputeSVD","Math","SCIRun","...","...");
-  
+  addModuleDesc<BuildNoiseColumnMatrix>("BuildNoiseColumnMatrix", "Math", "SCIRun", "...", "...");
   addModuleDesc<EditMeshBoundingBox>("Rewrite", "...");
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
-  addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "..."); 
+  addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","BioPSE","...","...");
 
   // insert module desc here
 }
