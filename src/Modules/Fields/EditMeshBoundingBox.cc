@@ -267,7 +267,7 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
 
     Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
-
+    geom->objectName = "Bounding Box";
     GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
     int64_t numVBOElements = 0;
     std::vector<std::pair<Point,Point>> bounding_edges;
