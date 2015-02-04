@@ -32,7 +32,6 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <Core/Utils/Legacy/Debug.h>
-#include <Core/Utils/Legacy/ProgressReporter.h>
 #include <Core/Thread/Mutex.h>
 #include <sci_debug.h>
 
