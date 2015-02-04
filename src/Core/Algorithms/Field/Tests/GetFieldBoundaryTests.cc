@@ -43,6 +43,8 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
+// TODO: test with more field types...
+
 namespace 
 {
 void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const std::string& expectedMatrixString = "")

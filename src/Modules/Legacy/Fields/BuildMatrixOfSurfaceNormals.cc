@@ -26,56 +26,40 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Core/Algorithms/Fields/MeshData/GetSurfaceNodeNormals.h>
-
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h> 
+#include <Modules/Legacy/Fields/BuildMatrixOfSurfaceNormals.h> 
+#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
+#include <Core/Datatypes/Legacy/Field/Field.h> 
+#include <Core/Datatypes/DenseMatrix.h> 
+#include <Core/Datatypes/DenseColumnMatrix.h>
+//#include <Dataflow/Network/Ports/FieldPort.h>
+//#include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Module.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms; 
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms; 
 
-namespace SCIRun {
+const ModuleLookupInfo BuildMatrixOfSurfaceNormals::staticInfo_("BuildMatrixOfSurfaceNormals", "MiscField","SCIRun");
 
-/// @class BuildMatrixOfSurfaceNormals
-/// @brief The BuildMatrixOfSurfaceNormals calculates area weighted normal Vectors per node. 
-
-class BuildMatrixOfSurfaceNormals : public Module {
-  public:
-    BuildMatrixOfSurfaceNormals(GuiContext* ctx);
-    virtual ~BuildMatrixOfSurfaceNormals() {}
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::GetSurfaceNodeNormalsAlgo algo_;
-};
-
-DECLARE_MAKER(BuildMatrixOfSurfaceNormals)
-
-BuildMatrixOfSurfaceNormals::BuildMatrixOfSurfaceNormals(GuiContext* ctx) : 
-  Module("BuildMatrixOfSurfaceNormals", ctx, Filter, "MiscField", "SCIRun")
+BuildMatrixOfSurfaceNormals::BuildMatrixOfSurfaceNormals() : Module(staticInfo_, false)
 {
-  algo_.set_progress_reporter(this);
+		INITIALIZE_PORT(InputField);
+		INITIALIZE_PORT(OutputMatrix); 
 }
-
 void 
 BuildMatrixOfSurfaceNormals::execute()
 {
-  FieldHandle input; MatrixHandle output;
+	auto input = getRequiredInput(InputField); 
   
-  get_input_handle("Surface Field", input);
-
-  if (inputs_changed_ || !oport_cached("Nodal Surface Normals"))
-  {
-    // Inform module that execution started
+  if(input) 
+	{
     update_state(Executing);
-    
-    // Core algorithm of the module
-    if(!(algo_.run(input,output))) return;
-
-    // Send output to output ports
-    send_output_handle("Nodal Surface Normals", output, true);
+		auto output = algo().run_generic(withInputData((InputField, input))); 
+		sendOutputFromAlgorithm(OutputMatrix, output); 
   }
 }
-
-} // End namespace SCIRun
-
-

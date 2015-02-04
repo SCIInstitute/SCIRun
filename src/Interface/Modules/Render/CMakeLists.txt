@@ -29,11 +29,13 @@
 
 SET(Interface_Modules_Render_FORMS
   ViewScene.ui
+  ViewSceneControls.ui
 )
 
 SET(Interface_Modules_Render_HEADERS
   share.h
   ViewScene.h
+  ViewSceneControlsDock.h
   GLWidget.h
   GLContext.h
   GLContextPlatformCompatibility.h
@@ -50,10 +52,13 @@ SET(Interface_Modules_Render_HEADERS
   ES/comp/LightingUniforms.h
   ES/systems/RenderBasicSys.h
   ES/systems/RenderColorMapSys.h
+  ES/systems/RenderTransBasicSys.h
+  ES/systems/RenderTransColorMapSys.h
 )
 
 SET(Interface_Modules_Render_SOURCES 
   ViewScene.cc
+  ViewSceneControlsDock.cc
   GLWidget.cc
   GLContext.cc
   QtGLContext.cc
@@ -67,6 +72,8 @@ SET(Interface_Modules_Render_SOURCES
   ES/comp/LightingUniforms.cc
   ES/systems/RenderBasicSys.cc
   ES/systems/RenderColorMapSys.cc
+  ES/systems/RenderTransBasicSys.cc
+  ES/systems/RenderTransColorMapSys.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})

@@ -44,13 +44,13 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
-SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(ModuleLookupInfo("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun"))
+SetConductivitiesToMesh::SetConductivitiesToMesh() : Module(ModuleLookupInfo("SetConductivitiesToMesh", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(InputField);
  INITIALIZE_PORT(OutputField);
 }
 
-void SetConductivitiesToTetMeshModule::setStateDefaults()
+void SetConductivitiesToMesh::setStateDefaults()
 {
   setStateDoubleFromAlgo(Parameters::Skin);
   setStateDoubleFromAlgo(Parameters::SoftBone);
@@ -62,7 +62,7 @@ void SetConductivitiesToTetMeshModule::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::InternalAir);
 }
 
-void SetConductivitiesToTetMeshModule::execute()
+void SetConductivitiesToMesh::execute()
 {
   auto mesh = getRequiredInput(InputField);
   

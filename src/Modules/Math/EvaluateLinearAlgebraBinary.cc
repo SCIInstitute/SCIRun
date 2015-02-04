@@ -36,6 +36,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
+//AlgorithmParameterName EvaluateLinearAlgebraBinaryModule::FunctionString("FunctionString");
+
 EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
 Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
 {
@@ -48,6 +50,7 @@ void EvaluateLinearAlgebraBinaryModule::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Variables::Operator, 0);
+	state->setValue(Variables::FunctionString, std::string("x+y"));
 }
 
 void EvaluateLinearAlgebraBinaryModule::execute()
@@ -55,11 +58,16 @@ void EvaluateLinearAlgebraBinaryModule::execute()
   auto lhs = getRequiredInput(LHS);
   auto rhs = getRequiredInput(RHS);
 
-  auto state = get_state();
-  auto oper = state->getValue(Variables::Operator).toInt();
+  if (needToExecute())
+  {
+    auto state = get_state();
+    auto oper = state->getValue(Variables::Operator).toInt();
+	  auto func = state->getValue(Variables::FunctionString).toString();
 
-  algo().set(Variables::Operator, oper);
-  auto output = algo().run_generic(withInputData((LHS, lhs)(RHS, rhs))); 
+    algo().set(Variables::Operator, oper);
+	  algo().set(Variables::FunctionString, func);
+    auto output = algo().run_generic(withInputData((LHS, lhs)(RHS, rhs)));
 
-  sendOutputFromAlgorithm(Result, output);
+    sendOutputFromAlgorithm(Result, output);
+  }
 }

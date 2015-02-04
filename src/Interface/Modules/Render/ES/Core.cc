@@ -44,7 +44,7 @@ namespace fs      = CPM_ES_FS_NS;
 namespace SCIRun {
 namespace Render {
 
-ESCore::ESCore()
+  ESCore::ESCore() : r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
 {
   // Register common systems.
   gen::registerAll(*this);
@@ -118,7 +118,8 @@ void ESCore::execute(double currentTime, double constantFrameTime)
     // Reset the GL state (we shouldn't really need to do this, but we will anyways).
     mDefaultGLState.apply();
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    //lClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(r_, g_, b_, a_);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
 
@@ -127,6 +128,14 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   mSystems->runSystems(*this, timeInMS);
 
   mCurrentTime += constantFrameTime;
+}
+
+void ESCore::setBackgroundColor(float r, float g, float b, float a)
+{
+  r_ = r;
+  g_ = g;
+  b_ = b;
+  a_ = a;
 }
 
 } // namespace Render

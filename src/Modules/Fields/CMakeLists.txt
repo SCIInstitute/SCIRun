@@ -30,12 +30,15 @@ SET(Modules_Fields_SRCS
   CreateScalarFieldDataBasic.cc
   ReportFieldInfo.cc
   InterfaceWithCleaver.cc
+  EditMeshBoundingBox.cc
 )
 
 SET(Modules_Fields_HEADERS
   InterfaceWithCleaver.h
   CreateScalarFieldDataBasic.h
   ReportFieldInfo.h
+  EditMeshBoundingBox.h
+  BoxWidgetTypes.h
   share.h
 )
 
@@ -50,6 +53,8 @@ TARGET_LINK_LIBRARIES(Modules_Fields
   Core_Datatypes_Mesh
   Algorithms_Field
   Core_Datatypes_Legacy_Field
+  ${OPENGL_LIBRARIES}
+  ${CPM_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)

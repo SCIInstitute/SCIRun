@@ -39,22 +39,24 @@ int GuiApplication::run(int argc, const char* argv[])
   QApplication app(argc, const_cast<char**>(argv));
 
   try
-  { 
+  {
     SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
 
     mainWin->setController(Core::Application::Instance().controller());
     mainWin->initialize();
-    
+
     return app.exec();
   }
   catch (std::exception& e)
   {
     QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
+    std::cerr << "Unhandled exception: " << e.what() << std::endl;
     return 1;
   }
   catch (...)
   {
     QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
+    std::cerr << "Unhandled exception: Unknown" << std::endl;
     return 1;
   }
 }

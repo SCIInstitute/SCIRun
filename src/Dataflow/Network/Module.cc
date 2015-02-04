@@ -39,12 +39,14 @@
 #include <Dataflow/Network/NullModuleState.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Mutex.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
 
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
@@ -123,6 +125,8 @@ size_t Module::num_output_ports() const
 
 bool Module::do_execute() throw()
 {
+  //Log::get() << INFO << "executing module: " << id_ << std::endl;
+  //std::cout << "executing module: " << id_ << std::endl;
   executeBegins_(id_);
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
@@ -242,10 +246,10 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   }
 
   {
-    Log::get() << DEBUG_LOG << id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value." << std::endl;
+    //Log::get() << DEBUG_LOG << id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value." << std::endl;
     // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
     inputsChanged_ = port->hasChanged() || inputsChanged_;
-    Log::get() << DEBUG_LOG << id_ << ":: inputsChanged is now " << inputsChanged_ << std::endl;
+    //Log::get() << DEBUG_LOG << id_ << ":: inputsChanged is now " << inputsChanged_ << std::endl;
   }
 
   auto data = port->getData();
@@ -503,7 +507,7 @@ void Module::setAlgoDoubleFromState(const AlgorithmParameterName& name)
 
 void Module::setAlgoOptionFromState(const AlgorithmParameterName& name)
 {
-  algo().set_option(name, get_state()->getValue(name).toString());
+	algo().set_option(name, get_state()->getValue(name).toString());
 }
 
 void Module::setStateStringFromAlgoOption(const AlgorithmParameterName& name)
@@ -531,10 +535,13 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
 
 bool Module::needToExecute() const
 {
+  static Mutex needToExecuteLock("buh");
   if (reexecute_)
   {
+    //Test fix for reexecute problem. Seems like it could be a race condition, but not sure.
+    Guard g(needToExecuteLock.get());
     auto val = reexecute_->needToExecute();
-    Log::get() << DEBUG_LOG << id_ << " Using real needToExecute strategy object, value is: " << val << std::endl;
+    //Log::get() << DEBUG_LOG << id_ << " Using real needToExecute strategy object, value is: " << val << std::endl;
     return val;
   }
 
@@ -606,7 +613,7 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(const Module& module) : modul
 bool InputsChangedCheckerImpl::inputsChanged() const
 {
   auto ret = module_.inputsChanged();
-  Log::get() << DEBUG_LOG << module_.get_id() << " InputsChangedCheckerImpl returns " << ret << std::endl;
+  //Log::get() << DEBUG_LOG << module_.get_id() << " InputsChangedCheckerImpl returns " << ret << std::endl;
   return ret;
 }
 
@@ -617,7 +624,7 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_
 bool StateChangedCheckerImpl::newStatePresent() const
 {
   auto ret = module_.newStatePresent();
-  Log::get() << DEBUG_LOG << module_.get_id() << " StateChangedCheckerImpl returns " << ret << std::endl;
+  //Log::get() << DEBUG_LOG << module_.get_id() << " StateChangedCheckerImpl returns " << ret << std::endl;
   return ret;
 }
 
@@ -693,6 +700,16 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
       }
     }
   }
-  LOG_DEBUG("\tFound replacement: " << potentialReplacement.lookupInfo_.module_name_ << std::endl);
+  //LOG_DEBUG("\tFound replacement: " << potentialReplacement.lookupInfo_.module_name_ << std::endl);
   return true;
+}
+
+void Module::enqueueExecuteAgain()
+{
+  executionSelfRequested_();
+}
+
+boost::signals2::connection Module::connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber)
+{
+  return executionSelfRequested_.connect(subscriber);
 }

@@ -562,6 +562,22 @@ TEST(SparseRowMatrixTest, TestLegacyConstructor)
   EXPECT_EQ(nnz, m.nonZeros());
 }
 
+TEST(SparseRowMatrixTest, TestLegacyConstructorWithValues)
+{
+  int nnz = 35;
+  int nrows = 7, ncols = 7;
+  index_type rows[] = {0, 7, 11, 17, 21, 26, 30, 35};
+  index_type cols[] = {0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 5, 0, 1, 2, 4, 5, 6, 0, 3, 4, 6, 0, 2, 3, 4, 6, 0, 1, 2, 5, 0, 2, 3, 4, 6};
+  double vals[] = {1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1};
+
+  SparseRowMatrix m(nrows, ncols, rows, cols, vals, nnz);
+  EXPECT_EQ(nrows, m.nrows());
+  EXPECT_EQ(ncols, m.ncols());
+  EXPECT_EQ(nnz, m.nonZeros());
+  EXPECT_EQ(1, *std::max_element(m.valuePtr(), m.valuePtr() + m.nonZeros()));
+  EXPECT_EQ(-1, *std::min_element(m.valuePtr(), m.valuePtr() + m.nonZeros()));
+}
+
 TEST(SparseRowMatrixTest, CopyBlock)
 {
   auto m = MAKE_SPARSE_MATRIX_HANDLE(

@@ -27,103 +27,74 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/RefineMesh.cc
 
-#include <Core/Algorithms/Fields/RefineMesh/RefineMesh.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h> 
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Scalar.h>
+#include <Modules/Legacy/Fields/RefineMesh.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
 
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-namespace SCIRun {
+const ModuleLookupInfo RefineMesh::staticInfo_("RefineMesh", "ChangeFieldData", "SCIRun"); 
 
-class RefineMesh : public Module
+RefineMesh::RefineMesh()
+		:Module(staticInfo_)
 {
-  public:
-    RefineMesh(GuiContext* ctx);
-    virtual ~RefineMesh() {}
-    virtual void execute();
+		INITIALIZE_PORT(InputField);
+		INITIALIZE_PORT(OutputField);
+		INITIALIZE_PORT(IsoValueField);
+		//INITIALIZE_PORT(Mapping); 
+}
 
-    /// Fix backwards compatibility
-    virtual void post_read();
-
-  private:
-    GuiString gui_select_;
-    GuiString gui_method_;
-    GuiDouble gui_isoval_;
-    
-    SCIRunAlgo::RefineMeshAlgo algo_;
-};
-
-
-DECLARE_MAKER(RefineMesh)
-
-
-RefineMesh::RefineMesh(GuiContext* ctx)
-  : Module("RefineMesh", ctx, Filter, "NewField", "SCIRun"),
-    gui_select_(get_ctx()->subVar("select"),"all"),
-    gui_method_(get_ctx()->subVar("method"),"default"),
-    gui_isoval_(get_ctx()->subVar("isoval"), 0.0)
+void RefineMesh::setStateDefaults()
 {
-  algo_.set_progress_reporter(this);
+		setStateStringFromAlgoOption(Parameters::AddConstraints);
+		setStateStringFromAlgoOption(Parameters::RefineMethod);
+		setStateDoubleFromAlgo(Parameters::IsoValue);
 }
 
 void
 RefineMesh::execute()
-{
-  // Get input field.
-  FieldHandle input;
-  MatrixHandle isomat;
+{	
+auto input = getRequiredInput(InputField);
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+bool need_mapping = oport_connected("Mapping");
+#endif
+auto isovaluefield = getOptionalInput(IsoValueField);  
 
-  get_input_handle("Mesh", input,true);
-  get_input_handle("Isovalue", isomat, false);
-  
-
-  if (inputs_changed_ || gui_select_.changed() || gui_method_.changed() ||
-      gui_isoval_.changed() || !oport_cached("RefinedMesh") || 
-      !oport_cached("Mapping") )
+  if (needToExecute() )
   {
     update_state(Executing);
-      
-    FieldHandle output;
-    MatrixHandle mapping;
+				
+		setAlgoOptionFromState(Parameters::AddConstraints);
+		setAlgoOptionFromState(Parameters::RefineMethod);
+		setAlgoDoubleFromState(Parameters::IsoValue);
 
-    double isoval = gui_isoval_.get();
-    if (isomat.get_rep())
-    {
-      isoval = 0.0;
-      if (isomat->get_data_size() > 0) isoval = isomat->get(0,0);
-    }
+		#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+		if (need_mapping)
+		{
+		if (!(algo_.run(input_field_handle,output_field_handle,mapping_matrix_handle))) return;
+		}
+		else
+		{
+		if (!(algo_.run(input_field_handle,output_field_handle))) return;
+		}
+		#endif
+		remark("Mapping matrix port implementation is not enabled yet--please contact a developer");
 
-    algo_.set_option("select",gui_select_.get());
-    algo_.set_scalar("isoval",isoval);
-    if (gui_method_.get() == "convex") algo_.set_bool("hex_convex",true);
+		auto output = algo().run_generic(withInputData((InputField, input)));
+		sendOutputFromAlgorithm(OutputField, output);
 
-    if(!(algo_.run(input,output)))
-    {
-      return;
-    }
-    
-    send_output_handle("RefinedMesh",output);
-    send_output_handle("Mapping",mapping);
+		#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+		send_output_handle("Mapping", mapping_matrix_handle);
+		#endif
   }
 }
-
-
-void
-RefineMesh::post_read()
-{
-  const std::string modName = get_ctx()->getfullname() + "-";
-  std::string val;
-  if( TCLInterface::get(modName+"lte", val, get_ctx()) )
-  {
-    if (val=="0") TCLInterface::set(modName+"select", "greaterthan", get_ctx());
-    if (val=="1") TCLInterface::set(modName+"select", "lessthan", get_ctx());
-  }
-  
-  get_ctx()->reset();
-}
-
-} // End namespace SCIRun
-

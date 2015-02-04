@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>752</width>
-    <height>327</height>
+    <height>420</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>752</width>
-    <height>327</height>
+    <height>420</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
     <attribute name="title">
      <string>Electrode/Coil Setup</string>
     </attribute>
-    <widget class="QTableWidget" name="tableWidget">
+    <widget class="QTableWidget" name="electrode_coil_tableWidget">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -49,126 +49,135 @@
        <string>1</string>
       </property>
      </row>
-     <row>
-      <property name="text">
-       <string>2</string>
-      </property>
-     </row>
-     <row>
-      <property name="text">
-       <string>3</string>
-      </property>
-     </row>
-     <column>
-      <property name="text">
-       <string>Field Input #</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Type</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Name</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Height [mm]</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Width [mm]</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Lenght [mm]</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Properties</string>
-      </property>
-     </column>
-     <item row="0" column="1">
-      <property name="text">
-       <string/>
-      </property>
-     </item>
-     <item row="0" column="2">
-      <property name="text">
-       <string>Fpz</string>
-      </property>
-     </item>
-     <item row="0" column="3">
-      <property name="text">
-       <string>5</string>
-      </property>
-     </item>
-     <item row="0" column="4">
-      <property name="text">
-       <string>50</string>
-      </property>
-     </item>
-     <item row="0" column="5">
-      <property name="text">
-       <string>50</string>
-      </property>
-     </item>
-     <item row="0" column="6">
-      <property name="text">
-       <string>5000</string>
-      </property>
-     </item>
-     <item row="1" column="1">
-      <property name="text">
-       <string/>
-      </property>
-     </item>
-     <item row="1" column="2">
-      <property name="text">
-       <string>C3</string>
-      </property>
-     </item>
-     <item row="1" column="3">
-      <property name="text">
-       <string>5</string>
-      </property>
-     </item>
-     <item row="1" column="4">
-      <property name="text">
-       <string>50</string>
-      </property>
-     </item>
-     <item row="1" column="5">
-      <property name="text">
-       <string>50</string>
-      </property>
-     </item>
-     <item row="1" column="6">
-      <property name="text">
-       <string>5000</string>
-      </property>
-     </item>
-     <item row="2" column="2">
-      <property name="text">
-       <string>MC-B70 coil</string>
-      </property>
-     </item>
-     <item row="2" column="6">
-      <property name="text">
-       <string>1e6</string>
-      </property>
-     </item>
     </widget>
    </widget>
+  </widget>
+  <widget class="QCheckBox" name="AllInputsTDCS_">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>330</y>
+     <width>211</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>All inputs are tDCS electrodes</string>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="ProtoTypeInputCheckbox_">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>330</y>
+     <width>221</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Only use this prototype input:</string>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="ProtoTypeInputComboBox_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>610</x>
+     <y>330</y>
+     <width>111</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>???</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QCheckBox" name="electrodethicknessCheckBox_">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>360</y>
+     <width>201</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Electrode-sponge thickness:</string>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="electrodethicknessSpinBox_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>360</y>
+     <width>69</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="decimals">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <double>1000000000.000000000000000</double>
+   </property>
+   <property name="singleStep">
+    <double>1.000000000000000</double>
+   </property>
+   <property name="value">
+    <double>1.000000000000000</double>
+   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>ProtoTypeInputCheckbox_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ProtoTypeInputComboBox_</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>500</x>
+     <y>339</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>665</x>
+     <y>342</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>electrodethicknessCheckBox_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>electrodethicknessSpinBox_</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>120</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>264</x>
+     <y>371</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

@@ -117,6 +117,7 @@ Q_SIGNALS:
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
     virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const SCIRun::Dataflow::Networks::ModuleId& id) const;
+    virtual bool containsViewScene() const;
 
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
@@ -150,12 +151,17 @@ Q_SIGNALS:
 
     boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
+    int currentZoomPercentage() const;
+
+    void setVisibility(bool visible);
+
   protected:
     virtual void dropEvent(QDropEvent* event) override;
     virtual void dragEnterEvent(QDragEnterEvent* event) override;
     virtual void dragMoveEvent(QDragMoveEvent* event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
+    virtual void wheelEvent(QWheelEvent* event) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -176,6 +182,13 @@ Q_SIGNALS:
     void restoreAllModuleUIs();
     void updateViewport();
     void connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
+    void setMouseAsDragMode();
+    void setMouseAsSelectMode();
+    void zoomIn();
+    void zoomOut();
+    void zoomReset();
+    void centerView();
+    void setModuleMini(bool mini);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -188,6 +201,7 @@ Q_SIGNALS:
     void defaultNotePositionChanged(NotePosition position);
     void sceneChanged(const QList<QRectF>& region);
     void snapToModules();
+    void zoomLevelChanged(int zoom);
   private Q_SLOTS:
     void cut();
     void copy();
@@ -210,6 +224,7 @@ Q_SIGNALS:
     void addNewModuleAtPosition(const QPoint& position);
     ConnectionLine* getSingleConnectionSelected();
     void unselectConnectionGroup();
+    void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions) const;
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;
@@ -219,9 +234,11 @@ Q_SIGNALS:
     QAction* propertiesAction_;
     //QAction* executeAction_;
 		bool modulesSelectedByCL_;
+    double currentScale_;
 
     QGraphicsScene* scene_;
 
+    bool visibleItems_;
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
 		boost::shared_ptr<DialogErrorControl> dialogErrorControl_;

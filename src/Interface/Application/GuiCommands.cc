@@ -38,6 +38,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Interface/Application/Utility.h>
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
 
@@ -67,6 +68,7 @@ bool QuitAfterExecuteCommandGui::execute()
 bool QuitCommandGui::execute()
 {
   SCIRunMainWindow::Instance()->quit();
+  exit(0);
   return true;
 }
 
@@ -98,7 +100,7 @@ bool ShowSplashScreenGui::execute()
 
 void ShowSplashScreenGui::initSplashScreen()
 {
-  splash_ = new QSplashScreen(0, QPixmap(":/gear/splash-scirun.png").scaled(990, 490),  Qt::WindowStaysOnTopHint);
+  splash_ = new QSplashScreen(0, QPixmap(":/general/Resources/scirun_5_0_alpha.png"), Qt::WindowStaysOnTopHint);
   splashTimer_ = new QTimer;
   splashTimer_->setSingleShot( true );
   splashTimer_->setInterval( 5000 );
@@ -111,12 +113,23 @@ QTimer* ShowSplashScreenGui::splashTimer_ = 0;
 namespace
 {
   template <class PointIter>
-  QPointF findCenterOfNetwork(PointIter begin, PointIter end)
+  QPointF centroidOfPointRange(PointIter begin, PointIter end)
   {
     QPointF sum = std::accumulate(begin, end, QPointF(), [](const QPointF& acc, const typename PointIter::value_type& point) { return acc + QPointF(point.first, point.second); });
     size_t num = std::distance(begin, end);
     return sum / num;
   }
+
+  QPointF findCenterOfNetworkFile(const NetworkFile& file)
+  {
+    return findCenterOfNetwork(file.modulePositions);
+  }
+}
+
+QPointF SCIRun::Gui::findCenterOfNetwork(const ModulePositions& positions)
+{
+  auto pointRange = positions.modulePositions | boost::adaptors::map_values;
+  return centroidOfPointRange(pointRange.begin(), pointRange.end());
 }
 
 namespace std
@@ -153,17 +166,17 @@ bool FileOpenCommand::execute()
         progress.show();
         progress.setValue(0);
 
-        //TODO: trying to load in a separate thread exposed problems with the signal/slots related to wiring up the GUI elements, 
+        //TODO: trying to load in a separate thread exposed problems with the signal/slots related to wiring up the GUI elements,
         // so I'll come back to this idea when there's time to refactor that part of the code (NEC::loadNetwork)
         //QFuture<int> future = QtConcurrent::run(load);
         //progress.setValue(future.result());
-
+        networkEditor_->setVisibility(false);
         progress.setValue(load());
+        networkEditor_->setVisibility(true);
       }
       openedFile_ = openedFile;
 
-      auto pointRange = openedFile_->modulePositions.modulePositions | boost::adaptors::map_values;
-      QPointF center = findCenterOfNetwork(pointRange.begin(), pointRange.end());
+      QPointF center = findCenterOfNetworkFile(*openedFile_);
       networkEditor_->centerOn(center);
 
       GuiLogger::Instance().log("File load done.");

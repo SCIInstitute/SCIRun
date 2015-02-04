@@ -85,3 +85,14 @@ TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, NullInputThrowsException)
   EXPECT_THROW(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(DenseMatrixHandle(), matrix1()), EvaluateLinearAlgebraBinaryAlgorithm::ADD), AlgorithmInputException);
   EXPECT_THROW(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(matrix1(), DenseMatrixHandle()), EvaluateLinearAlgebraBinaryAlgorithm::ADD), AlgorithmInputException);
 }
+
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunction)
+{
+	EvaluateLinearAlgebraBinaryAlgorithm algo; 
+
+	DenseMatrixHandle m(matrix1());
+	std::string functionArg = "x+y"; 
+	DenseMatrixHandle result  = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg));
+	EXPECT_EQ( *m+*m, *result); 
+	
+}

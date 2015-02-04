@@ -42,7 +42,7 @@ namespace Engine {
   {
   public:
     SerialExecutionStrategy();
-    virtual void execute(const ExecutionContext& context) override;
+    virtual void execute(const ExecutionContext& context, Core::Thread::Mutex& executionLock) override;
   private:
     boost::shared_ptr<SerialExecutionStrategyPrivate> impl_;
   };

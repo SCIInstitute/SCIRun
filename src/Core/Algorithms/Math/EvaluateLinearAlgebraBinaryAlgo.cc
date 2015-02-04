@@ -30,14 +30,18 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Parser/ArrayMathEngine.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun;
 
 EvaluateLinearAlgebraBinaryAlgorithm::EvaluateLinearAlgebraBinaryAlgorithm()
 {
   addParameter(Variables::Operator, 0);
+	addParameter(Variables::FunctionString, std::string("x+y"));
 }
 
 EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
@@ -48,22 +52,52 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   ENSURE_ALGORITHM_INPUT_NOT_NULL(lhs, "lhs");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(rhs, "rhs");
 
-  Operator oper = params;
-
+  Operator oper = params.get<0>();
   /// @todo: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
   case ADD:
+    if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
+      THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to add matrices.");
     result.reset(lhs->clone());
     *result += *rhs;
     break;
   case SUBTRACT:
+    if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
+      THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to subtract matrices.");
     result.reset(lhs->clone());
     *result -= *rhs;
     break;
   case MULTIPLY:
+    if (lhs->ncols() != rhs->nrows())
+      THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to multiply matrices.");
     result.reset(lhs->clone());
     *result *= *rhs;
+    break;
+	case FUNCTION:
+			{
+				NewArrayMathEngine engine;
+				MatrixHandle lhsInput, rhsInput;
+				lhsInput.reset(lhs->clone());
+				rhsInput.reset(rhs->clone());
+
+				if (!(engine.add_input_fullmatrix("x", lhsInput ) ))
+          THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
+				if (!(engine.add_input_fullmatrix("y", rhsInput ) ))
+          THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
+
+				boost::optional<std::string> func = params.get<1>();
+				std::string function_string = func.get();
+
+				function_string = "RESULT="+function_string;
+				engine.add_expressions(function_string);
+
+				if(!(engine.add_output_fullmatrix("RESULT",lhsInput)))
+          THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
+				if (!(engine.run()))
+          THROW_ALGORITHM_INPUT_ERROR("Error running math engine");
+				result = matrix_cast::as_dense(lhsInput);
+			}
     break;
   default:
     THROW_ALGORITHM_INPUT_ERROR("ERROR: unknown binary operation");
@@ -77,8 +111,9 @@ AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run_generic(const Algorith
 {
   auto LHS = input.get<DenseMatrix>(Variables::LHS);
   auto RHS = input.get<DenseMatrix>(Variables::RHS);
+	auto func = boost::make_optional(get(Variables::FunctionString).toString());
 
-  auto result = run(boost::make_tuple(LHS, RHS), Operator(get(Variables::Operator).toInt()));
+  auto result = run(boost::make_tuple(LHS, RHS), boost::make_tuple(Operator(get(Variables::Operator).toInt()), func));
 
   AlgorithmOutput output;
   output[Variables::Result] = result;

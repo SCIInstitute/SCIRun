@@ -97,6 +97,10 @@ namespace Networks {
     virtual void setExecutionState(ExecutionState state);
     virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber);
 
+    virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber);
+
+    virtual void enqueueExecuteAgain();
+
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
     virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id);
@@ -279,6 +283,7 @@ namespace Networks {
     boost::atomic<ExecutionState> executionState_;
     ExecutionStateChangedSignalType executionStateChanged_;
     std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
+    ExecutionSelfRequestSignalType executionSelfRequested_;
 
     ModuleReexecutionStrategyHandle reexecute_;
 

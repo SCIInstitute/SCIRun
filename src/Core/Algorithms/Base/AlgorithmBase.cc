@@ -65,7 +65,7 @@ AlgorithmBase::~AlgorithmBase() {}
 
 namespace
 {
-  // Note: boost::serialization has trouble with NaN values, in addition to the platform differences. 
+  // Note: boost::serialization has trouble with NaN values, in addition to the platform differences.
   // Workaround will be to store a string in place of the actual double nan value.
   // TODO: investigate if this is a problem with infinities too. No modules store them at the moment.
   const std::string nanString = "NaN";
@@ -84,9 +84,26 @@ void Variable::setValue(const Value& val)
     if (boost::get<std::string>(&val))
     {
       auto stringPath = toString();
-      if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDir().string(), AlgorithmParameterHelper::dataDirPlaceholder()))
-        value_ = stringPath;
-      return;
+      {
+        // TODO #787
+        // loop through all paths in path list, checking if file in each dir; if one found replace and return
+        if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDir().string(), AlgorithmParameterHelper::dataDirPlaceholder()))
+        {
+          value_ = stringPath;
+          return;
+        }
+
+        for (const auto& path : AlgorithmParameterHelper::dataPath())
+        {
+          if (SCIRun::Core::replaceSubstring(stringPath, path.string(), AlgorithmParameterHelper::dataDirPlaceholder()))
+          {
+            value_ = stringPath;
+            return;
+          }
+        }
+
+        return;
+      }
     }
   }
 
@@ -131,7 +148,7 @@ boost::filesystem::path AlgorithmParameter::toFilename() const
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
     Guard g(AlgorithmParameterHelper::lock_.get());
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
-    boost::filesystem::path::imbue( std::locale( "" ) );  
+    boost::filesystem::path::imbue( std::locale( "" ) );
     boost::filesystem::path dummy("boost bug workaround");
     Log::get() << DEBUG_LOG << dummy.string() << std::endl;
 #endif
@@ -139,7 +156,23 @@ boost::filesystem::path AlgorithmParameter::toFilename() const
 
   auto stringPath = toString();
   if (SCIRun::Core::replaceSubstring(stringPath, AlgorithmParameterHelper::dataDirPlaceholder(), ""))
-    return AlgorithmParameterHelper::dataDir() / stringPath;
+  {
+    // TODO #787
+    // loop through all paths in path list, checking if file exists each time. return first one that exists.
+    auto initialPath = AlgorithmParameterHelper::dataDir() / stringPath;
+    if (boost::filesystem::exists(initialPath))
+      return initialPath;
+
+    for (const auto& path : AlgorithmParameterHelper::dataPath())
+    {
+      auto nextPath = path / stringPath;
+      if (boost::filesystem::exists(nextPath))
+        return nextPath;
+    }
+    //nothing found, let module deal with it.
+    return initialPath;
+  }
+
   boost::filesystem::path p(stringPath);
   return p;
 }
@@ -192,7 +225,18 @@ std::string AlgorithmParameterHelper::dataDirPlaceholder()
   return dataDirPlaceholder_;
 }
 
+void AlgorithmParameterHelper::setDataPath(const std::vector<boost::filesystem::path>& paths)
+{
+  paths_ = paths;
+}
+
+std::vector<boost::filesystem::path> AlgorithmParameterHelper::dataPath()
+{
+  return paths_;
+}
+
 boost::filesystem::path AlgorithmParameterHelper::dataDir_;
+std::vector<boost::filesystem::path> AlgorithmParameterHelper::paths_;
 std::string AlgorithmParameterHelper::dataDirPlaceholder_;
 Mutex AlgorithmParameterHelper::lock_("fsbug");
 
@@ -252,14 +296,18 @@ void AlgorithmParameterList::addParameter(const AlgorithmParameterName& key, con
   parameters_[key] = AlgorithmParameter(key, defaultValue);
 }
 
-AlgorithmStatusReporter::AlgorithmStatusReporter() 
+AlgorithmStatusReporter::AlgorithmStatusReporter()
 {
+#if DEBUG
   setUpdaterFunc(defaultUpdaterFunc_);
+#else
+  setUpdaterFunc([](double x) {});
+#endif
 }
 
 AlgorithmStatusReporter::UpdaterFunc AlgorithmStatusReporter::defaultUpdaterFunc_([](double r) { std::cout << "Algorithm at " << std::setiosflags(std::ios::fixed) << std::setprecision(2) << r*100 << "% complete" << std::endl;});
 
-ScopedAlgorithmStatusReporter::ScopedAlgorithmStatusReporter(const AlgorithmStatusReporter* asr, const std::string& tag) : asr_(asr) 
+ScopedAlgorithmStatusReporter::ScopedAlgorithmStatusReporter(const AlgorithmStatusReporter* asr, const std::string& tag) : asr_(asr)
 {
   if (asr_)
     asr_->report_start(tag);
@@ -292,7 +340,7 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
 
   if (paramIt == parameters_.end())
     return keyNotFoundPolicy(key);
-  
+
   AlgoOption param = paramIt->second.toOption();
 
   if (param.options_.find(value) == param.options_.end())
@@ -337,7 +385,7 @@ void AlgorithmBase::dumpAlgoState() const
 {
   std::ostringstream ostr;
   ostr << "Algorithm state for " << typeid(*this).name() << " id#" << id() << std::endl;
-  
+
   auto range = std::make_pair(paramsBegin(), paramsEnd());
   BOOST_FOREACH(const ParameterMap::value_type& pair, range)
   {
@@ -391,6 +439,11 @@ AlgorithmInput SCIRun::Core::Algorithms::makeNullInput()
 bool SCIRun::Core::Algorithms::operator==(const Variable& lhs, const Variable& rhs)
 {
   return lhs.name() == rhs.name() && lhs.value() == rhs.value() && lhs.getDatatype() == rhs.getDatatype();
+}
+
+bool SCIRun::Core::Algorithms::operator!=(const Variable& lhs, const Variable& rhs)
+{
+  return !(lhs == rhs);
 }
 
 std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Variable& var)

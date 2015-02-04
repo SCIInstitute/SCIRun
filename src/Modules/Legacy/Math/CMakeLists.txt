@@ -39,7 +39,7 @@ SET(Modules_Legacy_Math_SRCS
   BuildNoiseColumnMatrix.cc
   #CreateGeometricTransform.cc
   #ChooseMatrix.cc
-  #ComputeSVD.cc
+  ComputeSVD.cc
   ConvertMatrixType.cc
   #CollectMatrices.cc
   #ReportColumnMatrixMisfit.cc
@@ -75,7 +75,7 @@ SET(Modules_Legacy_Math_HEADERS
   BuildNoiseColumnMatrix.h
   #CreateGeometricTransform.h
   #ChooseMatrix.h
-  #ComputeSVD.h
+  ComputeSVD.h
   ConvertMatrixType.h
   #CollectMatrices.h
   #ReportColumnMatrixMisfit.h

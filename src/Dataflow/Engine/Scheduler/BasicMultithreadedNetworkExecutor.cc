@@ -42,12 +42,14 @@ namespace
 {
   struct ParallelExecution : public WaitsForStartupInitialization
   {
-    ParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
+    ParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, Mutex* executionLock) 
+      : lookup_(lookup), order_(order), bounds_(bounds), executionLock_(executionLock)
     {}
 
     void operator()() const
     {
-      waitForStartupInit();
+      waitForStartupInit(*lookup_);
+      Guard g(executionLock_->get());
       /// @todo ESSENTIAL: scoped start/finish signaling
       bounds_.executeStarts_();
       for (int group = order_.minGroup(); group <= order_.maxGroup(); ++group)
@@ -70,12 +72,13 @@ namespace
     const ExecutableLookup* lookup_;
     ParallelModuleExecutionOrder order_;
     const ExecutionBounds& bounds_;
+    Mutex* executionLock_;
   };
 
 }
 
-void BasicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order)
+void BasicMultithreadedNetworkExecutor::execute(const ExecutionContext& context, ParallelModuleExecutionOrder order, Mutex& executionLock)
 {
-  ParallelExecution runner(&context.lookup, order, context.bounds());
+  ParallelExecution runner(&context.lookup, order, context.bounds(), &executionLock);
   boost::thread execution(runner);
 }

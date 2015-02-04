@@ -65,7 +65,7 @@ namespace
 
 TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalars)
 {
-  SetConductivitiesToTetMeshAlgorithm algo;
+  SetConductivitiesToMeshAlgorithm algo;
 
   double conductivities[] = {9.25, 25.1988, 18.99999, 3.5, 5.1988, 5.22, 22.2013};
 
@@ -95,7 +95,7 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalars)
 
 TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
 {
-  SetConductivitiesToTetMeshAlgorithm algo;
+  SetConductivitiesToMeshAlgorithm algo;
 
   double conductivities[] = {9.25, 25.1988, 18.99999, 3.5, 5.1988, 5.22, 22.2013};
 
@@ -126,7 +126,7 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarSevenElem)
 
 TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarThreeElem)
 {
-  SetConductivitiesToTetMeshAlgorithm algo;
+  SetConductivitiesToMeshAlgorithm algo;
   double conductivities[] = {9.25, 18.999, 123,456, 25.1988};
 
   algo.set(Parameters::Skin,  conductivities[0]);
@@ -153,19 +153,19 @@ TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshScalarThreeElem)
 
 TEST(SetConductivitiesToTetMeshAlgorithmTest, TetMeshVector)
 {
-  SetConductivitiesToTetMeshAlgorithm algo;
+  SetConductivitiesToMeshAlgorithm algo;
   EXPECT_THROW(algo.run(CreateTetMeshVectorOnElem()), AlgorithmInputException);
 }
 
 TEST(SetConductivitiesToTetMeshAlgorithmTest, ThrowsForDataOnNode)
 {
-  SetConductivitiesToTetMeshAlgorithm algo;
+  SetConductivitiesToMeshAlgorithm algo;
   EXPECT_THROW(algo.run(CreateTetMeshScalarOnNode()), AlgorithmInputException);
 }
 
 TEST(SetConductivitiesToTetMeshAlgorithmTest, ThrowsForNullInput)
 {
-  SetConductivitiesToTetMeshAlgorithm algo;
+  SetConductivitiesToMeshAlgorithm algo;
   FieldHandle nullField;
   EXPECT_THROW(algo.run(nullField), AlgorithmInputException);
 }

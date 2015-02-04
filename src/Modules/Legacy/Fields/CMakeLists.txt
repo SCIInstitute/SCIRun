@@ -29,9 +29,11 @@
 # CMakeLists.txt for Dataflow/Modules/Fields
 
 SET(Modules_Legacy_Fields_HEADERS
+	RefineMesh.h
   CreateLatVol.h
   GetFieldBoundary.h
   BuildMappingMatrix.h
+  BuildMatrixOfSurfaceNormals.h
   CalculateDistanceToField.h
   CalculateDistanceToFieldBoundary.h
   CollectFields.h
@@ -68,6 +70,8 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
   FlipSurfaceNormals.h
+  SwapFieldDataWithMatrixEntries.h
+  ConvertIndicesToFieldData.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -94,7 +98,7 @@ SET(Modules_Legacy_Fields_SRCS
   ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
   BuildMappingMatrix.cc
-  #BuildMatrixOfSurfaceNormals.cc
+  BuildMatrixOfSurfaceNormals.cc
   #GetCentroidsFromMesh.cc
   #ConvertMeshCoordinateSystem.cc
   ConvertFieldBasis.cc
@@ -130,8 +134,8 @@ SET(Modules_Legacy_Fields_SRCS
   #InsertHexVolSheetAlongSurface.cc
   #MergeTriSurfs.cc
   #ClipVolumeByIsovalue.cc
-  #RefineMesh.cc
-  #SwapFieldDataWithMatrixEntries.cc
+  RefineMesh.cc
+  SwapFieldDataWithMatrixEntries.cc
   #SwapNodeLocationsWithMatrixEntries.cc
   #ConvertLatVolDataFromElemToNode.cc
   #ConvertLatVolDataFromNodeToElem.cc
@@ -167,7 +171,7 @@ SET(Modules_Legacy_Fields_SRCS
   CalculateSignedDistanceToField.cc
   #CalculateIsInsideField.cc
   #CalculateInsideWhichField.cc
-  #ConvertIndicesToFieldData.cc
+  ConvertIndicesToFieldData.cc
   CreateFieldData.cc
   #GetFieldData.cc
   #SetFieldData.cc
@@ -193,7 +197,13 @@ SET(Modules_Legacy_Fields_SRCS
 
 IF(WITH_TETGEN)
   SET(Modules_Legacy_Fields_SRCS ${Modules_Legacy_Fields_SRCS}
-    InterfaceWithTetGen.cc)
+    InterfaceWithTetGen.cc
+	InterfaceWithTetGenImpl.cc
+	)
+  SET(Modules_Legacy_Fields_HEADERS ${Modules_Legacy_Fields_HEADERS}
+	InterfaceWithTetGen.h
+    InterfaceWithTetGenImpl.h
+	)
 ENDIF(WITH_TETGEN)
     
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields 

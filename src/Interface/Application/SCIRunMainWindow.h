@@ -65,8 +65,9 @@ public:
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
-  void setDataDirectory(const QString& scriptFileName);
-  QString dataDirectory() const;
+  void setDataDirectory(const QString& dir);
+  void setDataPath(const QString& dirs);
+  void addToDataDirectory(const QString& dir);
 
   bool newInterface() const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
@@ -74,8 +75,11 @@ public:
   ~SCIRunMainWindow();
 public Q_SLOTS:
   void executeAll();
+  void showZoomStatusMessage(int zoomLevel);
 protected:
-  virtual void closeEvent(QCloseEvent* event);
+  virtual void closeEvent(QCloseEvent* event) override;
+  virtual void keyPressEvent(QKeyEvent *event) override;
+  virtual void keyReleaseEvent(QKeyEvent *event) override;
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
@@ -149,12 +153,16 @@ private Q_SLOTS:
   void makeModulesLargeSize();
   void makeModulesSmallSize();
   void setDataDirectoryFromGUI();
+  void addToPathFromGUI();
   void displayAcknowledgement();
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void resetWindowLayout();
+  void zoomNetwork();
+  void setDragMode(bool toggle);
+  void setSelectMode(bool toggle);
   void adjustModuleDock(int state);
   void exitApplication(int code);
 };

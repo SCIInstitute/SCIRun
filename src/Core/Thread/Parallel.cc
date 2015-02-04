@@ -36,7 +36,7 @@ using namespace SCIRun::Core::Thread;
 void Parallel::RunTasks(IndexedTask task, int numProcs)
 {
   boost::thread_group threads;
-  
+
   for (int i = 0; i < numProcs; ++i)
   {
     threads.create_thread(boost::bind(task, i));

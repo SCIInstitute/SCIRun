@@ -31,9 +31,16 @@
 #include <Core/Logging/Log.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
+#if 0 //TODO: make compiler symbol for WITH_QWT_WIDGETS
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
+#include <qwt_legend.h>
+#endif
+
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+
 
 namespace SCIRun {
   namespace Gui {
@@ -42,13 +49,12 @@ namespace SCIRun {
     public:
       SolveLinearSystemDialogImpl()
       {
-        typedef boost::bimap<std::string, std::string>::value_type strPair;
-        solverNameLookup_.insert(strPair("Conjugate Gradient (SCI)", "cg"));
-        solverNameLookup_.insert(strPair("BiConjugate Gradient (SCI)", "bicg"));
-        solverNameLookup_.insert(strPair("Jacobi (SCI)", "jacobi"));
-        solverNameLookup_.insert(strPair("MINRES (SCI)", "minres"));
+        solverNameLookup_.insert(StringPair("Conjugate Gradient (SCI)", "cg"));
+        solverNameLookup_.insert(StringPair("BiConjugate Gradient (SCI)", "bicg"));
+        solverNameLookup_.insert(StringPair("Jacobi (SCI)", "jacobi"));
+        solverNameLookup_.insert(StringPair("MINRES (SCI)", "minres"));
       }
-      boost::bimap<std::string, std::string> solverNameLookup_;
+      GuiStringTranslationMap solverNameLookup_;
     };
   }}
 
@@ -62,6 +68,39 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 
   addSpinBoxManager(maxIterationsSpinBox_, Variables::MaxIterations);
   addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
+
+#if 0 //TODO: make compiler symbol for WITH_QWT_WIDGETS
+  //TODO: fix parenting, all these objects leak 
+	QwtPlot *myPlot = this->qwtPlot;
+	QwtLegend *myLegend = new QwtLegend;
+	QwtPlotCurve *curve1 = new QwtPlotCurve("Current Target");
+	QwtPlotCurve *curve2 = new QwtPlotCurve("Target Error");
+	QwtPlotCurve *curve3 = new QwtPlotCurve("CurrentError");
+	double x[5] = { 0, 10, 15, 20, 25 };
+	double y[5] = { 0, 2, 4, 16, 64 };
+	
+	curve1->setSamples(&x[0], &y[0], (size_t)5);
+	curve1->setPen(Qt::blue);
+	curve1->setLegendAttribute(QwtPlotCurve::LegendShowLine);
+	curve1->setItemAttribute(QwtPlotItem::Legend, true);
+	
+	curve2->setPen(Qt::darkRed);
+	curve2->setLegendAttribute(QwtPlotCurve::LegendShowLine);
+	curve2->setItemAttribute(QwtPlotItem::Legend, true);
+	
+	curve3->setPen(Qt::darkGreen);
+	curve3->setLegendAttribute(QwtPlotCurve::LegendShowLine);
+	curve3->setItemAttribute(QwtPlotItem::Legend, true);
+	
+	myPlot->setAxisTitle(2, QString("Iteration"));
+	myPlot->setAxisTitle(0, QString("Error (RMS)"));
+	myPlot->setTitle(QString("Convergence"));
+	myPlot->insertLegend(myLegend, QwtPlot::RightLegend);
+	
+	curve1->attach(myPlot);
+	myPlot->replot();
+	myPlot->show();
+#endif
 
   addComboBoxManager(preconditionerComboBox_, Variables::Preconditioner);
   addComboBoxManager(methodComboBox_, Variables::Method, impl_->solverNameLookup_);

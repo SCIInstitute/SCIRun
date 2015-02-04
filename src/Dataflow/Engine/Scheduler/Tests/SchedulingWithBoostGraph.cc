@@ -82,6 +82,7 @@ using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Thread;
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -220,10 +221,11 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
   LinearSerialNetworkExecutor executor;
   ExecutionContext context(matrixMathNetwork);
-  executor.execute(context, order);
+  Mutex m("exec");
+  executor.execute(context, order, m);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+  boost::this_thread::sleep(boost::posix_time::milliseconds(800));
 
   //grab reporting module state
   ReportMatrixInfoAlgorithm::Outputs reportOutput = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
@@ -272,10 +274,11 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   //executor.executeAll(matrixMathNetwork, order, ExecutionBounds());
   BasicParallelExecutionStrategy strategy;
   ExecutionContext context(matrixMathNetwork, matrixMathNetwork);
-  strategy.execute(context);
+  Mutex m("exec");
+  strategy.execute(context, m);
 
   /// @todo: let executor thread finish.  should be an event generated or something.
-  boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+  boost::this_thread::sleep(boost::posix_time::milliseconds(800));
 
   //grab reporting module state
   ReportMatrixInfoAlgorithm::Outputs reportOutput = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));

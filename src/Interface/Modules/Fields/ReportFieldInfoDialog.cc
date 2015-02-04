@@ -41,26 +41,11 @@ ReportFieldInfoDialog::ReportFieldInfoDialog(const std::string& name, ModuleStat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  fixSize();
-
-  buttonBox->setVisible(false);
 }
 
 void ReportFieldInfoDialog::pullAndDisplayInfo() 
 {
   auto info = optional_any_cast_or_default<ReportFieldInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
-
-  std::ostringstream ostr;
-  ostr << "Type: " << info.type << std::endl;
-  ostr << "Center: " << info.center << std::endl;
-  ostr << "Size: " << info.size << std::endl;
-  ostr << "Data min,max: " << info.dataMin << " , " << info.dataMax << std::endl;
-  ostr << "# nodes: " << info.numnodes_ << std::endl;
-  ostr << "# elements: " << info.numelements_ << std::endl;
-  ostr << "# data: " << info.numdata_ << std::endl;
-  ostr << "Data location: " << info.dataLocation << std::endl;
-  ostr << "Dims (x,y,z): " << info.dims << std::endl;
-  ostr << "Geometric size: " << info.geometricSize << std::endl;
-
-  fieldInfoTextEdit_->setPlainText(ostr.str().c_str());
+  auto str = ReportFieldInfoAlgorithm::summarize(info);
+  fieldInfoTextEdit_->setPlainText(QString::fromStdString(str));
 }

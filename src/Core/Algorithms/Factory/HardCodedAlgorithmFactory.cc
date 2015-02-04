@@ -32,6 +32,7 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h> 
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
@@ -42,6 +43,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h> 
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
@@ -53,6 +55,9 @@
 #include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h> 
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h> 
+#include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -63,6 +68,7 @@
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Math/BuildNoiseColumnMatrix.h>
+#include <Core/Algorithms/Math/ComputeSVD.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
@@ -113,11 +119,12 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(AlignMeshBoundingBoxes, AlignMeshBoundingBoxesAlgo)
       ADD_MODULE_ALGORITHM(GetFieldNodes, GetMeshNodesAlgo)     /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
       ADD_MODULE_ALGORITHM(ElectrodeCoilSetup, ElectrodeCoilSetupAlgorithm)
-      ADD_MODULE_ALGORITHM(SetConductivitiesToTetMesh, SetConductivitiesToTetMeshAlgorithm)
-      ADD_MODULE_ALGORITHM(SetupRHSforTDCSandTMS, SetupRHSforTDCSandTMSAlgorithm)
+      ADD_MODULE_ALGORITHM(SetConductivitiesToMesh, SetConductivitiesToMeshAlgorithm)
+      ADD_MODULE_ALGORITHM(SetupTDCS, SetupTDCSAlgorithm)
       ADD_MODULE_ALGORITHM(GenerateROIStatistics, GenerateROIStatisticsAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
       ADD_MODULE_ALGORITHM(ReportFieldInfo, ReportFieldInfoAlgorithm)
+			ADD_MODULE_ALGORITHM(BuildMatrixOfSurfaceNormals, BuildMatrixOfSurfaceNormalsAlgo) 
       ADD_MODULE_ALGORITHM(ReportMatrixInfo, ReportMatrixInfoAlgorithm)
       ADD_MODULE_ALGORITHM(AppendMatrix, AppendMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(ReadMatrix, ReadMatrixAlgorithm)
@@ -154,9 +161,14 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationAlgo)
       ADD_MODULE_ALGORITHM(SimulateForwardMagneticField, SimulateForwardMagneticFieldAlgo)
       ADD_MODULE_ALGORITHM(BuildFEVolRHS, BuildFEVolRHSAlgo)
+			ADD_MODULE_ALGORITHM(RefineMesh, RefineMeshAlgo)
       ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
+			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)
 	  ADD_MODULE_ALGORITHM(FlipSurfaceNormals,FlipSurfaceNormalsAlgo)
 	  ADD_MODULE_ALGORITHM(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixAlgorithm)
+      ADD_MODULE_ALGORITHM(BuildMappingMatrix, BuildMappingMatrixAlgo)
+	  ADD_MODULE_ALGORITHM(ConvertIndicesToFieldData, ConvertIndicesToFieldDataAlgo)
+	  ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo)
     ;
   }
 }
@@ -169,6 +181,7 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
   if (func != factoryMap_.end())
     h.reset((func->second)());
 
+  //TODO: make a convenience function to copy these for "sub-algorithms"
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());

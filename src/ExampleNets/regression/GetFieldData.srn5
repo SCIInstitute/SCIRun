@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -578,141 +578,141 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>GetFieldData:79</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-1.89500000000000000e+003</first>
-				<second>-1.38900000000000000e+003</second>
+				<first>-1895</first>
+				<second>-1389</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:80</first>
 			<second>
-				<first>-2.24800000000000000e+003</first>
-				<second>-1.39800000000000000e+003</second>
+				<first>-2248</first>
+				<second>-1398</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:81</first>
 			<second>
-				<first>-2.24100000000000000e+003</first>
-				<second>-1.12000000000000000e+003</second>
+				<first>-2241</first>
+				<second>-1120</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:82</first>
 			<second>
-				<first>-1.62600000000000000e+003</first>
-				<second>-1.38500000000000000e+003</second>
+				<first>-1626</first>
+				<second>-1385</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:83</first>
 			<second>
-				<first>-1.63000000000000000e+003</first>
-				<second>-1.15800000000000000e+003</second>
+				<first>-1630</first>
+				<second>-1158</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:84</first>
 			<second>
-				<first>-1.89600000000000000e+003</first>
-				<second>-1.16000000000000000e+003</second>
+				<first>-1896</first>
+				<second>-1160</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:85</first>
 			<second>
-				<first>-1.90700000000000000e+003</first>
-				<second>-8.76000000000000000e+002</second>
+				<first>-1907</first>
+				<second>-876</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:86</first>
 			<second>
-				<first>-1.64600000000000000e+003</first>
-				<second>-8.75000000000000000e+002</second>
+				<first>-1646</first>
+				<second>-875</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:87</first>
 			<second>
-				<first>-1.65000000000000000e+003</first>
-				<second>-6.35000000000000000e+002</second>
+				<first>-1650</first>
+				<second>-635</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:88</first>
 			<second>
-				<first>-1.90600000000000000e+003</first>
-				<second>-6.38000000000000000e+002</second>
+				<first>-1906</first>
+				<second>-638</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:15</first>
 			<second>
-				<first>-1.64700000000000000e+003</first>
-				<second>-9.80000000000000000e+002</second>
+				<first>-1647</first>
+				<second>-980</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:46</first>
 			<second>
-				<first>-1.90700000000000000e+003</first>
-				<second>-9.81000000000000000e+002</second>
+				<first>-1907</first>
+				<second>-981</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:60</first>
 			<second>
-				<first>-1.62800000000000000e+003</first>
-				<second>-1.49600000000000000e+003</second>
+				<first>-1628</first>
+				<second>-1496</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:61</first>
 			<second>
-				<first>-1.90000000000000000e+003</first>
-				<second>-1.49600000000000000e+003</second>
+				<first>-1900</first>
+				<second>-1496</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:62</first>
 			<second>
-				<first>-1.89700000000000000e+003</first>
-				<second>-1.26600000000000000e+003</second>
+				<first>-1897</first>
+				<second>-1266</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:63</first>
 			<second>
-				<first>-1.62900000000000000e+003</first>
-				<second>-1.26000000000000000e+003</second>
+				<first>-1629</first>
+				<second>-1260</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:64</first>
 			<second>
-				<first>-1.64800000000000000e+003</first>
-				<second>-7.38000000000000000e+002</second>
+				<first>-1648</first>
+				<second>-738</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:65</first>
 			<second>
-				<first>-1.90500000000000000e+003</first>
-				<second>-7.45000000000000000e+002</second>
+				<first>-1905</first>
+				<second>-745</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:77</first>
 			<second>
-				<first>-2.25500000000000000e+003</first>
-				<second>-1.51200000000000000e+003</second>
+				<first>-2255</first>
+				<second>-1512</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:78</first>
 			<second>
-				<first>-2.23900000000000000e+003</first>
-				<second>-1.22800000000000000e+003</second>
+				<first>-2239</first>
+				<second>-1228</second>
 			</second>
 		</item>
 	</modulePositions>

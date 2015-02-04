@@ -42,6 +42,7 @@ namespace Algorithms {
     AlgorithmLogger();
     ~AlgorithmLogger();
     void setLogger(Core::Logging::LoggerHandle logger);
+    Core::Logging::LoggerHandle getLogger() const { return logger_; }
 
     /// functions for the algorithm, so it can forward errors if needed
     virtual void error(const std::string& error) const;

@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
 #  in all copies or substantial portions of the Software.
-# 
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -32,17 +32,19 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   DistanceField/CalculateSignedDistanceField.h
   DistanceField/CalculateDistanceField.h
   Mapping/ApplyMappingMatrix.h
+  FieldData/BuildMatrixOfSurfaceNormalsAlgo.h
   #Mapping/ApplyMappingMatrix.h
-  #FieldData/CalculateFieldDataMetric.h         
-  #FieldData/ConvertIndicesToFieldData.h
-  FieldData/CalculateGradientsAlgo.h               
+  #FieldData/CalculateFieldDataMetric.h
+  FieldData/ConvertIndicesToFieldDataAlgo.h
+  FieldData/CalculateGradientsAlgo.h
   FieldData/CalculateVectorMagnitudesAlgo.h
   #FieldData/ConvertMappingMatrixToFieldData.h
-  #FieldData/ConvertFieldDataType.h             
-  #FieldData/CalculateLatVolGradientsAtNodes.h  
+  #FieldData/ConvertFieldDataType.h
+  #FieldData/CalculateLatVolGradientsAtNodes.h
   #FieldData/GetFieldData.h
   FieldData/SetFieldData.h
   FieldData/SetFieldDataToConstantValue.h
+  FieldData/SwapFieldDataWithMatrixEntriesAlgo.h
   #FieldData/SmoothVecFieldMedian.h
   Mapping/BuildMappingMatrixAlgo.h
   DomainFields/GetDomainBoundaryAlgo.h
@@ -69,6 +71,14 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   TransformMesh/ScaleFieldMeshAndData.h
   TransformMesh/ProjectPointsOntoMesh.h
   MeshData/FlipSurfaceNormals.h
+  RefineMesh/RefineMesh.h
+	
+  RefineMesh/RefineMeshCurveAlgoV.h
+  RefineMesh/RefineMeshHexVolAlgoV.h
+  RefineMesh/RefineMeshQuadSurfAlgoV.h
+  RefineMesh/RefineMeshTetVolAlgoV.h
+  RefineMesh/RefineMeshTriSurfAlgoV.h
+  RefineMesh/EdgePairHash.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -89,7 +99,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
-  
+
   DistanceField/CalculateDistanceField.cc
   #DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
@@ -105,8 +115,8 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/CalculateFieldDataMetric.cc
 #FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
-
-  #FieldData/ConvertIndicesToFieldData.cc
+  FieldData/SwapFieldDataWithMatrixEntriesAlgo.cc
+  FieldData/ConvertIndicesToFieldDataAlgo.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
   FieldData/SetFieldData.cc
@@ -117,6 +127,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FilterFieldData/TriSurfPhaseFilter.cc
   #FindNodes/FindClosestNode.cc
   #FindNodes/FindClosestNodeByValue.cc
+  FieldData/BuildMatrixOfSurfaceNormalsAlgo.cc
   Mapping/BuildMappingMatrixAlgo.cc
   Mapping/MapFieldDataFromElemToNode.cc
   Mapping/MapFieldDataFromNodeToElem.cc
@@ -154,7 +165,12 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   MeshDerivatives/GetFieldBoundaryAlgo.cc
   #MeshDerivatives/GetBoundingBox.cc
   MeshDerivatives/SplitByConnectedRegion.cc
-  #RefineMesh/RefineMesh.cc
+  RefineMesh/RefineMesh.cc
+  RefineMesh/RefineMeshCurveAlgoV.cc
+  RefineMesh/RefineMeshHexVolAlgoV.cc
+  RefineMesh/RefineMeshQuadSurfAlgoV.cc
+  RefineMesh/RefineMeshTetVolAlgoV.cc
+  RefineMesh/RefineMeshTriSurfAlgoV.cc
   ResampleMesh/ResampleRegularMesh.cc
   #ResampleMesh/PadRegularMesh.cc
   #SampleField/GeneratePointSamplesFromField.cc
@@ -170,42 +186,32 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   TransformMesh/ProjectPointsOntoMesh.cc
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
-  #TracePoints/TracePoints.cc  
+  #TracePoints/TracePoints.cc
 )
 
-IF(WITH_TETGEN)
-  SET(Core_Algorithms_Legacy_Fields_SRCS ${Core_Algorithms_Legacy_Fields_SRCS}
-    TetGen/InterfaceWithTetGen.cc)
-ENDIF(WITH_TETGEN)
-
-SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields 
+SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields
   ${Core_Algorithms_Legacy_Fields_HEADERS}
   ${Core_Algorithms_Legacy_Fields_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields 
-  Core_Datatypes 
+TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
+  Core_Datatypes
   Core_Datatypes_Legacy_Field
   Algorithms_Base
-  #Core_Util 
   Core_Exceptions_Legacy
-  Core_Thread 
-  #Core_Geom 
+  Core_Thread
   Core_Geometry_Primitives
-  Core_Algorithms_Legacy_Fields
-  #Core_Algorithms_Legacy_Converter
-  #Core_Algorithms_Legacy_Math
-  #Core_Algorithms_Util 
-  #Core_Persistent 
-  Core_Basis 
+  Core_Basis
   #${SCI_TEEM_LIBRARY}
 )
 
+IF(FALSE)
 IF(WITH_TETGEN)
   TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
      ${SCI_TETGEN_LIBRARY}
   )
 ENDIF(WITH_TETGEN)
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Fields)

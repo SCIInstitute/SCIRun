@@ -30,8 +30,8 @@
 #define ALGORITHMS_MATH_BUILDNOISECOLUMNMATRIX_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/share.h>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
 	namespace Core {
@@ -46,7 +46,7 @@ namespace SCIRun {
 						static AlgorithmOutputName ResultMatrix;
 						static AlgorithmParameterName SignalToNoiseRatio();
 						BuildNoiseColumnMatrixAlgorithm();
-						void run(Datatypes::MatrixHandle output_matrix) const;
+            Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix) const;
 						AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 				};
 			}

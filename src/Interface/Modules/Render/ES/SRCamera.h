@@ -77,10 +77,13 @@ public:
   /// Perform autoview.
   void doAutoView(const Core::Geometry::BBox& bbox);
 
+  /// Sets the selected View of the window to given up axis and view axis
+  void setView(const glm::vec3& view, const glm::vec3& up);
+
   /// Default camera settings
   /// @{
   static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
-  static float getDefaultZNear()  {return 0.1f;}
+  static float getDefaultZNear()  {return 0.001f;}
   static float getDefaultZFar()   {return 100000.0f;}
   /// @}
 

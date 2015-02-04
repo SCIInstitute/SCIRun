@@ -37,7 +37,6 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Math {
-
   class SCISHARE EvaluateLinearAlgebraBinaryAlgorithm : public AlgorithmBase
   {
   public:
@@ -45,7 +44,8 @@ namespace Math {
     {
       ADD,
       SUBTRACT,
-      MULTIPLY
+      MULTIPLY,
+			FUNCTION
     };
 
     /// @todo: idea (type, name)
@@ -54,7 +54,7 @@ namespace Math {
 
     EvaluateLinearAlgebraBinaryAlgorithm();
     typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
-    typedef Operator Parameters;
+    typedef boost::tuple<Operator, boost::optional<std::string> > Parameters;
     typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
 
     Outputs run(const Inputs& inputs, const Parameters& params) const;

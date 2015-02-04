@@ -76,13 +76,15 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowDense)
   {
     auto col = algo.runImpl(m1, i, true);
     DenseMatrix expected(m1->col(i));
-    EXPECT_EQ(expected, *matrix_cast::as_dense(col));
+    EXPECT_EQ(expected, *matrix_cast::as_dense(col.get<0>()));
+    EXPECT_EQ(m1->ncols() - 1, col.get<1>());
   }
   for (int i = 0; i < m1->nrows(); ++i)
   {
     auto row = algo.runImpl(m1, i, false);
     DenseMatrix expected(m1->row(i));
-    EXPECT_EQ(expected, *matrix_cast::as_dense(row));
+    EXPECT_EQ(expected, *matrix_cast::as_dense(row.get<0>()));
+    EXPECT_EQ(m1->nrows() - 1, row.get<1>());
   }
 }
 
@@ -94,17 +96,21 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowSparse)
 
   for (int i = 0; i < m1->ncols(); ++i)
   {
-    auto col = algo.runImpl(m1, i, true);
+    EXPECT_THROW(algo.runImpl(m1, i, true), AlgorithmProcessingException);
+    /* TODO: fix in #822
     SparseRowMatrix expected(m1->col(i));
-    ASSERT_TRUE(col != nullptr);
-    EXPECT_EQ(expected, *matrix_cast::as_sparse(col));
+    ASSERT_TRUE(col.get<0>() != nullptr);
+    EXPECT_EQ(expected, *matrix_cast::as_sparse(col.get<0>()));
+    EXPECT_EQ(m1->ncols() - 1, col.get<1>());
+    */
   }
   for (int i = 0; i < m1->nrows(); ++i)
   {
     auto row = algo.runImpl(m1, i, false);
     SparseRowMatrix expected(m1->row(i));
-    ASSERT_TRUE(row != nullptr);
-    EXPECT_EQ(expected, *matrix_cast::as_sparse(row));
+    ASSERT_TRUE(row.get<0>() != nullptr);
+    EXPECT_EQ(expected, *matrix_cast::as_sparse(row.get<0>()));
+    EXPECT_EQ(m1->nrows() - 1, row.get<1>());
   }
 }
 

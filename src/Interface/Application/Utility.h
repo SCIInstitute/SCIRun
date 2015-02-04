@@ -66,6 +66,7 @@ namespace Gui
   typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
   typedef boost::function<void(QAction*)> QActionHookup;
   void fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
+  QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
 }
 
 }

@@ -44,6 +44,7 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //TODO: remove
 #include <Dataflow/Network/NetworkSettings.h> //TODO: push
 #include <Core/Application/Preferences/Preferences.h>
+#include <Core/Application/Application.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
@@ -63,7 +64,9 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   sendToBackAction_(0),
   propertiesAction_(0),
   modulesSelectedByCL_(false),
+  currentScale_(1),
   scene_(new QGraphicsScene(parent)),
+  visibleItems_(true),
   lastModulePosition_(0,0),
   defaultModulePosition_(0,0),
   dialogErrorControl_(dialogErrorControl),
@@ -88,6 +91,9 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
 
   updateActions();
   ensureVisible(0,0,0,0);
+
+  setMouseAsDragMode();
+
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setExecutionContext(this);
 #endif
@@ -122,6 +128,10 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
     connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
       this, SLOT(connectionAddedQueued(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+
+    //TODO: duplication
+    const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
+    controller_->getSettings().setValue("networkStateUpdateThread", value);
   }
 }
 
@@ -167,6 +177,19 @@ namespace
       if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
       {
         if (id == w->getModuleWidget()->getModuleId())
+          return w;
+      }
+    }
+    return 0;
+  }
+
+  ModuleProxyWidget* findFirstByName(const QList<QGraphicsItem*>& list, const std::string& name)
+  {
+    Q_FOREACH(QGraphicsItem* item, list)
+    {
+      if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        if (w->getModuleWidget()->getModuleId().find(name) != std::string::npos)
           return w;
       }
     }
@@ -244,7 +267,6 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(zLevelManager_->get_max());
-  proxy->setVisible(true);
   proxy->setPos(lastModulePosition_);
   lastModulePosition_ += moduleAddIncrement;
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
@@ -254,6 +276,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(snapToModules()), proxy, SLOT(snapToGrid()));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
+  connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
+  connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
@@ -264,8 +288,19 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   scene_->clearSelection();
   proxy->setSelected(true);
   bringToFront();
+  proxy->setVisible(visibleItems_);
 
   GuiLogger::Instance().log("Module added.");
+}
+
+void NetworkEditor::setMouseAsDragMode()
+{
+  setDragMode(ScrollHandDrag);
+}
+
+void NetworkEditor::setMouseAsSelectMode()
+{
+  setDragMode(RubberBandDrag);
 }
 
 void NetworkEditor::bringToFront()
@@ -310,6 +345,19 @@ ModuleWidget* getModule(QGraphicsItem* item)
   if (proxy)
     return static_cast<ModuleWidget*>(proxy->widget());
   return 0;
+}
+
+void NetworkEditor::setVisibility(bool visible)
+{
+  visibleItems_ = visible;
+  ModuleWidget::connectionFactory_->setVisibility(visible);
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto p = getModuleProxy(item))
+      p->setVisible(visibleItems_);
+    else if (auto c = dynamic_cast<ConnectionLine*>(item))
+      c->setVisible(visibleItems_);
+  }
 }
 
 //TODO copy/paste
@@ -540,28 +588,32 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
 	if (event->button() != Qt::LeftButton)
 		Q_EMIT networkEditorMouseButtonPressed();
 
-	if (ConnectionLine* cL = getSingleConnectionSelected())
-		if (event->buttons() & Qt::LeftButton)
-			if (!(event->modifiers() & Qt::ControlModifier))
-		{
-			auto selectedPair = cL->getConnectedToModuleIds();
+  if (ConnectionLine* cL = getSingleConnectionSelected())
+  {
+    if (event->buttons() & Qt::LeftButton)
+    {
+      if (!(event->modifiers() & Qt::ControlModifier))
+      {
+        auto selectedPair = cL->getConnectedToModuleIds();
 
-			findById(scene_->items(),selectedPair.first)->setSelected(true);
-			findById(scene_->items(),selectedPair.second)->setSelected(true);
-			modulesSelectedByCL_ = true;
-		}
-	QGraphicsView::mouseMoveEvent(event);
+        findById(scene_->items(), selectedPair.first)->setSelected(true);
+        findById(scene_->items(), selectedPair.second)->setSelected(true);
+        modulesSelectedByCL_ = true;
+      }
+    }
+  }
+  QGraphicsView::mouseMoveEvent(event);
 }
 
 void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 {
-		if(modulesSelectedByCL_)
-		{
-				unselectConnectionGroup();
-				Q_EMIT modified();
-		}
-		modulesSelectedByCL_ = false;
-	QGraphicsView::mouseReleaseEvent(event);
+  if (modulesSelectedByCL_)
+  {
+    unselectConnectionGroup();
+    Q_EMIT modified();
+  }
+  modulesSelectedByCL_ = false;
+  QGraphicsView::mouseReleaseEvent(event);
 }
 
 ConnectionLine* NetworkEditor::getSingleConnectionSelected()
@@ -608,14 +660,26 @@ void NetworkEditor::unselectConnectionGroup()
 ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 {
   ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
+  fillModulePositionMap(*positions);
+  return positions;
+}
+
+void NetworkEditor::fillModulePositionMap(ModulePositions& positions) const
+{
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      positions->modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
+      positions.modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
     }
   }
-  return positions;
+}
+
+void NetworkEditor::centerView()
+{
+  ModulePositions positions;
+  fillModulePositionMap(positions);
+  centerOn(findCenterOfNetwork(positions));
 }
 
 ModuleNotesHandle NetworkEditor::dumpModuleNotes() const
@@ -759,6 +823,10 @@ SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork() const
 void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
   controller_->loadNetwork(xml);
+
+  //TODO: duplication
+  const std::string value = Application::Instance().parameters()->entireCommandLine().find("--testUpdateThread") != std::string::npos ? "yes" : "no";
+  controller_->getSettings().setValue("networkStateUpdateThread", value);
 }
 
 size_t NetworkEditor::numModules() const
@@ -865,6 +933,83 @@ void NetworkEditor::restoreAllModuleUIs()
     auto module = getModule(item);
     if (module)
       module->showUI();
+  }
+}
+
+namespace
+{
+  const double minScale = 0.03;
+  const double maxScale = 4.0;
+  const double scaleFactor = 1.15;
+}
+
+void NetworkEditor::wheelEvent(QWheelEvent* event)
+{
+  if (event->modifiers() & Qt::ShiftModifier)
+  {
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+    if (event->delta() > 0)
+    {
+      zoomIn();
+    }
+    else
+    {
+      zoomOut();
+    }
+    // Don't call superclass handler here
+    // as wheel is normally used for moving scrollbars
+  }
+  else
+    QGraphicsView::wheelEvent(event);
+}
+
+void NetworkEditor::zoomIn()
+{
+  if (currentScale_ < maxScale)
+  {
+    double factor = std::min(scaleFactor, 4.0/currentScale_);
+    scale(factor, factor);
+    currentScale_ *= factor;
+    Q_EMIT zoomLevelChanged(currentZoomPercentage());
+  }
+}
+
+void NetworkEditor::zoomOut()
+{
+  if (currentScale_ > minScale)
+  {
+    scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+    currentScale_ /= scaleFactor;
+    Q_EMIT zoomLevelChanged(currentZoomPercentage());
+  }
+}
+
+void NetworkEditor::zoomReset()
+{
+  scale(1.0 / currentScale_, 1.0 / currentScale_);
+  currentScale_ = 1;
+  Q_EMIT zoomLevelChanged(currentZoomPercentage());
+}
+
+int NetworkEditor::currentZoomPercentage() const
+{
+  return static_cast<int>(currentScale_ * 100);
+}
+
+bool NetworkEditor::containsViewScene() const
+{
+  return findFirstByName(scene_->items(), "ViewScene") != nullptr;
+}
+
+void NetworkEditor::setModuleMini(bool mini)
+{
+  ModuleWidget::setGlobalMiniMode(mini);
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+      module->setMiniMode(mini);
   }
 }
 

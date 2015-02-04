@@ -32,7 +32,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
@@ -67,6 +67,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputMatrixType</name>
+								</first>
+								<second>
+									<name>OutputMatrixType</name>
+									<value>
+										<which>2</which>
+										<value>sparse</value>
 									</value>
 								</second>
 							</item>
@@ -266,13 +278,6 @@ NaN
 			<second class_id="17" tracking_level="0" version="0">
 				<first>-1.72000000000000000e+003</first>
 				<second>-1.00700000000000000e+003</second>
-			</second>
-		</item>
-		<item>
-			<first>ConvertMatrixType:11</first>
-			<second>
-				<first>-1.68100000000000000e+003</first>
-				<second>-1.18500000000000000e+003</second>
 			</second>
 		</item>
 		<item>
