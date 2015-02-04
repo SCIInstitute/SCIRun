@@ -148,15 +148,16 @@ void ViewSceneDialog::newGeometryValue()
     for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
     {
       boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
+      auto displayName = QString::fromStdString(obj->objectName).split('_').first();
       if (isObjectUnselected(obj->objectName))
       {
-        itemManager_->addItem(QString::fromStdString(obj->objectName), false);
+        itemManager_->addItem(QString::fromStdString(obj->objectName), displayName, false);
       }
       else
       {
         spire->handleGeomObject(obj, port);
         validObjects.push_back(obj->objectName);
-        itemManager_->addItem(QString::fromStdString(obj->objectName), true);
+        itemManager_->addItem(QString::fromStdString(obj->objectName), displayName, true);
       }
     }
     spire->gcInvalidObjects(validObjects);
@@ -598,9 +599,11 @@ void ViewSceneItemManager::SetupConnections(ViewSceneDialog* slotHolder)
   connect(this, SIGNAL(itemSelected(const QString&)), slotHolder, SLOT(handleSelectedItem(const QString&)));
 }
 
-void ViewSceneItemManager::addItem(const QString& name, bool checked)
+void ViewSceneItemManager::addItem(const QString& name, const QString& displayName, bool checked)
 {
 	QStandardItem* item = new QStandardItem(name);
+  //TODO dan
+  //item->setToolTip(displayName);
 
 	item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
   if (checked)

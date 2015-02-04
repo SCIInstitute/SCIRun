@@ -447,7 +447,9 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-    geom->objectName = get_id();
+    std::ostringstream ostr;
+    ostr << get_id() << "_" << this;
+    geom->objectName = ostr.str();
 
     geom->mPasses.push_back(pass);
 
