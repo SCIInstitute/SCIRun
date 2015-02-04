@@ -60,9 +60,13 @@ namespace detail
   {
   public:
     InstanceCountIdGenerator() : instanceCount_(0) {}
-    virtual int makeId() override final
+    virtual int makeId(const std::string& /*name*/) override final
     {
       return instanceCount_++;
+    }
+    virtual bool takeId(const std::string& name, int id) override final
+    {
+      return false;
     }
     virtual void reset() override final
     {
@@ -71,10 +75,32 @@ namespace detail
   private:
     std::atomic<int> instanceCount_;
   };
+
+  class PerTypeInstanceCountIdGenerator : public ModuleIdGenerator
+  {
+  public:
+    PerTypeInstanceCountIdGenerator() {}
+    virtual int makeId(const std::string& name) override final
+    {
+      return instanceCounts_[name]++;
+    }
+    virtual bool takeId(const std::string& name, int id) override final
+    {
+      int next = instanceCounts_[name];
+      instanceCounts_[name] = std::max(next, id + 1);
+      return true;
+    }
+    virtual void reset() override final
+    {
+      instanceCounts_.clear();
+    }
+  private:
+    std::map<std::string, std::atomic<int>> instanceCounts_;
+  };
 }
 
 /*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
-/*static*/ ModuleIdGeneratorHandle Module::idGenerator_(new detail::InstanceCountIdGenerator);
+/*static*/ ModuleIdGeneratorHandle Module::idGenerator_(new detail::PerTypeInstanceCountIdGenerator);
 
 /*static*/ void Module::resetIdGenerator() { idGenerator_->reset(); }
 
@@ -85,7 +111,7 @@ Module::Module(const ModuleLookupInfo& info,
   ReexecuteStrategyFactoryHandle reexFactory,
   const std::string& version)
   : info_(info),
-  id_(info_.module_name_, idGenerator_->makeId()),
+  id_(info.module_name_, idGenerator_->makeId(info.module_name_)),
   inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
@@ -97,13 +123,13 @@ Module::Module(const ModuleLookupInfo& info,
 
   Log& log = Log::get();
 
-  log << DEBUG_LOG << "Module created: " << info.module_name_ << " with id: " << id_;
+  log << DEBUG_LOG << "Module created: " << info_.module_name_ << " with id: " << id_;
 
   if (algoFactory)
   {
     algo_ = algoFactory->create(get_module_name(), this);
     if (algo_)
-      log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
+      log << DEBUG_LOG << "Module algorithm initialized: " << info_.module_name_;
   }
   log.flush();
 
@@ -111,6 +137,14 @@ Module::Module(const ModuleLookupInfo& info,
 
   if (reexFactory)
     setReexecutionStrategy(reexFactory->create(*this));
+}
+
+void Module::set_id(const std::string& id) 
+{ 
+  ModuleId newId(id);
+  if (!idGenerator_->takeId(newId.name_, newId.idNumber_))
+    THROW_INVALID_ARGUMENT("Duplicate module IDs, invalid network file.");
+  id_ = newId; 
 }
 
 Module::~Module()
@@ -555,7 +589,7 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
 
 bool Module::needToExecute() const
 {
-  static Mutex needToExecuteLock("buh");
+  static Mutex needToExecuteLock("needToExecute");
   if (reexecute_)
   {
     //Test fix for reexecute problem. Seems like it could be a race condition, but not sure.
@@ -732,4 +766,15 @@ void Module::enqueueExecuteAgain()
 boost::signals2::connection Module::connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber)
 {
   return executionSelfRequested_.connect(subscriber);
+}
+
+UseGlobalInstanceCountIdGenerator::UseGlobalInstanceCountIdGenerator()
+{
+  oldGenerator_ = Module::idGenerator_;
+  Module::idGenerator_.reset(new detail::InstanceCountIdGenerator);
+}
+
+UseGlobalInstanceCountIdGenerator::~UseGlobalInstanceCountIdGenerator()
+{
+  Module::idGenerator_ = oldGenerator_;
 }

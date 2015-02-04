@@ -68,7 +68,7 @@ namespace Networks {
 
     //for serialization
     virtual const ModuleLookupInfo& get_info() const { return info_; }
-    virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
+    virtual void set_id(const std::string& id);
 
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();
@@ -292,6 +292,7 @@ namespace Networks {
     UiToggleFunc uiToggleFunc_;
     static SCIRun::Core::Logging::LoggerHandle defaultLogger_;
     static ModuleIdGeneratorHandle idGenerator_;
+    friend class UseGlobalInstanceCountIdGenerator;
   };
 
   template <class T>
@@ -481,6 +482,15 @@ namespace Networks {
     virtual ModuleReexecutionStrategyHandle create(const Module& module) const;
   private:
     boost::optional<std::string> reexecuteMode_;
+  };
+
+  class SCISHARE UseGlobalInstanceCountIdGenerator
+  {
+  public:
+    UseGlobalInstanceCountIdGenerator();
+    ~UseGlobalInstanceCountIdGenerator();
+  private:
+    ModuleIdGeneratorHandle oldGenerator_;
   };
 
 }}

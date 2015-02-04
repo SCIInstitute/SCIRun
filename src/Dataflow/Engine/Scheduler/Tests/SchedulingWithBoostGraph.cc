@@ -116,6 +116,7 @@ protected:
   Network matrixMathNetwork;
   ModuleHandle receive, report;
   DenseMatrix expected;
+  UseGlobalInstanceCountIdGenerator switcher;
 
   virtual void SetUp()
   {

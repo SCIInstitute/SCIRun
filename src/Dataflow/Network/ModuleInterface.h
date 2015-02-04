@@ -187,7 +187,8 @@ namespace Networks {
   {
   public:
     virtual ~ModuleIdGenerator() {}
-    virtual int makeId() = 0;
+    virtual int makeId(const std::string& name) = 0;
+    virtual bool takeId(const std::string& name, int id) = 0;
     virtual void reset() = 0; //for unit testing
   };
   typedef boost::shared_ptr<ModuleIdGenerator> ModuleIdGeneratorHandle;
