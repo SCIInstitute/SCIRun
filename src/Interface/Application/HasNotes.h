@@ -35,8 +35,8 @@ class QAction;
 
 namespace SCIRun {
 namespace Gui {
-  
-  class HasNotes 
+
+  class HasNotes
   {
   public:
     HasNotes(const std::string& name, bool positionAdjustable);
@@ -44,6 +44,7 @@ namespace Gui {
     void connectNoteEditorToAction(QAction* action);
     void connectUpdateNote(QObject* obj);
     void setCurrentNote(const Note& note, bool updateEditor);
+    Note getCurrentNote() const { return currentNote_; }
   protected:
     void destroy();
   private:

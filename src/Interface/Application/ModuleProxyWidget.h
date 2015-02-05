@@ -42,18 +42,19 @@ namespace SCIRun
     class ModuleProxyWidget : public QGraphicsProxyWidget, public NoteDisplayHelper
     {
 	    Q_OBJECT
-	
+
     public:
       explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
       ~ModuleProxyWidget();
       ModuleWidget* getModuleWidget();
+      void createStartupNote();
 
     public Q_SLOTS:
       void highlightIfSelected();
       void setDefaultNotePosition(NotePosition position);
       void createPortPositionProviders();
       void snapToGrid();
-	 
+
     Q_SIGNALS:
       void selected();
       void widgetMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
@@ -70,7 +71,7 @@ namespace SCIRun
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
-    
+
       ModuleWidget* module_;
       bool grabbedByWidget_, isSelected_;
       QWidget* pressedSubWidget_;

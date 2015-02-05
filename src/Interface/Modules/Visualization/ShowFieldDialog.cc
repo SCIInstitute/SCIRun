@@ -107,6 +107,12 @@ void ShowFieldDialog::push()
   }
 }
 
+void ShowFieldDialog::createStartupNote()
+{
+  auto showFieldId = windowTitle().split(':')[1];
+  setStartupNote("ID: " + showFieldId);
+}
+
 void ShowFieldDialog::pull()
 {
   pull_newVersionToReplaceOld();
