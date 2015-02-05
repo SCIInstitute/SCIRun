@@ -45,11 +45,54 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name)
 {
   if (name == "Rainbow")
     return ColorMapHandle(rainbow_.clone());
-  if (name == "Gray")
+  if (name == "Grayscale")
     return ColorMapHandle(grayscale_.clone());
   if (name == "Blackbody")
     return ColorMapHandle(blackbody_.clone());
   THROW_INVALID_ARGUMENT("Unknown standard colormap name: " + name);
+}
+
+float ColorMap::Hue_2_RGB(float v1, float v2, float vH) {
+   if ( vH < 0 ) vH += 1.;
+   if ( vH > 1 ) vH -= 1.;
+   if ( ( 6 * vH ) < 1 ) return ( v1 + ( v2 - v1 ) * 6. * vH );
+   if ( ( 2 * vH ) < 1 ) return ( v2 );
+   if ( ( 3 * vH ) < 2 ) return ( v1 + ( v2 - v1 ) * ( ( .666667 ) - vH ) * 6. );
+   return ( v1 );
+}
+
+ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
+    float r,g,b;
+    if ( s == 0. ) {
+       r = g = b = l ;
+    } else {
+       float var_1, var_2;
+       if ( l < 0.5 ) var_2 = l * ( 1. + s );
+       else           var_2 = ( l + s ) - ( s * l );
+
+       var_1 = 2 * l - var_2;
+
+       r = Hue_2_RGB( var_1, var_2, h + ( .333333 ) );
+       g = Hue_2_RGB( var_1, var_2, h );
+       b = Hue_2_RGB( var_1, var_2, h - ( .333333 ) );
+    }
+    return ColorRGB(r,g,b);
+}
+
+ColorRGB ColorMap::getColorMapVal(float v) {
+    ColorRGB col;
+    if (name_ == "Rainbow")
+        col = hslToRGB((1.0-v) * 0.8, 0.95, 0.5);
+    else if (name_ == "Blackbody") {
+        if (v < 0.333333)
+            col = ColorRGB(v * 3., 0., 0.);
+        else if (v < 0.6666667)
+            col = ColorRGB(1.,(v - 0.333333) * 3., 0.);
+        else
+            col = ColorRGB(1., 1., (v - 0.6666667) * 3.);
+    } else if (name_ == "Grayscale")
+        col = hslToRGB(0., 0., v);
+    return col;
 }
 
 ColorMap StandardColorMapFactory::rainbow_("Rainbow");

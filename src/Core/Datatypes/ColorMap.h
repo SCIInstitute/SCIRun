@@ -31,6 +31,7 @@
 
 #include <Core/Datatypes/Datatype.h>
 #include <boost/noncopyable.hpp>
+#include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -45,9 +46,12 @@ namespace Datatypes {
     virtual ColorMap* clone() const;
 
     std::string getColorMapName() const {return name_;}
+    Core::Datatypes::ColorRGB getColorMapVal(float v);
   private:
     std::string name_;
     boost::shared_ptr<class ColorMapImpl> impl_;
+    float Hue_2_RGB(float v1, float v2, float vH);
+    Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l);
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable

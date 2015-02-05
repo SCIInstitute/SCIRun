@@ -32,6 +32,8 @@
 #include "Interface/Modules/Visualization/ui_CreateBasicColorMap.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Visualization/share.h>
+#include <Core/Datatypes/ColorMap.h>
+using namespace SCIRun::Core::Datatypes;
 
 namespace SCIRun {
 namespace Gui {
@@ -46,6 +48,15 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
+ private Q_SLOTS:
+  void updateColorMapPreview(QString s);
+  const QString buildGradientString(ColorMap cm);
+  void setShiftSlider(QString s);
+  void setResolutionSlider(QString s);
+  void setShiftText(int i);
+  void setResolutionText(int i);
+  void onInvertCheck(bool b);
+  
 };
 
 }
