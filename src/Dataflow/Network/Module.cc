@@ -79,23 +79,27 @@ namespace detail
   class PerTypeInstanceCountIdGenerator : public ModuleIdGenerator
   {
   public:
-    PerTypeInstanceCountIdGenerator() {}
+    PerTypeInstanceCountIdGenerator() : mapLock_("moduleCounts") {}
     virtual int makeId(const std::string& name) override final
     {
+      Guard g(mapLock_.get());
       return instanceCounts_[name]++;
     }
     virtual bool takeId(const std::string& name, int id) override final
     {
+      Guard g(mapLock_.get());
       int next = instanceCounts_[name];
       instanceCounts_[name] = std::max(next, id + 1);
       return true;
     }
     virtual void reset() override final
     {
+      Guard g(mapLock_.get());
       instanceCounts_.clear();
     }
   private:
-    std::map<std::string, std::atomic<int>> instanceCounts_;
+    Mutex mapLock_;
+    std::map<std::string, int> instanceCounts_;
   };
 }
 
