@@ -579,7 +579,7 @@ void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmP
 {
   addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
 }
-
+/*
 class SliderSlotManager : public WidgetSlotManager
 {
 public:
@@ -608,7 +608,7 @@ void ModuleDialogGeneric::addSliderManager(QSlider* slider, const AlgorithmParam
 {
   addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, slider));
 }
-
+*/
 class RadioButtonGroupSlotManager : public WidgetSlotManager
 {
 public:
