@@ -34,9 +34,11 @@
   #endif
 #endif
 
-varying vec4	fColor;
+uniform sampler1D uTX0;
+
+varying float vFieldData;
 
 void main()
 {
-	gl_FragColor 		= fColor;
+  gl_FragColor = texture1D( uTX0, vFieldData );
 }

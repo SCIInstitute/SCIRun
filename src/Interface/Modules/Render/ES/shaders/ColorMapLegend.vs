@@ -35,10 +35,10 @@ uniform float    uDisplayLength;
 
 // Attributes
 attribute vec3  aPos;
-attribute vec4  aColorFloat;
+attribute float aFieldData;
 
 // Outputs to the fragment shader.
-varying vec4    fColor;
+varying float   vFieldData;
 
 void main( void )
 {
@@ -56,5 +56,5 @@ void main( void )
                   -1.):(ex?0.05:0.1)));
   gl_Position = vec4(newPos.x * x_scale + x_trans, 
                      newPos.y * y_scale + y_trans, newPos.z, 1.0);
-  fColor      = aColorFloat;
+  vFieldData  = aFieldData;
 }

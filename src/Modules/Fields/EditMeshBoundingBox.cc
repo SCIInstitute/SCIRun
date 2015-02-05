@@ -183,9 +183,9 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(OutputCenterX, 0.0);
   state->setValue(OutputCenterY, 0.0);
   state->setValue(OutputCenterZ, 0.0);
-  state->setValue(OutputSizeX, 0.0);
-  state->setValue(OutputSizeY, 0.0);
-  state->setValue(OutputSizeZ, 0.0);
+  state->setValue(OutputSizeX, 100.0);
+  state->setValue(OutputSizeY, 100.0);
+  state->setValue(OutputSizeZ, 100.0);
   state->setValue(Scale, 1.0);
 
   //TODO
@@ -293,8 +293,8 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     };
     auto state = get_state();
     double scale = state->getValue(Scale).toDouble();
-    if (scale < 0) scale *= -1.;
-    int num_strips = int(30. * scale);
+    scale = std::max(scale,0.01);
+    int num_strips = int(100. * scale);
     std::vector<Vector> tri_points;
     std::vector<Vector> tri_normals;
     std::vector<uint32_t> tri_indices;
