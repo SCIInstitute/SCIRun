@@ -50,7 +50,7 @@ using namespace SCIRun::Dataflow::Networks;
 bool LoadFileCommandGui::execute()
 {
   auto inputFiles = Application::Instance().parameters()->inputFiles();
-  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFiles[0]));
+  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFiles[index_]));
 }
 
 bool ExecuteCurrentNetworkCommandGui::execute()

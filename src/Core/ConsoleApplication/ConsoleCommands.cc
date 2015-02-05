@@ -43,7 +43,7 @@ bool LoadFileCommandConsole::execute()
   auto inputFiles = Application::Instance().parameters()->inputFiles();
   if (!inputFiles.empty())
   {
-    auto filename = inputFiles[0];
+    auto filename = inputFiles[index_];
 
     /// @todo: real logger
     std::cout << "Attempting load of " + filename << std::endl;
