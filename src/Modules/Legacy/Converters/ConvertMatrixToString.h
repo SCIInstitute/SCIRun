@@ -26,42 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/String.h>
-#include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#ifndef MODULES_LEGACY_CONVERTER_CONVERTMATRIXTOSTRING_
+#define MODULES_LEGACY_CONVERTER_CONVERTMATRIXTOSTRING_ 1
 
-using namespace SCIRun;
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Utility;
-using namespace SCIRun::Core::Logging;
-using namespace SCIRun::Core::Algorithms::Converters;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Converters/share.h>
 
-bool ConvertMatrixToStringAlgo::run(MatrixHandle input, StringHandle& output) const
-{
-	Logging::LoggerHandle pr;
-	ConverterAlgo algo(pr);
-	if(algo.MatrixToString(input, output))
-		return true;
-	else
-		return false;
-}
-
-AlgorithmOutput ConvertMatrixToStringAlgo::run_generic(const AlgorithmInput& input) const
-{
-	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
+namespace SCIRun {
+	namespace Modules {
+			namespace Converters {
 	
-	StringHandle output_string;
-	run(input_matrix, output_string);
-	
-	AlgorithmOutput output;
-	output[ResultString] = output_string;
-	return output;
-}
+	class SCISHARE ConvertMatrixToString : public Dataflow::Networks::Module,
+		public Has1InputPort<MatrixPortTag>,
+		public Has1OutputPort<StringPortTag>
+		{
+			public:
+				ConvertMatrixToString();
+				virtual void setStateDefaults() {}
+				virtual void execute();
+				
+				INPUT_PORT(0, InputMatrix, Matrix);
+				OUTPUT_PORT(0, ResultString, String);
+		};
+}}}
 
-AlgorithmOutputName ConvertMatrixToStringAlgo::ResultString("ResultString");
+#endif

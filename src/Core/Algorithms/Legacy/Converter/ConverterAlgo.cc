@@ -750,56 +750,46 @@ bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input,MatrixHandle& output)
 bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::StringHandle& output)
 {
   std::string oss;
-  //if (input.get_rep()==0)
-  //{
-    //error("MatrixToString: No input matrix");
-    //return false;
-  //}
-
-  //Datatypes::SparseRowMatrixHandle sparse = matrix_cast::as_sparse(input);
+  
   if (matrix_is::sparse(input))
   {
 	SparseRowMatrixHandle sparse = matrix_convert::to_sparse(input);
     SparseRowMatrixGeneric<double>::RowsPtr rowData = sparse->get_rows();
     SparseRowMatrixGeneric<double>::ColumnsPtr columnData = sparse->get_cols();
-    //double *d  = sparse->get_vals();
     size_type numRows = sparse->nrows();
     size_type numCols = sparse->ncols();
 
-    oss += "Sparse Matrix ("; oss += numRows; oss += "x"; oss += numCols; oss += "):\n";
+    oss += "Sparse Matrix ("; oss += std::to_string(numRows); oss += "x"; oss += std::to_string(numCols); oss += "):\n";
     for(index_type r = 0; r < numRows; r++)
     {
       for(index_type c = 0; c < numCols; c++)
       {
-        oss += "["; oss += r; oss += ","; oss += c; oss += "] = "; oss += sparse->get(r, c); oss += "\n";
+        oss += "["; oss += std::to_string(r); oss += ","; oss += std::to_string(c); oss += "] = "; oss += std::to_string(sparse->get(r, c)); oss += "\n";
       }
     }
   }
+  
   else
   {
     input = matrix_convert::to_dense(input);
     size_type numRows = input->nrows();
     size_type numCols = input->ncols();
-    //double* d = input->get_data_pointer();
-    oss += "Dense inputrix ("; oss += numRows; oss += "x"; oss += numCols; oss += "):\n";
+    oss += "Dense Matrix ("; oss += std::to_string(numRows); oss += "x"; oss += std::to_string(numCols); oss += "):\n";
 
     for(index_type r = 0; r < numRows; r++)
     {
       for(index_type c = 0; c < numCols; c++)
       {
-        oss += input->get(r, c); oss += " ";
+        oss += std::to_string(input->get(r, c)); oss += " ";
       }
       oss += "\n";
     }
   }
-
+  
   output = boost::make_shared<String>(oss);
-
-  //if (output.get_rep()==0)
-  //{
-    //error("MatrixToString: Could not generate output");
-    //return false;
-  //}
+  
+  // Just for testing to make sure that the string is being correctly converted. 
+  //std::cout << output->value();
 
   return true;
 }
