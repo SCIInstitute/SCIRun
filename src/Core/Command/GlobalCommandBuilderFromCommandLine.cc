@@ -62,7 +62,7 @@ using namespace SCIRun::Core::Commands;
 
     if (!params->disableSplash() && !params->disableGui())
       q->enqueue(cmdFactory_->create(ShowSplashScreen));
-    
+
     if (!params->disableGui())
       q->enqueue(cmdFactory_->create(ShowMainWindow));
     else
@@ -70,8 +70,8 @@ using namespace SCIRun::Core::Commands;
 
     if (params->dataDirectory())
       q->enqueue(cmdFactory_->create(SetupDataDirectory));
-  
-    if (params->inputFile())
+
+    if (!params->inputFiles().empty())
       q->enqueue(cmdFactory_->create(LoadNetworkFile));
     else if (params->pythonScriptFile())
       q->enqueue(cmdFactory_->create(RunPythonScript));
