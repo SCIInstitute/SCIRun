@@ -30,17 +30,21 @@
 
 #include <Modules/Visualization/ShowColorMapModule.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Color.h> 
+#include <Core/GeometryPrimitives/Vector.h>
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun;
 
 ShowColorMapModule::ShowColorMapModule() : Module(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
 {
-  INITIALIZE_PORT(ColorMapObject);
+    INITIALIZE_PORT(ColorMapObject);
 	INITIALIZE_PORT(GeometryOutput); 
 }
 
@@ -60,193 +64,123 @@ void ShowColorMapModule::setStateDefaults()
 
 void ShowColorMapModule::execute()
 {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
-	ColorMapHandle cmHandle = 0;
-	if (!get_input_handle("ColorMap", cmHandle, true)) return;
-
-	if (inputs_changed_ ||
-		!geometry_output_handle_.get_rep() ||
-		gui_length_.changed(true) ||
-		gui_side_.changed(true) ||
-		gui_numlabels_.changed(true) ||
-		gui_scale_.changed(true) ||
-		gui_num_sig_digits_.changed(true) ||
-		gui_units_.changed(true) ||
-		gui_text_fontsize_.changed(true) ||
-		gui_extra_padding_.changed(true) ||
-		color_changed_ == true)
-	{
-		// Inform module that execution started
-		update_state(Executing);
-
-		GeomGroup *all = new GeomGroup();
-
-		Point  ref1(0.0, 0.0, 0.0);
-		Vector out(0.0, 0.0, 0.0);
-		Vector along(0.0, 0.0, 0.0);
-
-		color_changed_ = false;
-
-		text_material_handle_->diffuse =
-			Color(gui_color_r_.get(), gui_color_g_.get(), gui_color_b_.get());
-
-		if (gui_side_.get() == "left")
-		{
-			out = Vector(-0.05, 0.0, 0.0);
-			if (gui_length_.get() == "full" || gui_length_.get() == "half2")
-			{
-				if (gui_extra_padding_.get())
-				{
-					ref1 = Point(-1.0, -14.0 / 16.0, 0.0);
-				}
-				else
-				{
-					ref1 = Point(-1.0, -15.0 / 16.0, 0.0);
-				}
-			}
-			else
-			{
-				ref1 = Point(-1.0, 1.0 / 16.0, 1.0);
-			}
-
-			if (gui_length_.get() == "full")
-			{
-				if (gui_extra_padding_.get())
-				{
-					along = Vector(0.0, 29.0 / 16.0, 0.0);
-				}
-				else
-				{
-					along = Vector(0.0, 30.0 / 16.0, 0.0);
-				}
-			}
-			else
-			{
-				along = Vector(0.0, 14.0 / 16.0, 0.0);
-			}
-		}
-		else if (gui_side_.get() == "bottom")
-		{
-			out = Vector(0.0, -0.05, 0.0);
-			if (gui_length_.get() == "full" || gui_length_.get() == "half1")
-			{
-				ref1 = Point(-15.0 / 16.0, -1.0, 0.0);
-			}
-			else
-			{
-				ref1 = Point(1.0 / 16.0, -1.0, 0.0);
-			}
-
-			if (gui_length_.get() == "full")
-			{
-				if (gui_extra_padding_.get())
-				{
-					along = Vector(29.0 / 16.0, 0.0, 0.0);
-				}
-				else
-				{
-					along = Vector(30.0 / 16.0, 0.0, 0.0);
-				}
-			}
-			else
-			{
-				if (gui_extra_padding_.get())
-				{
-					along = Vector(13.0 / 16.0, 0.0, 0.0);
-				}
-				else
-				{
-					along = Vector(14.0 / 16.0, 0.0, 0.0);
-				}
-			}
-		}
-
-		const Point  ref0(ref1 - out);
-		// Create a new colormap that we can send to ColorMapTex.  We need
-		// to do this, because if the colormap min/max are too close you get
-		// problems.  This is because the min and max are used to lookup
-		// into the texture as floats.  Precion problems occur when the min
-		// == max in floats, but not as doubles.
-		ColorMapHandle cmap_rescaled;
-		// Only rescale it when the min != max or min and max are too close.
-		float too_close = Abs((float)(cmHandle->getMin()) - (float)(cmHandle->getMax()));
-		// Replace zero compared with too_close with an epsilon if desired.
-		if (too_close <= 0)
-		{
-			// Make a copy of the colormap we can rescale
-			cmap_rescaled = cmHandle->clone();
-			cmap_rescaled->Scale(0, 1);
-		}
-		else
-		{
-			cmap_rescaled = cmHandle;
-		}
-
-		ColorMapTex *sq = new ColorMapTex(ref0, ref0 + along,
-			ref0 + along + out, ref0 + out, cmap_rescaled);
-		all->add(sq);
-
-		double scale = gui_scale_.get();
-		std::string str = gui_units_.get();
-		if (str.empty()) str = cmHandle->units();
-		// So if the maximum number of digits the number will take up is
-		// at most 25 then the length of str better be less than 80-25-1.
-		// See size of value and num_sig_digits below.
-		if (str.length() > 50)
-		{
-			error("Length of units string is too long.  Make it smaller than 50 characters please.");
-			return;
-		}
-
-		const int numlabels = gui_numlabels_.get();
-		if (numlabels > 1 && numlabels < 50)
-		{
-			// Fill in the text.
-			const double minval = cmHandle->getMin()*scale;
-			const double maxval = cmHandle->getMax()*scale;
-
-			Point p0 = ref0 - out * 0.02;
-			char value[80];
-			GeomLines *lines = new GeomLines();
-			GeomTexts *texts = new GeomTexts();
-			texts->set_is_2d(true);
-			texts->set_font_index(gui_text_fontsize_.get());
-			int num_sig_digits = gui_num_sig_digits_.get();
-			if (num_sig_digits < 1)
-			{
-				warning("Number of significant digits needs to be at least 1.  Setting the number of significant digits to 1.");
-				gui_num_sig_digits_.set(1);
-				num_sig_digits = 1;
-			}
-			if (num_sig_digits > 20)
-			{
-				warning("Number of significant digits needs to be less than or equal to 20.  Setting the number of significant digits to 20");
-				gui_num_sig_digits_.set(20);
-				num_sig_digits = 20;
-			}
-			for (int i = 0; i < numlabels; i++)
-			{
-				sprintf(value, "%.*g %s", num_sig_digits,
-					minval + (maxval - minval)*(i / (numlabels - 1.0)),
-					str.c_str());
-				const Point loc = p0 + along * (i / (numlabels - 1.0));
-				texts->add(value, loc, text_material_handle_->diffuse);
-				lines->add(loc, text_material_handle_,
-					loc + out * 0.5, text_material_handle_);
-			}
-
-			all->add(texts);
-			all->add(lines);
-		}
-
-		GeomSticky *sticky = new GeomSticky(all);
-		geometry_output_handle_ = GeomHandle(sticky);
-
-		send_output_handle("Geometry", geometry_output_handle_, "ShowColorMap Sticky");
- 	}
-  sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
-#endif
+  boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap> colorMap = getRequiredInput(ColorMapObject);
+  if (needToExecute())
+  {
+    GeometryHandle geom = buildGeometryObject(colorMap, get_state(), get_id());
+    sendOutput(GeometryOutput, geom);
+  }
+   
 }
+
+SCIRun::Core::Datatypes::GeometryHandle
+ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap> cm,
+                                        Dataflow::Networks::ModuleStateHandle state,
+                                        const std::string& id) {
+  //set up geometry
+  Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
+  std::ostringstream ostr;
+  ostr << get_id() << "ShowColorMap_" << geom.get();
+  geom->objectName = ostr.str();
+  std::vector<Vector> points;
+  std::vector<double> colors;
+  std::vector<uint32_t> indices;
+  int32_t numVBOElements = 0;
+  double resolution = 0.001; //@TODO this will be pulled for colormap object eventually
+  
+  for (double i = 0.; i < 1.0; i+=resolution) {
+    uint32_t offset = (uint32_t)points.size();
+    points.push_back(Vector(0.,i,0.));
+    colors.push_back(i);
+    points.push_back(Vector(1.,i,0.));
+    colors.push_back(i);
+    points.push_back(Vector(0.,i+resolution,0.));
+    colors.push_back(i);
+    points.push_back(Vector(1.,i+resolution,0.));
+    colors.push_back(i);
+    numVBOElements+=2;
+    indices.push_back(offset + 0);
+    indices.push_back(offset + 1);
+    indices.push_back(offset + 3);
+    indices.push_back(offset + 3);
+    indices.push_back(offset + 2);
+    indices.push_back(offset + 0);
+  }
+
+  // IBO/VBOs and sizes
+  uint32_t iboSize = sizeof(uint32_t) * (uint32_t)indices.size();
+  uint32_t vboSize = sizeof(float) * 4 * (uint32_t)points.size();
+  
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
+      new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
+      new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+
+  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
+  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+  
+  for (auto a : indices) iboBuffer->write(a);
+  
+  for (size_t i = 0; i < points.size(); i ++) {
+    vboBuffer->write(static_cast<float>(points[i].x()));
+    vboBuffer->write(static_cast<float>(points[i].y()));
+    vboBuffer->write(static_cast<float>(points[i].z()));
+    vboBuffer->write(static_cast<float>(colors[i]));
+  }
+
+  //add the actual points and colors
+
+  std::string uniqueNodeID = id + "colorMapLegend";
+  std::string vboName      = uniqueNodeID + "VBO";
+  std::string iboName      = uniqueNodeID + "IBO";
+  std::string passName     = uniqueNodeID + "Pass";
+
+  // NOTE: Attributes will depend on the color scheme. We will want to
+  // normalize the colors if the color scheme is COLOR_IN_SITU.
+
+  // Construct VBO.
+  std::string shader = "Shaders/ColorMapLegend";
+  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
+  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+  bool extraSpace = state->getValue(AddExtraSpace).toBool();
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uExtraSpace",extraSpace?1.:0.));
+  int displaySide = state->getValue(DisplaySide).toInt();
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide",static_cast<float>(displaySide)));
+  int displayLength = state->getValue(DisplayLength).toInt();
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength",static_cast<float>(displayLength)));
+  GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
+		numVBOElements,Core::Geometry::BBox(),true);
+
+  geom->mVBOs.push_back(geomVBO);
+
+  // Construct IBO.
+
+  GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName,
+                                        GeometryObject::SpireIBO::TRIANGLES,
+                                        sizeof(uint32_t), iboBufferSPtr);
+  geom->mColorMap = cm->getColorMapName();
+  geom->mIBOs.push_back(geomIBO);
+  RenderState renState;
+  renState.set(RenderState::USE_COLORMAP, true);
+    
+  // Construct Pass.
+  // Build pass for the edges.
+  /// \todo Find an appropriate place to put program names like UniformColor.
+  GeometryObject::ColorScheme scheme = GeometryObject::COLOR_MAP;
+  GeometryObject::SpireSubPass pass =
+  GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+                               scheme, renState, GeometryObject::RENDER_VBO_IBO, geomVBO, geomIBO);
+
+  // Add all uniforms generated above to the pass.
+  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
+  
+  geom->mPasses.push_back(pass);
+  return geom;
+}
+
+
 
 AlgorithmParameterName ShowColorMapModule::DisplaySide("DisplaySide"); 
 AlgorithmParameterName ShowColorMapModule::DisplayLength("DisplayLength");
@@ -256,4 +190,4 @@ AlgorithmParameterName ShowColorMapModule::Labels("Labels");
 AlgorithmParameterName ShowColorMapModule::Scale("Scale");
 AlgorithmParameterName ShowColorMapModule::Units("Units");
 AlgorithmParameterName ShowColorMapModule::SignificantDigits("SignificantDigits");
-AlgorithmParameterName ShowColorMapModule::AddExtraSpace("AddExtraSpace"); 
+AlgorithmParameterName ShowColorMapModule::AddExtraSpace("AddExtraSpace");

@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,43 +25,36 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Datatypes/ColorMap.h
-#ifndef CORE_DATATYPES_COLORMAP_H
-#define CORE_DATATYPES_COLORMAP_H 
 
-#include <Core/Datatypes/Datatype.h>
-#include <boost/noncopyable.hpp>
-#include <Core/Datatypes/share.h>
+// Uniforms
+uniform float    uAspectRatio  ;      
+uniform float    uWindowWidth  ;
+uniform float    uExtraSpace   ;
+uniform float    uDisplaySide  ;
+uniform float    uDisplayLength;
 
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+// Attributes
+attribute vec3  aPos;
+attribute float aFieldData;
 
-  class SCISHARE ColorMap : public Datatype
-  {
-  public:
-    explicit ColorMap(const std::string& name);
+// Outputs to the fragment shader.
+varying float   vFieldData;
 
-    virtual ColorMap* clone() const;
-
-    std::string getColorMapName() const {return name_;}
-  private:
-    std::string name_;
-    boost::shared_ptr<class ColorMapImpl> impl_;
-  };
-
-  class SCISHARE StandardColorMapFactory : boost::noncopyable
-  {
-  public:
-    static ColorMapHandle create(const std::string& name);
-  private:
-    StandardColorMapFactory();
-    static ColorMap rainbow_;
-    static ColorMap grayscale_;
-    static ColorMap blackbody_;
-  };
-
-}}}
-
-
-#endif
+void main( void )
+{
+  bool ex = uExtraSpace == 1.;
+  bool ds = uDisplaySide == 0.;
+  bool full = uDisplayLength == 1.;
+  bool half1 = uDisplayLength == 0.;
+  vec3 newPos = ds?vec3(aPos.x, aPos.y, aPos.z):vec3(aPos.y,aPos.x,aPos.z);
+  float x_scale = ds?(30.0 / uWindowWidth):(full?1.8:0.9);
+  float y_scale = ds?(full?1.8:0.9):(30. * uAspectRatio / uWindowWidth);
+  float x_trans = ds?(-1.+(ex?(30. / uWindowWidth):0.)):(full?-0.9:
+                  (half1?(ex?(30. / uWindowWidth - 1.):-1.):(ex?0.05:0.1)));
+  float y_trans = (!ds)?(-1.+(ex?(30. * uAspectRatio / uWindowWidth):0.)):
+                  (full?-0.9:(half1?(ex?(30. * uAspectRatio / uWindowWidth - 1.):
+                  -1.):(ex?0.05:0.1)));
+  gl_Position = vec4(newPos.x * x_scale + x_trans, 
+                     newPos.y * y_scale + y_trans, newPos.z, 1.0);
+  vFieldData  = aFieldData;
+}
