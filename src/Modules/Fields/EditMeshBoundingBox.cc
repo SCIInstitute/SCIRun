@@ -267,7 +267,9 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
 
     Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
-    geom->objectName = "Bounding Box";
+    std::ostringstream ostr;
+    ostr << get_id() << "EditBoundingBox_" << geom.get();
+    geom->objectName = ostr.str();
     GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
     int64_t numVBOElements = 0;
     std::vector<std::pair<Point,Point>> bounding_edges;
@@ -447,12 +449,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-    std::ostringstream ostr;
-    ostr << get_id() << "_" << this;
-    geom->objectName = ostr.str();
-
     geom->mPasses.push_back(pass);
-
 
     return geom;
 }
