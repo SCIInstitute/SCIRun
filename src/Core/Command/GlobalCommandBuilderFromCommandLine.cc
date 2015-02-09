@@ -62,17 +62,22 @@ using namespace SCIRun::Core::Commands;
 
     if (!params->disableSplash() && !params->disableGui())
       q->enqueue(cmdFactory_->create(ShowSplashScreen));
-    
+
     if (!params->disableGui())
       q->enqueue(cmdFactory_->create(ShowMainWindow));
     else
       std::cout << "HEADLESS MODE" << std::endl;  /// @todo obviously
 
-    if (params->dataDirectory())
+    if (!params->dataDirectory())
       q->enqueue(cmdFactory_->create(SetupDataDirectory));
-  
-    if (params->inputFile())
-      q->enqueue(cmdFactory_->create(LoadNetworkFile));
+
+    if (!params->inputFiles().empty())
+    {
+      for (int i = 0; i < params->inputFiles().size(); ++i)
+      {
+        q->enqueue(cmdFactory_->create(LoadNetworkFile, i));
+      }
+    }
     else if (params->pythonScriptFile())
       q->enqueue(cmdFactory_->create(RunPythonScript));
 

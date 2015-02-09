@@ -63,6 +63,7 @@ namespace Gui {
     QAction* getExecuteAction() { return executeAction_; }
     void setDockable(QDockWidget* dock) { dock_ = dock; } // to enable title changes
     void updateWindowTitle(const QString& title);
+    virtual void createStartupNote() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
 
@@ -82,6 +83,7 @@ namespace Gui {
     void pullSignal();
     void executionTimeChanged(int time);
     void executeActionTriggered();
+    void setStartupNote(const QString& text);
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
     virtual void contextMenuEvent(QContextMenuEvent* e) override;
