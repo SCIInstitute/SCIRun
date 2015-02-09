@@ -41,7 +41,7 @@ namespace Datatypes {
   class SCISHARE ColorMap : public Datatype
   {
   public:
-    explicit ColorMap(const std::string& name);
+    explicit ColorMap(const std::string& name, const size_t resolution = 256, const double shift = 0.0);
 
     virtual ColorMap* clone() const;
 
@@ -49,6 +49,8 @@ namespace Datatypes {
     Core::Datatypes::ColorRGB getColorMapVal(float v);
   private:
     std::string name_;
+    size_t resolution_;
+    double shift_;
     boost::shared_ptr<class ColorMapImpl> impl_;
     float Hue_2_RGB(float v1, float v2, float vH);
     Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l);
