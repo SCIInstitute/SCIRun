@@ -80,6 +80,16 @@ void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
   }
 }
 
+void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
+{
+  connect(box, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(executeActionTriggered()));
+  if (disablerAdd_ && disablerRemove_)
+  {
+    disablerAdd_(box);
+    needToRemoveFromDisabler_.push_back(box);
+  }
+}
+
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
 {
   setWindowTitle(title);

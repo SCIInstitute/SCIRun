@@ -41,6 +41,7 @@ CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   addComboBoxManager(colorMapNameComboBox_, Variables::ColorMapName);
+  connectComboToExecuteSignal(colorMapNameComboBox_);
 }
 
 void CreateBasicColorMapDialog::pull()

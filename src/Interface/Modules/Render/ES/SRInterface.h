@@ -134,8 +134,11 @@ namespace SCIRun {
 			/// Toggle Orientation Axes
 			void showOrientation(bool value);
 
-      /// Set the Background Color
-      void setBackgroundColor(QColor color);
+            /// Set the Background Color
+            void setBackgroundColor(QColor color);
+      
+            //choose a color value for color mapping based on value and type of color map
+            static Core::Datatypes::ColorRGB getColorMapVal(float v, std::string which);
 
 		private:
 
@@ -182,6 +185,10 @@ namespace SCIRun {
 
 				int										          mPort;
 			};
+            //internal color map options
+            
+            static float Hue_2_RGB(float v1, float v2, float vH) ;
+            static Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l) ;
 
 			// Sets up ESCore.
 			void setupCore();
@@ -226,6 +233,7 @@ namespace SCIRun {
 
 			GLuint                          mRainbowCMap;     ///< Rainbow color map.
 			GLuint                          mGrayscaleCMap;   ///< Grayscale color map.
+			GLuint                          mBlackBodyCMap;   ///< Blackbody color map.
 
 			std::shared_ptr<Gui::GLContext> mContext;         ///< Context to use for rendering.
 			std::unique_ptr<SRCamera>       mCamera;          ///< Primary camera.
