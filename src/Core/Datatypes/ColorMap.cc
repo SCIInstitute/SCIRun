@@ -80,7 +80,8 @@ ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
 ColorRGB ColorMap::getColorMapVal(float v) {
     //@todo this will not be needed with rescale color map.
     v = std::min(std::max(0.f,v),1.f);
-    double shift = (shift_+1.)/2.;
+    float shift = (static_cast<float>(shift_)+1.f)/2.f;
+    v = (v + shift) / (shift + 0.5f);
     //apply the resolution
     v = static_cast<double>((static_cast<int>(v * static_cast<float>(resolution_)))) / static_cast<double>(resolution_ - 1);
     ColorRGB col;
