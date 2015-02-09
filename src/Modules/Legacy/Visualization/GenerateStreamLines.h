@@ -26,29 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_MATH_COMPUTESVD_H_
-#define MODULES_LEGACY_MATH_COMPUTESVD_H_ 1
+#ifndef MODULES_LEGACY_VISUALIZATION_GENERATESTREAMLINES_H_
+#define MODULES_LEGACY_VISUALIZATION_GENERATESTREAMLINES_H_
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Math/share.h>
+#include <Modules/Legacy/Visualization/share.h>
 
 namespace SCIRun {
 	namespace Modules {
-		namespace Math {
+		namespace Visualization {
 		
-		class SCISHARE ComputeSVD : public Dataflow::Networks::Module,
-			public Has1InputPort<MatrixPortTag>,
-			public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+		class SCISHARE GenerateStreamLines : public Dataflow::Networks::Module,
+			public Has2InputPort<FieldPortTag, FieldPortTag>,
+      public Has1OutputPort<FieldPortTag>
 			{
 				public:
-					ComputeSVD();
-					virtual void setStateDefaults() {}
-					virtual void execute();
+          GenerateStreamLines();
+          virtual void setStateDefaults() override;
+					virtual void execute() override;
 					
-					INPUT_PORT(0, InputMatrix, Matrix);
-					OUTPUT_PORT(0, LeftSingularMatrix, DenseMatrix);
-					OUTPUT_PORT(1, SingularValues, DenseMatrix);
-					OUTPUT_PORT(2, RightSingularMatrix, DenseMatrix);
+					INPUT_PORT(0, Vector_Field, LegacyField);
+          INPUT_PORT(1, Seed_Points, LegacyField);
+          OUTPUT_PORT(0, Streamlines, LegacyField);
 			
 			};
 			

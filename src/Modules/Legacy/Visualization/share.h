@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2010 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,32 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_MATH_COMPUTESVD_H_
-#define MODULES_LEGACY_MATH_COMPUTESVD_H_ 1
+#undef SCISHARE
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Math/share.h>
-
-namespace SCIRun {
-	namespace Modules {
-		namespace Math {
-		
-		class SCISHARE ComputeSVD : public Dataflow::Networks::Module,
-			public Has1InputPort<MatrixPortTag>,
-			public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-			{
-				public:
-					ComputeSVD();
-					virtual void setStateDefaults() {}
-					virtual void execute();
-					
-					INPUT_PORT(0, InputMatrix, Matrix);
-					OUTPUT_PORT(0, LeftSingularMatrix, DenseMatrix);
-					OUTPUT_PORT(1, SingularValues, DenseMatrix);
-					OUTPUT_PORT(2, RightSingularMatrix, DenseMatrix);
-			
-			};
-			
-}}};
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_Legacy_Visualization
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif
