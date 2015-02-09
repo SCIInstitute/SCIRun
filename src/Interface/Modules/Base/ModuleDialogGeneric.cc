@@ -82,12 +82,14 @@ void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 
 void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
 {
-  connect(box, SIGNAL(activated(const QString&)), this, SIGNAL(executeActionTriggered()));
+  /*
+  connect(box, SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(executeActionTriggered()));
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(box);
     needToRemoveFromDisabler_.push_back(box);
   }
+  */
 }
 
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
@@ -201,7 +203,7 @@ public:
     ToQStringConverter toLabelConverter = &QString::fromStdString) :
   WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
   {
-    connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     const GuiStringTranslationMap& stringMap) :
@@ -213,7 +215,7 @@ public:
     }
     fromLabelConverter_ = [this](const QString& qstr) { return findOrFirst(stringMap_.left, qstr.toStdString()); };
     toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(findOrFirst(stringMap_.right, str)); };
-    connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
   virtual void pull() override
   {
