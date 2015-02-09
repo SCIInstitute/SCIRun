@@ -82,7 +82,7 @@ void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 
 void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
 {
-  connect(box, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(executeActionTriggered()));
+  connect(box, SIGNAL(activated(const QString&)), this, SIGNAL(executeActionTriggered()));
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(box);
