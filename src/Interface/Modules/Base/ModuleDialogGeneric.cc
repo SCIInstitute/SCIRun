@@ -83,6 +83,7 @@ void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
 {
   /*
+  TODO: investigate why duplicate executes are signalled.
   connect(box, SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(executeActionTriggered()));
   if (disablerAdd_ && disablerRemove_)
   {
