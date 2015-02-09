@@ -48,6 +48,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
+#include <Modules/Legacy/Visualization/GenerateStreamLines.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -56,6 +57,7 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::BrainStimulator;
+using namespace SCIRun::Modules::Visualization;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
@@ -83,4 +85,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
+  addModuleDesc<GenerateStreamLines>("...", "...");
 }

@@ -30,13 +30,16 @@
 //    Author : Allen R. Sanderson
 //    Date   : July 2006
 
+#include <Modules/Legacy/Visualization/GenerateStreamLines.h>
+//#include <Core/Algorithms/Fields/StreamLines/GenerateStreamLines.h>
 
-#include <Core/Algorithms/Fields/StreamLines/GenerateStreamLines.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Visualization;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun;
 
-namespace SCIRun {
-
+/*
 class GenerateStreamLines : public Module {
 public:
   GenerateStreamLines(GuiContext* ctx);
@@ -56,12 +59,13 @@ private:
   
   SCIRunAlgo::GenerateStreamLinesAlgo algo_;
 };
+*/
 
-DECLARE_MAKER(GenerateStreamLines)
+const ModuleLookupInfo GenerateStreamLines::staticInfo_("GenerateStreamLines", "Visualization", "SCIRun");
 
-GenerateStreamLines::GenerateStreamLines(GuiContext* ctx) : 
-  Module("GenerateStreamLines", ctx, Source, "Visualization", "SCIRun"),
-  gui_step_size_(get_ctx()->subVar("stepsize"), 0.01),
+GenerateStreamLines::GenerateStreamLines() : Module(staticInfo_)
+/*
+gui_step_size_(get_ctx()->subVar("stepsize"), 0.01),
   gui_tolerance_(get_ctx()->subVar("tolerance"), 0.0001),
   gui_max_steps_(get_ctx()->subVar("maxsteps"), 2000),
   gui_direction_(get_ctx()->subVar("direction"), 1),
@@ -69,13 +73,21 @@ GenerateStreamLines::GenerateStreamLines(GuiContext* ctx) :
   gui_remove_colinear_pts_(get_ctx()->subVar("remove-colinear-points"), 1),
   gui_method_(get_ctx()->subVar("method"), 4),
   gui_auto_parameterize_(get_ctx()->subVar("auto-parameterize"), false)
+  */
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Vector_Field);
+  INITIALIZE_PORT(Seed_Points);
+  INITIALIZE_PORT(Streamlines);
 }
 
-void
-GenerateStreamLines::execute()
+void GenerateStreamLines::setStateDefaults()
 {
+  //TODO
+}
+
+void GenerateStreamLines::execute()
+{
+  /*
   FieldHandle input, seeds, output;
 
   get_input_handle( "Vector Field", input, true );
@@ -117,6 +129,5 @@ GenerateStreamLines::execute()
 
     send_output_handle( "Streamlines", output, true );
   }
+  */
 }
-
-} // End namespace SCIRun
