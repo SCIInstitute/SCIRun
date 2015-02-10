@@ -42,25 +42,30 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-//ALGORITHM_PARAMETER_DEF(Fields, )
-ALGORITHM_PARAMETER_DEF(Fields, StreamlineStepSize)
+ALGORITHM_PARAMETER_DEF(Fields, StreamlineStepSize);
+ALGORITHM_PARAMETER_DEF(Fields, StreamlineTolerance);
+ALGORITHM_PARAMETER_DEF(Fields, StreamlineMaxSteps);
+ALGORITHM_PARAMETER_DEF(Fields, StreamlineDirection);
+ALGORITHM_PARAMETER_DEF(Fields, StreamlineValue);
+ALGORITHM_PARAMETER_DEF(Fields, RemoveColinearPoints);
+ALGORITHM_PARAMETER_DEF(Fields, StreamlineMethod);
+ALGORITHM_PARAMETER_DEF(Fields, AutoParameters);
+ALGORITHM_PARAMETER_DEF(Fields, NumStreamlines);
 
 GenerateStreamLinesAlgo::GenerateStreamLinesAlgo()
 {
-  #if 0
-  add_scalar("step_size",0.01);
-  add_scalar("tolerance",0.0001);
-  add_int("max_steps",100);
-  add_int("direction",1);
-  add_int("value",1);
-  add_bool("remove_colinear_points",true);
-  add_option("method","CellWalk","AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
+  addParameter(Parameters::StreamlineStepSize, 0.01);
+  addParameter(Parameters::StreamlineTolerance, 0.0001);
+  addParameter(Parameters::StreamlineMaxSteps, 100);
+  addParameter(Parameters::StreamlineDirection, 1);
+  addParameter(Parameters::StreamlineValue, 1);
+  addParameter(Parameters::RemoveColinearPoints, true);
+  add_option(Parameters::StreamlineMethod, "CellWalk", "AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
   // Estimate step size and tolerance automatically based on average edge length
-  add_bool("auto_parameters",false);
+  addParameter(Parameters::AutoParameters,false);
 
   // For output
-  add_int("num_streamlines",0);
-  #endif
+  addParameter(Parameters::NumStreamlines, 0);
 }
 
 #if 0
