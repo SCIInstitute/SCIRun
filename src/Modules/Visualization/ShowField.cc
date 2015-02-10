@@ -1417,7 +1417,7 @@ void ShowFieldModule::renderEdges(
   // normalize the colors if the color scheme is COLOR_IN_SITU.
 
   // Construct VBO.
-  std::string shader = state.get(RenderState::USE_CYLINDER) ? "Shaders/DirPhong" : "Shaders/UniformColor";
+  std::string shader = state.get(RenderState::USE_CYLINDER) ? "Shaders/DirPhongCMapUniform" : "Shaders/UniformColor";
   std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
   if (state.get(RenderState::USE_CYLINDER))
@@ -1448,6 +1448,7 @@ void ShowFieldModule::renderEdges(
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
     }
     else {
       shader = "Shaders/InSituColor";
@@ -1464,6 +1465,10 @@ void ShowFieldModule::renderEdges(
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
       glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+    if (state.get(RenderState::USE_CYLINDER))
+      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+    else
+      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
   }
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
   // Use cylinders...
@@ -1559,12 +1564,14 @@ void ShowFieldModule::renderEdges(
           colors.push_back(ColorRGB(scol0, scol0, scol0));
         else if (colorScheme == GeometryObject::COLOR_IN_SITU)
           colors.push_back(vcol0.diffuse);
+        else  colors.push_back(state.defaultColor);
         numVBOElements++;
         points.push_back(radius * p + Vector(p1));
         if (colorScheme == GeometryObject::COLOR_MAP)
           colors.push_back(ColorRGB(scol1, scol1, scol1));
         else if (colorScheme == GeometryObject::COLOR_IN_SITU)
           colors.push_back(vcol1.diffuse);
+        else  colors.push_back(state.defaultColor);
         numVBOElements++;
         normals.push_back(p);
         normals.push_back(p);
@@ -1683,7 +1690,7 @@ void ShowFieldModule::renderEdges(
       vboBuffer->write(COLOR_FTOB(colors.at(i).r()));
       vboBuffer->write(COLOR_FTOB(colors.at(i).g()));
       vboBuffer->write(COLOR_FTOB(colors.at(i).b()));
-      vboBuffer->write(COLOR_FTOB(0.5));
+      vboBuffer->write(COLOR_FTOB(1.0));
     }
   }
 
