@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,22 +26,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/StreamLines/GenerateStreamLines.h>
-#include <Core/Algorithms/Fields/StreamLines/StreamLineIntegrators.h>
+#include <Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h>
+#include <Core/Algorithms/Legacy/Fields/StreamLines/StreamLineIntegrators.h>
 
-#include <Core/Geometry/CompGeom.h>
+//#include <Core/Geometry/CompGeom.h>
 
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 #include <algorithm>
-#include <sstream>
-
-namespace SCIRunAlgo {
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
 
+//ALGORITHM_PARAMETER_DEF(Fields, )
+ALGORITHM_PARAMETER_DEF(Fields, StreamlineStepSize)
 
-// General streamline code
+GenerateStreamLinesAlgo::GenerateStreamLinesAlgo()
+{
+  #if 0
+  add_scalar("step_size",0.01);
+  add_scalar("tolerance",0.0001);
+  add_int("max_steps",100);
+  add_int("direction",1);
+  add_int("value",1);
+  add_bool("remove_colinear_points",true);
+  add_option("method","CellWalk","AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
+  // Estimate step size and tolerance automatically based on average edge length
+  add_bool("auto_parameters",false);
+
+  // For output
+  add_int("num_streamlines",0);
+  #endif
+}
+
+#if 0
+namespace detail
+{
 
 void CleanupStreamLinePoints(const std::vector<Point> &input, std::vector<Point> &output, double e2)
 {
@@ -68,39 +92,39 @@ void CleanupStreamLinePoints(const std::vector<Point> &input, std::vector<Point>
 
 
 class GenerateStreamLinesAlgoP {
-  
+
   public:
     GenerateStreamLinesAlgoP() :
         tolerance_(0), step_size_(0), max_steps_(0), direction_(0), value_(0), remove_colinear_pts_(false),
           method_(0), seed_field_(0), seed_mesh_(0), field_(0), mesh_(0), ofield_(0), omesh_(0), algo_(0), success_(false)
        {}
-  
-    bool run(AlgoBase* algo, FieldHandle input, 
+
+    bool run(AlgoBase* algo, FieldHandle input,
              FieldHandle seeds, FieldHandle& output,
              int method);
 
   private:
     void runImpl();
-  
+
     double tolerance_;
     double step_size_;
     int    max_steps_;
     int    direction_;
     int    value_;
     bool   remove_colinear_pts_;
-    int    method_;    
+    int    method_;
 
     VField* seed_field_;
     VMesh*  seed_mesh_;
 
     VField* field_;
     VMesh*  mesh_;
-    
+
     VField* ofield_;
     VMesh*  omesh_;
-    
+
     AlgoBase* algo_;
-    
+
     bool success_;
 };
 
@@ -108,7 +132,7 @@ class GenerateStreamLinesAlgoP {
 void
 GenerateStreamLinesAlgoP::runImpl()
 {
-  try 
+  try
   {
     VMesh::Node::index_type n1, n2;
     Vector test;
@@ -137,12 +161,12 @@ GenerateStreamLinesAlgoP::runImpl()
       int cc = 0;
 
       // Find the negative streamlines.
-      if( direction_ <= 1 ) 
+      if( direction_ <= 1 )
       {
         BI.step_size_ = -step_size_;   // initial step size
         BI.integrate( method_ );
 
-        if ( direction_ == 1 ) 
+        if ( direction_ == 1 )
         {
           BI.seed_ = BI.nodes_[0];     // Reset the seed
 
@@ -153,7 +177,7 @@ GenerateStreamLinesAlgoP::runImpl()
       }
 
       // Append the positive streamlines.
-      if( direction_ >= 1 ) 
+      if( direction_ >= 1 )
       {
         BI.step_size_ = step_size_;   // initial step size
         BI.integrate( method_ );
@@ -162,15 +186,15 @@ GenerateStreamLinesAlgoP::runImpl()
       double length = 0;
       Point p1;
 
-      if( value_ == 5 ) 
+      if( value_ == 5 )
       {
         node_iter = BI.nodes_.begin();
-        if (node_iter != BI.nodes_.end()) 
+        if (node_iter != BI.nodes_.end())
         {
-          p1 = *node_iter;	
+          p1 = *node_iter;
           ++node_iter;
 
-          while (node_iter != BI.nodes_.end()) 
+          while (node_iter != BI.nodes_.end())
           {
             length += Vector( *node_iter-p1 ).length();
             p1 = *node_iter;
@@ -180,17 +204,17 @@ GenerateStreamLinesAlgoP::runImpl()
       }
 
       node_iter = BI.nodes_.begin();
-      
-      if (node_iter != BI.nodes_.end()) 
+
+      if (node_iter != BI.nodes_.end())
       {
         p1 = *node_iter;
         n1 = omesh_->add_point(p1);
 
 	// Record the streamline point indexes. Used downstream.
-	std::ostringstream str;
-	str << "Streamline " << (unsigned int) idx << " Node Index";      
-	ofield_->set_property( str.str(), (unsigned int) n1, false );
- 
+	//std::ostringstream str;
+	//str << "Streamline " << (unsigned int) idx << " Node Index";
+	//ofield_->set_property( str.str(), (unsigned int) n1, false );
+
         ofield_->resize_values();
 
         if (value_ == 0) ofield_->copy_value(seed_field_,idx,n1);
@@ -203,7 +227,7 @@ GenerateStreamLinesAlgoP::runImpl()
         ++node_iter;
         cc++;
 
-        while (node_iter != BI.nodes_.end()) 
+        while (node_iter != BI.nodes_.end())
         {
           n2 = omesh_->add_point(*node_iter);
           ofield_->resize_fdata();
@@ -211,19 +235,19 @@ GenerateStreamLinesAlgoP::runImpl()
           if (value_ == 0) ofield_->copy_value(seed_field_,idx,n2);
           else if (value_ == 1) ofield_->set_value(index_type(idx),n2);
           else if (value_ == 2) ofield_->set_value(abs(cc),n2);
-          else if (value_ == 3) 
+          else if (value_ == 3)
           {
             length = Vector( *node_iter-p1 ).length();
             ofield_->set_value(length,n2);
           }
-          else if (value_ == 4) 
+          else if (value_ == 4)
           {
             length += Vector( *node_iter-p1 ).length();
             ofield_->set_value(length,n2);
           }
           else if (value_ == 5)
-	  {
-	    ofield_->set_value(length,n2);
+	        {
+	           ofield_->set_value(length,n2);
           }
 
           newnodes[0] = n1;
@@ -241,7 +265,7 @@ GenerateStreamLinesAlgoP::runImpl()
     }
 
     algo_->set_int("num_streamlines", num_seeds);
- 
+
     // Record the number of streamline. Used downstream.
     ofield_->set_property( "Streamline Count", (unsigned int) num_seeds, false );
    }
@@ -260,23 +284,23 @@ GenerateStreamLinesAlgoP::runImpl()
   {
     algo_->error(std::string(a));
     success_ = false;
-  }	
+  }
   catch (...)
   {
     algo_->error(std::string("Crashed for unknown reason."));
     success_ = false;
-  }	
+  }
 
 }
 
 
 bool
-GenerateStreamLinesAlgoP::run(AlgoBase* algo, 
-                              FieldHandle input, 
-                              FieldHandle seeds, 
+GenerateStreamLinesAlgoP::run(AlgoBase* algo,
+                              FieldHandle input,
+                              FieldHandle seeds,
                               FieldHandle& output,
                               int method)
-{  
+{
   seed_field_ = seeds->vfield();
   seed_mesh_ = seeds->vmesh();
   field_ = input->vfield();
@@ -291,7 +315,7 @@ GenerateStreamLinesAlgoP::run(AlgoBase* algo,
   direction_ = algo->get_int("direction");
   value_ =     algo->get_int("value");
   remove_colinear_pts_ = algo->get_bool("remove_colinear_points");
-  method_ = method;    
+  method_ = method;
 
   success_ = true;
 
@@ -306,18 +330,18 @@ GenerateStreamLinesAlgoP::run(AlgoBase* algo,
 
 
 class GenerateStreamLinesAccAlgo {
-  
+
   public:
     GenerateStreamLinesAccAlgo() :
       lock_("GenerateStreamLinesAcc Lock") {}
-  
-    bool run(AlgoBase* algo, FieldHandle input, 
+
+    bool run(AlgoBase* algo, FieldHandle input,
              FieldHandle seeds, FieldHandle& output);
 
     void find_nodes(std::vector<Point> &v,Point seed, bool back);
   private:
     // parameters
-  
+
     int    max_steps_;
     int    direction_;
     int    value_;
@@ -328,19 +352,19 @@ class GenerateStreamLinesAccAlgo {
 
     VField* field_;
     VMesh*  mesh_;
-    
+
     VField* ofield_;
     VMesh*  omesh_;
-    
+
     Mutex lock_;
-    
+
     bool success_;
 };
 
 bool
-GenerateStreamLinesAccAlgo::run(AlgoBase* algo, 
-				FieldHandle input, 
-				FieldHandle seeds, 
+GenerateStreamLinesAccAlgo::run(AlgoBase* algo,
+				FieldHandle input,
+				FieldHandle seeds,
 				FieldHandle& output)
 {
   success_ = true;
@@ -404,15 +428,15 @@ GenerateStreamLinesAccAlgo::run(AlgoBase* algo,
       double length = 0;
       Point p1;
 
-      if( value_ == 5 ) 
+      if( value_ == 5 )
       {
         node_iter = nodes.begin();
-        if (node_iter != nodes.end()) 
+        if (node_iter != nodes.end())
         {
-          p1 = *node_iter;	
+          p1 = *node_iter;
           ++node_iter;
 
-          while (node_iter != nodes.end()) 
+          while (node_iter != nodes.end())
           {
             length += Vector( *node_iter-p1 ).length();
             p1 = *node_iter;
@@ -429,10 +453,10 @@ GenerateStreamLinesAccAlgo::run(AlgoBase* algo,
         n1 = omesh_->add_point(*node_iter);
 
 	// Record the streamline point indexes. Used downstream.
-	std::ostringstream str;
-	str << "Streamline " << (unsigned int) idx << " Node Index";      
-	ofield_->set_property( str.str(), (unsigned int) n1, false );
- 
+	//std::ostringstream str;
+	//str << "Streamline " << (unsigned int) idx << " Node Index";
+	//ofield_->set_property( str.str(), (unsigned int) n1, false );
+
         ofield_->resize_values();
 
         if (value_ == 0) ofield_->copy_value(field_,idx,n1);
@@ -449,7 +473,7 @@ GenerateStreamLinesAccAlgo::run(AlgoBase* algo,
         {
           n2 = omesh_->add_point(*node_iter);
           ofield_->resize_values();
-          
+
           if (value_ == 0) ofield_->copy_value(field_,idx,n2);
           else if( value_ == 1) ofield_->set_value((int)index_type(idx),n2);
           else if (value_ == 2) ofield_->set_value(abs(cc),n2);
@@ -458,16 +482,16 @@ GenerateStreamLinesAccAlgo::run(AlgoBase* algo,
             length = Vector( *node_iter-p1 ).length();
             ofield_->set_value(length,n2);
           }
-          else if (value_ == 4) 
+          else if (value_ == 4)
           {
             length += Vector( *node_iter-p1 ).length();
             ofield_->set_value(length,n2);
           }
           else if (value_ == 5)
-	  {
-	    ofield_->set_value(length,n2);
+	       {
+	          ofield_->set_value(length,n2);
           }
-          
+
           newnodes[0] = n1;
           newnodes[1] = n2;
 
@@ -503,14 +527,14 @@ GenerateStreamLinesAccAlgo::run(AlgoBase* algo,
   {
     algo->error(std::string(a));
     success_ = false;
-  }	
+  }
   catch (...)
   {
     algo->error(std::string("Crashed for unknown reason."));
     success_ = false;
-  }	
-  
-  return (success_);        
+  }
+
+  return (success_);
 }
 
 
@@ -527,7 +551,7 @@ GenerateStreamLinesAccAlgo::find_nodes(std::vector<Point> &v,
   Vector dir;
   std::vector<Point> points(3);
   std::vector<Point> tv;
-  
+
   if (!(mesh_->locate(elem, seed)))
   {
     return;
@@ -542,7 +566,7 @@ GenerateStreamLinesAccAlgo::find_nodes(std::vector<Point> &v,
     field_->get_value(dir, elem);
     dir.safe_normalize();
     if (back) { dir *= -1.0; }
-    
+
     if (i && (Dot(dir, lastnormal) < 1e-12))
     {
       dir = dir - lastnormal * Dot(dir, lastnormal);
@@ -553,7 +577,7 @@ GenerateStreamLinesAccAlgo::find_nodes(std::vector<Point> &v,
     double mindist = DBL_MAX;
     bool found = false;
     Point ecenter;
-    
+
     mesh_->get_center(ecenter, elem);
     for (size_t j=0; j < faces.size(); j++)
     {
@@ -564,7 +588,7 @@ GenerateStreamLinesAccAlgo::find_nodes(std::vector<Point> &v,
       Vector normal = Cross(points[1]-points[0], points[2]-points[0]);
       normal.safe_normalize();
      if (Dot(normal, ecenter-points[0]) > 0.0) { normal *= -1.0; }
-      
+
       const double Vd = Dot(dir, normal);
       if (Vd < 1e-12) continue;
       const double V0 = Dot(normal, (points[0]-seed));
@@ -577,7 +601,7 @@ GenerateStreamLinesAccAlgo::find_nodes(std::vector<Point> &v,
         found = true;
       }
     }
-    
+
     if (!found) { break; }
 
     seed = seed + dir * mindist;
@@ -586,8 +610,7 @@ GenerateStreamLinesAccAlgo::find_nodes(std::vector<Point> &v,
     if (!(mesh_->get_neighbor(neighbor, elem, VMesh::DElem::index_type(minface)))) { break; }
     elem = neighbor;
     lastnormal = minnormal;
-    lastface = minface;
-//    if (Dot(lastnormal, dir) < 0.0) { lastnormal *= -1; }
+    lastface = minface;}
   }
 
   if (remove_colinear_pts_)
@@ -596,26 +619,23 @@ GenerateStreamLinesAccAlgo::find_nodes(std::vector<Point> &v,
   }
 }
 
+}
+#endif
 
-
-
-
-bool 
-GenerateStreamLinesAlgo::
-run(FieldHandle input, FieldHandle seeds, FieldHandle& output)
+bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, FieldHandle& output) const
 {
-  algo_start("GenerateStreamLines");
+  ScopedAlgorithmStatusReporter asr(this, "GenerateStreamLines");
 
-  if (input.get_rep() == 0)
+  if (!input)
   {
-    error("No input source field"); 
-    algo_end(); return (false);
+    error("No input source field");
+    return (false);
   }
-  
-  if (seeds.get_rep() == 0)
+
+  if (!seeds)
   {
     error("No input seed points");
-    algo_end(); return (false);
+    return (false);
   }
 
   VField* ifield = input->vfield();
@@ -624,13 +644,13 @@ run(FieldHandle input, FieldHandle seeds, FieldHandle& output)
   if (!(ifield->is_vector()))
   {
     error("Input field is not a Vector field.");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (mesh->dimensionality() < 2) 
+  if (mesh->dimensionality() < 2)
   {
     error("This algorithm does not works only work for volumes or surfaces");
-    algo_end(); return (false);
+    return (false);
   }
 
   std::string smethod = get_option("method");
@@ -646,7 +666,7 @@ run(FieldHandle input, FieldHandle seeds, FieldHandle& output)
     if (ifield->basis_order() != 0)
     {
       error("The Cell Walk method only works for cell centered Vector Fields.");
-      algo_end(); return (false);
+      return (false);
     }
   }
 
@@ -655,13 +675,13 @@ run(FieldHandle input, FieldHandle seeds, FieldHandle& output)
   fi.make_lineardata();
   fi.make_linearmesh();
   fi.make_double();
-    
+
   output = CreateField(fi);
 
   if (output.get_rep() == 0)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
 
 
@@ -673,13 +693,13 @@ run(FieldHandle input, FieldHandle seeds, FieldHandle& output)
   {
     mesh->synchronize(Mesh::EPSILON_E|Mesh::ELEM_LOCATE_E|Mesh::FACES_E);
   }
-  
+
   bool success = false;
 
   if (method == 5)
   {
     GenerateStreamLinesAccAlgo algo;
-    success = algo.run(this,input,seeds,output);  
+    success = algo.run(this,input,seeds,output);
   }
   else
   {
@@ -687,22 +707,20 @@ run(FieldHandle input, FieldHandle seeds, FieldHandle& output)
     {
       VMesh::size_type num_edges = mesh->num_edges();
       double length = 0;
-     
+
       for (VMesh::Edge::index_type idx=0; idx<num_edges;idx++)
       {
         length += mesh->get_size(idx);
       }
-      length = length / num_edges;      
+      length = length / num_edges;
 
       set_scalar("tolerance",length/20.0);
       set_scalar("step_size",length/5.0);
     }
-    
+
     GenerateStreamLinesAlgoP algo;
     success = algo.run(this,input,seeds,output,method);
   }
 
-  algo_end(); return (success);
+  return (success);
 }
-
-} // namespace SCIRunAlgo
