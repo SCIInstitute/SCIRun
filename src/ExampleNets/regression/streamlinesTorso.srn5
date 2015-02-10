@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>9</count>
+			<count>10</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CalculateGradients:0</first>
@@ -41,6 +41,34 @@
 								<second class_id="10" tracking_level="0" version="0">
 									<name>ColorMapName</name>
 									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateStandardColorMap:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
 										<which>2</which>
 										<value>Rainbow</value>
 									</value>
@@ -651,7 +679,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ViewScene:0</first>
+				<first>ViewScene:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -668,7 +696,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>8</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CalculateGradients:0</moduleId1_>
@@ -689,6 +717,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:1</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateStandardColorMap:1</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:0</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -748,7 +788,7 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>1</id>
@@ -760,16 +800,16 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>2</id>
+					<id>0</id>
 				</port2_>
 			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>9</count>
+		<count>10</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateGradients:0</first>
@@ -783,6 +823,13 @@
 			<second>
 				<first>-760</first>
 				<second>-304</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:1</first>
+			<second>
+				<first>-228</first>
+				<second>-76</second>
 			</second>
 		</item>
 		<item>
@@ -828,9 +875,9 @@
 			</second>
 		</item>
 		<item>
-			<first>ViewScene:0</first>
+			<first>ViewScene:1</first>
 			<second>
-				<first>-532</first>
+				<first>-684</first>
 				<second>228</second>
 			</second>
 		</item>
