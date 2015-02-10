@@ -31,10 +31,8 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-ColorMap::ColorMap(const std::string& name) : name_(name)
-{
-
-}
+ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift)
+: name_(name), resolution_(resolution), shift_(shift) {}
 
 ColorMap* ColorMap::clone() const
 {
@@ -45,11 +43,60 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name)
 {
   if (name == "Rainbow")
     return ColorMapHandle(rainbow_.clone());
-  if (name == "Gray")
+  if (name == "Grayscale")
     return ColorMapHandle(grayscale_.clone());
   if (name == "Blackbody")
     return ColorMapHandle(blackbody_.clone());
   THROW_INVALID_ARGUMENT("Unknown standard colormap name: " + name);
+}
+
+float ColorMap::Hue_2_RGB(float v1, float v2, float vH) {
+   if ( vH < 0 ) vH += 1.;
+   if ( vH > 1 ) vH -= 1.;
+   if ( ( 6 * vH ) < 1 ) return ( v1 + ( v2 - v1 ) * 6. * vH );
+   if ( ( 2 * vH ) < 1 ) return ( v2 );
+   if ( ( 3 * vH ) < 2 ) return ( v1 + ( v2 - v1 ) * ( ( .666667 ) - vH ) * 6. );
+   return ( v1 );
+}
+
+ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
+    float r,g,b;
+    if ( s == 0. ) {
+       r = g = b = l ;
+    } else {
+       float var_1, var_2;
+       if ( l < 0.5 ) var_2 = l * ( 1. + s );
+       else           var_2 = ( l + s ) - ( s * l );
+
+       var_1 = 2 * l - var_2;
+
+       r = Hue_2_RGB( var_1, var_2, h + ( .333333 ) );
+       g = Hue_2_RGB( var_1, var_2, h );
+       b = Hue_2_RGB( var_1, var_2, h - ( .333333 ) );
+    }
+    return ColorRGB(r,g,b);
+}
+
+ColorRGB ColorMap::getColorMapVal(float v) {
+    //@todo this will not be needed with rescale color map.
+    v = std::min(std::max(0.f,v),1.f);
+    float shift = (static_cast<float>(shift_)+1.f)/2.f;
+    v = (v + shift) / (shift + 0.5f);
+    //apply the resolution
+    v = static_cast<double>((static_cast<int>(v * static_cast<float>(resolution_)))) / static_cast<double>(resolution_ - 1);
+    ColorRGB col;
+    if (name_ == "Rainbow")
+        col = hslToRGB((1.0-v) * 0.8, 0.95, 0.5);
+    else if (name_ == "Blackbody") {
+        if (v < 0.333333)
+            col = ColorRGB(v * 3., 0., 0.);
+        else if (v < 0.6666667)
+            col = ColorRGB(1.,(v - 0.333333) * 3., 0.);
+        else
+            col = ColorRGB(1., 1., (v - 0.6666667) * 3.);
+    } else if (name_ == "Grayscale")
+        col = hslToRGB(0., 0., v);
+    return col;
 }
 
 ColorMap StandardColorMapFactory::rainbow_("Rainbow");

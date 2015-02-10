@@ -73,6 +73,10 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   connectButtonToExecuteSignal(edgesAsCylindersButton_);
   connectButtonToExecuteSignal(nodesAsPointsButton_);
   connectButtonToExecuteSignal(nodesAsSpheresButton_);
+  
+  //default values
+  cylinder_rad_spin->setValue(1.0);
+  cylinder_res_spin->setValue(5);
 
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 

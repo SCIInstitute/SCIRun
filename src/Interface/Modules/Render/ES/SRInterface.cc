@@ -71,6 +71,9 @@ DEALINGS IN THE SOFTWARE.
 #include "systems/RenderColorMapSys.h"
 #include "systems/RenderTransBasicSys.h"
 #include "systems/RenderTransColorMapSys.h"
+#include <Core/Datatypes/ColorMap.h>
+
+using namespace SCIRun::Core::Datatypes;
 
 using namespace std::placeholders;
 
@@ -913,60 +916,16 @@ namespace SCIRun {
       }
 		}
 
-float SRInterface::Hue_2_RGB(float v1, float v2, float vH) {
-   if ( vH < 0 ) vH += 1.;
-   if ( vH > 1 ) vH -= 1.;
-   if ( ( 6 * vH ) < 1 ) return ( v1 + ( v2 - v1 ) * 6. * vH );
-   if ( ( 2 * vH ) < 1 ) return ( v2 );
-   if ( ( 3 * vH ) < 2 ) return ( v1 + ( v2 - v1 ) * ( ( .666667 ) - vH ) * 6. );
-   return ( v1 );
-}
-
-Core::Datatypes::ColorRGB SRInterface::hslToRGB(float h, float s, float l) {
-    float r,g,b;
-    if ( s == 0. ) {
-       r = g = b = l ;
-    } else {
-       float var_1, var_2;
-       if ( l < 0.5 ) var_2 = l * ( 1. + s );
-       else           var_2 = ( l + s ) - ( s * l );
-
-       var_1 = 2 * l - var_2;
-
-       r = Hue_2_RGB( var_1, var_2, h + ( .333333 ) );
-       g = Hue_2_RGB( var_1, var_2, h );
-       b = Hue_2_RGB( var_1, var_2, h - ( .333333 ) );
-    }
-    return Core::Datatypes::ColorRGB(r,g,b);
-}
-
-Core::Datatypes::ColorRGB SRInterface::getColorMapVal(float v, std::string which) {
-    Core::Datatypes::ColorRGB col;
-    std::string str = which;
-    if (str == "Rainbow")
-        col = hslToRGB((1.0-v) * 0.8, 0.95, 0.5);
-    else if (str == "Blackbody") {
-        if (v < 0.333333)
-            col = Core::Datatypes::ColorRGB(v * 3., 0., 0.);
-        else if (v < 0.6666667)
-            col = Core::Datatypes::ColorRGB(1.,(v - 0.333333) * 3., 0.);
-        else
-            col = Core::Datatypes::ColorRGB(1., 1., (v - 0.6666667) * 3.);
-    } else if (str == "Grayscale")
-        col = hslToRGB(0., 0., v);
-    return col;
-}
-
 		// Create default colormaps.
 		void SRInterface::generateColormaps()
 		{
 			size_t resolution = 1000;
             float step = 1.f / static_cast<float>(resolution);
-
+            ColorMap cm("Rainbow");
 			std::vector<uint8_t> rainbow;
 			rainbow.reserve(resolution * 3);
 			for (float i = 0.f; i < 1.f; i+=step) {
-                Core::Datatypes::ColorRGB col = getColorMapVal(i, "Rainbow");
+                ColorRGB col = cm.getColorMapVal(i);
 				rainbow.push_back(static_cast<uint8_t>(col.r() * 255.0f));
 				rainbow.push_back(static_cast<uint8_t>(col.g() * 255.0f));
 				rainbow.push_back(static_cast<uint8_t>(col.b() * 255.0f));
@@ -987,11 +946,12 @@ Core::Datatypes::ColorRGB SRInterface::getColorMapVal(float v, std::string which
 				GL_RGBA,
 				GL_UNSIGNED_BYTE, &rainbow[0]));
 
+            cm = ColorMap("Grayscale");
 			// build grayscale texture.
 			std::vector<uint8_t> grayscale;
 			grayscale.reserve(resolution * 3);
 			for (float i = 0.f; i < 1.f; i+=step) {
-                Core::Datatypes::ColorRGB col = getColorMapVal(i, "Grayscale");
+                ColorRGB col = cm.getColorMapVal(i);
 				grayscale.push_back(static_cast<uint8_t>(col.r() * 255.0f));
 				grayscale.push_back(static_cast<uint8_t>(col.g() * 255.0f));
 				grayscale.push_back(static_cast<uint8_t>(col.b() * 255.0f));
@@ -1012,11 +972,12 @@ Core::Datatypes::ColorRGB SRInterface::getColorMapVal(float v, std::string which
 				GL_RGBA,
 				GL_UNSIGNED_BYTE, &grayscale[0]));
 
+            cm = ColorMap("Blackbody");
             //blackbody texture
 			std::vector<uint8_t> blackbody;
 			blackbody.reserve(resolution * 3);
 			for (float i = 0.f; i < 1.f; i+=step) {
-                Core::Datatypes::ColorRGB col = getColorMapVal(i, "Blackbody");
+                ColorRGB col = cm.getColorMapVal(i);
 				blackbody.push_back(static_cast<uint8_t>(col.r() * 255.0f));
 				blackbody.push_back(static_cast<uint8_t>(col.g() * 255.0f));
 				blackbody.push_back(static_cast<uint8_t>(col.b() * 255.0f));

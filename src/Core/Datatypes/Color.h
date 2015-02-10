@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Color.h 
+/// @todo Documentation Core/Datatypes/Color.h
 
 #ifndef CORE_DATATYPES_COLORRGB_H
-#define CORE_DATATYPES_COLORRGB_H 
+#define CORE_DATATYPES_COLORRGB_H
 
 #include <iosfwd>
 #include <Core/Datatypes/Datatype.h>
@@ -39,14 +39,14 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE ColorRGB 
+  class SCISHARE ColorRGB
   {
   private:
     double r_, g_, b_;
   public:
     ColorRGB();
     explicit ColorRGB(const std::string& rgb);
-    ColorRGB(double, double, double);
+    ColorRGB(double r, double g, double b);
 
     // These equality operations should use floating point comparisons.
     inline bool operator==(const ColorRGB& c) const {
