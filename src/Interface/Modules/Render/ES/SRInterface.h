@@ -136,9 +136,6 @@ namespace SCIRun {
 
             /// Set the Background Color
             void setBackgroundColor(QColor color);
-      
-            //choose a color value for color mapping based on value and type of color map
-            static Core::Datatypes::ColorRGB getColorMapVal(float v, std::string which);
 
 		private:
 
@@ -185,11 +182,6 @@ namespace SCIRun {
 
 				int										          mPort;
 			};
-            //internal color map options
-            
-            static float Hue_2_RGB(float v1, float v2, float vH) ;
-            static Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l) ;
-
 			// Sets up ESCore.
 			void setupCore();
 
