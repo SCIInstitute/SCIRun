@@ -1457,18 +1457,17 @@ void ShowFieldModule::renderEdges(
   }
   else if (colorScheme == GeometryObject::COLOR_UNIFORM)
   {
-    ColorRGB dft = state.defaultColor;
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
-      glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-      glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
-      glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    if (state.get(RenderState::USE_CYLINDER))
+    if (state.get(RenderState::USE_CYLINDER)) {
+        ColorRGB dft = state.defaultColor;
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+            glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
+            glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+            glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
       attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
-    else
-      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
+    }
   }
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
   // Use cylinders...
@@ -1685,7 +1684,12 @@ void ShowFieldModule::renderEdges(
     }
     if (colorScheme == GeometryObject::COLOR_MAP)
       vboBuffer->write(static_cast<float>(colors.at(i).r()));
-    else {
+    else if (colorScheme == GeometryObject::COLOR_UNIFORM &&
+                    !state.get(RenderState::USE_CYLINDER) ){
+        ColorRGB dft = state.defaultColor;
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uColor",
+            glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f)));
+    } else {
       // Writes uint8_t out to the VBO. A total of 4 bytes.
       vboBuffer->write(COLOR_FTOB(colors.at(i).r()));
       vboBuffer->write(COLOR_FTOB(colors.at(i).g()));
