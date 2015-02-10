@@ -56,3 +56,8 @@ GenerateStreamLinesDialog::GenerateStreamLinesDialog(const std::string& name, Mo
   addCheckBoxManager(autoParameterCheckBox_, Parameters::AutoParameters);
   addCheckBoxManager(filterColinearCheckBox_, Parameters::RemoveColinearPoints);
 }
+
+void GenerateStreamLinesDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

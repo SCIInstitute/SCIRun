@@ -54,11 +54,11 @@ GenerateStreamLinesAlgo::GenerateStreamLinesAlgo()
 {
   addParameter(Parameters::StreamlineStepSize, 0.01);
   addParameter(Parameters::StreamlineTolerance, 0.0001);
-  addParameter(Parameters::StreamlineMaxSteps, 100);
+  addParameter(Parameters::StreamlineMaxSteps, 2000);
   add_option(Parameters::StreamlineDirection, "Both", "Negative|Both|Positive");
   add_option(Parameters::StreamlineValue, "Seed index", "Seed value|Seed index|Integration index|Integration step|Distance from seed|Streamline length");
-  addParameter(Parameters::RemoveColinearPoints, true);
-  add_option(Parameters::StreamlineMethod, "CellWalk", "AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
+  addParameter(Parameters::RemoveColinearPoints, false);
+  add_option(Parameters::StreamlineMethod, "RungeKuttaFehlberg", "AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
   // Estimate step size and tolerance automatically based on average edge length
   addParameter(Parameters::AutoParameters,false);
 

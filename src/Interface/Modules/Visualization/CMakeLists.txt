@@ -67,7 +67,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Visualization
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Visualization 
   Modules_Visualization
-  Core_Algorithms_Legacy_Field
+  Core_Algorithms_Legacy_Fields
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
