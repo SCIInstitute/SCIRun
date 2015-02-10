@@ -53,12 +53,12 @@ GenerateStreamLines::GenerateStreamLines() : Module(staticInfo_)
 void GenerateStreamLines::setStateDefaults()
 {
   auto state = get_state();
-  setStateIntFromAlgo(Parameters::StreamlineDirection);
-  setStateIntFromAlgo(Parameters::StreamlineValue);
+  setStateStringFromAlgoOption(Parameters::StreamlineDirection);
+  setStateStringFromAlgoOption(Parameters::StreamlineValue);
   setStateIntFromAlgo(Parameters::StreamlineMaxSteps);
   setStateDoubleFromAlgo(Parameters::StreamlineStepSize);
   setStateDoubleFromAlgo(Parameters::StreamlineTolerance);
-  setStateStringFromAlgoOption(Parameters::StreamlineMethod); // 4?
+  setStateStringFromAlgoOption(Parameters::StreamlineMethod);
   setStateBoolFromAlgo(Parameters::AutoParameters);
   setStateBoolFromAlgo(Parameters::RemoveColinearPoints);
 }
@@ -74,8 +74,8 @@ void GenerateStreamLines::execute()
 
     setAlgoDoubleFromState(Parameters::StreamlineStepSize);
     setAlgoDoubleFromState(Parameters::StreamlineTolerance);
-    setAlgoIntFromState(Parameters::StreamlineDirection);
-    setAlgoIntFromState(Parameters::StreamlineValue);
+    setAlgoOptionFromState(Parameters::StreamlineDirection);
+    setAlgoOptionFromState(Parameters::StreamlineValue);
     setAlgoIntFromState(Parameters::StreamlineMaxSteps);
     setAlgoBoolFromState(Parameters::RemoveColinearPoints);
     setAlgoBoolFromState(Parameters::AutoParameters);

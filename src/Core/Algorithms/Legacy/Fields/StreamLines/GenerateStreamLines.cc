@@ -34,9 +34,8 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-#include <algorithm>
-
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -56,8 +55,8 @@ GenerateStreamLinesAlgo::GenerateStreamLinesAlgo()
   addParameter(Parameters::StreamlineStepSize, 0.01);
   addParameter(Parameters::StreamlineTolerance, 0.0001);
   addParameter(Parameters::StreamlineMaxSteps, 100);
-  addParameter(Parameters::StreamlineDirection, 1);
-  addParameter(Parameters::StreamlineValue, 1);
+  add_option(Parameters::StreamlineDirection, "Both", "Negative|Both|Positive");
+  add_option(Parameters::StreamlineValue, "Seed index", "Seed value|Seed index|Integration index|Integration step|Distance from seed|Streamline length");
   addParameter(Parameters::RemoveColinearPoints, true);
   add_option(Parameters::StreamlineMethod, "CellWalk", "AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
   // Estimate step size and tolerance automatically based on average edge length
@@ -93,19 +92,75 @@ void CleanupStreamLinePoints(const std::vector<Point> &input, std::vector<Point>
   }
 }
 
+bool directionIncludesNegative(int dir)
+{
+  return dir <= 1;
+}
+
+bool directionIncludesPositive(int dir)
+{
+  return dir >= 1;
+}
+
+bool directionIsBoth(int dir)
+{
+  return 1 == dir;
+}
+
+int convertDirectionOption(const std::string& dir)
+{
+  if (dir == "Negative")
+    return 0;
+  else if (dir == "Both")
+    return 1;
+  else // Positive
+    return 2;
+}
+
+IntegrationMethod convertMethod(const std::string& option)
+{
+  int method = 0;
+  if (option == "AdamsBashforth") method = 0;
+  else if (option == "Heun") method = 2;
+  else if (option == "RungeKutta") method = 3;
+  else if (option == "RungeKuttaFehlberg") method = 4;
+  else if (option == "CellWalk") method = 5;
+  else
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown streamline method selected"));
+  return IntegrationMethod(method);
+}
+
+StreamlineValue convertValue(const std::string& option)
+{
+  //"Seed value|Seed index|Integration index|Integration step|Distance from seed|Streamline length"
+  if (option == "Seed value")
+    return SeedValue;
+  if (option == "Seed index")
+    return SeedIndex;
+  if (option == "Integration index")
+    return IntegrationIndex;
+  if (option == "Integration step")
+    return IntegrationStep;
+  if (option == "Distance from seed") 
+    return DistanceFromSeed;
+  if (option == "Streamline length") 
+    return StreamlineLength; 
+
+  BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown streamline value selected"));
+}
 
 
 class GenerateStreamLinesAlgoP {
 
   public:
     GenerateStreamLinesAlgoP() :
-        tolerance_(0), step_size_(0), max_steps_(0), direction_(0), value_(0), remove_colinear_pts_(false),
-          method_(0), seed_field_(0), seed_mesh_(0), field_(0), mesh_(0), ofield_(0), omesh_(0), algo_(0), success_(false)
-       {}
+      tolerance_(0), step_size_(0), max_steps_(0), direction_(0), value_(SeedIndex), remove_colinear_pts_(false),
+      method_(AdamsBashforth), seed_field_(0), seed_mesh_(0), field_(0), mesh_(0), ofield_(0), omesh_(0), algo_(0), success_(false)
+    {}
 
     bool run(const AlgorithmBase* algo, FieldHandle input,
              FieldHandle seeds, FieldHandle& output,
-             int method);
+             IntegrationMethod method);
 
   private:
     void runImpl();
@@ -114,9 +169,9 @@ class GenerateStreamLinesAlgoP {
     double step_size_;
     int    max_steps_;
     int    direction_;
-    int    value_;
+    StreamlineValue    value_;
     bool   remove_colinear_pts_;
-    int    method_;
+    IntegrationMethod method_;
 
     VField* seed_field_;
     VMesh*  seed_mesh_;
@@ -157,7 +212,8 @@ GenerateStreamLinesAlgoP::runImpl()
       seed_mesh_->get_point(BI.seed_, idx);
 
        // Is the seed point inside the field?
-      if (!field_->interpolate(test, BI.seed_)) continue;
+      if (!field_->interpolate(test, BI.seed_)) 
+        continue;
 
       BI.nodes_.clear();
       BI.nodes_.push_back(BI.seed_);
@@ -165,12 +221,12 @@ GenerateStreamLinesAlgoP::runImpl()
       int cc = 0;
 
       // Find the negative streamlines.
-      if( direction_ <= 1 )
+      if (directionIncludesNegative(direction_))
       {
         BI.step_size_ = -step_size_;   // initial step size
         BI.integrate( method_ );
 
-        if ( direction_ == 1 )
+        if (directionIsBoth(direction_))
         {
           BI.seed_ = BI.nodes_[0];     // Reset the seed
 
@@ -181,7 +237,7 @@ GenerateStreamLinesAlgoP::runImpl()
       }
 
       // Append the positive streamlines.
-      if( direction_ >= 1 )
+      if (directionIncludesPositive(direction_))
       {
         BI.step_size_ = step_size_;   // initial step size
         BI.integrate( method_ );
@@ -190,7 +246,7 @@ GenerateStreamLinesAlgoP::runImpl()
       double length = 0;
       Point p1;
 
-      if( value_ == 5 )
+      if (value_ == StreamlineLength)
       {
         node_iter = BI.nodes_.begin();
         if (node_iter != BI.nodes_.end())
@@ -221,12 +277,12 @@ GenerateStreamLinesAlgoP::runImpl()
 
         ofield_->resize_values();
 
-        if (value_ == 0) ofield_->copy_value(seed_field_,idx,n1);
-        else if (value_ == 1) ofield_->set_value(index_type(idx),n1);
-        else if (value_ == 2) ofield_->set_value(abs(cc),n1);
-        else if (value_ == 3) ofield_->set_value(0,n1);
-        else if (value_ == 4) ofield_->set_value(0,n1);
-        else if (value_ == 5) ofield_->set_value(length,n1);
+        if (value_ == SeedValue) ofield_->copy_value(seed_field_, idx, n1);
+        else if (value_ == SeedIndex) ofield_->set_value(index_type(idx), n1);
+        else if (value_ == IntegrationIndex) ofield_->set_value(abs(cc), n1);
+        else if (value_ == IntegrationStep) ofield_->set_value(0, n1);
+        else if (value_ == DistanceFromSeed) ofield_->set_value(0, n1);
+        else if (value_ == StreamlineLength) ofield_->set_value(length, n1);
 
         ++node_iter;
         cc++;
@@ -236,20 +292,20 @@ GenerateStreamLinesAlgoP::runImpl()
           n2 = omesh_->add_point(*node_iter);
           ofield_->resize_fdata();
 
-          if (value_ == 0) ofield_->copy_value(seed_field_,idx,n2);
-          else if (value_ == 1) ofield_->set_value(index_type(idx),n2);
-          else if (value_ == 2) ofield_->set_value(abs(cc),n2);
-          else if (value_ == 3)
+          if (value_ == SeedValue) ofield_->copy_value(seed_field_, idx, n2);
+          else if (value_ == SeedIndex) ofield_->set_value(index_type(idx), n2);
+          else if (value_ == IntegrationIndex) ofield_->set_value(abs(cc), n2);
+          else if (value_ == IntegrationStep)
           {
             length = Vector( *node_iter-p1 ).length();
             ofield_->set_value(length,n2);
           }
-          else if (value_ == 4)
+          else if (value_ == DistanceFromSeed)
           {
             length += Vector( *node_iter-p1 ).length();
             ofield_->set_value(length,n2);
           }
-          else if (value_ == 5)
+          else if (value_ == StreamlineLength)
 	        {
 	           ofield_->set_value(length,n2);
           }
@@ -305,7 +361,7 @@ GenerateStreamLinesAlgoP::run(const AlgorithmBase* algo,
                               FieldHandle input,
                               FieldHandle seeds,
                               FieldHandle& output,
-                              int method)
+                              IntegrationMethod method)
 {
   seed_field_ = seeds->vfield();
   seed_mesh_ = seeds->vmesh();
@@ -318,8 +374,8 @@ GenerateStreamLinesAlgoP::run(const AlgorithmBase* algo,
   tolerance_ = algo->get(Parameters::StreamlineTolerance).toDouble();
   step_size_ = algo->get(Parameters::StreamlineStepSize).toDouble();
   max_steps_ = algo->get(Parameters::StreamlineMaxSteps).toInt();
-  direction_ = algo->get(Parameters::StreamlineDirection).toInt();
-  value_ =     algo->get(Parameters::StreamlineValue).toInt();
+  direction_ = convertDirectionOption(algo->get_option(Parameters::StreamlineDirection));
+  value_ = convertValue(algo->get_option(Parameters::StreamlineValue));
   remove_colinear_pts_ = algo->get(Parameters::RemoveColinearPoints).toBool();
   method_ = method;
 
@@ -339,7 +395,7 @@ class GenerateStreamLinesAccAlgo {
 
   public:
     GenerateStreamLinesAccAlgo() :
-      max_steps_(0), direction_(0), value_(0), remove_colinear_pts_(false),
+      max_steps_(0), direction_(0), value_(SeedIndex), remove_colinear_pts_(false),
       seed_field_(0), seed_mesh_(0), field_(0), mesh_(0), ofield_(0),
       omesh_(0), success_(false)
       {}
@@ -351,7 +407,7 @@ class GenerateStreamLinesAccAlgo {
   private:
     int    max_steps_;
     int    direction_;
-    int    value_;
+    StreamlineValue    value_;
     bool   remove_colinear_pts_;
 
     VField* seed_field_;
@@ -383,8 +439,8 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
     omesh_ = output->vmesh();
 
     max_steps_ = algo->get(Parameters::StreamlineMaxSteps).toInt();
-    direction_ = algo->get(Parameters::StreamlineDirection).toInt();
-    value_ =     algo->get(Parameters::StreamlineValue).toInt();
+    direction_ = convertDirectionOption(algo->get_option(Parameters::StreamlineDirection));
+    value_ = convertValue(algo->get_option(Parameters::StreamlineValue));
     remove_colinear_pts_ = algo->get(Parameters::RemoveColinearPoints).toBool();
 
     Point seed;
@@ -405,18 +461,19 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
       seed_mesh_->get_center(seed, idx);
 
       // Is the seed point inside the field?
-      if (!(mesh_->locate(elem, seed))) continue;
+      if (!(mesh_->locate(elem, seed))) 
+        continue;
       nodes.clear();
       nodes.push_back(seed);
 
       int cc = 0;
 
       // Find the negative streamlines.
-      if( direction_ <= 1 )
+      if (directionIncludesNegative(direction_))
       {
         find_nodes(nodes, seed, true);
 
-        if ( direction_ == 1 )
+        if (directionIsBoth(direction_))
         {
           std::reverse(nodes.begin(), nodes.end());
           cc = nodes.size();
@@ -425,7 +482,7 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
       }
 
       // Append the positive streamlines.
-      if( direction_ >= 1 )
+      if (directionIncludesPositive(direction_))
       {
         find_nodes(nodes, seed, false);
       }
@@ -433,7 +490,7 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
       double length = 0;
       Point p1;
 
-      if( value_ == 5 )
+      if (value_ == StreamlineLength)
       {
         node_iter = nodes.begin();
         if (node_iter != nodes.end())
@@ -464,12 +521,12 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
 
         ofield_->resize_values();
 
-        if (value_ == 0) ofield_->copy_value(field_,idx,n1);
-        else if( value_ == 1) ofield_->set_value((int)index_type(idx),n1);
-        else if (value_ == 2) ofield_->set_value(abs(cc),n1);
-        else if (value_ == 3) ofield_->set_value(0,n1);
-        else if (value_ == 4) ofield_->set_value(0,n1);
-        else if (value_ == 5) ofield_->set_value(length,n1);
+        if (value_ == SeedValue) ofield_->copy_value(field_, idx, n1);
+        else if (value_ == SeedIndex) ofield_->set_value(static_cast<int>(idx), n1);
+        else if (value_ == IntegrationIndex) ofield_->set_value(abs(cc), n1);
+        else if (value_ == IntegrationStep) ofield_->set_value(0, n1);
+        else if (value_ == DistanceFromSeed) ofield_->set_value(0, n1);
+        else if (value_ == StreamlineLength) ofield_->set_value(length, n1);
         ++node_iter;
 
         cc++;
@@ -479,20 +536,20 @@ GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo,
           n2 = omesh_->add_point(*node_iter);
           ofield_->resize_values();
 
-          if (value_ == 0) ofield_->copy_value(field_,idx,n2);
-          else if( value_ == 1) ofield_->set_value((int)index_type(idx),n2);
-          else if (value_ == 2) ofield_->set_value(abs(cc),n2);
-          else if (value_ == 3)
+          if (value_ == SeedValue) ofield_->copy_value(field_, idx, n2);
+          else if (value_ == SeedIndex) ofield_->set_value(static_cast<int>(idx), n2);
+          else if (value_ == IntegrationIndex) ofield_->set_value(abs(cc), n2);
+          else if (value_ == IntegrationStep)
           {
             length = Vector( *node_iter-p1 ).length();
             ofield_->set_value(length,n2);
           }
-          else if (value_ == 4)
+          else if (value_ == DistanceFromSeed)
           {
             length += Vector( *node_iter-p1 ).length();
             ofield_->set_value(length,n2);
           }
-          else if (value_ == 5)
+          else if (value_ == StreamlineLength)
 	       {
 	          ofield_->set_value(length,n2);
           }
@@ -666,21 +723,12 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
     return (false);
   }
 
-  const std::string smethod = get_option(Parameters::StreamlineMethod);
-  int method;
-  if (smethod == "AdamsBashforth") method = 0;
-  if (smethod == "Heun") method = 2;
-  if (smethod == "RungeKutta") method = 3;
-  if (smethod == "RungeKuttaFehlberg") method = 4;
-  if (smethod == "CellWalk") method = 5;
+  auto method = detail::convertMethod(get_option(Parameters::StreamlineMethod));
 
-  if (method == 5)
+  if (method == CellWalk && ifield->basis_order() != 0)
   {
-    if (ifield->basis_order() != 0)
-    {
-      error("The Cell Walk method only works for cell centered Vector Fields.");
-      return (false);
-    }
+    error("The Cell Walk method only works for cell centered Vector Fields.");
+    return (false);
   }
 
   FieldInformation fi(input);

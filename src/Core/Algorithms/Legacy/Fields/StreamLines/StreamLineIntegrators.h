@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 //    File   : StreamLineIntergrators.h
@@ -46,34 +46,55 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-class SCISHARE StreamLineIntegrators
-{
-public:
-  void FindAdamsBashforth();
-  void FindHeun();
-  void FindRK4();
-  void FindRKF();
+        enum IntegrationMethod
+        {
+          AdamsBashforth = 0,
+          Heun = 2,
+          RungeKutta = 3,
+          RungeKuttaFehlberg = 4,
+          CellWalk = 5
+        };
 
-  int ComputeRKFTerms(Geometry::Vector v[6],       // storage for terms
-		      const Geometry::Point &p,    // previous point
-		      double s );        // current step size
+        enum StreamlineValue
+        {
+          SeedValue,
+          SeedIndex,
+          IntegrationIndex,
+          IntegrationStep,
+          DistanceFromSeed,
+          StreamlineLength
+        };
 
-  void integrate( unsigned int method );
+        class SCISHARE StreamLineIntegrators
+        {
+        public:
+          void FindAdamsBashforth();
+          void FindHeun();
+          void FindRK4();
+          void FindRKF();
 
-//TODO: make private
-  Geometry::Point seed_;                         // initial point
-  double tolerance2_;                  // square error tolerance
-  double step_size_;                    // initial step size
-  unsigned int max_steps_;              // max number of steps
-  VField* vfield_;     // the field
+          void integrate(IntegrationMethod method);
 
-  std::vector<Geometry::Point> nodes_;                // storage for points
+          //TODO: make private
+          Geometry::Point seed_;                         // initial point
+          double tolerance2_;                  // square error tolerance
+          double step_size_;                    // initial step size
+          unsigned int max_steps_;              // max number of steps
+          VField* vfield_;     // the field
 
-private:
-  bool interpolate( const Geometry::Point &p, Geometry::Vector &v);
+          std::vector<Geometry::Point> nodes_;                // storage for points
 
-};
+        private:
+          int ComputeRKFTerms(Geometry::Vector v[6],       // storage for terms
+            const Geometry::Point &p,    // previous point
+            double s);        // current step size
 
-}}}} // End namespace SCIRun
+          bool interpolate(const Geometry::Point &p, Geometry::Vector &v);
+        };
+
+      }
+    }
+  }
+} // End namespace SCIRun
 
 #endif

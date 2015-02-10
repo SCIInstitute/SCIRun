@@ -48,7 +48,7 @@ public:
 
   virtual void pull();
 private:
-  GuiStringTranslationMap streamlineMethod_, streamlineDirection_, streamlineValue_;
+  GuiStringTranslationMap streamlineMethod_;
 };
 
 }

@@ -27,10 +27,11 @@
 */
 
 #include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
+#include <Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Field;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 GenerateStreamLinesDialog::GenerateStreamLinesDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -40,29 +41,18 @@ GenerateStreamLinesDialog::GenerateStreamLinesDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  streamlineMethod_.insert(StringPair("Direct entry", "single"));
-  streamlineMethod_.insert(StringPair("Slider", "slider"));
-  streamlineMethod_.insert(StringPair("L-curve", "lcurve"));
-  streamlineMethod_.insert(StringPair("L-curve", "lcurve"));
-  streamlineMethod_.insert(StringPair("L-curve", "lcurve"));
-
-  streamlineDirection_.insert(StringPair("Negative", "single"));
-  streamlineDirection_.insert(StringPair("Both", "slider"));
-  streamlineDirection_.insert(StringPair("Positive", "lcurve"));
-
-  streamlineValue_.insert(StringPair("Direct entry", "single"));
-  streamlineValue_.insert(StringPair("Slider", "slider"));
-  streamlineValue_.insert(StringPair("L-curve", "lcurve"));
-  streamlineValue_.insert(StringPair("Direct entry", "single"));
-  streamlineValue_.insert(StringPair("Slider", "slider"));
-  streamlineValue_.insert(StringPair("L-curve", "lcurve"));
-
+  streamlineMethod_.insert(StringPair("Cell Walk", "CellWalk"));
+  streamlineMethod_.insert(StringPair("Adams-Bashforth Multi-Step", "AdamsBashforth"));
+  streamlineMethod_.insert(StringPair("Heun Method", "Heun"));
+  streamlineMethod_.insert(StringPair("Classic 4th Order Runge-Kutta", "RungeKutta"));
+  streamlineMethod_.insert(StringPair("Adaptive Runge-Kutta-Fehlberg", "RungeKuttaFehlberg"));
+  
   addSpinBoxManager(maxStepsSpinBox_, Parameters::StreamlineMaxSteps);
   addDoubleSpinBoxManager(toleranceDoubleSpinBox_, Parameters::StreamlineTolerance);
   addDoubleSpinBoxManager(stepSizeDoubleSpinBox_, Parameters::StreamlineStepSize);
-  addComboBoxManager(directionComboBox_, Parameters::StreamlineDirection, lambdaMethod_);
-  addComboBoxManager(valueComboBox_, Parameters::StreamlineValue, lambdaMethod_);
-  addComboBoxManager(methodComboBox_, Parameters::StreamlineMethod, lambdaMethod_);
-  addCheckboxManager(autoParameterCheckBox_, Parameters::AutoParameters);
-  addCheckboxManager(filterColinearCheckBox_, Parameters::RemoveColinearPoints);
+  addComboBoxManager(directionComboBox_, Parameters::StreamlineDirection);
+  addComboBoxManager(valueComboBox_, Parameters::StreamlineValue);
+  addComboBoxManager(methodComboBox_, Parameters::StreamlineMethod, streamlineMethod_);
+  addCheckBoxManager(autoParameterCheckBox_, Parameters::AutoParameters);
+  addCheckBoxManager(filterColinearCheckBox_, Parameters::RemoveColinearPoints);
 }

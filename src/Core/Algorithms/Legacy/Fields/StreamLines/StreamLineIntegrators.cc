@@ -221,11 +221,6 @@ StreamLineIntegrators::ComputeRKFTerms(Vector v[6],       // storage for terms
 				  const Point &p,    // previous point
 				  double s)
 {
-  // Already computed this one when we did the inside test.
-  //  if (!interpolate(p, v[0]))
-  //  {
-  //    return -1;
-  //  }
   v[0] *= s;
 
   if (!interpolate(p + v[0]*rkf_d[1][0], v[1]))
@@ -265,25 +260,26 @@ StreamLineIntegrators::ComputeRKFTerms(Vector v[6],       // storage for terms
 
 
 void
-StreamLineIntegrators::integrate( unsigned int method )
+StreamLineIntegrators::integrate(IntegrationMethod method)
 {
-  switch ( method ) {
-  case 0:
+  switch ( method ) 
+  {
+  case AdamsBashforth:
     FindAdamsBashforth();
     break;
 
-  case 2:
+  case Heun:
     FindHeun();
     break;
 
-  case 3:
+  case RungeKutta:
     FindRK4();
     break;
 
-  case 4:
+  case RungeKuttaFehlberg:
     FindRKF();
     break;
   default:
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown stream line integration method"));
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown stream line integration method (Cell walk uses different function)"));
   }
 }
