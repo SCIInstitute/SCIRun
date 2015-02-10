@@ -29,6 +29,7 @@
 
 SET(Interface_Modules_Visualization_FORMS
   CreateBasicColorMap.ui
+  GenerateStreamLines.ui
   MatrixAsVectorField.ui
   ShowField.ui
   ShowString.ui
@@ -37,6 +38,7 @@ SET(Interface_Modules_Visualization_FORMS
 
 SET(Interface_Modules_Visualization_HEADERS
   CreateBasicColorMapDialog.h
+  GenerateStreamLinesDialog.h
   MatrixAsVectorFieldDialog.h
   share.h
   ShowFieldDialog.h
@@ -46,6 +48,7 @@ SET(Interface_Modules_Visualization_HEADERS
 
 SET(Interface_Modules_Visualization_SOURCES 
   CreateBasicColorMapDialog.cc
+  GenerateStreamLinesDialog.cc
   MatrixAsVectorFieldDialog.cc
   ShowFieldDialog.cc
   ShowStringDialog.cc
@@ -64,6 +67,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Visualization
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Visualization 
   Modules_Visualization
+  Core_Algorithms_Legacy_Field
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
