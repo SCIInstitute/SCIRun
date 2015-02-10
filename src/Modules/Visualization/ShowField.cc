@@ -81,8 +81,8 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(FaceTransparencyValue, 0.65f);
   state->setValue(EdgeTransparencyValue, 0.65f);
   state->setValue(SphereScaleValue, 1.0);
-  state->setValue(CylinderRadius, 0.05);
-  state->setValue(CylinderResolution, 8);
+  state->setValue(CylinderRadius, 1.0);
+  state->setValue(CylinderResolution, 5);
   faceTransparencyValue_ = 0.65f;
   edgeTransparencyValue_ = 0.65f;
   sphereScalar_ = 1.0;
@@ -200,11 +200,6 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).toBool();
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
-  const ColorRGB meshColor(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
-  float meshRed = static_cast<float>(meshColor.r() / 255.0f);
-  float meshGreen = static_cast<float>(meshColor.g() / 255.0f);
-  float meshBlue = static_cast<float>(meshColor.b() / 255.0f);
-
   // Resultant geometry type (representing a spire object and a number of passes).
   GeometryHandle geom(new GeometryObject(field));
   geom->objectName = id;
@@ -1471,11 +1466,9 @@ void ShowFieldModule::renderEdges(
   }
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
   // Use cylinders...
-  if (state.get(RenderState::USE_CYLINDER)) {
-    renderType = GeometryObject::RENDER_VBO_IBO;
+  if (state.get(RenderState::USE_CYLINDER))
     primIn = GeometryObject::SpireIBO::TRIANGLES;
     vboOnGPU = true;
-  }
   auto my_state = this->get_state();
   double num_strips = double(my_state->getValue(CylinderResolution).toInt());
   double radius = my_state->getValue(CylinderRadius).toDouble();
