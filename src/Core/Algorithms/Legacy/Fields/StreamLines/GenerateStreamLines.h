@@ -54,6 +54,10 @@ class SCISHARE GenerateStreamLinesAlgo : public AlgorithmBase
     bool runImpl(FieldHandle input, FieldHandle seeds, FieldHandle& output) const;
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+
+    static const AlgorithmInputName VectorField;
+    static const AlgorithmInputName Seeds;
+    static const AlgorithmOutputName Streamlines;
 };
 
 }}}} // end namespace SCIRunAlgo

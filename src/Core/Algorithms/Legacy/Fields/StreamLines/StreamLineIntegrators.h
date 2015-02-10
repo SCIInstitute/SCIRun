@@ -60,8 +60,7 @@ public:
 
   void integrate( unsigned int method );
 
-private:
-  bool interpolate( const Geometry::Point &p, Geometry::Vector &v);
+//TODO: make private
   Geometry::Point seed_;                         // initial point
   double tolerance2_;                  // square error tolerance
   double step_size_;                    // initial step size
@@ -69,6 +68,10 @@ private:
   VField* vfield_;     // the field
 
   std::vector<Geometry::Point> nodes_;                // storage for points
+
+private:
+  bool interpolate( const Geometry::Point &p, Geometry::Vector &v);
+
 };
 
 }}}} // End namespace SCIRun
