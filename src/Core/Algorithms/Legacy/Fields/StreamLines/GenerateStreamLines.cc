@@ -740,8 +740,8 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
   return (success);
 }
 
-const AlgorithmInputName GenerateStreamLinesAlgo::VectorField("VectorField");
-const AlgorithmInputName GenerateStreamLinesAlgo::Seeds("Seeds");
+const AlgorithmInputName GenerateStreamLinesAlgo::VectorField("Vector_Field");
+const AlgorithmInputName GenerateStreamLinesAlgo::Seeds("Seed_Points");
 const AlgorithmOutputName GenerateStreamLinesAlgo::Streamlines("Streamlines");
 
 AlgorithmOutput GenerateStreamLinesAlgo::run_generic(const AlgorithmInput& input) const
