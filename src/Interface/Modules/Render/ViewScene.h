@@ -118,8 +118,10 @@ namespace SCIRun {
       bool shown_;
       bool hideViewBar_;
       bool showConfiguration_;
+      bool itemValueChanged_;
       std::shared_ptr<class ViewSceneItemManager> itemManager_;
       std::vector<std::string> unselectedObjectNames_;
+      std::vector<std::string> previousObjectNames_;
 
       friend class ViewSceneControlsDock;
 		};
