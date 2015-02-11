@@ -20,6 +20,7 @@
 #include <es-render/comp/MatUniform.hpp>
 #include <es-render/comp/StaticGLState.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
+#include <es-render/comp/StaticIBOMan.hpp>
 
 #include "../comp/RenderColorMapGeom.h"
 #include "../comp/SRRenderState.h"
@@ -52,10 +53,12 @@ class RenderColorMapSysTrans :
                              ren::MatUniform,
                              ren::Shader,
                              ren::GLState,
+                             Core::Datatypes::GeometryObject::SpireSubPass,
                              StaticWorldLight,
                              gen::StaticCamera,
                              ren::StaticGLState,
-                             ren::StaticVBOMan>
+                             ren::StaticVBOMan,
+                             ren::StaticIBOMan>
 {
 public:
 
@@ -69,6 +72,83 @@ public:
                                   ren::CommonUniforms,
                                   ren::VecUniform,
                                   ren::MatUniform>(type);
+  }
+
+private:
+  Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);
+  GLuint sortedID = NULL;
+  
+  class DepthIndex {
+  public:
+    size_t mIndex;
+    double mDepth;
+
+    DepthIndex() :
+      mIndex(0),
+      mDepth(0.0)
+    {}
+
+    DepthIndex(size_t index, double depth) :
+      mIndex(index),
+      mDepth(depth)
+    {}
+
+    bool operator<(const DepthIndex& di) const
+    {
+      return this->mDepth < di.mDepth;
+    }
+  };
+
+  GLuint sortObjects(const Core::Geometry::Vector& dir,
+                     const es::ComponentGroup<ren::IBO>& ibo, 
+                     const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
+                     const es::ComponentGroup<ren::StaticIBOMan>& iboMan)
+  {
+    char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
+    uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.front().ibo.data->getBuffer());
+    size_t num_triangles = pass.front().ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+
+    size_t stride_vbo = 0;
+    for (auto a : pass.front().vbo.attributes)
+      stride_vbo += a.sizeInBytes;
+
+    std::vector<DepthIndex> rel_depth(num_triangles);
+
+
+    for (size_t j = 0; j < num_triangles; j++)
+    {
+      float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
+      Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+
+      float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 1]));
+      Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+      float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 2]));
+      Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+      rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+      rel_depth[j].mIndex = j;
+    }
+
+    std::sort(rel_depth.begin(), rel_depth.end());
+
+    // setup index buffers
+    int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
+
+    std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
+    char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
+    char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
+    size_t tri_size = pass.front().ibo.data->getBufferSize() / num_triangles;
+
+    for (size_t j = 0; j < num_triangles; j++)
+    {
+      memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+    }
+
+    std::string transIBOName = pass.front().ibo.name + "trans";
+
+    return iboMan.front().instance->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), ibo.front().primMode, ibo.front().primType,
+      numPrimitives, transIBOName);
   }
 
   void groupExecute(
@@ -87,10 +167,12 @@ public:
       const es::ComponentGroup<ren::MatUniform>& matUniforms,
       const es::ComponentGroup<ren::Shader>& shader,
       const es::ComponentGroup<ren::GLState>& state,
+      const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
       const es::ComponentGroup<StaticWorldLight>& worldLight,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
-      const es::ComponentGroup<ren::StaticVBOMan>& vboMan) override
+      const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
+      const es::ComponentGroup<ren::StaticIBOMan>& iboMan) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -103,6 +185,7 @@ public:
       return;
     }
 
+    bool drawLines = (ibo.front().primMode == Core::Datatypes::GeometryObject::SpireIBO::LINES);
     GLuint iboID = ibo.front().glid;
     GLuint iboXID = ibo.front().glid;
     GLuint iboYID = ibo.front().glid;
@@ -131,34 +214,73 @@ public:
         iboLinesID = it->glid;
     }
 
-    if (ibo.front().primMode == Core::Datatypes::GeometryObject::SpireIBO::LINES)
+    Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
+                               camera.front().data.worldToView[1][2],
+                               camera.front().data.worldToView[2][2]);
+
+    if (sortedID == NULL)
+    {
+      prevDir = dir;
+    }
+    if (drawLines)
     {
       iboID = iboLinesID;
     }
     else
     {
-      Core::Geometry::Vector currentDir(camera.front().data.worldToView[0][2],
-        camera.front().data.worldToView[1][2],
-        camera.front().data.worldToView[2][2]);
-
-      Core::Geometry::Vector absDir(abs(camera.front().data.worldToView[0][2]),
-        abs(camera.front().data.worldToView[1][2]),
-        abs(camera.front().data.worldToView[2][2]));
-
-      double xORy = absDir.x() > absDir.y() ? absDir.x() : absDir.y();
-      double orZ = absDir.z() > xORy ? absDir.z() : xORy;
-
-      if (orZ == absDir.x())
+      switch (pass.front().renderState.mSortType)
       {
-        iboID = currentDir.x() < orZ ? iboNegXID : iboXID;
-      }
-      if (orZ == absDir.y())
-      {
-        iboID = currentDir.y() < orZ ? iboNegYID : iboYID;
-      }
-      if (orZ == absDir.z())
-      {
-        iboID = currentDir.z() < orZ ? iboNegZID : iboZID;
+        case RenderState::TransparencySortType::CONTINUOUS_SORT:
+        {
+          iboID = sortObjects(dir, ibo, pass, iboMan);
+          std::cout << "continuous" << std::endl;
+          break;
+        }
+        case RenderState::TransparencySortType::UPDATE_SORT:
+        {
+          Core::Geometry::Vector diff = prevDir - dir;
+          float distance = sqrtf(Core::Geometry::Dot(diff, diff));
+          if (distance >= 1.23 || sortedID == NULL)
+          {
+            if (sortedID != NULL)
+            {
+              iboMan.front().instance->removeInMemoryIBO(sortedID);
+            }
+            prevDir = dir;
+            sortedID = sortObjects(dir, ibo, pass, iboMan);
+          }
+          iboID = sortedID;
+          std::cout << "update" << std::endl;
+          break;
+        }
+        case RenderState::TransparencySortType::LISTS_SORT:
+        {
+          Core::Geometry::Vector currentDir(camera.front().data.worldToView[0][2],
+            camera.front().data.worldToView[1][2],
+            camera.front().data.worldToView[2][2]);
+
+          Core::Geometry::Vector absDir(abs(camera.front().data.worldToView[0][2]),
+            abs(camera.front().data.worldToView[1][2]),
+            abs(camera.front().data.worldToView[2][2]));
+
+          double xORy = absDir.x() > absDir.y() ? absDir.x() : absDir.y();
+          double orZ = absDir.z() > xORy ? absDir.z() : xORy;
+
+          if (orZ == absDir.x())
+          {
+            iboID = currentDir.x() < orZ ? iboNegXID : iboXID;
+          }
+          if (orZ == absDir.y())
+          {
+            iboID = currentDir.y() < orZ ? iboNegYID : iboYID;
+          }
+          if (orZ == absDir.z())
+          {
+            iboID = currentDir.z() < orZ ? iboNegZID : iboZID;
+          }
+          std::cout << "lists" << std::endl;
+          break;
+        }
       }
     }
 
@@ -254,6 +376,7 @@ public:
     bool cullFace = glIsEnabled(GL_CULL_FACE);
     bool blend = glIsEnabled(GL_BLEND);
       
+    GL(glEnable(GL_DEPTH_TEST));
     GL(glDepthMask(GL_FALSE));
     GL(glDisable(GL_CULL_FACE));
     GL(glEnable(GL_BLEND));
@@ -368,6 +491,13 @@ public:
         glCullFace(GL_FRONT);
         GL(glDrawElements(ibo.front().primMode, ibo.front().numPrims,
                           ibo.front().primType, 0));
+      }
+    }
+    if (!drawLines)
+    {
+      if (pass.front().renderState.mSortType == RenderState::TransparencySortType::CONTINUOUS_SORT)
+      {
+        iboMan.front().instance->removeInMemoryIBO(iboID);
       }
     }
 

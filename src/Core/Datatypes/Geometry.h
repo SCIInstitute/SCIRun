@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 /// @todo Documentation Core/Datatypes/Geometry.h
 
 #ifndef CORE_DATATYPES_GEOMETRY_H
-#define CORE_DATATYPES_GEOMETRY_H 
+#define CORE_DATATYPES_GEOMETRY_H
 
 #include <cstdint>
 #include <list>
@@ -79,7 +79,7 @@ namespace Datatypes {
     DatatypeConstHandle get_underlying() const;
     virtual GeometryObject* clone() const { return new GeometryObject(*this); }
 
-    std::string objectName;     ///< Name of this object. Should be unique 
+    std::string objectName;     ///< Name of this object. Should be unique
                                 ///< across all modules in the network.
 
     // Could require rvalue references...
@@ -98,6 +98,7 @@ namespace Datatypes {
         bool        normalize;
       };
 
+			SpireVBO(){}
       SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
                std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboData,
                int64_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
@@ -126,6 +127,7 @@ namespace Datatypes {
         TRIANGLES,
       };
 
+			SpireIBO() {}
       SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
                std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
           name(iboName),
@@ -146,7 +148,8 @@ namespace Datatypes {
     /// Defines a Spire object 'pass'.
     struct SpireSubPass
     {
-      SpireSubPass(const std::string& name, const std::string& vboName, 
+			SpireSubPass() {}
+      SpireSubPass(const std::string& name, const std::string& vboName,
                    const std::string& iboName, const std::string& program,
                    ColorScheme scheme, const RenderState& state,
                    RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo) :
@@ -158,9 +161,17 @@ namespace Datatypes {
           renderType(renType),
 					vbo(vbo),
 					ibo(ibo),
-          mColorScheme(scheme),
-          scalar(1.0)
+          scalar(1.0),
+          mColorScheme(scheme)
       {}
+
+			static const char* getName() { return "SpireSubPass"; }
+
+			bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+			{
+				// No need to serialize.
+				return true;
+			}
 
       std::string   passName;
       std::string   vboName;
@@ -180,7 +191,7 @@ namespace Datatypes {
           UNIFORM_VEC4
         };
 
-				//Uniform(){}
+				Uniform(){}
         Uniform(const std::string& nameIn, float d) :
             name(nameIn),
             type(UNIFORM_SCALAR),

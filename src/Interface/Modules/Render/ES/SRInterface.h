@@ -239,30 +239,31 @@ namespace SCIRun {
 			// Apply uniform.
 			void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
       
-      bool                            showOrientation_; ///< Whether the coordinate axes will render or not.
-      bool                            autoRotate_;      ///< Whether the scene will continue to rotate.
+      bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
+      bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
 
-      MouseMode                       mMouseMode;       ///< Current mouse mode.
+      MouseMode                         mMouseMode;       ///< Current mouse mode.
 
-			size_t                          mScreenWidth;     ///< Screen width in pixels.
-			size_t                          mScreenHeight;    ///< Screen height in pixels.
+			size_t                            mScreenWidth;     ///< Screen width in pixels.
+			size_t                            mScreenHeight;    ///< Screen height in pixels.
 
-			GLuint                          mRainbowCMap;     ///< Rainbow color map.
-			GLuint                          mGrayscaleCMap;   ///< Grayscale color map.
+			GLuint                            mRainbowCMap;     ///< Rainbow color map.
+			GLuint                            mGrayscaleCMap;   ///< Grayscale color map.
 
-			std::shared_ptr<Gui::GLContext> mContext;         ///< Context to use for rendering.
-			std::unique_ptr<SRCamera>       mCamera;          ///< Primary camera.
-			std::vector<SRObject>           mSRObjects;       ///< All SCIRun objects.
-			Core::Geometry::BBox            mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
+			std::shared_ptr<Gui::GLContext>   mContext;         ///< Context to use for rendering.
+			std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
+			std::vector<SRObject>             mSRObjects;       ///< All SCIRun objects.
+			Core::Geometry::BBox              mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
 
-			ESCore                          mCore;            ///< Entity system core.
+			ESCore                            mCore;            ///< Entity system core.
 
-			std::string                     mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
-			std::string                     mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
-			std::string                     mArrowObjectName; ///< Object name for profile arrow.
+			std::string                       mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
+			std::string                       mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
+			std::string                       mArrowObjectName; ///< Object name for profile arrow.
 
-			ren::ShaderVBOAttribs<5>        mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
-			ren::CommonUniforms             mArrowUniforms;   ///< Common uniforms used in the arrow shader.
+			ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
+			ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
+      RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency 
 		};
 
 	} // namespace Render

@@ -93,7 +93,7 @@ namespace SCIRun {
 
       showOrientation_ = true;
       autoRotate_ = false;
-
+      mRenderSortType = RenderState::TransparencySortType::CONTINUOUS_SORT;
 			// Construct ESCore. We will need to bootstrap the core. We should also
 			// probably add utility static classes.
 			setupCore();
@@ -609,6 +609,8 @@ namespace SCIRun {
 
         // Add a pass to our local object.
         elem.mPasses.emplace_back(pass.passName, pass.renderType);
+        pass.renderState.mSortType = mRenderSortType;
+        mCore.addComponent(entityID, pass);
       }
 
       // Recalculate scene bounding box. Should only be done when an object is added.
