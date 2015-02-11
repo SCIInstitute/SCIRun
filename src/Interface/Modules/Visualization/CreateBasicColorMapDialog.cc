@@ -28,11 +28,14 @@
 
 #include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/Visualization/CreateBasicColorMap.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+
+typedef SCIRun::Modules::Visualization::CreateBasicColorMap CreateBasicColorMapModule;
 
 CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,7 +45,12 @@ CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   ColorMap cm("Rainbow");
   previewColorMap_->setStyleSheet(buildGradientString(cm));
-  addComboBoxManager(colorMapNameComboBox_, Variables::ColorMapName);
+  
+  addComboBoxManager(colorMapNameComboBox_, CreateBasicColorMapModule::ColorMapName);
+  addLineEditManager(resolutionText_, CreateBasicColorMapModule::ColorMapResolution);
+  addLineEditManager(shiftText_, CreateBasicColorMapModule::ColorMapShift);
+  addCheckBoxManager(invertCheck_, CreateBasicColorMapModule::ColorMapInvert);
+  
   connect(colorMapNameComboBox_,SIGNAL(currentIndexChanged(QString)),this,SLOT(updateColorMapPreview(QString)));
   connect(shiftText_,SIGNAL(textChanged(QString)),this,SLOT(setShiftSlider(QString)));
   connect(resolutionText_,SIGNAL(textChanged(QString)),this,SLOT(setResolutionSlider(QString)));
@@ -57,7 +65,9 @@ void CreateBasicColorMapDialog::pull()
 }
 
 void CreateBasicColorMapDialog::updateColorMapPreview(QString s) {
-    ColorMap cm(s.toStdString(),resolutionSlider_->value(),static_cast<double>(shiftSlider_->value()) / 100.);
+    ColorMap cm(s.toStdString(),resolutionSlider_->value(),
+                static_cast<double>(shiftSlider_->value()) / 100.,
+                invertCheck_->isChecked());
     previewColorMap_->setStyleSheet(buildGradientString(cm));
 }
 
@@ -111,7 +121,7 @@ void CreateBasicColorMapDialog::setResolutionText(int i) {
 }
 
 void CreateBasicColorMapDialog::onInvertCheck(bool b) {
-
+    updateColorMapPreview(colorMapNameComboBox_->currentText());
 }
 
 

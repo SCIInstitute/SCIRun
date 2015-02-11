@@ -28,7 +28,6 @@
 
 #include <Interface/Modules/Visualization/ShowColorMapDialog.h>
 #include <Modules/Visualization/ShowColorMapModule.h> 
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h> 
 
 using namespace SCIRun::Gui;

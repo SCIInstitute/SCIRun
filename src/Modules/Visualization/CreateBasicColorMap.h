@@ -45,6 +45,12 @@ namespace Visualization {
     CreateBasicColorMap();
     virtual void execute();
     virtual void setStateDefaults();
+    
+    
+	static Core::Algorithms::AlgorithmParameterName ColorMapName;
+	static Core::Algorithms::AlgorithmParameterName ColorMapInvert;
+	static Core::Algorithms::AlgorithmParameterName ColorMapShift;
+	static Core::Algorithms::AlgorithmParameterName ColorMapResolution;
     OUTPUT_PORT(0, ColorMapObject, ColorMap);
   };
 }}}
