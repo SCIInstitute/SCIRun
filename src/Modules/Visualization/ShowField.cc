@@ -1436,6 +1436,11 @@ void ShowFieldModule::renderEdges(
   if (colorScheme == GeometryObject::COLOR_MAP) {
     shader = state.get(RenderState::USE_CYLINDER) ? "Shaders/DirPhongCMap" : "Shaders/ColorMap";
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+    //push the color map parameters
+    ColorMap * map = colorMap.get().get();
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU) {
     if (state.get(RenderState::USE_CYLINDER)) {
