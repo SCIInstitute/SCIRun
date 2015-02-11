@@ -1683,6 +1683,10 @@ void ShowFieldModule::renderEdges(
     }
     if (colorScheme == GeometryObject::COLOR_MAP)
       vboBuffer->write(static_cast<float>(colors.at(i).r()));
+    else if (colorScheme == GeometryObject::COLOR_UNIFORM && !state.get(RenderState::USE_CYLINDER))
+    {
+      // no coloring at all
+    }
     else {
       // Writes uint8_t out to the VBO. A total of 4 bytes.
       vboBuffer->write(COLOR_FTOB(colors.at(i).r()));
