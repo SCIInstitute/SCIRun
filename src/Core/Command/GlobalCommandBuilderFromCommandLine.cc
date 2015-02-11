@@ -73,21 +73,25 @@ using namespace SCIRun::Core::Commands;
 
     if (!params->inputFiles().empty())
     {
-      for (int i = 0; i < params->inputFiles().size(); ++i)
+      const int last = 1;
+      //TODO: support multiple files loaded--need to be able to execute and wait for each before loading next. See #825
+      // last = params->inputFiles().size()
+      for (int i = 0; i < last; ++i)
       {
         q->enqueue(cmdFactory_->create(LoadNetworkFile, i));
+
+        if (params->executeNetwork())
+          q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
+        else if (params->executeNetworkAndQuit())
+        {
+          if (i == last - 1)
+            q->enqueue(cmdFactory_->create(SetupQuitAfterExecute));
+          q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
+        }
       }
     }
     else if (params->pythonScriptFile())
       q->enqueue(cmdFactory_->create(RunPythonScript));
-
-    if (params->executeNetwork())
-      q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
-    else if (params->executeNetworkAndQuit())
-    {
-      q->enqueue(cmdFactory_->create(SetupQuitAfterExecute));
-      q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
-    }
 
     return q;
   }
