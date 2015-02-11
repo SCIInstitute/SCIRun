@@ -35,7 +35,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
-typedef SCIRun::Modules::Visualization::CreateBasicColorMap CreateBasicColorMapModule;
+
 
 CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -46,14 +46,19 @@ CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, Mo
   ColorMap cm("Rainbow");
   previewColorMap_->setStyleSheet(buildGradientString(cm));
   
+  typedef SCIRun::Modules::Visualization::CreateBasicColorMap CreateBasicColorMapModule;
+  resolutionSpin_->setValue(256);
+  shiftSpin_->setValue(0.0);
+  invertCheck_->setChecked(false);
+  
   addComboBoxManager(colorMapNameComboBox_, CreateBasicColorMapModule::ColorMapName);
-  addLineEditManager(resolutionText_, CreateBasicColorMapModule::ColorMapResolution);
-  addLineEditManager(shiftText_, CreateBasicColorMapModule::ColorMapShift);
+  addSpinBoxManager(resolutionSpin_, CreateBasicColorMapModule::ColorMapResolution);
+  addDoubleSpinBoxManager(shiftSpin_, CreateBasicColorMapModule::ColorMapShift);
   addCheckBoxManager(invertCheck_, CreateBasicColorMapModule::ColorMapInvert);
   
   connect(colorMapNameComboBox_,SIGNAL(currentIndexChanged(QString)),this,SLOT(updateColorMapPreview(QString)));
-  connect(shiftText_,SIGNAL(textChanged(QString)),this,SLOT(setShiftSlider(QString)));
-  connect(resolutionText_,SIGNAL(textChanged(QString)),this,SLOT(setResolutionSlider(QString)));
+  connect(shiftSpin_,SIGNAL(valueChanged(double)),this,SLOT(setShiftSlider(double)));
+  connect(resolutionSpin_,SIGNAL(valueChanged(int)),this,SLOT(setResolutionSlider(int)));
   connect(shiftSlider_,SIGNAL(valueChanged(int)),this,SLOT(setShiftText(int)));
   connect(resolutionSlider_,SIGNAL(valueChanged(int)),this,SLOT(setResolutionText(int)));
   connect(invertCheck_,SIGNAL(toggled(bool)),this,SLOT(onInvertCheck(bool)));
@@ -87,36 +92,23 @@ const QString CreateBasicColorMapDialog::buildGradientString(ColorMap cm) {
 }
 
 
-void CreateBasicColorMapDialog::setShiftSlider(QString s) {
-    bool ok = false;
-    double v = s.toDouble(&ok);
-    if (ok && v >= -1. && v <= 1.) {
-        shiftSlider_->setValue(static_cast<int>(v * 100.));
-        updateColorMapPreview(colorMapNameComboBox_->currentText());
-    }
+void CreateBasicColorMapDialog::setShiftSlider(double d) {
+    shiftSlider_->setValue(static_cast<int>(d * 100.));
+    updateColorMapPreview(colorMapNameComboBox_->currentText());
 }
 
-void CreateBasicColorMapDialog::setResolutionSlider(QString s) {
-    bool ok = false;
-    int v = s.toInt(&ok,10);
-    if (ok && v >= 2 && v <= 256) {
-        resolutionSlider_->setValue(v);
-        updateColorMapPreview(colorMapNameComboBox_->currentText());
-    }
+void CreateBasicColorMapDialog::setResolutionSlider(int i) {
+    resolutionSlider_->setValue(i);
+    updateColorMapPreview(colorMapNameComboBox_->currentText());
 }
 
 void CreateBasicColorMapDialog::setShiftText(int i) {
-    std::stringstream ss;
-    double v = static_cast<double>(i) / 100.;
-    ss << v;
-    shiftText_->setText(QString::fromStdString(ss.str()));
+    shiftSpin_->setValue(static_cast<double>(i) / 100.);
     updateColorMapPreview(colorMapNameComboBox_->currentText());
 }
 
 void CreateBasicColorMapDialog::setResolutionText(int i) {
-    std::stringstream ss;
-    ss << i;
-    resolutionText_->setText(QString::fromStdString(ss.str()));
+    resolutionSpin_->setValue(i);
     updateColorMapPreview(colorMapNameComboBox_->currentText());
 }
 

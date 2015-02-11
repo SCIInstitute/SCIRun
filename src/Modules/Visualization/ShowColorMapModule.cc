@@ -86,18 +86,19 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   std::vector<double> colors;
   std::vector<uint32_t> indices;
   int32_t numVBOElements = 0;
-  double resolution = 0.001; //@TODO this will be pulled for colormap object eventually
+  ColorMap *map = cm.get();
+  double resolution = 1. / static_cast<double>(map->getColorMapResolution());
   
   for (double i = 0.; i < 1.0; i+=resolution) {
     uint32_t offset = (uint32_t)points.size();
     points.push_back(Vector(0.,i,0.));
-    colors.push_back(i);
+    colors.push_back(map->getTransformedColor(i));
     points.push_back(Vector(1.,i,0.));
-    colors.push_back(i);
+    colors.push_back(map->getTransformedColor(i));
     points.push_back(Vector(0.,i+resolution,0.));
-    colors.push_back(i);
+    colors.push_back(map->getTransformedColor(i));
     points.push_back(Vector(1.,i+resolution,0.));
-    colors.push_back(i);
+    colors.push_back(map->getTransformedColor(i));
     numVBOElements+=2;
     indices.push_back(offset + 0);
     indices.push_back(offset + 1);

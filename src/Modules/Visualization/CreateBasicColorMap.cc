@@ -60,11 +60,14 @@ void CreateBasicColorMap::execute()
     auto res = state->getValue(ColorMapResolution).toInt();
     auto inv = state->getValue(ColorMapInvert).toBool();
     auto shift = state->getValue(ColorMapShift).toDouble();
+    //just in case there is a problem with the QT values...
+    res = std::min(std::max(res,2),256);
+    shift = std::min(std::max(shift,-1.),1.);
     sendOutput(ColorMapObject,StandardColorMapFactory::create(name,res, shift,inv));
   }
 }
 
-AlgorithmParameterName CreateBasicColorMap::ColorMapName("ColorMapName");
-AlgorithmParameterName CreateBasicColorMap::ColorMapInvert("ColorMapInvert");
-AlgorithmParameterName CreateBasicColorMap::ColorMapShift("ColorMapShift");
-AlgorithmParameterName CreateBasicColorMap::ColorMapResolution("ColorMapResolution");
+const AlgorithmParameterName CreateBasicColorMap::ColorMapName("ColorMapName");
+const AlgorithmParameterName CreateBasicColorMap::ColorMapInvert("ColorMapInvert");
+const AlgorithmParameterName CreateBasicColorMap::ColorMapShift("ColorMapShift");
+const AlgorithmParameterName CreateBasicColorMap::ColorMapResolution("ColorMapResolution");

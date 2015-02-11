@@ -42,6 +42,7 @@ ColorMap* ColorMap::clone() const
 ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &resolution,
                                                 const double &shift, const bool &invert)
 {
+  cm_ = ColorMap(name,resolution,shift,invert);
   return ColorMapHandle(cm_.clone());
 }
 
@@ -74,9 +75,10 @@ ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
                     std::min(std::max(b,0.f),1.f));
 }
 
-ColorRGB ColorMap::getColorMapVal(float v) {
+
+float ColorMap::getTransformedColor(float f) {
     //@todo this will not be needed with rescale color map.
-    v = std::min(std::max(0.f,v),1.f);
+    float v = std::min(std::max(0.f,f),1.f);
     double shift = shift_;
     if (invert_) {
         v = 1.f - v;
@@ -92,22 +94,27 @@ ColorRGB ColorMap::getColorMapVal(float v) {
     if (std::isnan(denom)) denom = 0.f;
     denom = std::max(denom, 0.001f);
     v = std::pow(v,(1.f/denom));
+    return v;
+}
+
+ColorRGB ColorMap::getColorMapVal(float v) {
+    float f = getTransformedColor(v);
     //now grab the RGB
     ColorRGB col;
     if (name_ == "Rainbow") {
         // spread out the thin colors
         //if (v < 0.7 && v > 0.3)
         //    v = v - 0.05f * std::sin((v - 0.3) * 6.f * M_PI / 0.8);
-        col = hslToRGB((1. - v) * 0.7, 0.95, 0.5);
+        col = hslToRGB((1. - f) * 0.7, 0.95, 0.5);
     } else if (name_ == "Blackbody") {
-        if (v < 0.333333)
-            col = ColorRGB(std::min(std::max(v * 3.,0.),1.), 0., 0.);
-        else if (v < 0.6666666)
-            col = ColorRGB(1.,std::min(std::max((v - 0.333333) * 3.,0.),1.), 0.);
+        if (f < 0.333333)
+            col = ColorRGB(std::min(std::max(f * 3.,0.),1.), 0., 0.);
+        else if (f < 0.6666666)
+            col = ColorRGB(1.,std::min(std::max((f - 0.333333) * 3.,0.),1.), 0.);
         else
-            col = ColorRGB(1., 1., std::min(std::max((v - 0.6666666) * 3.,0.),1.));
+            col = ColorRGB(1., 1., std::min(std::max((f - 0.6666666) * 3.,0.),1.));
     } else if (name_ == "Grayscale")
-        col = hslToRGB(0., 0., v);
+        col = hslToRGB(0., 0., f);
     return col;
 }
 

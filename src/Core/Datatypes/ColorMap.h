@@ -47,7 +47,11 @@ namespace Datatypes {
     virtual ColorMap* clone() const;
 
     std::string getColorMapName() const {return name_;}
+    size_t getColorMapResolution() const {return resolution_;}
+    double getColorMapShift() const {return shift_;}
+    bool getColorMapInvert() const {return invert_;}
     Core::Datatypes::ColorRGB getColorMapVal(float v);
+    float getTransformedColor(float v);
   private:
     std::string name_;
     size_t resolution_;
