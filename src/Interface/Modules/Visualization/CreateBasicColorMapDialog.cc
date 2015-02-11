@@ -35,6 +35,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
+typedef SCIRun::Modules::Visualization::CreateBasicColorMap CreateBasicColorMapModule;
 
 
 CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, ModuleStateHandle state,
@@ -46,7 +47,6 @@ CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, Mo
   ColorMap cm("Rainbow");
   previewColorMap_->setStyleSheet(buildGradientString(cm));
   
-  typedef SCIRun::Modules::Visualization::CreateBasicColorMap CreateBasicColorMapModule;
   resolutionSpin_->setValue(256);
   shiftSpin_->setValue(0.0);
   invertCheck_->setChecked(false);
@@ -67,6 +67,17 @@ CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, Mo
 void CreateBasicColorMapDialog::pull()
 {
   pull_newVersionToReplaceOld();
+  Pulling p(this);
+  std::string cm_name(state_->getValue(CreateBasicColorMapModule::ColorMapName).toString());
+  double cm_shift(state_->getValue(CreateBasicColorMapModule::ColorMapShift).toDouble());
+  int cm_res(state_->getValue(CreateBasicColorMapModule::ColorMapResolution).toInt());
+  bool cm_inv(state_->getValue(CreateBasicColorMapModule::ColorMapInvert).toBool());
+  colorMapNameComboBox_->setCurrentIndex(colorMapNameComboBox_->findText(QString::fromStdString(cm_name)));
+  shiftSpin_->setValue(cm_shift);
+  shiftSlider_->setValue(static_cast<int>(cm_shift * 100.));
+  resolutionSlider_->setValue(cm_res);
+  resolutionSpin_->setValue(cm_res);
+  invertCheck_->setChecked(cm_inv);
 }
 
 void CreateBasicColorMapDialog::updateColorMapPreview(QString s) {

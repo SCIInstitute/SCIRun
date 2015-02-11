@@ -67,6 +67,7 @@ void CreateBasicColorMap::execute()
   }
 }
 
+
 const AlgorithmParameterName CreateBasicColorMap::ColorMapName("ColorMapName");
 const AlgorithmParameterName CreateBasicColorMap::ColorMapInvert("ColorMapInvert");
 const AlgorithmParameterName CreateBasicColorMap::ColorMapShift("ColorMapShift");

@@ -24,21 +24,39 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+ */
 #ifdef OPENGL_ES
-  #ifdef GL_FRAGMENT_PRECISION_HIGH
-    // Default precision
-    precision highp float;
-  #else
-    precision mediump float;
-  #endif
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+// Default precision
+precision highp float;
+#else
+precision mediump float;
+#endif
 #endif
 
 uniform sampler1D uTX0;
 
 varying float vFieldData;
+uniform float   uCMInvert;
+uniform float   uCMShift;
+uniform float   uCMResolution;
 
 void main()
 {
-  gl_FragColor = texture1D( uTX0, vFieldData );
+   float param = vFieldData;
+   float shift = uCMShift;
+   if (uCMInvert != 0.) {
+      param = 1. - param;
+      shift = shift * -1.;
+   }
+   //apply the resolution
+   int res = int(uCMResolution);
+   param = float(int(param * (float(res)))) / float(res - 1);
+   // the shift is a gamma.
+   float bp = 1. / tan((3.14159265359 / 2.) *  ( 0.5 - shift * 0.5));
+   param = pow(param,bp);
+
+   vec4 color = texture1D( uTX0, param );
+   color.a       = 1.0;
+   gl_FragColor = color;
 }

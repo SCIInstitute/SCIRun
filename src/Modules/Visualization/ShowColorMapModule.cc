@@ -67,10 +67,11 @@ void ShowColorMapModule::execute()
   boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap> colorMap = getRequiredInput(ColorMapObject);
   if (needToExecute())
   {
-    GeometryHandle geom = buildGeometryObject(colorMap, get_state(), get_id());
+    std::ostringstream ostr;
+    ostr << get_id() << "_" << colorMap.get();
+    GeometryHandle geom = buildGeometryObject(colorMap, get_state(), ostr.str());
     sendOutput(GeometryOutput, geom);
   }
-   
 }
 
 SCIRun::Core::Datatypes::GeometryHandle
@@ -86,19 +87,19 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   std::vector<double> colors;
   std::vector<uint32_t> indices;
   int32_t numVBOElements = 0;
-  ColorMap *map = cm.get();
+  ColorMap * map = cm.get();
   double resolution = 1. / static_cast<double>(map->getColorMapResolution());
   
   for (double i = 0.; i < 1.0; i+=resolution) {
     uint32_t offset = (uint32_t)points.size();
     points.push_back(Vector(0.,i,0.));
-    colors.push_back(map->getTransformedColor(i));
+    colors.push_back(i);
     points.push_back(Vector(1.,i,0.));
-    colors.push_back(map->getTransformedColor(i));
+    colors.push_back(i);
     points.push_back(Vector(0.,i+resolution,0.));
-    colors.push_back(map->getTransformedColor(i));
+    colors.push_back(i);
     points.push_back(Vector(1.,i+resolution,0.));
-    colors.push_back(map->getTransformedColor(i));
+    colors.push_back(i);
     numVBOElements+=2;
     indices.push_back(offset + 0);
     indices.push_back(offset + 1);
@@ -153,6 +154,10 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength",static_cast<float>(displayLength)));
   GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
 		numVBOElements,Core::Geometry::BBox(),true);
+  //push the color map parameters
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
 
   geom->mVBOs.push_back(geomVBO);
 
