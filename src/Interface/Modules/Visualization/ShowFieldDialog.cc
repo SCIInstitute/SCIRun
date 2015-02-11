@@ -142,5 +142,5 @@ void ShowFieldDialog::assignDefaultMeshColor()
 
 void ShowFieldDialog::pushColor()
 {
-  state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
+  state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red() / 255.0, defaultMeshColor_.green() / 255.0, defaultMeshColor_.blue() / 255.0).toString());
 }
