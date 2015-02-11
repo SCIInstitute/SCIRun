@@ -32,7 +32,12 @@
 using namespace SCIRun::Core::Datatypes;
 
 ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift, const bool invert)
-: name_(name), resolution_(resolution), shift_(shift), invert_(invert) {}
+: name_(name), resolution_(resolution), shift_(shift), invert_(invert) {
+    if (!(name_ == "Rainbow"   ||
+          name_ == "Blackbody" ||
+          name_ == "Grayscale"  ))
+          throw InvalidArgumentException();
+}
 
 ColorMap* ColorMap::clone() const
 {
