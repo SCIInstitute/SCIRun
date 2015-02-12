@@ -157,18 +157,23 @@ private:
 
     std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
     char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
-    char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
-    size_t tri_size = pass.front().ibo.data->getBufferSize() / num_triangles;
-
-    for (size_t j = 0; j < num_triangles; j++)
+    char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+    GLuint result = ibo.front().glid;
+    if (sbuffer && num_triangles > 0)
     {
-      memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+      size_t tri_size = pass.front().ibo.data->getBufferSize() / num_triangles;
+
+      for (size_t j = 0; j < num_triangles; j++)
+      {
+        memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+      }
+
+      std::string transIBOName = pass.front().ibo.name + "trans";
+      result = iboMan.front().instance->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), ibo.front().primMode, ibo.front().primType,
+        numPrimitives, transIBOName);
     }
 
-    std::string transIBOName = pass.front().ibo.name + "trans";
-
-    return iboMan.front().instance->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), ibo.front().primMode, ibo.front().primType,
-      numPrimitives, transIBOName);
+    return result;
   }
 
   void groupExecute(
