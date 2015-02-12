@@ -32,7 +32,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
 #include <Modules/Legacy/Fields/CalculateGradients.h>
-#include <Modules/Legacy/Fields/ConvertFieldBasis.h> 
+#include <Modules/Legacy/Fields/ConvertFieldBasis.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
@@ -64,17 +64,17 @@ void ModuleDescriptionLookup::addBrainSpecificModules()
   addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", "In progress: needs a few consistency checks", "Generates tDCS Forward Matrix ");
   addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
   addModuleDesc<SetConductivitiesToMesh>("SetConductivitiesToMesh", "BrainStimulator", "SCIRun", "New module", " Sets conveniently conductivity profile for tetrahedral mesh ");
-  addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
+  addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");
   addModuleDesc<SetupTDCS>("SetupTDCS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");
-  addModuleDesc<SimulateForwardMagneticFieldModule>("SimulateForwardMagneticField", "BrainStimulator", "SCIRun", "Real ported module", "...");      
+  addModuleDesc<SimulateForwardMagneticFieldModule>("SimulateForwardMagneticField", "BrainStimulator", "SCIRun", "Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addMoreModules()
 {
-  addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", "Real ported module", "...");        
+  addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", "Real ported module", "...");
   addModuleDesc<CalculateVectorMagnitudesModule>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<CalculateGradients >("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-	addModuleDesc<ConvertFieldBasis>("ConvertFieldBasis", "ChangeFieldData", "SCIRun", "Real ported module", "..."); 
+	addModuleDesc<ConvertFieldBasis>("ConvertFieldBasis", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<GetFieldDataModule>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New module", "...");
   addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
@@ -85,5 +85,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
-  addModuleDesc<GenerateStreamLines>("...", "...");
+  addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
 }
