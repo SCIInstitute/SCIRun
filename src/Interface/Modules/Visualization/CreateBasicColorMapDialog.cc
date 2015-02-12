@@ -71,13 +71,9 @@ void CreateBasicColorMapDialog::pull()
   std::string cm_name(state_->getValue(CreateBasicColorMapModule::ColorMapName).toString());
   double cm_shift(state_->getValue(CreateBasicColorMapModule::ColorMapShift).toDouble());
   int cm_res(state_->getValue(CreateBasicColorMapModule::ColorMapResolution).toInt());
-  bool cm_inv(state_->getValue(CreateBasicColorMapModule::ColorMapInvert).toBool());
   colorMapNameComboBox_->setCurrentIndex(colorMapNameComboBox_->findText(QString::fromStdString(cm_name)));
-  shiftSpin_->setValue(cm_shift);
   shiftSlider_->setValue(static_cast<int>(cm_shift * 100.));
   resolutionSlider_->setValue(cm_res);
-  resolutionSpin_->setValue(cm_res);
-  invertCheck_->setChecked(cm_inv);
 }
 
 void CreateBasicColorMapDialog::updateColorMapPreview(QString s) {
