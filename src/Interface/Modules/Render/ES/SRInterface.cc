@@ -344,46 +344,46 @@ namespace SCIRun {
 
 			// Add index buffer objects.
 			nameIndex = 0;
-			for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
-			{
-				const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
-				GLenum primType = GL_UNSIGNED_SHORT;
-				switch (ibo.indexSize)
-				{
-				case 1: // 8-bit
-					primType = GL_UNSIGNED_BYTE;
-					break;
+      for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
+      {
+        const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
+        GLenum primType = GL_UNSIGNED_SHORT;
+        switch (ibo.indexSize)
+        {
+        case 1: // 8-bit
+          primType = GL_UNSIGNED_BYTE;
+          break;
 
-				case 2: // 16-bit
-					primType = GL_UNSIGNED_SHORT;
-					break;
+        case 2: // 16-bit
+          primType = GL_UNSIGNED_SHORT;
+          break;
 
-				case 4: // 32-bit
-					primType = GL_UNSIGNED_INT;
-					break;
+        case 4: // 32-bit
+          primType = GL_UNSIGNED_INT;
+          break;
 
-				default:
-					primType = GL_UNSIGNED_INT;
-					throw std::invalid_argument("Unable to determine index buffer depth.");
-					break;
-				}
+        default:
+          primType = GL_UNSIGNED_INT;
+          throw std::invalid_argument("Unable to determine index buffer depth.");
+          break;
+        }
 
-				GLenum primitive = GL_TRIANGLES;
-				switch (ibo.prim)
-				{
-				case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
-					primitive = GL_POINTS;
-					break;
+        GLenum primitive = GL_TRIANGLES;
+        switch (ibo.prim)
+        {
+        case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
+          primitive = GL_POINTS;
+          break;
 
-				case Core::Datatypes::GeometryObject::SpireIBO::LINES:
-					primitive = GL_LINES;
-					break;
+        case Core::Datatypes::GeometryObject::SpireIBO::LINES:
+          primitive = GL_LINES;
+          break;
 
-				case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
-				default:
-					primitive = GL_TRIANGLES;
-					break;
-				}
+        case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
+        default:
+          primitive = GL_TRIANGLES;
+          break;
+        }
 
         if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
         {
@@ -454,15 +454,17 @@ namespace SCIRun {
 
               std::vector<char> sorted_buffer(ibo.data->getBufferSize());
               char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
-              char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
-              size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+              char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
 
-              for (size_t j = 0; j < num_triangles; j++)
+              if (sbuffer && num_triangles > 0)
               {
-                memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+                size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+                for (size_t j = 0; j < num_triangles; j++)
+                {
+                  memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+                }
+                iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
               }
-
-              iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
             }
           }
         }
@@ -471,7 +473,7 @@ namespace SCIRun {
           int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
           iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
         }
-			}
+      }
 
 			// Add default identity transform to the object globally (instead of per-pass)
 			glm::mat4 xform;
