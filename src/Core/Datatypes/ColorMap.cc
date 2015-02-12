@@ -29,6 +29,7 @@
 
 #include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/ColorMap.h>
+#include <iostream>
 
 using namespace SCIRun::Core::Datatypes;
 
@@ -42,7 +43,7 @@ ColorMap::ColorMap(const std::string& name, const size_t resolution, const doubl
 
 ColorMap* ColorMap::clone() const
 {
-  return new ColorMap(name_,resolution_,shift_,invert_);
+  return new ColorMap(*this);
 }
 
 ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &resolution,
@@ -82,7 +83,13 @@ ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
 }
 
 
-float ColorMap::getTransformedColor(float f) {
+float ColorMap::getTransformedColor(float f) const {
+  static bool x = true;
+  if (x)
+  {
+    std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
+    x = false;
+  }
     //@todo this will not be needed with rescale color map.
     float v = std::min(std::max(0.f,f),1.f);
     double shift = shift_;
@@ -103,7 +110,7 @@ float ColorMap::getTransformedColor(float f) {
     return v;
 }
 
-ColorRGB ColorMap::getColorMapVal(float v) {
+ColorRGB ColorMap::getColorMapVal(float v) const {
     float f = getTransformedColor(v);
     //now grab the RGB
     ColorRGB col;

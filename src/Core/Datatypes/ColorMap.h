@@ -43,23 +43,22 @@ namespace Datatypes {
   public:
     explicit ColorMap(const std::string& name, const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false);
-
     virtual ColorMap* clone() const;
 
     std::string getColorMapName() const {return name_;}
     size_t getColorMapResolution() const {return resolution_;}
     double getColorMapShift() const {return shift_;}
     bool getColorMapInvert() const {return invert_;}
-    Core::Datatypes::ColorRGB getColorMapVal(float v);
-    float getTransformedColor(float v);
+    Core::Datatypes::ColorRGB getColorMapVal(float v) const;
+    float getTransformedColor(float v) const;
   private:
     std::string name_;
     size_t resolution_;
     double shift_;
     bool invert_;
-    boost::shared_ptr<class ColorMapImpl> impl_;
-    float Hue_2_RGB(float v1, float v2, float vH);
-    Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l);
+    //boost::shared_ptr<class ColorMapImpl> impl_;
+    static float Hue_2_RGB(float v1, float v2, float vH);
+    static Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l);
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable
