@@ -123,6 +123,14 @@ RenderState ShowFieldModule::getNodeRenderState(
   renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).toInt() == 1);
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
+                           renState.defaultColor.g() > 1.0 ||
+                           renState.defaultColor.b() > 1.0)?
+                                ColorRGB(
+                                renState.defaultColor.r() / 255.,
+                                renState.defaultColor.g() / 255.,
+                                renState.defaultColor.b() / 255.)
+                            :   renState.defaultColor;
 
   sphereScalar_ = state->getValue(ShowFieldModule::SphereScaleValue).toDouble();
 
@@ -152,6 +160,14 @@ RenderState ShowFieldModule::getEdgeRenderState(
   renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toInt() == 1);
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
+                           renState.defaultColor.g() > 1.0 ||
+                           renState.defaultColor.b() > 1.0)?
+                                ColorRGB(
+                                renState.defaultColor.r() / 255.,
+                                renState.defaultColor.g() / 255.,
+                                renState.defaultColor.b() / 255.)
+                            :   renState.defaultColor;
 
   edgeTransparencyValue_ = (float)(state->getValue(ShowFieldModule::EdgeTransparencyValue).toDouble());
 
@@ -177,6 +193,14 @@ RenderState ShowFieldModule::getFaceRenderState(
   renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool());
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
+                           renState.defaultColor.g() > 1.0 ||
+                           renState.defaultColor.b() > 1.0)?
+                                ColorRGB(
+                                renState.defaultColor.r() / 255.,
+                                renState.defaultColor.g() / 255.,
+                                renState.defaultColor.b() / 255.)
+                            :   renState.defaultColor;
 
   faceTransparencyValue_ = (float)(state->getValue(ShowFieldModule::FaceTransparencyValue).toDouble());
 
