@@ -133,10 +133,12 @@ namespace SCIRun {
 
 			/// Toggle Orientation Axes
 			void showOrientation(bool value);
+      
+      /// Set the Background Color
+      void setBackgroundColor(QColor color);
 
-
-            /// Set the Background Color
-            void setBackgroundColor(QColor color);
+      /// Set Transparency Rener Type
+      void setTransparencyRendertype(RenderState::TransparencySortType rType);
 
 		private:
 

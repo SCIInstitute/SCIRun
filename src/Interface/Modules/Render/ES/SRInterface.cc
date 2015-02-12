@@ -246,6 +246,12 @@ namespace SCIRun {
       mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
     }
 
+    //------------------------------------------------------------------------------
+    void SRInterface::setTransparencyRendertype(RenderState::TransparencySortType rType)
+    {
+      mRenderSortType = rType;      
+    }
+
 		//------------------------------------------------------------------------------
 		void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
 		{

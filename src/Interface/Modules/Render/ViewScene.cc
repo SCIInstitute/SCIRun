@@ -425,6 +425,30 @@ void ViewSceneDialog::assignBackgroundColor()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::CONTINUOUS_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::UPDATE_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeLists(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::handleUnselectedItem(const QString& name)
 {
   itemValueChanged_ = true;
