@@ -99,7 +99,7 @@ void ShowFieldModule::execute()
   if (needToExecute())
   {
     std::ostringstream ostr;
-    ostr << get_id() << "_" << this;
+    ostr << get_id() << "_" << field.get();
     GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), ostr.str());
     sendOutput(SceneGraph, geom);
   }
@@ -1664,6 +1664,12 @@ void ShowFieldModule::renderEdges(
   for (auto a : indices)
     iboBuffer->write(a);
 
+  if (colorScheme == GeometryObject::COLOR_UNIFORM && !state.get(RenderState::USE_CYLINDER))
+  {
+    ColorRGB dft = state.defaultColor;
+    uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f));
+  }
+
   for (size_t i = 0; i < points.size(); i++) {
     // Write first point on line
     vboBuffer->write(static_cast<float>(points.at(i).x()));
@@ -1677,12 +1683,11 @@ void ShowFieldModule::renderEdges(
     }
     if (colorScheme == GeometryObject::COLOR_MAP)
       vboBuffer->write(static_cast<float>(colors.at(i).r()));
-    else if (colorScheme == GeometryObject::COLOR_UNIFORM &&
-                    !state.get(RenderState::USE_CYLINDER) ){
-        ColorRGB dft = state.defaultColor;
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uColor",
-            glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f)));
-    } else {
+    else if (colorScheme == GeometryObject::COLOR_UNIFORM && !state.get(RenderState::USE_CYLINDER))
+    {
+      // no coloring at all
+    }
+    else {
       // Writes uint8_t out to the VBO. A total of 4 bytes.
       vboBuffer->write(COLOR_FTOB(colors.at(i).r()));
       vboBuffer->write(COLOR_FTOB(colors.at(i).g()));
