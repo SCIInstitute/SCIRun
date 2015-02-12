@@ -40,10 +40,10 @@ using namespace SCIRun::Dataflow::Networks;
 
 bool LoadFileCommandConsole::execute()
 {
-  auto inputFile = Application::Instance().parameters()->inputFile();
-  if (inputFile)
+  auto inputFiles = Application::Instance().parameters()->inputFiles();
+  if (!inputFiles.empty())
   {
-    auto filename = *inputFile;
+    auto filename = inputFiles[index_];
 
     /// @todo: real logger
     std::cout << "Attempting load of " + filename << std::endl;

@@ -43,7 +43,10 @@ namespace Gui {
   class LoadFileCommandGui : public Core::Commands::GuiCommand
   {
   public:
+    explicit LoadFileCommandGui(int index) : index_(index) {}
     virtual bool execute();
+  private:
+    int index_;
   };
 
   class RunPythonScriptCommandGui : public Core::Commands::GuiCommand
@@ -81,7 +84,7 @@ namespace Gui {
   public:
     virtual bool execute();
   };
-  
+
   class ShowSplashScreenGui : public Core::Commands::GuiCommand
   {
   public:
@@ -92,7 +95,7 @@ namespace Gui {
     static QSplashScreen* splash_;
     static QTimer* splashTimer_;
   };
-  
+
   class FileOpenCommand : public Core::Commands::GuiCommand
   {
   public:

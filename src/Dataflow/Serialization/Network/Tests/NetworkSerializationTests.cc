@@ -181,7 +181,7 @@ TEST(SerializeNetworkTest, RoundTripObject)
 
 TEST(SerializeNetworkTest, FullTestWithModuleState)
 {
-  Module::resetInstanceCount();
+  Module::resetIdGenerator();
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
@@ -241,7 +241,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   EXPECT_EQ(9, deserialized->nmodules());
   EXPECT_NE(matrixMathNetwork.get(), deserialized.get());
 
-  ModuleHandle trans2 = deserialized->lookupModule(ModuleId("EvaluateLinearAlgebraUnary", 2));
+  ModuleHandle trans2 = deserialized->lookupModule(ModuleId("EvaluateLinearAlgebraUnary", 0));
   ASSERT_TRUE(trans2.get() != nullptr);
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->get_module_name());
   EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(Variables::Operator).toInt());

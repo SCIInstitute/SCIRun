@@ -183,9 +183,9 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(OutputCenterX, 0.0);
   state->setValue(OutputCenterY, 0.0);
   state->setValue(OutputCenterZ, 0.0);
-  state->setValue(OutputSizeX, 0.0);
-  state->setValue(OutputSizeY, 0.0);
-  state->setValue(OutputSizeZ, 0.0);
+  state->setValue(OutputSizeX, 100.0);
+  state->setValue(OutputSizeY, 100.0);
+  state->setValue(OutputSizeZ, 100.0);
   state->setValue(Scale, 1.0);
 
   //TODO
@@ -197,12 +197,12 @@ void EditMeshBoundingBox::setStateDefaults()
 void EditMeshBoundingBox::execute()
 {
   //TODO: need version to pass a func for ifNull case--fancy but useful. For now just reset each time.
-  clear_vals();
   setBoxRestrictions();
   auto field = getRequiredInput(InputField);
 
   if (needToExecute())
   {
+    clear_vals();
     update_state(Executing);
     update_input_attributes(field);
     executeImpl(field);
@@ -265,9 +265,11 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 }
 
 Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
-    
+
     Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
-    
+    std::ostringstream ostr;
+    ostr << get_id() << "EditBoundingBox_" << geom.get();
+    geom->objectName = ostr.str();
     GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
     int64_t numVBOElements = 0;
     std::vector<std::pair<Point,Point>> bounding_edges;
@@ -293,8 +295,8 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     };
     auto state = get_state();
     double scale = state->getValue(Scale).toDouble();
-    if (scale < 0) scale *= -1.;
-    int num_strips = int(30. * scale);
+    scale = std::max(scale,0.01);
+    int num_strips = int(100. * scale);
     std::vector<Vector> tri_points;
     std::vector<Vector> tri_normals;
     std::vector<uint32_t> tri_indices;
@@ -357,36 +359,36 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
             }
         }
     }
-    
-    
+
+
     // Attempt some form of precalculation of iboBuffer and vboBuffer size.
     uint32_t iboSize = (uint32_t)(tri_indices.size() * sizeof(uint32_t));
     uint32_t vboSize = (uint32_t)(tri_points.size() * 2 * 3 * sizeof(float));
-    
-    
+
+
     /// \todo To reduce memory requirements, we can use a 16bit index buffer.
-    
+
     /// \todo To further reduce a large amount of memory, get rid of the index
     ///       buffer and use glDrawArrays to render without an IBO. An IBO is
     ///       a waste of space.
     ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
-    
+
     /// \todo Switch to unique_ptrs and move semantics.
     std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
                                                                 new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
     std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
                                                                 new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-    
+
     // Accessing the pointers like this is contrived. We only do this for
     // speed since we will be using the pointers in a tight inner loop.
     CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
     CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
-    
-    
+
+
     //write to the IBO/VBOs
     for(size_t i = 0; i < tri_indices.size(); i++)
         iboBuffer->write(tri_indices[i]);
-    
+
     for (size_t i = 0; i < tri_points.size(); i++)
     {
         // Write first point on line
@@ -398,40 +400,40 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
         vboBuffer->write(static_cast<float>(tri_normals.at(i).y()));
         vboBuffer->write(static_cast<float>(tri_normals.at(i).z()));
     }
-    
+
     std::string uniqueNodeID = "bounding_edge_face";
     std::string vboName      = uniqueNodeID + "VBO";
     std::string iboName      = uniqueNodeID + "IBO";
     std::string passName     = uniqueNodeID + "Pass";
-    
+
     // Construct VBO.
     std::string shader = "Shaders/DirPhong";
     std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
     GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
-    
+
     // If true, then the VBO will be placed on the GPU. We don't want to place
     // VBOs on the GPU when we are generating rendering lists.
     GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
                                                                 numVBOElements, bbox_, true);
     geom->mVBOs.push_back(geomVBO);
-    
+
     // Construct IBO.
     GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName,
                                                                 GeometryObject::SpireIBO::TRIANGLES,
                                                                 sizeof(uint32_t), iboBufferSPtr);
     geom->mIBOs.push_back(geomIBO);
-    
+
     RenderState renState;
-    
+
     renState.set(RenderState::IS_ON, true);
     renState.set(RenderState::USE_TRANSPARENCY, false);
-    
+
     renState.defaultColor = ColorRGB(1,1,1);
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
     renState.set(RenderState::USE_NORMALS, true);
-    
+
     // Construct Pass.
     GeometryObject::SpireSubPass pass =
     GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
@@ -446,10 +448,9 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
                                                              glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-    
+
     geom->mPasses.push_back(pass);
-    
-    
+
     return geom;
 }
 
@@ -461,7 +462,7 @@ EditMeshBoundingBox::build_widget(FieldHandle f, bool reset)
     Point center;
     Vector size;
     BBox bbox = f->vmesh()->get_bounding_box();
-    if (!bbox.valid()) 
+    if (!bbox.valid())
     {
       warning("Input field is empty -- using unit cube.");
       bbox.extend(Point(0, 0, 0));
@@ -726,4 +727,3 @@ const AlgorithmParameterName EditMeshBoundingBox::RestrictI("RestrictI");
 
 const AlgorithmParameterName EditMeshBoundingBox::BoxMode("BoxMode");
 const AlgorithmParameterName EditMeshBoundingBox::BoxRealScale("BoxRealScale");
-

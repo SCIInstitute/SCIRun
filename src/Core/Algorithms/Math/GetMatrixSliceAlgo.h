@@ -42,7 +42,10 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(IsSliceColumn);
         ALGORITHM_PARAMETER_DECL(SliceIndex);
         ALGORITHM_PARAMETER_DECL(MaxIndex);
-				ALGORITHM_PARAMETER_DECL(PlayMode);
+				ALGORITHM_PARAMETER_DECL(PlayModeActive);
+        ALGORITHM_PARAMETER_DECL(PlayModeType);
+        ALGORITHM_PARAMETER_DECL(SliceIncrement);
+        ALGORITHM_PARAMETER_DECL(PlayModeDelay);
 
         class SCISHARE GetMatrixSliceAlgo : public AlgorithmBase
         {
@@ -50,6 +53,13 @@ namespace SCIRun {
           GetMatrixSliceAlgo();
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
           boost::tuple<Datatypes::MatrixHandle, int> runImpl(Datatypes::MatrixHandle matrix, int index, bool getColumn) const;
+
+					enum PlayMode
+					{
+						PLAY = 1,
+						PAUSE = 2
+					};
+
         private:
           void checkIndex(int index, int max) const;
         };

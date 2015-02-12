@@ -68,10 +68,10 @@ namespace Networks {
 
     //for serialization
     virtual const ModuleLookupInfo& get_info() const { return info_; }
-    virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
+    virtual void set_id(const std::string& id);
 
     //for unit testing. Need to restrict access somehow.
-    static void resetInstanceCount();
+    static void resetIdGenerator();
 
     bool has_ui() const { return has_ui_; }
     void setUiVisible(bool visible);
@@ -96,6 +96,8 @@ namespace Networks {
     virtual ExecutionState executionState() const;
     virtual void setExecutionState(ExecutionState state);
     virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber);
+
+    virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber);
 
     virtual void enqueueExecuteAgain();
 
@@ -225,7 +227,7 @@ namespace Networks {
     static ReexecuteStrategyFactoryHandle defaultReexFactory_;
 
   protected:
-    ModuleLookupInfo info_;
+    const ModuleLookupInfo info_;
     ModuleId id_;
 
     Core::Algorithms::AlgorithmBase& algo();
@@ -281,14 +283,16 @@ namespace Networks {
     boost::atomic<ExecutionState> executionState_;
     ExecutionStateChangedSignalType executionStateChanged_;
     std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
+    ExecutionSelfRequestSignalType executionSelfRequested_;
 
     ModuleReexecutionStrategyHandle reexecute_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
     UiToggleFunc uiToggleFunc_;
-    static int instanceCount_;
     static SCIRun::Core::Logging::LoggerHandle defaultLogger_;
+    static ModuleIdGeneratorHandle idGenerator_;
+    friend class UseGlobalInstanceCountIdGenerator;
   };
 
   template <class T>
@@ -478,6 +482,15 @@ namespace Networks {
     virtual ModuleReexecutionStrategyHandle create(const Module& module) const;
   private:
     boost::optional<std::string> reexecuteMode_;
+  };
+
+  class SCISHARE UseGlobalInstanceCountIdGenerator
+  {
+  public:
+    UseGlobalInstanceCountIdGenerator();
+    ~UseGlobalInstanceCountIdGenerator();
+  private:
+    ModuleIdGeneratorHandle oldGenerator_;
   };
 
 }}

@@ -37,17 +37,22 @@ namespace Modules {
 namespace Math {
 
   class SCISHARE GetMatrixSlice : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+    public Has2InputPorts<MatrixPortTag, ScalarPortTag>,
+    public Has2OutputPorts<MatrixPortTag, ScalarPortTag>
   {
   public:
     GetMatrixSlice();
     virtual void execute();
     virtual void setStateDefaults();
     INPUT_PORT(0, InputMatrix, Matrix);
+    INPUT_PORT(1, Current_Index, Int32);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
+    OUTPUT_PORT(1, Selected_Index, Int32);
 
     static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  private:
+    bool playing_;
+    void playAgain(int nextIndex);
   };
 }}}
 

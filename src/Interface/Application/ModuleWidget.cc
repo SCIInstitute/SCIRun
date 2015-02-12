@@ -507,6 +507,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
+  theModule_->connectExecuteSelfRequest([this]() { executeButtonPushed(); });
+
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
   //TODO: doh, how do i destroy myself?
@@ -929,6 +931,8 @@ ModuleWidget::~ModuleWidget()
 
     if (dockable_)
     {
+      if (isViewScene_) // see bug #808
+        dockable_->setFloating(false);
       SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
       delete dockable_;
     }
@@ -1049,12 +1053,12 @@ void ModuleWidget::makeOptionsDialog()
         dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
-      dialog_->pull();
       addWidgetToExecutionDisableList(dialog_->getExecuteAction());
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
       connect(this, SIGNAL(dynamicPortChanged()), this, SLOT(updateDialogWithPortCount()));
+      connect(dialog_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
@@ -1067,6 +1071,8 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
+
+      dialog_->pull();
     }
   }
 }
@@ -1159,6 +1165,20 @@ void ModuleWidget::launchDocumentation()
 
   if (!QDesktopServices::openUrl(qurl))
     GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
+}
+
+void ModuleWidget::setStartupNote(const QString& text)
+{
+  auto note = getCurrentNote();
+  note.plainText_ = text;
+  note.html_ = "<p style=\"color:white\">" + text;
+  updateNoteFromFile(note);
+}
+
+void ModuleWidget::createStartupNote()
+{
+  if (dialog_)
+    dialog_->createStartupNote();
 }
 
 void ModuleWidget::updateNote(const Note& note)

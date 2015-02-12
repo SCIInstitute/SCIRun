@@ -125,6 +125,9 @@ namespace Networks {
     virtual void setExecutionState(ExecutionState state) = 0;
     virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
 
+    typedef boost::signals2::signal<void()> ExecutionSelfRequestSignalType;
+    virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
+
     /// @todo for deserialization
     virtual void set_id(const std::string& id) = 0;
     virtual void set_state(ModuleStateHandle state) = 0;
@@ -179,6 +182,17 @@ namespace Networks {
     virtual ~ReexecuteStrategyFactory() {}
     virtual ModuleReexecutionStrategyHandle create(const class Module& module) const = 0;
   };
+
+  class SCISHARE ModuleIdGenerator
+  {
+  public:
+    virtual ~ModuleIdGenerator() {}
+    virtual int makeId(const std::string& name) = 0;
+    virtual bool takeId(const std::string& name, int id) = 0;
+    virtual void reset() = 0; //for unit testing
+  };
+  typedef boost::shared_ptr<ModuleIdGenerator> ModuleIdGeneratorHandle;
+
 }}}
 
 #endif

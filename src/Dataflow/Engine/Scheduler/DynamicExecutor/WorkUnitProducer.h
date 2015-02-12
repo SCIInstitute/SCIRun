@@ -49,15 +49,16 @@ namespace SCIRun {
         public:
           ModuleProducer(const Networks::ModuleFilter& filter,
             const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
-            scheduler_(filter), network_(network), lock_(lock),
-            work_(work), doneCount_(0), shouldLog_(SCIRun::Core::Logging::Log::get().verbose()), numModules_(numModules)
+            scheduler_(filter), network_(network), enqueueLock_(lock),
+            work_(work), doneCount_(0), badGroup_(false),
+            shouldLog_(SCIRun::Core::Logging::Log::get().verbose()), numModules_(numModules)
           {
             log_.setVerbose(shouldLog_);
           }
 
           virtual void enqueueReadyModules() const
           {
-            Core::Thread::Guard g(lock_->get());
+            Core::Thread::Guard g(enqueueLock_->get());
             if (!isDone())
             {
               auto order = scheduler_.schedule(*network_);
@@ -67,6 +68,10 @@ namespace SCIRun {
                 ostr << "Producer received this ordering: \n" << order << std::endl;
                 log_ << Core::Logging::DEBUG_LOG << ostr.str() << std::endl;
                 log_ << Core::Logging::DEBUG_LOG << "Producer processing min group " << order.minGroup();
+              }
+              if (order.minGroup() < 0)
+              {
+                badGroup_ = true;
               }
               auto groupIter = order.getGroup(order.minGroup());
               BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& mod, groupIter)
@@ -81,7 +86,7 @@ namespace SCIRun {
                   if (doneIds_.find(mod.second) != doneIds_.end())
                   {
                     if (shouldLog_)
-                      SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::INFO << "Module producer: wants to enqueue module " << mod.second << " a second time." << std::endl;
+                      SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::INFO << "Module producer: wants to enqueue module " << mod.second << " a second time." << id_ << " " << std::endl;
                   }
                   else
                   {
@@ -90,7 +95,7 @@ namespace SCIRun {
                     doneCount_.fetch_add(1);
 
                     if (shouldLog_)
-                      log_ << Core::Logging::DEBUG_LOG << "Producer status: " << doneCount_ << " out of " << numModules_ << std::endl;
+                      log_ << Core::Logging::DEBUG_LOG << "Producer status: " << id_ << " " << doneCount_ << " out of " << numModules_ << std::endl;
                   }
                 }
               }
@@ -99,16 +104,23 @@ namespace SCIRun {
 
           void operator()() const
           {
+            id_ = boost::this_thread::get_id();
             if (shouldLog_)
-              log_ << Core::Logging::DEBUG_LOG << "Producer started" << std::endl;
+              log_ << Core::Logging::DEBUG_LOG << "Producer started " << id_ << std::endl;
 
             enqueueReadyModules();
 
-            while (!isDone())
-              boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+            while (!badGroup_ && !isDone())
+            {
+              boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+              //std::cout << "producer thread waiting " << id_ << std::endl;
+            }
+
+            if (badGroup_)
+              std::cerr << "producer is done with bad group, something went wrong. probably a race condition..." << std::endl;
 
             if (shouldLog_)
-              log_ << Core::Logging::DEBUG_LOG << "Producer is done." << std::endl;
+              log_ << Core::Logging::DEBUG_LOG << "Producer is done. " << id_ << std::endl;
           }
 
           bool isDone() const
@@ -118,13 +130,15 @@ namespace SCIRun {
         private:
           BoostGraphParallelScheduler scheduler_;
           const Networks::NetworkInterface* network_;
-          Core::Thread::Mutex* lock_;
+          Core::Thread::Mutex* enqueueLock_;
           ModuleWorkQueuePtr work_;
           mutable boost::atomic<int> doneCount_;
+          mutable bool badGroup_;
           mutable std::set<Networks::ModuleId> doneIds_;
           static Core::Logging::Log& log_;
           bool shouldLog_;
           size_t numModules_;
+          mutable boost::thread::id id_;
         };
 
         typedef boost::shared_ptr<ModuleProducer> ModuleProducerPtr;
