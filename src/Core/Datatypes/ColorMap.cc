@@ -27,6 +27,7 @@
 */
 /// @todo Documentation Core/Datatypes/ColorMap.cc
 
+#include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Core::Datatypes;

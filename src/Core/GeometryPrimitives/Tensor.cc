@@ -246,7 +246,7 @@ double Tensor::norm()
   for (int i=0;i<3;i++)
   {
     sum = 0.0;
-    for (int j=0;j<3;j++) sum += SCIRun::Abs(mat_[i][j]);
+    for (int j=0;j<3;j++) sum += std::fabs(mat_[i][j]);
     if (sum > a) a = sum;
   }
   return (a);
