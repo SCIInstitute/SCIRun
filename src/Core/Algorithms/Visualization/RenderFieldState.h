@@ -56,9 +56,11 @@ public:
 
     // Node flags
     USE_SPHERE,
+    USE_TRANSPARENT_NODES,
 
     // Edge flags
     USE_CYLINDER,
+    USE_TRANSPARENT_EDGES,
 
     // Face flags
     USE_NORMALS,

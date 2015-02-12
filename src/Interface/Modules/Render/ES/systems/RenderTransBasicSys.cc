@@ -182,60 +182,26 @@ private:
       return;
     }
     
-    if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY) &&
+        !srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) &&
+        !srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES))
     {
       return;
     }
 
-
     bool drawLines = (ibo.front().primMode == Core::Datatypes::GeometryObject::SpireIBO::LINES);
     GLuint iboID = ibo.front().glid;
-    GLuint iboXID = ibo.front().glid;
-    GLuint iboYID = ibo.front().glid;
-    GLuint iboZID = ibo.front().glid;
-    GLuint iboNegXID = ibo.front().glid;
-    GLuint iboNegYID = ibo.front().glid;
-    GLuint iboNegZID = ibo.front().glid;
-    GLuint iboLinesID = ibo.front().glid;
-
-
-    int index = 0;
-    for (auto it = ibo.begin(); it != ibo.end(); ++it, ++index)
-    {
-
-      if (index == 0)
-        iboXID = it->glid;
-      if (index == 1)
-        iboYID = it->glid;
-      if (index == 2)
-        iboZID = it->glid;
-      if (index == 3)
-        iboNegXID = it->glid;
-      if (index == 4)
-        iboNegYID = it->glid;
-      if (index == 5)
-        iboNegZID = it->glid;
-      if (index == 6)
-        iboLinesID = it->glid;
-    }
-
 
     Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
-                               camera.front().data.worldToView[1][2],
-                               camera.front().data.worldToView[2][2]);
-
+      camera.front().data.worldToView[1][2],
+      camera.front().data.worldToView[2][2]);
 
     if (sortedID == NULL)
     {
       prevDir = dir;
     }
 
-    if (drawLines)
-    {
-      iboID = iboLinesID;
-    }
-
-    else
+    if (!drawLines)
     {
       switch (pass.front().renderState.mSortType)
       {
@@ -259,24 +225,46 @@ private:
             sortedID = sortObjects(dir, ibo, pass, iboMan);
           }
           iboID = sortedID;
-          //std::cout << "update" << std::endl;
+          //::cout << "update" << std::endl;
           break;
         }
         case RenderState::TransparencySortType::LISTS_SORT:
         {
+          GLuint iboXID = ibo.front().glid;
+          GLuint iboYID = ibo.front().glid;
+          GLuint iboZID = ibo.front().glid;
+          GLuint iboNegXID = ibo.front().glid;
+          GLuint iboNegYID = ibo.front().glid;
+          GLuint iboNegZID = ibo.front().glid;
+
+          int index = 0;
+          for (auto it = ibo.begin(); it != ibo.end(); ++it, ++index)
+          {
+            if (index == 1)
+              iboXID = it->glid;
+            if (index == 2)
+              iboYID = it->glid;
+            if (index == 3)
+              iboZID = it->glid;
+            if (index == 4)
+              iboNegXID = it->glid;
+            if (index == 5)
+              iboNegYID = it->glid;
+            if (index == 6)
+              iboNegZID = it->glid;
+          }
+
           Core::Geometry::Vector currentDir(camera.front().data.worldToView[0][2],
-            camera.front().data.worldToView[1][2],
-            camera.front().data.worldToView[2][2]);
+                                            camera.front().data.worldToView[1][2],
+                                            camera.front().data.worldToView[2][2]);
 
 
           Core::Geometry::Vector absDir(abs(camera.front().data.worldToView[0][2]),
-            abs(camera.front().data.worldToView[1][2]),
-            abs(camera.front().data.worldToView[2][2]));
-
+                                        abs(camera.front().data.worldToView[1][2]),
+                                        abs(camera.front().data.worldToView[2][2]));
 
           double xORy = absDir.x() > absDir.y() ? absDir.x() : absDir.y();
           double orZ = absDir.z() > xORy ? absDir.z() : xORy;
-
 
           if (orZ == absDir.x())
           {
@@ -295,7 +283,6 @@ private:
         }
       }
     }
-
 
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been

@@ -393,38 +393,42 @@ namespace SCIRun {
         for (int i = 0; i <= 6; ++i)
         {
           std::string name = ibo.name;
-          
           if (i == 0)
+          {
+            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+            iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+          }          
+          if (i == 1)
           {
             dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
             name += "X";
           }
-          if (i == 1)
+          if (i == 2)
           {
             dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
             name += "Y";
           }
-          if (i == 2)
+          if (i == 3)
           {
             dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
             name += "Z";
           }
-          if (i == 3)
+          if (i == 4)
           {
             dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
             name += "NegX";
           }
-          if (i == 4)
+          if (i == 5)
           {
             dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
             name += "NegY";
           }
-          if (i == 5)
+          if (i == 6)
           {
             dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
             name += "NegZ";
           }
-          if (i < 6)
+          if (i > 0)
           {
             for (size_t j = 0; j < num_triangles; j++)
             {
@@ -457,11 +461,6 @@ namespace SCIRun {
 
             iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
           }
-          else
-          {
-            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-            iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
-          }
         }        
 			}
 
@@ -485,17 +484,17 @@ namespace SCIRun {
           for (int i = 0; i <= 6; ++i)
           {
             std::string name = pass.iboName;
-            if (i == 0)
-              name += "X";
             if (i == 1)
-              name += "Y";
+              name += "X";
             if (i == 2)
-              name += "Z";
+              name += "Y";
             if (i == 3)
-              name += "NegX";
+              name += "Z";
             if (i == 4)
-              name += "NegY";
+              name += "NegX";
             if (i == 5)
+              name += "NegY";
+            if (i == 6)
               name += "NegZ";
 
             addIBOToEntity(entityID, name);
