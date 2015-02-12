@@ -45,13 +45,30 @@ CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateStan
 void CreateBasicColorMap::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Variables::ColorMapName, std::string("Rainbow"));
+  state->setValue(ColorMapName, std::string("Rainbow"));
+  state->setValue(ColorMapResolution, 256);
+  state->setValue(ColorMapInvert, false);
+  state->setValue(ColorMapShift, 0.0);
 }
 
 void CreateBasicColorMap::execute()
 {
   if (needToExecute())
   {
-    sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
+    auto state = get_state();
+    auto name = state->getValue(ColorMapName).toString();
+    auto res = state->getValue(ColorMapResolution).toInt();
+    auto inv = state->getValue(ColorMapInvert).toBool();
+    auto shift = state->getValue(ColorMapShift).toDouble();
+    //just in case there is a problem with the QT values...
+    res = std::min(std::max(res,2),256);
+    shift = std::min(std::max(shift,-1.),1.);
+    sendOutput(ColorMapObject,StandardColorMapFactory::create(name,res, shift,inv));
   }
 }
+
+
+const AlgorithmParameterName CreateBasicColorMap::ColorMapName("ColorMapName");
+const AlgorithmParameterName CreateBasicColorMap::ColorMapInvert("ColorMapInvert");
+const AlgorithmParameterName CreateBasicColorMap::ColorMapShift("ColorMapShift");
+const AlgorithmParameterName CreateBasicColorMap::ColorMapResolution("ColorMapResolution");

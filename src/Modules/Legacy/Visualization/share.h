@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,21 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#undef SCISHARE
 
-
-///
-///@class MiscMath
-///
-///@author
-///       Michael Callahan
-///       Department of Computer Science
-///       University of Utah
-///
-///@date  June 2004
-///
-
-#include <Core/Math/MiscMath.h>
-
-namespace SCIRun {
-
-} // namespace SCIRun
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_Legacy_Visualization
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,21 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_GENERATESTREAMLINES_H
+#define INTERFACE_MODULES_GENERATESTREAMLINES_H
 
-
-///
-///@class MiscMath
-///
-///@author
-///       Michael Callahan
-///       Department of Computer Science
-///       University of Utah
-///
-///@date  June 2004
-///
-
-#include <Core/Math/MiscMath.h>
+#include "Interface/Modules/Visualization/ui_GenerateStreamLines.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
+namespace Gui {
 
-} // namespace SCIRun
+class SCISHARE GenerateStreamLinesDialog : public ModuleDialogGeneric,
+  public Ui::GenerateStreamLines
+{
+	Q_OBJECT
+
+public:
+  GenerateStreamLinesDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+
+  virtual void pull();
+private:
+  GuiStringTranslationMap streamlineMethod_;
+};
+
+}
+}
+
+#endif

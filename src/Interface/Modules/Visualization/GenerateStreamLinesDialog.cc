@@ -26,39 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Visualization/ShowColorMapDialog.h>
-#include <Modules/Visualization/ShowColorMapModule.h> 
-#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
+#include <Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::Visualization;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandle state,
+GenerateStreamLinesDialog::GenerateStreamLinesDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-	addRadioButtonGroupManager({ leftRadioButton_, bottomRadioButton_ }, ShowColorMapModule::DisplaySide);
-	addRadioButtonGroupManager({ firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_ }, ShowColorMapModule::DisplayLength);
-	addRadioButtonGroupManager({ LRadioButton_, MRadioButton_, SRadioButton_, TRadioButton_, XLRadioButton_ }, ShowColorMapModule::TextSize);
-	addLineEditManager(labelsLineEdit_, ShowColorMapModule::Labels);
-	addLineEditManager(scaleLineEdit_, ShowColorMapModule::Scale);
-	addLineEditManager(unitsLineEdit_, ShowColorMapModule::Units);
-	addLineEditManager(sigDigitsLineEdit_, ShowColorMapModule::SignificantDigits);
-	addCheckBoxManager(addExtraSpaceCheckBox_, ShowColorMapModule::AddExtraSpace);
-    connectButtonToExecuteSignal(addExtraSpaceCheckBox_);
-    connectButtonToExecuteSignal(leftRadioButton_);
-    connectButtonToExecuteSignal(bottomRadioButton_);
-    connectButtonToExecuteSignal(firstHalfRadioButton_);
-    connectButtonToExecuteSignal(fullRadioButton_);
-    connectButtonToExecuteSignal(secondHalfRadioButton_);
+
+  streamlineMethod_.insert(StringPair("Cell Walk", "CellWalk"));
+  streamlineMethod_.insert(StringPair("Adams-Bashforth Multi-Step", "AdamsBashforth"));
+  streamlineMethod_.insert(StringPair("Heun Method", "Heun"));
+  streamlineMethod_.insert(StringPair("Classic 4th Order Runge-Kutta", "RungeKutta"));
+  streamlineMethod_.insert(StringPair("Adaptive Runge-Kutta-Fehlberg", "RungeKuttaFehlberg"));
+  
+  addSpinBoxManager(maxStepsSpinBox_, Parameters::StreamlineMaxSteps);
+  addDoubleSpinBoxManager(toleranceDoubleSpinBox_, Parameters::StreamlineTolerance);
+  addDoubleSpinBoxManager(stepSizeDoubleSpinBox_, Parameters::StreamlineStepSize);
+  addComboBoxManager(directionComboBox_, Parameters::StreamlineDirection);
+  addComboBoxManager(valueComboBox_, Parameters::StreamlineValue);
+  addComboBoxManager(methodComboBox_, Parameters::StreamlineMethod, streamlineMethod_);
+  addCheckBoxManager(autoParameterCheckBox_, Parameters::AutoParameters);
+  addCheckBoxManager(filterColinearCheckBox_, Parameters::RemoveColinearPoints);
 }
 
-void ShowColorMapDialog::pull()
+void GenerateStreamLinesDialog::pull()
 {
   pull_newVersionToReplaceOld();
 }
