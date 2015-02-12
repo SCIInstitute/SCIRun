@@ -242,7 +242,7 @@ private:
         case RenderState::TransparencySortType::CONTINUOUS_SORT:
         {
           iboID = sortObjects(dir, ibo, pass, iboMan);
-          std::cout << "continuous" << std::endl;
+          //std::cout << "continuous" << std::endl;
           break;
         }
         case RenderState::TransparencySortType::UPDATE_SORT:
@@ -259,7 +259,7 @@ private:
             sortedID = sortObjects(dir, ibo, pass, iboMan);
           }
           iboID = sortedID;
-          std::cout << "update" << std::endl;
+          //std::cout << "update" << std::endl;
           break;
         }
         case RenderState::TransparencySortType::LISTS_SORT:
@@ -290,7 +290,7 @@ private:
           {
             iboID = currentDir.z() < orZ ? iboNegZID : iboZID;
           }
-          std::cout << "lists" << std::endl;
+          //std::cout << "lists" << std::endl;
           break;
         }
       }
