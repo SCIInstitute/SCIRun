@@ -138,7 +138,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(160,160,164)</value>
+										<value>Color(0.831373,0.15552,0.123156)</value>
 									</value>
 								</second>
 							</item>
@@ -186,7 +186,7 @@
 									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
