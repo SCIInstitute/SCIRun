@@ -100,6 +100,11 @@ void ShowFieldModule::execute()
   {
     std::ostringstream ostr;
     ostr << get_id() << "_" << field.get();
+    ostr << "_";
+    if (colorMap)
+      ostr << colorMap->get();
+    else
+      ostr << "<nocolormap>";
     GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), ostr.str());
     sendOutput(SceneGraph, geom);
   }

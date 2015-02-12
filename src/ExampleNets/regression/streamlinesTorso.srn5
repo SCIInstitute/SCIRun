@@ -42,7 +42,7 @@
 									<name>ColorMapName</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>Rainbow</value>
+										<value>Grayscale</value>
 									</value>
 								</second>
 							</item>
@@ -134,7 +134,7 @@
 									<name>StreamlineMaxSteps</name>
 									<value>
 										<which>0</which>
-										<value>200</value>
+										<value>2000</value>
 									</value>
 								</second>
 							</item>
@@ -146,7 +146,7 @@
 									<name>StreamlineMethod</name>
 									<value>
 										<which>2</which>
-										<value>CellWalk</value>
+										<value>RungeKuttaFehlberg</value>
 									</value>
 								</second>
 							</item>
@@ -158,7 +158,7 @@
 									<name>StreamlineStepSize</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>0.01</value>
 									</value>
 								</second>
 							</item>
