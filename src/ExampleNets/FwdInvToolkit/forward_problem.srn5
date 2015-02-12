@@ -254,8 +254,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>4</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ColorMapInvert</name>
+								</first>
+								<second>
+									<name>ColorMapInvert</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>ColorMapName</name>
@@ -265,6 +277,30 @@
 									<value>
 										<which>2</which>
 										<value>Rainbow</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -962,8 +998,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>13</count>
+							<count>14</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CylinderResolution</name>
+								</first>
+								<second>
+									<name>CylinderResolution</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>DefaultMeshColor</name>
@@ -1134,8 +1182,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>14</count>
+							<count>15</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CylinderResolution</name>
+								</first>
+								<second>
+									<name>CylinderResolution</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>DefaultMeshColor</name>

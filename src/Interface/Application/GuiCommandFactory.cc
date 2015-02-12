@@ -36,7 +36,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Console;
 
-CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
+CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type, int param) const
 {
   switch (type)
   {
@@ -49,7 +49,7 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
   case PrintVersion:
     return boost::make_shared<PrintVersionCommand>();
   case LoadNetworkFile:
-    return boost::make_shared<LoadFileCommandGui>();
+    return boost::make_shared<LoadFileCommandGui>(param);
   case RunPythonScript:
     return boost::make_shared<RunPythonScriptCommandGui>();
   case SetupDataDirectory:

@@ -183,9 +183,9 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(OutputCenterX, 0.0);
   state->setValue(OutputCenterY, 0.0);
   state->setValue(OutputCenterZ, 0.0);
-  state->setValue(OutputSizeX, 0.0);
-  state->setValue(OutputSizeY, 0.0);
-  state->setValue(OutputSizeZ, 0.0);
+  state->setValue(OutputSizeX, 100.0);
+  state->setValue(OutputSizeY, 100.0);
+  state->setValue(OutputSizeZ, 100.0);
   state->setValue(Scale, 1.0);
 
   //TODO
@@ -267,7 +267,9 @@ bool EditMeshBoundingBox::isBoxEmpty() const
 Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
 
     Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
-
+    std::ostringstream ostr;
+    ostr << get_id() << "EditBoundingBox_" << geom.get();
+    geom->objectName = ostr.str();
     GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
     int64_t numVBOElements = 0;
     std::vector<std::pair<Point,Point>> bounding_edges;
@@ -293,8 +295,8 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     };
     auto state = get_state();
     double scale = state->getValue(Scale).toDouble();
-    if (scale < 0) scale *= -1.;
-    int num_strips = int(30. * scale);
+    scale = std::max(scale,0.01);
+    int num_strips = 50.;
     std::vector<Vector> tri_points;
     std::vector<Vector> tri_normals;
     std::vector<uint32_t> tri_indices;
@@ -447,12 +449,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-    std::ostringstream ostr;
-    ostr << get_id() << "_" << this;
-    geom->objectName = ostr.str();
-
     geom->mPasses.push_back(pass);
-
 
     return geom;
 }

@@ -116,6 +116,7 @@ protected:
   Network matrixMathNetwork;
   ModuleHandle receive, report;
   DenseMatrix expected;
+  UseGlobalInstanceCountIdGenerator switcher;
 
   virtual void SetUp()
   {
@@ -148,7 +149,7 @@ protected:
 
   void setupBasicNetwork()
   {
-    Module::resetInstanceCount();
+    Module::resetIdGenerator();
     //Test network:
     /*
     send m1(0)          send m2(0)

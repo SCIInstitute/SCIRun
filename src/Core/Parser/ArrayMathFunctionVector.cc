@@ -244,8 +244,8 @@ bool maxnorm_v(SCIRun::ArrayMathProgramCode& pc)
   while (data0 != data0_end) 
   {
     double a = data1[0];
-    if (a < Abs(data1[1])) a = Abs(data1[1]);
-    if (a < Abs(data1[2])) a = Abs(data1[2]);
+    if (a < std::fabs(data1[1])) a = std::fabs(data1[1]);
+    if (a < std::fabs(data1[2])) a = std::fabs(data1[2]);
     data0++; data1+=3;
   }
   
@@ -723,9 +723,9 @@ bool find_normal1_v(SCIRun::ArrayMathProgramCode& pc)
   {
     double a0,a1,a2;
     double b0,b1,b2;
-    a0 = Abs(data1[0]); 
-    a1 = Abs(data1[1]); 
-    a2 = Abs(data1[2]);
+    a0 = std::fabs(data1[0]);
+    a1 = std::fabs(data1[1]);
+    a2 = std::fabs(data1[2]);
     
     if ((a0==0.0)&&(a1==0.0)&&(a2==0.0))
     {
@@ -767,9 +767,9 @@ bool find_normal2_v(SCIRun::ArrayMathProgramCode& pc)
     double a0,a1,a2;
     double b0,b1,b2;
     double c0,c1,c2;
-    a0 = Abs(data1[0]); 
-    a1 = Abs(data1[1]); 
-    a2 = Abs(data1[2]);
+    a0 = std::fabs(data1[0]);
+    a1 = std::fabs(data1[1]);
+    a2 = std::fabs(data1[2]);
     
     if ((a0==0.0)&&(a1==0.0)&&(a2==0.0))
     {

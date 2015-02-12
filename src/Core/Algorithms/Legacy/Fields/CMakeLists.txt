@@ -72,13 +72,15 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   TransformMesh/ProjectPointsOntoMesh.h
   MeshData/FlipSurfaceNormals.h
   RefineMesh/RefineMesh.h
-	
+
   RefineMesh/RefineMeshCurveAlgoV.h
   RefineMesh/RefineMeshHexVolAlgoV.h
   RefineMesh/RefineMeshQuadSurfAlgoV.h
   RefineMesh/RefineMeshTetVolAlgoV.h
   RefineMesh/RefineMeshTriSurfAlgoV.h
   RefineMesh/EdgePairHash.h
+  StreamLines/StreamLineIntegrators.h
+  StreamLines/GenerateStreamLines.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -175,8 +177,8 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #ResampleMesh/PadRegularMesh.cc
   #SampleField/GeneratePointSamplesFromField.cc
   SmoothMesh/FairMesh.cc
-  #StreamLines/StreamLineIntegrators.cc
-  #StreamLines/GenerateStreamLines.cc
+  StreamLines/StreamLineIntegrators.cc
+  StreamLines/GenerateStreamLines.cc
   TransformMesh/AlignMeshBoundingBoxes.cc
   #TransformMesh/TransformMeshWithTransform.cc
   #TransformMesh/ConvertMeshCoordinateSystem.cc

@@ -7,66 +7,86 @@
 			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateStandardColorMap:3</first>
+				<first>CreateLatVol:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
-						<category_name_>Visualization</category_name_>
-						<module_name_>CreateStandardColorMap</module_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>CreateLatVol</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>1</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>ColorMapName</name>
+									<name>DataAtLocation</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>ColorMapName</name>
+									<name>DataAtLocation</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>Rainbow</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadField:2</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadField</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Field File</value>
+										<value>Nodes</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>Filename</name>
+									<name>ElementSizeNormalized</name>
 								</first>
 								<second>
-									<name>Filename</name>
+									<name>ElementSizeNormalized</name>
 									<value>
-										<which>2</which>
-										<value>%SCIRUNDATADIR%/Fields/curveMesh.fld</value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PadPercent</name>
+								</first>
+								<second>
+									<name>PadPercent</name>
+									<value>
+										<which>1</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XSize</name>
+								</first>
+								<second>
+									<name>XSize</name>
+									<value>
+										<which>0</which>
+										<value>4</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YSize</name>
+								</first>
+								<second>
+									<name>YSize</name>
+									<value>
+										<which>0</which>
+										<value>3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ZSize</name>
+								</first>
+								<second>
+									<name>ZSize</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -84,8 +104,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>13</count>
+							<count>14</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CylinderRadius</name>
+								</first>
+								<second>
+									<name>CylinderRadius</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CylinderResolution</name>
+								</first>
+								<second>
+									<name>CylinderResolution</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>DefaultMeshColor</name>
@@ -94,7 +138,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(160,160,164)</value>
+										<value>Color(0.831373,0.15552,0.123156)</value>
 									</value>
 								</second>
 							</item>
@@ -106,7 +150,7 @@
 									<name>EdgeTransparency</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -118,7 +162,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.69999999999999996</value>
+										<value>0.64999997615814209</value>
 									</value>
 								</second>
 							</item>
@@ -129,32 +173,20 @@
 								<second>
 									<name>EdgesAsCylinders</name>
 									<value>
-										<which>3</which>
+										<which>0</which>
 										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>EdgesAsLines</name>
+									<name>FaceTransparency</name>
 								</first>
 								<second>
-									<name>EdgesAsLines</name>
+									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceTransparency</name>
-								</first>
-								<second>
-									<name>FaceTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -166,19 +198,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.5</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeAsPoints</name>
-								</first>
-								<second>
-									<name>NodeAsPoints</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
+										<value>0.64999997615814209</value>
 									</value>
 								</second>
 							</item>
@@ -189,7 +209,7 @@
 								<second>
 									<name>NodeAsSpheres</name>
 									<value>
-										<which>3</which>
+										<which>0</which>
 										<value>0</value>
 									</value>
 								</second>
@@ -239,6 +259,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SphereScaleValue</name>
+								</first>
+								<second>
+									<name>SphereScaleValue</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -247,7 +279,23 @@
 				</second>
 			</item>
 			<item>
-				<first>ViewScene:1</first>
+				<first>ViewScene:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>ViewScene</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ViewScene:3</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -264,24 +312,12 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>3</count>
+			<count>2</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>CreateStandardColorMap:3</moduleId1_>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowField:0</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadField:2</moduleId1_>
-				<port1_>
-					<name>Field</name>
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:0</moduleId2_>
@@ -296,7 +332,7 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:1</moduleId2_>
+				<moduleId2_>ViewScene:0</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>0</id>
@@ -308,31 +344,31 @@
 		<count>4</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>CreateStandardColorMap:3</first>
+			<first>CreateLatVol:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-380</first>
-				<second>-456</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadField:2</first>
-			<second>
-				<first>-532</first>
-				<second>-532</second>
+				<first>-836</first>
+				<second>-608</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-456</first>
+				<first>-836</first>
+				<second>-456</second>
+			</second>
+		</item>
+		<item>
+			<first>ViewScene:0</first>
+			<second>
+				<first>-836</first>
 				<second>-304</second>
 			</second>
 		</item>
 		<item>
-			<first>ViewScene:1</first>
+			<first>ViewScene:3</first>
 			<second>
-				<first>-456</first>
-				<second>-152</second>
+				<first>-532</first>
+				<second>-304</second>
 			</second>
 		</item>
 	</modulePositions>

@@ -26,52 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@todo Documentation Core/Datatypes/Color.cc
+// Uniforms
+uniform float    uAspectRatio  ;      
+uniform float    uWindowWidth  ;
+uniform float    uExtraSpace   ;
+uniform float    uDisplaySide  ;
+uniform float    uDisplayLength;
 
-#include <sstream>
-#include <Core/Datatypes/Color.h>
-#include <boost/regex.hpp>
-#include <boost/lexical_cast.hpp>
+// Attributes
+attribute vec3  aPos;
+attribute float aFieldData;
 
-using namespace SCIRun::Core::Datatypes;
+// Outputs to the fragment shader.
+varying float   vFieldData;
 
-ColorRGB::ColorRGB()
-  : r_(1.0), g_(1.0), b_(1.0)
+void main( void )
 {
-}
-
-ColorRGB::ColorRGB(double r, double g, double b)
-  : r_(r), g_(g), b_(b)
-{
-}
-
-ColorRGB::ColorRGB(const std::string& rgb) : r_(1.0), g_(1.0), b_(1.0)
-{
-  try
-  {
-    static boost::regex r("Color\\((.+),(.+),(.+)\\)");
-    boost::smatch what;
-    regex_match(rgb, what, r);
-    r_ = boost::lexical_cast<double>(what[1]);
-    g_ = boost::lexical_cast<double>(what[2]);
-    b_ = boost::lexical_cast<double>(what[3]);
-  }
-  catch (...)
-  {
-    //error results in white (so you can see things in viewer):
-    r_ = g_ = b_ = 1.0f;
-  }
-}
-
-std::string ColorRGB::toString() const
-{
-  std::ostringstream ostr;
-  ostr << *this;
-  return ostr.str();
-}
-
-std::ostream& SCIRun::Core::Datatypes::operator<<(std::ostream& out, const ColorRGB& color)
-{
-  out << "Color(" << color.r() << "," << color.g() << "," << color.b() << ")";
-  return out;
+  bool ex = uExtraSpace == 1.;
+  bool ds = uDisplaySide == 0.;
+  bool full = uDisplayLength == 1.;
+  bool half1 = uDisplayLength == 0.;
+  vec3 newPos = ds?vec3(aPos.x, aPos.y, aPos.z):vec3(aPos.y,aPos.x,aPos.z);
+  float x_scale = ds?(30.0 / uWindowWidth):(full?1.8:0.9);
+  float y_scale = ds?(full?1.8:0.9):(30. * uAspectRatio / uWindowWidth);
+  float x_trans = ds?(-1.+(ex?(30. / uWindowWidth):0.)):(full?-0.9:
+                  (half1?(ex?(30. / uWindowWidth - 1.):-1.):(ex?0.05:0.1)));
+  float y_trans = (!ds)?(-1.+(ex?(30. * uAspectRatio / uWindowWidth):0.)):
+                  (full?-0.9:(half1?(ex?(30. * uAspectRatio / uWindowWidth - 1.):
+                  -1.):(ex?0.05:0.1)));
+  gl_Position = vec4(newPos.x * x_scale + x_trans, 
+                     newPos.y * y_scale + y_trans, newPos.z, 1.0);
+  vFieldData  = aFieldData;
 }

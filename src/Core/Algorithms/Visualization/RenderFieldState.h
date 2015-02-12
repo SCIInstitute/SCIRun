@@ -100,6 +100,13 @@ public:
     RING_GLYPH
   };
 
+  enum TransparencySortType
+  {
+    CONTINUOUS_SORT,
+    UPDATE_SORT,
+    LISTS_SORT
+  };
+
   RenderState()
   {
     for (int i = 0; i < MAX_ACTION_FLAGS; ++i)
@@ -123,6 +130,7 @@ public:
 
   // Render state flags.
   bool mFlags[MAX_ACTION_FLAGS];
+  TransparencySortType mSortType = CONTINUOUS_SORT;
 
   Core::Datatypes::ColorRGB defaultColor;
 };

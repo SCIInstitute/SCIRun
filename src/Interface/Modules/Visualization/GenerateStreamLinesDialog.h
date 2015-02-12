@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,59 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_GENERATESTREAMLINES_H
+#define INTERFACE_MODULES_GENERATESTREAMLINES_H
 
-
-///
-///@file   ParallelBase.h
-///@brief  Helper class to instantiate several threads
-///
-///@author Steve Parker
-///        Department of Computer Science
-///        University of Utah
-///@date   June 1997
-///
-
-#ifndef Core_Thread_ParallelBase_h
-#define Core_Thread_ParallelBase_h
-
-#include <Core/Thread/Legacy/share.h>
+#include "Interface/Modules/Visualization/ui_GenerateStreamLines.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
+namespace Gui {
 
-class Semaphore;
-/**************************************
+class SCISHARE GenerateStreamLinesDialog : public ModuleDialogGeneric,
+  public Ui::GenerateStreamLines
+{
+	Q_OBJECT
 
-@class
- ParallelBase
-
- KEYWORDS
- Thread
-
-@details
- Helper class for Parallel class.  This will never be used
- by a user program.  See <b>Parallel</b> instead.
-   
-****************************************/
-class SCISHARE ParallelBase {
 public:
-  //////////
-  /// <i>The thread body</i>
-  virtual void run(int proc)=0;
+  GenerateStreamLinesDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
 
-protected:
-  ParallelBase();
-  virtual ~ParallelBase();
-  mutable Semaphore* wait_; // This may be modified by Thread::parallel
-  friend class Thread;
-
+  virtual void pull();
 private:
-  // Cannot copy them
-  ParallelBase(const ParallelBase&);
-  ParallelBase& operator=(const ParallelBase&);
+  GuiStringTranslationMap streamlineMethod_;
 };
-} // End namespace SCIRun
+
+}
+}
 
 #endif
-
-
-

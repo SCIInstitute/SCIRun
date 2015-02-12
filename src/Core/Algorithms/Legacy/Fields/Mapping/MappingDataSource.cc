@@ -2184,7 +2184,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
         {
           double l = 1.0/(points_[j]-r).length();
 
-          double dx = Abs(points_[j].x()-r.x());
+          double dx = std::fabs(points_[j].x() - r.x());
           double xw = l*dx;
           if (xw > 1e-3)
           {
@@ -2192,7 +2192,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
             sxw += xw;
           }
 
-          double dy = Abs(points_[j].y()-r.y());
+          double dy = std::fabs(points_[j].y() - r.y());
           double yw = l*dy;
           if (yw > 1e-3)
           {
@@ -2200,7 +2200,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
             syw += yw;
           }
 
-          double dz = Abs(points_[j].z()-r.z());
+          double dz = std::fabs(points_[j].z()-r.z());
           double zw = l*dz;
           if (zw > 1e-3)
           {
@@ -2243,7 +2243,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
           {
             double l = 1.0/(points_[j]-r).length();
 
-            double dx = Abs(points_[j].x()-r.x());
+            double dx = std::fabs(points_[j].x()-r.x());
             double xw = l*dx;
             if (xw > 1e-3)
             {
@@ -2251,7 +2251,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
               sxw += xw;
             }
 
-            double dy = Abs(points_[j].y()-r.y());
+            double dy = std::fabs(points_[j].y()-r.y());
             double yw = l*dy;
             if (yw > 1e-3)
             {
@@ -2259,7 +2259,7 @@ class ClosestNodeGradientSource : public MappingDataSource {
               syw += yw;
             }
 
-            double dz = Abs(points_[j].z()-r.z());
+            double dz = std::fabs(points_[j].z()-r.z());
             double zw = l*dz;
             if (zw > 1e-3)
             {
@@ -2335,7 +2335,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
         {
           double l = 1.0/(points_[j]-r).length();
 
-          double dx = Abs(points_[j].x()-r.x());
+          double dx = std::fabs(points_[j].x() - r.x());
           double xw = l*dx;
           if (xw > 1e-3)
           {
@@ -2343,7 +2343,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
             sxw += xw;
           }
 
-          double dy = Abs(points_[j].y()-r.y());
+          double dy = std::fabs(points_[j].y() - r.y());
           double yw = l*dy;
           if (yw > 1e-3)
           {
@@ -2351,7 +2351,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
             syw += yw;
           }
 
-          double dz = Abs(points_[j].z()-r.z());
+          double dz = std::fabs(points_[j].z() - r.z());
           double zw = l*dz;
           if (zw > 1e-3)
           {
@@ -2404,7 +2404,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
           {
             double l = 1.0/(points_[j]-r).length();
 
-            double dx = Abs(points_[j].x()-r.x());
+            double dx = std::fabs(points_[j].x()-r.x());
             double xw = l*dx;
             if (xw > 1e-3)
             {
@@ -2412,7 +2412,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
               sxw += xw;
             }
 
-            double dy = Abs(points_[j].y()-r.y());
+            double dy = std::fabs(points_[j].y()-r.y());
             double yw = l*dy;
             if (yw > 1e-3)
             {
@@ -2420,7 +2420,7 @@ class ClosestNodeWeightedGradientSource : public MappingDataSource {
               syw += yw;
             }
 
-            double dz = Abs(points_[j].z()-r.z());
+            double dz = std::fabs(points_[j].z()-r.z());
             double zw = l*dz;
             if (zw > 1e-3)
             {
@@ -2502,7 +2502,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
         {
           double l = 1.0/(points_[j]-r).length();
 
-          double dx = Abs(points_[j].x()-r.x());
+          double dx = std::fabs(points_[j].x() - r.x());
           double xw = l*dx;
           if (xw > 1e-3)
           {
@@ -2510,7 +2510,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
             sxw += xw;
           }
 
-          double dy = Abs(points_[j].y()-r.y());
+          double dy = std::fabs(points_[j].y() - r.y());
           double yw = l*dy;
           if (yw > 1e-3)
           {
@@ -2518,7 +2518,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
             syw += yw;
           }
 
-          double dz = Abs(points_[j].z()-r.z());
+          double dz = std::fabs(points_[j].z() - r.z());
           double zw = l*dz;
           if (zw > 1e-3)
           {
@@ -2572,7 +2572,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
           {
             double l = 1.0/(points_[j]-r).length();
 
-            double dx = Abs(points_[j].x()-r.x());
+            double dx = std::fabs(points_[j].x() - r.x());
             double xw = l*dx;
             if (xw > 1e-3)
             {
@@ -2580,7 +2580,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
               sxw += xw;
             }
 
-            double dy = Abs(points_[j].y()-r.y());
+            double dy = std::fabs(points_[j].y() - r.y());
             double yw = l*dy;
             if (yw > 1e-3)
             {
@@ -2588,7 +2588,7 @@ class ClosestNodeWeightedTensorGradientSource : public MappingDataSource {
               syw += yw;
             }
 
-            double dz = Abs(points_[j].z()-r.z());
+            double dz = std::fabs(points_[j].z() - r.z());
             double zw = l*dz;
             if (zw > 1e-3)
             {
@@ -2663,7 +2663,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
         {
           double l = 1.0/(points_[j]-r).length();
 
-          double dx = Abs(points_[j].x()-r.x());
+          double dx = std::fabs(points_[j].x()-r.x());
           double xw = l*dx;
           if (xw > 1e-3)
           {
@@ -2671,7 +2671,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
             sxw += xw;
           }
 
-          double dy = Abs(points_[j].y()-r.y());
+          double dy = std::fabs(points_[j].y()-r.y());
           double yw = l*dy;
           if (yw > 1e-3)
           {
@@ -2679,7 +2679,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
             syw += yw;
           }
 
-          double dz = Abs(points_[j].z()-r.z());
+          double dz = std::fabs(points_[j].z()-r.z());
           double zw = l*dz;
           if (zw > 1e-3)
           {
@@ -2723,7 +2723,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
           {
             double l = 1.0/(points_[j]-r).length();
 
-            double dx = Abs(points_[j].x()-r.x());
+            double dx = std::fabs(points_[j].x()-r.x());
             double xw = l*dx;
             if (xw > 1e-3)
             {
@@ -2731,7 +2731,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
               sxw += xw;
             }
 
-            double dy = Abs(points_[j].y()-r.y());
+            double dy = std::fabs(points_[j].y()-r.y());
             double yw = l*dy;
             if (yw > 1e-3)
             {
@@ -2739,7 +2739,7 @@ class ClosestNodeGradientNormSource : public MappingDataSource {
               syw += yw;
             }
 
-            double dz = Abs(points_[j].z()-r.z());
+            double dz = std::fabs(points_[j].z()-r.z());
             double zw = l*dz;
             if (zw > 1e-3)
             {
@@ -2816,7 +2816,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
         {
           double l = 1.0/(points_[j]-r).length();
 
-          double dx = Abs(points_[j].x()-r.x());
+          double dx = std::fabs(points_[j].x()-r.x());
           double xw = l*dx;
           if (xw > 1e-3)
           {
@@ -2824,7 +2824,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
             sxw += xw;
           }
 
-          double dy = Abs(points_[j].y()-r.y());
+          double dy = std::fabs(points_[j].y()-r.y());
           double yw = l*dy;
           if (yw > 1e-3)
           {
@@ -2832,7 +2832,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
             syw += yw;
           }
 
-          double dz = Abs(points_[j].z()-r.z());
+          double dz = std::fabs(points_[j].z()-r.z());
           double zw = l*dz;
           if (zw > 1e-3)
           {
@@ -2886,7 +2886,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
           {
             double l = 1.0/(points_[j]-r).length();
 
-            double dx = Abs(points_[j].x()-r.x());
+            double dx = std::fabs(points_[j].x()-r.x());
             double xw = l*dx;
             if (xw > 1e-3)
             {
@@ -2894,7 +2894,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
               sxw += xw;
             }
 
-            double dy = Abs(points_[j].y()-r.y());
+            double dy = std::fabs(points_[j].y()-r.y());
             double yw = l*dy;
             if (yw > 1e-3)
             {
@@ -2902,7 +2902,7 @@ class ClosestNodeWeightedGradientNormSource : public MappingDataSource {
               syw += yw;
             }
 
-            double dz = Abs(points_[j].z()-r.z());
+            double dz = std::fabs(points_[j].z()-r.z());
             double zw = l*dz;
             if (zw > 1e-3)
             {
@@ -2985,7 +2985,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
         {
           double l = 1.0/(points_[j]-r).length();
 
-          double dx = Abs(points_[j].x()-r.x());
+          double dx = std::fabs(points_[j].x()-r.x());
           double xw = l*dx;
           if (xw > 1e-3)
           {
@@ -2993,7 +2993,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
             sxw += xw;
           }
 
-          double dy = Abs(points_[j].y()-r.y());
+          double dy = std::fabs(points_[j].y()-r.y());
           double yw = l*dy;
           if (yw > 1e-3)
           {
@@ -3001,7 +3001,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
             syw += yw;
           }
 
-          double dz = Abs(points_[j].z()-r.z());
+          double dz = std::fabs(points_[j].z()-r.z());
           double zw = l*dz;
           if (zw > 1e-3)
           {
@@ -3055,7 +3055,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
           {
             double l = 1.0/(points_[j]-r).length();
 
-            double dx = Abs(points_[j].x()-r.x());
+            double dx = std::fabs(points_[j].x()-r.x());
             double xw = l*dx;
             if (xw > 1e-3)
             {
@@ -3063,7 +3063,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
               sxw += xw;
             }
 
-            double dy = Abs(points_[j].y()-r.y());
+            double dy = std::fabs(points_[j].y()-r.y());
             double yw = l*dy;
             if (yw > 1e-3)
             {
@@ -3071,7 +3071,7 @@ class ClosestNodeWeightedTensorGradientNormSource : public MappingDataSource {
               syw += yw;
             }
 
-            double dz = Abs(points_[j].z()-r.z());
+            double dz = std::fabs(points_[j].z()-r.z());
             double zw = l*dz;
             if (zw > 1e-3)
             {

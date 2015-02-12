@@ -26,12 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
-
-#ifndef CORE_MATH_MISCMATH_H
-#define CORE_MATH_MISCMATH_H 
+#ifndef CORE_MATH_MISCMATH2_H
+#define CORE_MATH_MISCMATH2_H 
 
 #include <Core/Math/share.h>
 
@@ -41,16 +37,6 @@ namespace SCIRun
   {
     namespace Math
     {
-
-      #ifndef M_PI
-      #define M_PI 3.14159265358979323846
-      #endif
-
-      inline double DtoR(double d)
-      {
-        return d*(M_PI/180.);
-      }
-
       template <typename T> 
       int sgn(T val) 
       {
