@@ -78,8 +78,25 @@ public:
   }
 
 private:
+  class SortedObject
+  {
+  public:
+    std::string mName;
+    GLuint mSortedID;
+
+    SortedObject() :
+      mName(""),
+      mSortedID(NULL)
+    {}
+
+    SortedObject(std::string name, GLuint ID) :
+      mName(name),
+      mSortedID(ID)
+    {}
+  };
+
   Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);
-  GLuint sortedID = NULL;
+  std::vector<SortedObject> sortedObjects;
 
   class DepthIndex {
   public:
@@ -196,7 +213,7 @@ private:
       camera.front().data.worldToView[1][2],
       camera.front().data.worldToView[2][2]);
 
-    if (sortedID == NULL)
+    if (sortedObjects.size() <= 0)
     {
       prevDir = dir;
     }
@@ -213,18 +230,34 @@ private:
         }
         case RenderState::TransparencySortType::UPDATE_SORT:
         {
+          unsigned int index = 0;
+          bool indexed = false;
+          for (int i = 0; i < sortedObjects.size(); ++i)
+          {
+            if (sortedObjects[i].mName == pass.front().ibo.name)
+            {
+              indexed = true;
+              index = i;
+            }
+          }
+          if (!indexed)
+          {
+            index = sortedObjects.size();
+            sortedObjects.push_back(SortedObject(pass.front().ibo.name, NULL));
+          }
+
           Core::Geometry::Vector diff = prevDir - dir;
           float distance = sqrtf(Core::Geometry::Dot(diff, diff));
-          if (distance >= 1.23 || sortedID == NULL)
+          if (distance >= 1.23 || sortedObjects[index].mSortedID == NULL)
           {
-            if (sortedID != NULL)
+            if (sortedObjects[index].mSortedID != NULL)
             {
-              iboMan.front().instance->removeInMemoryIBO(sortedID);
+              iboMan.front().instance->removeInMemoryIBO(sortedObjects[index].mSortedID);
             }
             prevDir = dir;
-            sortedID = sortObjects(dir, ibo, pass, iboMan);
+            sortedObjects[index].mSortedID = sortObjects(dir, ibo, pass, iboMan);
           }
-          iboID = sortedID;
+          iboID = sortedObjects[index].mSortedID;
           //::cout << "update" << std::endl;
           break;
         }

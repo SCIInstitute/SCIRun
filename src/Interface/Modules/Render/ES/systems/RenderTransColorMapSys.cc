@@ -94,7 +94,6 @@ private:
 
   Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);
   std::vector<SortedObject> sortedObjects;
-  GLuint sortedID = NULL;
   
   class DepthIndex {
   public:
@@ -251,7 +250,6 @@ private:
           {
             if (sortedObjects[index].mSortedID != NULL)
             {
-              std::cout << "remove from mem" << std::endl;
               iboMan.front().instance->removeInMemoryIBO(sortedObjects[index].mSortedID);
             }
             prevDir = dir;
