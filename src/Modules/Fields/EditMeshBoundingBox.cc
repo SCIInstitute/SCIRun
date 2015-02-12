@@ -296,7 +296,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     auto state = get_state();
     double scale = state->getValue(Scale).toDouble();
     scale = std::max(scale,0.01);
-    int num_strips = int(100. * scale);
+    int num_strips = 50.;
     std::vector<Vector> tri_points;
     std::vector<Vector> tri_normals;
     std::vector<uint32_t> tri_indices;

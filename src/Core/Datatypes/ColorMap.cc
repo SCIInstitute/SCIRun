@@ -31,23 +31,24 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift)
-: name_(name), resolution_(resolution), shift_(shift) {}
+ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift, const bool invert)
+: name_(name), resolution_(resolution), shift_(shift), invert_(invert) {
+    if (!(name_ == "Rainbow"   ||
+          name_ == "Blackbody" ||
+          name_ == "Grayscale"  ))
+          throw InvalidArgumentException();
+}
 
 ColorMap* ColorMap::clone() const
 {
-  return new ColorMap(name_);
+  return new ColorMap(name_,resolution_,shift_,invert_);
 }
 
-ColorMapHandle StandardColorMapFactory::create(const std::string& name)
+ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &resolution,
+                                                const double &shift, const bool &invert)
 {
-  if (name == "Rainbow")
-    return ColorMapHandle(rainbow_.clone());
-  if (name == "Grayscale")
-    return ColorMapHandle(grayscale_.clone());
-  if (name == "Blackbody")
-    return ColorMapHandle(blackbody_.clone());
-  THROW_INVALID_ARGUMENT("Unknown standard colormap name: " + name);
+  cm_ = ColorMap(name,resolution,shift,invert);
+  return ColorMapHandle(cm_.clone());
 }
 
 float ColorMap::Hue_2_RGB(float v1, float v2, float vH) {
@@ -74,31 +75,52 @@ ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
        g = Hue_2_RGB( var_1, var_2, h );
        b = Hue_2_RGB( var_1, var_2, h - ( .333333 ) );
     }
-    return ColorRGB(r,g,b);
+    return ColorRGB(std::min(std::max(r,0.f),1.f),
+                    std::min(std::max(g,0.f),1.f),
+                    std::min(std::max(b,0.f),1.f));
+}
+
+
+float ColorMap::getTransformedColor(float f) {
+    //@todo this will not be needed with rescale color map.
+    float v = std::min(std::max(0.f,f),1.f);
+    double shift = shift_;
+    if (invert_) {
+        v = 1.f - v;
+        shift *= -1.;
+    }
+    //apply the resolution
+    v = static_cast<double>((static_cast<int>(v *
+        static_cast<float>(resolution_)))) /
+        static_cast<double>(resolution_ - 1);
+    // the shift is a gamma.
+    float denom = std::tan(M_PI_2 * ( 0.5f - std::min(std::max(shift,-0.99),0.99) * 0.5f));
+    // make sure we don't hit divide by zero
+    if (std::isnan(denom)) denom = 0.f;
+    denom = std::max(denom, 0.001f);
+    v = std::pow(v,(1.f/denom));
+    return v;
 }
 
 ColorRGB ColorMap::getColorMapVal(float v) {
-    //@todo this will not be needed with rescale color map.
-    v = std::min(std::max(0.f,v),1.f);
-    float shift = (static_cast<float>(shift_)+1.f)/2.f;
-    v = (v + shift) / (shift + 0.5f);
-    //apply the resolution
-    v = static_cast<double>((static_cast<int>(v * static_cast<float>(resolution_)))) / static_cast<double>(resolution_ - 1);
+    float f = getTransformedColor(v);
+    //now grab the RGB
     ColorRGB col;
-    if (name_ == "Rainbow")
-        col = hslToRGB((1.0-v) * 0.8, 0.95, 0.5);
-    else if (name_ == "Blackbody") {
-        if (v < 0.333333)
-            col = ColorRGB(v * 3., 0., 0.);
-        else if (v < 0.6666667)
-            col = ColorRGB(1.,(v - 0.333333) * 3., 0.);
+    if (name_ == "Rainbow") {
+        // spread out the thin colors
+        //if (v < 0.7 && v > 0.3)
+        //    v = v - 0.05f * std::sin((v - 0.3) * 6.f * M_PI / 0.8);
+        col = hslToRGB((1. - f) * 0.7, 0.95, 0.5);
+    } else if (name_ == "Blackbody") {
+        if (f < 0.333333)
+            col = ColorRGB(std::min(std::max(f * 3.,0.),1.), 0., 0.);
+        else if (f < 0.6666666)
+            col = ColorRGB(1.,std::min(std::max((f - 0.333333) * 3.,0.),1.), 0.);
         else
-            col = ColorRGB(1., 1., (v - 0.6666667) * 3.);
+            col = ColorRGB(1., 1., std::min(std::max((f - 0.6666666) * 3.,0.),1.));
     } else if (name_ == "Grayscale")
-        col = hslToRGB(0., 0., v);
+        col = hslToRGB(0., 0., f);
     return col;
 }
 
-ColorMap StandardColorMapFactory::rainbow_("Rainbow");
-ColorMap StandardColorMapFactory::grayscale_("Grayscale");
-ColorMap StandardColorMapFactory::blackbody_("Blackbody");
+ColorMap StandardColorMapFactory::cm_("Rainbow");

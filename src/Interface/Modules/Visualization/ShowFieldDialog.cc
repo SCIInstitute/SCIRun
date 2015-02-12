@@ -90,12 +90,12 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   groupBox_4->setVisible(false); //Node Display Type Group Box
 
   //Edges Tab
-  groupBox_7->setVisible(false);//Edge Display Type Group Box
-  label_9->setVisible(false); //resolution label
-  cylinder_res_spin->setVisible(false); //resolution spinbox
-  label_8->setVisible(false); //scale label
-  cylinder_rad_spin->setVisible(false); //cylinder scale spinbox
-  groupBox_6->setVisible(false); //edge coloring
+  //groupBox_7->setVisible(false);//Edge Display Type Group Box
+  //label_9->setVisible(false); //resolution label
+  //cylinder_res_spin->setVisible(false); //resolution spinbox
+  //label_8->setVisible(false); //scale label
+  //cylinder_rad_spin->setVisible(false); //cylinder scale spinbox
+  //groupBox_6->setVisible(false); //edge coloring
 
   //Faces Tab
   groupBox_5->setVisible(false); //face coloring

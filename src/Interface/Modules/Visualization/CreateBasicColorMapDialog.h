@@ -50,8 +50,8 @@ public:
  private Q_SLOTS:
   void updateColorMapPreview(QString s);
   const QString buildGradientString(SCIRun::Core::Datatypes::ColorMap cm);
-  void setShiftSlider(QString s);
-  void setResolutionSlider(QString s);
+  void setShiftSlider(double d);
+  void setResolutionSlider(int i);
   void setShiftText(int i);
   void setResolutionText(int i);
   void onInvertCheck(bool b);
