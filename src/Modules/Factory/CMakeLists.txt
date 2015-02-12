@@ -52,6 +52,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_FiniteElements
   Modules_Legacy_Forward
   Modules_Legacy_Inverse
+  Modules_Legacy_Visualization
   Modules_Basic
   Modules_DataIO
   Modules_String

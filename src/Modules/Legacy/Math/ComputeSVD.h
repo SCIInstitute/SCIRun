@@ -27,7 +27,7 @@
 */
 
 #ifndef MODULES_LEGACY_MATH_COMPUTESVD_H_
-#define MODLES_LEGACY_MATH_COMPUTESVD_H_ 1
+#define MODULES_LEGACY_MATH_COMPUTESVD_H_ 1
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Math/share.h>

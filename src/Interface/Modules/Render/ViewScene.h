@@ -83,6 +83,9 @@ namespace SCIRun {
       void viewVectorSelected(int index);
       void configurationButtonClicked();
       void assignBackgroundColor();
+      void setTransparencySortTypeContinuous(bool index);
+      void setTransparencySortTypeUpdate(bool index);
+      void setTransparencySortTypeLists(bool index);
       void handleUnselectedItem(const QString& name);
       void handleSelectedItem(const QString& name);
 

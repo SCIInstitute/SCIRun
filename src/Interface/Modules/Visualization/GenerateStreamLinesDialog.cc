@@ -26,28 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Factory/ModuleDialogFactory.h>
-#include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
-#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
-#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
-#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
-#include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
 #include <Interface/Modules/Visualization/GenerateStreamLinesDialog.h>
-#include <boost/assign.hpp>
-#include <boost/functional/factory.hpp>
+#include <Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace boost::assign;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-void ModuleDialogFactory::addDialogsToMakerMap2()
+GenerateStreamLinesDialog::GenerateStreamLinesDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(tDCSSimulator, TDCSSimulatorDialog)
-    ADD_MODULE_DIALOG(ElectrodeCoilSetup, ElectrodeCoilSetupDialog)
-    ADD_MODULE_DIALOG(SetConductivitiesToMesh, SetConductivitiesToTetMeshDialog)
-    ADD_MODULE_DIALOG(GenerateROIStatistics, GenerateROIStatisticsDialog)
-    ADD_MODULE_DIALOG(SetupTDCS, SetupRHSforTDCSandTMSDialog)
-    ADD_MODULE_DIALOG(GenerateStreamLines, GenerateStreamLinesDialog)
-  ;
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+  streamlineMethod_.insert(StringPair("Cell Walk", "CellWalk"));
+  streamlineMethod_.insert(StringPair("Adams-Bashforth Multi-Step", "AdamsBashforth"));
+  streamlineMethod_.insert(StringPair("Heun Method", "Heun"));
+  streamlineMethod_.insert(StringPair("Classic 4th Order Runge-Kutta", "RungeKutta"));
+  streamlineMethod_.insert(StringPair("Adaptive Runge-Kutta-Fehlberg", "RungeKuttaFehlberg"));
+  
+  addSpinBoxManager(maxStepsSpinBox_, Parameters::StreamlineMaxSteps);
+  addDoubleSpinBoxManager(toleranceDoubleSpinBox_, Parameters::StreamlineTolerance);
+  addDoubleSpinBoxManager(stepSizeDoubleSpinBox_, Parameters::StreamlineStepSize);
+  addComboBoxManager(directionComboBox_, Parameters::StreamlineDirection);
+  addComboBoxManager(valueComboBox_, Parameters::StreamlineValue);
+  addComboBoxManager(methodComboBox_, Parameters::StreamlineMethod, streamlineMethod_);
+  addCheckBoxManager(autoParameterCheckBox_, Parameters::AutoParameters);
+  addCheckBoxManager(filterColinearCheckBox_, Parameters::RemoveColinearPoints);
+}
+
+void GenerateStreamLinesDialog::pull()
+{
+  pull_newVersionToReplaceOld();
 }

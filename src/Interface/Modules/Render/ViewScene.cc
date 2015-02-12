@@ -113,9 +113,12 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
+
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
+
   Guard lock(SCIRun::Modules::Render::ViewScene::mutex_.get());
+
 
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
   
@@ -123,6 +126,7 @@ void ViewSceneDialog::newGeometryValue()
   if (spire == nullptr)
     return;
   spire->removeAllGeomObjects();
+
 
   // Grab the geomData transient value.
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
@@ -181,6 +185,7 @@ void ViewSceneDialog::newGeometryValue()
       itemValueChanged_ = false;
     }
   }
+
   else
   {
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
@@ -420,6 +425,30 @@ void ViewSceneDialog::assignBackgroundColor()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::CONTINUOUS_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::UPDATE_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeLists(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::handleUnselectedItem(const QString& name)
 {
   itemValueChanged_ = true;
@@ -593,6 +622,7 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
 	ModuleDialogGeneric::hideEvent(evt);
 }
 
+
 ViewSceneItemManager::ViewSceneItemManager() 
   : model_(new QStandardItemModel(3, 1))
 {
@@ -614,6 +644,7 @@ ViewSceneItemManager::ViewSceneItemManager()
 #endif
 }
 
+
 void ViewSceneItemManager::SetupConnections(ViewSceneDialog* slotHolder)
 {
   connect(this, SIGNAL(itemUnselected(const QString&)), slotHolder, SLOT(handleUnselectedItem(const QString&)));
@@ -627,6 +658,7 @@ void ViewSceneItemManager::addItem(const QString& name, const QString& displayNa
   //item->setToolTip(displayName);
 
 	item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+
   if (checked)
     item->setData(Qt::Checked, Qt::CheckStateRole);
   else

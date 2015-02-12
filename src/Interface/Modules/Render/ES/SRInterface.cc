@@ -96,7 +96,7 @@ namespace SCIRun {
 
       showOrientation_ = true;
       autoRotate_ = false;
-
+      mRenderSortType = RenderState::TransparencySortType::CONTINUOUS_SORT;
 			// Construct ESCore. We will need to bootstrap the core. We should also
 			// probably add utility static classes.
 			setupCore();
@@ -246,6 +246,12 @@ namespace SCIRun {
       mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
     }
 
+    //------------------------------------------------------------------------------
+    void SRInterface::setTransparencyRendertype(RenderState::TransparencySortType rType)
+    {
+      mRenderSortType = rType;      
+    }
+
 		//------------------------------------------------------------------------------
 		void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
 		{
@@ -306,8 +312,11 @@ namespace SCIRun {
 			}
 
 			// Add vertex buffer objects.
+      std::vector<char*> vbo_buffer;
+      std::vector<size_t> stride_vbo;
+      
 			int nameIndex = 0;
-			for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+			for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
 			{
 				const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
 
@@ -324,12 +333,18 @@ namespace SCIRun {
 						attributeData, vbo.name);
 				}
 
+        vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
+        size_t stride = 0;
+        for (auto a : vbo.attributes)
+          stride += a.sizeInBytes; 
+        stride_vbo.push_back(stride);
+
 				bbox.extend(vbo.boundingBox);
 			}
 
 			// Add index buffer objects.
 			nameIndex = 0;
-			for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
+			for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
 			{
 				const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
 				GLenum primType = GL_UNSIGNED_SHORT;
@@ -369,11 +384,85 @@ namespace SCIRun {
 					primitive = GL_TRIANGLES;
 					break;
 				}
+        /// Create sorted lists of Buffers for transparency in each direction of the axis
+        uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
+        size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+        Core::Geometry::Vector dir(0.0, 0.0, 0.0);
 
-				int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+        std::vector<DepthIndex> rel_depth(num_triangles);
+        for (int i = 0; i <= 6; ++i)
+        {
+          std::string name = ibo.name;
+          
+          if (i == 0)
+          {
+            dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
+            name += "X";
+          }
+          if (i == 1)
+          {
+            dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
+            name += "Y";
+          }
+          if (i == 2)
+          {
+            dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
+            name += "Z";
+          }
+          if (i == 3)
+          {
+            dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
+            name += "NegX";
+          }
+          if (i == 4)
+          {
+            dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
+            name += "NegY";
+          }
+          if (i == 5)
+          {
+            dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
+            name += "NegZ";
+          }
+          if (i < 6)
+          {
+            for (size_t j = 0; j < num_triangles; j++)
+            {
+              float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
+              Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
 
-				iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType,
-					numPrimitives, ibo.name);
+              float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
+              Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+              float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
+              Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+              rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+              rel_depth[j].mIndex = j;
+            }
+
+            std::sort(rel_depth.begin(), rel_depth.end());
+
+            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+
+            std::vector<char> sorted_buffer(ibo.data->getBufferSize());
+            char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
+            char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
+            size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+
+            for (size_t j = 0; j < num_triangles; j++)
+            {
+              memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+            }
+
+            iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
+          }
+          else
+          {
+            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+            iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+          }
+        }        
 			}
 
 			// Add default identity transform to the object globally (instead of per-pass)
@@ -391,9 +480,26 @@ namespace SCIRun {
 				uint64_t entityID = getEntityIDForName(pass.passName, port);
 
 				if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
-				{
+				{   
 					addVBOToEntity(entityID, pass.vboName);
-					addIBOToEntity(entityID, pass.iboName);
+          for (int i = 0; i <= 6; ++i)
+          {
+            std::string name = pass.iboName;
+            if (i == 0)
+              name += "X";
+            if (i == 1)
+              name += "Y";
+            if (i == 2)
+              name += "Z";
+            if (i == 3)
+              name += "NegX";
+            if (i == 4)
+              name += "NegY";
+            if (i == 5)
+              name += "NegZ";
+
+            addIBOToEntity(entityID, name);
+          }
 				}
 				else
 				{
@@ -514,8 +620,8 @@ namespace SCIRun {
 
         // Add a pass to our local object.
         elem.mPasses.emplace_back(pass.passName, pass.renderType);
+        pass.renderState.mSortType = mRenderSortType;
         mCore.addComponent(entityID, pass);
-
       }
 
       // Recalculate scene bounding box. Should only be done when an object is added.
@@ -552,9 +658,58 @@ namespace SCIRun {
 			ibo.primType = iboData.primType;
 			ibo.primMode = iboData.primMode;
 			ibo.numPrims = iboData.numPrims;
-
+      
 			mCore.addComponent(entityID, ibo);
 		}
+
+    //------------------------------------------------------------------------------
+    void SRInterface::reorderIBO(Core::Datatypes::GeometryObject::SpireSubPass& pass)
+    { 
+      char* vbo_buffer = reinterpret_cast<char*>(pass.vbo.data->getBuffer());
+      uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.ibo.data->getBuffer());
+      size_t num_triangles = pass.ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+      size_t stride_vbo = 0;
+      for (auto a : pass.vbo.attributes)
+        stride_vbo += a.sizeInBytes;
+
+      std::vector<DepthIndex> rel_depth(num_triangles);
+      Core::Geometry::Vector dir(mCamera->getViewToWorld()[0][2], mCamera->getViewToWorld()[1][2], mCamera->getViewToWorld()[2][2]);
+      
+      for (size_t j = 0; j < num_triangles; j++)
+      {
+        float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
+        Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+
+        float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 1]));
+        Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+        float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 2]));
+        Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+        rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+        rel_depth[j].mIndex = j;
+      }
+
+      std::sort(rel_depth.begin(), rel_depth.end());
+
+      int numPrimitives = pass.ibo.data->getBufferSize() / pass.ibo.indexSize;
+
+      std::vector<char> sorted_buffer(pass.ibo.data->getBufferSize());
+      char* ibuffer = reinterpret_cast<char*>(pass.ibo.data->getBuffer());
+      char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
+      size_t tri_size = pass.ibo.data->getBufferSize() / num_triangles;
+
+      for (size_t j = 0; j < num_triangles; j++)
+      {
+        memcpy(sbuffer + j * tri_size, pass.ibo.data->getBuffer() + rel_depth[j].mIndex * tri_size, tri_size);
+      }
+
+      //ren::IBOMan& iboMan = *mCore.getStaticComponent<ren::StaticIBOMan>()->instance;
+
+     // auto iboData = iboMan.getIBOData(pass.iboName);
+
+      //iboMan.addInMemoryIBO(sbuffer, pass.ibo.data->getBufferSize(), iboData.primMode, iboData.primType, iboData.numPrims, pass.iboName);
+    }
 
 		//------------------------------------------------------------------------------
 		void SRInterface::addShaderToEntity(uint64_t entityID, const std::string& shaderName)

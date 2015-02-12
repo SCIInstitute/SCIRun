@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 //    File   : StreamLineIntergrators.h
@@ -35,48 +35,66 @@
 #ifndef CORE_ALGORITHMS_FIELDS_STREAMLINES_STREAMLINEINTEGRATORS_H
 #define CORE_ALGORITHMS_FIELDS_STREAMLINES_STREAMLINEINTEGRATORS_H 1
 
-#include <string>
-#include <vector>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-namespace SCIRunAlgo {
+        enum IntegrationMethod
+        {
+          AdamsBashforth = 0,
+          Heun = 2,
+          RungeKutta = 3,
+          RungeKuttaFehlberg = 4,
+          CellWalk = 5
+        };
 
-using namespace SCIRun;
+        enum StreamlineValue
+        {
+          SeedValue,
+          SeedIndex,
+          IntegrationIndex,
+          IntegrationStep,
+          DistanceFromSeed,
+          StreamlineLength
+        };
 
-class SCISHARE StreamLineIntegrators
-{
-public:
-  void FindAdamsBashforth();
-  void FindAdamsMoulton();
-  void FindHeun();
-  void FindRK4();
-  void FindRKF();
+        class SCISHARE StreamLineIntegrators
+        {
+        public:
+          void FindAdamsBashforth();
+          void FindHeun();
+          void FindRK4();
+          void FindRKF();
 
-  int ComputeRKFTerms(Vector v[6],       // storage for terms
-		      const Point &p,    // previous point
-		      double s );        // current step size
+          void integrate(IntegrationMethod method);
 
-  void integrate( unsigned int method );
+          //TODO: make private
+          Geometry::Point seed_;                         // initial point
+          double tolerance2_;                  // square error tolerance
+          double step_size_;                    // initial step size
+          unsigned int max_steps_;              // max number of steps
+          VField* vfield_;     // the field
 
-protected:
-  inline bool interpolate( const Point &p, Vector &v);
+          std::vector<Geometry::Point> nodes_;                // storage for points
 
-public:
-  Point seed_;                         // initial point
-  double tolerance2_;                  // square error tolerance
-  double step_size_;                    // initial step size
-  unsigned int max_steps_;              // max number of steps
-  VField* vfield_;     // the field
+        private:
+          int ComputeRKFTerms(Geometry::Vector v[6],       // storage for terms
+            const Geometry::Point &p,    // previous point
+            double s);        // current step size
 
-  std::vector<Point> nodes_;                // storage for points
-};
+          bool interpolate(const Geometry::Point &p, Geometry::Vector &v);
+        };
 
+      }
+    }
+  }
 } // End namespace SCIRun
 
-#endif 
-
+#endif

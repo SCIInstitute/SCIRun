@@ -74,6 +74,7 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
   state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
+
   //state->setValue(NodeAsPoints, true); //not used
   state->setValue(NodeAsSpheres, 0);
   //state->setValue(EdgesAsLines, true); //not used
@@ -100,6 +101,11 @@ void ShowFieldModule::execute()
   {
     std::ostringstream ostr;
     ostr << get_id() << "_" << field.get();
+    ostr << "_";
+    if (colorMap)
+      ostr << colorMap->get();
+    else
+      ostr << "<nocolormap>";
     GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), ostr.str());
     sendOutput(SceneGraph, geom);
   }
@@ -423,6 +429,7 @@ void ShowFieldModule::renderFacesLinear(
     //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals)
     {
+      /// Fix normal of Quads
       if (points.size() == 4)
       {
         Core::Geometry::Vector edge1 = points[1] - points[0];
@@ -439,6 +446,7 @@ void ShowFieldModule::renderFacesLinear(
           normals[i] = norm;
         }
       }
+      /// Fix Normals of Tris
       else
       {
         Core::Geometry::Vector edge1 = points[1] - points[0];
@@ -451,6 +459,7 @@ void ShowFieldModule::renderFacesLinear(
         {
           normals[i] = norm;
         }
+        //For future reference for a try at smoother rendering
         /*
         for (size_t i = 0; i < nodes.size(); i++)
         {
