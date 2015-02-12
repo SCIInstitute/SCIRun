@@ -1467,30 +1467,35 @@ void ShowFieldModule::renderEdges(
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(edgeTransparencyValue_)));
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {
-    shader = state.get(RenderState::USE_CYLINDER) ? "Shaders/DirPhongCMap" : "Shaders/ColorMap";
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
     //push the color map parameters
     ColorMap * map = colorMap.get().get();
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
+    if (state.get(RenderState::USE_CYLINDER)) {
+        shader = "Shaders/DirPhongCMap" ;
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+          glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+          glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
+        uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+    } else {
+        shader = "Shaders/ColorMap";
+    }
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU) {
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
     if (state.get(RenderState::USE_CYLINDER)) {
-      shader = "Shaders/DirPhongCMap";
-      ColorRGB dft = state.defaultColor;
+      shader = "Shaders/DirPhongInSitu";
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-        glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
     }
     else {
       shader = "Shaders/InSituColor";
-      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(float), true));
     }
   }
   else if (colorScheme == GeometryObject::COLOR_UNIFORM)
@@ -1512,7 +1517,6 @@ void ShowFieldModule::renderEdges(
   // Use cylinders...
   if (state.get(RenderState::USE_CYLINDER))
     primIn = GeometryObject::SpireIBO::TRIANGLES;
-    vboOnGPU = true;
   auto my_state = this->get_state();
   double num_strips = double(my_state->getValue(CylinderResolution).toInt());
   double radius = my_state->getValue(CylinderRadius).toDouble();
@@ -1600,14 +1604,12 @@ void ShowFieldModule::renderEdges(
           colors.push_back(ColorRGB(scol0, scol0, scol0));
         else if (colorScheme == GeometryObject::COLOR_IN_SITU)
           colors.push_back(vcol0.diffuse);
-        else  colors.push_back(state.defaultColor);
         numVBOElements++;
         points.push_back(radius * p + Vector(p1));
         if (colorScheme == GeometryObject::COLOR_MAP)
           colors.push_back(ColorRGB(scol1, scol1, scol1));
         else if (colorScheme == GeometryObject::COLOR_IN_SITU)
           colors.push_back(vcol1.diffuse);
-        else  colors.push_back(state.defaultColor);
         numVBOElements++;
         normals.push_back(p);
         normals.push_back(p);
@@ -1635,15 +1637,13 @@ void ShowFieldModule::renderEdges(
             if (colorScheme == GeometryObject::COLOR_MAP)
               colors.push_back(ColorRGB(col, col, col));
             else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-                colors.push_back(vcol0.diffuse);
-            else  colors.push_back(state.defaultColor);
+                colors.push_back(rgbcol.diffuse);
             numVBOElements++;
             points.push_back(radius * pp2 + Vector(a));
             if (colorScheme == GeometryObject::COLOR_MAP)
               colors.push_back(ColorRGB(col, col, col));
             else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-                colors.push_back(vcol1.diffuse);
-            else  colors.push_back(state.defaultColor);
+                colors.push_back(rgbcol.diffuse);
             numVBOElements++;
             normals.push_back(pp1);
             normals.push_back(pp2);
@@ -1663,7 +1663,6 @@ void ShowFieldModule::renderEdges(
         colors.push_back(ColorRGB(scol0, scol0, scol0));
       else if (colorScheme == GeometryObject::COLOR_IN_SITU)
         colors.push_back(vcol0.diffuse);
-      else  colors.push_back(state.defaultColor);
       indices.push_back(index);
       ++index;
       points.push_back(Vector(p1));
@@ -1671,7 +1670,6 @@ void ShowFieldModule::renderEdges(
         colors.push_back(ColorRGB(scol1, scol1, scol1));
       else if (colorScheme == GeometryObject::COLOR_IN_SITU)
         colors.push_back(vcol1.diffuse);
-      else  colors.push_back(state.defaultColor);
       indices.push_back(index);
       ++index;
       ++numVBOElements;
@@ -1683,7 +1681,7 @@ void ShowFieldModule::renderEdges(
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
   vboSize += (uint32_t)normals.size() * 3 * sizeof(float);
   if (colorScheme == GeometryObject::COLOR_IN_SITU || colorScheme == GeometryObject::COLOR_MAP)
-    vboSize += (uint32_t)points.size() * 4; //add last 4 bytes for color
+    vboSize += (uint32_t)colors.size() * 4; //add last 4 bytes for color
   iboSize = (uint32_t)indices.size() * sizeof(uint32_t);
 
   /// \todo To reduce memory requirements, we can use a 16bit index buffer.
