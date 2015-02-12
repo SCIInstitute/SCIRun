@@ -1591,8 +1591,9 @@ void ShowFieldModule::renderEdges(
     //accumulate VBO or IBO data
     if (state.get(RenderState::USE_CYLINDER) && p0 != p1) {
       //generate triangles for the cylinders.
-      Vector n((p0 - p1).normal()), u = (n + Vector(10, 10, 10)).normal();
+      Vector n((p0 - p1).normal()), u = (10 * n + Vector(10, 10, 10)).normal();
       Vector crx = Cross(u, n).normal();
+      u = Cross(crx, n).normal();
       Vector p;
       for (double strips = 0.; strips <= num_strips; strips += 1.) {
         uint32_t offset = (uint32_t)numVBOElements;
