@@ -800,3 +800,14 @@ namespace ThreadingPrototype
     }
   }
 }
+
+TEST(ModuleReplaceWithAlgoTest, Foo)
+{
+  HardCodedModuleFactory f;
+
+
+
+
+
+  FAIL() << "todo";
+}

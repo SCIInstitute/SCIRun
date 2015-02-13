@@ -28,7 +28,7 @@
 /// @todo Documentation Dataflow/Network/ModuleDescription.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
-#define DATAFLOW_NETWORK_MODULE_DESCRIPTION_H 
+#define DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
 
 #include <string>
 #include <vector>
@@ -54,7 +54,7 @@ namespace Networks {
 
   struct SCISHARE PortDescription
   {
-    PortDescription(const PortId& p, const std::string& d, bool dyn) : 
+    PortDescription(const PortId& p, const std::string& d, bool dyn) :
       id(p), datatype(d), isDynamic(dyn) {}
     PortId id;
     std::string datatype;
@@ -72,6 +72,8 @@ namespace Networks {
 
   typedef PortDescription InputPortDescription;
   typedef PortDescription OutputPortDescription;
+  typedef std::vector<InputPortDescription> InputPortDescriptionList;
+  typedef std::vector<OutputPortDescription> OutputPortDescriptionList;
 
   struct SCISHARE ModuleId
   {
@@ -114,8 +116,8 @@ namespace Networks {
     std::string module_version_;
     std::string moduleStatus_;
     std::string moduleInfo_;
-    std::vector<InputPortDescription> input_ports_;
-    std::vector<OutputPortDescription> output_ports_;
+    InputPortDescriptionList input_ports_;
+    OutputPortDescriptionList output_ports_;
     //bool                              optional_;
     //bool                              hide_;
     //bool                              dynamic_;
