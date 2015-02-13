@@ -98,20 +98,15 @@ public:
       return;
     }
 
-    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY) ||
+        srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) ||
+        srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES))
     {
       return;
     }
 
     GLuint iboID = ibo.front().glid;
-
-    int index = 0;
-    for (auto it = ibo.begin(); it != ibo.end(); ++it, ++index)
-    {
-      if (index == 6)
-        iboID = it->glid;
-    }
-
+    
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
     // setup (including uniforms) if the simple geom hasn't been setup.

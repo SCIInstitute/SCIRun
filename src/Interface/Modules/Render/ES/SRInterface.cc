@@ -344,128 +344,136 @@ namespace SCIRun {
 
 			// Add index buffer objects.
 			nameIndex = 0;
-			for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
-			{
-				const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
-				GLenum primType = GL_UNSIGNED_SHORT;
-				switch (ibo.indexSize)
-				{
-				case 1: // 8-bit
-					primType = GL_UNSIGNED_BYTE;
-					break;
-
-				case 2: // 16-bit
-					primType = GL_UNSIGNED_SHORT;
-					break;
-
-				case 4: // 32-bit
-					primType = GL_UNSIGNED_INT;
-					break;
-
-				default:
-					primType = GL_UNSIGNED_INT;
-					throw std::invalid_argument("Unable to determine index buffer depth.");
-					break;
-				}
-
-				GLenum primitive = GL_TRIANGLES;
-				switch (ibo.prim)
-				{
-				case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
-					primitive = GL_POINTS;
-					break;
-
-				case Core::Datatypes::GeometryObject::SpireIBO::LINES:
-					primitive = GL_LINES;
-					break;
-
-				case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
-				default:
-					primitive = GL_TRIANGLES;
-					break;
-				}
-        /// Create sorted lists of Buffers for transparency in each direction of the axis
-        uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
-        size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
-        Core::Geometry::Vector dir(0.0, 0.0, 0.0);
-
-        std::vector<DepthIndex> rel_depth(num_triangles);
-        for (int i = 0; i <= 6; ++i)
+      for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
+      {
+        const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
+        GLenum primType = GL_UNSIGNED_SHORT;
+        switch (ibo.indexSize)
         {
-          std::string name = ibo.name;
-          
-          if (i == 0)
+        case 1: // 8-bit
+          primType = GL_UNSIGNED_BYTE;
+          break;
+
+        case 2: // 16-bit
+          primType = GL_UNSIGNED_SHORT;
+          break;
+
+        case 4: // 32-bit
+          primType = GL_UNSIGNED_INT;
+          break;
+
+        default:
+          primType = GL_UNSIGNED_INT;
+          throw std::invalid_argument("Unable to determine index buffer depth.");
+          break;
+        }
+
+        GLenum primitive = GL_TRIANGLES;
+        switch (ibo.prim)
+        {
+        case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
+          primitive = GL_POINTS;
+          break;
+
+        case Core::Datatypes::GeometryObject::SpireIBO::LINES:
+          primitive = GL_LINES;
+          break;
+
+        case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
+        default:
+          primitive = GL_TRIANGLES;
+          break;
+        }
+
+        if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
+        {
+          /// Create sorted lists of Buffers for transparency in each direction of the axis
+          uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
+          size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+          Core::Geometry::Vector dir(0.0, 0.0, 0.0);
+
+          std::vector<DepthIndex> rel_depth(num_triangles);
+          for (int i = 0; i <= 6; ++i)
           {
-            dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
-            name += "X";
-          }
-          if (i == 1)
-          {
-            dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
-            name += "Y";
-          }
-          if (i == 2)
-          {
-            dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
-            name += "Z";
-          }
-          if (i == 3)
-          {
-            dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
-            name += "NegX";
-          }
-          if (i == 4)
-          {
-            dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
-            name += "NegY";
-          }
-          if (i == 5)
-          {
-            dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
-            name += "NegZ";
-          }
-          if (i < 6)
-          {
-            for (size_t j = 0; j < num_triangles; j++)
+            std::string name = ibo.name;
+            if (i == 0)
             {
-              float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
-              Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
-
-              float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
-              Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
-
-              float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
-              Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
-
-              rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
-              rel_depth[j].mIndex = j;
+              int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+              iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
             }
-
-            std::sort(rel_depth.begin(), rel_depth.end());
-
-            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-
-            std::vector<char> sorted_buffer(ibo.data->getBufferSize());
-            char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
-            char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
-            
-            if (sbuffer && num_triangles > 0)
+            if (i == 1)
             {
-              size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+              dir = Core::Geometry::Vector(1.0, 0.0, 0.0);
+              name += "X";
+            }
+            if (i == 2)
+            {
+              dir = Core::Geometry::Vector(0.0, 1.0, 0.0);
+              name += "Y";
+            }
+            if (i == 3)
+            {
+              dir = Core::Geometry::Vector(0.0, 0.0, 1.0);
+              name += "Z";
+            }
+            if (i == 4)
+            {
+              dir = Core::Geometry::Vector(-1.0, 0.0, 0.0);
+              name += "NegX";
+            }
+            if (i == 5)
+            {
+              dir = Core::Geometry::Vector(0.0, -1.0, 0.0);
+              name += "NegY";
+            }
+            if (i == 6)
+            {
+              dir = Core::Geometry::Vector(0.0, 0.0, -1.0);
+              name += "NegZ";
+            }
+            if (i > 0)
+            {
               for (size_t j = 0; j < num_triangles; j++)
               {
-                memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+                float* vertex1 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3]));
+                Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+
+                float* vertex2 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 1]));
+                Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+                float* vertex3 = reinterpret_cast<float*>(vbo_buffer[nameIndex] + stride_vbo[nameIndex] * (ibo_buffer[j * 3 + 2]));
+                Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+                rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+                rel_depth[j].mIndex = j;
               }
-              iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
+
+              std::sort(rel_depth.begin(), rel_depth.end());
+
+              int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+
+              std::vector<char> sorted_buffer(ibo.data->getBufferSize());
+              char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
+              char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+
+              if (sbuffer && num_triangles > 0)
+              {
+                size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+                for (size_t j = 0; j < num_triangles; j++)
+                {
+                  memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+                }
+                iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
+              }
             }
           }
-          else
-          {
-            int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
-            iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
-          }
-        }        
-			}
+        }
+        else
+        {
+          int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
+          iboMan.addInMemoryIBO(ibo.data->getBuffer(), ibo.data->getBufferSize(), primitive, primType, numPrimitives, ibo.name);
+        }
+      }
 
 			// Add default identity transform to the object globally (instead of per-pass)
 			glm::mat4 xform;
@@ -484,23 +492,30 @@ namespace SCIRun {
 				if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
 				{   
 					addVBOToEntity(entityID, pass.vboName);
-          for (int i = 0; i <= 6; ++i)
+          if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
           {
-            std::string name = pass.iboName;
-            if (i == 0)
-              name += "X";
-            if (i == 1)
-              name += "Y";
-            if (i == 2)
-              name += "Z";
-            if (i == 3)
-              name += "NegX";
-            if (i == 4)
-              name += "NegY";
-            if (i == 5)
-              name += "NegZ";
+            for (int i = 0; i <= 6; ++i)
+            {
+              std::string name = pass.iboName;
+              if (i == 1)
+                name += "X";
+              if (i == 2)
+                name += "Y";
+              if (i == 3)
+                name += "Z";
+              if (i == 4)
+                name += "NegX";
+              if (i == 5)
+                name += "NegY";
+              if (i == 6)
+                name += "NegZ";
 
-            addIBOToEntity(entityID, name);
+              addIBOToEntity(entityID, name);
+            }
+          }
+          else
+          {
+            addIBOToEntity(entityID, pass.iboName);
           }
 				}
 				else
