@@ -80,14 +80,6 @@ void GenerateStreamLines::execute()
     setAlgoBoolFromState(Parameters::RemoveColinearPoints);
     setAlgoBoolFromState(Parameters::AutoParameters);
     setAlgoOptionFromState(Parameters::StreamlineMethod);
-    /*
-    int method = gui_method_.get();
-    if (method == 0) algo_.set_option("method","AdamsBashforth");
-    else if (method == 2) algo_.set_option("method","Heun");
-    else if (method == 3) algo_.set_option("method","RungeKutta");
-    else if (method == 4) algo_.set_option("method","RungeKuttaFehlberg");
-    else if (method == 5) algo_.set_option("method","CellWalk");
-    */
 
     auto output = algo().run_generic(withInputData((Vector_Field, input)(Seed_Points, seeds)));
 
