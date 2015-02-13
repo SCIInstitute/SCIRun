@@ -82,11 +82,10 @@ private:
     GLuint mSortedID;
 
     SortedObject() :
-      mName(""),
-      mSortedID(NULL)
+      mSortedID(0)
     {}
 
-    SortedObject(std::string name, GLuint ID) :
+    SortedObject(const std::string& name, GLuint ID) :
       mName(name),
       mSortedID(ID)
     {}
@@ -94,7 +93,7 @@ private:
 
   Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);
   std::vector<SortedObject> sortedObjects;
-  
+
   class DepthIndex {
   public:
     size_t mIndex;
@@ -117,7 +116,7 @@ private:
   };
 
   GLuint sortObjects(const Core::Geometry::Vector& dir,
-                     const es::ComponentGroup<ren::IBO>& ibo, 
+                     const es::ComponentGroup<ren::IBO>& ibo,
                      const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
                      const es::ComponentGroup<ren::StaticIBOMan>& iboMan)
   {
@@ -169,7 +168,7 @@ private:
       result = iboMan.front().instance->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), ibo.front().primMode, ibo.front().primType,
         numPrimitives, transIBOName);
     }
-   
+
     return result;
   }
 
@@ -210,12 +209,12 @@ private:
     }
 
     bool drawLines = (ibo.front().primMode == Core::Datatypes::GeometryObject::SpireIBO::LINES);
-    GLuint iboID = ibo.front().glid;    
+    GLuint iboID = ibo.front().glid;
 
     Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
                                camera.front().data.worldToView[1][2],
                                camera.front().data.worldToView[2][2]);
-    
+
     if (sortedObjects.size() <=0)
     {
       prevDir = dir;
@@ -246,14 +245,14 @@ private:
           if (!indexed)
           {
             index = sortedObjects.size();
-            sortedObjects.push_back(SortedObject(pass.front().ibo.name, NULL));
+            sortedObjects.push_back(SortedObject(pass.front().ibo.name, 0));
           }
 
           Core::Geometry::Vector diff = prevDir - dir;
           float distance = sqrtf(Core::Geometry::Dot(diff, diff));
-          if (distance >= 1.23 || sortedObjects[index].mSortedID == NULL)
+          if (distance >= 1.23 || sortedObjects[index].mSortedID == 0)
           {
-            if (sortedObjects[index].mSortedID != NULL)
+            if (sortedObjects[index].mSortedID != 0)
             {
               iboMan.front().instance->removeInMemoryIBO(sortedObjects[index].mSortedID);
             }
@@ -407,11 +406,11 @@ private:
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}
 
     geom.front().attribs.bind();
-    
+
     bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
     bool cullFace = glIsEnabled(GL_CULL_FACE);
     bool blend = glIsEnabled(GL_BLEND);
-      
+
     GL(glEnable(GL_DEPTH_TEST));
     GL(glDepthMask(GL_FALSE));
     GL(glDisable(GL_CULL_FACE));
@@ -442,7 +441,7 @@ private:
           rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       CPM_BSERIALIZE_NS::BSerialize dataDeserialize(
-          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize()); 
+          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       int64_t posSize     = 0;
       int64_t dataSize    = 0;
@@ -574,4 +573,3 @@ const char* getSystemName_RenderColorMapTrans()
 
 } // namespace Render
 } // namespace SCIRun
-

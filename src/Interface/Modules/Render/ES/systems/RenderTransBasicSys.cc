@@ -85,11 +85,10 @@ private:
     GLuint mSortedID;
 
     SortedObject() :
-      mName(""),
-      mSortedID(NULL)
+      mSortedID(0)
     {}
 
-    SortedObject(std::string name, GLuint ID) :
+    SortedObject(const std::string& name, GLuint ID) :
       mName(name),
       mSortedID(ID)
     {}
@@ -203,7 +202,7 @@ private:
     {
       return;
     }
-    
+
     if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY) &&
         !srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) &&
         !srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES))
@@ -248,14 +247,14 @@ private:
           if (!indexed)
           {
             index = sortedObjects.size();
-            sortedObjects.push_back(SortedObject(pass.front().ibo.name, NULL));
+            sortedObjects.push_back(SortedObject(pass.front().ibo.name, 0));
           }
 
           Core::Geometry::Vector diff = prevDir - dir;
           float distance = sqrtf(Core::Geometry::Dot(diff, diff));
-          if (distance >= 1.23 || sortedObjects[index].mSortedID == NULL)
+          if (distance >= 1.23 || sortedObjects[index].mSortedID == 0)
           {
-            if (sortedObjects[index].mSortedID != NULL)
+            if (sortedObjects[index].mSortedID != 0)
             {
               iboMan.front().instance->removeInMemoryIBO(sortedObjects[index].mSortedID);
             }
@@ -400,7 +399,7 @@ private:
     bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
     bool cullFace = glIsEnabled(GL_CULL_FACE);
     bool blend = glIsEnabled(GL_BLEND);
-      
+
     GL(glEnable(GL_DEPTH_TEST));
     GL(glDepthMask(GL_FALSE));
     GL(glDisable(GL_CULL_FACE));
@@ -429,7 +428,7 @@ private:
           rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       CPM_BSERIALIZE_NS::BSerialize colorDeserialize(
-          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize()); 
+          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       int64_t posSize     = 0;
       int64_t colorSize   = 0;
@@ -520,7 +519,7 @@ private:
       }
     }
 
- 
+
     if (!drawLines)
     {
       if (pass.front().renderState.mSortType == RenderState::TransparencySortType::CONTINUOUS_SORT)
@@ -541,7 +540,7 @@ private:
     {
       GL(glDisable(GL_BLEND));
     }
-    		
+
     geom.front().attribs.unbind();
 
     // Reapply the default state here -- only do this if static state is
@@ -566,4 +565,3 @@ const char* getSystemName_RenderBasicTransGeom()
 
 } // namespace Render
 } // namespace SCIRun
-
