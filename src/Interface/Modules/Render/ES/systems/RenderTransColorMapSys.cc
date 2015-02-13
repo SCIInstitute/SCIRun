@@ -93,7 +93,6 @@ private:
     {}
   };
 
-  //Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);
   std::vector<SortedObject> sortedObjects;
 
   class DepthIndex {
@@ -224,7 +223,6 @@ private:
         case RenderState::TransparencySortType::CONTINUOUS_SORT:
         {
           iboID = sortObjects(dir, ibo, pass, iboMan);
-          //std::cout << "continuous" << std::endl;
           break;
         }
         case RenderState::TransparencySortType::UPDATE_SORT:
@@ -246,7 +244,7 @@ private:
           }
 
           Core::Geometry::Vector diff = sortedObjects[index].prevDir - dir;
-          float distance = sqrtf(Core::Geometry::Dot(diff, diff));
+          double distance = sqrtf(Core::Geometry::Dot(diff, diff));
           if (distance >= 1.23 || sortedObjects[index].mSortedID == 0)
           {
             if (sortedObjects[index].mSortedID != 0)
@@ -257,7 +255,6 @@ private:
             sortedObjects[index].mSortedID = sortObjects(dir, ibo, pass, iboMan);
           }
           iboID = sortedObjects[index].mSortedID;
-          //::cout << "update" << std::endl;
           break;
         }
         case RenderState::TransparencySortType::LISTS_SORT:
@@ -286,11 +283,6 @@ private:
               iboNegZID = it->glid;
           }
 
-          Core::Geometry::Vector currentDir(camera.front().data.worldToView[0][2],
-                                            camera.front().data.worldToView[1][2],
-                                            camera.front().data.worldToView[2][2]);
-
-
           Core::Geometry::Vector absDir(abs(camera.front().data.worldToView[0][2]),
                                         abs(camera.front().data.worldToView[1][2]),
                                         abs(camera.front().data.worldToView[2][2]));
@@ -300,17 +292,16 @@ private:
 
           if (orZ == absDir.x())
           {
-            iboID = currentDir.x() < orZ ? iboNegXID : iboXID;
+            iboID = dir.x() < orZ ? iboNegXID : iboXID;
           }
           if (orZ == absDir.y())
           {
-            iboID = currentDir.y() < orZ ? iboNegYID : iboYID;
+            iboID = dir.y() < orZ ? iboNegYID : iboYID;
           }
           if (orZ == absDir.z())
           {
-            iboID = currentDir.z() < orZ ? iboNegZID : iboZID;
+            iboID = dir.z() < orZ ? iboNegZID : iboZID;
           }
-          //std::cout << "lists" << std::endl;
           break;
         }
       }
