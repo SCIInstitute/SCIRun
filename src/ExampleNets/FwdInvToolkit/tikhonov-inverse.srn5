@@ -664,8 +664,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>14</count>
+							<count>15</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CylinderRadius</name>
+								</first>
+								<second>
+									<name>CylinderRadius</name>
+									<value>
+										<which>1</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>CylinderResolution</name>
@@ -709,8 +721,8 @@
 								<second>
 									<name>EdgesAsCylinders</name>
 									<value>
-										<which>3</which>
-										<value>0</value>
+										<which>0</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -893,8 +905,8 @@
 								<second>
 									<name>EdgesAsCylinders</name>
 									<value>
-										<which>3</which>
-										<value>0</value>
+										<which>0</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1042,7 +1054,7 @@
 									<name>LCurveText</name>
 									<value>
 										<which>2</which>
-										<value>SolveInverseProblemWithTikhonov:0 plot_graph &quot; 1.75301 6.23573 1.75302 6.2346 1.75302 6.23328 1.75302 6.23173 1.75302 6.22992 1.75303 6.22781 1.75303 6.22534 1.75304 6.22246 1.75305 6.21912 1.75306 6.21523 1.75308 6.21072 1.7531 6.20551 1.75313 6.19949 1.75317 6.19257 1.75323 6.18463 1.75329 6.17554 1.75338 6.16519 1.75349 6.15345 1.75363 6.1402 1.7538 6.12529 1.75401 6.10863 1.75426 6.09009 1.75456 6.06959 1.75491 6.04704 1.75531 6.0224 1.75577 5.99563 1.75628 5.96673 1.75683 5.93572 1.75743 5.90267 1.75807 5.86765 1.75874 5.83077 1.75943 5.79218 1.76013 5.75201 1.76083 5.71044 1.76153 5.66764 1.76221 5.62379 1.76288 5.57907 1.76353 5.53365 1.76415 5.48768 1.76475 5.4413 1.76532 5.39466 1.76586 5.34785 1.76636 5.301 1.76685 5.25419 1.7673 5.20752 1.76773 5.16109 1.76813 5.115 1.76851 5.06938 1.76886 5.02436 1.7692 4.98012 1.76951 4.93683 1.76981 4.89469 1.77008 4.8539 1.77034 4.81466 1.77059 4.77713 1.77082 4.74144 1.77104 4.7077 1.77125 4.67594 1.77145 4.64615 1.77164 4.61831 1.77182 4.59236 1.772 4.5682 1.77218 4.54575 1.77235 4.52492 1.77253 4.50563 1.7727 4.48778 1.77287 4.4713 1.77305 4.45611 1.77322 4.44212 1.7734 4.42927 1.77358 4.41746 1.77377 4.40663 1.77396 4.39669 1.77416 4.38757 1.77436 4.37919 1.77458 4.37147 1.7748 4.36434 1.77504 4.35771 1.77529 4.35154 1.77556 4.34574 1.77586 4.34026 1.77617 4.33507 1.77652 4.33011 1.7769 4.32536 1.77733 4.32079 1.77779 4.3164 1.77831 4.31217 1.77889 4.3081 1.77952 4.30417 1.78023 4.30038 1.78102 4.29672 1.7819 4.29317 1.78288 4.28971 1.784 4.28632 1.78527 4.28296 1.78673 4.27962 1.78841 4.27625 1.79037 4.27285 1.79266 4.26938 1.79534 4.26582 1.79849 4.26216 1.8022 4.25837 1.80655 4.25445 1.81166 4.25037 1.81765 4.24613 1.82466 4.24169 1.83282 4.23703 1.8423 4.23214 1.85324 4.22698 1.8658 4.22154 1.88009 4.2158 1.89619 4.20973 1.91413 4.20332 1.93388 4.19658 1.95535 4.18951 1.97838 4.18212 2.0028 4.17442 2.02839 4.16643 2.05495 4.15818 2.08228 4.14969 2.11022 4.14096 2.13863 4.13201 2.16741 4.12284 2.1965 4.11343 2.22585 4.10379 2.2554 4.0939 2.28512 4.08375 2.31498 4.07331 2.34494 4.06258 2.37497 4.05153 2.40507 4.04015 2.43524 4.02839 2.46549 4.01621 2.49587 4.00355 2.52644 3.99032 2.55727 3.9764 2.5884 3.96168 2.61986 3.946 2.65165 3.92922 2.68368 3.91116 2.71584 3.89167 2.74795 3.87061 2.77977 3.84785 2.81105 3.82332 2.84154 3.79696 2.87099 3.76877 2.89918 3.73883 2.92592 3.70722 2.95109 3.67414 2.97461 3.63979 2.99643 3.60445 3.01659 3.56842 3.03514 3.532 3.05216 3.4955 3.06779 3.45916 3.08216 3.4232 3.09543 3.38772 3.10776 3.35274 3.11932 3.31816 3.13025 3.28384 3.14069 3.24953 3.15076 3.21499 3.16054 3.17994 3.17008 3.14413 3.17941 3.10738 3.18853 3.06953 3.19742 3.03053 3.20602 2.99038 3.21431 2.94918 3.22221 2.90713 3.2297 2.8645 3.23673 2.82161 3.24328 2.77886 3.24936 2.73668 3.25497 2.69547 3.26013 2.65559 3.26488 2.61731 3.26928 2.58077 3.27339 2.54596 3.27725 2.5127 3.28096 2.48068 3.28456 2.44949 3.28814 2.41866 3.29174 2.38769 3.29542 2.35608 3.29922 2.3234 3.30315 2.28927 3.3072 2.25336 3.31138 2.21543 3.31563 2.17531 3.31992 2.1329 3.32418 2.08816 3.32837 2.0411 3.33243 1.99177 3.33631 1.94028 3.33996 1.88673 3.34337 1.83127 3.34652 1.77406 3.34939 1.71524 3.35198 1.65497 &quot; &quot; 0.753014 4.27285 1.79037 4.27285 1.79037 1.65497 &quot; 0.00258262 97 ; 
+										<value>SolveInverseProblemWithTikhonov:0 plot_graph &quot; 1.7309 6.32417 1.7309 6.32288 1.7309 6.32137 1.73091 6.3196 1.73091 6.31753 1.73092 6.31512 1.73093 6.3123 1.73094 6.30902 1.73096 6.30521 1.73099 6.30078 1.73102 6.29565 1.73106 6.28971 1.73112 6.28287 1.73119 6.275 1.73129 6.26599 1.73141 6.25569 1.73157 6.24398 1.73177 6.23071 1.73201 6.21576 1.73231 6.19899 1.73267 6.18029 1.7331 6.15956 1.73361 6.13671 1.73419 6.11169 1.73484 6.08448 1.73557 6.05508 1.73636 6.02355 1.73721 5.98998 1.73811 5.95448 1.73905 5.91723 1.74001 5.87843 1.74097 5.83832 1.74193 5.79717 1.74288 5.75526 1.74381 5.71289 1.7447 5.67036 1.74555 5.62795 1.74637 5.58592 1.74715 5.54447 1.7479 5.50376 1.74861 5.46386 1.74929 5.42479 1.74994 5.38648 1.75057 5.34882 1.75119 5.31163 1.75179 5.27472 1.75239 5.23789 1.75298 5.20095 1.75357 5.16374 1.75416 5.12613 1.75474 5.08804 1.75533 5.04945 1.75591 5.01038 1.75648 4.97092 1.75705 4.93118 1.7576 4.89134 1.75814 4.85161 1.75866 4.81221 1.75916 4.77343 1.75965 4.73553 1.76011 4.69881 1.76055 4.66355 1.76097 4.63001 1.76137 4.59844 1.76175 4.56902 1.76211 4.5419 1.76245 4.51712 1.76278 4.4947 1.7631 4.47455 1.7634 4.45654 1.76369 4.44049 1.76397 4.42619 1.76425 4.41343 1.76453 4.40199 1.76481 4.39164 1.7651 4.38219 1.7654 4.37349 1.76571 4.36539 1.76605 4.35778 1.76641 4.35057 1.7668 4.34371 1.76722 4.33716 1.76768 4.33091 1.76818 4.32495 1.76873 4.31928 1.76931 4.31391 1.76995 4.30885 1.77063 4.30411 1.77136 4.29967 1.77215 4.29553 1.77299 4.29166 1.7739 4.28803 1.77489 4.28462 1.77597 4.28137 1.77717 4.27826 1.77851 4.27524 1.78002 4.27226 1.78177 4.2693 1.78379 4.2663 1.78617 4.26324 1.78897 4.26009 1.7923 4.25681 1.79627 4.25338 1.801 4.24976 1.80666 4.24594 1.8134 4.24188 1.82141 4.23756 1.83085 4.23294 1.84193 4.22802 1.85478 4.22276 1.86953 4.21715 1.88624 4.21117 1.90493 4.20484 1.92552 4.19814 1.94787 4.19109 1.97181 4.1837 1.99711 4.176 2.02354 4.16801 2.05087 4.15976 2.07892 4.15125 2.1075 4.1425 2.1365 4.13353 2.16582 4.12433 2.19539 4.1149 2.22516 4.10522 2.2551 4.09529 2.28516 4.08509 2.31532 4.0746 2.34555 4.06381 2.37581 4.05271 2.40609 4.04126 2.4364 4.02945 2.46677 4.01722 2.49723 4.0045 2.52786 3.99121 2.55871 3.97725 2.58984 3.96248 2.62129 3.94677 2.65305 3.92994 2.68504 3.91185 2.71715 3.89233 2.74921 3.87124 2.78097 3.84846 2.81221 3.8239 2.84265 3.79752 2.87205 3.76932 2.90019 3.73935 2.92689 3.70772 2.95202 3.67462 2.9755 3.64025 2.9973 3.60489 3.01743 3.56884 3.03595 3.5324 3.05295 3.49588 3.06855 3.45953 3.0829 3.42354 3.09616 3.38804 3.10848 3.35303 3.12002 3.31843 3.13094 3.28408 3.14137 3.24975 3.15142 3.21517 3.16119 3.18009 3.17072 3.14426 3.18003 3.10747 3.18914 3.06959 3.19801 3.03056 3.2066 2.99038 3.21486 2.94916 3.22275 2.90708 3.23022 2.86441 3.23724 2.82149 3.24378 2.77872 3.24984 2.7365 3.25544 2.69526 3.26059 2.65535 3.26533 2.61703 3.26972 2.58046 3.27381 2.54561 3.27767 2.51231 3.28136 2.48026 3.28496 2.44905 3.28852 2.41819 3.29211 2.38719 3.29578 2.35556 3.29957 2.32287 3.30348 2.28872 3.30752 2.2528 3.31168 2.21486 3.31592 2.17473 3.32019 2.13232 3.32444 2.08757 3.32861 2.0405 3.33265 1.99117 3.33651 1.93968 3.34016 1.88613 3.34356 1.83067 3.34669 1.77345 3.34955 1.71463 3.35213 1.65436 &quot; &quot; 0.730896 4.2693 1.78177 4.2693 1.78177 1.65436 &quot; 0.00258262 97 ; 
 </value>
 									</value>
 								</second>
@@ -1571,7 +1583,7 @@
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Generate Noise&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Generate Noise</noteText>
 				<position>6</position>
@@ -1584,7 +1596,7 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Apply Forward Solution&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Apply Forward Solution</noteText>
 				<position>6</position>
@@ -1597,7 +1609,7 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Add Noise to Forward Solution&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Add Noise to Forward Solution</noteText>
 				<position>6</position>
@@ -1610,7 +1622,7 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Choose a column&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;(single time instant) &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;from data matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
@@ -1627,7 +1639,7 @@ from data matrix</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Load Epicardial Potential Data Matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Load Epicardial Potential Data Matrix</noteText>
 				<position>0</position>
@@ -1640,7 +1652,7 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Load Forward&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt; Solution Matrix&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Load Forward
@@ -1655,8 +1667,8 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; color:#ffffff;&quot;&gt;ID: 12&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 12&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 12</noteText>
 				<position>0</position>
 				<fontSize>13</fontSize>
@@ -1668,7 +1680,7 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Visualize Solution &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;to Inverse Problem&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Visualize Solution 
@@ -1683,7 +1695,7 @@ to Inverse Problem</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Solve Inverse Problem&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Solve Inverse Problem</noteText>
 				<position>6</position>
@@ -1696,7 +1708,7 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Assign Solution Matrix Values&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;to Epicardial Geometry&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Assign Solution Matrix Values
@@ -1711,7 +1723,7 @@ to Epicardial Geometry</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Assign Data Matrix values&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;to Epicardial Geometry&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Assign Data Matrix values
@@ -1726,7 +1738,7 @@ to Epicardial Geometry</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;.Helvetica Neue DeskInterface&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Show Visualizations of True&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;and Inverse Solution Potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Show Visualizations of True

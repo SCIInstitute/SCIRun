@@ -82,12 +82,12 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 
   /////Set unused widgets to be not visible
   //Nodes Tab
-  label_4->setVisible(false); // Sphere scale lable
-  scaleSphereDoubleSpinBox_->setVisible(false); // Sphere scale spin box
-  resolutionSpinBox->setVisible(false); //resolution spin box
-  label_5->setVisible(false); //resolution label
-  groupBox_3->setVisible(false); //Node coloring
-  groupBox_4->setVisible(false); //Node Display Type Group Box
+  //label_4->setVisible(false); // Sphere scale lable
+  //scaleSphereDoubleSpinBox_->setVisible(false); // Sphere scale spin box
+  //resolutionSpinBox->setVisible(false); //resolution spin box
+  //label_5->setVisible(false); //resolution label
+  //groupBox_3->setVisible(false); //Node coloring
+  //groupBox_4->setVisible(false); //Node Display Type Group Box
 
   //Edges Tab
   //groupBox_7->setVisible(false);//Edge Display Type Group Box

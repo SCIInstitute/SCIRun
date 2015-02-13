@@ -62,6 +62,7 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
         static Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
         static Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
+        static Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
         static Core::Algorithms::AlgorithmParameterName SphereScaleValue;
         static Core::Algorithms::AlgorithmParameterName CylinderResolution;
         static Core::Algorithms::AlgorithmParameterName CylinderRadius;
@@ -148,6 +149,7 @@ namespace SCIRun {
         double sphereScalar_;
         float faceTransparencyValue_;
         float edgeTransparencyValue_;
+        float nodeTransparencyValue_;
 
       };
 
