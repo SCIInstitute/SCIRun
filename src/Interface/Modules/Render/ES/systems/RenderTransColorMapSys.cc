@@ -80,18 +80,20 @@ private:
   public:
     std::string mName;
     GLuint mSortedID;
+    Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);;
 
     SortedObject() :
       mSortedID(0)
     {}
 
-    SortedObject(const std::string& name, GLuint ID) :
+    SortedObject(const std::string& name, GLuint ID, Core::Geometry::Vector& dir) :
       mName(name),
-      mSortedID(ID)
+      mSortedID(ID),
+      prevDir(dir)
     {}
   };
 
-  Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);
+  //Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);
   std::vector<SortedObject> sortedObjects;
 
   class DepthIndex {
@@ -214,12 +216,7 @@ private:
     Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
                                camera.front().data.worldToView[1][2],
                                camera.front().data.worldToView[2][2]);
-
-    if (sortedObjects.size() <=0)
-    {
-      prevDir = dir;
-    }
-
+    
     if (!drawLines)
     {
       switch (pass.front().renderState.mSortType)
@@ -245,10 +242,10 @@ private:
           if (!indexed)
           {
             index = sortedObjects.size();
-            sortedObjects.push_back(SortedObject(pass.front().ibo.name, 0));
+            sortedObjects.push_back(SortedObject(pass.front().ibo.name, 0, dir));
           }
 
-          Core::Geometry::Vector diff = prevDir - dir;
+          Core::Geometry::Vector diff = sortedObjects[index].prevDir - dir;
           float distance = sqrtf(Core::Geometry::Dot(diff, diff));
           if (distance >= 1.23 || sortedObjects[index].mSortedID == 0)
           {
@@ -256,7 +253,7 @@ private:
             {
               iboMan.front().instance->removeInMemoryIBO(sortedObjects[index].mSortedID);
             }
-            prevDir = dir;
+            sortedObjects[index].prevDir = dir;
             sortedObjects[index].mSortedID = sortObjects(dir, ibo, pass, iboMan);
           }
           iboID = sortedObjects[index].mSortedID;
