@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>16</count>
+			<count>15</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BuildNoiseColumnMatrix:5</first>
@@ -27,70 +27,6 @@
 									<value class_id="11" tracking_level="0" version="0">
 										<which>1</which>
 										<value>30.559999999999999</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>CreateStandardColorMap:14</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Visualization</category_name_>
-						<module_name_>CreateStandardColorMap</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>4</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>ColorMapInvert</name>
-								</first>
-								<second>
-									<name>ColorMapInvert</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ColorMapName</name>
-								</first>
-								<second>
-									<name>ColorMapName</name>
-									<value>
-										<which>2</which>
-										<value>Rainbow</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ColorMapResolution</name>
-								</first>
-								<second>
-									<name>ColorMapResolution</name>
-									<value>
-										<which>0</which>
-										<value>256</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ColorMapShift</name>
-								</first>
-								<second>
-									<name>ColorMapShift</name>
-									<value>
-										<which>1</which>
-										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1312,12 +1248,12 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateStandardColorMap:14</moduleId1_>
+				<moduleId1_>CreateStandardColorMap:15</moduleId1_>
 				<port1_>
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:13</moduleId2_>
+				<moduleId2_>ShowField:12</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -1329,7 +1265,7 @@
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:12</moduleId2_>
+				<moduleId2_>ShowField:13</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -1530,20 +1466,13 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>16</count>
+		<count>15</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>BuildNoiseColumnMatrix:5</first>
 			<second class_id="17" tracking_level="0" version="0">
 				<first>-684</first>
 				<second>-380</second>
-			</second>
-		</item>
-		<item>
-			<first>CreateStandardColorMap:14</first>
-			<second>
-				<first>-837.52087500000005</first>
-				<second>241.73162499999989</second>
 			</second>
 		</item>
 		<item>
