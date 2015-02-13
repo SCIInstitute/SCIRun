@@ -447,15 +447,17 @@ namespace SCIRun {
 
             std::vector<char> sorted_buffer(ibo.data->getBufferSize());
             char* ibuffer = reinterpret_cast<char*>(ibo.data->getBuffer());
-            char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
-            size_t tri_size = ibo.data->getBufferSize() / num_triangles;
-
-            for (size_t j = 0; j < num_triangles; j++)
+            char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+            
+            if (sbuffer && num_triangles > 0)
             {
-              memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+              size_t tri_size = ibo.data->getBufferSize() / num_triangles;
+              for (size_t j = 0; j < num_triangles; j++)
+              {
+                memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+              }
+              iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
             }
-
-            iboMan.addInMemoryIBO(sbuffer, ibo.data->getBufferSize(), primitive, primType, numPrimitives, name);
           }
           else
           {
