@@ -38,6 +38,7 @@ namespace SCIRun {
   namespace Modules {
     namespace Factory {
 
+#if 0
       //loose replace interpretation: order of ports doesn't matter, only number. could use multiset here, but not as easy to deal with.
       typedef std::map<std::string, int> ConnectedPortTypesWithCount;
       struct SCISHARE ConnectedPortInfo
@@ -61,7 +62,7 @@ namespace SCIRun {
         boost::shared_ptr<ModuleReplacementFilter> build();
       };
 
-
+#endif
 
       class SCISHARE HardCodedModuleFactory : public SCIRun::Dataflow::Networks::ModuleFactory
       {
