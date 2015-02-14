@@ -96,7 +96,7 @@ namespace SCIRun {
 
       showOrientation_ = true;
       autoRotate_ = false;
-      mRenderSortType = RenderState::TransparencySortType::CONTINUOUS_SORT;
+      mRenderSortType = RenderState::TransparencySortType::UPDATE_SORT;
 			// Construct ESCore. We will need to bootstrap the core. We should also
 			// probably add utility static classes.
 			setupCore();
