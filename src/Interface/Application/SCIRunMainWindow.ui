@@ -34,7 +34,7 @@
        <bool>true</bool>
       </property>
       <property name="whatsThis">
-       <string>The network editor pane. Displays modules and connetions in the loaded network file.</string>
+       <string>The network editor pane. Displays modules and connections in the current network file.</string>
       </property>
       <property name="widgetResizable">
        <bool>true</bool>
