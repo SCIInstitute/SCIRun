@@ -83,18 +83,19 @@ private:
   public:
     std::string mName;
     GLuint mSortedID;
+    Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);
 
     SortedObject() :
       mSortedID(0)
     {}
 
-    SortedObject(const std::string& name, GLuint ID) :
+    SortedObject(const std::string& name, GLuint ID, Core::Geometry::Vector& dir) :
       mName(name),
-      mSortedID(ID)
+      mSortedID(ID),
+      prevDir(dir)
     {}
   };
 
-  Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);
   std::vector<SortedObject> sortedObjects;
 
   class DepthIndex {
@@ -214,13 +215,8 @@ private:
     GLuint iboID = ibo.front().glid;
 
     Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
-      camera.front().data.worldToView[1][2],
-      camera.front().data.worldToView[2][2]);
-
-    if (sortedObjects.size() <= 0)
-    {
-      prevDir = dir;
-    }
+                               camera.front().data.worldToView[1][2],
+                               camera.front().data.worldToView[2][2]);
 
     if (!drawLines)
     {
@@ -229,7 +225,6 @@ private:
         case RenderState::TransparencySortType::CONTINUOUS_SORT:
         {
           iboID = sortObjects(dir, ibo, pass, iboMan);
-          //std::cout << "continuous" << std::endl;
           break;
         }
         case RenderState::TransparencySortType::UPDATE_SORT:
@@ -247,22 +242,21 @@ private:
           if (!indexed)
           {
             index = sortedObjects.size();
-            sortedObjects.push_back(SortedObject(pass.front().ibo.name, 0));
+            sortedObjects.push_back(SortedObject(pass.front().ibo.name, 0, dir));
           }
 
-          Core::Geometry::Vector diff = prevDir - dir;
-          float distance = sqrtf(Core::Geometry::Dot(diff, diff));
+          Core::Geometry::Vector diff = sortedObjects[index].prevDir - dir;
+          double distance = sqrtf(Core::Geometry::Dot(diff, diff));
           if (distance >= 1.23 || sortedObjects[index].mSortedID == 0)
           {
             if (sortedObjects[index].mSortedID != 0)
             {
               iboMan.front().instance->removeInMemoryIBO(sortedObjects[index].mSortedID);
             }
-            prevDir = dir;
+            sortedObjects[index].prevDir = dir;
             sortedObjects[index].mSortedID = sortObjects(dir, ibo, pass, iboMan);
           }
           iboID = sortedObjects[index].mSortedID;
-          //::cout << "update" << std::endl;
           break;
         }
         case RenderState::TransparencySortType::LISTS_SORT:
@@ -291,11 +285,6 @@ private:
               iboNegZID = it->glid;
           }
 
-          Core::Geometry::Vector currentDir(camera.front().data.worldToView[0][2],
-                                            camera.front().data.worldToView[1][2],
-                                            camera.front().data.worldToView[2][2]);
-
-
           Core::Geometry::Vector absDir(abs(camera.front().data.worldToView[0][2]),
                                         abs(camera.front().data.worldToView[1][2]),
                                         abs(camera.front().data.worldToView[2][2]));
@@ -305,17 +294,16 @@ private:
 
           if (orZ == absDir.x())
           {
-            iboID = currentDir.x() < orZ ? iboNegXID : iboXID;
+            iboID = dir.x() < orZ ? iboNegXID : iboXID;
           }
           if (orZ == absDir.y())
           {
-            iboID = currentDir.y() < orZ ? iboNegYID : iboYID;
+            iboID = dir.y() < orZ ? iboNegYID : iboYID;
           }
           if (orZ == absDir.z())
           {
-            iboID = currentDir.z() < orZ ? iboNegZID : iboZID;
+            iboID = dir.z() < orZ ? iboNegZID : iboZID;
           }
-          //std::cout << "lists" << std::endl;
           break;
         }
       }
