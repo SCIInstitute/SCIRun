@@ -68,6 +68,9 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   //View Tab
   groupBox->setVisible(false);
 
+  //Render Tab
+  groupBox_6->setVisible(false);
+
 }
 
 void ViewSceneControlsDock::setSampleColor(const QColor& color)

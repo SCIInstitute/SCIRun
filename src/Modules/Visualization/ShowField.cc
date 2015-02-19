@@ -73,7 +73,7 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(NodeTransparency, false);
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
-  state->setValue(DefaultMeshColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(DefaultMeshColor, ColorRGB(0.5, 0.5, 0.5).toString());
 
   //state->setValue(NodeAsPoints, true); //not used
   state->setValue(NodeAsSpheres, 0);
@@ -118,7 +118,7 @@ RenderState ShowFieldModule::getNodeRenderState(
   RenderState renState;
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).toBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::NodeTransparency).toBool());
+  renState.set(RenderState::USE_TRANSPARENT_NODES, state->getValue(ShowFieldModule::NodeTransparency).toBool());
 
   renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).toInt() == 1);
 
@@ -156,7 +156,7 @@ RenderState ShowFieldModule::getEdgeRenderState(
   RenderState renState;
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
+  renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
   renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toInt() == 1);
 
   renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
@@ -1203,11 +1203,14 @@ void ShowFieldModule::renderNodes(
   bool vboOnGPU = true;
 
   std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
-  //transparency
-  if (state.get(RenderState::USE_TRANSPARENCY))
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(edgeTransparencyValue_)));
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {
+    //transparency
+    if (state.get(RenderState::USE_TRANSPARENT_NODES))
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", 
+               (float)(0.75)));// TODO use edgeTransparencyValue_ for all transparency cases below
+    else
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0)));
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
     //push the color map parameters
     ColorMap * map = colorMap.get().get();
@@ -1243,12 +1246,15 @@ void ShowFieldModule::renderNodes(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-            glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f)));
+            glm::vec4(dft.r(), dft.g(), dft.b(), 
+               state.get(RenderState::USE_TRANSPARENT_NODES)?0.7f:1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     } else {
-        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f));
+        shader = "Shaders/UniformColor";
+        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), 
+                 state.get(RenderState::USE_TRANSPARENT_NODES)?0.7f:1.0f));
     }
   }
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::POINTS;
@@ -1468,7 +1474,7 @@ void ShowFieldModule::renderEdges(
 
   std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
   //transparency
-  if (state.get(RenderState::USE_TRANSPARENCY))
+  if (state.get(RenderState::USE_TRANSPARENT_EDGES))
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(edgeTransparencyValue_)));
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {

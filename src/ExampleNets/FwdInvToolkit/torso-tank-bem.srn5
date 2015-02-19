@@ -1576,7 +1576,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>28</count>
+			<count>27</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>BuildBEMatrix:6</moduleId1_>
@@ -1840,18 +1840,6 @@
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ShowField:15</moduleId1_>
-				<port1_>
-					<name>SceneGraph</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ViewScene:19</moduleId2_>
-				<port2_>
-					<name>GeneralGeom</name>
-					<id>2</id>
 				</port2_>
 			</item>
 			<item>
