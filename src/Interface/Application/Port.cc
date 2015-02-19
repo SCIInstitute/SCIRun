@@ -144,7 +144,7 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   const PortId& portId, size_t index,
   bool isInput, bool isDynamic,
   boost::shared_ptr<ConnectionFactory> connectionFactory,
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
@@ -423,6 +423,17 @@ ModuleId PortWidget::getUnderlyingModuleId() const
   return moduleId_;
 }
 
+void PortWidget::setHighlight(bool on)
+{
+  if (on)
+  {
+
+  }
+  else
+  {
+    
+  }
+}
 
 void PortWidget::portCachingChanged(bool checked)
 {

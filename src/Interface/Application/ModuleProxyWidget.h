@@ -59,9 +59,11 @@ namespace SCIRun
       void selected();
       void widgetMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+      void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+      void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+      void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+      void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
       QVariant itemChange(GraphicsItemChange change, const QVariant& value);
       virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:

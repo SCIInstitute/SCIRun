@@ -306,3 +306,17 @@ void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 {
   setDefaultNotePositionImpl(position);
 }
+
+void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+{
+  //qDebug() << "hover over module " << module_->getModuleId().c_str();
+  module_->highlightPorts();
+  QGraphicsProxyWidget::hoverEnterEvent(event);
+}
+
+void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+{
+  //qDebug() << "hover leave module " << module_->getModuleId().c_str();
+  module_->unhighlightPorts();
+  QGraphicsProxyWidget::hoverLeaveEvent(event);
+}

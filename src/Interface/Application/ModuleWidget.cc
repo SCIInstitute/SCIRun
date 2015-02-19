@@ -847,6 +847,14 @@ void PortWidgetManager::addPort(InputPortWidget* port)
   inputPorts_.push_back(port);
 }
 
+void PortWidgetManager::setHighlightPorts(bool on)
+{
+  for (auto& port : getAllPorts())
+  {
+    port->setHighlight(on);
+  }
+}
+
 void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_)
@@ -1268,5 +1276,17 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
   auto size = widget(newIndex)->size();
   setCurrentIndex(newIndex);
   resize(size);
+  Q_EMIT displayChanged();
+}
+
+void ModuleWidget::highlightPorts()
+{
+  ports_->setHighlightPorts(true);
+  Q_EMIT displayChanged();
+}
+
+void ModuleWidget::unhighlightPorts()
+{
+  ports_->setHighlightPorts(false);
   Q_EMIT displayChanged();
 }
