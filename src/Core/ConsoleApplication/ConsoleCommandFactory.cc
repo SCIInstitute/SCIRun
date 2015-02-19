@@ -40,7 +40,7 @@ public:
   virtual bool execute() { return true; }
 };
 
-CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
+CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type, int param) const
 {
   switch (type)
   {
@@ -53,7 +53,7 @@ CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
   case PrintVersion:
     return boost::make_shared<PrintVersionCommand>();
   case LoadNetworkFile:
-    return boost::make_shared<LoadFileCommandConsole>();
+    return boost::make_shared<LoadFileCommandConsole>(param);
   case RunPythonScript:
     return boost::make_shared<RunPythonScriptCommandConsole>();
   case ExecuteCurrentNetwork:

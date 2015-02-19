@@ -64,12 +64,6 @@ namespace SCIRun {
           virtual void update_progress(double percent) const = 0;
           template <typename T1, typename T2>
           inline void update_progress_max(T1 current, T2 max) const { update_progress(((double)current) / max); }
-
-        protected:
-          /// @todo: replace with C++11 atomic<int>?
-          //AtomicCounter         progress_current_;
-          //int progressCurrent_;
-          //int progressMax_;
       };
 
 }}}

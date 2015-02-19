@@ -70,7 +70,7 @@ MatrixHandle BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle input_matrix) con
 	}
 	power /= nc*nr;
 	
-	sigma = sqrt(power)/(snr*Sqrt(2*M_PI));
+	sigma = sqrt(power)/(snr*sqrt(2*M_PI));
 	
 	for(r = 0; r < nr; r++)
 	{

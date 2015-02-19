@@ -98,11 +98,15 @@ public:
       return;
     }
 
-    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY) ||
+        srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) ||
+        srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES))
     {
       return;
     }
 
+    GLuint iboID = ibo.front().glid;
+    
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
     // setup (including uniforms) if the simple geom hasn't been setup.
@@ -158,7 +162,7 @@ public:
 
     // Bind VBO and IBO
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo.front().glid));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
 
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)

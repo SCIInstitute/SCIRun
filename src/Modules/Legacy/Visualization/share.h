@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,26 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#undef SCISHARE
 
-
-///
-///@file  Thread_unix.h 
-///@brief Header file for utiity functions for unix versions
-///		    of the thread class
-///
-///@author
-///       Steve Parker
-///       Department of Computer Science
-///       University of Utah
-///@date  June 1997
-///
-
-#ifndef Core_Thread_Thread_unix_h
-#define Core_Thread_Thread_unix_h
-
-#include <sys/types.h>
-#include <string>
-
-std::string Core_Thread_signal_name(int sig, void* code);
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_Legacy_Visualization
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

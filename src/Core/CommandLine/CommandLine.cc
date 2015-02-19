@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -57,14 +57,14 @@ public:
       ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("interactive,i", "interactive mode--TODO")
       ("headless,x", "disable GUI (Qt still needed, for now)")
-      ("input-file", po::value<std::string>(), "SCIRun Network Input File")
+      ("input-file", po::value<std::vector<std::string>>(), "SCIRun Network Input File")
       ("script,s", po::value<std::string>(), "SCIRun Python Script")
       ("no_splash", "Turn off splash screen")
       ("verbose", "Turn on debug log information")
       ("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
       ("reexecuteMode", po::value<std::string>(), "network reexecution mode--DEVELOPER USE ONLY")
       ;
-      
+
       positional_.add("input-file", -1);
   }
 
@@ -91,7 +91,7 @@ public:
     ostr << desc_;
     return ostr.str();
   }
-  
+
 private:
   po::options_description desc_;
   po::positional_options_description positional_;
@@ -116,30 +116,30 @@ public:
       bool isRegressionMode,
       bool isVerboseMode) : help_(help), version_(version), executeNetwork_(executeNetwork),
       executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
-      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), isVerboseMode_(isVerboseMode) 
+      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), isVerboseMode_(isVerboseMode)
     {}
     bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, isVerboseMode_;
   };
   ApplicationParametersImpl(
     const std::string& entireCommandLine,
-    const boost::optional<std::string>& inputFile,
+    std::vector<std::string>&& inputFiles,
     const boost::optional<boost::filesystem::path>& pythonScriptFile,
     const boost::optional<boost::filesystem::path>& dataDirectory,
     const boost::optional<std::string>& threadMode,
     const boost::optional<std::string>& reexecuteMode,
     const Flags& flags
    ) : entireCommandLine_(entireCommandLine),
-    inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory), 
+    inputFiles_(inputFiles), pythonScriptFile_(pythonScriptFile), dataDirectory_(dataDirectory),
     threadMode_(threadMode), reexecuteMode_(reexecuteMode),
     flags_(flags)
   {}
 
-  virtual boost::optional<std::string> inputFile() const
+  virtual const std::vector<std::string>& inputFiles() const
   {
-    return inputFile_;
+    return inputFiles_;
   }
 
-  virtual boost::optional<boost::filesystem::path> pythonScriptFile() const 
+  virtual boost::optional<boost::filesystem::path> pythonScriptFile() const
   {
     return pythonScriptFile_;
   }
@@ -173,7 +173,7 @@ public:
   {
     return flags_.disableGui_;
   }
-  
+
   virtual bool disableSplash() const
   {
     return flags_.disableSplash_;
@@ -199,14 +199,14 @@ public:
     return reexecuteMode_;
   }
 
-  virtual const std::string& entireCommandLine() const 
+  virtual const std::string& entireCommandLine() const
   {
     return entireCommandLine_;
   }
 
 private:
   std::string entireCommandLine_;
-  boost::optional<std::string> inputFile_;
+  std::vector<std::string> inputFiles_;
   boost::optional<boost::filesystem::path> pythonScriptFile_;
   boost::optional<boost::filesystem::path> dataDirectory_;
   boost::optional<std::string> threadMode_, reexecuteMode_;
@@ -230,7 +230,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
   {
     auto parsed = impl_->parse(argc, argv);
     std::vector<std::string> cmdline(argv, argv + argc);
-    auto inputFile = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::string>() : boost::optional<std::string>();
+    auto inputFiles = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::vector<std::string>>() : std::vector<std::string>();
     auto pythonScriptFile = boost::optional<boost::filesystem::path>();
     if (parsed.count("script") != 0 && !parsed["script"].empty() && !parsed["script"].defaulted())
     {
@@ -245,7 +245,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     auto reexecuteMode = parsed.count("reexecuteMode") != 0 ? parsed["reexecuteMode"].as<std::string>() : boost::optional<std::string>();
     return boost::make_shared<ApplicationParametersImpl>
       (boost::algorithm::join(cmdline, " "),
-      inputFile,
+      std::move(inputFiles),
       pythonScriptFile,
       dataDirectory,
       threadMode,

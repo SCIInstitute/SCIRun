@@ -1,14 +1,12 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2010 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,43 +24,35 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
-/// @todo Documentation Core/Utils/Legacy/LogFile.h
+   */
 
-///@file LogFile.h
+#ifndef MODULES_LEGACY_VISUALIZATION_GENERATESTREAMLINES_H_
+#define MODULES_LEGACY_VISUALIZATION_GENERATESTREAMLINES_H_
 
-
-#ifndef CORE_UTIL_LOGFILE_H
-#define CORE_UTIL_LOGFILE_H 1
-
-#include <fstream>
-#include <string>
-
-#include <Core/Util/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Visualization/share.h>
 
 namespace SCIRun {
-	
-class SCISHARE LogFile 
-{
-public:
-  // Create a log file, that can used by multiple threads without
-  // the log becoming a mesh
-  explicit LogFile(const std::string& filename);
+  namespace Modules {
+    namespace Visualization {
 
-  // Since we used a ofstream, this one is automatically closed when the
-  // object is destroyed.
-	
-  // Write a message into the log
-  void putmsg(const std::string& msg);
-private:
-  std::ofstream logfile_;
-  bool haslog_;
+      class SCISHARE GenerateStreamLines : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        GenerateStreamLines();
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
+
+        INPUT_PORT(0, Vector_Field, LegacyField);
+        INPUT_PORT(1, Seed_Points, LegacyField);
+        OUTPUT_PORT(0, Streamlines, LegacyField);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
+  }
 };
-
-typedef boost::shared_ptr<LogFile> LogFileHandle;
-
-}
-
-#endif
 
 #endif

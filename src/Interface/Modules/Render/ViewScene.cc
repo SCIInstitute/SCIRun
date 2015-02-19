@@ -46,7 +46,7 @@ using namespace SCIRun::Render;
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent /* = 0 */)
-	: ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false),
+  : ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false), itemValueChanged_(true),
 	itemManager_(new ViewSceneItemManager)
 {
   setupUi(this);
@@ -113,18 +113,20 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
+
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
+
 
   Guard lock(SCIRun::Modules::Render::ViewScene::mutex_.get());
 
+
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
-
-  itemManager_->removeAll();
-
+  
   std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
   if (spire == nullptr)
     return;
   spire->removeAllGeomObjects();
+
 
   // Grab the geomData transient value.
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
@@ -144,24 +146,46 @@ void ViewSceneDialog::newGeometryValue()
     }
 
     int port = 0;
+    std::vector<std::string>objectNames;
     std::vector<std::string> validObjects;
     for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
     {
       boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
-      auto displayName = QString::fromStdString(obj->objectName).split('_').first();
-      if (isObjectUnselected(obj->objectName))
-      {
-        itemManager_->addItem(QString::fromStdString(obj->objectName), displayName, false);
-      }
-      else
+      objectNames.push_back(obj->objectName);
+      if (!isObjectUnselected(obj->objectName))
       {
         spire->handleGeomObject(obj, port);
         validObjects.push_back(obj->objectName);
-        itemManager_->addItem(QString::fromStdString(obj->objectName), displayName, true);
       }
     }
     spire->gcInvalidObjects(validObjects);
+
+    std::sort(objectNames.begin(), objectNames.end());
+    if (previousObjectNames_ != objectNames)
+    {
+      itemValueChanged_ = true;
+      previousObjectNames_ = objectNames;
+    }
+    if (itemValueChanged_)
+    {
+      itemManager_->removeAll();
+      for (auto it = objectNames.begin(); it != objectNames.end(); ++it)
+      {
+        std::string name = *it;
+        auto displayName = QString::fromStdString(name).split('_').first();
+        if (isObjectUnselected(name))
+        {
+          itemManager_->addItem(QString::fromStdString(name), displayName, false);
+        }
+        else
+        {
+          itemManager_->addItem(QString::fromStdString(name), displayName, true);
+        }
+      }
+      itemValueChanged_ = false;
+    }
   }
+
   else
   {
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
@@ -401,8 +425,33 @@ void ViewSceneDialog::assignBackgroundColor()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::CONTINUOUS_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::UPDATE_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeLists(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::handleUnselectedItem(const QString& name)
 {
+  itemValueChanged_ = true;
   unselectedObjectNames_.push_back(name.toStdString());
   newGeometryValue();
 }
@@ -410,6 +459,7 @@ void ViewSceneDialog::handleUnselectedItem(const QString& name)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::handleSelectedItem(const QString& name)
 {
+  itemValueChanged_ = true;
   unselectedObjectNames_.erase(std::remove(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name.toStdString()), unselectedObjectNames_.end());
   newGeometryValue();
 }
@@ -572,6 +622,7 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
 	ModuleDialogGeneric::hideEvent(evt);
 }
 
+
 ViewSceneItemManager::ViewSceneItemManager() 
   : model_(new QStandardItemModel(3, 1))
 {
@@ -593,6 +644,7 @@ ViewSceneItemManager::ViewSceneItemManager()
 #endif
 }
 
+
 void ViewSceneItemManager::SetupConnections(ViewSceneDialog* slotHolder)
 {
   connect(this, SIGNAL(itemUnselected(const QString&)), slotHolder, SLOT(handleUnselectedItem(const QString&)));
@@ -606,6 +658,7 @@ void ViewSceneItemManager::addItem(const QString& name, const QString& displayNa
   //item->setToolTip(displayName);
 
 	item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+
   if (checked)
     item->setData(Qt::Checked, Qt::CheckStateRole);
   else

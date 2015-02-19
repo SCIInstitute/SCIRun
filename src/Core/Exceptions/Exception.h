@@ -46,7 +46,7 @@
 #include <sci_defs/error_defs.h>
 #include <Core/Exceptions/share.h>
 
-#ifdef WIN32 //VS2010 doesn't understand this yet. VS2012 ought to.
+#ifdef WIN32 
 #define NOEXCEPT
 #else
 #define NOEXCEPT noexcept(true)

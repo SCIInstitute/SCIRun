@@ -80,6 +80,19 @@ void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
   }
 }
 
+void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
+{
+  /*
+  TODO: investigate why duplicate executes are signalled.
+  connect(box, SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(executeActionTriggered()));
+  if (disablerAdd_ && disablerRemove_)
+  {
+    disablerAdd_(box);
+    needToRemoveFromDisabler_.push_back(box);
+  }
+  */
+}
+
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
 {
   setWindowTitle(title);
@@ -191,7 +204,7 @@ public:
     ToQStringConverter toLabelConverter = &QString::fromStdString) :
   WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
   {
-    connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     const GuiStringTranslationMap& stringMap) :
@@ -203,7 +216,7 @@ public:
     }
     fromLabelConverter_ = [this](const QString& qstr) { return findOrFirst(stringMap_.left, qstr.toStdString()); };
     toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(findOrFirst(stringMap_.right, str)); };
-    connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
   virtual void pull() override
   {
@@ -569,7 +582,36 @@ void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmP
 {
   addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
 }
+/*
+class SliderSlotManager : public WidgetSlotManager
+{
+public:
+  SliderSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSlider* slider) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), slider_(slider)
+  {
+  }
+  virtual void pull() override
+  {
+    auto newValue = state_->getValue(stateKey_).toInt();
+    if (newValue != slider_->value())
+    {
+      LOG_DEBUG("In new version of pull code for QSlider: " << newValue);
+      slider_->setValue(newValue);
+    }
+  }
+  virtual void pushImpl() override
+  {
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QSlider* slider_;
+};
 
+void ModuleDialogGeneric::addSliderManager(QSlider* slider, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, slider));
+}
+*/
 class RadioButtonGroupSlotManager : public WidgetSlotManager
 {
 public:

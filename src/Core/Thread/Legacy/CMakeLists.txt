@@ -29,26 +29,18 @@
 # Sources of Core/Thread classes
 
 SET(Core_Thread_Legacy_SRCS
-  AtomicCounter_default.cc
-  Barrier_default.cc
   CleanupManager.cc 
-  CrowdMonitor_default.cc
   Guard.cc 
-  MutexPool.cc 
-  ParallelBase.cc 
-  RecursiveMutex_default.cc
   Runnable.cc 
   Thread.cc 
   ThreadError.cc 
   SimpleReducer.cc 
   ThreadLock.cc 
   ThreadGroup.cc 
-  Thread_unix.cc 
   ThreadPool.cc 
 )
 
 SET(Core_Thread_Legacy_HEADERS
-  AtomicCounter.h
   Barrier.h
   CleanupManager.h
   ConditionVariable.h
@@ -57,13 +49,6 @@ SET(Core_Thread_Legacy_HEADERS
   Guard.h
   Mailbox.h
   Mutex.h
-  MutexPool.h
-  Parallel.h
-  Parallel1.h
-  Parallel2.h
-  Parallel3.h
-  Parallel4.h
-  ParallelBase.h
   RecursiveMutex.h
   Reducer.h
   Runnable.h
@@ -74,15 +59,10 @@ SET(Core_Thread_Legacy_HEADERS
   SimpleReducer.h
   ThreadLock.h
   ThreadGroup.h
-  Thread_unix.h
   ThreadPool.h
   Time.h  
   UsedWithLockingHandle.h
 )
-
-IF(WIN32)
-  SET(Core_Thread_Legacy_SRCS ${Core_Thread_Legacy_SRCS} Thread_win32.cc Time_win32.cc)
-ENDIF(WIN32)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Thread_Legacy)

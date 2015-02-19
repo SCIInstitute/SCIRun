@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,45 +29,37 @@
 #ifndef CORE_ALGORITHMS_FIELDS_STREAMLINES_GENERATESTREAMLINES_H
 #define CORE_ALGORITHMS_FIELDS_STREAMLINES_GENERATESTREAMLINES_H 1
 
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+        ALGORITHM_PARAMETER_DECL(StreamlineStepSize);
+        ALGORITHM_PARAMETER_DECL(StreamlineTolerance);
+        ALGORITHM_PARAMETER_DECL(StreamlineMaxSteps);
+        ALGORITHM_PARAMETER_DECL(StreamlineDirection);
+        ALGORITHM_PARAMETER_DECL(StreamlineValue);
+        ALGORITHM_PARAMETER_DECL(RemoveColinearPoints);
+        ALGORITHM_PARAMETER_DECL(StreamlineMethod);
+        ALGORITHM_PARAMETER_DECL(AutoParameters);
+        ALGORITHM_PARAMETER_DECL(NumStreamlines);
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GenerateStreamLinesAlgo : public AlgoBase 
+class SCISHARE GenerateStreamLinesAlgo : public AlgorithmBase
 {
-
   public:
-    GenerateStreamLinesAlgo()
-    {
-      add_scalar("step_size",0.01);
-      add_scalar("tolerance",0.0001);
-      add_int("max_steps",100);
-      add_int("direction",1);
-      add_int("value",1);
-      add_bool("remove_colinear_points",true);
-      add_option("method","CellWalk","AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
-      // Estimate step size and tolerance automatically based on average edge length
-      add_bool("auto_parameters",false);
-      
-      // For output
-      add_int("num_streamlines",0);
-    }
-    
-    /// Convert data into a matrix
-    bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
+    GenerateStreamLinesAlgo();
+    bool runImpl(FieldHandle input, FieldHandle seeds, FieldHandle& output) const;
+
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+
+    static const AlgorithmInputName VectorField;
+    static const AlgorithmInputName Seeds;
+    static const AlgorithmOutputName Streamlines;
 };
 
-} // end namespace SCIRunAlgo
+}}}} // end namespace SCIRunAlgo
 
 #endif
