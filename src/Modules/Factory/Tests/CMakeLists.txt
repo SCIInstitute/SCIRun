@@ -25,3 +25,24 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
+SET(Modules_Factory_Tests_SRCS
+  ModuleReplaceBuilderTests.cc
+)
+
+SCIRUN_ADD_UNIT_TEST(Modules_Factory_Tests
+  ${Modules_Factory_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_Factory_Tests
+  #Modules_Fields
+  Modules_Factory
+  #Core_Datatypes
+  Dataflow_Network
+  #Dataflow_State
+  Testing_Utils
+  Testing_ModuleTestBase
+  gtest_main
+  gtest
+  gmock
+)
