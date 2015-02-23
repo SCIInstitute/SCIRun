@@ -74,7 +74,7 @@ ModuleDescription::~ModuleDescription()
 ModuleLookupInfo::ModuleLookupInfo() {}
 
 ModuleLookupInfo::ModuleLookupInfo(const std::string& mod, const std::string& cat, const std::string& pack)
-  : package_name_(pack), category_name_(cat), module_name_(mod) 
+  : package_name_(pack), category_name_(cat), module_name_(mod)
 {}
 
 ModuleId::ModuleId() : name_("<Unknown>"), id_("<Invalid>"), idNumber_(-1) {}
@@ -143,4 +143,15 @@ std::string PortId::toString() const
   std::ostringstream ostr;
   ostr << *this;
   return ostr.str();
+}
+
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ModuleLookupInfo& mli)
+{
+  return o << "Module[" << mli.package_name_ << "::" << mli.category_name_ << "::" << mli.module_name_ << "]";
+
+}
+
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ModuleDescription& desc)
+{
+  return o << "Description: TODO " << desc.lookupInfo_;
 }

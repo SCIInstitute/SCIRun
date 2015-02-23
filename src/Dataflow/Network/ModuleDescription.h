@@ -128,7 +128,19 @@ namespace Networks {
     //bool                              has_gui_node_;
   };
 
+  SCISHARE std::ostream& operator<<(std::ostream& o, const ModuleLookupInfo& mli);
+  SCISHARE std::ostream& operator<<(std::ostream& o, const ModuleDescription& desc);
   SCISHARE bool canReplaceWith(ModuleHandle module, const ModuleDescription& potentialReplacement);
+
+  struct SCISHARE ModuleLookupInfoLess
+  {
+    bool operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const
+    {
+      return lhs.module_name_ < rhs.module_name_;
+    }
+  };
+
+  typedef std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> DirectModuleDescriptionLookupMap;
 
 }}}
 

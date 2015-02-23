@@ -27,12 +27,13 @@
 */
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
 //#include <Core/Datatypes/Legacy/Field/Field.h>
 //#include <Modules/Legacy/Fields/CreateLatVol.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
-//using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Modules::Factory;
 //using namespace SCIRun::Core::Datatypes;
 //using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
@@ -41,7 +42,19 @@ using namespace SCIRun::Dataflow::Networks;
 //using ::testing::DefaultValue;
 //using ::testing::Return;
 
-TEST(ModuleReplaceBuilderTests, Foo)
+TEST(HardCodedModuleFactoryTests, ListAllModules)
+{
+  HardCodedModuleFactory factory;
+
+  auto descMap = factory.getDirectModuleDescriptionLookupMap();
+
+  for (const auto& p : descMap)
+  {
+    std::cout << p.first << " --> " << p.second << std::endl;
+  }
+}
+
+TEST(ModuleReplaceBuilderTests, NoConnectedPortsCanBeReplacedWithAnything)
 {
   FAIL() << "todo";
 }

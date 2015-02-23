@@ -146,3 +146,8 @@ const ModuleDescriptionMap& HardCodedModuleFactory::getAllAvailableModuleDescrip
 {
   return impl_->lookup.descMap_;
 }
+
+const DirectModuleDescriptionLookupMap& HardCodedModuleFactory::getDirectModuleDescriptionLookupMap() const
+{
+  return impl_->lookup.lookup_;
+}
