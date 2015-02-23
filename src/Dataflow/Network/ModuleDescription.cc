@@ -155,3 +155,10 @@ std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const Modu
 {
   return o << "Description: TODO " << desc.lookupInfo_;
 }
+
+bool ModuleLookupInfoLess::operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const
+{
+  //TODO: this is the correct ordering, but right now the package and category are not passed in when adding modules to the network. For now, just compare by module name.
+  //return std::tie(lhs.package_name_, lhs.category_name_, lhs.module_name_) < std::tie(rhs.package_name_, rhs.category_name_, rhs.module_name_);
+  return lhs.module_name_ < rhs.module_name_;
+}

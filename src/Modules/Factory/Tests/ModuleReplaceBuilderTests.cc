@@ -47,7 +47,12 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
   EXPECT_EQ(84, descMap.size());
 }
 
-TEST(ModuleReplaceBuilderTests, NoConnectedPortsCanBeReplacedWithAnything)
+TEST(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
+{
+  FAIL() << "todo";
+}
+
+TEST(ModuleReplaceTests, NoConnectedPortsCanBeReplacedWithAnything)
 {
   FAIL() << "todo";
 }

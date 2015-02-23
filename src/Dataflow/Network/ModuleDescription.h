@@ -100,7 +100,7 @@ namespace Networks {
   struct SCISHARE ModuleLookupInfo
   {
     ModuleLookupInfo();
-    ModuleLookupInfo(const std::string& mod, const std::string& cat = "", const std::string& pack = "");
+    ModuleLookupInfo(const std::string& mod, const std::string& cat, const std::string& pack);
     std::string package_name_;
     std::string category_name_;
     std::string module_name_;
@@ -134,10 +134,7 @@ namespace Networks {
 
   struct SCISHARE ModuleLookupInfoLess
   {
-    bool operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const
-    {
-      return lhs.module_name_ < rhs.module_name_;
-    }
+    bool operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const;
   };
 
   typedef std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> DirectModuleDescriptionLookupMap;
