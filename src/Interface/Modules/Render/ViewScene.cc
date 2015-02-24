@@ -66,6 +66,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   fmt.setDepthBufferSize(24);
 
   mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
+  connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
 
   if (mGLWidget->isValid())
   {

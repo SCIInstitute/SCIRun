@@ -88,7 +88,8 @@ namespace SCIRun {
 			mMouseMode(MOUSE_OLDSCIRUN),
 			mScreenWidth(640),
 			mScreenHeight(480),
-			mContext(context),
+      axesFailCount_(0),
+      mContext(context),
 			mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
 		{
 			// Create default colormaps.
@@ -879,7 +880,13 @@ namespace SCIRun {
 
 			// Bail if assets have not been loaded yet (asynchronous loading may take a
 			// few frames).
-			if (arrowVBO == 0 || arrowIBO == 0 || shader == 0) { return; }
+			if (arrowVBO == 0 || arrowIBO == 0 || shader == 0) 
+      { 
+        axesFailCount_++;
+        if (axesFailCount_ > 50)
+          throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
+        return; 
+      }
 
 			const ren::IBOMan::IBOData* iboData;
 			try
