@@ -87,7 +87,7 @@
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
-#include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
+#include <Interface/Modules/Visualization/CreateStandardColorMapDialog.h>
 #include <Interface/Modules/Visualization/ShowColorMapDialog.h> 
 #include <Interface/Modules/Matlab/ImportDatatypesFromMatlabDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
@@ -139,7 +139,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
     ADD_MODULE_DIALOG(CreateLatVol, CreateLatVolDialog)
-    ADD_MODULE_DIALOG(CreateStandardColorMap, CreateBasicColorMapDialog)
+    ADD_MODULE_DIALOG(CreateStandardColorMap, CreateStandardColorMapDialog)
     ADD_MODULE_DIALOG(GetDomainBoundary, GetDomainBoundaryDialog)
     ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
     ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)

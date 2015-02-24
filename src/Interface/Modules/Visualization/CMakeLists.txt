@@ -28,7 +28,7 @@
 #
 
 SET(Interface_Modules_Visualization_FORMS
-  CreateBasicColorMap.ui
+  CreateStandardColorMap.ui
   GenerateStreamLines.ui
   MatrixAsVectorField.ui
   ShowField.ui
@@ -37,7 +37,7 @@ SET(Interface_Modules_Visualization_FORMS
 )
 
 SET(Interface_Modules_Visualization_HEADERS
-  CreateBasicColorMapDialog.h
+  CreateStandardColorMapDialog.h
   GenerateStreamLinesDialog.h
   MatrixAsVectorFieldDialog.h
   share.h
@@ -47,7 +47,7 @@ SET(Interface_Modules_Visualization_HEADERS
 )
 
 SET(Interface_Modules_Visualization_SOURCES 
-  CreateBasicColorMapDialog.cc
+  CreateStandardColorMapDialog.cc
   GenerateStreamLinesDialog.cc
   MatrixAsVectorFieldDialog.cc
   ShowFieldDialog.cc
