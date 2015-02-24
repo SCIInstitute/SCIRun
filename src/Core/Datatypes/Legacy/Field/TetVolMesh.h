@@ -4207,11 +4207,11 @@ TetVolMesh<Basis>::insert_node_in_elem(typename Elem::array_type &tets,
   const Core::Geometry::Point &p3 = points_[cells_[ci*4 + 3]];
 
   // Compute all the new tet areas.
-  const double aerr = Abs(Dot(Cross(p1 - p0, p2 - p0), p3 - p0)) * 0.01;
-  const double a0 = Abs(Dot(Cross(p1 - p, p2 - p), p3 - p));
-  const double a1 = Abs(Dot(Cross(p - p0, p2 - p0), p3 - p0));
-  const double a2 = Abs(Dot(Cross(p1 - p0, p - p0), p3 - p0));
-  const double a3 = Abs(Dot(Cross(p1 - p0, p2 - p0), p - p0));
+  const double aerr = std::fabs(Dot(Cross(p1 - p0, p2 - p0), p3 - p0)) * 0.01;
+  const double a0 = std::fabs(Dot(Cross(p1 - p, p2 - p), p3 - p));
+  const double a1 = std::fabs(Dot(Cross(p - p0, p2 - p0), p3 - p0));
+  const double a2 = std::fabs(Dot(Cross(p1 - p0, p - p0), p3 - p0));
+  const double a3 = std::fabs(Dot(Cross(p1 - p0, p2 - p0), p - p0));
 
   mask_type mask = 0;
   if (a0 >= aerr && a0 >= epsilon3_) { mask |= 1; }

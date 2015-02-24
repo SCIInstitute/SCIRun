@@ -83,6 +83,9 @@ namespace SCIRun {
       void viewVectorSelected(int index);
       void configurationButtonClicked();
       void assignBackgroundColor();
+      void setTransparencySortTypeContinuous(bool index);
+      void setTransparencySortTypeUpdate(bool index);
+      void setTransparencySortTypeLists(bool index);
       void handleUnselectedItem(const QString& name);
       void handleSelectedItem(const QString& name);
 
@@ -118,8 +121,10 @@ namespace SCIRun {
       bool shown_;
       bool hideViewBar_;
       bool showConfiguration_;
+      bool itemValueChanged_;
       std::shared_ptr<class ViewSceneItemManager> itemManager_;
       std::vector<std::string> unselectedObjectNames_;
+      std::vector<std::string> previousObjectNames_;
 
       friend class ViewSceneControlsDock;
 		};
@@ -132,7 +137,7 @@ namespace SCIRun {
 			QStandardItemModel* model() { return model_; }
       void SetupConnections(ViewSceneDialog* slotHolder);
 			public Q_SLOTS:
-			void addItem(const QString& name, bool checked);
+      void addItem(const QString& name, const QString& displayName, bool checked);
 			void removeItem(const QString& name);
 			void removeAll();
 		Q_SIGNALS:

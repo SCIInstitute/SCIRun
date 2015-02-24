@@ -67,6 +67,8 @@ public:
   /// contexts running on the same thread.
   void makeCurrent();
 
+Q_SIGNALS:
+  void fatalError(const QString& message);
 protected:
   virtual void mousePressEvent(QMouseEvent* event);
   virtual void mouseMoveEvent(QMouseEvent* event);

@@ -131,6 +131,11 @@ ModuleProxyWidget::~ModuleProxyWidget()
 {
 }
 
+void ModuleProxyWidget::createStartupNote()
+{
+  module_->createStartupNote();
+}
+
 void ModuleProxyWidget::ensureVisible()
 {
   auto views = scene()->views();

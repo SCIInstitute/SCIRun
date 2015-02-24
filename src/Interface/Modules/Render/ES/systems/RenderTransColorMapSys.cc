@@ -73,7 +73,28 @@ public:
                                   ren::VecUniform,
                                   ren::MatUniform>(type);
   }
-  
+
+private:
+  class SortedObject
+  {
+  public:
+    std::string mName;
+    GLuint mSortedID;
+    Core::Geometry::Vector prevDir = Core::Geometry::Vector(0.0);;
+
+    SortedObject() :
+      mSortedID(0)
+    {}
+
+    SortedObject(const std::string& name, GLuint ID, Core::Geometry::Vector& dir) :
+      mName(name),
+      mSortedID(ID),
+      prevDir(dir)
+    {}
+  };
+
+  std::vector<SortedObject> sortedObjects;
+
   class DepthIndex {
   public:
     size_t mIndex;
@@ -94,6 +115,63 @@ public:
       return this->mDepth < di.mDepth;
     }
   };
+
+  GLuint sortObjects(const Core::Geometry::Vector& dir,
+                     const es::ComponentGroup<ren::IBO>& ibo,
+                     const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
+                     const es::ComponentGroup<ren::StaticIBOMan>& iboMan)
+  {
+    char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
+    uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.front().ibo.data->getBuffer());
+    size_t num_triangles = pass.front().ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
+
+    size_t stride_vbo = 0;
+    for (auto a : pass.front().vbo.attributes)
+      stride_vbo += a.sizeInBytes;
+
+    std::vector<DepthIndex> rel_depth(num_triangles);
+
+
+    for (size_t j = 0; j < num_triangles; j++)
+    {
+      float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
+      Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+
+      float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 1]));
+      Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+
+      float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 2]));
+      Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+
+      rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
+      rel_depth[j].mIndex = j;
+    }
+
+    std::sort(rel_depth.begin(), rel_depth.end());
+
+    // setup index buffers
+    int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
+
+    std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
+    char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
+    char* sbuffer = !sorted_buffer.empty() ? reinterpret_cast<char*>(&sorted_buffer[0]) : 0;
+    GLuint result = ibo.front().glid;
+    if (sbuffer && num_triangles > 0)
+    {
+      size_t tri_size = pass.front().ibo.data->getBufferSize() / num_triangles;
+
+      for (size_t j = 0; j < num_triangles; j++)
+      {
+        memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
+      }
+
+      std::string transIBOName = pass.front().ibo.name + "trans";
+      result = iboMan.front().instance->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), ibo.front().primMode, ibo.front().primType,
+        numPrimitives, transIBOName);
+    }
+
+    return result;
+  }
 
   void groupExecute(
       es::ESCoreBase&, uint64_t /* entityID */,
@@ -124,7 +202,9 @@ public:
       return;
     }
 
-    if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY))
+    if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY) &&
+        !srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) &&
+        !srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES))
     {
       return;
     }
@@ -132,97 +212,99 @@ public:
     bool drawLines = (ibo.front().primMode == Core::Datatypes::GeometryObject::SpireIBO::LINES);
     GLuint iboID = ibo.front().glid;
 
+    Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
+                               camera.front().data.worldToView[1][2],
+                               camera.front().data.worldToView[2][2]);
+    
     if (!drawLines)
     {
-      char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
-      uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.front().ibo.data->getBuffer());
-      size_t num_triangles = pass.front().ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
-
-      size_t stride_vbo = 0;
-      for (auto a : pass.front().vbo.attributes)
-        stride_vbo += a.sizeInBytes;
-
-      std::vector<DepthIndex> rel_depth(num_triangles);
-      Core::Geometry::Vector dir(
-        camera.front().data.worldToView[0][2],
-        camera.front().data.worldToView[1][2],
-        camera.front().data.worldToView[2][2]);
-
-      for (size_t j = 0; j < num_triangles; j++)
+      switch (pass.front().renderState.mSortType)
       {
-        float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
-        Core::Geometry::Point node1(vertex1[0], vertex1[1], vertex1[2]);
+        case RenderState::TransparencySortType::CONTINUOUS_SORT:
+        {
+          iboID = sortObjects(dir, ibo, pass, iboMan);
+          break;
+        }
+        case RenderState::TransparencySortType::UPDATE_SORT:
+        {
+          unsigned int index = 0;
+          bool indexed = false;
+          for (int i = 0; i < sortedObjects.size(); ++i)
+          {
+            if (sortedObjects[i].mName == pass.front().ibo.name)
+            {
+              indexed = true;
+              index = i;
+            }
+          }
+          if (!indexed)
+          {
+            index = sortedObjects.size();
+            sortedObjects.push_back(SortedObject(pass.front().ibo.name, 0, dir));
+          }
 
-        float* vertex2 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 1]));
-        Core::Geometry::Point node2(vertex2[0], vertex2[1], vertex2[2]);
+          Core::Geometry::Vector diff = sortedObjects[index].prevDir - dir;
+          double distance = sqrtf(Core::Geometry::Dot(diff, diff));
+          if (distance >= 1.23 || sortedObjects[index].mSortedID == 0)
+          {
+            if (sortedObjects[index].mSortedID != 0)
+            {
+              iboMan.front().instance->removeInMemoryIBO(sortedObjects[index].mSortedID);
+            }
+            sortedObjects[index].prevDir = dir;
+            sortedObjects[index].mSortedID = sortObjects(dir, ibo, pass, iboMan);
+          }
+          iboID = sortedObjects[index].mSortedID;
+          break;
+        }
+        case RenderState::TransparencySortType::LISTS_SORT:
+        {
+          GLuint iboXID = ibo.front().glid;
+          GLuint iboYID = ibo.front().glid;
+          GLuint iboZID = ibo.front().glid;
+          GLuint iboNegXID = ibo.front().glid;
+          GLuint iboNegYID = ibo.front().glid;
+          GLuint iboNegZID = ibo.front().glid;
 
-        float* vertex3 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3 + 2]));
-        Core::Geometry::Point node3(vertex3[0], vertex3[1], vertex3[2]);
+          int index = 0;
+          for (auto it = ibo.begin(); it != ibo.end(); ++it, ++index)
+          {
+            if (index == 1)
+              iboXID = it->glid;
+            if (index == 2)
+              iboYID = it->glid;
+            if (index == 3)
+              iboZID = it->glid;
+            if (index == 4)
+              iboNegXID = it->glid;
+            if (index == 5)
+              iboNegYID = it->glid;
+            if (index == 6)
+              iboNegZID = it->glid;
+          }
 
-        rel_depth[j].mDepth = Core::Geometry::Dot(dir, node1) + Core::Geometry::Dot(dir, node2) + Core::Geometry::Dot(dir, node3);
-        rel_depth[j].mIndex = j;
+          Core::Geometry::Vector absDir(abs(camera.front().data.worldToView[0][2]),
+                                        abs(camera.front().data.worldToView[1][2]),
+                                        abs(camera.front().data.worldToView[2][2]));
+
+          double xORy = absDir.x() > absDir.y() ? absDir.x() : absDir.y();
+          double orZ = absDir.z() > xORy ? absDir.z() : xORy;
+
+          if (orZ == absDir.x())
+          {
+            iboID = dir.x() < orZ ? iboNegXID : iboXID;
+          }
+          if (orZ == absDir.y())
+          {
+            iboID = dir.y() < orZ ? iboNegYID : iboYID;
+          }
+          if (orZ == absDir.z())
+          {
+            iboID = dir.z() < orZ ? iboNegZID : iboZID;
+          }
+          break;
+        }
       }
-
-      std::sort(rel_depth.begin(), rel_depth.end());
-
-      // setup index buffers
-
-      GLenum primType = GL_UNSIGNED_SHORT;
-      switch (pass.front().ibo.indexSize)
-      {
-      case 1: // 8-bit
-        primType = GL_UNSIGNED_BYTE;
-        break;
-
-      case 2: // 16-bit
-        primType = GL_UNSIGNED_SHORT;
-        break;
-
-      case 4: // 32-bit
-        primType = GL_UNSIGNED_INT;
-        break;
-
-      default:
-        primType = GL_UNSIGNED_INT;
-        throw std::invalid_argument("Unable to determine index buffer depth.");
-        break;
-      }
-
-      GLenum primitive = GL_TRIANGLES;
-      switch (pass.front().ibo.prim)
-      {
-      case Core::Datatypes::GeometryObject::SpireIBO::POINTS:
-        primitive = GL_POINTS;
-        break;
-
-      case Core::Datatypes::GeometryObject::SpireIBO::LINES:
-        primitive = GL_LINES;
-        break;
-
-      case Core::Datatypes::GeometryObject::SpireIBO::TRIANGLES:
-      default:
-        primitive = GL_TRIANGLES;
-        break;
-      }
-
-      int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
-
-      std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
-      char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
-      char* sbuffer = reinterpret_cast<char*>(&sorted_buffer[0]);
-      size_t tri_size = pass.front().ibo.data->getBufferSize() / num_triangles;
-
-      for (size_t j = 0; j < num_triangles; j++)
-      {
-        memcpy(sbuffer + j * tri_size, ibuffer + rel_depth[j].mIndex * tri_size, tri_size);
-      }
-
-      //int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
-
-      std::string transIBOName = pass.front().ibo.name + "trans";
-
-      iboID = iboMan.front().instance->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), primitive, primType,
-        numPrimitives, transIBOName);
     }
 
     // Setup *everything*. We don't want to enter multiple conditional
@@ -312,11 +394,11 @@ public:
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}
 
     geom.front().attribs.bind();
-    
+
     bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
     bool cullFace = glIsEnabled(GL_CULL_FACE);
     bool blend = glIsEnabled(GL_BLEND);
-      
+
     GL(glEnable(GL_DEPTH_TEST));
     GL(glDepthMask(GL_FALSE));
     GL(glDisable(GL_CULL_FACE));
@@ -347,7 +429,7 @@ public:
           rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       CPM_BSERIALIZE_NS::BSerialize dataDeserialize(
-          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize()); 
+          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       int64_t posSize     = 0;
       int64_t dataSize    = 0;
@@ -434,9 +516,13 @@ public:
                           ibo.front().primType, 0));
       }
     }
+
     if (!drawLines)
     {
-      iboMan.front().instance->removeInMemoryIBO(iboID);
+      if (pass.front().renderState.mSortType == RenderState::TransparencySortType::CONTINUOUS_SORT)
+      {
+        iboMan.front().instance->removeInMemoryIBO(iboID);
+      }
     }
 
     if (depthMask)
@@ -475,4 +561,3 @@ const char* getSystemName_RenderColorMapTrans()
 
 } // namespace Render
 } // namespace SCIRun
-

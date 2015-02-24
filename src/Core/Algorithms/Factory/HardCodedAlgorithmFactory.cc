@@ -32,7 +32,7 @@
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoElems.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataFromSourceToDestination.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h> 
+#include <Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateDistanceField.h>
@@ -43,7 +43,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h> 
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
@@ -55,9 +55,10 @@
 #include <Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ScaleFieldMeshAndData.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/ProjectPointsOntoMesh.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h> 
-#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h> 
+#include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/StreamLines/GenerateStreamLines.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -126,7 +127,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(GenerateROIStatistics, GenerateROIStatisticsAlgorithm)
       ADD_MODULE_ALGORITHM(SetFieldNodes, SetMeshNodesAlgo)
       ADD_MODULE_ALGORITHM(ReportFieldInfo, ReportFieldInfoAlgorithm)
-			ADD_MODULE_ALGORITHM(BuildMatrixOfSurfaceNormals, BuildMatrixOfSurfaceNormalsAlgo) 
+			ADD_MODULE_ALGORITHM(BuildMatrixOfSurfaceNormals, BuildMatrixOfSurfaceNormalsAlgo)
       ADD_MODULE_ALGORITHM(ReportMatrixInfo, ReportMatrixInfoAlgorithm)
       ADD_MODULE_ALGORITHM(AppendMatrix, AppendMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(ReadMatrix, ReadMatrixAlgorithm)
@@ -152,6 +153,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeAlgo)
       ADD_MODULE_ALGORITHM(ResampleRegularMesh, ResampleRegularMeshAlgo)
       ADD_MODULE_ALGORITHM(FairMesh, FairMeshAlgo)
+      ADD_MODULE_ALGORITHM(GenerateStreamLines, GenerateStreamLinesAlgo)
       ADD_MODULE_ALGORITHM(ScaleFieldMeshAndData, ScaleFieldMeshAndDataAlgo)
       ADD_MODULE_ALGORITHM(ConvertFieldBasis, ConvertFieldBasisTypeAlgo)
       ADD_MODULE_ALGORITHM(ProjectPointsOntoMesh, ProjectPointsOntoMeshAlgo)
@@ -166,11 +168,11 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 			ADD_MODULE_ALGORITHM(RefineMesh, RefineMeshAlgo)
       ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
 			ADD_MODULE_ALGORITHM(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesAlgo)
-	  ADD_MODULE_ALGORITHM(FlipSurfaceNormals,FlipSurfaceNormalsAlgo)
-	  ADD_MODULE_ALGORITHM(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixAlgorithm)
+	    ADD_MODULE_ALGORITHM(FlipSurfaceNormals,FlipSurfaceNormalsAlgo)
+	    ADD_MODULE_ALGORITHM(BuildNoiseColumnMatrix,BuildNoiseColumnMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(BuildMappingMatrix, BuildMappingMatrixAlgo)
-	  ADD_MODULE_ALGORITHM(ConvertIndicesToFieldData, ConvertIndicesToFieldDataAlgo)
-	  ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo)
+	    ADD_MODULE_ALGORITHM(ConvertIndicesToFieldData, ConvertIndicesToFieldDataAlgo)
+	    ADD_MODULE_ALGORITHM(ComputeSVD, ComputeSVDAlgo)
     ;
   }
 }

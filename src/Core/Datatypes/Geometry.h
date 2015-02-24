@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 /// @todo Documentation Core/Datatypes/Geometry.h
 
 #ifndef CORE_DATATYPES_GEOMETRY_H
-#define CORE_DATATYPES_GEOMETRY_H 
+#define CORE_DATATYPES_GEOMETRY_H
 
 #include <cstdint>
 #include <list>
@@ -79,7 +79,7 @@ namespace Datatypes {
     DatatypeConstHandle get_underlying() const;
     virtual GeometryObject* clone() const { return new GeometryObject(*this); }
 
-    std::string objectName;     ///< Name of this object. Should be unique 
+    std::string objectName;     ///< Name of this object. Should be unique
                                 ///< across all modules in the network.
 
     // Could require rvalue references...
@@ -149,7 +149,7 @@ namespace Datatypes {
     struct SpireSubPass
     {
 			SpireSubPass() {}
-      SpireSubPass(const std::string& name, const std::string& vboName, 
+      SpireSubPass(const std::string& name, const std::string& vboName,
                    const std::string& iboName, const std::string& program,
                    ColorScheme scheme, const RenderState& state,
                    RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo) :
@@ -161,8 +161,8 @@ namespace Datatypes {
           renderType(renType),
 					vbo(vbo),
 					ibo(ibo),
-          mColorScheme(scheme),
-          scalar(1.0)
+          scalar(1.0),
+          mColorScheme(scheme)
       {}
 
 			static const char* getName() { return "SpireSubPass"; }

@@ -70,6 +70,7 @@ public:
   void addToDataDirectory(const QString& dir);
 
   bool newInterface() const;
+  bool isInFavorites(const QString& module) const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
   ~SCIRunMainWindow();

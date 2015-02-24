@@ -116,6 +116,8 @@ public:
 
   bool hasDynamicPorts() const;
 
+  void createStartupNote();
+
   static const int PORT_SPACING = 3;
 
   virtual boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber);
@@ -133,6 +135,7 @@ public Q_SLOTS:
   void updateProgressBar(double percent);
   void updateModuleTime();
   void launchDocumentation();
+  void setStartupNote(const QString& text);
   void updateNote(const Note& note);
   void duplicate();
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
@@ -173,6 +176,7 @@ private Q_SLOTS:
   void fillReplaceWithMenu();
   void replaceModuleWith();
   void updateDialogWithPortCount();
+  void handleDialogFatalError(const QString& message);
 private:
   ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;

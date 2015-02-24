@@ -39,7 +39,10 @@ namespace Console {
   class SCISHARE LoadFileCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
+    explicit LoadFileCommandConsole(int index) : index_(index) {}
     virtual bool execute();
+  private:
+    int index_;
   };
 
   class SCISHARE RunPythonScriptCommandConsole : public Core::Commands::ConsoleCommand
@@ -77,7 +80,7 @@ namespace Console {
   public:
     virtual bool execute();
   };
-  
+
   /// @TODO
 //   class SCISHARE SetupDataDirectoryCommand : public Core::Commands::ConsoleCommand
 //   {

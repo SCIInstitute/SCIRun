@@ -1,13 +1,12 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,60 +24,39 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
-
-
-
-///
-///@class MutexPool 
-///@brief A set of mutex objects
-///
-///@author
-///       Steve Parker
-///       Department of Computer Science
-///       University of Utah
-///@date  September 1999
-///
-
-#include <Core/Thread/Legacy/MutexPool.h>
-#include <Core/Thread/Legacy/UsedWithLockingHandle.h>
-
-namespace SCIRun {
-
-
-MutexPool::MutexPool(const char* name, int size)
-    :  nextID_("MutexPool ID lock", 0), size_(size),
-    pool_(size)
-{
-    // Mutex has no default CTOR so we must allocate them independently.
-    for (int i=0; i < size_; i++)
-	    pool_[i].reset(new Mutex(name));
-}
-
-MutexPool::~MutexPool()
-{
-  pool_.clear();
-}
-
-int MutexPool::nextIndex()
-{
-  for(;;) 
-  {
-    int next = nextID_++;
-    if(next < size_)
-      return next;
-    // The above is atomic, but if it exceeds size, we need to
-    // reset it.
-    nextID_.set(0);
-  }
-}
-
-Mutex& MutexPool::getMutex()
-{
-  return *pool_[nextIndex()];
-}
-
-UsedWithLockingHandleBase::~UsedWithLockingHandleBase() {}
-
-} // End namespace SCIRun
+ */
+#ifdef OPENGL_ES
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+// Default precision
+precision highp float;
+#else
+precision mediump float;
 #endif
+#endif
+
+uniform sampler1D uTX0;
+
+varying float vFieldData;
+uniform float   uCMInvert;
+uniform float   uCMShift;
+uniform float   uCMResolution;
+
+void main()
+{
+   float param = vFieldData;
+   float shift = uCMShift;
+   if (uCMInvert != 0.) {
+      param = 1. - param;
+      shift = shift * -1.;
+   }
+   //apply the resolution
+   int res = int(uCMResolution);
+   param = float(int(param * (float(res)))) / float(res - 1);
+   // the shift is a gamma.
+   float bp = 1. / tan((3.14159265359 / 2.) *  ( 0.5 - shift * 0.5));
+   param = pow(param,bp);
+
+   vec4 color = texture1D( uTX0, param );
+   color.a       = 1.0;
+   gl_FragColor = color;
+}

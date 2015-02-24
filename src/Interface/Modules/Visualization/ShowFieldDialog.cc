@@ -74,9 +74,33 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   connectButtonToExecuteSignal(nodesAsPointsButton_);
   connectButtonToExecuteSignal(nodesAsSpheresButton_);
 
+  //default values
+  cylinder_rad_spin->setValue(1.0);
+  cylinder_res_spin->setValue(5);
+
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 
-  pushColor();
+  /////Set unused widgets to be not visible
+  //Nodes Tab
+  label_4->setVisible(false); // Sphere scale lable
+  scaleSphereDoubleSpinBox_->setVisible(false); // Sphere scale spin box
+  resolutionSpinBox->setVisible(false); //resolution spin box
+  label_5->setVisible(false); //resolution label
+  groupBox_3->setVisible(false); //Node coloring
+  groupBox_4->setVisible(false); //Node Display Type Group Box
+
+  //Edges Tab
+  groupBox_7->setVisible(false);//Edge Display Type Group Box
+  label_9->setVisible(false); //resolution label
+  cylinder_res_spin->setVisible(false); //resolution spinbox
+  label_8->setVisible(false); //scale label
+  cylinder_rad_spin->setVisible(false); //cylinder scale spinbox
+  //groupBox_6->setVisible(false); //edge coloring
+
+  //Faces Tab
+  groupBox_5->setVisible(false); //face coloring
+  checkBox->setVisible(false); //Use Face Normal box
+  checkBox_2->setVisible(false); //Images as texture box
 }
 
 void ShowFieldDialog::push()
@@ -87,15 +111,23 @@ void ShowFieldDialog::push()
   }
 }
 
+void ShowFieldDialog::createStartupNote()
+{
+  auto showFieldId = windowTitle().split(':')[1];
+  setStartupNote("ID: " + showFieldId);
+}
+
 void ShowFieldDialog::pull()
 {
   pull_newVersionToReplaceOld();
   Pulling p(this);
   ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  //std::cout << "pull color: " << color.r() << " " << color.g() << " " << color.b() << std::endl;
+  // check for old saved color format: integers 0-255.
   defaultMeshColor_ = QColor(
-    static_cast<int>(color.r() * 255.0),
-    static_cast<int>(color.g() * 255.0),
-    static_cast<int>(color.b() * 255.0));
+    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 }
 
 void ShowFieldDialog::assignDefaultMeshColor()
@@ -112,5 +144,7 @@ void ShowFieldDialog::assignDefaultMeshColor()
 
 void ShowFieldDialog::pushColor()
 {
-  state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
+  //std::cout << "push color: " << defaultMeshColor_.redF() << " " << defaultMeshColor_.greenF() << " " << defaultMeshColor_.blueF() << std::endl;
+  state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+  Q_EMIT executeActionTriggered();
 }

@@ -1053,12 +1053,13 @@ void ModuleWidget::makeOptionsDialog()
         dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
-      dialog_->pull();
       addWidgetToExecutionDisableList(dialog_->getExecuteAction());
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
       connect(this, SIGNAL(dynamicPortChanged()), this, SLOT(updateDialogWithPortCount()));
+      connect(dialog_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
+      connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
@@ -1071,6 +1072,8 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
+
+      dialog_->pull();
     }
   }
 }
@@ -1165,6 +1168,20 @@ void ModuleWidget::launchDocumentation()
     GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
 }
 
+void ModuleWidget::setStartupNote(const QString& text)
+{
+  auto note = getCurrentNote();
+  note.plainText_ = text;
+  note.html_ = "<p style=\"color:white\">" + text;
+  updateNoteFromFile(note);
+}
+
+void ModuleWidget::createStartupNote()
+{
+  if (dialog_)
+    dialog_->createStartupNote();
+}
+
 void ModuleWidget::updateNote(const Note& note)
 {
   setCurrentNote(note, false);
@@ -1253,4 +1270,12 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
   setCurrentIndex(newIndex);
   resize(size);
   Q_EMIT displayChanged();
+}
+
+void ModuleWidget::handleDialogFatalError(const QString& message)
+{
+  qDebug() << "Dialog error: " << message;
+  updateBackgroundColor(moduleRGBA(176, 23, 31)); //TODO: will consolidate as part of state machine refactoring
+  colorLocked_ = true;
+  setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nDelete and re-add to network for proper execution.");
 }
