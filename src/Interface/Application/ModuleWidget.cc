@@ -1276,4 +1276,6 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
 {
   qDebug() << "Dialog error: " << message;
   updateBackgroundColor(moduleRGBA(176, 23, 31)); //TODO: will consolidate as part of state machine refactoring
+  colorLocked_ = true;
+  setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nDelete and re-add to network for proper execution.");
 }
