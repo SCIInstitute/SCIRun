@@ -102,6 +102,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/CreateStandardColorMap.h>
 #include <Modules/Visualization/ShowColorMapModule.h> 
+#include <Modules/Visualization/RescaleColorMap.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
@@ -155,7 +156,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   //addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<CreateStandardColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress: two color maps available", "...");
+  addModuleDesc<CreateStandardColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress: four color maps available", "...");
   addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
@@ -193,6 +194,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
   addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "..."); 
+  addModuleDesc<RescaleColorMap>("RescaleColorMap", "Visualization", "SCIRun", "Real ported module", "...");
 
   // insert module desc here
 }

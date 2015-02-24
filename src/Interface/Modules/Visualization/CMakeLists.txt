@@ -34,6 +34,7 @@ SET(Interface_Modules_Visualization_FORMS
   ShowField.ui
   ShowString.ui
   ShowColorMap.ui
+  RescaleColorMap.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
@@ -44,6 +45,7 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowFieldDialog.h
   ShowStringDialog.h
   ShowColorMapDialog.h
+  RescaleColorMapDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES 
@@ -53,6 +55,7 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowFieldDialog.cc
   ShowStringDialog.cc
   ShowColorMapDialog.cc
+  RescaleColorMapDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS ${Interface_Modules_Visualization_FORMS})

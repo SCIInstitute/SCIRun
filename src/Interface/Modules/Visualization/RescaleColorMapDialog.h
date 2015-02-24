@@ -25,28 +25,30 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
 
-#ifndef MODULES_VISUALIZATION_SHOWCOLORMAP_H
-#define MODULES_VISUALIZATION_SHOWCOLORMAP_H
+#ifndef INTERFACE_MODULES_RESCALECOLORMAPDIALOG_H
+#define INTERFACE_MODULES_RESCALECOLORMAPDIALOG_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Visualization/share.h>
+#include "Interface/Modules/Visualization/ui_RescaleColorMap.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Visualization {
+namespace Gui {
+  
+class SCISHARE RescaleColorMapDialog : public ModuleDialogGeneric,
+	public Ui::RescaleColorMap
+{
+	Q_OBJECT
+	
+public:
+    RescaleColorMapDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
 
-	class SCISHARE ShowColorMap : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has1OutputPort<ColorMapPortTag>
-  {
-  public:
-		ShowColorMap();
-    virtual void execute();
-    virtual void setStateDefaults();
-    OUTPUT_PORT(0, ColorMapObject, ColorMap);
-  };
-}}}
+}
+}
 
 #endif

@@ -28,7 +28,8 @@
 
 /// @todo Documentation Modules/Visualization/CreateBasicColorMap.cc
 
-#include <Modules/Visualization/ShowColorMap.h>
+#include <Modules/Visualization/RescaleColorMap.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/ColorMap.h>
 
@@ -37,18 +38,24 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-ShowColorMap::ShowColorMap() : Module(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
+RescaleColorMap::RescaleColorMap() : Module(ModuleLookupInfo("RescaleColorMap", "Visualization", "SCIRun"))
 {
+  INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
+  INITIALIZE_PORT(ColorMapOutput);
 }
 
-void ShowColorMap::setStateDefaults()
+void RescaleColorMap::setStateDefaults()
 {
   auto state = get_state();
-  //state->setValue(Variables::ColorMapName, std::string("Rainbow"));
 }
 
-void ShowColorMap::execute()
+void RescaleColorMap::execute()
 {
-  sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
+  boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
+  boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap> colorMap = getRequiredInput(ColorMapObject);
+  sendOutput(ColorMapOutput, StandardColorMapFactory::create(colorMap.get()->getColorMapName(),
+                                                             colorMap.get()->getColorMapResolution(),
+                                                             colorMap.get()->getColorMapShift(),
+                                                             colorMap.get()->getColorMapInvert()));
 }
