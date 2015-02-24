@@ -84,6 +84,7 @@ namespace Gui {
     void executionTimeChanged(int time);
     void executeActionTriggered();
     void setStartupNote(const QString& text);
+    void fatalError(const QString& message);
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
     virtual void contextMenuEvent(QContextMenuEvent* e) override;

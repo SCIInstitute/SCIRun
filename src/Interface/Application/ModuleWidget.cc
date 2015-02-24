@@ -1059,6 +1059,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
       connect(this, SIGNAL(dynamicPortChanged()), this, SLOT(updateDialogWithPortCount()));
       connect(dialog_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
+      connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
@@ -1269,4 +1270,12 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
   setCurrentIndex(newIndex);
   resize(size);
   Q_EMIT displayChanged();
+}
+
+void ModuleWidget::handleDialogFatalError(const QString& message)
+{
+  qDebug() << "Dialog error: " << message;
+  updateBackgroundColor(moduleRGBA(176, 23, 31)); //TODO: will consolidate as part of state machine refactoring
+  colorLocked_ = true;
+  setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nDelete and re-add to network for proper execution.");
 }
