@@ -40,6 +40,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory_Tests
   #Core_Datatypes
   Dataflow_Network
   #Dataflow_State
+  Engine_Network
   Testing_Utils
   Testing_ModuleTestBase
   gtest_main

@@ -42,7 +42,7 @@ namespace SCIRun
     {
     protected:
       ModuleTestBase();
-
+      void initModuleParameters(bool verbose = true);
       Dataflow::Networks::ModuleHandle makeModule(const std::string& name);
 
       void stubPortNWithThisData(Dataflow::Networks::ModuleHandle module, size_t portNum, Core::Datatypes::DatatypeHandle data);

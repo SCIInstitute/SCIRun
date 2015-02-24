@@ -46,6 +46,11 @@ namespace SCIRun {
         ConnectedPortTypesWithCount input, output;
       };
 
+      SCISHARE bool operator==(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
+      SCISHARE bool operator!=(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
+      SCISHARE std::ostream& operator<<(std::ostream& o, const ConnectedPortInfo& cpi);
+      SCISHARE ConnectedPortInfo makeConnectedPortInfo(Dataflow::Networks::ModuleHandle module); 
+
       class SCISHARE ModuleReplacementFilter
       {
       public:
