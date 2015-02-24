@@ -67,7 +67,12 @@
         </property>
         <item>
          <property name="text">
-          <string>Grayscale</string>
+          <string>Rainbow</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Old Rainbow</string>
          </property>
         </item>
         <item>
@@ -77,7 +82,7 @@
         </item>
         <item>
          <property name="text">
-          <string>Rainbow</string>
+          <string>Grayscale</string>
          </property>
         </item>
        </widget>

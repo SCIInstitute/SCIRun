@@ -36,6 +36,7 @@ using namespace SCIRun::Core::Datatypes;
 ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift, const bool invert)
 : name_(name), resolution_(resolution), shift_(shift), invert_(invert) {
     if (!(name_ == "Rainbow"   ||
+          name_ == "Old Rainbow" ||
           name_ == "Blackbody" ||
           name_ == "Grayscale"  ))
           throw InvalidArgumentException();
@@ -115,10 +116,16 @@ ColorRGB ColorMap::getColorMapVal(float v) const {
     //now grab the RGB
     ColorRGB col;
     if (name_ == "Rainbow") {
-        // spread out the thin colors
-        //if (v < 0.7 && v > 0.3)
-        //    v = v - 0.05f * std::sin((v - 0.3) * 6.f * M_PI / 0.8);
-        col = hslToRGB((1. - f) * 0.7, 0.95, 0.5);
+        if (0. <= f && f < 0.25)
+            col = ColorRGB(0.,f*3.,1.-f);
+        else if (0.25 <= f && f < 0.5)
+            col = ColorRGB(0.,f+0.5,1.5 - f*3.);
+        else if (0.5 <= f && f < 0.75)
+            col = ColorRGB(4.*f - 2.,2. - 2.*f,0.);
+        else if (0.75 <= f && f <= 1.0)
+            col = ColorRGB(1.,2. - 2.*f,0.);
+    } else if (name_ == "Old Rainbow") {
+        col = hslToRGB((1. - f) * 0.675, 0.95, 0.5);
     } else if (name_ == "Blackbody") {
         if (f < 0.333333)
             col = ColorRGB(std::min(std::max(f * 3.,0.),1.), 0., 0.);
