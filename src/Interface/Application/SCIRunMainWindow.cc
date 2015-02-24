@@ -1082,6 +1082,11 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   }
 }
 
+bool SCIRunMainWindow::isInFavorites(const QString& module) const
+{
+	return favoriteModuleNames_.contains(module);
+}
+
 void SCIRunMainWindow::displayAcknowledgement()
 {
   QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment",
@@ -1330,7 +1335,7 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     dataSetGroupBox_ <<
     optionsGroupBox_ <<
     networkEditorMiniViewLabel_ <<
-    miniviewTextLabel_ << 
+    miniviewTextLabel_ <<
     scirunDataPathTextEdit_ <<
     addToPathButton_;
 

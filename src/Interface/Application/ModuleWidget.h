@@ -179,6 +179,7 @@ private Q_SLOTS:
   void fillReplaceWithMenu();
   void replaceModuleWith();
   void updateDialogWithPortCount();
+  void handleDialogFatalError(const QString& message);
 private:
   ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
