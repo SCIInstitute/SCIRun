@@ -69,55 +69,63 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 
   ASSERT_EQ(3, network->nmodules());
 
-  auto sendInfo = makeConnectedPortInfo(send);
-  ConnectedPortInfo expectedSendInfo; // empty maps
-  EXPECT_EQ(expectedSendInfo, sendInfo);
-  auto procInfo = makeConnectedPortInfo(process);
-  ConnectedPortInfo expectedProcInfo; // empty maps
-  EXPECT_EQ(expectedProcInfo, procInfo);
-  auto recInfo = makeConnectedPortInfo(receive);
-  ConnectedPortInfo expectedRecInfo; // empty maps
-  EXPECT_EQ(expectedRecInfo, recInfo);
+  {
+    auto sendInfo = makeConnectedPortInfo(send);
+    ConnectedPortInfo expectedSendInfo; // empty maps
+    EXPECT_EQ(expectedSendInfo, sendInfo);
+    auto procInfo = makeConnectedPortInfo(process);
+    ConnectedPortInfo expectedProcInfo; // empty maps
+    EXPECT_EQ(expectedProcInfo, procInfo);
+    auto recInfo = makeConnectedPortInfo(receive);
+    ConnectedPortInfo expectedRecInfo; // empty maps
+    EXPECT_EQ(expectedRecInfo, recInfo);
+  }
 
   auto cid1 = network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 0));
   auto cid2 = network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   ASSERT_EQ(2, network->nconnections());
 
-  sendInfo = makeConnectedPortInfo(send);
-  expectedSendInfo = { {}, { { "Matrix", 1 } } };
-  EXPECT_EQ(expectedSendInfo, sendInfo);
-  procInfo = makeConnectedPortInfo(process);
-  expectedProcInfo = { { { "Matrix", 1 } }, { { "Matrix", 1 } } };
-  EXPECT_EQ(expectedProcInfo, procInfo);
-  recInfo = makeConnectedPortInfo(receive);
-  expectedRecInfo = { { { "Matrix", 1 } }, {}};
-  EXPECT_EQ(expectedRecInfo, recInfo);
+  {
+    auto sendInfo = makeConnectedPortInfo(send);
+    ConnectedPortInfo expectedSendInfo = { {}, { { "Matrix", 1 } } };
+    EXPECT_EQ(expectedSendInfo, sendInfo);
+    auto procInfo = makeConnectedPortInfo(process);
+    ConnectedPortInfo expectedProcInfo = { { { "Matrix", 1 } }, { { "Matrix", 1 } } };
+    EXPECT_EQ(expectedProcInfo, procInfo);
+    auto recInfo = makeConnectedPortInfo(receive);
+    ConnectedPortInfo expectedRecInfo = { { { "Matrix", 1 } }, {} };
+    EXPECT_EQ(expectedRecInfo, recInfo);
+  }
 
   network->disconnect(cid1);
   ASSERT_EQ(1, network->nconnections());
-
-  sendInfo = makeConnectedPortInfo(send);
-  expectedSendInfo = {}; // empty maps
-  EXPECT_EQ(expectedSendInfo, sendInfo);
-  procInfo = makeConnectedPortInfo(process);
-  expectedProcInfo = { { }, { { "Matrix", 1 } } };
-  EXPECT_EQ(expectedProcInfo, procInfo);
-  recInfo = makeConnectedPortInfo(receive);
-  //expectedRecInfo unchanged
-  EXPECT_EQ(expectedRecInfo, recInfo);
+  
+  {
+    auto sendInfo = makeConnectedPortInfo(send);
+    ConnectedPortInfo expectedSendInfo; // empty maps
+    EXPECT_EQ(expectedSendInfo, sendInfo);
+    auto procInfo = makeConnectedPortInfo(process);
+    ConnectedPortInfo expectedProcInfo = { {}, { { "Matrix", 1 } } };
+    EXPECT_EQ(expectedProcInfo, procInfo);
+    auto recInfo = makeConnectedPortInfo(receive);
+    ConnectedPortInfo expectedRecInfo = { { { "Matrix", 1 } }, {} };
+    EXPECT_EQ(expectedRecInfo, recInfo);
+  }
 
   network->disconnect(cid2);
   ASSERT_EQ(0, network->nconnections());
 
-  sendInfo = makeConnectedPortInfo(send);
-  expectedSendInfo = {}; // empty maps
-  EXPECT_EQ(expectedSendInfo, sendInfo);
-  procInfo = makeConnectedPortInfo(process);
-  expectedProcInfo = {}; // empty maps
-  EXPECT_EQ(expectedProcInfo, procInfo);
-  recInfo = makeConnectedPortInfo(receive);
-  expectedRecInfo = {}; // empty maps
-  EXPECT_EQ(expectedRecInfo, recInfo);
+  {
+    auto sendInfo = makeConnectedPortInfo(send);
+    ConnectedPortInfo expectedSendInfo = {}; // empty maps
+    EXPECT_EQ(expectedSendInfo, sendInfo);
+    auto procInfo = makeConnectedPortInfo(process);
+    ConnectedPortInfo expectedProcInfo = {}; // empty maps
+    EXPECT_EQ(expectedProcInfo, procInfo);
+    auto recInfo = makeConnectedPortInfo(receive);
+    ConnectedPortInfo expectedRecInfo = {}; // empty maps
+    EXPECT_EQ(expectedRecInfo, recInfo);
+  }
 
   ModuleHandle create = controller.addModule("CreateLatVol");
   ModuleHandle setFD = controller.addModule("SetFieldData");
@@ -128,18 +136,20 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
   auto cid3 = network->connect(ConnectionOutputPort(setFD, 0), ConnectionInputPort(report, 0));
   ASSERT_EQ(3, network->nconnections());
 
-  auto createInfo = makeConnectedPortInfo(create);
-  ConnectedPortInfo expectedCreateInfo = { { }, { { "Field", 1 } } };
-  EXPECT_EQ(expectedCreateInfo, createInfo);
-  auto setInfo = makeConnectedPortInfo(setFD);
-  ConnectedPortInfo expectedSetInfo = { { { "Matrix", 1 }, { "Field", 1 } }, { { "Field", 1 } } };
-  EXPECT_EQ(expectedSetInfo, setInfo);
-  auto reportInfo = makeConnectedPortInfo(report);
-  ConnectedPortInfo expectedReportInfo = { { { "Field", 1 } }, { } };
-  EXPECT_EQ(expectedReportInfo, reportInfo);
+  {
+    auto createInfo = makeConnectedPortInfo(create);
+    ConnectedPortInfo expectedCreateInfo = { {}, { { "Field", 1 } } };
+    EXPECT_EQ(expectedCreateInfo, createInfo);
+    auto setInfo = makeConnectedPortInfo(setFD);
+    ConnectedPortInfo expectedSetInfo = { { { "Matrix", 1 }, { "Field", 1 } }, { { "Field", 1 } } };
+    EXPECT_EQ(expectedSetInfo, setInfo);
+    auto reportInfo = makeConnectedPortInfo(report);
+    ConnectedPortInfo expectedReportInfo = { { { "Field", 1 } }, {} };
+    EXPECT_EQ(expectedReportInfo, reportInfo);
+  }
 }
 
-TEST_F(ModuleReplaceTests, NoConnectedPortsCanBeReplacedWithAnything)
+TEST_F(ModuleReplaceTests, DISABLED_NoConnectedPortsCanBeReplacedWithAnything)
 {
   FAIL() << "todo";
 }
