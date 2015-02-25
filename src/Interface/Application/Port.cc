@@ -144,7 +144,7 @@ namespace SCIRun {
 
 PortWidget::PortWidgetMap PortWidget::portWidgetMap_;
 
-PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent) {}
+PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent), isHighlighted_(false) {}
 
 PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId,
   const PortId& portId, size_t index,
@@ -163,7 +163,6 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
   setToolTip(QString(name_).replace("_", " ") + (isDynamic ? ("[" + QString::number(portId_.id) + "]") : "") + " : " + QString::fromStdString(typename_));
-
 
   setMenu(menu_);
 
@@ -201,14 +200,25 @@ void PortWidget::turn_on_light()
 void PortWidgetBase::paintEvent(QPaintEvent* event)
 {
   QSize size = sizeHint();
+  const double highlightFactor = 1.7;
+  if (isHighlighted_)
+  {
+    size *= highlightFactor;
+    resize(size);
+  }
+
   QPainter painter(this);
   painter.fillRect(QRect(QPoint(), size), color());
-  QPoint lightStart = isInput() ? QPoint(0,5) : QPoint(0,0);
+  QPoint lightStart = isInput() ? QPoint(0, size.height() - 2) : QPoint(0,0);
 
   //TODO: remove light entirely?
   QColor lightColor = isLightOn() ? Qt::red : color();
 
   painter.fillRect(QRect(lightStart, QSize(size.width(), 2)), lightColor);
+
+
+
+  QPushButton::paintEvent(event);
 }
 
 void PortWidget::mousePressEvent(QMouseEvent* event)
@@ -432,13 +442,14 @@ ModuleId PortWidget::getUnderlyingModuleId() const
 
 void PortWidget::setHighlight(bool on)
 {
+  isHighlighted_ = on;
   if (on)
   {
-
+    if (isInput() && isConnected())
+      isHighlighted_ = false;
   }
   else
   {
-    
   }
 }
 

@@ -71,6 +71,7 @@ protected:
   explicit PortWidgetBase(QWidget* parent);
   virtual QSize sizeHint() const override;
   virtual void paintEvent(QPaintEvent* event) override;
+  bool isHighlighted_;
 };
 
 class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider

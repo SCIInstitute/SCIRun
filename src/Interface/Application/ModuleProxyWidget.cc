@@ -309,14 +309,16 @@ void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 
 void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  //qDebug() << "hover over module " << module_->getModuleId().c_str();
+  //TODO: need to update PPPs
+  //TODO: need to call same in dragEnter event, if connection in progress
   module_->highlightPorts();
   QGraphicsProxyWidget::hoverEnterEvent(event);
 }
 
 void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-  //qDebug() << "hover leave module " << module_->getModuleId().c_str();
+  //TODO: need to update PPPs
+  //TODO: need to call same in dragLeave event, if connection in progress
   module_->unhighlightPorts();
   QGraphicsProxyWidget::hoverLeaveEvent(event);
 }

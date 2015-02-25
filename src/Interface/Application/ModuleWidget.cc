@@ -1291,11 +1291,15 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
 void ModuleWidget::highlightPorts()
 {
   ports_->setHighlightPorts(true);
+  inputPortLayout_->setSpacing(PORT_SPACING * 4);
+  outputPortLayout_->setSpacing(PORT_SPACING * 4);
   Q_EMIT displayChanged();
 }
 
 void ModuleWidget::unhighlightPorts()
 {
   ports_->setHighlightPorts(false);
+  inputPortLayout_->setSpacing(PORT_SPACING);
+  outputPortLayout_->setSpacing(PORT_SPACING);
   Q_EMIT displayChanged();
 }
