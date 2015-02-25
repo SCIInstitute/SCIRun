@@ -42,13 +42,16 @@ namespace Datatypes {
   {
   public:
     explicit ColorMap(const std::string& name, const size_t resolution = 256,
-                        const double shift = 0.0, const bool invert = false);
+                        const double shift = 0.0, const bool invert = false,
+                        const double rescale_scale = 1.0, const double rescale_shift = 0.);
     virtual ColorMap* clone() const;
 
-    std::string getColorMapName() const {return name_;}
-    size_t getColorMapResolution() const {return resolution_;}
-    double getColorMapShift() const {return shift_;}
-    bool getColorMapInvert() const {return invert_;}
+    std::string getColorMapName() const;
+    size_t getColorMapResolution() const;
+    double getColorMapShift() const;
+    bool getColorMapInvert() const;
+    double getColorMapRescaleScale() const;
+    double getColorMapRescaleShift() const;
     Core::Datatypes::ColorRGB getColorMapVal(float v) const;
     float getTransformedColor(float v) const;
   private:
@@ -56,6 +59,9 @@ namespace Datatypes {
     size_t resolution_;
     double shift_;
     bool invert_;
+    //rescaling options.
+    double rescale_scale_;
+    double rescale_shift_;
     //boost::shared_ptr<class ColorMapImpl> impl_;
     static float Hue_2_RGB(float v1, float v2, float vH);
     static Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l);
@@ -65,7 +71,8 @@ namespace Datatypes {
   {
   public:
     static ColorMapHandle create(const std::string& name, const size_t &resolution,
-                                    const double &shift, const bool &invert);
+                                    const double &shift, const bool &invert,
+                                    const double &rescale_scale, const double &rescale_shift);
   private:
     StandardColorMapFactory();
     static ColorMap cm_;

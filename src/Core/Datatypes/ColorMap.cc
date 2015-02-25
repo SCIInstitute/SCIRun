@@ -33,8 +33,10 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift, const bool invert)
-: name_(name), resolution_(resolution), shift_(shift), invert_(invert) {
+ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift,
+                    const bool invert, const double rescale_scale, const double rescale_shift)
+: name_(name), resolution_(resolution), shift_(shift),
+  invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift){
     if (!(name_ == "Rainbow"   ||
           name_ == "Old Rainbow" ||
           name_ == "Blackbody" ||
@@ -47,10 +49,11 @@ ColorMap* ColorMap::clone() const
   return new ColorMap(*this);
 }
 
-ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &resolution,
-                                                const double &shift, const bool &invert)
+ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &res,
+                                                const double &shift, const bool &invert,
+                                                const double &rescale_scale, const double &rescale_shift)
 {
-  cm_ = ColorMap(name,resolution,shift,invert);
+  cm_ = ColorMap(name,res,shift,invert,rescale_scale, rescale_shift);
   return ColorMapHandle(cm_.clone());
 }
 
@@ -85,14 +88,7 @@ ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
 
 
 float ColorMap::getTransformedColor(float f) const {
-  static bool x = true;
-  if (x)
-  {
-    std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
-    x = false;
-  }
-    //@todo this will not be needed with rescale color map.
-    float v = std::min(std::max(0.f,f),1.f);
+    float v = std::min(std::max(0.f,float(f*rescale_scale_+rescale_shift_)),1.f);
     double shift = shift_;
     if (invert_) {
         v = 1.f - v;
@@ -137,5 +133,12 @@ ColorRGB ColorMap::getColorMapVal(float v) const {
         col = hslToRGB(0., 0., f);
     return col;
 }
+
+std::string ColorMap::getColorMapName() const {return name_;}
+size_t ColorMap::getColorMapResolution() const {return resolution_;}
+double ColorMap::getColorMapShift() const {return shift_;}
+bool ColorMap::getColorMapInvert() const {return invert_;}
+double ColorMap::getColorMapRescaleScale() const {return rescale_scale_;}
+double ColorMap::getColorMapRescaleShift() const {return rescale_shift_;}
 
 ColorMap StandardColorMapFactory::cm_("Rainbow");

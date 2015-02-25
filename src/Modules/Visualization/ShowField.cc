@@ -651,6 +651,9 @@ void ShowFieldModule::renderFacesLinear(
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
+    double scl = map->getColorMapRescaleScale(), shft = map->getColorMapRescaleShift();
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",static_cast<float>(scl)));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",static_cast<float>(shft)));
 
     if (state.get(RenderState::IS_DOUBLE_SIDED) == false)
     {
@@ -1217,6 +1220,8 @@ void ShowFieldModule::renderNodes(
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",static_cast<float>(map->getColorMapRescaleScale())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",static_cast<float>(map->getColorMapRescaleShift())));
     if (state.get(RenderState::USE_SPHERE)) {
         shader = "Shaders/DirPhongCMap" ;
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
@@ -1484,6 +1489,8 @@ void ShowFieldModule::renderEdges(
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",static_cast<float>(map->getColorMapRescaleScale())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",static_cast<float>(map->getColorMapRescaleShift())));
     if (state.get(RenderState::USE_CYLINDER)) {
         shader = "Shaders/DirPhongCMap" ;
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
