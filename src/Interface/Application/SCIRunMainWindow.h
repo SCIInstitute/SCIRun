@@ -160,6 +160,7 @@ private Q_SLOTS:
   void addModuleKeyboardAction();
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
+  void highlightPortsChanged();
   void resetWindowLayout();
   void zoomNetwork();
   void setDragMode(bool toggle);

@@ -117,7 +117,8 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   module_(module),
   grabbedByWidget_(false),
   isSelected_(false),
-  pressedSubWidget_(0)
+  pressedSubWidget_(0),
+  doHighlight_(false)
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
@@ -311,7 +312,8 @@ void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
   //TODO: need to update PPPs
   //TODO: need to call same in dragEnter event, if connection in progress
-  module_->highlightPorts();
+  if (doHighlight_)
+    module_->highlightPorts();
   QGraphicsProxyWidget::hoverEnterEvent(event);
 }
 
@@ -319,6 +321,12 @@ void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
   //TODO: need to update PPPs
   //TODO: need to call same in dragLeave event, if connection in progress
-  module_->unhighlightPorts();
+  if (doHighlight_)
+    module_->unhighlightPorts();
   QGraphicsProxyWidget::hoverLeaveEvent(event);
+}
+
+void ModuleProxyWidget::highlightPorts(int state)
+{
+  doHighlight_ = state != 0;
 }

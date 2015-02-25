@@ -54,6 +54,7 @@ namespace SCIRun
       void setDefaultNotePosition(NotePosition position);
       void createPortPositionProviders();
       void snapToGrid();
+      void highlightPorts(int state);
 
     Q_SIGNALS:
       void selected();
@@ -79,6 +80,7 @@ namespace SCIRun
       QWidget* pressedSubWidget_;
       QPointF position_;
       QPointF cachedPosition_;
+      bool doHighlight_;
     };
 
   }

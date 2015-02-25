@@ -274,12 +274,14 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(modified()));
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(snapToModules()), proxy, SLOT(snapToGrid()));
+  connect(this, SIGNAL(highlightPorts(int)), proxy, SLOT(highlightPorts(int)));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
   connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
+  proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
   scene_->addItem(proxy);
   proxy->createStartupNote();
