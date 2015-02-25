@@ -46,6 +46,10 @@ namespace Visualization {
 	RescaleColorMap();
     virtual void execute();
     virtual void setStateDefaults();
+	static const Core::Algorithms::AlgorithmParameterName AutoScale;
+	static const Core::Algorithms::AlgorithmParameterName Symmetric;
+	static const Core::Algorithms::AlgorithmParameterName FixedMin;
+	static const Core::Algorithms::AlgorithmParameterName FixedMax;
     INPUT_PORT(0, Field, LegacyField);
     INPUT_PORT(1, ColorMapObject, ColorMap);
     OUTPUT_PORT(0, ColorMapOutput, ColorMap);
