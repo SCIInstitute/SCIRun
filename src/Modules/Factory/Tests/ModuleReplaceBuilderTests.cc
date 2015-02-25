@@ -50,7 +50,8 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 
   for (const auto& p : descMap)
   {
-    //std::cout << p.first << " --> " << p.second << std::endl;
+    if (false)
+      std::cout << p.first << " --> " << p.second << std::endl;
   }
   EXPECT_EQ(84, descMap.size());
 }
@@ -85,30 +86,33 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
   auto cid2 = network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   ASSERT_EQ(2, network->nconnections());
 
+  //clang on mac doesn't like "{}" for empty std::map initialization in a struct.
+  const ConnectedPortTypesWithCount empty;
+
   {
     auto sendInfo = makeConnectedPortInfo(send);
-    ConnectedPortInfo expectedSendInfo = { {}, { { "Matrix", 1 } } };
+    ConnectedPortInfo expectedSendInfo { empty, { { "Matrix", 1 } } };
     EXPECT_EQ(expectedSendInfo, sendInfo);
     auto procInfo = makeConnectedPortInfo(process);
-    ConnectedPortInfo expectedProcInfo = { { { "Matrix", 1 } }, { { "Matrix", 1 } } };
+    ConnectedPortInfo expectedProcInfo { { { "Matrix", 1 } }, { { "Matrix", 1 } } };
     EXPECT_EQ(expectedProcInfo, procInfo);
     auto recInfo = makeConnectedPortInfo(receive);
-    ConnectedPortInfo expectedRecInfo = { { { "Matrix", 1 } }, {} };
+    ConnectedPortInfo expectedRecInfo { { { "Matrix", 1 } }, empty };
     EXPECT_EQ(expectedRecInfo, recInfo);
   }
 
   network->disconnect(cid1);
   ASSERT_EQ(1, network->nconnections());
-  
+
   {
     auto sendInfo = makeConnectedPortInfo(send);
     ConnectedPortInfo expectedSendInfo; // empty maps
     EXPECT_EQ(expectedSendInfo, sendInfo);
     auto procInfo = makeConnectedPortInfo(process);
-    ConnectedPortInfo expectedProcInfo = { {}, { { "Matrix", 1 } } };
+    ConnectedPortInfo expectedProcInfo { empty, { { "Matrix", 1 } } };
     EXPECT_EQ(expectedProcInfo, procInfo);
     auto recInfo = makeConnectedPortInfo(receive);
-    ConnectedPortInfo expectedRecInfo = { { { "Matrix", 1 } }, {} };
+    ConnectedPortInfo expectedRecInfo { { { "Matrix", 1 } }, empty };
     EXPECT_EQ(expectedRecInfo, recInfo);
   }
 
@@ -117,13 +121,13 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 
   {
     auto sendInfo = makeConnectedPortInfo(send);
-    ConnectedPortInfo expectedSendInfo = {}; // empty maps
+    ConnectedPortInfo expectedSendInfo; // empty maps
     EXPECT_EQ(expectedSendInfo, sendInfo);
     auto procInfo = makeConnectedPortInfo(process);
-    ConnectedPortInfo expectedProcInfo = {}; // empty maps
+    ConnectedPortInfo expectedProcInfo; // empty maps
     EXPECT_EQ(expectedProcInfo, procInfo);
     auto recInfo = makeConnectedPortInfo(receive);
-    ConnectedPortInfo expectedRecInfo = {}; // empty maps
+    ConnectedPortInfo expectedRecInfo; // empty maps
     EXPECT_EQ(expectedRecInfo, recInfo);
   }
 
@@ -138,13 +142,13 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 
   {
     auto createInfo = makeConnectedPortInfo(create);
-    ConnectedPortInfo expectedCreateInfo = { {}, { { "Field", 1 } } };
+    ConnectedPortInfo expectedCreateInfo { empty, { { "Field", 1 } } };
     EXPECT_EQ(expectedCreateInfo, createInfo);
     auto setInfo = makeConnectedPortInfo(setFD);
-    ConnectedPortInfo expectedSetInfo = { { { "Matrix", 1 }, { "Field", 1 } }, { { "Field", 1 } } };
+    ConnectedPortInfo expectedSetInfo { { { "Matrix", 1 }, { "Field", 1 } }, { { "Field", 1 } } };
     EXPECT_EQ(expectedSetInfo, setInfo);
     auto reportInfo = makeConnectedPortInfo(report);
-    ConnectedPortInfo expectedReportInfo = { { { "Field", 1 } }, {} };
+    ConnectedPortInfo expectedReportInfo { { { "Field", 1 } }, empty };
     EXPECT_EQ(expectedReportInfo, reportInfo);
   }
 }
