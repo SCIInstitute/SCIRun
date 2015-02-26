@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Converters/ConvertMatrixToString.h>
-#include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
+#ifndef CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H
+#define CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H 1
 
-#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/String.h>
 #include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+				namespace Converters {
+			
+		class SCISHARE ConvertMatrixToStringAlgo : public AlgorithmBase
+		{
+			public:
+				static AlgorithmInputName InputMatrix;
+				static AlgorithmOutputName ResultString;
+				ConvertMatrixToStringAlgo() {}
+				bool run(Datatypes::MatrixHandle input, Datatypes::StringHandle& output) const;
+				virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+		};
+}}}}
 
-using namespace SCIRun;
-using namespace SCIRun::Modules;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::Converters;
-
-
-ConvertMatrixToString::ConvertMatrixToString() : Module(ModuleLookupInfo("ConvertMatrixToString","Converters","BioPSE"),false)
-{
-	INITIALIZE_PORT(InputMatrix);
-	INITIALIZE_PORT(ResultString);
-}
-
-void ConvertMatrixToString::execute()
-{
-	auto input_matrix = getRequiredInput(InputMatrix);
-	
-	auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
-	
-	sendOutputFromAlgorithm(ResultString, output);
-} 
-
-
+#endif

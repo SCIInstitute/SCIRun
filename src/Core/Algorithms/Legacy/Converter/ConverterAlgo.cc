@@ -35,6 +35,10 @@
 #include <algorithm>
 
 //#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/MatrixTypeConversions.h> 
 #include <Core/Algorithms/Legacy/Converter/NrrdToField.h>
 #include <Core/Algorithms/Legacy/Converter/FieldToNrrd.h>
 //#include <Core/Algorithms/Converter/MatrixToField.h>
@@ -43,6 +47,8 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Datatypes;
 
 ConverterAlgo::ConverterAlgo(LoggerHandle pr) :
   pr_(pr)
@@ -739,67 +745,55 @@ bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input,MatrixHandle& output)
 
   return true;
 }
+#endif
 
-bool ConverterAlgo::MatrixToString(MatrixHandle input, StringHandle& output)
+bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::StringHandle& output)
 {
-  std::ostringstream oss;
-  if (input.get_rep()==0)
+  std::string oss;
+  
+  if (matrix_is::sparse(input))
   {
-    error("MatrixToString: No input matrix");
-    return false;
-  }
+	SparseRowMatrixHandle sparse = matrix_convert::to_sparse(input);
+    SparseRowMatrixGeneric<double>::RowsPtr rowData = sparse->get_rows();
+    SparseRowMatrixGeneric<double>::ColumnsPtr columnData = sparse->get_cols();
+    size_type numRows = sparse->nrows();
+    size_type numCols = sparse->ncols();
 
-  SparseRowMatrix* sparse = matrix_cast::as_sparse(input);
-  if (sparse)
-  {
-    index_type* rr = sparse->get_rows();
-    index_type* cc = sparse->get_cols();
-    double *d  = sparse->get_vals();
-    size_type m   = sparse->nrows();
-    size_type n   = sparse->ncols();
-
-    oss << "Sparse Matrix ("<<m<<"x"<<n<<"):\n";
-    if (sparse->is_valid())
+    oss += "Sparse Matrix ("; oss += std::to_string(numRows); oss += "x"; oss += std::to_string(numCols); oss += "):\n";
+    for(index_type r = 0; r < numRows; r++)
     {
-      for (index_type r = 0; r < m; r++)
+      for(index_type c = 0; c < numCols; c++)
       {
-        for (index_type c=rr[r]; c<rr[r+1];c++)
-        {
-          oss << "["<<r<<","<<cc[c]<<"] = " << d[c] << "\n";
-        }
+        oss += "["; oss += std::to_string(r); oss += ","; oss += std::to_string(c); oss += "] = "; oss += std::to_string(sparse->get(r, c)); oss += "\n";
       }
     }
   }
+  
   else
   {
-    input = input->dense();
-    size_type m = input->nrows();
-    size_type n = input->ncols();
-    double* d = input->get_data_pointer();
-    oss << "Dense inputrix ("<<m<<"x"<<n<<"):\n";
-    int k = 0;
+    input = matrix_convert::to_dense(input);
+    size_type numRows = input->nrows();
+    size_type numCols = input->ncols();
+    oss += "Dense Matrix ("; oss += std::to_string(numRows); oss += "x"; oss += std::to_string(numCols); oss += "):\n";
 
-    for (index_type r=0; r<m;r++)
+    for(index_type r = 0; r < numRows; r++)
     {
-      for (index_type c=0; c<n;c++)
+      for(index_type c = 0; c < numCols; c++)
       {
-        oss << d[k++] << " ";
+        oss += std::to_string(input->get(r, c)); oss += " ";
       }
-      oss << "\n";
+      oss += "\n";
     }
   }
-
-  output = new String(oss.str());
-
-  if (output.get_rep()==0)
-  {
-    error("MatrixToString: Could not generate output");
-    return false;
-  }
+  
+  output = boost::make_shared<String>(oss);
+  
+  // Just for testing to make sure that the string is being correctly converted. 
+  //std::cout << output->value();
 
   return true;
 }
-#endif
+
 
 AlgorithmOutput ConverterAlgo::run_generic(const AlgorithmInput& input) const
 {

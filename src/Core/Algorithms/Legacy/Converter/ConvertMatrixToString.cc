@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Converters/ConvertMatrixToString.h>
 #include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
-
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/String.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
-
+#include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::Converters;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms::Converters;
 
-
-ConvertMatrixToString::ConvertMatrixToString() : Module(ModuleLookupInfo("ConvertMatrixToString","Converters","BioPSE"),false)
+bool ConvertMatrixToStringAlgo::run(MatrixHandle input, StringHandle& output) const
 {
-	INITIALIZE_PORT(InputMatrix);
-	INITIALIZE_PORT(ResultString);
+	Logging::LoggerHandle pr;
+	ConverterAlgo algo(pr);
+	if(algo.MatrixToString(input, output))
+		return true;
+	else
+		return false;
 }
 
-void ConvertMatrixToString::execute()
+AlgorithmOutput ConvertMatrixToStringAlgo::run_generic(const AlgorithmInput& input) const
 {
-	auto input_matrix = getRequiredInput(InputMatrix);
+	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
 	
-	auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
+	StringHandle output_string;
+	run(input_matrix, output_string);
 	
-	sendOutputFromAlgorithm(ResultString, output);
-} 
+	AlgorithmOutput output;
+	output[ResultString] = output_string;
+	return output;
+}
 
-
+AlgorithmOutputName ConvertMatrixToStringAlgo::ResultString("ResultString");
