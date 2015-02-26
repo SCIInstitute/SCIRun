@@ -45,6 +45,7 @@ Preferences::Preferences() :
   saveBeforeExecute("saveBeforeExecute", false),
   useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
   modulesSnapToGrid("modulesSnapToGrid", true),
+  highlightPorts("highlightPorts", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080")
 {

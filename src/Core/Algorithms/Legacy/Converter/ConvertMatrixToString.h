@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,30 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Geometry.cc
-#include <sstream>
-#include <Core/Datatypes/Geometry.h>
+#ifndef CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H
+#define CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H 1
 
-using namespace SCIRun::Core::Datatypes;
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
-GeometryObject::GeometryObject(DatatypeConstHandle dh) : 
-    mLowestValue(0.0),
-    mHighestValue(0.0),
-    data_(dh)
-{
-}
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+				namespace Converters {
+			
+		class SCISHARE ConvertMatrixToStringAlgo : public AlgorithmBase
+		{
+			public:
+				static AlgorithmInputName InputMatrix;
+				static AlgorithmOutputName ResultString;
+				ConvertMatrixToStringAlgo() {}
+				bool run(Datatypes::MatrixHandle input, Datatypes::StringHandle& output) const;
+				virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+		};
+}}}}
 
-GeometryObject::GeometryObject(const GeometryObject& other) :
-    mLowestValue(0.0),
-    mHighestValue(0.0),
-    data_(other.data_->clone())
-{}
-
-GeometryObject& GeometryObject::operator=(const GeometryObject& other) 
-{ 
-  if (this != &other)
-  {
-    data_.reset(other.data_->clone());
-  } 
-  return *this; 
-}
+#endif

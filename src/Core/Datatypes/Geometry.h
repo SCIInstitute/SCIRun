@@ -76,7 +76,6 @@ namespace Datatypes {
     explicit GeometryObject(DatatypeConstHandle dh);
     GeometryObject(const GeometryObject& other);
     GeometryObject& operator=(const GeometryObject& other);
-    DatatypeConstHandle get_underlying() const;
     virtual GeometryObject* clone() const { return new GeometryObject(*this); }
 
     std::string objectName;     ///< Name of this object. Should be unique

@@ -201,6 +201,7 @@ Q_SIGNALS:
     void defaultNotePositionChanged(NotePosition position);
     void sceneChanged(const QList<QRectF>& region);
     void snapToModules();
+    void highlightPorts(int state);
     void zoomLevelChanged(int zoom);
   private Q_SLOTS:
     void cut();

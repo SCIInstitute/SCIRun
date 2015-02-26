@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,30 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Geometry.cc
-#include <sstream>
-#include <Core/Datatypes/Geometry.h>
+#include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms::Converters;
 
-GeometryObject::GeometryObject(DatatypeConstHandle dh) : 
-    mLowestValue(0.0),
-    mHighestValue(0.0),
-    data_(dh)
+bool ConvertMatrixToStringAlgo::run(MatrixHandle input, StringHandle& output) const
 {
+	Logging::LoggerHandle pr;
+	ConverterAlgo algo(pr);
+  return algo.MatrixToString(input, output);
 }
 
-GeometryObject::GeometryObject(const GeometryObject& other) :
-    mLowestValue(0.0),
-    mHighestValue(0.0),
-    data_(other.data_->clone())
-{}
-
-GeometryObject& GeometryObject::operator=(const GeometryObject& other) 
-{ 
-  if (this != &other)
-  {
-    data_.reset(other.data_->clone());
-  } 
-  return *this; 
+AlgorithmOutput ConvertMatrixToStringAlgo::run_generic(const AlgorithmInput& input) const
+{
+	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
+	
+	StringHandle output_string;
+	run(input_matrix, output_string);
+	
+	AlgorithmOutput output;
+	output[ResultString] = output_string;
+	return output;
 }
+
+AlgorithmOutputName ConvertMatrixToStringAlgo::ResultString("ResultString");

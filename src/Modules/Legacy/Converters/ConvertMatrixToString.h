@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,30 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Geometry.cc
-#include <sstream>
-#include <Core/Datatypes/Geometry.h>
+#ifndef MODULES_LEGACY_CONVERTER_CONVERTMATRIXTOSTRING_
+#define MODULES_LEGACY_CONVERTER_CONVERTMATRIXTOSTRING_ 1
 
-using namespace SCIRun::Core::Datatypes;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Converters/share.h>
 
-GeometryObject::GeometryObject(DatatypeConstHandle dh) : 
-    mLowestValue(0.0),
-    mHighestValue(0.0),
-    data_(dh)
-{
-}
+namespace SCIRun {
+	namespace Modules {
+			namespace Converters {
+	
+	class SCISHARE ConvertMatrixToString : public Dataflow::Networks::Module,
+		public Has1InputPort<MatrixPortTag>,
+		public Has1OutputPort<StringPortTag>
+		{
+			public:
+				ConvertMatrixToString();
+				virtual void setStateDefaults() {}
+				virtual void execute();
+				
+				INPUT_PORT(0, InputMatrix, Matrix);
+				OUTPUT_PORT(0, ResultString, String);
+		};
+}}}
 
-GeometryObject::GeometryObject(const GeometryObject& other) :
-    mLowestValue(0.0),
-    mHighestValue(0.0),
-    data_(other.data_->clone())
-{}
-
-GeometryObject& GeometryObject::operator=(const GeometryObject& other) 
-{ 
-  if (this != &other)
-  {
-    data_.reset(other.data_->clone());
-  } 
-  return *this; 
-}
+#endif

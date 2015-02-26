@@ -144,7 +144,7 @@ namespace Engine {
 
   private:
     void printNetwork() const;
-    Networks::ModuleHandle addModuleImpl(const std::string& moduleName);
+    Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
     
     void executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
     void initExecutor();

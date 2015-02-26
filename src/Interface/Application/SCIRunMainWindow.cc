@@ -254,6 +254,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
+  connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(highlightPortsChanged()));
+  connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(highlightPorts(int)));
+
   connect(dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
 
   makeFilterButtonMenu();
@@ -1297,6 +1300,12 @@ void SCIRunMainWindow::modulesSnapToChanged()
 {
   bool snapTo = modulesSnapToCheckBox_->isChecked();
   Preferences::Instance().modulesSnapToGrid.setValue(snapTo);
+}
+
+void SCIRunMainWindow::highlightPortsChanged()
+{
+  bool val = portSizeEffectsCheckBox_->isChecked();
+  Preferences::Instance().highlightPorts.setValue(val);
 }
 
 void SCIRunMainWindow::resetWindowLayout()
