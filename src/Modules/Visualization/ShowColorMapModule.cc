@@ -29,6 +29,7 @@
 /// @todo Documentation Modules/Visualization/CreateBasicColorMap.cc
 
 #include <Modules/Visualization/ShowColorMapModule.h>
+#include <Modules/Visualization/TextBuilder.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Datatypes/ColorMap.h>
@@ -183,6 +184,114 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
   
   geom->mPasses.push_back(pass);
+  //########################################
+  // Now render the numbers for the scale bar
+  
+  points.clear();
+  indices.clear();
+  std::vector<float> shifts;
+  numVBOElements = 0;
+  TextBuilder txt, txt2;
+  uint32_t count = 0;
+  
+  for (double i = 0.; i < 1.; i+=0.1) { //TODO increment/start/end will be passed in by the dialog
+    std::stringstream ss;
+    char cstr[128];
+    sprintf(cstr,"%.2f",(cm->getColorMapActualMax()-cm->getColorMapActualMin())*i+cm->getColorMapActualMin());
+                          //TODO decimal places will come from dialog, as well as start/end #'s
+    if (displaySide==0)
+        ss << "__ ";
+    ss << cstr;
+    txt.reset(ss.str().c_str(), 15., Vector((displaySide==0)?10.:1.,(displaySide==0)?0.:20.,0.));
+    if (displaySide!=0)
+        txt2.reset("|", 15., Vector(1.,0.,0.));
+    std::vector<Vector> tmp;
+    txt.getStringVerts(tmp);
+    for (auto a : tmp) {
+        points.push_back(a);
+        indices.push_back(count);
+        shifts.push_back(i);
+        count++;
+    }
+    if (displaySide!=0) {
+        std::vector<Vector> tmp2;
+        txt2.getStringVerts(tmp2);
+        for (auto a : tmp2) {
+            points.push_back(a);
+            indices.push_back(count);
+            shifts.push_back(i);
+            count++;
+        }
+    }
+  }
+  numVBOElements = (uint32_t)points.size() / 2;
+
+  // IBO/VBOs and sizes
+  iboSize = sizeof(uint32_t) * (uint32_t)indices.size();
+  vboSize = sizeof(float) * 4 * (uint32_t)points.size();
+  
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr2(
+      new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr2(
+      new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+
+  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer2 = iboBufferSPtr2.get();
+  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer2 = vboBufferSPtr2.get();
+  
+  for (auto a : indices) iboBuffer2->write(a);
+  
+  for (size_t i = 0; i < points.size(); i ++) {
+    vboBuffer2->write(static_cast<float>(points[i].x()));
+    vboBuffer2->write(static_cast<float>(points[i].y()));
+    vboBuffer2->write(static_cast<float>(points[i].z()));
+    vboBuffer2->write(static_cast<float>(shifts[i]));
+  }
+
+  //add the actual points and colors
+
+  uniqueNodeID = id + "colorMapLegendText";
+  vboName      = uniqueNodeID + "VBO";
+  iboName      = uniqueNodeID + "IBO";
+  passName     = uniqueNodeID + "Pass2";
+
+  // NOTE: Attributes will depend on the color scheme. We will want to
+  // normalize the colors if the color scheme is COLOR_IN_SITU.
+
+  // Construct VBO.
+  shader = "Shaders/Text";
+  attribs.clear();
+  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aShift", 1 * sizeof(float)));
+  uniforms.clear();
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uExtraSpace",extraSpace?1.:0.));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide",static_cast<float>(displaySide)));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength",static_cast<float>(displayLength)));
+  GeometryObject::SpireVBO geomVBO2 = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr2,
+		numVBOElements,Core::Geometry::BBox(),true);
+
+  geom->mVBOs.push_back(geomVBO2);
+
+  // Construct IBO.
+
+  GeometryObject::SpireIBO geomIBO2 = GeometryObject::SpireIBO(iboName,
+                                        GeometryObject::SpireIBO::LINES,
+                                        sizeof(uint32_t), iboBufferSPtr2);
+  geom->mIBOs.push_back(geomIBO2);
+  renState.set(RenderState::USE_COLORMAP, false);
+    
+  // Construct Pass.
+  // Build pass for the edges.
+  /// \todo Find an appropriate place to put program names like UniformColor.
+  scheme = GeometryObject::COLOR_UNIFORM;
+  GeometryObject::SpireSubPass pass2 =
+  GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+                               scheme, renState, GeometryObject::RENDER_VBO_IBO, geomVBO2, geomIBO2);
+
+  // Add all uniforms generated above to the pass.
+  for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
+  
+  geom->mPasses.push_back(pass2);
+  
   return geom;
 }
 

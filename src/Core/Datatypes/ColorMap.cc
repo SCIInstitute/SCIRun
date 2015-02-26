@@ -34,9 +34,11 @@
 using namespace SCIRun::Core::Datatypes;
 
 ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift,
-                    const bool invert, const double rescale_scale, const double rescale_shift)
+                    const bool invert, const double rescale_scale, const double rescale_shift,
+                        const double actual_min, const double actual_max)
 : name_(name), resolution_(resolution), shift_(shift),
-  invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift){
+  invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift),
+  actual_min_(actual_min), actual_max_(actual_max){
     if (!(name_ == "Rainbow"   ||
           name_ == "Old Rainbow" ||
           name_ == "Blackbody" ||
@@ -51,9 +53,10 @@ ColorMap* ColorMap::clone() const
 
 ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &res,
                                                 const double &shift, const bool &invert,
-                                                const double &rescale_scale, const double &rescale_shift)
+                                                const double &rescale_scale, const double &rescale_shift,
+                                                const double &actual_min, const double &actual_max)
 {
-  cm_ = ColorMap(name,res,shift,invert,rescale_scale, rescale_shift);
+  cm_ = ColorMap(name,res,shift,invert,rescale_scale, rescale_shift,actual_min,actual_max);
   return ColorMapHandle(cm_.clone());
 }
 
@@ -140,5 +143,7 @@ double ColorMap::getColorMapShift() const {return shift_;}
 bool ColorMap::getColorMapInvert() const {return invert_;}
 double ColorMap::getColorMapRescaleScale() const {return rescale_scale_;}
 double ColorMap::getColorMapRescaleShift() const {return rescale_shift_;}
+double ColorMap::getColorMapActualMin() const {return actual_min_;}
+double ColorMap::getColorMapActualMax() const {return actual_max_;}
 
 ColorMap StandardColorMapFactory::cm_("Rainbow");

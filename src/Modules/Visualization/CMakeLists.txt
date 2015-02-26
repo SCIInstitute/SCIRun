@@ -33,6 +33,7 @@ SET(Modules_Visualization_SRCS
   ShowString.cc
   ShowColorMapModule.cc
   RescaleColorMap.cc
+  TextBuilder.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -42,6 +43,7 @@ SET(Modules_Visualization_HEADERS
   ShowString.h
   ShowColorMapModule.h
   RescaleColorMap.h
+  TextBuilder.h
   share.h
 )
 

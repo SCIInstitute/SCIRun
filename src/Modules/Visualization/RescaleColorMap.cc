@@ -110,7 +110,7 @@ void RescaleColorMap::execute()
                                                                  colorMap.get()->getColorMapResolution(),
                                                                  colorMap.get()->getColorMapShift(),
                                                                  colorMap.get()->getColorMapInvert(),
-                                                                 cm_scale, cm_shift));
+                                                                 cm_scale, cm_shift,fixed_min,fixed_max));
   }
 }
 
