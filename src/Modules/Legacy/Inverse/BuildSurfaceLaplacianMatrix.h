@@ -26,44 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/DatatypeFwd.h>
+#ifndef MODULES_LEGACY_INVERSE_BUILDSURFACELAPLACIANMATRIX_H_
+#define MODULES_LEGACY_INVERSE_BUILDSURFACELAPLACIANMATRIX_H_ 1
 
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Inverse/share.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Inverse;
-//using namespace SCIRun::Core::Algorithms::Geometry;
-
-BuildSurfaceLaplacianMatrix::BuildSurfaceLaplacianMatrix() : Module(ModuleLookupInfo("BuildSurfaceLaplacianMatrix","Inverse","SCIRun"),false)
-{
-	INITIALIZE_PORT(InputField);
-	INITIALIZE_PORT(ResultMatrix);
-}
-
-void BuildSurfaceLaplacianMatrix::execute()
-{
+namespace SCIRun {
+	namespace Modules {
+		namespace Inverse {
 	
-	if(needToExecute())
-	{
-		update_state(Executing);
-		
-		auto input_field = getRequiredInput(InputField);
-		
-		//MatrixHandle output_matrix = surfaceLaplacian(input_field->vmesh());
-		MatrixHandle output_matrix;
-		
-		AlgorithmOutput output;
-		output[Variables::ResultMatrix] = output_matrix;
-		
-		sendOutputFromAlgorithm(ResultMatrix,output);
-		
-	}
-}
+	class SCISHARE BuildSurfaceLaplacianMatrix : public Dataflow::Networks::Module,
+		public Has1InputPort<FieldPortTag>,
+		public Has1OutputPort<MatrixPortTag>
+		{
+			public:
+				BuildSurfaceLaplacianMatrix();
+				virtual void setStateDefaults() {}
+				virtual void execute();
+				
+				INPUT_PORT(0, InputField, LegacyField);
+				OUTPUT_PORT(0, ResultMatrix, Matrix);
+	};
+}}}
+
+#endif
