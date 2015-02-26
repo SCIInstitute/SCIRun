@@ -807,6 +807,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
+  SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
 ENDIF()
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")

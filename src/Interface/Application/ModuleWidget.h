@@ -112,6 +112,9 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
+  void highlightPorts();
+  void unhighlightPorts();
+
   void printPortPositions() const;
 
   bool hasDynamicPorts() const;

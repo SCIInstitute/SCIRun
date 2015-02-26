@@ -79,6 +79,7 @@ namespace SCIRun
       BooleanVariable saveBeforeExecute;
       BooleanVariable useNewViewSceneMouseControls;
       BooleanVariable modulesSnapToGrid;
+      BooleanVariable highlightPorts;
       TrackedVariable<BooleanVariable> modulesAreDockable;
       StringVariable networkBackgroundColor;
 

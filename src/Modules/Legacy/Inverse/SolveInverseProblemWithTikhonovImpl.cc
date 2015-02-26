@@ -427,6 +427,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     {
       rm[i] = AtrA[i] + lambda_sq * RtrR[i];
     }
+    //TODO: don't use pointers, math should look like this:
+    //regForMatrix = ARRtrAtr + lambda_sq * CCtr;
 
     if (computeRegularizedInverse_)
     {

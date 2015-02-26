@@ -82,23 +82,32 @@ private:
 class MockAlgorithmFactory : public AlgorithmFactory
 {
 public:
+  explicit MockAlgorithmFactory(bool verbose) : verbose_(verbose) {}
   virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const
   {
-    std::cout << "Creating mock algorithm named: " << name << std::endl;
+    if (verbose_)
+      std::cout << "Creating mock algorithm named: " << name << std::endl;
     return AlgorithmHandle(new NiceMock<MockAlgorithm>);
   }
+private:
+  bool verbose_;
 };
 
 ModuleTestBase::ModuleTestBase() : factory_(new HardCodedModuleFactory)
 {
+  initModuleParameters();
+}
+
+void ModuleTestBase::initModuleParameters(bool verbose)
+{
   Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
-  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
+  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory(verbose));
   DefaultValue<AlgorithmParameterName>::Set(AlgorithmParameterName());
   DefaultValue<AlgorithmParameter>::Set(AlgorithmParameter());
   DefaultValue<const AlgorithmParameter&>::Set(algoParam_);
   DefaultValue<AlgorithmOutput>::Set(AlgorithmOutput());
   DefaultValue<AlgorithmInput>::Set(AlgorithmInput());
-  Core::Logging::Log::get().setVerbose(true);
+  Core::Logging::Log::get().setVerbose(verbose);
 }
 
 ModuleHandle ModuleTestBase::makeModule(const std::string& name)
@@ -163,7 +172,7 @@ UseRealAlgorithmFactory::UseRealAlgorithmFactory()
 
 UseRealAlgorithmFactory::~UseRealAlgorithmFactory()
 {
-  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
+  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory(true));
 }
 
 UseRealModuleStateFactory::UseRealModuleStateFactory()
