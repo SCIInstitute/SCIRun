@@ -46,10 +46,7 @@ bool ConvertMatrixToStringAlgo::run(MatrixHandle input, StringHandle& output) co
 {
 	Logging::LoggerHandle pr;
 	ConverterAlgo algo(pr);
-	if(algo.MatrixToString(input, output))
-		return true;
-	else
-		return false;
+  return algo.MatrixToString(input, output);
 }
 
 AlgorithmOutput ConvertMatrixToStringAlgo::run_generic(const AlgorithmInput& input) const

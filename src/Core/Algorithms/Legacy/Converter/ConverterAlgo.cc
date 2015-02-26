@@ -749,7 +749,7 @@ bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input, MatrixHandle& output)
 
 bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::StringHandle& output)
 {
-  std::string oss;
+  std::ostringstream oss;
 
   if (matrix_is::sparse(input))
   {
@@ -759,12 +759,12 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
     size_type numRows = sparse->nrows();
     size_type numCols = sparse->ncols();
 
-    oss += "Sparse Matrix ("; oss += std::to_string(numRows); oss += "x"; oss += std::to_string(numCols); oss += "):\n";
+    oss << "Sparse Matrix (" << numRows << "x" << numCols << "):\n";
     for (index_type r = 0; r < numRows; r++)
     {
       for (index_type c = 0; c < numCols; c++)
       {
-        oss += "["; oss += std::to_string(r); oss += ","; oss += std::to_string(c); oss += "] = "; oss += std::to_string(sparse->get(r, c)); oss += "\n";
+        oss << "[" << r << "," << c << "] = " << sparse->get(r, c) << "\n";
       }
     }
   }
@@ -774,22 +774,19 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
     input = matrix_convert::to_dense(input);
     size_type numRows = input->nrows();
     size_type numCols = input->ncols();
-    oss += "Dense Matrix ("; oss += std::to_string(numRows); oss += "x"; oss += std::to_string(numCols); oss += "):\n";
+    oss << "Dense Matrix (" << numRows << "x" << numCols << "):\n";
 
     for (index_type r = 0; r < numRows; r++)
     {
       for (index_type c = 0; c < numCols; c++)
       {
-        oss += std::to_string(input->get(r, c)); oss += " ";
+        oss << input->get(r, c) << " ";
       }
-      oss += "\n";
+      oss << "\n";
     }
   }
 
-  output = boost::make_shared<String>(oss);
-
-  // Just for testing to make sure that the string is being correctly converted. 
-  //std::cout << output->value();
+  output = boost::make_shared<String>(oss.str());
 
   return true;
 }
