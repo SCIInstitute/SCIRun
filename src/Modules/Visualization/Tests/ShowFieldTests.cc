@@ -78,3 +78,25 @@ INSTANTIATE_TEST_CASE_P(
   //, 256 // probably runs out of memory
   )
   );
+
+class GeometryIDGenerator
+{
+public:
+  std::string generateID() const;
+
+  void addModuleID(const ModuleId& id);
+  void addInputDatatype(DatatypeHandle data);
+  void addState(ModuleStateHandle state);
+
+};
+
+TEST(ShowFieldStateGeometryNameSynchronizationTest, GeometryNameSynchronizesWithShowFieldState)
+{
+
+
+
+
+
+
+  FAIL() << "todo";
+}

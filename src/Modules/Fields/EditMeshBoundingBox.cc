@@ -264,12 +264,8 @@ bool EditMeshBoundingBox::isBoxEmpty() const
   return (c == r) || (c == d) || (c == b);
 }
 
-Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
-
-    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
-    std::ostringstream ostr;
-    ostr << get_id() << "EditBoundingBox_" << geom.get();
-    geom->objectName = ostr.str();
+Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() 
+{
     GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
     int64_t numVBOElements = 0;
     std::vector<std::pair<Point,Point>> bounding_edges;
@@ -415,15 +411,10 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
 
     // If true, then the VBO will be placed on the GPU. We don't want to place
     // VBOs on the GPU when we are generating rendering lists.
-    GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                                numVBOElements, bbox_, true);
-    geom->mVBOs.push_back(geomVBO);
+    GeometryObject::SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements, bbox_, true);
 
     // Construct IBO.
-    GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName,
-                                                                GeometryObject::SpireIBO::TRIANGLES,
-                                                                sizeof(uint32_t), iboBufferSPtr);
-    geom->mIBOs.push_back(geomIBO);
+    GeometryObject::SpireIBO geomIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
     RenderState renState;
 
@@ -435,8 +426,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     renState.set(RenderState::USE_NORMALS, true);
 
     // Construct Pass.
-    GeometryObject::SpireSubPass pass =
-    GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+    GeometryObject::SpireSubPass pass(passName, vboName, iboName, shader,
                                  colorScheme, renState, renderType, geomVBO, geomIBO);
     // Add all uniforms generated above to the pass.
     std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
@@ -449,6 +439,12 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
+    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr));
+    std::ostringstream ostr;
+    ostr << get_id() << "EditBoundingBox_" << geom.get();
+    geom->objectName = ostr.str();
+    geom->mIBOs.push_back(geomIBO);
+    geom->mVBOs.push_back(geomVBO);
     geom->mPasses.push_back(pass);
 
     return geom;

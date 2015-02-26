@@ -55,10 +55,11 @@ void ShowColorMapModule::setStateDefaults()
 	state->setValue(DisplayLength, 0);
 	state->setValue(TextSize, 0);
 	state->setValue(TextColor, ColorRGB(255, 255, 255).toString());//this is a guess
-	state->setValue(Labels, "5");
-	state->setValue(Scale, "1.0");
-	state->setValue(Units,"");
-	state->setValue(SignificantDigits, "2");
+  //TODO change to doubles
+	state->setValue(Labels, std::string("5"));
+  state->setValue(Scale, std::string("1.0"));
+  state->setValue(Units, std::string(""));
+  state->setValue(SignificantDigits, std::string("2"));
 	state->setValue(AddExtraSpace, false);
 }
 
@@ -77,12 +78,8 @@ void ShowColorMapModule::execute()
 SCIRun::Core::Datatypes::GeometryHandle
 ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap> cm,
                                         Dataflow::Networks::ModuleStateHandle state,
-                                        const std::string& id) {
-  //set up geometry
-  Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
-  std::ostringstream ostr;
-  ostr << get_id() << "ShowColorMap_" << geom.get();
-  geom->objectName = ostr.str();
+                                        const std::string& id) 
+{
   std::vector<Vector> points;
   std::vector<double> colors;
   std::vector<uint32_t> indices;
@@ -147,7 +144,7 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
   std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
   bool extraSpace = state->getValue(AddExtraSpace).toBool();
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uExtraSpace",extraSpace?1.:0.));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uExtraSpace",extraSpace?1.f:0.f));
   int displaySide = state->getValue(DisplaySide).toInt();
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide",static_cast<float>(displaySide)));
   int displayLength = state->getValue(DisplayLength).toInt();
@@ -159,15 +156,10 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
 
-  geom->mVBOs.push_back(geomVBO);
-
   // Construct IBO.
 
-  GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName,
-                                        GeometryObject::SpireIBO::TRIANGLES,
-                                        sizeof(uint32_t), iboBufferSPtr);
-  geom->mColorMap = cm->getColorMapName();
-  geom->mIBOs.push_back(geomIBO);
+  GeometryObject::SpireIBO geomIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+  
   RenderState renState;
   renState.set(RenderState::USE_COLORMAP, true);
     
@@ -175,13 +167,20 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::ColorScheme scheme = GeometryObject::COLOR_MAP;
-  GeometryObject::SpireSubPass pass =
-  GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+  GeometryObject::SpireSubPass pass(passName, vboName, iboName, shader,
                                scheme, renState, GeometryObject::RENDER_VBO_IBO, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
   
+  Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr));
+  std::ostringstream ostr;
+  ostr << get_id() << "ShowColorMap_" << geom.get();
+  geom->objectName = ostr.str();
+
+  geom->mColorMap = cm->getColorMapName();
+  geom->mIBOs.push_back(geomIBO);
+  geom->mVBOs.push_back(geomVBO);
   geom->mPasses.push_back(pass);
   return geom;
 }
