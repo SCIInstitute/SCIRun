@@ -54,14 +54,14 @@ void ShowColorMapModule::setStateDefaults()
     auto state = get_state();
     state->setValue(DisplaySide, 0);
 	state->setValue(DisplayLength, 0);
-	state->setValue(TextSize, 0);
+	state->setValue(TextSize, 2);
 	state->setValue(TextRed, 1.);
 	state->setValue(TextGreen, 1.);
 	state->setValue(TextBlue, 1.);
-	state->setValue(Labels, std::string("10"));
-    state->setValue(Scale, std::string("1.0"));
+	state->setValue(Labels, 10);
+    state->setValue(Scale, 1.0);
     state->setValue(Units, std::string(""));
-    state->setValue(SignificantDigits, std::string("2"));
+    state->setValue(SignificantDigits, 2);
 	state->setValue(AddExtraSpace, false);
 }
 
@@ -191,23 +191,30 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   //########################################
   // Now render the numbers for the scale bar
   
+  auto st = get_state();
+  char str2[128];
+  std::stringstream sd;
+  sd << "%." << st->getValue(SignificantDigits).toInt() << "f";
   points.clear();
   indices.clear();
   numVBOElements = 0;
   TextBuilder txt, txt2;
   uint32_t count = 0;
+  double scale = st->getValue(Scale).toDouble();
+  double increment = 1./ static_cast<double>(st->getValue(Labels).toInt() - 1);
+  double textSize = 5. * static_cast<double>(st->getValue(TextSize).toInt()+1);
   
-  for (double i = 0.; i < 1.; i+=0.1) { //TODO increment/start/end will be passed in by the dialog
+  for (double i = 0.; i <= 1.000000001; i+=increment) {
     std::stringstream ss;
-    char cstr[128];
-    sprintf(cstr,"%.2f",(cm->getColorMapActualMax()-cm->getColorMapActualMin())*i+cm->getColorMapActualMin());
-                          //TODO decimal places will come from dialog, as well as start/end #'s
+    sprintf(str2,sd.str().c_str(),((cm->getColorMapActualMax() -
+                                    cm->getColorMapActualMin()) * i +
+                                    cm->getColorMapActualMin()) * scale);
     if (displaySide==0)
         ss << "__ ";
-    ss << cstr;
-    txt.reset(ss.str().c_str(), 15., Vector((displaySide==0)?10.:1.,(displaySide==0)?0.:20.,i));
+    ss << str2;
+    txt.reset(ss.str().c_str(), textSize, Vector((displaySide==0)?10.:1.,(displaySide==0)?0.:20.,i));
     if (displaySide!=0)
-        txt2.reset("|", 15., Vector(1.,0.,i));
+        txt2.reset("|", textSize, Vector(1.,0.,i));
     std::vector<Vector> tmp;
     txt.getStringVerts(tmp);
     for (auto a : tmp) {
@@ -265,7 +272,6 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uExtraSpace",extraSpace?1.:0.));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide",static_cast<float>(displaySide)));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength",static_cast<float>(displayLength)));
-  auto st = get_state();
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRed",static_cast<float>(st->getValue(TextRed).toDouble())));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uGreen",static_cast<float>(st->getValue(TextGreen).toDouble())));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uBlue",static_cast<float>(st->getValue(TextBlue).toDouble())));

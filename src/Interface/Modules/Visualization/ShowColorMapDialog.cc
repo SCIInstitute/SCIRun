@@ -44,7 +44,7 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
   fixSize();
 	addRadioButtonGroupManager({ leftRadioButton_, bottomRadioButton_ }, ShowColorMapModule::DisplaySide);
 	addRadioButtonGroupManager({ firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_ }, ShowColorMapModule::DisplayLength);
-	addRadioButtonGroupManager({ LRadioButton_, MRadioButton_, SRadioButton_, TRadioButton_, XLRadioButton_ }, ShowColorMapModule::TextSize);
+	addRadioButtonGroupManager({ TRadioButton_, SRadioButton_, MRadioButton_, LRadioButton_, XLRadioButton_ }, ShowColorMapModule::TextSize);
 	addSpinBoxManager(ticksSpinner_, ShowColorMapModule::Labels);
 	addDoubleSpinBoxManager(scaleSpinner_, ShowColorMapModule::Scale);
 	addLineEditManager(unitsText_, ShowColorMapModule::Units);
@@ -64,6 +64,14 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
     r_.setValue(1.);
     g_.setValue(1.);
     b_.setValue(1.);
+    sigDigitsSpinner_->setValue(2);
+    ticksSpinner_->setValue(10);
+    scaleSpinner_->setValue(1.);
+    TRadioButton_->setChecked(false);
+    SRadioButton_->setChecked(false);
+    MRadioButton_->setChecked(true);
+    LRadioButton_->setChecked(false);
+    XLRadioButton_->setChecked(false); 
 }
 
 void ShowColorMapDialog::pull()
