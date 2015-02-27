@@ -32,11 +32,13 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Logging/Log.h>
+#include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Testing;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core;
 using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
@@ -79,24 +81,120 @@ INSTANTIATE_TEST_CASE_P(
   )
   );
 
+class ModuleLevelUniqueIDGenerator
+{
+public:
+  ModuleLevelUniqueIDGenerator(const ModuleInterface& module, const std::string& name) :
+    module_(module), name_(name)
+  {}
+  std::string operator()() const { return generateModuleLevelUniqueID(module_, name_); }
+private:
+  const ModuleInterface& module_;
+  std::string name_;
+  static std::hash<std::string> hash_;
+  std::string generateModuleLevelUniqueID(const ModuleInterface& module, const std::string& name) const;
+};
+
+std::hash<std::string> ModuleLevelUniqueIDGenerator::hash_;
+
+std::string ModuleLevelUniqueIDGenerator::generateModuleLevelUniqueID(const ModuleInterface& module, const std::string& name) const
+{
+  std::ostringstream ostr;
+  ostr << name << "_" << module.get_id() << "__";
+
+  std::ostringstream toHash;
+  toHash << "Data{";
+  for (const auto& input : module.inputPorts())
+  {
+    auto data = input->getData();
+    auto dataID = data ? (*data ? (*data)->id() : -1) : -2;
+    toHash << "[" << input->get_portname() << "]:" << dataID << "_";
+  }
+
+  toHash << "}__State{";
+  auto state = module.get_state();
+  for (const auto& key : state->getKeys())
+  {
+    toHash << key << "->" << state->getValue(key).value() << "_";
+  }
+  toHash << "}";
+
+  //std::cout << "trying to hash: " << toHash.str() << std::endl;
+
+  ostr << hash_(toHash.str());
+
+  return ostr.str();
+}
+
 class GeometryIDGenerator
 {
 public:
-  std::string generateID() const;
-
-  void addModuleID(const ModuleId& id);
-  void addInputDatatype(DatatypeHandle data);
-  void addState(ModuleStateHandle state);
-
+  virtual ~GeometryIDGenerator() {}
+  virtual std::string generateGeometryID(const std::string& description) const = 0;
 };
 
-TEST(ShowFieldStateGeometryNameSynchronizationTest, GeometryNameSynchronizesWithShowFieldState)
+class ModuleWithGeometryOutput : public GeometryIDGenerator // : public Module
 {
+public:
+  virtual std::string generateGeometryID(const std::string& description) const override;
+};
 
+class ShowFieldStateGeometryNameSynchronizationTest : public ModuleTest
+{
+protected:
+  virtual void SetUp()
+  {
+    Log::get().setVerbose(false);
+    showField = makeModule("ShowField");
+    showField->setStateDefaults();
+    auto size = 2;
+    latVol = CreateEmptyLatVol(size, size, size);
+    stubPortNWithThisData(showField, 0, latVol);
+  }
 
+  UseRealModuleStateFactory f;
+  ModuleHandle showField;
+  FieldHandle latVol;
+};
 
+TEST_F(ShowFieldStateGeometryNameSynchronizationTest, GeometryNameSynchronizesWithShowFieldState)
+{
+  /*
+  std::cout << showField->get_id() << std::endl;
 
+  for (const auto& input : showField->inputPorts())
+  {
+    std::cout << "Port" << std::endl;
+    auto data = input->getData();
+    auto dataID = data ? (*data ? (*data)->id() : -1) : -2;
+    std::cout << input->get_portname() << " : " << dataID << std::endl;
+  }
 
+  std::cout << "State" << std::endl;
+  auto state = showField->get_state();
+  std::cout << state << std::endl;
+  for (const auto& key : state->getKeys())
+  {
+    std::cout << key << " -> " << state->getValue(key).value() << std::endl;
+  }
+*/
+  ModuleLevelUniqueIDGenerator generator(*showField, "EntireField");
+  std::cout << "\n" << generator() << "\n";
+  std::cout << "\n" << generator() << "\n";
+
+  showField->get_state()->setValue(ShowFieldModule::CylinderRadius, 2);
+
+  std::cout << "\n" << generator() << "\n";
+
+  auto size = 3;
+  latVol = CreateEmptyLatVol(size, size, size);
+  stubPortNWithThisData(showField, 0, latVol);
+
+  std::cout << "\n" << generator() << "\n";
+
+  stubPortNWithThisData(showField, 1, ColorMapHandle());
+
+  std::cout << "\n" << generator() << "\n";
 
   FAIL() << "todo";
 }

@@ -143,12 +143,12 @@ Module::Module(const ModuleLookupInfo& info,
     setReexecutionStrategy(reexFactory->create(*this));
 }
 
-void Module::set_id(const std::string& id) 
-{ 
+void Module::set_id(const std::string& id)
+{
   ModuleId newId(id);
   if (!idGenerator_->takeId(newId.name_, newId.idNumber_))
     THROW_INVALID_ARGUMENT("Duplicate module IDs, invalid network file.");
-  id_ = newId; 
+  id_ = newId;
 }
 
 Module::~Module()
@@ -692,6 +692,7 @@ OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module)
 
 bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
+  module_.outputPorts();
   return true;
   //TODO: need a way to filter optional input ports
   /*
