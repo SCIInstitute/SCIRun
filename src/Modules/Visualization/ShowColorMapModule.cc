@@ -51,16 +51,17 @@ ShowColorMapModule::ShowColorMapModule() : Module(ModuleLookupInfo("ShowColorMap
 
 void ShowColorMapModule::setStateDefaults()
 {
-  auto state = get_state();
-  state->setValue(DisplaySide, 0);
+    auto state = get_state();
+    state->setValue(DisplaySide, 0);
 	state->setValue(DisplayLength, 0);
 	state->setValue(TextSize, 0);
-	state->setValue(TextColor, ColorRGB(255, 255, 255).toString());//this is a guess
-  //TODO change to doubles
-	state->setValue(Labels, std::string("5"));
-  state->setValue(Scale, std::string("1.0"));
-  state->setValue(Units, std::string(""));
-  state->setValue(SignificantDigits, std::string("2"));
+	state->setValue(TextRed, 1.);
+	state->setValue(TextGreen, 1.);
+	state->setValue(TextBlue, 1.);
+	state->setValue(Labels, std::string("10"));
+    state->setValue(Scale, std::string("1.0"));
+    state->setValue(Units, std::string(""));
+    state->setValue(SignificantDigits, std::string("2"));
 	state->setValue(AddExtraSpace, false);
 }
 
@@ -70,7 +71,11 @@ void ShowColorMapModule::execute()
   if (needToExecute())
   {
     std::ostringstream ostr;
-    ostr << get_id() << "_" << colorMap.get();
+    ColorMap *cm = colorMap.get();
+    ostr << get_id() << "_" << cm->getColorMapActualMin() << cm->getColorMapActualMax() <<
+    cm->getColorMapInvert() << cm->getColorMapName()<< cm->getColorMapRescaleScale() <<
+    cm->getColorMapRescaleShift() << cm->getColorMapResolution() << colorMap.get() << (rand() / RAND_MAX) <<
+    cm->getColorMapShift();
     GeometryHandle geom = buildGeometryObject(colorMap, get_state(), ostr.str());
     sendOutput(GeometryOutput, geom);
   }
@@ -88,7 +93,7 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   ColorMap * map = cm.get();
   double resolution = 1. / static_cast<double>(map->getColorMapResolution());
   
-  for (double i = 0.; i < 1.0; i+=resolution) {
+  for (double i = 0.; std::abs(i - 1.) > 0.000001; i+=resolution) {
     uint32_t offset = (uint32_t)points.size();
     points.push_back(Vector(0.,i,0.));
     colors.push_back(i);
@@ -188,7 +193,6 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   
   points.clear();
   indices.clear();
-  std::vector<float> shifts;
   numVBOElements = 0;
   TextBuilder txt, txt2;
   uint32_t count = 0;
@@ -201,15 +205,14 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
     if (displaySide==0)
         ss << "__ ";
     ss << cstr;
-    txt.reset(ss.str().c_str(), 15., Vector((displaySide==0)?10.:1.,(displaySide==0)?0.:20.,0.));
+    txt.reset(ss.str().c_str(), 15., Vector((displaySide==0)?10.:1.,(displaySide==0)?0.:20.,i));
     if (displaySide!=0)
-        txt2.reset("|", 15., Vector(1.,0.,0.));
+        txt2.reset("|", 15., Vector(1.,0.,i));
     std::vector<Vector> tmp;
     txt.getStringVerts(tmp);
     for (auto a : tmp) {
         points.push_back(a);
         indices.push_back(count);
-        shifts.push_back(i);
         count++;
     }
     if (displaySide!=0) {
@@ -218,7 +221,6 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
         for (auto a : tmp2) {
             points.push_back(a);
             indices.push_back(count);
-            shifts.push_back(i);
             count++;
         }
     }
@@ -227,7 +229,7 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
 
   // IBO/VBOs and sizes
   iboSize = sizeof(uint32_t) * (uint32_t)indices.size();
-  vboSize = sizeof(float) * 4 * (uint32_t)points.size();
+  vboSize = sizeof(float) * 3 * (uint32_t)points.size();
   
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr2(
       new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
@@ -243,7 +245,6 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
     vboBuffer2->write(static_cast<float>(points[i].x()));
     vboBuffer2->write(static_cast<float>(points[i].y()));
     vboBuffer2->write(static_cast<float>(points[i].z()));
-    vboBuffer2->write(static_cast<float>(shifts[i]));
   }
 
   //add the actual points and colors
@@ -260,11 +261,14 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   shader = "Shaders/Text";
   attribs.clear();
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aShift", 1 * sizeof(float)));
   uniforms.clear();
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uExtraSpace",extraSpace?1.:0.));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide",static_cast<float>(displaySide)));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength",static_cast<float>(displayLength)));
+  auto st = get_state();
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRed",static_cast<float>(st->getValue(TextRed).toDouble())));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uGreen",static_cast<float>(st->getValue(TextGreen).toDouble())));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uBlue",static_cast<float>(st->getValue(TextBlue).toDouble())));
   GeometryObject::SpireVBO geomVBO2 = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr2,
 		numVBOElements,Core::Geometry::BBox(),true);
 
@@ -305,3 +309,6 @@ AlgorithmParameterName ShowColorMapModule::Scale("Scale");
 AlgorithmParameterName ShowColorMapModule::Units("Units");
 AlgorithmParameterName ShowColorMapModule::SignificantDigits("SignificantDigits");
 AlgorithmParameterName ShowColorMapModule::AddExtraSpace("AddExtraSpace");
+AlgorithmParameterName ShowColorMapModule::TextRed("TextRed");
+AlgorithmParameterName ShowColorMapModule::TextGreen("TextGreen");
+AlgorithmParameterName ShowColorMapModule::TextBlue("TextBlue");

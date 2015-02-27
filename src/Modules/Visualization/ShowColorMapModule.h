@@ -58,6 +58,10 @@ namespace Visualization {
 		static Core::Algorithms::AlgorithmParameterName Units;
 		static Core::Algorithms::AlgorithmParameterName SignificantDigits;
 		static Core::Algorithms::AlgorithmParameterName AddExtraSpace; 
+		static Core::Algorithms::AlgorithmParameterName TextRed;
+		static Core::Algorithms::AlgorithmParameterName TextGreen;
+		static Core::Algorithms::AlgorithmParameterName TextBlue;
+
 
 		virtual void setStateDefaults();
         INPUT_PORT(0, ColorMapObject, ColorMap);
