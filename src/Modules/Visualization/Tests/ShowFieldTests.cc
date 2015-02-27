@@ -74,7 +74,29 @@ INSTANTIATE_TEST_CASE_P(
   ConstructLatVolGeometry,
   ShowFieldScalingTest,
   Values(20, 40, 60, 80
-  //, 100, 120, 150, 200 //to speed up make test
+  //, 100, 120, 150//, //200 //to speed up make test
   //, 256 // probably runs out of memory
   )
   );
+
+class GeometryIDGenerator
+{
+public:
+  std::string generateID() const;
+
+  void addModuleID(const ModuleId& id);
+  void addInputDatatype(DatatypeHandle data);
+  void addState(ModuleStateHandle state);
+
+};
+
+TEST(ShowFieldStateGeometryNameSynchronizationTest, GeometryNameSynchronizesWithShowFieldState)
+{
+
+
+
+
+
+
+  FAIL() << "todo";
+}

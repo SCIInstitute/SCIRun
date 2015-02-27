@@ -254,6 +254,9 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
+  connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(highlightPortsChanged()));
+  connect(portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(highlightPorts(int)));
+
   connect(dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
 
   makeFilterButtonMenu();
@@ -1082,6 +1085,11 @@ void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int colum
   }
 }
 
+bool SCIRunMainWindow::isInFavorites(const QString& module) const
+{
+	return favoriteModuleNames_.contains(module);
+}
+
 void SCIRunMainWindow::displayAcknowledgement()
 {
   QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment",
@@ -1294,6 +1302,12 @@ void SCIRunMainWindow::modulesSnapToChanged()
   Preferences::Instance().modulesSnapToGrid.setValue(snapTo);
 }
 
+void SCIRunMainWindow::highlightPortsChanged()
+{
+  bool val = portSizeEffectsCheckBox_->isChecked();
+  Preferences::Instance().highlightPorts.setValue(val);
+}
+
 void SCIRunMainWindow::resetWindowLayout()
 {
   configurationDockWidget_->hide();
@@ -1330,7 +1344,7 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     dataSetGroupBox_ <<
     optionsGroupBox_ <<
     networkEditorMiniViewLabel_ <<
-    miniviewTextLabel_ << 
+    miniviewTextLabel_ <<
     scirunDataPathTextEdit_ <<
     addToPathButton_;
 

@@ -39,11 +39,6 @@ GeometryObject::GeometryObject(DatatypeConstHandle dh) :
 {
 }
 
-DatatypeConstHandle GeometryObject::get_underlying() const
-{
-  return data_;
-}
-
 GeometryObject::GeometryObject(const GeometryObject& other) :
     mLowestValue(0.0),
     mHighestValue(0.0),

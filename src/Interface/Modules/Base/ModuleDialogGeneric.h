@@ -63,6 +63,7 @@ namespace Gui {
     QAction* getExecuteAction() { return executeAction_; }
     void setDockable(QDockWidget* dock) { dock_ = dock; } // to enable title changes
     void updateWindowTitle(const QString& title);
+    virtual void createStartupNote() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
 
@@ -82,11 +83,14 @@ namespace Gui {
     void pullSignal();
     void executionTimeChanged(int time);
     void executeActionTriggered();
+    void setStartupNote(const QString& text);
+    void fatalError(const QString& message);
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
     virtual void contextMenuEvent(QContextMenuEvent* e) override;
     void fixSize();
     void connectButtonToExecuteSignal(QAbstractButton* button);
+    void connectComboToExecuteSignal(QComboBox* box);
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
 
     //TODO: need a better push/pull model
@@ -109,6 +113,7 @@ namespace Gui {
     void addTwoChoiceBooleanComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addDynamicLabelManager(QLabel* label, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    //void addSliderManager(QSlider* slider, const Core::Algorithms::AlgorithmParameterName& stateKey);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
@@ -122,7 +127,7 @@ namespace Gui {
     QString windowTitle_;
     QDockWidget* dock_;
     QSize oldSize_;
-    std::vector<QAbstractButton*> needToRemoveFromDisabler_;
+    std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;
     static ExecutionDisablingServiceFunction disablerRemove_;
   };

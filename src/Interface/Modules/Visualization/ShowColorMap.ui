@@ -6,14 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>289</width>
-    <height>340</height>
+    <width>297</width>
+    <height>431</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>289</width>
-    <height>340</height>
+    <width>297</width>
+    <height>431</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -94,6 +100,9 @@
      </item>
      <item>
       <widget class="QGroupBox" name="groupBox_3">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="title">
         <string>Text Size: </string>
        </property>
@@ -151,6 +160,12 @@
           </item>
           <item>
            <widget class="QLabel" name="textColorDisplayLabel_">
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: white;</string>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -176,6 +191,9 @@
      </item>
      <item>
       <widget class="QGroupBox" name="groupBox_4">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="title">
         <string/>
        </property>

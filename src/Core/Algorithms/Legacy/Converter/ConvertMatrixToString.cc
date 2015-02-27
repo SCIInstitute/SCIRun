@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,26 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Algorithms/Legacy/Converter/ConverterAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms::Converters;
 
-///
-///@file  Thread_unix.h 
-///@brief Header file for utiity functions for unix versions
-///		    of the thread class
-///
-///@author
-///       Steve Parker
-///       Department of Computer Science
-///       University of Utah
-///@date  June 1997
-///
+bool ConvertMatrixToStringAlgo::run(MatrixHandle input, StringHandle& output) const
+{
+	Logging::LoggerHandle pr;
+	ConverterAlgo algo(pr);
+  return algo.MatrixToString(input, output);
+}
 
-#ifndef Core_Thread_Thread_unix_h
-#define Core_Thread_Thread_unix_h
+AlgorithmOutput ConvertMatrixToStringAlgo::run_generic(const AlgorithmInput& input) const
+{
+	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
+	
+	StringHandle output_string;
+	run(input_matrix, output_string);
+	
+	AlgorithmOutput output;
+	output[ResultString] = output_string;
+	return output;
+}
 
-#include <sys/types.h>
-#include <string>
-
-std::string Core_Thread_signal_name(int sig, void* code);
-
-#endif
+AlgorithmOutputName ConvertMatrixToStringAlgo::ResultString("ResultString");

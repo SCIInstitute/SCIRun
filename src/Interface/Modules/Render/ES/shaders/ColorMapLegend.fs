@@ -1,13 +1,12 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,44 +24,39 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
-
-
-/// @todo Documentation Core/Utils/Legacy/LogFile.cc
-
-
-#include <Core/Utils/Legacy/LogFile.h>
-#include <Core/Thread/Legacy/Guard.h>
-
-namespace SCIRun {
-
-LogFile::LogFile(const std::string& filename) :
-  haslog_(false) 
-{	
-  if (!filename.empty())
-  {
-    try 
-    {
-      logfile_.open(filename.c_str(),std::ios_base::out|std::ios_base::app);
-      haslog_ = true;
-    }
-    catch(...) 
-    {
-      haslog_ = false;
-    }
-  }
-}	
-
-void LogFile::putmsg(const std::string& msg)
-{
-  if (haslog_) 
-  {
-    Guard g(&lock);
-    logfile_ << msg << std::endl;
-    logfile_.flush();
-  }
-}	
-
-}
-
+ */
+#ifdef OPENGL_ES
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+// Default precision
+precision highp float;
+#else
+precision mediump float;
 #endif
+#endif
+
+uniform sampler1D uTX0;
+
+varying float vFieldData;
+uniform float   uCMInvert;
+uniform float   uCMShift;
+uniform float   uCMResolution;
+
+void main()
+{
+   float param = vFieldData;
+   float shift = uCMShift;
+   if (uCMInvert != 0.) {
+      param = 1. - param;
+      shift = shift * -1.;
+   }
+   //apply the resolution
+   int res = int(uCMResolution);
+   param = float(int(param * (float(res)))) / float(res - 1);
+   // the shift is a gamma.
+   float bp = 1. / tan((3.14159265359 / 2.) *  ( 0.5 - shift * 0.5));
+   param = pow(param,bp);
+
+   vec4 color = texture1D( uTX0, param );
+   color.a       = 1.0;
+   gl_FragColor = color;
+}

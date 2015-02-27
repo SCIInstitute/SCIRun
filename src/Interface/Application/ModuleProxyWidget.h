@@ -42,25 +42,29 @@ namespace SCIRun
     class ModuleProxyWidget : public QGraphicsProxyWidget, public NoteDisplayHelper
     {
 	    Q_OBJECT
-	
+
     public:
       explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
       ~ModuleProxyWidget();
       ModuleWidget* getModuleWidget();
+      void createStartupNote();
 
     public Q_SLOTS:
       void highlightIfSelected();
       void setDefaultNotePosition(NotePosition position);
       void createPortPositionProviders();
       void snapToGrid();
-	 
+      void highlightPorts(int state);
+
     Q_SIGNALS:
       void selected();
       void widgetMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+      void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+      void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+      void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+      void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
       QVariant itemChange(GraphicsItemChange change, const QVariant& value);
       virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
@@ -70,12 +74,13 @@ namespace SCIRun
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
-    
+
       ModuleWidget* module_;
       bool grabbedByWidget_, isSelected_;
       QWidget* pressedSubWidget_;
       QPointF position_;
       QPointF cachedPosition_;
+      bool doHighlight_;
     };
 
   }

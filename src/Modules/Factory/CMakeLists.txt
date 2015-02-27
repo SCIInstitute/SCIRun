@@ -52,6 +52,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_FiniteElements
   Modules_Legacy_Forward
   Modules_Legacy_Inverse
+  Modules_Legacy_Visualization
   Modules_Basic
   Modules_DataIO
   Modules_String
@@ -61,6 +62,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_Bundle
   Modules_Legacy_Fields
   Modules_Legacy_Matlab_DataIO
+  Modules_Legacy_Converters
 )
 
 IF(BUILD_SHARED_LIBS)

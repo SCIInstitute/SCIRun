@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2010 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,61 +24,35 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
+#ifndef MODULES_LEGACY_VISUALIZATION_GENERATESTREAMLINES_H_
+#define MODULES_LEGACY_VISUALIZATION_GENERATESTREAMLINES_H_
 
-
-///
-///@file   ParallelBase.h
-///@brief  Helper class to instantiate several threads
-///
-///@author Steve Parker
-///        Department of Computer Science
-///        University of Utah
-///@date   June 1997
-///
-
-#ifndef Core_Thread_ParallelBase_h
-#define Core_Thread_ParallelBase_h
-
-#include <Core/Thread/Legacy/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Visualization/share.h>
 
 namespace SCIRun {
+  namespace Modules {
+    namespace Visualization {
 
-class Semaphore;
-/**************************************
+      class SCISHARE GenerateStreamLines : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        GenerateStreamLines();
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
 
-@class
- ParallelBase
+        INPUT_PORT(0, Vector_Field, LegacyField);
+        INPUT_PORT(1, Seed_Points, LegacyField);
+        OUTPUT_PORT(0, Streamlines, LegacyField);
 
- KEYWORDS
- Thread
-
-@details
- Helper class for Parallel class.  This will never be used
- by a user program.  See <b>Parallel</b> instead.
-   
-****************************************/
-class SCISHARE ParallelBase {
-public:
-  //////////
-  /// <i>The thread body</i>
-  virtual void run(int proc)=0;
-
-protected:
-  ParallelBase();
-  virtual ~ParallelBase();
-  mutable Semaphore* wait_; // This may be modified by Thread::parallel
-  friend class Thread;
-
-private:
-  // Cannot copy them
-  ParallelBase(const ParallelBase&);
-  ParallelBase& operator=(const ParallelBase&);
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
+  }
 };
-} // End namespace SCIRun
 
 #endif
-
-
-

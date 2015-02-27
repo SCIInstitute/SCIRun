@@ -1,5 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -8,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,42 +25,29 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Utils/Legacy/LogFile.h
 
-///@file LogFile.h
+#ifndef MODULES_LEGACY_CONVERTER_CONVERTMATRIXTOSTRING_
+#define MODULES_LEGACY_CONVERTER_CONVERTMATRIXTOSTRING_ 1
 
-
-#ifndef CORE_UTIL_LOGFILE_H
-#define CORE_UTIL_LOGFILE_H 1
-
-#include <fstream>
-#include <string>
-
-#include <Core/Util/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Converters/share.h>
 
 namespace SCIRun {
+	namespace Modules {
+			namespace Converters {
 	
-class SCISHARE LogFile 
-{
-public:
-  // Create a log file, that can used by multiple threads without
-  // the log becoming a mesh
-  explicit LogFile(const std::string& filename);
-
-  // Since we used a ofstream, this one is automatically closed when the
-  // object is destroyed.
-	
-  // Write a message into the log
-  void putmsg(const std::string& msg);
-private:
-  std::ofstream logfile_;
-  bool haslog_;
-};
-
-typedef boost::shared_ptr<LogFile> LogFileHandle;
-
-}
-
-#endif
+	class SCISHARE ConvertMatrixToString : public Dataflow::Networks::Module,
+		public Has1InputPort<MatrixPortTag>,
+		public Has1OutputPort<StringPortTag>
+		{
+			public:
+				ConvertMatrixToString();
+				virtual void setStateDefaults() {}
+				virtual void execute();
+				
+				INPUT_PORT(0, InputMatrix, Matrix);
+				OUTPUT_PORT(0, ResultString, String);
+		};
+}}}
 
 #endif

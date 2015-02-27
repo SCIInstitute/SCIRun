@@ -1,13 +1,12 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,31 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_GENERATESTREAMLINES_H
+#define INTERFACE_MODULES_GENERATESTREAMLINES_H
 
+#include "Interface/Modules/Visualization/ui_GenerateStreamLines.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
-///
-///@class ParallelBase
-///@brief Helper class to instantiate several threads
-///
-///@author
-///       Steve Parker
-///       Department of Computer Science
-///       University of Utah
-///@date  June 1997
-///
-
-#include <Core/Thread/Legacy/ParallelBase.h>
 namespace SCIRun {
+namespace Gui {
 
-
-ParallelBase::ParallelBase()
+class SCISHARE GenerateStreamLinesDialog : public ModuleDialogGeneric,
+  public Ui::GenerateStreamLines
 {
+	Q_OBJECT
+
+public:
+  GenerateStreamLinesDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+
+  virtual void pull();
+private:
+  GuiStringTranslationMap streamlineMethod_;
+};
+
+}
 }
 
-ParallelBase::~ParallelBase()
-{
-}
-
-
-} // End namespace SCIRun
 #endif

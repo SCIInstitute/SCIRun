@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +27,7 @@
 */
 
 #ifndef CORE_COMMANDLINE_COMMANDLINESPEC_H
-#define CORE_COMMANDLINE_COMMANDLINESPEC_H 
+#define CORE_COMMANDLINE_COMMANDLINESPEC_H
 
 #include <string>
 #include <boost/filesystem.hpp>
@@ -44,7 +44,7 @@ namespace SCIRun {
       {
       public:
         virtual ~ApplicationParameters();
-        virtual boost::optional<std::string> inputFile() const = 0;
+        virtual const std::vector<std::string>& inputFiles() const = 0;
         virtual boost::optional<boost::filesystem::path> pythonScriptFile() const = 0;
         virtual boost::optional<boost::filesystem::path> dataDirectory() const = 0;
         virtual bool help() const = 0;

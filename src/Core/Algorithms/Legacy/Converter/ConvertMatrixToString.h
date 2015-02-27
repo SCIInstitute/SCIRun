@@ -1,4 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -7,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,58 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H
+#define CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H 1
 
-
-///
-///@class MutexPool 
-///@brief A set of mutex objects
-///
-///@author
-///       Steve Parker
-///       Department of Computer Science
-///       University of Utah
-///@date  September 1999
-///
-
-#include <Core/Thread/Legacy/MutexPool.h>
-#include <Core/Thread/Legacy/UsedWithLockingHandle.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
 namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+				namespace Converters {
+			
+		class SCISHARE ConvertMatrixToStringAlgo : public AlgorithmBase
+		{
+			public:
+				static AlgorithmInputName InputMatrix;
+				static AlgorithmOutputName ResultString;
+				ConvertMatrixToStringAlgo() {}
+				bool run(Datatypes::MatrixHandle input, Datatypes::StringHandle& output) const;
+				virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+		};
+}}}}
 
-
-MutexPool::MutexPool(const char* name, int size)
-    :  nextID_("MutexPool ID lock", 0), size_(size),
-    pool_(size)
-{
-    // Mutex has no default CTOR so we must allocate them independently.
-    for (int i=0; i < size_; i++)
-	    pool_[i].reset(new Mutex(name));
-}
-
-MutexPool::~MutexPool()
-{
-  pool_.clear();
-}
-
-int MutexPool::nextIndex()
-{
-  for(;;) 
-  {
-    int next = nextID_++;
-    if(next < size_)
-      return next;
-    // The above is atomic, but if it exceeds size, we need to
-    // reset it.
-    nextID_.set(0);
-  }
-}
-
-Mutex& MutexPool::getMutex()
-{
-  return *pool_[nextIndex()];
-}
-
-UsedWithLockingHandleBase::~UsedWithLockingHandleBase() {}
-
-} // End namespace SCIRun
 #endif

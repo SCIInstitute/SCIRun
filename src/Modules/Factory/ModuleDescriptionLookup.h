@@ -44,18 +44,8 @@ namespace SCIRun {
         ModuleDescriptionLookup();
         Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) const;
         Dataflow::Networks::ModuleDescriptionMap descMap_;
+        Dataflow::Networks::DirectModuleDescriptionLookupMap lookup_;
       private:
-
-        struct ModuleLookupInfoLess
-        {
-          bool operator()(const Dataflow::Networks::ModuleLookupInfo& lhs, const Dataflow::Networks::ModuleLookupInfo& rhs) const
-          {
-            return lhs.module_name_ < rhs.module_name_;
-          }
-        };
-
-        typedef std::map<Dataflow::Networks::ModuleLookupInfo, Dataflow::Networks::ModuleDescription, ModuleLookupInfoLess> Lookup;
-        Lookup lookup_;
         bool includeTestingModules_;
 
         /// @todo: remove this function and use static MLI from each module
