@@ -255,8 +255,8 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   
   for (auto a : indices) iboBuffer2->write(a);
   float red = static_cast<float>(st->getValue(TextRed).toDouble());
-  float green = static_cast<float>(st->getValue(TextRed).toDouble());
-  float blue = static_cast<float>(st->getValue(TextRed).toDouble());
+  float green = static_cast<float>(st->getValue(TextGreen).toDouble());
+  float blue = static_cast<float>(st->getValue(TextBlue).toDouble());
   for (size_t i = 0; i < points.size(); i ++) {
     vboBuffer2->write(static_cast<float>(points[i].x()));
     vboBuffer2->write(static_cast<float>(points[i].y()));
@@ -298,7 +298,7 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
                                         sizeof(uint32_t), iboBufferSPtr2);
   geom->mIBOs.push_back(geomIBO2);
   renState.set(RenderState::USE_COLORMAP, false);
-  renState.set(RenderState::USE_TRANSPARENT_NODES, true);
+  //renState.set(RenderState::USE_TRANSPARENT_NODES, true);
     
   // Construct Pass.
   // Build pass for the edges.
