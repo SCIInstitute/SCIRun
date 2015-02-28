@@ -44,7 +44,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Inverse;
 //using namespace SCIRun::Core::Algorithms::Geometry;
 
-BuildSurfaceLaplacianMatrix::BuildSurfaceLaplacianMatrix() : Module(ModuleLookupInfo("BuildSurfaceLaplacianMatrix","Inverse","BioPSe"),false)
+BuildSurfaceLaplacianMatrix::BuildSurfaceLaplacianMatrix() : Module(ModuleLookupInfo("BuildSurfaceLaplacianMatrix","Inverse","SCIRun"),false)
 {
 	INITIALIZE_PORT(InputField);
 	INITIALIZE_PORT(ResultMatrix);
