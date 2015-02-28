@@ -43,28 +43,14 @@ class TextBuilder {
                 const Core::Geometry::Vector shift = Core::Geometry::Vector());
     void reset(const char * text, const double scale,
             const Core::Geometry::Vector shift);
-    void getStringVerts(std::vector<Core::Geometry::Vector> &verts);
+    void getStringVerts(std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
   private:
     std::string text_;
     double scale_;
     Core::Geometry::Vector shift_;
-    void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts);
-    //all of the constant arrays of verts for each character
-    const static std::vector<Core::Geometry::Vector> underscore_verts_;
-    const static std::vector<Core::Geometry::Vector> dash_verts_;
-    const static std::vector<Core::Geometry::Vector> pipe_verts_;
-    const static std::vector<Core::Geometry::Vector> unknown_verts_;
-    const static std::vector<Core::Geometry::Vector> zero_verts_;
-    const static std::vector<Core::Geometry::Vector> one_verts_;
-    const static std::vector<Core::Geometry::Vector> two_verts_;
-    const static std::vector<Core::Geometry::Vector> three_verts_;
-    const static std::vector<Core::Geometry::Vector> four_verts_;
-    const static std::vector<Core::Geometry::Vector> five_verts_;
-    const static std::vector<Core::Geometry::Vector> six_verts_;
-    const static std::vector<Core::Geometry::Vector> seven_verts_;
-    const static std::vector<Core::Geometry::Vector> eight_verts_;
-    const static std::vector<Core::Geometry::Vector> nine_verts_;
-    const static std::vector<Core::Geometry::Vector> decimal_verts_;
+    void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
+    //four fonts to choose from.
+    const static uint16_t font0_[512*512];
   };
 }}}
 
