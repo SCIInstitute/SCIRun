@@ -28,25 +28,32 @@
 
 # CMakeLists.txt for Core/Algorithms/Geometry
 
-SET(Core_Algorithms_Geometry_SRCS
-  CoregPts.cc
+SET(Core_Algorithms_Legacy_Geometry_SRCS
+  #CoregPts.cc
   SurfaceLaplacian.cc
 )
 
-SCIRUN_ADD_LIBRARY(Core_Algorithms_Geometry ${Core_Algorithms_Geometry_SRCS})
+SET(Core_Algorithms_Legacy_Geometry_HEADERS
+  #CoregPts.h
+  SurfaceLaplacian.h
+  share.h
+)
 
-TARGET_LINK_LIBRARIES(Core_Algorithms_Geometry
+SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Geometry 
+  ${Core_Algorithms_Legacy_Geometry_SRCS} 
+  ${Core_Algorithms_Legacy_Geometry_HEADERS})
+
+TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Geometry
   Core_Basis
   Core_Datatypes
-  Core_Exceptions
-  Core_Geometry
-  Core_Math
-  Core_Thread
-  Core_Util
-  ${GL_LIBRARY}
-  ${M_LIBRARY}
+  Core_Datatypes_Legacy_Field
+  #Core_Exceptions
+  Core_Geometry_Primitives
+  #Core_Math
+  #Core_Thread
+  #Core_Util
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Geometry)
+  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Geometry)
 ENDIF(BUILD_SHARED_LIBS)

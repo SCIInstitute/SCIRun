@@ -29,7 +29,7 @@
 #undef SCISHARE
 
 #if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
-#ifdef BUILD_Core_Algorithms_Geometry
+#ifdef BUILD_Core_Algorithms_Legacy_Geometry
 #define SCISHARE __declspec(dllexport)
 #else
 #define SCISHARE __declspec(dllimport)

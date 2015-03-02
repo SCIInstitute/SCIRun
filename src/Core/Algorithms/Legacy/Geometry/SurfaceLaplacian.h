@@ -42,11 +42,11 @@
 
 #include <Core/Datatypes/MatrixFwd.h>
 
-#include <Core/Algorithms/Geometry/share.h>
+#include <Core/Algorithms/Legacy/Geometry/share.h>
 
 namespace SCIRun {
 
-SCISHARE MatrixHandle surfaceLaplacian(class VMesh *mesh);
+SCISHARE Core::Datatypes::MatrixHandle surfaceLaplacian(class VMesh *mesh);
 
 } // End namespace SCIRun
 #endif // SurfaceLaplacian_h

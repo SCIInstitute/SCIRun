@@ -30,25 +30,23 @@
 //    Author : Jeroen Stinstra, Brett Burton
 //    Date   : Apr MST 2009
 
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Containers/Array2.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Algorithms/Geometry/SurfaceLaplacian.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Algorithms/Legacy/Geometry/SurfaceLaplacian.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-namespace SCIRun {
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 // function to compute laplacian matrix from neighbors
-MatrixHandle surfaceLaplacian(VMesh *tsm) 
+MatrixHandle SCIRun::surfaceLaplacian(VMesh *tsm)
 {
   tsm->synchronize(Mesh::NODE_NEIGHBORS_E);
   
   VMesh::size_type nnz = 0;
-  VMesh::Node::size_type num_nodes = tsm->num_nodes();
+  int num_nodes = tsm->num_nodes();
   VMesh::Node::array_type nodes;
   std::vector<double> dist, odist;
 
@@ -58,10 +56,12 @@ MatrixHandle surfaceLaplacian(VMesh *tsm)
     nnz += nodes.size() + 1;
   }
 
-  SparseRowMatrix::Data matrix(num_nodes + 1, nnz);
-  const SparseRowMatrix::Rows& row_buffer = matrix.rows();
-  const SparseRowMatrix::Columns& col_buffer = matrix.columns();
-  const SparseRowMatrix::Storage& values = matrix.data();
+  LegacySparseDataContainer<double> matrix(num_nodes + 1, nnz);
+
+  const SparseRowMatrix::RowsPtr& row_buffer = matrix.rows().get();
+  const SparseRowMatrix::ColumnsPtr& col_buffer = matrix.columns().get();
+  const SparseRowMatrix::Storage& values = matrix.data().get();
+
   index_type k = 0;
 	row_buffer[0] = 0;
 	
@@ -110,8 +110,5 @@ MatrixHandle surfaceLaplacian(VMesh *tsm)
     row_buffer[idx + 1] = k;
   }
 	
-  MatrixHandle surfLapl = new SparseRowMatrix(num_nodes, num_nodes, matrix, nnz, true);
-  return surfLapl;
-}
-
+  return boost::make_shared<SparseRowMatrix>(num_nodes, num_nodes, row_buffer, col_buffer, values, nnz);
 }

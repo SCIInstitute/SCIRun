@@ -34,7 +34,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 //TODO: split into algo class
-//#include <Core/Algorithms/Geometry/SurfaceLaplacian.h>
+#include <Core/Algorithms/Legacy/Geometry/SurfaceLaplacian.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules;
@@ -42,7 +42,6 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Inverse;
-//using namespace SCIRun::Core::Algorithms::Geometry;
 
 const ModuleLookupInfo BuildSurfaceLaplacianMatrix::staticInfo_("BuildSurfaceLaplacianMatrix","Inverse","SCIRun");
 
@@ -68,8 +67,8 @@ void BuildSurfaceLaplacianMatrix::execute()
       return;
     }
 
-    //auto result = surfaceLaplacian(source->vmesh());
+    auto result = surfaceLaplacian(source->vmesh());
 
-    //sendOutput(ResultMatrix, result);
+    sendOutput(ResultMatrix, result);
 	}
 }
