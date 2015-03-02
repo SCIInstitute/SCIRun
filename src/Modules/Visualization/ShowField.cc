@@ -1185,8 +1185,15 @@ void ShowFieldModule::renderNodes(
   // Attempt some form of precalculation of iboBuffer and vboBuffer size.
   uint32_t iboSize = 0;
   uint32_t vboSize = 0;
+  auto my_state = this->get_state();
+  double radius = my_state->getValue(SphereScaleValue).toDouble();
+  double num_strips = 10;
+  if (radius < 0) radius = 1.;
+  
+  std::stringstream ss;
+  ss << state.get(RenderState::USE_SPHERE) << radius << num_strips;
 
-  std::string uniqueNodeID = id + "node";
+  std::string uniqueNodeID = id + "node" + ss.str().c_str();
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
   std::string passName = uniqueNodeID + "Pass";
@@ -1205,14 +1212,15 @@ void ShowFieldModule::renderNodes(
   // If true, then the VBO will be placed on the GPU. We don't want to place
   // VBOs on the GPU when we are generating rendering lists.
   bool vboOnGPU = true;
-
+  auto st = get_state();
+  nodeTransparencyValue_ = static_cast<float>(st->getValue(NodeTransparencyValue).toDouble());
+  
   std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {
     //transparency
     if (state.get(RenderState::USE_TRANSPARENT_NODES))
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", 
-               (float)(0.75)));// TODO use edgeTransparencyValue_ for all transparency cases below
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency",nodeTransparencyValue_));
     else
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0)));
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
@@ -1252,25 +1260,19 @@ void ShowFieldModule::renderNodes(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-            glm::vec4(dft.r(), dft.g(), dft.b(), 
-               state.get(RenderState::USE_TRANSPARENT_NODES)?0.7f:1.0f)));
+            glm::vec4(dft.r(), dft.g(), dft.b(), nodeTransparencyValue_)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     } else {
         shader = "Shaders/UniformColor";
-        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), 
-                 state.get(RenderState::USE_TRANSPARENT_NODES)?0.7f:1.0f));
+        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), nodeTransparencyValue_));
     }
   }
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::POINTS;
   // Use spheres...
   if (state.get(RenderState::USE_SPHERE))
     primIn = GeometryObject::SpireIBO::TRIANGLES;
-  auto my_state = this->get_state();
-  double num_strips = 10;
-  double radius = my_state->getValue(SphereScaleValue).toDouble();
-  if (radius < 0) radius = 1.;
   std::vector<Vector> points;
   std::vector<Vector> normals;
   std::vector<ColorRGB> colors;
@@ -1390,6 +1392,8 @@ void ShowFieldModule::renderNodes(
       vboBuffer->write(COLOR_FTOB(1.0));
     } // no color writing otherwise
   }
+  state.set(RenderState::IS_ON, true);
+  state.set(RenderState::HAS_DATA, true);
 
   GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, mesh->get_bounding_box(), vboOnGPU);
@@ -1521,12 +1525,12 @@ void ShowFieldModule::renderEdges(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-            glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f)));
+            glm::vec4(dft.r(), dft.g(), dft.b(), (float)edgeTransparencyValue_)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
             glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     } else {
-        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), 1.0f));
+        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), (float)edgeTransparencyValue_));
     }
   }
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::LINES;
@@ -1744,6 +1748,8 @@ void ShowFieldModule::renderEdges(
       vboBuffer->write(COLOR_FTOB(1.0));
     } // no color writing otherwise
   }
+  state.set(RenderState::IS_ON, true);
+  state.set(RenderState::HAS_DATA, true);
 
   GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, mesh->get_bounding_box(), vboOnGPU);

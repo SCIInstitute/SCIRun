@@ -54,6 +54,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
   addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
   addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
+  addDoubleSpinBoxManager(nodeTransparencyDoubleSpinBox_, ShowFieldModule::NodeTransparencyValue);
   addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, ShowFieldModule::EdgeTransparencyValue);
   addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
   addDoubleSpinBoxManager(cylinder_rad_spin, ShowFieldModule::CylinderRadius);
