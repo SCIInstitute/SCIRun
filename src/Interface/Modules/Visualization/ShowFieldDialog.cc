@@ -59,6 +59,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
   addDoubleSpinBoxManager(cylinder_rad_spin, ShowFieldModule::CylinderRadius);
   addSpinBoxManager(cylinder_res_spin, ShowFieldModule::CylinderResolution);
+  addSpinBoxManager(sphereResolutionSpinBox, ShowFieldModule::SphereResolution);
   addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowFieldModule::EdgesAsCylinders);
   addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_ }, ShowFieldModule::NodeAsSpheres);
 
@@ -77,7 +78,9 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 
   //default values
   cylinder_rad_spin->setValue(1.0);
-  cylinder_res_spin->setValue(5);
+  cylinder_res_spin->setValue(10);
+  sphereResolutionSpinBox->setValue(10);
+  scaleSphereDoubleSpinBox_->setValue(1.0);
 
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 

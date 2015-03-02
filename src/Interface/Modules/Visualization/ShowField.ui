@@ -224,9 +224,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="resolutionSpinBox">
+               <widget class="QSpinBox" name="sphereResolutionSpinBox">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="prefix">
                  <string/>

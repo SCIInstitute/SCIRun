@@ -362,6 +362,8 @@ void ShowFieldModule::renderFacesLinear(
   VMesh*  mesh = field->vmesh();
 
   bool withNormals = (state.get(RenderState::USE_NORMALS));
+  auto st = get_state();
+  bool invertNormals = st->getValue(FaceInvertNormals).toBool();
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   std::vector<double> svals(10);
   std::vector<Core::Geometry::Vector> vvals(10);
@@ -434,6 +436,11 @@ void ShowFieldModule::renderFacesLinear(
 
   uint32_t iboIndex = 0;
   int64_t numVBOElements = 0;
+  
+  
+  Core::Geometry::Point idpt;
+  mesh->get_nodes(nodes, *fiter);
+  mesh->get_point(idpt, nodes[0]);
 
   while (fiter != fiterEnd)
   {
@@ -448,8 +455,6 @@ void ShowFieldModule::renderFacesLinear(
     {
       mesh->get_point(points[i], nodes[i]);
     }
-    
-    bool invertNormals = get_state()->getValue(FaceInvertNormals).toBool();
 
     //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals)
@@ -626,7 +631,10 @@ void ShowFieldModule::renderFacesLinear(
     ++numVBOElements;
   }
 
-  std::string uniqueNodeID = id + "face";
+  std::stringstream ss;
+  ss << invertNormals;
+
+  std::string uniqueNodeID = id + "face" + ss.str().c_str();
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
   std::string passName = uniqueNodeID + "Pass";
@@ -1187,9 +1195,9 @@ void ShowFieldModule::renderNodes(
   uint32_t vboSize = 0;
   auto my_state = this->get_state();
   double radius = my_state->getValue(SphereScaleValue).toDouble();
-  double num_strips = 10;
+  double num_strips = static_cast<double>(my_state->getValue(SphereResolution).toInt());
   if (radius < 0) radius = 1.;
-  
+  if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
   ss << state.get(RenderState::USE_SPHERE) << radius << num_strips;
 
@@ -1216,13 +1224,14 @@ void ShowFieldModule::renderNodes(
   nodeTransparencyValue_ = static_cast<float>(st->getValue(NodeTransparencyValue).toDouble());
   
   std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+  
+  //transparency
+  if (state.get(RenderState::USE_TRANSPARENT_NODES))
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency",nodeTransparencyValue_));
+  else
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0)));
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {
-    //transparency
-    if (state.get(RenderState::USE_TRANSPARENT_NODES))
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency",nodeTransparencyValue_));
-    else
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0)));
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
     //push the color map parameters
     ColorMap * map = colorMap.get().get();
@@ -1461,8 +1470,17 @@ void ShowFieldModule::renderEdges(
   // Attempt some form of precalculation of iboBuffer and vboBuffer size.
   uint32_t iboSize = 0;
   uint32_t vboSize = 0;
-
-  std::string uniqueNodeID = id + "edge";
+  
+  auto my_state = this->get_state();
+  double num_strips = double(my_state->getValue(CylinderResolution).toInt());
+  double radius = my_state->getValue(CylinderRadius).toDouble();
+  if (num_strips < 0) num_strips = 50.;
+  if (radius < 0) radius = 1.;
+  
+  std::stringstream ss;
+  ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius;
+  
+  std::string uniqueNodeID = id + "edge" + ss.str().c_str();
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
   std::string passName = uniqueNodeID + "Pass";
@@ -1537,11 +1555,6 @@ void ShowFieldModule::renderEdges(
   // Use cylinders...
   if (state.get(RenderState::USE_CYLINDER))
     primIn = GeometryObject::SpireIBO::TRIANGLES;
-  auto my_state = this->get_state();
-  double num_strips = double(my_state->getValue(CylinderResolution).toInt());
-  double radius = my_state->getValue(CylinderRadius).toDouble();
-  if (num_strips < 0) num_strips = 50.;
-  if (radius < 0) radius = 1.;
   std::vector<Vector> points;
   std::vector<Vector> normals;
   std::vector<ColorRGB> colors;
@@ -1797,3 +1810,4 @@ AlgorithmParameterName ShowFieldModule::NodeTransparencyValue("NodeTransparencyV
 AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue");
 AlgorithmParameterName ShowFieldModule::CylinderRadius("CylinderRadius");
 AlgorithmParameterName ShowFieldModule::CylinderResolution("CylinderResolution");
+AlgorithmParameterName ShowFieldModule::SphereResolution("SphereResolution");

@@ -65,6 +65,7 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
         static Core::Algorithms::AlgorithmParameterName SphereScaleValue;
         static Core::Algorithms::AlgorithmParameterName CylinderResolution;
+        static Core::Algorithms::AlgorithmParameterName SphereResolution;
         static Core::Algorithms::AlgorithmParameterName CylinderRadius;
 
         INPUT_PORT(0, Field, LegacyField);

@@ -32,6 +32,8 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
+typedef SCIRun::Modules::Fields::EditMeshBoundingBox EditMeshBoundingBoxModule;
+
 EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
 : ModuleDialogGeneric(state, parent), scale_(1.0)
@@ -41,7 +43,6 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  typedef SCIRun::Modules::Fields::EditMeshBoundingBox EditMeshBoundingBoxModule;
   addCheckBoxManager(useOutputCenterCheckBox_, EditMeshBoundingBoxModule::UseOutputCenter);
   addCheckBoxManager(useOutputSizeCheckBox_, EditMeshBoundingBoxModule::UseOutputSize);
   addCheckableButtonManager(noTranslationRadioButton_, EditMeshBoundingBoxModule::NoTranslation);
@@ -86,4 +87,6 @@ void EditMeshBoundingBoxDialog::ScaleDoubleDownPush() { scale_*=0.64; spinner_sc
 void EditMeshBoundingBoxDialog::pull()
 {
   pull_newVersionToReplaceOld();
+  Pulling p(this);
+  //outputCenterXSpinBox_->setValue(state_->getValue(EditMeshBoundingBoxModule::OutputCenterX).toDouble());
 }
