@@ -361,8 +361,7 @@ void ShowFieldModule::renderFacesLinear(
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
-  bool withNormals = (state.get(RenderState::USE_NORMALS) && mesh->has_normals());
-
+  bool withNormals = (state.get(RenderState::USE_NORMALS));
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   std::vector<double> svals(10);
   std::vector<Core::Geometry::Vector> vvals(10);
@@ -449,6 +448,8 @@ void ShowFieldModule::renderFacesLinear(
     {
       mesh->get_point(points[i], nodes[i]);
     }
+    
+    bool invertNormals = get_state()->getValue(FaceInvertNormals).toBool();
 
     //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals)
@@ -467,7 +468,7 @@ void ShowFieldModule::renderFacesLinear(
 
         for (size_t i = 0; i < nodes.size(); i++)
         {
-          normals[i] = norm;
+          normals[i] = invertNormals?-norm:norm;
         }
       }
       /// Fix Normals of Tris
@@ -481,7 +482,7 @@ void ShowFieldModule::renderFacesLinear(
 
         for (size_t i = 0; i < nodes.size(); i++)
         {
-          normals[i] = norm;
+          normals[i] = invertNormals?-norm:norm;
         }
         //For future reference for a try at smoother rendering
         /*
@@ -1185,7 +1186,7 @@ void ShowFieldModule::renderNodes(
   uint32_t iboSize = 0;
   uint32_t vboSize = 0;
 
-  std::string uniqueNodeID = id + "edge";
+  std::string uniqueNodeID = id + "node";
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
   std::string passName = uniqueNodeID + "Pass";

@@ -67,7 +67,7 @@
            <string notr="true"/>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="nodesTab_">
            <attribute name="title">
@@ -449,7 +449,7 @@
              <rect>
               <x>10</x>
               <y>186</y>
-              <width>107</width>
+              <width>161</width>
               <height>17</height>
              </rect>
             </property>
@@ -462,7 +462,7 @@
              <rect>
               <x>10</x>
               <y>163</y>
-              <width>94</width>
+              <width>161</width>
               <height>17</height>
              </rect>
             </property>
