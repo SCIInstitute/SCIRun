@@ -51,8 +51,11 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
+
+ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
 
 ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
 
@@ -81,7 +84,7 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(FaceTransparencyValue, 0.65f);
   state->setValue(EdgeTransparencyValue, 0.65f);
   state->setValue(SphereScaleValue, 1.0);
-  state->setValue(CylinderRadius, 1.0);
+  state->setValue(Parameters::CylinderRadius, 1.0);
   state->setValue(CylinderResolution, 5);
   faceTransparencyValue_ = 0.65f;
   edgeTransparencyValue_ = 0.65f;
@@ -1504,7 +1507,7 @@ void ShowFieldModule::renderEdges(
     vboOnGPU = true;
   auto my_state = this->get_state();
   double num_strips = double(my_state->getValue(CylinderResolution).toInt());
-  double radius = my_state->getValue(CylinderRadius).toDouble();
+  double radius = my_state->getValue(Parameters::CylinderRadius).toDouble();
   if (num_strips < 0) num_strips = 50.;
   if (radius < 0) radius = 1.;
   std::vector<Vector> points;
@@ -1772,5 +1775,4 @@ AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
 AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
 AlgorithmParameterName ShowFieldModule::EdgeTransparencyValue("EdgeTransparencyValue");
 AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue");
-AlgorithmParameterName ShowFieldModule::CylinderRadius("CylinderRadius");
 AlgorithmParameterName ShowFieldModule::CylinderResolution("CylinderResolution");

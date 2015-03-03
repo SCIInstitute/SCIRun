@@ -30,6 +30,7 @@
 #include <sstream>
 #include <Core/Datatypes/Geometry.h>
 
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 
 GeometryObject::GeometryObject(DatatypeConstHandle dh, const GeometryIDGenerator& idGenerator, const std::string& tag) :

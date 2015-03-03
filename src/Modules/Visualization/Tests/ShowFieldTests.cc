@@ -38,6 +38,7 @@ using namespace SCIRun::Testing;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core;
 using namespace SCIRun;
@@ -106,7 +107,7 @@ TEST_F(ShowFieldStateGeometryNameSynchronizationTest, GeometryNameSynchronizesWi
   auto hash2NoChange = generator();
   EXPECT_EQ(hash1, hash2NoChange);
 
-  showField->get_state()->setValue(ShowFieldModule::CylinderRadius, 2);
+  showField->get_state()->setValue(Parameters::CylinderRadius, 2);
 
   auto stateChangeShouldBeDifferent = generator();
   EXPECT_NE(hash2NoChange, stateChangeShouldBeDifferent);

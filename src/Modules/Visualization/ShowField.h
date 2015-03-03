@@ -37,6 +37,20 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
+
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Visualization
+      {
+        ALGORITHM_PARAMETER_DECL(CylinderRadius);
+      }
+    }
+  }
+
+
+
   namespace Modules {
     namespace Visualization {
 
@@ -64,7 +78,6 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
         static Core::Algorithms::AlgorithmParameterName SphereScaleValue;
         static Core::Algorithms::AlgorithmParameterName CylinderResolution;
-        static Core::Algorithms::AlgorithmParameterName CylinderRadius;
 
         INPUT_PORT(0, Field, LegacyField);
         INPUT_PORT(1, ColorMapObject, ColorMap);
