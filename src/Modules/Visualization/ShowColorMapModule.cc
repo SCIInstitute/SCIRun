@@ -223,9 +223,9 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
     ss << str2 << " " << st->getValue(Units).toString();
     txt.reset(ss.str().c_str(), textSize, Vector((displaySide==0)?40.:1.,(displaySide==0)?0.:20.,i));
     if (displaySide!=0)
-        txt2.reset("|", 15., Vector(1.,0.,i));
+        txt2.reset("|", 20., Vector(1.,0.,i));
     else
-        txt2.reset("__", 15., Vector(10.,0.,i));
+        txt2.reset("__", 10., Vector(10.,0.,i));
     std::vector<Vector> tmp;
     std::vector<Vector> cols;
     txt.getStringVerts(tmp,cols);
@@ -283,7 +283,7 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   // normalize the colors if the color scheme is COLOR_IN_SITU.
 
   // Construct VBO.
-  shader = "Shaders/Text";
+  shader = "Shaders/ColorMapLegendText";
   attribs.clear();
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
