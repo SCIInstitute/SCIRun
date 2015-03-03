@@ -134,8 +134,21 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   }
 
   //add the actual points and colors
+  
+  auto st = get_state();
+  int sigdig = st->getValue(SignificantDigits).toInt();
+  int numlabel = st->getValue(Labels).toInt();
+  int txtsize = st->getValue(TextSize).toInt();
+  double scale = st->getValue(Scale).toDouble();
+  int displaySide = state->getValue(DisplaySide).toInt();
+  float red = static_cast<float>(st->getValue(TextRed).toDouble());
+  float green = static_cast<float>(st->getValue(TextGreen).toDouble());
+  float blue = static_cast<float>(st->getValue(TextBlue).toDouble());
+  std::stringstream ss;
+  ss << resolution << sigdig << txtsize << numlabel << st->getValue(Units).toString() <<
+                scale << displaySide << red << green << blue;
 
-  std::string uniqueNodeID = id + "colorMapLegend";
+  std::string uniqueNodeID = id + "colorMapLegend" + ss.str().c_str();
   std::string vboName      = uniqueNodeID + "VBO";
   std::string iboName      = uniqueNodeID + "IBO";
   std::string passName     = uniqueNodeID + "Pass";
@@ -151,7 +164,6 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
   bool extraSpace = state->getValue(AddExtraSpace).toBool();
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uExtraSpace",extraSpace?1.f:0.f));
-  int displaySide = state->getValue(DisplaySide).toInt();
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide",static_cast<float>(displaySide)));
   int displayLength = state->getValue(DisplayLength).toInt();
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength",static_cast<float>(displayLength)));
@@ -191,31 +203,29 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   //########################################
   // Now render the numbers for the scale bar
   
-  auto st = get_state();
   char str2[128];
   std::stringstream sd;
-  sd << "%." << st->getValue(SignificantDigits).toInt() << "f";
+  sd << "%." << sigdig << "f";
   points.clear();
   indices.clear();
   std::vector<Vector> txt_colors;
   numVBOElements = 0;
   TextBuilder txt, txt2;
   uint32_t count = 0;
-  double scale = st->getValue(Scale).toDouble();
-  double increment = 1./ static_cast<double>(st->getValue(Labels).toInt() - 1);
-  double textSize = 5. * static_cast<double>(st->getValue(TextSize).toInt()+2);
+  double increment = 1./ static_cast<double>(numlabel - 1);
+  double textSize = 5. * static_cast<double>(txtsize+2);
   
   for (double i = 0.; i <= 1.000000001; i+=increment) {
     std::stringstream ss;
     sprintf(str2,sd.str().c_str(),((cm->getColorMapActualMax() -
                                     cm->getColorMapActualMin()) * i +
                                     cm->getColorMapActualMin()) * scale);
-    if (displaySide==0)
-        ss << "__";
     ss << str2 << " " << st->getValue(Units).toString();
-    txt.reset(ss.str().c_str(), textSize, Vector((displaySide==0)?10.:1.,(displaySide==0)?0.:20.,i));
+    txt.reset(ss.str().c_str(), textSize, Vector((displaySide==0)?40.:1.,(displaySide==0)?0.:20.,i));
     if (displaySide!=0)
-        txt2.reset("|", textSize, Vector(1.,0.,i));
+        txt2.reset("|", 15., Vector(1.,0.,i));
+    else
+        txt2.reset("__", 15., Vector(10.,0.,i));
     std::vector<Vector> tmp;
     std::vector<Vector> cols;
     txt.getStringVerts(tmp,cols);
@@ -226,18 +236,16 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
     }
     for (auto a : cols) 
         txt_colors.push_back(a);
-    if (displaySide!=0) {
-        std::vector<Vector> tmp2;
-        std::vector<Vector> cols2;
-        txt2.getStringVerts(tmp2,cols2);
-        for (auto a : tmp2) {
-            points.push_back(a);
-            indices.push_back(count);
-            count++;
-        }
-        for (auto a : cols2)
-            txt_colors.push_back(a);
+    std::vector<Vector> tmp2;
+    std::vector<Vector> cols2;
+    txt2.getStringVerts(tmp2,cols2);
+    for (auto a : tmp2) {
+        points.push_back(a);
+        indices.push_back(count);
+        count++;
     }
+    for (auto a : cols2)
+        txt_colors.push_back(a);
   }
   numVBOElements = (uint32_t)points.size();
 
@@ -254,9 +262,6 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer2 = vboBufferSPtr2.get();
   
   for (auto a : indices) iboBuffer2->write(a);
-  float red = static_cast<float>(st->getValue(TextRed).toDouble());
-  float green = static_cast<float>(st->getValue(TextGreen).toDouble());
-  float blue = static_cast<float>(st->getValue(TextBlue).toDouble());
   for (size_t i = 0; i < points.size(); i ++) {
     vboBuffer2->write(static_cast<float>(points[i].x()));
     vboBuffer2->write(static_cast<float>(points[i].y()));
@@ -269,7 +274,7 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
 
   //add the actual points and colors
 
-  uniqueNodeID = id + "colorMapLegendText";
+  uniqueNodeID = id + "colorMapLegendText" + ss.str().c_str();
   vboName      = uniqueNodeID + "VBO";
   iboName      = uniqueNodeID + "IBO";
   passName     = uniqueNodeID + "Pass2";

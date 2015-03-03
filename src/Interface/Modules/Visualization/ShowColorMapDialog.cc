@@ -56,6 +56,13 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
     connectButtonToExecuteSignal(firstHalfRadioButton_);
     connectButtonToExecuteSignal(fullRadioButton_);
     connectButtonToExecuteSignal(secondHalfRadioButton_);
+    connectButtonToExecuteSignal(textColorPushButton_);
+    connectButtonToExecuteSignal(TRadioButton_);
+    connectButtonToExecuteSignal(SRadioButton_);
+    connectButtonToExecuteSignal(MRadioButton_);
+    connectButtonToExecuteSignal(LRadioButton_);
+    connectButtonToExecuteSignal(XLRadioButton_);
+
     connect(textColorPushButton_,SIGNAL(clicked()),this,SLOT(getColor()));
     text_color_ = QColor(255,255,255,255);
 	addDoubleSpinBoxManager(&r_, ShowColorMapModule::TextRed);

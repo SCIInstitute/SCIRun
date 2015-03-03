@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,34 +24,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+ */
 
-#ifndef MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
-#define MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
+varying vec4 fColor;
 
-#include <Core/Datatypes/Geometry.h>
-#include <cstring>
-#include <vector>
-
-namespace SCIRun {
-namespace Modules {
-namespace Visualization {
-
-class TextBuilder {
-  public:
-    TextBuilder(const char * text = "", const double scale = 1.,
-                const Core::Geometry::Vector shift = Core::Geometry::Vector());
-    void reset(const char * text, const double scale,
-            const Core::Geometry::Vector shift);
-    void getStringVerts(std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
-  private:
-    std::string text_;
-    double scale_;
-    Core::Geometry::Vector shift_;
-    void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
-    //four fonts to choose from.
-    const static uint16_t font0_[1024*384];
-  };
-}}}
-
-#endif
+void main()
+{
+   gl_FragColor = fColor;
+}
