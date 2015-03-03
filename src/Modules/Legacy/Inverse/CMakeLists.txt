@@ -47,7 +47,7 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_Inverse
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Inverse
  Dataflow_Network
- #Core_Algorithms_Legacy_Inverse
+ Core_Algorithms_Legacy_Geometry
  Core_Datatypes_Legacy_Field
  Algorithms_Base
  Core_Basis

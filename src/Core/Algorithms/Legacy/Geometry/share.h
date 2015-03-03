@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,34 +24,16 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
-#ifndef MODULES_LEGACY_INVERSE_BUILDSURFACELAPLACIANMATRIX_H_
-#define MODULES_LEGACY_INVERSE_BUILDSURFACELAPLACIANMATRIX_H_ 1
+#undef SCISHARE
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Inverse/share.h>
-
-namespace SCIRun {
-  namespace Modules {
-    namespace Inverse {
-
-      class SCISHARE BuildSurfaceLaplacianMatrix : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<MatrixPortTag>
-      {
-      public:
-        BuildSurfaceLaplacianMatrix();
-        virtual void setStateDefaults() {}
-        virtual void execute();
-
-        INPUT_PORT(0, Source, LegacyField);
-        OUTPUT_PORT(0, ResultMatrix, Matrix);
-
-        const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-    }
-  }
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_Algorithms_Legacy_Geometry
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

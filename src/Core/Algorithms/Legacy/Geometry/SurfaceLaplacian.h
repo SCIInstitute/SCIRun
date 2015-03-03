@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,34 +24,30 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   */
+*/
 
-#ifndef MODULES_LEGACY_INVERSE_BUILDSURFACELAPLACIANMATRIX_H_
-#define MODULES_LEGACY_INVERSE_BUILDSURFACELAPLACIANMATRIX_H_ 1
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Inverse/share.h>
+/*
+ *  SurfaceLaplacian.h
+ *
+ *   Yesim
+ *   Department of Computer Science
+ *   University of Utah
+ *   Nov 2003
+ */
+
+
+#ifndef SurfaceLaplacian_h
+#define SurfaceLaplacian_h
+
+#include <Core/Datatypes/MatrixFwd.h>
+
+#include <Core/Algorithms/Legacy/Geometry/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Inverse {
 
-      class SCISHARE BuildSurfaceLaplacianMatrix : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<MatrixPortTag>
-      {
-      public:
-        BuildSurfaceLaplacianMatrix();
-        virtual void setStateDefaults() {}
-        virtual void execute();
+SCISHARE Core::Datatypes::MatrixHandle surfaceLaplacian(class VMesh *mesh);
 
-        INPUT_PORT(0, Source, LegacyField);
-        OUTPUT_PORT(0, ResultMatrix, Matrix);
-
-        const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      };
-    }
-  }
-}
-
-#endif
+} // End namespace SCIRun
+#endif // SurfaceLaplacian_h
+ 
