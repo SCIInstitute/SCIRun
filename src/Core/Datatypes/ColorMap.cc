@@ -91,6 +91,15 @@ ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
 
 
 float ColorMap::getTransformedColor(float f) const {
+   /////////////////////////////////////////////////
+   //TODO: this seemingly useless code fixes a nasty crash bug on Windows. Don't delete it until a proper fix is implemented!
+   static bool x = true;
+   if (x)
+   {
+     std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
+     x = false;
+   }
+   /////////////////////////////////////////////////
     float v = std::min(std::max(0.f,float(f*rescale_scale_+rescale_shift_)),1.f);
     double shift = shift_;
     if (invert_) {

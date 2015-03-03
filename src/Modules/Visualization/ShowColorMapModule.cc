@@ -29,7 +29,6 @@
 /// @todo Documentation Modules/Visualization/CreateBasicColorMap.cc
 
 #include <Modules/Visualization/ShowColorMapModule.h>
-#include <Modules/Visualization/TextBuilder.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Datatypes/ColorMap.h>
@@ -210,7 +209,6 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   indices.clear();
   std::vector<Vector> txt_colors;
   numVBOElements = 0;
-  TextBuilder txt, txt2;
   uint32_t count = 0;
   double increment = 1./ static_cast<double>(numlabel - 1);
   double textSize = 5. * static_cast<double>(txtsize+2);
@@ -221,30 +219,21 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
                                     cm->getColorMapActualMin()) * i +
                                     cm->getColorMapActualMin()) * scale);
     ss << str2 << " " << st->getValue(Units).toString();
-    txt.reset(ss.str().c_str(), textSize, Vector((displaySide==0)?40.:1.,(displaySide==0)?0.:20.,i));
-    if (displaySide!=0)
-        txt2.reset("|", 20., Vector(1.,0.,i));
-    else
-        txt2.reset("__", 10., Vector(10.,0.,i));
+    text_.reset(ss.str().c_str(), textSize, Vector((displaySide==0)?40.:1.,(displaySide==0)?0.:20.,i));
     std::vector<Vector> tmp;
     std::vector<Vector> cols;
-    txt.getStringVerts(tmp,cols);
+    text_.getStringVerts(tmp,cols);
+    if (displaySide!=0)
+        text_.reset("|", 20., Vector(1.,0.,i));
+    else
+        text_.reset("__", 10., Vector(10.,0.,i));
+    text_.getStringVerts(tmp,cols);
     for (auto a : tmp) {
         points.push_back(a);
         indices.push_back(count);
         count++;
     }
-    for (auto a : cols) 
-        txt_colors.push_back(a);
-    std::vector<Vector> tmp2;
-    std::vector<Vector> cols2;
-    txt2.getStringVerts(tmp2,cols2);
-    for (auto a : tmp2) {
-        points.push_back(a);
-        indices.push_back(count);
-        count++;
-    }
-    for (auto a : cols2)
+    for (auto a : cols)
         txt_colors.push_back(a);
   }
   numVBOElements = (uint32_t)points.size();

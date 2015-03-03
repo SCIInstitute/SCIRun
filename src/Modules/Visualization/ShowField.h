@@ -147,7 +147,6 @@ namespace SCIRun {
         void applyColorMapScaling(boost::shared_ptr<SCIRun::Field> field,
           Core::Datatypes::GeometryObject::SpireSubPass& pass);
 
-        double sphereScalar_;
         float faceTransparencyValue_;
         float edgeTransparencyValue_;
         float nodeTransparencyValue_;

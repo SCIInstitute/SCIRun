@@ -32,6 +32,7 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Modules/Visualization/TextBuilder.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -42,6 +43,8 @@ namespace Visualization {
     public Has1InputPort<ColorMapPortTag>, 
     public Has1OutputPort<GeometryPortTag>
   {
+  private:
+        SCIRun::Modules::Visualization::TextBuilder text_;
   public:
 		ShowColorMapModule();
         virtual void execute();

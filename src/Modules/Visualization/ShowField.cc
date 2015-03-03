@@ -81,12 +81,13 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(EdgesAsCylinders, 0);
   state->setValue(FaceTransparencyValue, 0.65f);
   state->setValue(EdgeTransparencyValue, 0.65f);
-  state->setValue(SphereScaleValue, 1.0);
-  state->setValue(CylinderRadius, 1.0);
+  state->setValue(NodeTransparencyValue, 0.65f);
+  state->setValue(SphereScaleValue, 0.03);
+  state->setValue(CylinderRadius, 0.1);
   state->setValue(CylinderResolution, 5);
   faceTransparencyValue_ = 0.65f;
   edgeTransparencyValue_ = 0.65f;
-  sphereScalar_ = 1.0;
+  nodeTransparencyValue_ = 0.65f;
 
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
@@ -131,8 +132,6 @@ RenderState ShowFieldModule::getNodeRenderState(
                                 renState.defaultColor.g() / 255.,
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
-
-  sphereScalar_ = state->getValue(ShowFieldModule::SphereScaleValue).toDouble();
 
   if (colorMap)
   {
@@ -1310,7 +1309,7 @@ void ShowFieldModule::renderNodes(
         //generate triangles for the spheres
         Vector pp1, pp2;
         double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
-        for (double phi = 0.; phi <= M_PI; phi += phi_inc) {
+        for (double phi = 0.; phi < M_PI; phi += phi_inc) {
           for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) {
             uint32_t offset = (uint32_t)numVBOElements;
             pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));

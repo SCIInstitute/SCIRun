@@ -41,6 +41,7 @@ class TextBuilder {
   public:
     TextBuilder(const char * text = "", const double scale = 1.,
                 const Core::Geometry::Vector shift = Core::Geometry::Vector());
+    virtual ~TextBuilder();
     void reset(const char * text, const double scale,
             const Core::Geometry::Vector shift);
     void getStringVerts(std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
@@ -50,7 +51,8 @@ class TextBuilder {
     Core::Geometry::Vector shift_;
     void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
     //four fonts to choose from.
-    const static uint16_t font0_[1024*384];
+    uint16_t *font0_;
+    size_t font0_w_, font0_h_;
   };
 }}}
 
