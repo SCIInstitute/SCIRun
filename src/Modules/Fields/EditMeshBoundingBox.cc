@@ -153,7 +153,6 @@ namespace SCIRun
 
 EditMeshBoundingBox::EditMeshBoundingBox()
 : Module(staticInfo_),
-  cylinder_scale_(1.0),
   impl_(new EditMeshBoundingBoxImpl)
 {
     INITIALIZE_PORT(InputField);
@@ -186,7 +185,7 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(OutputSizeX, 1.0);
   state->setValue(OutputSizeY, 1.0);
   state->setValue(OutputSizeZ, 1.0);
-  state->setValue(Scale, 1.0);
+  state->setValue(Scale, 0.1);
 
   //TODO
 
@@ -299,7 +298,6 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
     };
     auto state = get_state();
     double scale = state->getValue(Scale).toDouble();
-    scale = std::max(scale,0.01);
     int num_strips = 50.;
     std::vector<Vector> tri_points;
     std::vector<Vector> tri_normals;

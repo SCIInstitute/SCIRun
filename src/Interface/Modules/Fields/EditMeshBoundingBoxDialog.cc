@@ -36,7 +36,7 @@ typedef SCIRun::Modules::Fields::EditMeshBoundingBox EditMeshBoundingBoxModule;
 
 EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-: ModuleDialogGeneric(state, parent), scale_(1.0)
+: ModuleDialogGeneric(state, parent), scale_(0.1)
 {
   setupUi(this);
   //custom value for cylinder size
@@ -66,6 +66,7 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
     connectButtonToExecuteSignal(upScaleToolButton_);
     connectButtonToExecuteSignal(doubleDownScaleToolButton_);
     connectButtonToExecuteSignal(doubleUpScaleToolButton_);
+    spinner_scale_.setValue(scale_);
     
 
     
