@@ -43,6 +43,8 @@ using namespace SCIRun::Core::Geometry;
 // function to compute laplacian matrix from neighbors
 MatrixHandle SCIRun::surfaceLaplacian(VMesh *tsm)
 {
+  ENSURE_NOT_NULL(tsm, "Mesh is null");
+
   tsm->synchronize(Mesh::NODE_NEIGHBORS_E);
   
   VMesh::size_type nnz = 0;
