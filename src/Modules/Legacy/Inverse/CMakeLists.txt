@@ -31,11 +31,13 @@
 SET(Modules_Legacy_Inverse_HEADERS
   SolveInverseProblemWithTikhonov.h
   SolveInverseProblemWithTikhonovImpl.h
+  BuildSurfaceLaplacianMatrix.h
 )
 
 SET(Modules_Legacy_Inverse_SRCS
   SolveInverseProblemWithTikhonov.cc
   SolveInverseProblemWithTikhonovImpl.cc
+  BuildSurfaceLaplacianMatrix.cc
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Inverse
