@@ -159,42 +159,28 @@ protected:
 
 TEST_F(ShowFieldStateGeometryNameSynchronizationTest, GeometryNameSynchronizesWithShowFieldState)
 {
-  /*
-  std::cout << showField->get_id() << std::endl;
-
-  for (const auto& input : showField->inputPorts())
-  {
-    std::cout << "Port" << std::endl;
-    auto data = input->getData();
-    auto dataID = data ? (*data ? (*data)->id() : -1) : -2;
-    std::cout << input->get_portname() << " : " << dataID << std::endl;
-  }
-
-  std::cout << "State" << std::endl;
-  auto state = showField->get_state();
-  std::cout << state << std::endl;
-  for (const auto& key : state->getKeys())
-  {
-    std::cout << key << " -> " << state->getValue(key).value() << std::endl;
-  }
-*/
   ModuleLevelUniqueIDGenerator generator(*showField, "EntireField");
-  std::cout << "\n" << generator() << "\n";
-  std::cout << "\n" << generator() << "\n";
+  auto hash1 = generator();
+  auto hash2NoChange = generator();
+  EXPECT_EQ(hash1, hash2NoChange);
 
   showField->get_state()->setValue(ShowFieldModule::CylinderRadius, 2);
 
-  std::cout << "\n" << generator() << "\n";
+  auto stateChangeShouldBeDifferent = generator();
+  EXPECT_NE(hash2NoChange, stateChangeShouldBeDifferent);
+  EXPECT_EQ(stateChangeShouldBeDifferent, generator());
 
   auto size = 3;
   latVol = CreateEmptyLatVol(size, size, size);
   stubPortNWithThisData(showField, 0, latVol);
 
-  std::cout << "\n" << generator() << "\n";
+  auto inputChangeShouldBeDifferent = generator();
+  EXPECT_NE(stateChangeShouldBeDifferent, inputChangeShouldBeDifferent);
 
   stubPortNWithThisData(showField, 1, ColorMapHandle());
+  auto addInputShouldBeDifferent = generator();
+  EXPECT_NE(inputChangeShouldBeDifferent, addInputShouldBeDifferent);
 
-  std::cout << "\n" << generator() << "\n";
-
-  FAIL() << "todo";
+  EXPECT_NE(hash1, addInputShouldBeDifferent);
+  EXPECT_NE(inputChangeShouldBeDifferent, hash1);
 }
