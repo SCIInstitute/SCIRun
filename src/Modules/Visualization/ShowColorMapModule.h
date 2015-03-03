@@ -38,8 +38,8 @@ namespace SCIRun {
 namespace Modules {
 namespace Visualization {
 
-	class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<ColorMapPortTag>, 
+	class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+    public Has1InputPort<ColorMapPortTag>,
     public Has1OutputPort<GeometryPortTag>
   {
   public:
@@ -57,11 +57,11 @@ namespace Visualization {
 		static Core::Algorithms::AlgorithmParameterName Scale;
 		static Core::Algorithms::AlgorithmParameterName Units;
 		static Core::Algorithms::AlgorithmParameterName SignificantDigits;
-		static Core::Algorithms::AlgorithmParameterName AddExtraSpace; 
+		static Core::Algorithms::AlgorithmParameterName AddExtraSpace;
 
 		virtual void setStateDefaults();
         INPUT_PORT(0, ColorMapObject, ColorMap);
-		OUTPUT_PORT(0, GeometryOutput, GeometryObject); 
+		OUTPUT_PORT(0, GeometryOutput, GeometryObject);
 
   };
 }}}

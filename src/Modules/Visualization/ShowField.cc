@@ -56,8 +56,7 @@ using namespace SCIRun;
 
 ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
 
-ShowFieldModule::ShowFieldModule() :
-Module(staticInfo_)
+ShowFieldModule::ShowFieldModule() : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
@@ -99,14 +98,7 @@ void ShowFieldModule::execute()
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
   if (needToExecute())
   {
-    std::ostringstream ostr;
-    ostr << get_id() << "_" << field.get();
-    ostr << "_";
-    if (colorMap)
-      ostr << colorMap->get();
-    else
-      ostr << "<nocolormap>";
-    GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), ostr.str());
+    GeometryHandle geom = buildGeometryObject(field, colorMap, get_state());
     sendOutput(SceneGraph, geom);
   }
 }
@@ -219,8 +211,7 @@ RenderState ShowFieldModule::getFaceRenderState(
 GeometryHandle ShowFieldModule::buildGeometryObject(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-  ModuleStateHandle state,
-  const std::string& id)
+  ModuleStateHandle state)
 {
   // Function for reporting progress.
   SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc =
@@ -231,8 +222,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
   // Resultant geometry type (representing a spire object and a number of passes).
-  GeometryHandle geom(new GeometryObject(field));
-  geom->objectName = id;
+  GeometryHandle geom(new GeometryObject(field, *this, "EntireField"));
 
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
@@ -252,18 +242,18 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   if (showNodes)
   {
     // Construct node geometry.
-    renderNodes(field, colorMap, getNodeRenderState(state, colorMap), geom, id);
+    renderNodes(field, colorMap, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   if (showFaces)
   {
     int approxDiv = 1;
-    renderFaces(field, colorMap, getFaceRenderState(state, colorMap), geom, approxDiv, id);
+    renderFaces(field, colorMap, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
   }
 
   if (showEdges)
   {
-    renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, id);
+    renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   // Set value ranges for color mapping fields. We should use uniforms for
@@ -302,8 +292,8 @@ void ShowFieldModule::applyColorMapScaling(
   double minv = std::numeric_limits<double>::max();
   double maxv = std::numeric_limits<double>::lowest();
 
-  VField* fld = field->vfield();
-  if (!(field->vfield()->minmax(minv, maxv)))
+  VField* vfld = field->vfield();
+  if (!vfld->minmax(minv, maxv))
   {
     std::cerr << "Input field is not a scalar or vector field." << std::endl;
     return;

@@ -783,3 +783,43 @@ UseGlobalInstanceCountIdGenerator::~UseGlobalInstanceCountIdGenerator()
 {
   Module::idGenerator_ = oldGenerator_;
 }
+
+std::hash<std::string> ModuleLevelUniqueIDGenerator::hash_;
+
+std::string ModuleLevelUniqueIDGenerator::generateModuleLevelUniqueID(const ModuleInterface& module, const std::string& name) const
+{
+  std::ostringstream ostr;
+  ostr << name << "_" << module.get_id() << "__";
+
+  std::ostringstream toHash;
+  toHash << "Data{";
+  for (const auto& input : module.inputPorts())
+  {
+    auto data = input->getData();
+    auto dataID = data ? (*data ? (*data)->id() : -1) : -2;
+    toHash << "[" << input->get_portname() << "]:" << dataID << "_";
+  }
+
+  toHash << "}__State{";
+  auto state = module.get_state();
+  for (const auto& key : state->getKeys())
+  {
+    toHash << key << "->" << state->getValue(key).value() << "_";
+  }
+  toHash << "}";
+
+  //std::cout << "trying to hash: " << toHash.str() << std::endl;
+
+  ostr << hash_(toHash.str());
+
+  return ostr.str();
+}
+
+GeometryGeneratingModule::GeometryGeneratingModule(const ModuleLookupInfo& info) : Module(info)
+{}
+
+std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag) const
+{
+  ModuleLevelUniqueIDGenerator gen(*this, tag);
+  return gen();
+}

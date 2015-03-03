@@ -40,7 +40,7 @@ namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::Module,
+      class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>
       {
@@ -74,15 +74,15 @@ namespace SCIRun {
 
         virtual void setStateDefaults();
       private:
-        /// Constructs a geometry object (essentially a spire object) from the given 
+        /// Constructs a geometry object (essentially a spire object) from the given
         /// field data.
         /// \param field    Field from which to construct geometry.
-        /// \param state    
+        /// \param state
         /// \param id       Ends up becoming the name of the spire object.
         Core::Datatypes::GeometryHandle buildGeometryObject(
           boost::shared_ptr<SCIRun::Field> field,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-          Dataflow::Networks::ModuleStateHandle state, const std::string& id);
+          Dataflow::Networks::ModuleStateHandle state);
 
         /// Mesh construction. Any of the functions below can modify the renderState.
         /// This modified render state will be passed onto the renderer.
