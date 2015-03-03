@@ -39,8 +39,8 @@ namespace SCIRun {
 namespace Modules {
 namespace Visualization {
 
-	class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<ColorMapPortTag>, 
+	class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+    public Has1InputPort<ColorMapPortTag>,
     public Has1OutputPort<GeometryPortTag>
   {
   private:
@@ -65,10 +65,9 @@ namespace Visualization {
 		static Core::Algorithms::AlgorithmParameterName TextGreen;
 		static Core::Algorithms::AlgorithmParameterName TextBlue;
 
-
 		virtual void setStateDefaults();
         INPUT_PORT(0, ColorMapObject, ColorMap);
-		OUTPUT_PORT(0, GeometryOutput, GeometryObject); 
+		OUTPUT_PORT(0, GeometryOutput, GeometryObject);
 
   };
 }}}

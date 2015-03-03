@@ -398,6 +398,27 @@ namespace Networks {
     virtual size_t add_input_port(InputPortHandle h) override;
   };
 
+  class SCISHARE ModuleLevelUniqueIDGenerator
+  {
+  public:
+    ModuleLevelUniqueIDGenerator(const ModuleInterface& module, const std::string& name) :
+      module_(module), name_(name)
+    {}
+    std::string operator()() const { return generateModuleLevelUniqueID(module_, name_); }
+  private:
+    const ModuleInterface& module_;
+    std::string name_;
+    static std::hash<std::string> hash_;
+    std::string generateModuleLevelUniqueID(const ModuleInterface& module, const std::string& name) const;
+  };
+
+  class SCISHARE GeometryGeneratingModule : public Module, public Core::GeometryIDGenerator
+  {
+  public:
+    explicit GeometryGeneratingModule(const ModuleLookupInfo& info);
+    virtual std::string generateGeometryID(const std::string& tag) const override;
+  };
+
   class SCISHARE AlwaysReexecuteStrategy : public ModuleReexecutionStrategy
   {
   public:

@@ -99,7 +99,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
-  
+
 }
 
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
@@ -122,7 +122,7 @@ void ViewSceneDialog::newGeometryValue()
 
 
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
-  
+
   std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
   if (spire == nullptr)
     return;
@@ -147,16 +147,17 @@ void ViewSceneDialog::newGeometryValue()
     }
 
     int port = 0;
-    std::vector<std::string>objectNames;
+    std::vector<std::string> objectNames;
     std::vector<std::string> validObjects;
     for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
     {
       boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
-      objectNames.push_back(obj->objectName);
-      if (!isObjectUnselected(obj->objectName))
+			auto name = obj->uniqueID();
+      objectNames.push_back(name);
+      if (!isObjectUnselected(name))
       {
         spire->handleGeomObject(obj, port);
-        validObjects.push_back(obj->objectName);
+        validObjects.push_back(name);
       }
     }
     spire->gcInvalidObjects(validObjects);
@@ -624,7 +625,7 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
 }
 
 
-ViewSceneItemManager::ViewSceneItemManager() 
+ViewSceneItemManager::ViewSceneItemManager()
   : model_(new QStandardItemModel(3, 1))
 {
 	model_->setItem(0, 0, new QStandardItem(QString("Object Selection")));

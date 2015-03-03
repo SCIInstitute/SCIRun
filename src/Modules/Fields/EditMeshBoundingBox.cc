@@ -152,7 +152,7 @@ namespace SCIRun
 }
 
 EditMeshBoundingBox::EditMeshBoundingBox()
-: Module(staticInfo_),
+: GeometryGeneratingModule(staticInfo_),
   impl_(new EditMeshBoundingBoxImpl)
 {
     INITIALIZE_PORT(InputField);
@@ -271,7 +271,7 @@ bool EditMeshBoundingBox::isBoxEmpty() const
   return (c == r) || (c == d) || (c == b);
 }
 
-Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() 
+Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
 {
     GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
     int64_t numVBOElements = 0;
@@ -448,10 +448,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr));
-    std::ostringstream ostr;
-    ostr << get_id() << "EditBoundingBox_" << geom.get();
-    geom->objectName = ostr.str();
+    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "BoundingBox"));
     geom->mIBOs.push_back(geomIBO);
     geom->mVBOs.push_back(geomVBO);
     geom->mPasses.push_back(pass);

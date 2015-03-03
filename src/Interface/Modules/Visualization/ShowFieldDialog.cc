@@ -36,6 +36,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Visualization;
 
 ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -57,7 +58,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addDoubleSpinBoxManager(nodeTransparencyDoubleSpinBox_, ShowFieldModule::NodeTransparencyValue);
   addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, ShowFieldModule::EdgeTransparencyValue);
   addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
-  addDoubleSpinBoxManager(cylinder_rad_spin, ShowFieldModule::CylinderRadius);
+  addDoubleSpinBoxManager(cylinder_rad_spin, Parameters::CylinderRadius);
   addSpinBoxManager(cylinder_res_spin, ShowFieldModule::CylinderResolution);
   addSpinBoxManager(sphereResolutionSpinBox, ShowFieldModule::SphereResolution);
   addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowFieldModule::EdgesAsCylinders);

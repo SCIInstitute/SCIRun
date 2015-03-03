@@ -32,7 +32,7 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Visualization/DataConversions.h>
 #include <Core/Datatypes/ColorMap.h>
-#include <Core/Datatypes/Color.h> 
+#include <Core/Datatypes/Color.h>
 #include <Core/GeometryPrimitives/Vector.h>
 
 using namespace SCIRun::Modules::Visualization;
@@ -42,10 +42,10 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
 
-ShowColorMapModule::ShowColorMapModule() : Module(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
+ShowColorMapModule::ShowColorMapModule() : GeometryGeneratingModule(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
 {
     INITIALIZE_PORT(ColorMapObject);
-	INITIALIZE_PORT(GeometryOutput); 
+	INITIALIZE_PORT(GeometryOutput);
 }
 
 void ShowColorMapModule::setStateDefaults()
@@ -83,7 +83,7 @@ void ShowColorMapModule::execute()
 SCIRun::Core::Datatypes::GeometryHandle
 ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap> cm,
                                         Dataflow::Networks::ModuleStateHandle state,
-                                        const std::string& id) 
+                                        const std::string& id)
 {
   std::vector<Vector> points;
   std::vector<double> colors;
@@ -91,7 +91,6 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   int32_t numVBOElements = 0;
   ColorMap * map = cm.get();
   double resolution = 1. / static_cast<double>(map->getColorMapResolution());
-  
   for (double i = 0.; std::abs(i - 1.) > 0.000001; i+=resolution) {
     uint32_t offset = (uint32_t)points.size();
     points.push_back(Vector(0.,i,0.));
@@ -114,7 +113,7 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   // IBO/VBOs and sizes
   uint32_t iboSize = sizeof(uint32_t) * (uint32_t)indices.size();
   uint32_t vboSize = sizeof(float) * 4 * (uint32_t)points.size();
-  
+
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
       new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
@@ -122,9 +121,9 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
 
   CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
-  
+
   for (auto a : indices) iboBuffer->write(a);
-  
+
   for (size_t i = 0; i < points.size(); i ++) {
     vboBuffer->write(static_cast<float>(points[i].x()));
     vboBuffer->write(static_cast<float>(points[i].y()));
@@ -176,10 +175,10 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
   // Construct IBO.
 
   GeometryObject::SpireIBO geomIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
-  
+
   RenderState renState;
   renState.set(RenderState::USE_COLORMAP, true);
-    
+
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
@@ -189,11 +188,8 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-  
-  Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr));
-  std::ostringstream ostr;
-  ostr << get_id() << "ShowColorMap_" << geom.get();
-  geom->objectName = ostr.str();
+
+  Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "ShowColorMap"));
 
   geom->mColorMap = cm->getColorMapName();
   geom->mIBOs.push_back(geomIBO);
@@ -312,10 +308,10 @@ ShowColorMapModule::buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatype
 
 
 
-AlgorithmParameterName ShowColorMapModule::DisplaySide("DisplaySide"); 
+AlgorithmParameterName ShowColorMapModule::DisplaySide("DisplaySide");
 AlgorithmParameterName ShowColorMapModule::DisplayLength("DisplayLength");
-AlgorithmParameterName ShowColorMapModule::TextSize("TextSize"); 
-AlgorithmParameterName ShowColorMapModule::TextColor("TextColor"); 
+AlgorithmParameterName ShowColorMapModule::TextSize("TextSize");
+AlgorithmParameterName ShowColorMapModule::TextColor("TextColor");
 AlgorithmParameterName ShowColorMapModule::Labels("Labels");
 AlgorithmParameterName ShowColorMapModule::Scale("Scale");
 AlgorithmParameterName ShowColorMapModule::Units("Units");

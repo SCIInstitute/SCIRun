@@ -251,7 +251,7 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::setTransparencyRendertype(RenderState::TransparencySortType rType)
     {
-      mRenderSortType = rType;      
+      mRenderSortType = rType;
     }
 
 		//------------------------------------------------------------------------------
@@ -271,7 +271,7 @@ namespace SCIRun {
 			// Ensure our rendering context is current on our thread.
 			mContext->makeCurrent();
 
-			std::string objectName = obj->objectName;
+			std::string objectName = obj->uniqueID();
 			Core::Geometry::BBox bbox; // Bounding box containing all vertex buffer objects.
 
 			// Check to see if the object already exists in our list. If so, then
@@ -316,7 +316,7 @@ namespace SCIRun {
 			// Add vertex buffer objects.
       std::vector<char*> vbo_buffer;
       std::vector<size_t> stride_vbo;
-      
+
 			int nameIndex = 0;
 			for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
 			{
@@ -338,7 +338,7 @@ namespace SCIRun {
         vbo_buffer.push_back(reinterpret_cast<char*>(vbo.data->getBuffer()));
         size_t stride = 0;
         for (auto a : vbo.attributes)
-          stride += a.sizeInBytes; 
+          stride += a.sizeInBytes;
         stride_vbo.push_back(stride);
 
 				bbox.extend(vbo.boundingBox);
@@ -492,7 +492,7 @@ namespace SCIRun {
 				uint64_t entityID = getEntityIDForName(pass.passName, port);
 
 				if (pass.renderType == Core::Datatypes::GeometryObject::RENDER_VBO_IBO)
-				{   
+				{
 					addVBOToEntity(entityID, pass.vboName);
           if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
           {
@@ -679,13 +679,13 @@ namespace SCIRun {
 			ibo.primType = iboData.primType;
 			ibo.primMode = iboData.primMode;
 			ibo.numPrims = iboData.numPrims;
-      
+
 			mCore.addComponent(entityID, ibo);
 		}
 
     //------------------------------------------------------------------------------
     void SRInterface::reorderIBO(Core::Datatypes::GeometryObject::SpireSubPass& pass)
-    { 
+    {
       char* vbo_buffer = reinterpret_cast<char*>(pass.vbo.data->getBuffer());
       uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.ibo.data->getBuffer());
       size_t num_triangles = pass.ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
@@ -695,7 +695,7 @@ namespace SCIRun {
 
       std::vector<DepthIndex> rel_depth(num_triangles);
       Core::Geometry::Vector dir(mCamera->getViewToWorld()[0][2], mCamera->getViewToWorld()[1][2], mCamera->getViewToWorld()[2][2]);
-      
+
       for (size_t j = 0; j < num_triangles; j++)
       {
         float* vertex1 = reinterpret_cast<float*>(vbo_buffer + stride_vbo * (ibo_buffer[j * 3]));
@@ -883,12 +883,12 @@ namespace SCIRun {
 
 			// Bail if assets have not been loaded yet (asynchronous loading may take a
 			// few frames).
-			if (arrowVBO == 0 || arrowIBO == 0 || shader == 0) 
-      { 
+			if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
+      {
         axesFailCount_++;
         if (axesFailCount_ > 50)
           throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
-        return; 
+        return;
       }
 
 			const ren::IBOMan::IBOData* iboData;
@@ -1209,5 +1209,4 @@ namespace SCIRun {
 
 
 	} // namespace Render
-} // namespace SCIRun 
-
+} // namespace SCIRun
