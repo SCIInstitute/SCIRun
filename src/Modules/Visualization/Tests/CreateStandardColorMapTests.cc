@@ -25,28 +25,41 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
 
-#ifndef MODULES_VISUALIZATION_SHOWCOLORMAP_H
-#define MODULES_VISUALIZATION_SHOWCOLORMAP_H
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Datatypes/ColorMap.h>
+#include <Modules/Visualization/CreateStandardColorMap.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Utils/Exception.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Visualization/share.h>
+using namespace SCIRun::Testing;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core;
 
-namespace SCIRun {
-namespace Modules {
-namespace Visualization {
+class CreateStandardColorMapModuleTest : public ModuleTest
+{
+};
 
-	class SCISHARE ShowColorMap : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has1OutputPort<ColorMapPortTag>
-  {
-  public:
-		ShowColorMap();
-    virtual void execute();
-    virtual void setStateDefaults();
-    OUTPUT_PORT(0, ColorMapObject, ColorMap);
-  };
-}}}
+TEST_F(CreateStandardColorMapModuleTest, ThrowsForUnknownColorMapName)
+{
+  UseRealModuleStateFactory f;
 
-#endif
+  auto cbc = makeModule("CreateStandardColorMap");
+
+  cbc->get_state()->setValue(Variables::ColorMapName, std::string("null"));
+
+  EXPECT_THROW(cbc->execute(), InvalidArgumentException);
+}
+
+TEST_F(CreateStandardColorMapModuleTest, DISABLED_CreatesRainbowByDefault)
+{
+  UseRealModuleStateFactory f;
+
+  auto cbc = makeModule("CreateStandardColorMap");
+
+  cbc->execute();
+
+  FAIL() << "TODO: need output value collector dummy module: See Issue #499";
+}

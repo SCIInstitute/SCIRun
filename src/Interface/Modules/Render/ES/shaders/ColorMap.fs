@@ -38,6 +38,8 @@ uniform sampler1D uTX0;
 uniform float   uCMInvert;
 uniform float   uCMShift;
 uniform float   uCMResolution;
+uniform float   uRescaleScale;
+uniform float   uRescaleShift;
 varying float  fFieldData;
 
 // Transparency to use along side the color map.
@@ -45,7 +47,7 @@ uniform float uTransparency;
 
 void main()
 {
-   float param = fFieldData;
+   float param = clamp(fFieldData * uRescaleScale + uRescaleShift,0.,1.);
    float shift = uCMShift;
    if (uCMInvert != 0.) {
       param = 1. - param;

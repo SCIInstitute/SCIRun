@@ -105,7 +105,6 @@ namespace Fields {
     SCIRun::Core::Geometry::BBox bbox_;
 
     BoxWidgetPtr box_;
-    double cylinder_scale_;
     boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
   };
 }}}

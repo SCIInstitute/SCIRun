@@ -25,30 +25,35 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
 
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.cc
+#ifndef MODULES_VISUALIZATION_RESCALECOLORMAP_H
+#define MODULES_VISUALIZATION_RESCALECOLORMAP_H
 
-#include <Modules/Visualization/ShowColorMap.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Datatypes/ColorMap.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Modules/Visualization/share.h>
 
-using namespace SCIRun::Modules::Visualization;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+namespace SCIRun {
+namespace Modules {
+namespace Visualization {
 
-ShowColorMap::ShowColorMap() : Module(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
-{
-  INITIALIZE_PORT(ColorMapObject);
-}
+	class SCISHARE RescaleColorMap : public SCIRun::Dataflow::Networks::Module,
+    public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
+    public Has1OutputPort<ColorMapPortTag>
+  {
+  public:
+	RescaleColorMap();
+    virtual void execute();
+    virtual void setStateDefaults();
+	static const Core::Algorithms::AlgorithmParameterName AutoScale;
+	static const Core::Algorithms::AlgorithmParameterName Symmetric;
+	static const Core::Algorithms::AlgorithmParameterName FixedMin;
+	static const Core::Algorithms::AlgorithmParameterName FixedMax;
+    INPUT_PORT(0, Field, LegacyField);
+    INPUT_PORT(1, ColorMapObject, ColorMap);
+    OUTPUT_PORT(0, ColorMapOutput, ColorMap);
+  };
+}}}
 
-void ShowColorMap::setStateDefaults()
-{
-  auto state = get_state();
-  //state->setValue(Variables::ColorMapName, std::string("Rainbow"));
-}
-
-void ShowColorMap::execute()
-{
-  sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
-}
+#endif

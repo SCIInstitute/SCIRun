@@ -26,40 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#ifndef INTERFACE_MODULES_CREATESTANDARDCOLORMAPDIALOG_H
+#define INTERFACE_MODULES_CREATESTANDARDCOLORMAPDIALOG_H
+
+#include "Interface/Modules/Visualization/ui_CreateStandardColorMap.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Datatypes/ColorMap.h>
-#include <Modules/Visualization/CreateBasicColorMap.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Utils/Exception.h>
+#include <Interface/Modules/Visualization/share.h>
 
-using namespace SCIRun::Testing;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core;
-
-class CreateBasicColorMapModuleTest : public ModuleTest
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric, 
+  public Ui::CreateStandardColorMap
 {
+	Q_OBJECT
+	
+public:
+  CreateStandardColorMapDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+ private Q_SLOTS:
+  void updateColorMapPreview(QString s);
+  const QString buildGradientString(SCIRun::Core::Datatypes::ColorMap cm);
+  void setShiftSlider(double d);
+  void setResolutionSlider(int i);
+  void setShiftText(int i);
+  void setResolutionText(int i);
+  void onInvertCheck(bool b);
+  
 };
 
-TEST_F(CreateBasicColorMapModuleTest, ThrowsForUnknownColorMapName)
-{
-  UseRealModuleStateFactory f;
-
-  auto cbc = makeModule("CreateStandardColorMap");
-
-  cbc->get_state()->setValue(Variables::ColorMapName, std::string("null"));
-
-  EXPECT_THROW(cbc->execute(), InvalidArgumentException);
+}
 }
 
-TEST_F(CreateBasicColorMapModuleTest, DISABLED_CreatesRainbowByDefault)
-{
-  UseRealModuleStateFactory f;
-
-  auto cbc = makeModule("CreateStandardColorMap");
-
-  cbc->execute();
-
-  FAIL() << "TODO: need output value collector dummy module: See Issue #499";
-}
+#endif

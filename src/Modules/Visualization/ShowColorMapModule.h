@@ -32,6 +32,7 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Modules/Visualization/TextBuilder.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -42,6 +43,8 @@ namespace Visualization {
     public Has1InputPort<ColorMapPortTag>,
     public Has1OutputPort<GeometryPortTag>
   {
+  private:
+        SCIRun::Modules::Visualization::TextBuilder text_;
   public:
 		ShowColorMapModule();
         virtual void execute();
@@ -57,7 +60,10 @@ namespace Visualization {
 		static Core::Algorithms::AlgorithmParameterName Scale;
 		static Core::Algorithms::AlgorithmParameterName Units;
 		static Core::Algorithms::AlgorithmParameterName SignificantDigits;
-		static Core::Algorithms::AlgorithmParameterName AddExtraSpace;
+		static Core::Algorithms::AlgorithmParameterName AddExtraSpace; 
+		static Core::Algorithms::AlgorithmParameterName TextRed;
+		static Core::Algorithms::AlgorithmParameterName TextGreen;
+		static Core::Algorithms::AlgorithmParameterName TextBlue;
 
 		virtual void setStateDefaults();
         INPUT_PORT(0, ColorMapObject, ColorMap);

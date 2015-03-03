@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.cc
+/// @todo Documentation Modules/Visualization/CreateStandardColorMap.cc
 
-#include <Modules/Visualization/CreateBasicColorMap.h>
+#include <Modules/Visualization/CreateStandardColorMap.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/ColorMap.h>
 
@@ -37,12 +37,12 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateStandardColorMap", "Visualization", "SCIRun"))
+CreateStandardColorMap::CreateStandardColorMap() : Module(ModuleLookupInfo("CreateStandardColorMap", "Visualization", "SCIRun"))
 {
   INITIALIZE_PORT(ColorMapObject);
 }
 
-void CreateBasicColorMap::setStateDefaults()
+void CreateStandardColorMap::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(ColorMapName, std::string("Rainbow"));
@@ -51,7 +51,7 @@ void CreateBasicColorMap::setStateDefaults()
   state->setValue(ColorMapShift, 0.0);
 }
 
-void CreateBasicColorMap::execute()
+void CreateStandardColorMap::execute()
 {
   if (needToExecute())
   {
@@ -63,12 +63,12 @@ void CreateBasicColorMap::execute()
     //just in case there is a problem with the QT values...
     res = std::min(std::max(res,2),256);
     shift = std::min(std::max(shift,-1.),1.);
-    sendOutput(ColorMapObject,StandardColorMapFactory::create(name,res, shift,inv));
+    sendOutput(ColorMapObject,StandardColorMapFactory::create(name,res, shift,inv,1.,0.,0.,1.));
   }
 }
 
 
-const AlgorithmParameterName CreateBasicColorMap::ColorMapName("ColorMapName");
-const AlgorithmParameterName CreateBasicColorMap::ColorMapInvert("ColorMapInvert");
-const AlgorithmParameterName CreateBasicColorMap::ColorMapShift("ColorMapShift");
-const AlgorithmParameterName CreateBasicColorMap::ColorMapResolution("ColorMapResolution");
+const AlgorithmParameterName CreateStandardColorMap::ColorMapName("ColorMapName");
+const AlgorithmParameterName CreateStandardColorMap::ColorMapInvert("ColorMapInvert");
+const AlgorithmParameterName CreateStandardColorMap::ColorMapShift("ColorMapShift");
+const AlgorithmParameterName CreateStandardColorMap::ColorMapResolution("ColorMapResolution");

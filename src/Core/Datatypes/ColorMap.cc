@@ -33,9 +33,14 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift, const bool invert)
-: name_(name), resolution_(resolution), shift_(shift), invert_(invert) {
+ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift,
+                    const bool invert, const double rescale_scale, const double rescale_shift,
+                        const double actual_min, const double actual_max)
+: name_(name), resolution_(resolution), shift_(shift),
+  invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift),
+  actual_min_(actual_min), actual_max_(actual_max){
     if (!(name_ == "Rainbow"   ||
+          name_ == "Old Rainbow" ||
           name_ == "Blackbody" ||
           name_ == "Grayscale"  ))
           throw InvalidArgumentException();
@@ -46,10 +51,12 @@ ColorMap* ColorMap::clone() const
   return new ColorMap(*this);
 }
 
-ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &resolution,
-                                                const double &shift, const bool &invert)
+ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &res,
+                                                const double &shift, const bool &invert,
+                                                const double &rescale_scale, const double &rescale_shift,
+                                                const double &actual_min, const double &actual_max)
 {
-  cm_ = ColorMap(name,resolution,shift,invert);
+  cm_ = ColorMap(name,res,shift,invert,rescale_scale, rescale_shift,actual_min,actual_max);
   return ColorMapHandle(cm_.clone());
 }
 
@@ -84,14 +91,16 @@ ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
 
 
 float ColorMap::getTransformedColor(float f) const {
-  static bool x = true;
-  if (x)
-  {
-    std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
-    x = false;
-  }
-    //@todo this will not be needed with rescale color map.
-    float v = std::min(std::max(0.f,f),1.f);
+   /////////////////////////////////////////////////
+   //TODO: this seemingly useless code fixes a nasty crash bug on Windows. Don't delete it until a proper fix is implemented!
+   static bool x = true;
+   if (x)
+   {
+     std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
+     x = false;
+   }
+   /////////////////////////////////////////////////
+    float v = std::min(std::max(0.f,float(f*rescale_scale_+rescale_shift_)),1.f);
     double shift = shift_;
     if (invert_) {
         v = 1.f - v;
@@ -115,10 +124,16 @@ ColorRGB ColorMap::getColorMapVal(float v) const {
     //now grab the RGB
     ColorRGB col;
     if (name_ == "Rainbow") {
-        // spread out the thin colors
-        //if (v < 0.7 && v > 0.3)
-        //    v = v - 0.05f * std::sin((v - 0.3) * 6.f * M_PI / 0.8);
-        col = hslToRGB((1. - f) * 0.7, 0.95, 0.5);
+        if (0. <= f && f < 0.25)
+            col = ColorRGB(0.,f*3.,1.-f);
+        else if (0.25 <= f && f < 0.5)
+            col = ColorRGB(0.,f+0.5,1.5 - f*3.);
+        else if (0.5 <= f && f < 0.75)
+            col = ColorRGB(4.*f - 2.,2. - 2.*f,0.);
+        else if (0.75 <= f && f <= 1.0)
+            col = ColorRGB(1.,2. - 2.*f,0.);
+    } else if (name_ == "Old Rainbow") {
+        col = hslToRGB((1. - f) * 0.675, 0.95, 0.5);
     } else if (name_ == "Blackbody") {
         if (f < 0.333333)
             col = ColorRGB(std::min(std::max(f * 3.,0.),1.), 0., 0.);
@@ -130,5 +145,14 @@ ColorRGB ColorMap::getColorMapVal(float v) const {
         col = hslToRGB(0., 0., f);
     return col;
 }
+
+std::string ColorMap::getColorMapName() const {return name_;}
+size_t ColorMap::getColorMapResolution() const {return resolution_;}
+double ColorMap::getColorMapShift() const {return shift_;}
+bool ColorMap::getColorMapInvert() const {return invert_;}
+double ColorMap::getColorMapRescaleScale() const {return rescale_scale_;}
+double ColorMap::getColorMapRescaleShift() const {return rescale_shift_;}
+double ColorMap::getColorMapActualMin() const {return actual_min_;}
+double ColorMap::getColorMapActualMax() const {return actual_max_;}
 
 ColorMap StandardColorMapFactory::cm_("Rainbow");

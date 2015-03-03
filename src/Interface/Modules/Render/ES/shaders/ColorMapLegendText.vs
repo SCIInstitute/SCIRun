@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
-#define INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
+// Uniforms
+uniform float    uAspectRatio  ;      
+uniform float    uWindowWidth  ;
+uniform float    uExtraSpace   ;
+uniform float    uDisplaySide  ;
+uniform float    uDisplayLength;
 
-#include "Interface/Modules/Visualization/ui_ShowColorMap.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Visualization/share.h>
+// Attributes
+attribute vec3  aPos;
+attribute vec4  aColor;
 
-namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE ShowColorMapDialog : public ModuleDialogGeneric, 
-	public Ui::ShowColorMap
+//Outputs
+varying vec4 fColor;
+
+void main( void )
 {
-	Q_OBJECT
-	
-public:
-  ShowColorMapDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
-  QColor text_color_;
-  QDoubleSpinBox r_,g_,b_;
-private Q_SLOTS:
-  void getColor();
-  
-};
-
+  bool ex = uExtraSpace == 1.;
+  bool ds = uDisplaySide == 0.;
+  bool full = uDisplayLength == 1.;
+  bool half1 = uDisplayLength == 0.;
+  vec3 newPos = aPos;
+  float x_scale = 1.5 / uWindowWidth;
+  float y_scale = 2.9 / (uWindowWidth / uAspectRatio);
+  float x_trans = ds?(-1.+(ex?.05:0.)):(-1.+(full?(aPos.z*1.8+.1):(aPos.z*.9+(half1?0.+(ex?.05:0.):
+                                       1.1+(ex?-.05:0.)))) - 15. / uWindowWidth);
+  float y_trans = ds?(-1.+(full?(aPos.z*1.8+.1):(aPos.z*.9+(half1?0.+(ex?.05:0.):
+                                       1.1+(ex?-.05:0.)))) - 2. / uWindowWidth):(-1.+(ex?.05:0.));
+  gl_Position = vec4(newPos.x * x_scale + x_trans, 
+                     newPos.y * y_scale + y_trans, 0., 1.0);
+  fColor = aColor;
 }
-}
-
-#endif

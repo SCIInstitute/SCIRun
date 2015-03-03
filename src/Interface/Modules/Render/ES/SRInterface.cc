@@ -107,6 +107,7 @@ namespace SCIRun {
 		SRInterface::~SRInterface()
 		{
 			glDeleteTextures(1, &mRainbowCMap);
+			glDeleteTextures(1, &mOldRainbowCMap);
 			glDeleteTextures(1, &mGrayscaleCMap);
 			glDeleteTextures(1, &mBlackBodyCMap);
 		}
@@ -603,6 +604,8 @@ namespace SCIRun {
           // Setup appropriate texture to render the color map.
           if (*obj->mColorMap == "Rainbow") {
             component.glid = mRainbowCMap;
+          } else if (*obj->mColorMap == "Old Rainbow") {
+            component.glid = mOldRainbowCMap;
           } else if (*obj->mColorMap == "Blackbody") {
             component.glid = mBlackBodyCMap;
           } else {
@@ -1125,6 +1128,32 @@ namespace SCIRun {
 				GL_RGBA,
 				GL_UNSIGNED_BYTE, &rainbow[0]));
 
+            cm = ColorMap("Old Rainbow");
+			// build old rainbow texture.
+			std::vector<uint8_t> oldrainbow;
+			oldrainbow.reserve(resolution * 3);
+			for (float i = 0.f; i < 1.f; i+=step) {
+                ColorRGB col = cm.getColorMapVal(i);
+				oldrainbow.push_back(static_cast<uint8_t>(col.r() * 255.0f));
+				oldrainbow.push_back(static_cast<uint8_t>(col.g() * 255.0f));
+				oldrainbow.push_back(static_cast<uint8_t>(col.b() * 255.0f));
+				oldrainbow.push_back(static_cast<uint8_t>(255.0f));
+			}
+
+			// oldrainbow texture.
+			GL(glGenTextures(1, &mOldRainbowCMap));
+			GL(glBindTexture(GL_TEXTURE_1D, mOldRainbowCMap));
+			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+			GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+			GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
+			GL(glTexImage1D(GL_TEXTURE_1D, 0,
+				GL_RGBA8,
+				static_cast<GLsizei>(oldrainbow.size() / 4), 0,
+				GL_RGBA,
+				GL_UNSIGNED_BYTE, &oldrainbow[0]));
+            
             cm = ColorMap("Grayscale");
 			// build grayscale texture.
 			std::vector<uint8_t> grayscale;

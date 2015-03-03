@@ -26,39 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CREATEBASICCOLORMAPDIALOG_H
-#define INTERFACE_MODULES_CREATEBASICCOLORMAPDIALOG_H
+#ifndef MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
+#define MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
 
-#include "Interface/Modules/Visualization/ui_CreateBasicColorMap.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Interface/Modules/Visualization/share.h>
+#include <Core/Datatypes/Geometry.h>
+#include <cstring>
+#include <vector>
 
 namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE CreateBasicColorMapDialog : public ModuleDialogGeneric, 
-  public Ui::CreateBasicColorMap
-{
-	Q_OBJECT
-	
-public:
-  CreateBasicColorMapDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
- private Q_SLOTS:
-  void updateColorMapPreview(QString s);
-  const QString buildGradientString(SCIRun::Core::Datatypes::ColorMap cm);
-  void setShiftSlider(double d);
-  void setResolutionSlider(int i);
-  void setShiftText(int i);
-  void setResolutionText(int i);
-  void onInvertCheck(bool b);
-  
-};
+namespace Modules {
+namespace Visualization {
 
-}
-}
+class TextBuilder {
+  public:
+    TextBuilder(const char * text = "", const double scale = 1.,
+                const Core::Geometry::Vector shift = Core::Geometry::Vector());
+    virtual ~TextBuilder();
+    void reset(const char * text, const double scale,
+            const Core::Geometry::Vector shift);
+    void getStringVerts(std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
+  private:
+    std::string text_;
+    double scale_;
+    Core::Geometry::Vector shift_;
+    void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
+    //four fonts to choose from.
+    uint16_t *font0_;
+    size_t font0_w_, font0_h_;
+  };
+}}}
 
 #endif

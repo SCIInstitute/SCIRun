@@ -76,8 +76,11 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
         static Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
         static Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
+        static Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
         static Core::Algorithms::AlgorithmParameterName SphereScaleValue;
         static Core::Algorithms::AlgorithmParameterName CylinderResolution;
+        static Core::Algorithms::AlgorithmParameterName SphereResolution;
+        static Core::Algorithms::AlgorithmParameterName CylinderRadius;
 
         INPUT_PORT(0, Field, LegacyField);
         INPUT_PORT(1, ColorMapObject, ColorMap);
@@ -158,9 +161,9 @@ namespace SCIRun {
         void applyColorMapScaling(boost::shared_ptr<SCIRun::Field> field,
           Core::Datatypes::GeometryObject::SpireSubPass& pass);
 
-        double sphereScalar_;
         float faceTransparencyValue_;
         float edgeTransparencyValue_;
+        float nodeTransparencyValue_;
 
       };
 

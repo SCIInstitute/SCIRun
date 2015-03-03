@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,35 +24,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
+ */
 
-#ifndef MODULES_VISUALIZATION_CREATEBASICCOLORMAP_H
-#define MODULES_VISUALIZATION_CREATEBASICCOLORMAP_H
+varying vec4 fColor;
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Visualization/share.h>
-
-namespace SCIRun {
-namespace Modules {
-namespace Visualization {
-
-  class SCISHARE CreateBasicColorMap : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has1OutputPort<ColorMapPortTag>
-  {
-  public:
-    CreateBasicColorMap();
-    virtual void execute();
-    virtual void setStateDefaults();
-    
-    
-	static const Core::Algorithms::AlgorithmParameterName ColorMapName;
-	static const Core::Algorithms::AlgorithmParameterName ColorMapInvert;
-	static const Core::Algorithms::AlgorithmParameterName ColorMapShift;
-	static const Core::Algorithms::AlgorithmParameterName ColorMapResolution;
-    OUTPUT_PORT(0, ColorMapObject, ColorMap);
-  };
-}}}
-
-#endif
+void main()
+{
+   gl_FragColor = fColor;
+}

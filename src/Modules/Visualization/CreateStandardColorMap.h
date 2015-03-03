@@ -25,35 +25,34 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Visualization/CreateStandardColorMap.h
 
-#ifndef INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
-#define INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
+#ifndef MODULES_VISUALIZATION_CREATESTANDARDCOLORMAP_H
+#define MODULES_VISUALIZATION_CREATESTANDARDCOLORMAP_H
 
-#include "Interface/Modules/Visualization/ui_ShowColorMap.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Visualization/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE ShowColorMapDialog : public ModuleDialogGeneric, 
-	public Ui::ShowColorMap
-{
-	Q_OBJECT
-	
-public:
-  ShowColorMapDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
-  QColor text_color_;
-  QDoubleSpinBox r_,g_,b_;
-private Q_SLOTS:
-  void getColor();
-  
-};
+namespace Modules {
+namespace Visualization {
 
-}
-}
+  class SCISHARE CreateStandardColorMap : public SCIRun::Dataflow::Networks::Module,
+    public HasNoInputPorts,
+    public Has1OutputPort<ColorMapPortTag>
+  {
+  public:
+    CreateStandardColorMap();
+    virtual void execute();
+    virtual void setStateDefaults();
+    
+    
+	static const Core::Algorithms::AlgorithmParameterName ColorMapName;
+	static const Core::Algorithms::AlgorithmParameterName ColorMapInvert;
+	static const Core::Algorithms::AlgorithmParameterName ColorMapShift;
+	static const Core::Algorithms::AlgorithmParameterName ColorMapResolution;
+    OUTPUT_PORT(0, ColorMapObject, ColorMap);
+  };
+}}}
 
 #endif

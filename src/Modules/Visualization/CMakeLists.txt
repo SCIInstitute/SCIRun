@@ -27,19 +27,23 @@
 #
 
 SET(Modules_Visualization_SRCS
-  CreateBasicColorMap.cc
+  CreateStandardColorMap.cc
   MatrixAsVectorField.cc
   ShowField.cc
   ShowString.cc
   ShowColorMapModule.cc
+  RescaleColorMap.cc
+  TextBuilder.cc
 )
 
 SET(Modules_Visualization_HEADERS
-  CreateBasicColorMap.h
+  CreateStandardColorMap.h
   MatrixAsVectorField.h
   ShowField.h
   ShowString.h
   ShowColorMapModule.h
+  RescaleColorMap.h
+  TextBuilder.h
   share.h
 )
 

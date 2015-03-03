@@ -26,31 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
-#define INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
+#ifndef INTERFACE_MODULES_RESCALECOLORMAPDIALOG_H
+#define INTERFACE_MODULES_RESCALECOLORMAPDIALOG_H
 
-#include "Interface/Modules/Visualization/ui_ShowColorMap.h"
+#include "Interface/Modules/Visualization/ui_RescaleColorMap.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE ShowColorMapDialog : public ModuleDialogGeneric, 
-	public Ui::ShowColorMap
+class SCISHARE RescaleColorMapDialog : public ModuleDialogGeneric,
+	public Ui::RescaleColorMap
 {
 	Q_OBJECT
 	
 public:
-  ShowColorMapDialog(const std::string& name, 
+    RescaleColorMapDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
-  QColor text_color_;
-  QDoubleSpinBox r_,g_,b_;
-private Q_SLOTS:
-  void getColor();
-  
 };
 
 }

@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
-#define INTERFACE_MODULES_SHOWCOLORMAPDIALOG_H
+// Uniforms
+uniform mat4    uProjIVObject;      // Projection transform * Inverse View
+uniform mat4    uObject;            // Object -> World
 
-#include "Interface/Modules/Visualization/ui_ShowColorMap.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Visualization/share.h>
+// Attributes
+attribute vec3  aPos;
+attribute vec3  aNormal;
+attribute vec4  aColor;
 
-namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE ShowColorMapDialog : public ModuleDialogGeneric, 
-	public Ui::ShowColorMap
+// Outputs to the fragment shader.
+varying vec3    vNormal;
+varying vec4    vColor;
+
+void main( void )
 {
-	Q_OBJECT
-	
-public:
-  ShowColorMapDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
-  QColor text_color_;
-  QDoubleSpinBox r_,g_,b_;
-private Q_SLOTS:
-  void getColor();
-  
-};
-
+  // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
+  // was generated in gamma space, and we need to convert it to linear space.
+  vNormal  = normalize(vec3(uObject * vec4(aNormal, 0.0)));
+  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+  vColor = aColor;
 }
-}
-
-#endif
