@@ -36,8 +36,6 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Algorithms::Visualization;
 
-typedef SCIRun::Modules::Visualization::RescaleColorMap RescaleColorMapModule;
-
 RescaleColorMapDialog::RescaleColorMapDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)

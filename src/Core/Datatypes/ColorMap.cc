@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 /// @todo Documentation Core/Datatypes/ColorMap.cc
 
 #include <Core/Math/MiscMath.h>
@@ -34,12 +34,13 @@
 using namespace SCIRun::Core::Datatypes;
 
 ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift,
-                    const bool invert, const double rescale_scale, const double rescale_shift,
-                        const double actual_min, const double actual_max)
-: name_(name), resolution_(resolution), shift_(shift),
+  const bool invert, const double rescale_scale, const double rescale_shift,
+  const double actual_min, const double actual_max)
+  : name_(name), resolution_(resolution), shift_(shift),
   invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift),
-  actual_min_(actual_min), actual_max_(actual_max){
-   
+  actual_min_(actual_min), actual_max_(actual_max)
+{
+
 }
 
 ColorMap* ColorMap::clone() const
@@ -48,9 +49,9 @@ ColorMap* ColorMap::clone() const
 }
 
 ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &res,
-                                                const double &shift, const bool &invert,
-                                                const double &rescale_scale, const double &rescale_shift,
-                                                const double &actual_min, const double &actual_max)
+  const double &shift, const bool &invert,
+  const double &rescale_scale, const double &rescale_shift,
+  const double &actual_min, const double &actual_max)
 {
   if (!(name == "Rainbow" ||
     name == "Old Rainbow" ||
@@ -58,100 +59,111 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
     name == "Grayscale"))
     THROW_INVALID_ARGUMENT("Color map name not implemented/recognized.");
 
-  return boost::make_shared<ColorMap>(name,res,shift,invert,rescale_scale, rescale_shift,actual_min,actual_max);
+  return boost::make_shared<ColorMap>(name, res, shift, invert, rescale_scale, rescale_shift, actual_min, actual_max);
 }
 
-float ColorMap::Hue_2_RGB(float v1, float v2, float vH) {
-   if ( vH < 0 ) vH += 1.;
-   if ( vH > 1 ) vH -= 1.;
-   if ( ( 6 * vH ) < 1 ) return ( v1 + ( v2 - v1 ) * 6. * vH );
-   if ( ( 2 * vH ) < 1 ) return ( v2 );
-   if ( ( 3 * vH ) < 2 ) return ( v1 + ( v2 - v1 ) * ( ( .666667 ) - vH ) * 6. );
-   return ( v1 );
+float ColorMap::Hue_2_RGB(float v1, float v2, float vH) 
+{
+  if (vH < 0) vH += 1.;
+  if (vH > 1) vH -= 1.;
+  if ((6 * vH) < 1) return (v1 + (v2 - v1) * 6. * vH);
+  if ((2 * vH) < 1) return (v2);
+  if ((3 * vH) < 2) return (v1 + (v2 - v1) * ((.666667) - vH) * 6.);
+  return (v1);
 }
 
-ColorRGB ColorMap::hslToRGB(float h, float s, float l) {
-    float r,g,b;
-    if ( s == 0. ) {
-       r = g = b = l ;
-    } else {
-       float var_1, var_2;
-       if ( l < 0.5 ) var_2 = l * ( 1. + s );
-       else           var_2 = ( l + s ) - ( s * l );
+ColorRGB ColorMap::hslToRGB(float h, float s, float l) 
+{
+  float r, g, b;
+  if (s == 0.) {
+    r = g = b = l;
+  }
+  else {
+    float var_1, var_2;
+    if (l < 0.5) var_2 = l * (1. + s);
+    else           var_2 = (l + s) - (s * l);
 
-       var_1 = 2 * l - var_2;
+    var_1 = 2 * l - var_2;
 
-       r = Hue_2_RGB( var_1, var_2, h + ( .333333 ) );
-       g = Hue_2_RGB( var_1, var_2, h );
-       b = Hue_2_RGB( var_1, var_2, h - ( .333333 ) );
-    }
-    return ColorRGB(std::min(std::max(r,0.f),1.f),
-                    std::min(std::max(g,0.f),1.f),
-                    std::min(std::max(b,0.f),1.f));
+    r = Hue_2_RGB(var_1, var_2, h + (.333333));
+    g = Hue_2_RGB(var_1, var_2, h);
+    b = Hue_2_RGB(var_1, var_2, h - (.333333));
+  }
+  return ColorRGB(std::min(std::max(r, 0.f), 1.f),
+    std::min(std::max(g, 0.f), 1.f),
+    std::min(std::max(b, 0.f), 1.f));
 }
 
 
-float ColorMap::getTransformedColor(float f) const {
-   /////////////////////////////////////////////////
-   //TODO: this seemingly useless code fixes a nasty crash bug on Windows. Don't delete it until a proper fix is implemented!
-   static bool x = true;
-   if (x)
-   {
-     std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
-     x = false;
-   }
-   /////////////////////////////////////////////////
-    float v = std::min(std::max(0.f,float(f*rescale_scale_+rescale_shift_)),1.f);
-    double shift = shift_;
-    if (invert_) {
-        v = 1.f - v;
-        shift *= -1.;
-    }
-    //apply the resolution
-    v = static_cast<double>((static_cast<int>(v *
-        static_cast<float>(resolution_)))) /
-        static_cast<double>(resolution_ - 1);
-    // the shift is a gamma.
-    float denom = std::tan(M_PI_2 * ( 0.5f - std::min(std::max(shift,-0.99),0.99) * 0.5f));
-    // make sure we don't hit divide by zero
-    if (std::isnan(denom)) denom = 0.f;
-    denom = std::max(denom, 0.001f);
-    v = std::pow(v,(1.f/denom));
-    return v;
+float ColorMap::getTransformedColor(float f) const 
+{
+  /////////////////////////////////////////////////
+  //TODO: this seemingly useless code fixes a nasty crash bug on Windows. Don't delete it until a proper fix is implemented!
+  static bool x = true;
+  if (x)
+  {
+    std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
+    x = false;
+  }
+  /////////////////////////////////////////////////
+
+  const float rescaled01 = static_cast<float>(f * rescale_scale_ + rescale_shift_);
+
+  float v = std::min(std::max(0.f, rescaled01), 1.f);
+  double shift = shift_;
+  if (invert_) {
+    v = 1.f - v;
+    shift *= -1.;
+  }
+  //apply the resolution
+  v = static_cast<double>((static_cast<int>(v *
+    static_cast<float>(resolution_)))) /
+    static_cast<double>(resolution_ - 1);
+  // the shift is a gamma.
+  float denom = std::tan(M_PI_2 * (0.5f - std::min(std::max(shift, -0.99), 0.99) * 0.5f));
+  // make sure we don't hit divide by zero
+  if (std::isnan(denom)) denom = 0.f;
+  denom = std::max(denom, 0.001f);
+  v = std::pow(v, (1.f / denom));
+  return v;
 }
 
-ColorRGB ColorMap::getColorMapVal(float v) const {
-    float f = getTransformedColor(v);
-    //now grab the RGB
-    ColorRGB col;
-    if (name_ == "Rainbow") {
-        if (0. <= f && f < 0.25)
-            col = ColorRGB(0.,f*3.,1.-f);
-        else if (0.25 <= f && f < 0.5)
-            col = ColorRGB(0.,f+0.5,1.5 - f*3.);
-        else if (0.5 <= f && f < 0.75)
-            col = ColorRGB(4.*f - 2.,2. - 2.*f,0.);
-        else if (0.75 <= f && f <= 1.0)
-            col = ColorRGB(1.,2. - 2.*f,0.);
-    } else if (name_ == "Old Rainbow") {
-        col = hslToRGB((1. - f) * 0.675, 0.95, 0.5);
-    } else if (name_ == "Blackbody") {
-        if (f < 0.333333)
-            col = ColorRGB(std::min(std::max(f * 3.,0.),1.), 0., 0.);
-        else if (f < 0.6666666)
-            col = ColorRGB(1.,std::min(std::max((f - 0.333333) * 3.,0.),1.), 0.);
-        else
-            col = ColorRGB(1., 1., std::min(std::max((f - 0.6666666) * 3.,0.),1.));
-    } else if (name_ == "Grayscale")
-        col = hslToRGB(0., 0., f);
-    return col;
+ColorRGB ColorMap::getColorMapVal(float v) const 
+{
+  float f = getTransformedColor(v);
+  //now grab the RGB
+  ColorRGB col;
+  if (name_ == "Rainbow") {
+    if (0. <= f && f < 0.25)
+      col = ColorRGB(0., f*3., 1. - f);
+    else if (0.25 <= f && f < 0.5)
+      col = ColorRGB(0., f + 0.5, 1.5 - f*3.);
+    else if (0.5 <= f && f < 0.75)
+      col = ColorRGB(4.*f - 2., 2. - 2.*f, 0.);
+    else if (0.75 <= f && f <= 1.0)
+      col = ColorRGB(1., 2. - 2.*f, 0.);
+  }
+  else if (name_ == "Old Rainbow") {
+    col = hslToRGB((1. - f) * 0.675, 0.95, 0.5);
+  }
+  else if (name_ == "Blackbody") {
+    if (f < 0.333333)
+      col = ColorRGB(std::min(std::max(f * 3., 0.), 1.), 0., 0.);
+    else if (f < 0.6666666)
+      col = ColorRGB(1., std::min(std::max((f - 0.333333) * 3., 0.), 1.), 0.);
+    else
+      col = ColorRGB(1., 1., std::min(std::max((f - 0.6666666) * 3., 0.), 1.));
+  }
+  else if (name_ == "Grayscale")
+    col = hslToRGB(0., 0., f);
+  return col;
 }
 
-std::string ColorMap::getColorMapName() const {return name_;}
-size_t ColorMap::getColorMapResolution() const {return resolution_;}
-double ColorMap::getColorMapShift() const {return shift_;}
-bool ColorMap::getColorMapInvert() const {return invert_;}
-double ColorMap::getColorMapRescaleScale() const {return rescale_scale_;}
-double ColorMap::getColorMapRescaleShift() const {return rescale_shift_;}
-double ColorMap::getColorMapActualMin() const {return actual_min_;}
-double ColorMap::getColorMapActualMax() const {return actual_max_;}
+std::string ColorMap::getColorMapName() const { return name_; }
+size_t ColorMap::getColorMapResolution() const { return resolution_; }
+double ColorMap::getColorMapShift() const { return shift_; }
+bool ColorMap::getColorMapInvert() const { return invert_; }
+double ColorMap::getColorMapRescaleScale() const { return rescale_scale_; }
+double ColorMap::getColorMapRescaleShift() const { return rescale_shift_; }
+double ColorMap::getColorMapActualMin() const { return actual_min_; }
+double ColorMap::getColorMapActualMax() const { return actual_max_; }
