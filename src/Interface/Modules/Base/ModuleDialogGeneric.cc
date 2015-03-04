@@ -45,6 +45,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   pulling_(false),
   executeAction_(0),
   shrinkAction_(0),
+  executeInteractivelyToggleAction_(0),
   collapsed_(false),
   dock_(0)
 {
@@ -126,6 +127,20 @@ void ModuleDialogGeneric::createShrinkAction()
   connect(shrinkAction_, SIGNAL(triggered()), this, SLOT(toggleCollapse()));
 }
 
+void ModuleDialogGeneric::createExecuteInteractivelyToggleAction()
+{
+  executeInteractivelyToggleAction_ = new QAction(this);
+  executeInteractivelyToggleAction_->setText("Execute Interactively");
+  executeInteractivelyToggleAction_->setCheckable(true);
+  executeInteractivelyToggleAction_->setChecked(true);
+  connect(executeInteractivelyToggleAction_, SIGNAL(triggered()), this, SLOT(executeInteractivelyToggled()));
+}
+
+void ModuleDialogGeneric::executeInteractivelyToggled()
+{
+  qDebug() << "toggled";
+}
+
 void ModuleDialogGeneric::toggleCollapse()
 {
   if (collapsed_)
@@ -161,6 +176,8 @@ void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e)
 {
   QMenu menu(this);
   menu.addAction(executeAction_);
+  if (executeInteractivelyToggleAction_)
+    menu.addAction(executeInteractivelyToggleAction_);
   menu.addAction(shrinkAction_);
   menu.exec(e->globalPos());
 

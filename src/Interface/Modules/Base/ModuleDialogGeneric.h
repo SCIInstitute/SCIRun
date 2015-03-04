@@ -114,6 +114,10 @@ namespace Gui {
     void addDynamicLabelManager(QLabel* label, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const Core::Algorithms::AlgorithmParameterName& stateKey);
     //void addSliderManager(QSlider* slider, const Core::Algorithms::AlgorithmParameterName& stateKey);
+
+    void createExecuteInteractivelyToggleAction();
+  private Q_SLOTS:
+    void executeInteractivelyToggled();
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
@@ -123,6 +127,7 @@ namespace Gui {
     boost::signals2::connection stateConnection_;
     QAction* executeAction_;
     QAction* shrinkAction_;
+    QAction* executeInteractivelyToggleAction_;
     bool collapsed_;
     QString windowTitle_;
     QDockWidget* dock_;

@@ -77,6 +77,8 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   connectButtonToExecuteSignal(nodesAsPointsButton_);
   connectButtonToExecuteSignal(nodesAsSpheresButton_);
 
+  createExecuteInteractivelyToggleAction();
+
   //default values
   cylinder_rad_spin->setValue(0.1);
   cylinder_res_spin->setValue(10);
