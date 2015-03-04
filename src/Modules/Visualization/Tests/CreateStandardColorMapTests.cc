@@ -35,7 +35,7 @@
 using namespace SCIRun::Testing;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core;
 
 class CreateStandardColorMapModuleTest : public ModuleTest
@@ -48,9 +48,30 @@ TEST_F(CreateStandardColorMapModuleTest, ThrowsForUnknownColorMapName)
 
   auto cbc = makeModule("CreateStandardColorMap");
 
-  cbc->get_state()->setValue(Variables::ColorMapName, std::string("null"));
+  cbc->get_state()->setValue(Parameters::ColorMapName, std::string("null"));
 
   EXPECT_THROW(cbc->execute(), InvalidArgumentException);
+}
+
+TEST_F(CreateStandardColorMapModuleTest, CanCreateFromFixedSetOfColormaps)
+{
+  UseRealModuleStateFactory f;
+
+  auto cbc = makeModule("CreateStandardColorMap");
+
+  cbc->get_state()->setValue(Parameters::ColorMapName, std::string("Rainbow"));
+  cbc->execute();
+
+  cbc->get_state()->setValue(Parameters::ColorMapName, std::string("Old Rainbow"));
+  cbc->execute();
+
+  cbc->get_state()->setValue(Parameters::ColorMapName, std::string("Blackbody"));
+  cbc->execute();
+
+  cbc->get_state()->setValue(Parameters::ColorMapName, std::string("Grayscale"));
+  cbc->execute();
+
+  //"TODO: need output value collector dummy module: See Issue #499";
 }
 
 TEST_F(CreateStandardColorMapModuleTest, DISABLED_CreatesRainbowByDefault)

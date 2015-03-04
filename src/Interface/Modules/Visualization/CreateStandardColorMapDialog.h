@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #ifndef INTERFACE_MODULES_CREATESTANDARDCOLORMAPDIALOG_H
 #define INTERFACE_MODULES_CREATESTANDARDCOLORMAPDIALOG_H
@@ -35,30 +35,30 @@
 #include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric, 
-  public Ui::CreateStandardColorMap
-{
-	Q_OBJECT
-	
-public:
-  CreateStandardColorMapDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
- private Q_SLOTS:
-  void updateColorMapPreview(QString s);
-  const QString buildGradientString(SCIRun::Core::Datatypes::ColorMap cm);
-  void setShiftSlider(double d);
-  void setResolutionSlider(int i);
-  void setShiftText(int i);
-  void setResolutionText(int i);
-  void onInvertCheck(bool b);
-  
-};
+  namespace Gui {
 
-}
+    class SCISHARE CreateStandardColorMapDialog : public ModuleDialogGeneric,
+      public Ui::CreateStandardColorMap
+    {
+      Q_OBJECT
+
+    public:
+      CreateStandardColorMapDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = 0);
+      virtual void pull();
+      private Q_SLOTS:
+      void updateColorMapPreview();
+      void updateColorMapPreview(const QString& s);
+      const QString buildGradientString(const SCIRun::Core::Datatypes::ColorMap& cm);
+      void setShiftSlider(double d);
+      void setResolutionSlider(int i);
+      void setShiftSpinner(int i);
+      void onInvertCheck(bool b);
+
+    };
+
+  }
 }
 
 #endif

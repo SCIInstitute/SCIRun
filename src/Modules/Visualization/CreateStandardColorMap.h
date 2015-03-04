@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 /// @todo Documentation Modules/Visualization/CreateStandardColorMap.h
 
 #ifndef MODULES_VISUALIZATION_CREATESTANDARDCOLORMAP_H
@@ -34,25 +34,39 @@
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Visualization {
 
-  class SCISHARE CreateStandardColorMap : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has1OutputPort<ColorMapPortTag>
+  namespace Core
   {
-  public:
-    CreateStandardColorMap();
-    virtual void execute();
-    virtual void setStateDefaults();
-    
-    
-	static const Core::Algorithms::AlgorithmParameterName ColorMapName;
-	static const Core::Algorithms::AlgorithmParameterName ColorMapInvert;
-	static const Core::Algorithms::AlgorithmParameterName ColorMapShift;
-	static const Core::Algorithms::AlgorithmParameterName ColorMapResolution;
-    OUTPUT_PORT(0, ColorMapObject, ColorMap);
-  };
-}}}
+    namespace Algorithms
+    {
+      namespace Visualization
+      {
+        ALGORITHM_PARAMETER_DECL(ColorMapName);
+        ALGORITHM_PARAMETER_DECL(ColorMapInvert);
+        ALGORITHM_PARAMETER_DECL(ColorMapShift);
+        ALGORITHM_PARAMETER_DECL(ColorMapResolution);
+      }
+    }
+  }
+
+  namespace Modules {
+    namespace Visualization {
+
+      class SCISHARE CreateStandardColorMap : public SCIRun::Dataflow::Networks::Module,
+        public HasNoInputPorts,
+        public Has1OutputPort<ColorMapPortTag>
+      {
+      public:
+        CreateStandardColorMap();
+        virtual void execute();
+        virtual void setStateDefaults();
+
+        OUTPUT_PORT(0, ColorMapObject, ColorMap);
+
+        const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
+  }
+}
 
 #endif

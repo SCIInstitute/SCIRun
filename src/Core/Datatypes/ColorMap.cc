@@ -39,11 +39,7 @@ ColorMap::ColorMap(const std::string& name, const size_t resolution, const doubl
 : name_(name), resolution_(resolution), shift_(shift),
   invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift),
   actual_min_(actual_min), actual_max_(actual_max){
-    if (!(name_ == "Rainbow"   ||
-          name_ == "Old Rainbow" ||
-          name_ == "Blackbody" ||
-          name_ == "Grayscale"  ))
-          throw InvalidArgumentException();
+   
 }
 
 ColorMap* ColorMap::clone() const
@@ -56,8 +52,13 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
                                                 const double &rescale_scale, const double &rescale_shift,
                                                 const double &actual_min, const double &actual_max)
 {
-  cm_ = ColorMap(name,res,shift,invert,rescale_scale, rescale_shift,actual_min,actual_max);
-  return ColorMapHandle(cm_.clone());
+  if (!(name == "Rainbow" ||
+    name == "Old Rainbow" ||
+    name == "Blackbody" ||
+    name == "Grayscale"))
+    THROW_INVALID_ARGUMENT("Color map name not implemented/recognized.");
+
+  return boost::make_shared<ColorMap>(name,res,shift,invert,rescale_scale, rescale_shift,actual_min,actual_max);
 }
 
 float ColorMap::Hue_2_RGB(float v1, float v2, float vH) {
@@ -154,5 +155,3 @@ double ColorMap::getColorMapRescaleScale() const {return rescale_scale_;}
 double ColorMap::getColorMapRescaleShift() const {return rescale_shift_;}
 double ColorMap::getColorMapActualMin() const {return actual_min_;}
 double ColorMap::getColorMapActualMax() const {return actual_max_;}
-
-ColorMap StandardColorMapFactory::cm_("Rainbow");

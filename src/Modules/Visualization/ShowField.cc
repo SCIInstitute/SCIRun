@@ -626,7 +626,7 @@ void ShowFieldModule::renderFacesLinear(
   std::stringstream ss;
   ss << invertNormals;
 
-  std::string uniqueNodeID = id + "face" + ss.str().c_str();
+  std::string uniqueNodeID = id + "face" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
   std::string passName = uniqueNodeID + "Pass";
@@ -1193,7 +1193,7 @@ void ShowFieldModule::renderNodes(
   std::stringstream ss;
   ss << state.get(RenderState::USE_SPHERE) << radius << num_strips;
 
-  std::string uniqueNodeID = id + "node" + ss.str().c_str();
+  std::string uniqueNodeID = id + "node" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
   std::string passName = uniqueNodeID + "Pass";
@@ -1472,7 +1472,7 @@ void ShowFieldModule::renderEdges(
   std::stringstream ss;
   ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius;
   
-  std::string uniqueNodeID = id + "edge" + ss.str().c_str();
+  std::string uniqueNodeID = id + "edge" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
   std::string passName = uniqueNodeID + "Pass";

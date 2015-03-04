@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #include <Interface/Modules/Visualization/CreateStandardColorMapDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -32,7 +32,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Datatypes;
 
 typedef SCIRun::Modules::Visualization::CreateStandardColorMap CreateStandardColorMapModule;
@@ -46,81 +46,76 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
   setWindowTitle(QString::fromStdString(name));
   ColorMap cm("Rainbow");
   previewColorMap_->setStyleSheet(buildGradientString(cm));
-  
-  resolutionSpin_->setValue(256);
-  shiftSpin_->setValue(0.0);
-  invertCheck_->setChecked(false);
-  
-  addComboBoxManager(colorMapNameComboBox_, CreateStandardColorMapModule::ColorMapName);
-  addSpinBoxManager(resolutionSpin_, CreateStandardColorMapModule::ColorMapResolution);
-  addDoubleSpinBoxManager(shiftSpin_, CreateStandardColorMapModule::ColorMapShift);
-  addCheckBoxManager(invertCheck_, CreateStandardColorMapModule::ColorMapInvert);
-  
-  connect(colorMapNameComboBox_,SIGNAL(currentIndexChanged(QString)),this,SLOT(updateColorMapPreview(QString)));
-  connect(shiftSpin_,SIGNAL(valueChanged(double)),this,SLOT(setShiftSlider(double)));
-  connect(resolutionSpin_,SIGNAL(valueChanged(int)),this,SLOT(setResolutionSlider(int)));
-  connect(shiftSlider_,SIGNAL(valueChanged(int)),this,SLOT(setShiftText(int)));
-  connect(resolutionSlider_,SIGNAL(valueChanged(int)),this,SLOT(setResolutionText(int)));
-  connect(invertCheck_,SIGNAL(toggled(bool)),this,SLOT(onInvertCheck(bool)));
+
+  addComboBoxManager(colorMapNameComboBox_, Parameters::ColorMapName);
+  addSpinBoxManager(resolutionSpin_, Parameters::ColorMapResolution);
+  addDoubleSpinBoxManager(shiftSpin_, Parameters::ColorMapShift);
+  addCheckBoxManager(invertCheck_, Parameters::ColorMapInvert);
+
+  connect(colorMapNameComboBox_, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(updateColorMapPreview(const QString&)));
+  connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(setShiftSlider(double)));
+  connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(setResolutionSlider(int)));
+  connect(shiftSpin_, SIGNAL(valueChanged(double)), this, SLOT(updateColorMapPreview()));
+  connect(resolutionSpin_, SIGNAL(valueChanged(int)), this, SLOT(updateColorMapPreview()));
+
+  connect(shiftSlider_, SIGNAL(valueChanged(int)), this, SLOT(setShiftSpinner(int)));
+  connect(resolutionSlider_, SIGNAL(valueChanged(int)), resolutionSpin_, SLOT(setValue(int)));
+  connect(invertCheck_, SIGNAL(toggled(bool)), this, SLOT(onInvertCheck(bool)));
 }
 
 void CreateStandardColorMapDialog::pull()
 {
   pull_newVersionToReplaceOld();
-  Pulling p(this);
-  std::string cm_name(state_->getValue(CreateStandardColorMapModule::ColorMapName).toString());
-  double cm_shift(state_->getValue(CreateStandardColorMapModule::ColorMapShift).toDouble());
-  int cm_res(state_->getValue(CreateStandardColorMapModule::ColorMapResolution).toInt());
-  colorMapNameComboBox_->setCurrentIndex(colorMapNameComboBox_->findText(QString::fromStdString(cm_name)));
-  shiftSlider_->setValue(static_cast<int>(cm_shift * 100.));
-  resolutionSlider_->setValue(cm_res);
 }
 
-void CreateStandardColorMapDialog::updateColorMapPreview(QString s) {
-    ColorMap cm(s.toStdString(),resolutionSlider_->value(),
-                static_cast<double>(shiftSlider_->value()) / 100.,
-                invertCheck_->isChecked());
-    previewColorMap_->setStyleSheet(buildGradientString(cm));
+void CreateStandardColorMapDialog::updateColorMapPreview(const QString& s) 
+{
+  ColorMap cm(s.toStdString(), resolutionSlider_->value(),
+    static_cast<double>(shiftSlider_->value()) / 100.,
+    invertCheck_->isChecked());
+ // qDebug() << "updating color map: " << s << " " << resolutionSlider_->value() << " " << shiftSlider_->value();
+  previewColorMap_->setStyleSheet(buildGradientString(cm));
 }
 
-
-const QString CreateStandardColorMapDialog::buildGradientString(ColorMap cm) {
-    std::stringstream ss;
-    ss << "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,";
-    for (double i = 0.001; i < 1.0; i +=0.001) {
-        ss << " stop:" << i;
-        ss << " rgba(";
-        ColorRGB c = cm.getColorMapVal(i);
-        ss << int(255.*c.r()) << ", " << int(255.*c.g()) << ", " << int(255.*c.b()) << ", 255),";
-    }
-    ss << ");";
-    std::string str = ss.str();
-    return QString::fromStdString(ss.str());
+void CreateStandardColorMapDialog::updateColorMapPreview()
+{
+  updateColorMapPreview(colorMapNameComboBox_->currentText());
 }
 
-
-void CreateStandardColorMapDialog::setShiftSlider(double d) {
-    shiftSlider_->setValue(static_cast<int>(d * 100.));
-    updateColorMapPreview(colorMapNameComboBox_->currentText());
+const QString CreateStandardColorMapDialog::buildGradientString(const ColorMap& cm) 
+{
+  //TODO: cache these values, GUI is slow to update.
+  std::stringstream ss;
+  ss << "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,";
+  for (double i = 0.001; i < 1.0; i += 0.001) {
+    ss << " stop:" << i;
+    ss << " rgba(";
+    ColorRGB c = cm.getColorMapVal(i);
+    ss << int(255.*c.r()) << ", " << int(255.*c.g()) << ", " << int(255.*c.b()) << ", 255),";
+  }
+  ss << ");";
+  std::string str = ss.str();
+  return QString::fromStdString(ss.str());
 }
 
-void CreateStandardColorMapDialog::setResolutionSlider(int i) {
-    resolutionSlider_->setValue(i);
-    updateColorMapPreview(colorMapNameComboBox_->currentText());
+void CreateStandardColorMapDialog::setShiftSlider(double d) 
+{
+  shiftSlider_->setValue(static_cast<int>(d * 100.));
 }
 
-void CreateStandardColorMapDialog::setShiftText(int i) {
-    shiftSpin_->setValue(static_cast<double>(i) / 100.);
-    updateColorMapPreview(colorMapNameComboBox_->currentText());
+void CreateStandardColorMapDialog::setResolutionSlider(int i) 
+{
+  resolutionSlider_->setValue(i);
 }
 
-void CreateStandardColorMapDialog::setResolutionText(int i) {
-    resolutionSpin_->setValue(i);
-    updateColorMapPreview(colorMapNameComboBox_->currentText());
+void CreateStandardColorMapDialog::setShiftSpinner(int i)
+{
+  shiftSpin_->setValue(static_cast<double>(i) / 100.);
 }
 
-void CreateStandardColorMapDialog::onInvertCheck(bool b) {
-    updateColorMapPreview(colorMapNameComboBox_->currentText());
+void CreateStandardColorMapDialog::onInvertCheck(bool b) 
+{
+  updateColorMapPreview();
 }
 
 

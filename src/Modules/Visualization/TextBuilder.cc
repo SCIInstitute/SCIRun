@@ -32,7 +32,7 @@
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Geometry;
 
-TextBuilder::TextBuilder(const char * text, const double scale,
+TextBuilder::TextBuilder(const std::string& text, const double scale,
             const Vector shift)
 : text_(text), scale_(scale), shift_(shift) {
     std::ifstream in("Assets/times_new_roman.font");
@@ -112,7 +112,7 @@ void TextBuilder::getCharVerts(const char c, std::vector<Vector> &verts, std::ve
     }
 }
 
-void TextBuilder::reset(const char * text, const double scale, const Vector shift) {
+void TextBuilder::reset(const std::string& text, const double scale, const Vector shift) {
     text_ = text;
     scale_ = scale;
     shift_ = shift;

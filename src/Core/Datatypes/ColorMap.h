@@ -67,7 +67,6 @@ namespace Datatypes {
     double rescale_shift_;
     double actual_min_;
     double actual_max_;
-    //boost::shared_ptr<class ColorMapImpl> impl_;
     static float Hue_2_RGB(float v1, float v2, float vH);
     static Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l);
   };
@@ -81,7 +80,6 @@ namespace Datatypes {
                                     const double &actual_min, const double &actual_max);
   private:
     StandardColorMapFactory();
-    static ColorMap cm_;
   };
 
 }}}

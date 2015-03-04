@@ -39,10 +39,10 @@ namespace Visualization {
 
 class TextBuilder {
   public:
-    TextBuilder(const char * text = "", const double scale = 1.,
+    TextBuilder(const std::string& text = "", const double scale = 1.,
                 const Core::Geometry::Vector shift = Core::Geometry::Vector());
     virtual ~TextBuilder();
-    void reset(const char * text, const double scale,
+    void reset(const std::string& text, const double scale,
             const Core::Geometry::Vector shift);
     void getStringVerts(std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
   private:

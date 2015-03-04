@@ -158,7 +158,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
   //addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
   addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<CreateStandardColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress: four color maps available", "...");
+  addModuleDesc<CreateStandardColorMap>("In progress: four color maps available", "...");
   addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
   addModuleDesc<CreateFieldData>("Real ported module", "...");
