@@ -60,24 +60,21 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   addDynamicLabelManager(inputSizeXLabel_, EditMeshBoundingBoxModule::InputSizeX);
   addDynamicLabelManager(inputSizeYLabel_, EditMeshBoundingBoxModule::InputSizeY);
   addDynamicLabelManager(inputSizeZLabel_, EditMeshBoundingBoxModule::InputSizeZ);
-    
+
     addDoubleSpinBoxManager(&spinner_scale_, EditMeshBoundingBoxModule::Scale);
     connectButtonToExecuteSignal(downScaleToolButton_);
     connectButtonToExecuteSignal(upScaleToolButton_);
     connectButtonToExecuteSignal(doubleDownScaleToolButton_);
     connectButtonToExecuteSignal(doubleUpScaleToolButton_);
     spinner_scale_.setValue(scale_);
-    
 
-    
-    
     connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleUpPush()));
     connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleUpPush()));
     connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDownPush()));
     connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleDownPush()));
 
-    
-    
+
+  createExecuteInteractivelyToggleAction();
 }
 
 void EditMeshBoundingBoxDialog::ScaleUpPush() { scale_*=1.25; spinner_scale_.setValue(scale_); }

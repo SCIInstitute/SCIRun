@@ -27,8 +27,8 @@
 */
 
 #include <Interface/Modules/Visualization/ShowColorMapDialog.h>
-#include <Modules/Visualization/ShowColorMapModule.h> 
-#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Modules/Visualization/ShowColorMapModule.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -78,7 +78,9 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
     SRadioButton_->setChecked(false);
     MRadioButton_->setChecked(true);
     LRadioButton_->setChecked(false);
-    XLRadioButton_->setChecked(false); 
+    XLRadioButton_->setChecked(false);
+
+  createExecuteInteractivelyToggleAction();
 }
 
 void ShowColorMapDialog::pull()
