@@ -33,8 +33,8 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Visualization/share.h>
 
-namespace SCIRun {
-
+namespace SCIRun 
+{
   namespace Core
   {
     namespace Algorithms
@@ -49,8 +49,10 @@ namespace SCIRun {
     }
   }
 
-  namespace Modules {
-    namespace Visualization {
+  namespace Modules 
+  {
+    namespace Visualization 
+    {
 
       class SCISHARE CreateStandardColorMap : public SCIRun::Dataflow::Networks::Module,
         public HasNoInputPorts,

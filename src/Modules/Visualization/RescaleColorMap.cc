@@ -36,9 +36,11 @@
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
 
-RescaleColorMap::RescaleColorMap() : Module(ModuleLookupInfo("RescaleColorMap", "Visualization", "SCIRun"))
+const ModuleLookupInfo RescaleColorMap::staticInfo_("RescaleColorMap", "Visualization", "SCIRun");
+
+RescaleColorMap::RescaleColorMap() : Module(staticInfo_)
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
@@ -48,24 +50,24 @@ RescaleColorMap::RescaleColorMap() : Module(ModuleLookupInfo("RescaleColorMap", 
 void RescaleColorMap::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(AutoScale, true);
-  state->setValue(Symmetric, false);
-  state->setValue(FixedMin, 0.0);
-  state->setValue(FixedMax, 1.0);
+  state->setValue(Parameters::AutoScale, 0);
+  state->setValue(Parameters::Symmetric, false);
+  state->setValue(Parameters::FixedMin, 0.0);
+  state->setValue(Parameters::FixedMax, 1.0);
 }
 
 void RescaleColorMap::execute()
 {
+  auto field = getRequiredInput(Field);
+  auto colorMap = getRequiredInput(ColorMapObject);
+
   if (needToExecute())
   {
-    boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
-    boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap> colorMap = getRequiredInput(ColorMapObject);
-
     auto state = get_state();
-    auto autoscale = state->getValue(AutoScale).toInt() == 0;
-    auto symmetric = state->getValue(Symmetric).toBool();
-    auto fixed_min = state->getValue(FixedMin).toDouble();
-    auto fixed_max = state->getValue(FixedMax).toDouble();
+    auto autoscale = state->getValue(Parameters::AutoScale).toInt() == 0;
+    auto symmetric = state->getValue(Parameters::Symmetric).toBool();
+    auto fixed_min = state->getValue(Parameters::FixedMin).toDouble();
+    auto fixed_max = state->getValue(Parameters::FixedMax).toDouble();
 
     double cm_scale = 1.;
     double cm_shift = 0.;
@@ -82,38 +84,42 @@ void RescaleColorMap::execute()
     double actual_min = std::numeric_limits<double>::max();
     double actual_max = std::numeric_limits<double>::min();
 
-    while (eiter != eiter_end) {
+    while (eiter != eiter_end) 
+    {
       fld->get_value(sval, *eiter);
       actual_min = std::min(sval, actual_min);
       actual_max = std::max(sval, actual_max);
       ++eiter;
     }
-    if (autoscale) {
+    if (autoscale) 
+    {
       //center around zero
-      if (symmetric) {
+      if (symmetric) 
+      {
         double mx = std::max(std::abs(actual_min), std::abs(actual_max));
         fixed_min = -mx;
         fixed_max = mx;
       }
-      else {
+      else 
+      {
         fixed_min = actual_min;
         fixed_max = actual_max;
       }
-      state->setValue(FixedMin, fixed_min);
-      state->setValue(FixedMax, fixed_max);
+      state->setValue(Parameters::FixedMin, fixed_min);
+      state->setValue(Parameters::FixedMax, fixed_max);
     }
     cm_scale = (actual_max - actual_min) / (fixed_max - fixed_min);
     cm_shift = (actual_min - fixed_min) / (fixed_max - fixed_min);
 
-    sendOutput(ColorMapOutput, StandardColorMapFactory::create(colorMap.get()->getColorMapName(),
-      colorMap.get()->getColorMapResolution(),
-      colorMap.get()->getColorMapShift(),
-      colorMap.get()->getColorMapInvert(),
+    sendOutput(ColorMapOutput, StandardColorMapFactory::create(colorMap->getColorMapName(),
+      colorMap->getColorMapResolution(),
+      colorMap->getColorMapShift(),
+      colorMap->getColorMapInvert(),
       cm_scale, cm_shift, fixed_min, fixed_max));
   }
 }
 
-const AlgorithmParameterName RescaleColorMap::AutoScale("AutoScale");
-const AlgorithmParameterName RescaleColorMap::Symmetric("Symmetric");
-const AlgorithmParameterName RescaleColorMap::FixedMin("FixedMin");
-const AlgorithmParameterName RescaleColorMap::FixedMax("FixedMax");
+ALGORITHM_PARAMETER_DEF(Visualization, AutoScale);
+ALGORITHM_PARAMETER_DEF(Visualization, Symmetric);
+ALGORITHM_PARAMETER_DEF(Visualization, FixedMin);
+ALGORITHM_PARAMETER_DEF(Visualization, FixedMax);

@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #ifndef MODULES_VISUALIZATION_RESCALECOLORMAP_H
 #define MODULES_VISUALIZATION_RESCALECOLORMAP_H
@@ -33,26 +33,43 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Visualization/share.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace Visualization {
-
-	class SCISHARE RescaleColorMap : public SCIRun::Dataflow::Networks::Module,
-    public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-    public Has1OutputPort<ColorMapPortTag>
+namespace SCIRun 
+{
+  namespace Core
   {
-  public:
-	RescaleColorMap();
-    virtual void execute();
-    virtual void setStateDefaults();
-	static const Core::Algorithms::AlgorithmParameterName AutoScale;
-	static const Core::Algorithms::AlgorithmParameterName Symmetric;
-	static const Core::Algorithms::AlgorithmParameterName FixedMin;
-	static const Core::Algorithms::AlgorithmParameterName FixedMax;
-    INPUT_PORT(0, Field, LegacyField);
-    INPUT_PORT(1, ColorMapObject, ColorMap);
-    OUTPUT_PORT(0, ColorMapOutput, ColorMap);
-  };
-}}}
+    namespace Algorithms
+    {
+      namespace Visualization
+      {
+        ALGORITHM_PARAMETER_DECL(AutoScale);
+        ALGORITHM_PARAMETER_DECL(Symmetric);
+        ALGORITHM_PARAMETER_DECL(FixedMin);
+        ALGORITHM_PARAMETER_DECL(FixedMax);
+      }
+    }
+  }
+
+  namespace Modules 
+  {
+    namespace Visualization 
+    {
+
+      class SCISHARE RescaleColorMap : public SCIRun::Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
+        public Has1OutputPort<ColorMapPortTag>
+      {
+      public:
+        RescaleColorMap();
+        virtual void execute();
+        virtual void setStateDefaults();
+        INPUT_PORT(0, Field, LegacyField);
+        INPUT_PORT(1, ColorMapObject, ColorMap);
+        OUTPUT_PORT(0, ColorMapOutput, ColorMap);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
+  }
+}
 
 #endif

@@ -196,7 +196,7 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<ConvertIndicesToFieldData>("Real ported module", "..."); 
   addModuleDesc<SolveInverseProblemWithTikhonov>("...", "...");
   addModuleDesc<ShowColorMapModule>("ShowColorMap", "Visualization", "SCIRun", "Real ported module", "...");
-  addModuleDesc<RescaleColorMap>("RescaleColorMap", "Visualization", "SCIRun", "Real ported module", "...");
+  addModuleDesc<RescaleColorMap>("Real ported module", "...");
   addModuleDesc<ConvertMatrixToString>("ConvertMatrixToString","Converters","SCIRun","...","...");
 
   // insert module desc here
