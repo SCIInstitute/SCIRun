@@ -30,7 +30,6 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Modules::Visualization;
@@ -74,23 +73,15 @@ void RescaleColorMap::execute()
 
     //set the min/max values to the actual min/max if we choose auto
     VField* fld = field->vfield();
-    VMesh*  mesh = field->vmesh();
-    double sval;
-    mesh->synchronize(Mesh::NODES_E);
-    VMesh::Node::iterator eiter, eiter_end;
-    mesh->begin(eiter);
-    mesh->end(eiter_end);
-
     double actual_min = std::numeric_limits<double>::max();
     double actual_max = std::numeric_limits<double>::min();
 
-    while (eiter != eiter_end) 
+    if (!fld->minmax(actual_min, actual_max))
     {
-      fld->get_value(sval, *eiter);
-      actual_min = std::min(sval, actual_min);
-      actual_max = std::max(sval, actual_max);
-      ++eiter;
+      error("An input field is not a scalar or vector field.");
+      return;
     }
+
     if (autoscale) 
     {
       //center around zero
