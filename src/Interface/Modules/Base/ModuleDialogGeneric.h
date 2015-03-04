@@ -83,6 +83,7 @@ namespace Gui {
     void pullSignal();
     void executionTimeChanged(int time);
     void executeActionTriggered();
+    void executeFromStateChangeTriggered();
     void setStartupNote(const QString& text);
     void fatalError(const QString& message);
   protected:
@@ -117,12 +118,14 @@ namespace Gui {
 
     void createExecuteInteractivelyToggleAction();
   private Q_SLOTS:
-    void executeInteractivelyToggled();
+    void executeInteractivelyToggled(bool toggle);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
     void createShrinkAction();
     void doCollapse();
+    void connectStateChangeToExecute();
+    void disconnectStateChangeToExecute();
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
     QAction* executeAction_;
