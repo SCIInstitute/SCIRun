@@ -102,7 +102,9 @@ void ShowFieldModule::execute()
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
   
   //set the default colormap scaling to be full range if no rescaling was provided.
-  if (colorMap.get()->getColorMapRescaleScale()==1. && colorMap.get()->getColorMapRescaleShift()==0.) {
+  if (colorMap &&
+        colorMap.get()->getColorMapRescaleScale()==1. &&
+        colorMap.get()->getColorMapRescaleShift()==0.) {
         // set the colormap min/max defaults to the data min/max.
         double actual_min = std::numeric_limits<double>::max();
         double actual_max = std::numeric_limits<double>::min();
