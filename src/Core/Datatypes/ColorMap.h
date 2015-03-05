@@ -32,6 +32,8 @@
 #include <Core/Datatypes/Datatype.h>
 #include <boost/noncopyable.hpp>
 #include <Core/Datatypes/Color.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -53,10 +55,14 @@ namespace Datatypes {
     bool getColorMapInvert() const;
     double getColorMapRescaleScale() const;
     double getColorMapRescaleShift() const;
+    void setColorMapRescaleScale(double scale);
+    void setColorMapRescaleShift(double shift);
     double getColorMapActualMin() const;
     double getColorMapActualMax() const;
     Core::Datatypes::ColorRGB getColorMapVal(float v) const;
-    float getTransformedColor(float v) const;
+    Core::Datatypes::ColorRGB valueToColor(double scalar);
+    Core::Datatypes::ColorRGB valueToColor(Core::Geometry::Tensor tensor);
+    Core::Datatypes::ColorRGB valueToColor(Core::Geometry::Vector vector);
   private:
     std::string name_;
     size_t resolution_;
@@ -69,6 +75,7 @@ namespace Datatypes {
     double actual_max_;
     static float Hue_2_RGB(float v1, float v2, float vH);
     static Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l);
+    float getTransformedColor(float v) const;
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable

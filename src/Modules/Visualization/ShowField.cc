@@ -100,6 +100,7 @@ void ShowFieldModule::execute()
 {
   boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
+
   if (needToExecute())
   {
     GeometryHandle geom = buildGeometryObject(field, colorMap, get_state());
@@ -284,34 +285,6 @@ static uint8_t COLOR_FTOB(double v)
   return static_cast<uint8_t>(inter);
 }
 
-void ShowFieldModule::applyColorMapScaling(
-  boost::shared_ptr<SCIRun::Field> field,
-  GeometryObject::SpireSubPass& pass)
-{
-  // Rescale color maps if that is the input paradigm we are using.
-  // initialize the following so that the compiler will stop
-  // warning us about possibly using unitialized variables
-  double minv = std::numeric_limits<double>::max();
-  double maxv = std::numeric_limits<double>::lowest();
-
-  VField* vfld = field->vfield();
-  if (!vfld->minmax(minv, maxv))
-  {
-    std::cerr << "Input field is not a scalar or vector field." << std::endl;
-    return;
-  }
-
-  pass.addUniform("uMinVal", minv);
-  pass.addUniform("uMaxVal", maxv);
-
-  // if ( gui_make_symmetric_.get() )
-  // {
-  //   float biggest = Max(Abs(minmax_.first), Abs(minmax_.second));
-  //   minmax_.first  = -biggest;
-  //   minmax_.second =  biggest;
-  // }
-}
-
 void ShowFieldModule::renderFaces(
   boost::shared_ptr<SCIRun::Field> field,
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
@@ -361,8 +334,9 @@ void ShowFieldModule::renderFacesLinear(
   std::vector<Core::Geometry::Vector> vvals(10);
   std::vector<Core::Geometry::Tensor> tvals(10);
 
-  std::vector<Material> vcols(10, Material());
-  std::vector<double> scols(10);
+  std::vector<ColorRGB> face_colors;
+  face_colors.resize(10);
+  ColorMap *color_map = colorMap.get().get();
 
   if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
   {
@@ -378,16 +352,7 @@ void ShowFieldModule::renderFacesLinear(
 
     for (uint32_t i = 0; i < 10; ++i)
     {
-      vcols[i] = Material(ColorRGB(1.0, 1.0, 1.0));
-
-      if (state.get(RenderState::USE_TRANSPARENCY))
-      {
-        vcols[i].transparency = 0.75;
-      }
-      else
-      {
-        vcols[i].transparency = 1.0;
-      }
+      face_colors[i] = ColorRGB(1.,1.,1.);
     }
   }
 
@@ -409,8 +374,8 @@ void ShowFieldModule::renderFacesLinear(
   // Attempt some form of precalculation of iboBuffer and vboBuffer size.
   // This Initial size estimation will be off quite a bit. Each face will
   // have up to 3 nodes associated.
-  uint32_t iboSize = mesh->num_faces() * sizeof(uint32_t) * 3;
-  uint32_t vboSize = mesh->num_faces() * sizeof(float) * 3;
+  uint32_t iboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(uint32_t) * 3);
+  uint32_t vboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(float) * 3);
 
   // Construct VBO and IBO that will be used to render the faces. Once again,
   // IBOs are not strictly needed. But, we may be able to optimize this code
@@ -495,7 +460,7 @@ void ShowFieldModule::renderFacesLinear(
     if (colorScheme == GeometryObject::COLOR_UNIFORM)
     {
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-        colorScheme, scols, vcols, state);
+        colorScheme, face_colors, state);
     }
     // Element data (Cells) so two sided faces.
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
@@ -515,9 +480,8 @@ void ShowFieldModule::renderFacesLinear(
         {
           svals[1] = svals[0];
         }
-
-        valueToColor(colorScheme, svals[0], scols[0], vcols[0]);
-        valueToColor(colorScheme, svals[1], scols[1], vcols[1]);
+        face_colors[0] = color_map->valueToColor(svals[0]);
+        face_colors[1] = color_map->valueToColor(svals[1]);
       }
       else if (fld->is_vector())
       {
@@ -532,8 +496,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
 
-        valueToColor(colorScheme, vvals[0], scols[0], vcols[0]);
-        valueToColor(colorScheme, vvals[1], scols[1], vcols[1]);
+        face_colors[0] = color_map->valueToColor(vvals[0]);
+        face_colors[1] = color_map->valueToColor(vvals[1]);
       }
       else if (fld->is_tensor())
       {
@@ -548,14 +512,14 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
 
-        valueToColor(colorScheme, tvals[0], scols[0], vcols[0]);
-        valueToColor(colorScheme, tvals[1], scols[1], vcols[1]);
+        face_colors[0] = color_map->valueToColor(tvals[0]);
+        face_colors[1] = color_map->valueToColor(tvals[1]);
       }
 
       state.set(RenderState::IS_DOUBLE_SIDED, true);
 
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-        colorScheme, scols, vcols, state);
+        colorScheme, face_colors, state);
     }
     // Element data (faces)
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
@@ -563,28 +527,27 @@ void ShowFieldModule::renderFacesLinear(
       if (fld->is_scalar())
       {
         fld->get_value(svals[0], *fiter);
-        valueToColor(colorScheme, svals[0], scols[0], vcols[0]);
+        face_colors[0] = color_map->valueToColor(svals[0]);
       }
       else if (fld->is_vector())
       {
         fld->get_value(vvals[0], *fiter);
-        valueToColor(colorScheme, vvals[0], scols[0], vcols[0]);
+        face_colors[0] = color_map->valueToColor(vvals[0]);
       }
       else if (fld->is_tensor())
       {
         fld->get_value(tvals[0], *fiter);
-        valueToColor(colorScheme, tvals[0], scols[0], vcols[0]);
+        face_colors[0] = color_map->valueToColor(tvals[0]);
       }
 
       // Same color at all corners.
       for (size_t i = 0; i<nodes.size(); ++i)
       {
-        scols[i] = scols[0];
-        vcols[i] = vcols[0];
+        face_colors[i] = face_colors[0];
       }
 
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-        colorScheme, scols, vcols, state);
+        colorScheme, face_colors,  state);
     }
 
     // Data at nodes
@@ -595,7 +558,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i = 0; i<nodes.size(); i++)
         {
           fld->get_value(svals[i], nodes[i]);
-          valueToColor(colorScheme, svals[i], scols[i], vcols[i]);
+          face_colors[i] = color_map->valueToColor(svals[i]);
         }
       }
       else if (fld->is_vector())
@@ -603,7 +566,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i = 0; i<nodes.size(); i++)
         {
           fld->get_value(vvals[i], nodes[i]);
-          valueToColor(colorScheme, vvals[i], scols[i], vcols[i]);
+          face_colors[i] = color_map->valueToColor(vvals[i]);
         }
       }
       else if (fld->is_tensor())
@@ -611,12 +574,12 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i = 0; i<nodes.size(); i++)
         {
           fld->get_value(tvals[i], nodes[i]);
-          valueToColor(colorScheme, tvals[i], scols[i], vcols[i]);
+          face_colors[i] = color_map->valueToColor(tvals[i]);
         }
       }
 
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
-        colorScheme, scols, vcols, state);
+        colorScheme, face_colors, state);
     }
 
     ++fiter;
@@ -646,13 +609,15 @@ void ShowFieldModule::renderFacesLinear(
 
   if (colorScheme == GeometryObject::COLOR_MAP)
   {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
     //push the color map parameters
-    ColorMap * map = colorMap.get().get();
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
-    double scl = map->getColorMapRescaleScale(), shft = map->getColorMapRescaleShift();
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",
+        color_map->getColorMapInvert()?1.f:0.f));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",
+        static_cast<float>(color_map->getColorMapShift())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",
+        static_cast<float>(color_map->getColorMapResolution())));
+    double scl = color_map->getColorMapRescaleScale(), shft = color_map->getColorMapRescaleShift();
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",static_cast<float>(scl)));
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",static_cast<float>(shft)));
 
@@ -676,7 +641,7 @@ void ShowFieldModule::renderFacesLinear(
     }
     else
     {
-      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldDataSecondary", 1 * sizeof(float)));
+      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColorSecondary", 4 * sizeof(float)));
 
       if (withNormals)
       {
@@ -706,7 +671,7 @@ void ShowFieldModule::renderFacesLinear(
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU)
   {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 1 * sizeof(uint32_t), true));
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float), true));
 
     if (state.get(RenderState::IS_DOUBLE_SIDED) == false)
     {
@@ -807,11 +772,6 @@ void ShowFieldModule::renderFacesLinear(
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  if (colorScheme == GeometryObject::COLOR_MAP)
-  {
-    applyColorMapScaling(field, pass);
-  }
-
   geom->mPasses.push_back(pass);
 
   /// \todo Add spheres and other glyphs as display lists. Will want to
@@ -831,8 +791,7 @@ void ShowFieldModule::addFaceGeom(
   CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
   GeometryObject::ColorScheme colorScheme,
-  std::vector<double> &scols,
-  std::vector<Material> &vcols,
+  std::vector<ColorRGB> &face_colors,
   const RenderState& state)
 {
   auto writeVBOPoint = [&vboBuffer](const Core::Geometry::Point& point)
@@ -1164,8 +1123,8 @@ void ShowFieldModule::renderNodes(
   Core::Geometry::Tensor tval;
 
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
-  double scol;
-  Core::Datatypes::Material vcol;
+  ColorRGB node_color;
+  ColorMap * color_map = colorMap.get().get();
 
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
@@ -1224,14 +1183,18 @@ void ShowFieldModule::renderNodes(
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0)));
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
     //push the color map parameters
-    ColorMap * map = colorMap.get().get();
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",static_cast<float>(map->getColorMapRescaleScale())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",static_cast<float>(map->getColorMapRescaleShift())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",
+        color_map->getColorMapInvert()?1.f:0.f));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",
+        static_cast<float>(color_map->getColorMapShift())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",
+        static_cast<float>(color_map->getColorMapResolution())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",
+        static_cast<float>(color_map->getColorMapRescaleScale())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",
+        static_cast<float>(color_map->getColorMapRescaleShift())));
     if (state.get(RenderState::USE_SPHERE)) {
         shader = "Shaders/DirPhongCMap" ;
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
@@ -1288,13 +1251,13 @@ void ShowFieldModule::renderNodes(
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
-        valueToColor(colorScheme, sval, scol, vcol);
+        node_color = color_map->valueToColor(sval);
       } else if (fld->is_vector()) {
         fld->get_value(vval, *eiter);
-        valueToColor(colorScheme, vval, scol, vcol);
+        node_color = color_map->valueToColor(vval);
       } else if (fld->is_tensor()) {
         fld->get_value(tval, *eiter);
-        valueToColor(colorScheme, tval, scol, vcol);
+        node_color = color_map->valueToColor(tval);
       }
     }
     //accumulate VBO or IBO data
@@ -1308,16 +1271,14 @@ void ShowFieldModule::renderNodes(
             pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
             pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
             points.push_back(radius * pp1 + Vector(p));
-            if (colorScheme == GeometryObject::COLOR_MAP)
-              colors.push_back(ColorRGB(scol, scol, scol));
-            else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-                colors.push_back(vcol.diffuse);
+            if (colorScheme == GeometryObject::COLOR_MAP ||
+                colorScheme == GeometryObject::COLOR_IN_SITU)
+                    colors.push_back(node_color);
             numVBOElements++;
             points.push_back(radius * pp2 + Vector(p));
-            if (colorScheme == GeometryObject::COLOR_MAP)
-              colors.push_back(ColorRGB(scol, scol, scol));
-            else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-                colors.push_back(vcol.diffuse);
+            if (colorScheme == GeometryObject::COLOR_MAP ||
+                colorScheme == GeometryObject::COLOR_IN_SITU)
+                    colors.push_back(node_color);
             numVBOElements++;
             normals.push_back(pp1);
             normals.push_back(pp2);
@@ -1332,10 +1293,9 @@ void ShowFieldModule::renderNodes(
         }
     } else {
       points.push_back(Vector(p));
-      if (colorScheme == GeometryObject::COLOR_MAP)
-        colors.push_back(ColorRGB(scol, scol, scol));
-      else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-        colors.push_back(vcol.diffuse);
+      if (colorScheme == GeometryObject::COLOR_MAP ||
+          colorScheme == GeometryObject::COLOR_IN_SITU)
+              colors.push_back(node_color);
       indices.push_back(index);
       ++index;
       ++numVBOElements;
@@ -1347,7 +1307,7 @@ void ShowFieldModule::renderNodes(
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
   vboSize += (uint32_t)normals.size() * 3 * sizeof(float);
   if (colorScheme == GeometryObject::COLOR_IN_SITU || colorScheme == GeometryObject::COLOR_MAP)
-    vboSize += (uint32_t)colors.size() * 4; //add last 4 bytes for color
+    vboSize += (uint32_t)colors.size() * 4 * sizeof(float); //RGBA
   iboSize = (uint32_t)indices.size() * sizeof(uint32_t);
 
   /// \todo To reduce memory requirements, we can use a 16bit index buffer.
@@ -1383,14 +1343,12 @@ void ShowFieldModule::renderNodes(
       vboBuffer->write(static_cast<float>(normals.at(i).y()));
       vboBuffer->write(static_cast<float>(normals.at(i).z()));
     }
-    if (colorScheme == GeometryObject::COLOR_MAP)
+    if (colorScheme == GeometryObject::COLOR_MAP ||
+        colorScheme == GeometryObject::COLOR_IN_SITU) {
       vboBuffer->write(static_cast<float>(colors.at(i).r()));
-    else if (colorScheme == GeometryObject::COLOR_IN_SITU) {
-      // Writes uint8_t out to the VBO. A total of 4 bytes.
-      vboBuffer->write(COLOR_FTOB(colors.at(i).r()));
-      vboBuffer->write(COLOR_FTOB(colors.at(i).g()));
-      vboBuffer->write(COLOR_FTOB(colors.at(i).b()));
-      vboBuffer->write(COLOR_FTOB(1.0));
+      vboBuffer->write(static_cast<float>(colors.at(i).g()));
+      vboBuffer->write(static_cast<float>(colors.at(i).b()));
+      vboBuffer->write(static_cast<float>(1.f));
     } // no color writing otherwise
   }
   state.set(RenderState::IS_ON, true);
@@ -1416,11 +1374,6 @@ void ShowFieldModule::renderNodes(
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  if (colorScheme == GeometryObject::COLOR_MAP)
-  {
-    applyColorMapScaling(field, pass);
-  }
-
   geom->mPasses.push_back(pass);
 }
 
@@ -1440,9 +1393,8 @@ void ShowFieldModule::renderEdges(
   Core::Geometry::Tensor tval0, tval1;
 
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
-  double scol0 = 0.0, scol1 = 0.0;
-  Core::Datatypes::Material vcol0;
-  Core::Datatypes::Material vcol1;
+  ColorRGB edge_colors[2];
+  ColorMap * color_map = colorMap.get().get();
 
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
@@ -1498,14 +1450,18 @@ void ShowFieldModule::renderEdges(
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(edgeTransparencyValue_)));
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
+    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
     //push the color map parameters
-    ColorMap * map = colorMap.get().get();
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",static_cast<float>(map->getColorMapRescaleScale())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",static_cast<float>(map->getColorMapRescaleShift())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",
+        color_map->getColorMapInvert()?1.f:0.f));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",
+        static_cast<float>(color_map->getColorMapShift())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",
+        static_cast<float>(color_map->getColorMapResolution())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",
+        static_cast<float>(color_map->getColorMapRescaleScale())));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",
+        static_cast<float>(color_map->getColorMapRescaleShift())));
     if (state.get(RenderState::USE_CYLINDER)) {
         shader = "Shaders/DirPhongCMap" ;
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
@@ -1576,9 +1532,8 @@ void ShowFieldModule::renderEdges(
 
           sval1 = sval0;
         }
-
-        valueToColor(colorScheme, sval0, scol0, vcol0);
-        valueToColor(colorScheme, sval1, scol1, vcol1);
+        edge_colors[0] = color_map->valueToColor(sval0);
+        edge_colors[0] = color_map->valueToColor(sval1);
       }
       else if (fld->is_vector())
       {
@@ -1593,8 +1548,8 @@ void ShowFieldModule::renderEdges(
           vval1 = vval0;
         }
 
-        valueToColor(colorScheme, vval0, scol0, vcol0);
-        valueToColor(colorScheme, vval1, scol1, vcol1);
+        edge_colors[0] = color_map->valueToColor(vval0);
+        edge_colors[0] = color_map->valueToColor(vval1);
       }
       else if (fld->is_tensor())
       {
@@ -1609,8 +1564,8 @@ void ShowFieldModule::renderEdges(
           tval1 = tval0;
         }
 
-        valueToColor(colorScheme, tval0, scol0, vcol0);
-        valueToColor(colorScheme, tval1, scol1, vcol1);
+        edge_colors[0] = color_map->valueToColor(tval0);
+        edge_colors[0] = color_map->valueToColor(tval1);
       }
     }
     //accumulate VBO or IBO data
@@ -1626,16 +1581,14 @@ void ShowFieldModule::renderEdges(
           std::sin(2. * M_PI * strips / num_strips) * crx;
         p.normalize();
         points.push_back(radius * p + Vector(p0));
-        if (colorScheme == GeometryObject::COLOR_MAP)
-          colors.push_back(ColorRGB(scol0, scol0, scol0));
-        else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-          colors.push_back(vcol0.diffuse);
+        if (colorScheme == GeometryObject::COLOR_MAP ||
+            colorScheme == GeometryObject::COLOR_IN_SITU)
+          colors.push_back(edge_colors[0]);
         numVBOElements++;
         points.push_back(radius * p + Vector(p1));
-        if (colorScheme == GeometryObject::COLOR_MAP)
-          colors.push_back(ColorRGB(scol1, scol1, scol1));
-        else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-          colors.push_back(vcol1.diffuse);
+        if (colorScheme == GeometryObject::COLOR_MAP ||
+            colorScheme == GeometryObject::COLOR_IN_SITU)
+          colors.push_back(edge_colors[1]);
         numVBOElements++;
         normals.push_back(p);
         normals.push_back(p);
@@ -1652,24 +1605,21 @@ void ShowFieldModule::renderEdges(
       double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
       std::vector<Point> epts = { { p0, p1 } };
       for (auto a : epts) {
-        double col = a == p0 ? scol0 : scol1;
-        Material rgbcol = a == p0 ? vcol0 : vcol1;
+        ColorRGB col = a == p0 ? edge_colors[0] : edge_colors[1];
         for (double phi = 0.; phi <= M_PI; phi += phi_inc) {
           for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) {
             uint32_t offset = (uint32_t)numVBOElements;
             pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
             pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
             points.push_back(radius * pp1 + Vector(a));
-            if (colorScheme == GeometryObject::COLOR_MAP)
-              colors.push_back(ColorRGB(col, col, col));
-            else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-                colors.push_back(rgbcol.diffuse);
+            if (colorScheme == GeometryObject::COLOR_MAP ||
+                colorScheme == GeometryObject::COLOR_IN_SITU)
+              colors.push_back(col);
             numVBOElements++;
             points.push_back(radius * pp2 + Vector(a));
-            if (colorScheme == GeometryObject::COLOR_MAP)
-              colors.push_back(ColorRGB(col, col, col));
-            else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-                colors.push_back(rgbcol.diffuse);
+            if (colorScheme == GeometryObject::COLOR_MAP ||
+                colorScheme == GeometryObject::COLOR_IN_SITU)
+              colors.push_back(col);
             numVBOElements++;
             normals.push_back(pp1);
             normals.push_back(pp2);
@@ -1685,17 +1635,15 @@ void ShowFieldModule::renderEdges(
       }
     } else {
       points.push_back(Vector(p0));
-      if (colorScheme == GeometryObject::COLOR_MAP)
-        colors.push_back(ColorRGB(scol0, scol0, scol0));
-      else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-        colors.push_back(vcol0.diffuse);
+      if (colorScheme == GeometryObject::COLOR_MAP ||
+          colorScheme == GeometryObject::COLOR_IN_SITU)
+        colors.push_back(edge_colors[0]);
       indices.push_back(index);
       ++index;
       points.push_back(Vector(p1));
-      if (colorScheme == GeometryObject::COLOR_MAP)
-        colors.push_back(ColorRGB(scol1, scol1, scol1));
-      else if (colorScheme == GeometryObject::COLOR_IN_SITU)
-        colors.push_back(vcol1.diffuse);
+      if (colorScheme == GeometryObject::COLOR_MAP ||
+          colorScheme == GeometryObject::COLOR_IN_SITU)
+        colors.push_back(edge_colors[1]);
       indices.push_back(index);
       ++index;
       ++numVBOElements;
@@ -1706,8 +1654,9 @@ void ShowFieldModule::renderEdges(
 
   vboSize = (uint32_t)points.size() * 3 * sizeof(float);
   vboSize += (uint32_t)normals.size() * 3 * sizeof(float);
-  if (colorScheme == GeometryObject::COLOR_IN_SITU || colorScheme == GeometryObject::COLOR_MAP)
-    vboSize += (uint32_t)colors.size() * 4; //add last 4 bytes for color
+  if (colorScheme == GeometryObject::COLOR_IN_SITU ||
+      colorScheme == GeometryObject::COLOR_MAP)
+    vboSize += (uint32_t)colors.size() * 4 * sizeof(float); //RGBA
   iboSize = (uint32_t)indices.size() * sizeof(uint32_t);
 
   /// \todo To reduce memory requirements, we can use a 16bit index buffer.
@@ -1743,14 +1692,12 @@ void ShowFieldModule::renderEdges(
       vboBuffer->write(static_cast<float>(normals.at(i).y()));
       vboBuffer->write(static_cast<float>(normals.at(i).z()));
     }
-    if (colorScheme == GeometryObject::COLOR_MAP)
-      vboBuffer->write(static_cast<float>(colors.at(i).r()));
-    else if (colorScheme == GeometryObject::COLOR_IN_SITU) {
-      // Writes uint8_t out to the VBO. A total of 4 bytes.
-      vboBuffer->write(COLOR_FTOB(colors.at(i).r()));
-      vboBuffer->write(COLOR_FTOB(colors.at(i).g()));
-      vboBuffer->write(COLOR_FTOB(colors.at(i).b()));
-      vboBuffer->write(COLOR_FTOB(1.0));
+    if (colorScheme == GeometryObject::COLOR_MAP ||
+        colorScheme == GeometryObject::COLOR_IN_SITU) {
+        vboBuffer->write(static_cast<float>(colors.at(i).r()));
+        vboBuffer->write(static_cast<float>(colors.at(i).g()));
+        vboBuffer->write(static_cast<float>(colors.at(i).b()));
+        vboBuffer->write(static_cast<float>(1.f));
     } // no color writing otherwise
   }
   state.set(RenderState::IS_ON, true);
@@ -1775,11 +1722,6 @@ void ShowFieldModule::renderEdges(
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
-  if (colorScheme == GeometryObject::COLOR_MAP)
-  {
-    applyColorMapScaling(field, pass);
-  }
 
   geom->mPasses.push_back(pass);
 }

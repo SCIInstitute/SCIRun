@@ -32,6 +32,7 @@
 #include <iostream>
 
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 ColorMap::ColorMap(const std::string& name, const size_t resolution, const double shift,
   const bool invert, const double rescale_scale, const double rescale_shift,
@@ -107,7 +108,7 @@ float ColorMap::getTransformedColor(float f) const
   }
   /////////////////////////////////////////////////
 
-  const float rescaled01 = static_cast<float>(f * rescale_scale_ + rescale_shift_);
+  const float rescaled01 = static_cast<float>((f + rescale_shift_) * rescale_scale_);
 
   float v = std::min(std::max(0.f, rescaled01), 1.f);
   double shift = shift_;
@@ -159,11 +160,31 @@ ColorRGB ColorMap::getColorMapVal(float v) const
   return col;
 }
 
+ColorRGB ColorMap::valueToColor(double scalar) {
+    return getColorMapVal(scalar);
+}
+
+ColorRGB ColorMap::valueToColor(Tensor tensor) {
+    //TODO this is not implemented.
+    return ColorRGB(getTransformedColor(fabs(tensor.xx())),
+                    getTransformedColor(fabs(tensor.yy())),
+                    getTransformedColor(fabs(tensor.zz())));
+}
+ColorRGB ColorMap::valueToColor(Vector vector) {
+    //TODO is this correct?
+    return ColorRGB(getTransformedColor(fabs(vector.x())),
+                    getTransformedColor(fabs(vector.y())),
+                    getTransformedColor(fabs(vector.z())));
+
+}
+
 std::string ColorMap::getColorMapName() const { return name_; }
 size_t ColorMap::getColorMapResolution() const { return resolution_; }
 double ColorMap::getColorMapShift() const { return shift_; }
 bool ColorMap::getColorMapInvert() const { return invert_; }
 double ColorMap::getColorMapRescaleScale() const { return rescale_scale_; }
 double ColorMap::getColorMapRescaleShift() const { return rescale_shift_; }
+void ColorMap::setColorMapRescaleScale(double scale) { rescale_scale_ = scale; }
+void ColorMap::setColorMapRescaleShift(double shift) { rescale_shift_ = shift; }
 double ColorMap::getColorMapActualMin() const { return actual_min_; }
 double ColorMap::getColorMapActualMax() const { return actual_max_; }
