@@ -35,10 +35,10 @@ uniform float    uDisplayLength;
 
 // Attributes
 attribute vec3  aPos;
-attribute vec4  aColor;
+attribute vec2  aTexCoord;
 
 //Outputs
-varying vec4 fColor;
+varying vec2 fTexCoord;
 
 void main( void )
 {
@@ -47,13 +47,13 @@ void main( void )
   bool full = uDisplayLength == 1.;
   bool half1 = uDisplayLength == 0.;
   vec3 newPos = aPos;
-  float x_scale = 1.5 / uWindowWidth;
-  float y_scale = 2.9 / (uWindowWidth / uAspectRatio);
+  float x_scale = .5 / uWindowWidth;
+  float y_scale = 1. / (uWindowWidth / uAspectRatio);
   float x_trans = ds?(-1.+(ex?.05:0.)):(-1.+(full?(aPos.z*1.8+.1):(aPos.z*.9+(half1?0.+(ex?.05:0.):
                                        1.1+(ex?-.05:0.)))) - 15. / uWindowWidth);
   float y_trans = ds?(-1.+(full?(aPos.z*1.8+.1):(aPos.z*.9+(half1?0.+(ex?.05:0.):
                                        1.1+(ex?-.05:0.)))) - 2. / uWindowWidth):(-1.+(ex?.05:0.));
   gl_Position = vec4(newPos.x * x_scale + x_trans, 
                      newPos.y * y_scale + y_trans, 0., 1.0);
-  fColor = aColor;
+  fTexCoord = aTexCoord;
 }

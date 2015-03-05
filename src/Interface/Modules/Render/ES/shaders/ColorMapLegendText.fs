@@ -25,10 +25,13 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
  */
+uniform vec4 uColor;
+uniform sampler2D uTX0;
 
-varying vec4 fColor;
+varying vec2 fTexCoord;
 
 void main()
 {
-   gl_FragColor = fColor;
+   vec4 rgba = texture2D( uTX0, fTexCoord );
+   gl_FragColor = uColor * rgba;
 }

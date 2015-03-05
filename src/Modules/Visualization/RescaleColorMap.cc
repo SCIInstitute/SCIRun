@@ -99,8 +99,8 @@ void RescaleColorMap::execute()
       state->setValue(Parameters::FixedMin, fixed_min);
       state->setValue(Parameters::FixedMax, fixed_max);
     }
-    cm_scale = (actual_max - actual_min) / (fixed_max - fixed_min);
-    cm_shift = (actual_min - fixed_min) / (fixed_max - fixed_min);
+    cm_shift =  - fixed_min;
+    cm_scale = 1. / (fixed_max - fixed_min);
 
     sendOutput(ColorMapOutput, StandardColorMapFactory::create(colorMap->getColorMapName(),
       colorMap->getColorMapResolution(),
