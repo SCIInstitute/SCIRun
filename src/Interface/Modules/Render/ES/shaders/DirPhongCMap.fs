@@ -77,7 +77,7 @@ void main()
    vec3  reflection  = reflect(invLightDir, normal);
    float spec        = max(0.0, dot(reflection, uCamViewVec));
 
-   float param = clamp(vFieldData * uRescaleScale + uRescaleShift,0.,1.);
+   float param = clamp((vFieldData + uRescaleShift) * uRescaleScale,0.,1.);
    float shift = uCMShift;
    if (uCMInvert != 0.) {
       param = 1. - param;

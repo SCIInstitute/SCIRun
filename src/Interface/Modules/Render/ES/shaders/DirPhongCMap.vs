@@ -29,8 +29,6 @@
 // Uniforms
 uniform mat4    uProjIVObject;      // Projection transform * Inverse View
 uniform mat4    uObject;            // Object -> World
-uniform float   uMinVal;
-uniform float   uMaxVal;
 
 // Attributes
 attribute vec3  aPos;
@@ -46,6 +44,6 @@ void main( void )
    // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
    // was generated in gamma space, and we need to convert it to linear space.
    vNormal  = vec3(uObject * vec4(aNormal, 0.0));
-   vFieldData = (aFieldData - uMinVal) / (uMaxVal - uMinVal);
+   vFieldData = aFieldData;
    gl_Position = uProjIVObject * vec4(aPos, 1.0);
 }
