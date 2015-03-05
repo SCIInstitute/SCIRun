@@ -165,5 +165,7 @@ double ColorMap::getColorMapShift() const { return shift_; }
 bool ColorMap::getColorMapInvert() const { return invert_; }
 double ColorMap::getColorMapRescaleScale() const { return rescale_scale_; }
 double ColorMap::getColorMapRescaleShift() const { return rescale_shift_; }
+void ColorMap::setColorMapRescaleScale(double scale) { rescale_scale_ = scale; }
+void ColorMap::setColorMapRescaleShift(double shift) { rescale_shift_ = shift; }
 double ColorMap::getColorMapActualMin() const { return actual_min_; }
 double ColorMap::getColorMapActualMax() const { return actual_max_; }

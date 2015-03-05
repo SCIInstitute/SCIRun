@@ -110,6 +110,7 @@ namespace SCIRun {
 			glDeleteTextures(1, &mOldRainbowCMap);
 			glDeleteTextures(1, &mGrayscaleCMap);
 			glDeleteTextures(1, &mBlackBodyCMap);
+			glDeleteTextures(1, &mFontTexture);
 		}
 
 		//------------------------------------------------------------------------------
@@ -588,6 +589,16 @@ namespace SCIRun {
         {
           RenderBasicGeom geom;
           mCore.addComponent(entityID, geom);
+          if (pass.passName.find("TextFont") != std::string::npos) { //this is a font texture
+
+                  // Construct texture component and add it to our entity for rendering.
+                  ren::Texture component;
+                  component.textureUnit = 0;
+                  component.setUniformName("uTX0");
+                  component.textureType = GL_TEXTURE_2D;
+                  component.glid = mFontTexture;
+                  mCore.addComponent(entityID, component);
+          }
         }
         else if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_MAP
           && obj->mColorMap)
@@ -615,9 +626,7 @@ namespace SCIRun {
 
           // Compare entity and system requirements.
           //mCore.displayEntityVersusSystemInfo(entityID, getSystemName_RenderColorMap());
-        }
-        else
-        {
+        } else {
           std::cerr << "Renderer: Unknown color scheme!" << std::endl;
           RenderBasicGeom geom;
           mCore.addComponent(entityID, geom);
@@ -1105,7 +1114,7 @@ namespace SCIRun {
             float step = 1.f / static_cast<float>(resolution);
             ColorMap cm("Rainbow");
 			std::vector<uint8_t> rainbow;
-			rainbow.reserve(resolution * 3);
+			rainbow.reserve(resolution * 4);
 			for (float i = 0.f; i < 1.f; i+=step) {
                 ColorRGB col = cm.getColorMapVal(i);
 				rainbow.push_back(static_cast<uint8_t>(col.r() * 255.0f));
@@ -1131,7 +1140,7 @@ namespace SCIRun {
             cm = ColorMap("Old Rainbow");
 			// build old rainbow texture.
 			std::vector<uint8_t> oldrainbow;
-			oldrainbow.reserve(resolution * 3);
+			oldrainbow.reserve(resolution * 4);
 			for (float i = 0.f; i < 1.f; i+=step) {
                 ColorRGB col = cm.getColorMapVal(i);
 				oldrainbow.push_back(static_cast<uint8_t>(col.r() * 255.0f));
@@ -1157,7 +1166,7 @@ namespace SCIRun {
             cm = ColorMap("Grayscale");
 			// build grayscale texture.
 			std::vector<uint8_t> grayscale;
-			grayscale.reserve(resolution * 3);
+			grayscale.reserve(resolution * 4);
 			for (float i = 0.f; i < 1.f; i+=step) {
                 ColorRGB col = cm.getColorMapVal(i);
 				grayscale.push_back(static_cast<uint8_t>(col.r() * 255.0f));
@@ -1183,7 +1192,7 @@ namespace SCIRun {
             cm = ColorMap("Blackbody");
             //blackbody texture
 			std::vector<uint8_t> blackbody;
-			blackbody.reserve(resolution * 3);
+			blackbody.reserve(resolution * 4);
 			for (float i = 0.f; i < 1.f; i+=step) {
                 ColorRGB col = cm.getColorMapVal(i);
 				blackbody.push_back(static_cast<uint8_t>(col.r() * 255.0f));
@@ -1205,7 +1214,52 @@ namespace SCIRun {
 				static_cast<GLsizei>(blackbody.size() / 4), 0,
 				GL_RGBA,
 				GL_UNSIGNED_BYTE, &blackbody[0]));
-		}
+            
+            
+            //font texture
+            //read in the font data
+            bool success = true;
+            std::ifstream in("Assets/times_new_roman.font");
+            if (in.fail()) {
+                //try the MAC App location if the UNIX/Windows location didn't work.
+                in.open("SCIRun.app/Contents/MacOS/Assets/times_new_roman.font");
+                if (in.fail()) {
+                    std::cerr << "Cannot find font \"Assets/times_new_roman.font\"" << std::endl;
+                    success = false;
+                    in.close();
+                }
+            }
+            if (success) {
+                size_t w,h;
+                in >> w >> h;
+                uint16_t *font_data = new uint16_t[w*h];
+                in.read((char*)font_data,sizeof(uint16_t)*w*h);
+                in.close();
+                std::vector<uint8_t> font;
+                font.reserve(w * h * 4);
+                for (size_t i = 0; i < w*h; i++) {
+                    uint16_t pixel = font_data[i];
+                    font.push_back(static_cast<uint8_t>(pixel >> 8));
+                    font.push_back(static_cast<uint8_t>(pixel >> 8));
+                    font.push_back(static_cast<uint8_t>(pixel >> 8));
+                    font.push_back(static_cast<uint8_t>(pixel & 0x00ff));
+                }
+
+                // Build font texture
+                GL(glGenTextures(1, &mFontTexture));
+                GL(glBindTexture(GL_TEXTURE_2D, mFontTexture));
+                GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+                GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+                GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+                GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
+                GL(glTexImage2D(GL_TEXTURE_2D, 0,
+                    GL_RGBA8,
+                    static_cast<GLsizei>(w), static_cast<GLsizei>(h), 0,
+                    GL_RGBA,
+                    GL_UNSIGNED_BYTE, &font[0]));
+                delete font_data;
+            }
+        }
 
 
 	} // namespace Render

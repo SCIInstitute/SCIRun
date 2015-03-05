@@ -50,9 +50,6 @@ class TextBuilder {
     double scale_;
     Core::Geometry::Vector shift_;
     void getCharVerts(const char c, std::vector<Core::Geometry::Vector> &verts,  std::vector<Core::Geometry::Vector> &colors);
-    //four fonts to choose from.
-    uint16_t *font0_;
-    size_t font0_w_, font0_h_;
   };
 }}}
 

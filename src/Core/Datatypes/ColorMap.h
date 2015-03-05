@@ -53,6 +53,8 @@ namespace Datatypes {
     bool getColorMapInvert() const;
     double getColorMapRescaleScale() const;
     double getColorMapRescaleShift() const;
+    void setColorMapRescaleScale(double scale);
+    void setColorMapRescaleShift(double shift);
     double getColorMapActualMin() const;
     double getColorMapActualMax() const;
     Core::Datatypes::ColorRGB getColorMapVal(float v) const;

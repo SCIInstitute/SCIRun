@@ -263,6 +263,8 @@ namespace SCIRun {
 			GLuint                            mOldRainbowCMap;     ///< Rainbow color map.
 			GLuint                            mGrayscaleCMap;   ///< Grayscale color map.
 			GLuint                            mBlackBodyCMap;   ///< Blackbody color map.
+            
+			GLuint                            mFontTexture;     /// 2D texture for fonts
 
             int axesFailCount_;
 			std::shared_ptr<Gui::GLContext>   mContext;         ///< Context to use for rendering.

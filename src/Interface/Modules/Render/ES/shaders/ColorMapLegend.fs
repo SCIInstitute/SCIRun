@@ -36,7 +36,7 @@ precision mediump float;
 
 uniform sampler1D uTX0;
 
-varying float vFieldData;
+varying float   vFieldData;
 uniform float   uCMInvert;
 uniform float   uCMShift;
 uniform float   uCMResolution;
