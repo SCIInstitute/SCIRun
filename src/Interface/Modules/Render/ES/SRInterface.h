@@ -225,7 +225,7 @@ namespace SCIRun {
 			void renderCoordinateAxes();
 
 			// Generates the various colormaps that we use for rendering SCIRun geometry.
-			void generateColormaps();
+			void generateTextures();
 
 			// Simple hash function. Modify if hash collisions occur due to string
 			// hashing. The simplest approach would be to have all names placed in a
@@ -263,6 +263,8 @@ namespace SCIRun {
 			GLuint                            mOldRainbowCMap;     ///< Rainbow color map.
 			GLuint                            mGrayscaleCMap;   ///< Grayscale color map.
 			GLuint                            mBlackBodyCMap;   ///< Blackbody color map.
+            
+			GLuint                            mFontTexture;     /// 2D texture for fonts
 
             int axesFailCount_;
 			std::shared_ptr<Gui::GLContext>   mContext;         ///< Context to use for rendering.
