@@ -158,9 +158,6 @@ namespace SCIRun {
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
         /// @}
 
-        void applyColorMapScaling(boost::shared_ptr<SCIRun::Field> field,
-          Core::Datatypes::GeometryObject::SpireSubPass& pass);
-
         float faceTransparencyValue_;
         float edgeTransparencyValue_;
         float nodeTransparencyValue_;

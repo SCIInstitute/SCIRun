@@ -29,8 +29,6 @@
 // Uniforms
 uniform mat4    uProjIVObject;    // Projection * Inverse View * World XForm
 uniform vec4    uColor;           // Uniform color
-uniform float   uMinVal;
-uniform float   uMaxVal;
 uniform float   uFDToggle;        // Field data toggle
 
 // Attributes
@@ -45,5 +43,5 @@ void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
   float fieldData = uFDToggle * aFieldData + (1.0 - uFDToggle) * aFieldDataSecondary;
-  fFieldData  = (fieldData - uMinVal) / (uMaxVal - uMinVal);
+  fFieldData  = fieldData;
 }

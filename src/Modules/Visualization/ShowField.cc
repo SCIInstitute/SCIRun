@@ -100,6 +100,19 @@ void ShowFieldModule::execute()
 {
   boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
+  
+  //set the default colormap scaling to be full range if no rescaling was provided.
+  if (colorMap.get()->getColorMapRescaleScale()==1. && colorMap.get()->getColorMapRescaleShift()==0.) {
+        // set the colormap min/max defaults to the data min/max.
+        double actual_min = std::numeric_limits<double>::max();
+        double actual_max = std::numeric_limits<double>::min();
+
+        if (!field.get()->vfield()->minmax(actual_min, actual_max))
+            error("An input field is not a scalar or vector field.");
+
+        colorMap.get()->setColorMapRescaleShift(-actual_min);
+        colorMap.get()->setColorMapRescaleScale(1. / (actual_max-actual_min));
+  }
   if (needToExecute())
   {
     GeometryHandle geom = buildGeometryObject(field, colorMap, get_state());
@@ -282,34 +295,6 @@ static uint8_t COLOR_FTOB(double v)
   if (inter > 255) return 255;
   if (inter < 0) return 0;
   return static_cast<uint8_t>(inter);
-}
-
-void ShowFieldModule::applyColorMapScaling(
-  boost::shared_ptr<SCIRun::Field> field,
-  GeometryObject::SpireSubPass& pass)
-{
-  // Rescale color maps if that is the input paradigm we are using.
-  // initialize the following so that the compiler will stop
-  // warning us about possibly using unitialized variables
-  double minv = std::numeric_limits<double>::max();
-  double maxv = std::numeric_limits<double>::lowest();
-
-  VField* vfld = field->vfield();
-  if (!vfld->minmax(minv, maxv))
-  {
-    std::cerr << "Input field is not a scalar or vector field." << std::endl;
-    return;
-  }
-
-  pass.addUniform("uMinVal", minv);
-  pass.addUniform("uMaxVal", maxv);
-
-  // if ( gui_make_symmetric_.get() )
-  // {
-  //   float biggest = Max(Abs(minmax_.first), Abs(minmax_.second));
-  //   minmax_.first  = -biggest;
-  //   minmax_.second =  biggest;
-  // }
 }
 
 void ShowFieldModule::renderFaces(
@@ -806,11 +791,6 @@ void ShowFieldModule::renderFacesLinear(
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
-  if (colorScheme == GeometryObject::COLOR_MAP)
-  {
-    applyColorMapScaling(field, pass);
-  }
 
   geom->mPasses.push_back(pass);
 
@@ -1416,11 +1396,6 @@ void ShowFieldModule::renderNodes(
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  if (colorScheme == GeometryObject::COLOR_MAP)
-  {
-    applyColorMapScaling(field, pass);
-  }
-
   geom->mPasses.push_back(pass);
 }
 
@@ -1775,11 +1750,6 @@ void ShowFieldModule::renderEdges(
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
-  if (colorScheme == GeometryObject::COLOR_MAP)
-  {
-    applyColorMapScaling(field, pass);
-  }
 
   geom->mPasses.push_back(pass);
 }
