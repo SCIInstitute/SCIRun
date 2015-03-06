@@ -241,53 +241,45 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   const int dim = field->vmesh()->dimensionality();
   if (showEdges && dim < 1) { showEdges = false; }
   if (showFaces && dim < 2) { showFaces = false; }
+  
+  //adjust color map to scalar data if there is one.
+  ColorMap *cmap = colorMap.get().get();
+  ColorMap adjustedCMap(cmap->getColorMapName(),cmap->getColorMapResolution(),
+                        cmap->getColorMapShift(), cmap->getColorMapInvert(),
+                        cmap->getColorMapRescaleScale(), cmap->getColorMapRescaleShift());
+  if (colorMap) {
+    double actual_max = std::numeric_limits<double>::min();
+    double actual_min = std::numeric_limits<double>::max();
+    VField * fld = field->vfield();
+    if (fld->minmax(actual_min, actual_max)) {
+        adjustedCMap.adjustColorMapForData(actual_min, actual_max);
+    }
+  }
 
   if (showNodes)
   {
     // Construct node geometry.
-    renderNodes(field, colorMap, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
+    renderNodes(field, adjustedCMap, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   if (showFaces)
   {
     int approxDiv = 1;
-    renderFaces(field, colorMap, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
+    renderFaces(field, adjustedCMap, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
   }
 
   if (showEdges)
   {
-    renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
-  }
-
-  // Set value ranges for color mapping fields. We should use uniforms for
-  // setting the highest / lowest value ranges. We should be able to do this
-  // independently of showNodes / showEdges / showFaces.
-  // geom->mLowestValue = valueRangeLow;
-  // geom->mHighestValue = valueRangeHigh;
-  if (colorMap)
-  {
-    geom->mColorMap = boost::optional<std::string>((*colorMap)->getColorMapName());
-  }
-  else
-  {
-    geom->mColorMap = boost::optional<std::string>();
+    renderEdges(field, adjustedCMap, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   return geom;
 }
 
-// Borrowed from SCIRun4 -- Float to Byte
-static uint8_t COLOR_FTOB(double v)
-{
-  const int inter = static_cast<int>(v * 255 + 0.5);
-  if (inter > 255) return 255;
-  if (inter < 0) return 0;
-  return static_cast<uint8_t>(inter);
-}
 
 void ShowFieldModule::renderFaces(
   boost::shared_ptr<SCIRun::Field> field,
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+  ColorMap colorMap,
   RenderState state, Core::Datatypes::GeometryHandle geom,
   unsigned int approxDiv,
   const std::string& id)
@@ -317,7 +309,7 @@ void ShowFieldModule::renderFaces(
 
 void ShowFieldModule::renderFacesLinear(
   boost::shared_ptr<SCIRun::Field> field,
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+  ColorMap colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   unsigned int approxDiv,
@@ -336,7 +328,6 @@ void ShowFieldModule::renderFacesLinear(
 
   std::vector<ColorRGB> face_colors;
   face_colors.resize(10);
-  ColorMap *color_map = colorMap.get().get();
 
   if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
   {
@@ -375,7 +366,7 @@ void ShowFieldModule::renderFacesLinear(
   // This Initial size estimation will be off quite a bit. Each face will
   // have up to 3 nodes associated.
   uint32_t iboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(uint32_t) * 3);
-  uint32_t vboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(float) * 3);
+  uint32_t vboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(float) * 7);
 
   // Construct VBO and IBO that will be used to render the faces. Once again,
   // IBOs are not strictly needed. But, we may be able to optimize this code
@@ -480,8 +471,8 @@ void ShowFieldModule::renderFacesLinear(
         {
           svals[1] = svals[0];
         }
-        face_colors[0] = color_map->valueToColor(svals[0]);
-        face_colors[1] = color_map->valueToColor(svals[1]);
+        face_colors[0] = colorMap.valueToColor(svals[0]);
+        face_colors[1] = colorMap.valueToColor(svals[1]);
       }
       else if (fld->is_vector())
       {
@@ -496,8 +487,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
 
-        face_colors[0] = color_map->valueToColor(vvals[0]);
-        face_colors[1] = color_map->valueToColor(vvals[1]);
+        face_colors[0] = colorMap.valueToColor(vvals[0]);
+        face_colors[1] = colorMap.valueToColor(vvals[1]);
       }
       else if (fld->is_tensor())
       {
@@ -512,8 +503,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
 
-        face_colors[0] = color_map->valueToColor(tvals[0]);
-        face_colors[1] = color_map->valueToColor(tvals[1]);
+        face_colors[0] = colorMap.valueToColor(tvals[0]);
+        face_colors[1] = colorMap.valueToColor(tvals[1]);
       }
 
       state.set(RenderState::IS_DOUBLE_SIDED, true);
@@ -527,17 +518,17 @@ void ShowFieldModule::renderFacesLinear(
       if (fld->is_scalar())
       {
         fld->get_value(svals[0], *fiter);
-        face_colors[0] = color_map->valueToColor(svals[0]);
+        face_colors[0] = colorMap.valueToColor(svals[0]);
       }
       else if (fld->is_vector())
       {
         fld->get_value(vvals[0], *fiter);
-        face_colors[0] = color_map->valueToColor(vvals[0]);
+        face_colors[0] = colorMap.valueToColor(vvals[0]);
       }
       else if (fld->is_tensor())
       {
         fld->get_value(tvals[0], *fiter);
-        face_colors[0] = color_map->valueToColor(tvals[0]);
+        face_colors[0] = colorMap.valueToColor(tvals[0]);
       }
 
       // Same color at all corners.
@@ -558,7 +549,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i = 0; i<nodes.size(); i++)
         {
           fld->get_value(svals[i], nodes[i]);
-          face_colors[i] = color_map->valueToColor(svals[i]);
+          face_colors[i] = colorMap.valueToColor(svals[i]);
         }
       }
       else if (fld->is_vector())
@@ -566,7 +557,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i = 0; i<nodes.size(); i++)
         {
           fld->get_value(vvals[i], nodes[i]);
-          face_colors[i] = color_map->valueToColor(vvals[i]);
+          face_colors[i] = colorMap.valueToColor(vvals[i]);
         }
       }
       else if (fld->is_tensor())
@@ -574,7 +565,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i = 0; i<nodes.size(); i++)
         {
           fld->get_value(tvals[i], nodes[i]);
-          face_colors[i] = color_map->valueToColor(tvals[i]);
+          face_colors[i] = colorMap.valueToColor(tvals[i]);
         }
       }
 
@@ -587,7 +578,7 @@ void ShowFieldModule::renderFacesLinear(
   }
 
   std::stringstream ss;
-  ss << invertNormals;
+  ss << invertNormals << colorScheme;
 
   std::string uniqueNodeID = id + "face" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
@@ -610,18 +601,8 @@ void ShowFieldModule::renderFacesLinear(
   if (colorScheme == GeometryObject::COLOR_MAP)
   {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    //push the color map parameters
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",
-        color_map->getColorMapInvert()?1.f:0.f));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",
-        static_cast<float>(color_map->getColorMapShift())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",
-        static_cast<float>(color_map->getColorMapResolution())));
-    double scl = color_map->getColorMapRescaleScale(), shft = color_map->getColorMapRescaleShift();
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",static_cast<float>(scl)));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",static_cast<float>(shft)));
 
-    if (state.get(RenderState::IS_DOUBLE_SIDED) == false)
+    if (!state.get(RenderState::IS_DOUBLE_SIDED))
     {
       if (withNormals)
       {
@@ -662,11 +643,11 @@ void ShowFieldModule::renderFacesLinear(
 
     if (state.get(RenderState::USE_TRANSPARENCY))
     {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(faceTransparencyValue_)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (faceTransparencyValue_)));
     }
     else
     {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0f)));
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (1.0f)));
     }
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU)
@@ -692,7 +673,7 @@ void ShowFieldModule::renderFacesLinear(
     }
     else
     {
-      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColorSecondary", 1 * sizeof(uint32_t), true));
+      attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColorSecondary", 4 * sizeof(float), true));
 
       if (withNormals)
       {
@@ -758,13 +739,11 @@ void ShowFieldModule::renderFacesLinear(
 
   // Construct IBO.
 
-  GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+  GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName,
+                GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   geom->mIBOs.push_back(geomIBO);
-
-  // Construct Pass.
-  // Build pass for the edges.
-  /// \todo Find an appropriate place to put program names like UniformColor.
+  
   GeometryObject::SpireSubPass pass =
     GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
     colorScheme, state, GeometryObject::RENDER_VBO_IBO, geomVBO, geomIBO);
@@ -807,18 +786,13 @@ void ShowFieldModule::addFaceGeom(
     vboBuffer->write(static_cast<float>(normal.y()));
     vboBuffer->write(static_cast<float>(normal.z()));
   };
-
-  auto writeVBO4ByteColor = [&vboBuffer](const Material& vcol)
+  
+  auto writeVBOColorValue = [&vboBuffer](ColorRGB value)
   {
-    vboBuffer->write(COLOR_FTOB(vcol.diffuse.r()));
-    vboBuffer->write(COLOR_FTOB(vcol.diffuse.g()));
-    vboBuffer->write(COLOR_FTOB(vcol.diffuse.b()));
-    vboBuffer->write(COLOR_FTOB(vcol.transparency));
-  };
-
-  auto writeVBOScalarValue = [&vboBuffer](double value)
-  {
-    vboBuffer->write(static_cast<float>(value));
+    vboBuffer->write(static_cast<float>(value.r()));
+    vboBuffer->write(static_cast<float>(value.g()));
+    vboBuffer->write(static_cast<float>(value.b()));
+    vboBuffer->write(static_cast<float>(1.f));
   };
 
   auto writeIBOIndex = [&iboBuffer](uint32_t index)
@@ -907,41 +881,41 @@ void ShowFieldModule::addFaceGeom(
       {
         writeVBOPoint(points[0]);
         writeVBONormal(normals[0]);
-        if (!doubleSided) { writeVBOScalarValue(scols[0]); }
-        else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
-        if (!doubleSided) { writeVBOScalarValue(scols[1]); }
-        else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[1]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[2]);
         writeVBONormal(normals[2]);
-        if (!doubleSided) { writeVBOScalarValue(scols[2]); }
-        else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[2]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[3]);
         writeVBONormal(normals[3]);
-        if (!doubleSided) { writeVBOScalarValue(scols[3]); }
-        else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[3]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
       }
       else
       {
         writeVBOPoint(points[0]);
-        if (!doubleSided) { writeVBOScalarValue(scols[0]); }
-        else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[1]);
-        if (!doubleSided) { writeVBOScalarValue(scols[1]); }
-        else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[1]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[2]);
-        if (!doubleSided) { writeVBOScalarValue(scols[2]); }
-        else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[2]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[3]);
-        if (!doubleSided) { writeVBOScalarValue(scols[3]); }
-        else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[3]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
       }
       writeIBOIndex(iboIndex);
       writeIBOIndex(iboIndex + 1);
@@ -964,39 +938,39 @@ void ShowFieldModule::addFaceGeom(
           // Render points if we are not rendering spheres.
           writeVBOPoint(points[0]);
           writeVBONormal(normals[0]);
-          if (!doubleSided) { writeVBOScalarValue(scols[0]); }
-          else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex);
 
           // Apply misc user settings.
           writeVBOPoint(points[i - 1]);
           writeVBONormal(normals[i - 1]);
-          if (!doubleSided) { writeVBOScalarValue(scols[i - 1]); }
-          else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[i-1]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex + i - 1);
 
           writeVBOPoint(points[i]);
           writeVBONormal(normals[i]);
-          if (!doubleSided) { writeVBOScalarValue(scols[i]); }
-          else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[i]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex + i);
         }
         else
         {
           // Render points if we are not rendering spheres.
           writeVBOPoint(points[0]);
-          if (!doubleSided) { writeVBOScalarValue(scols[0]); }
-          else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex);
 
           writeVBOPoint(points[i - 1]);
-          if (!doubleSided) { writeVBOScalarValue(scols[i - 1]); }
-          else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[i-1]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex + i - 1);
 
           writeVBOPoint(points[i]);
-          if (!doubleSided) { writeVBOScalarValue(scols[i]); }
-          else              { writeVBOScalarValue(scols[0]); writeVBOScalarValue(scols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[i]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex + i);
         }
       }
@@ -1011,42 +985,42 @@ void ShowFieldModule::addFaceGeom(
       {
         writeVBOPoint(points[0]);
         writeVBONormal(normals[0]);
-        if (!doubleSided) { writeVBO4ByteColor(vcols[0]); }
-        else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[1]);
         writeVBONormal(normals[1]);
-        if (!doubleSided) { writeVBO4ByteColor(vcols[1]); }
-        else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[1]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[2]);
         writeVBONormal(normals[2]);
-        if (!doubleSided) { writeVBO4ByteColor(vcols[2]); }
-        else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[2]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[3]);
         writeVBONormal(normals[3]);
-        if (!doubleSided) { writeVBO4ByteColor(vcols[3]); }
-        else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[3]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
       }
       else
       {
         writeVBOPoint(points[0]);
-        if (!doubleSided) { writeVBO4ByteColor(vcols[0]); }
-        else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         // Add appropriate uniforms to the pass (in this case, uColor).
         writeVBOPoint(points[1]);
-        if (!doubleSided) { writeVBO4ByteColor(vcols[1]); }
-        else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[1]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[2]);
-        if (!doubleSided) { writeVBO4ByteColor(vcols[2]); }
-        else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[2]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
 
         writeVBOPoint(points[3]);
-        if (!doubleSided) { writeVBO4ByteColor(vcols[3]); }
-        else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[3]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
       }
       writeIBOIndex(iboIndex);
       writeIBOIndex(iboIndex + 1);
@@ -1066,37 +1040,37 @@ void ShowFieldModule::addFaceGeom(
         {
           writeVBOPoint(points[0]);
           writeVBONormal(normals[0]);
-          if (!doubleSided) { writeVBO4ByteColor(vcols[0]); }
-          else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex);
 
           writeVBOPoint(points[i - 1]);
           writeVBONormal(normals[i - 1]);
-          if (!doubleSided) { writeVBO4ByteColor(vcols[i - 1]); }
-          else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[i - 1]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex + i - 1);
 
           writeVBOPoint(points[i]);
           writeVBONormal(normals[i]);
-          if (!doubleSided) { writeVBO4ByteColor(vcols[i]); }
-          else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[i]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex + i);
         }
         else
         {
           writeVBOPoint(points[0]);
-          if (!doubleSided) { writeVBO4ByteColor(vcols[0]); }
-          else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[0]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           iboBuffer->write(iboIndex);
 
           writeVBOPoint(points[i - 1]);
-          if (!doubleSided) { writeVBO4ByteColor(vcols[i - 1]); }
-          else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[i - 1]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex + i - 1);
 
           writeVBOPoint(points[i]);
-          if (!doubleSided) { writeVBO4ByteColor(vcols[i]); }
-          else              { writeVBO4ByteColor(vcols[0]); writeVBO4ByteColor(vcols[1]); }
+        if (!doubleSided) { writeVBOColorValue(face_colors[i]); }
+        else              { writeVBOColorValue(face_colors[0]); writeVBOColorValue(face_colors[1]); }
           writeIBOIndex(iboIndex + i);
         }
       }
@@ -1109,7 +1083,7 @@ void ShowFieldModule::addFaceGeom(
 
 void ShowFieldModule::renderNodes(
   boost::shared_ptr<SCIRun::Field> field,
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+  ColorMap colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   const std::string& id)
@@ -1124,7 +1098,6 @@ void ShowFieldModule::renderNodes(
 
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   ColorRGB node_color;
-  ColorMap * color_map = colorMap.get().get();
 
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
@@ -1150,7 +1123,7 @@ void ShowFieldModule::renderNodes(
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
-  ss << state.get(RenderState::USE_SPHERE) << radius << num_strips;
+  ss << state.get(RenderState::USE_SPHERE) << radius << num_strips << colorScheme;
 
   std::string uniqueNodeID = id + "node" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
@@ -1180,21 +1153,10 @@ void ShowFieldModule::renderNodes(
   if (state.get(RenderState::USE_TRANSPARENT_NODES))
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency",nodeTransparencyValue_));
   else
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(1.0)));
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", 1.f));
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    //push the color map parameters
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",
-        color_map->getColorMapInvert()?1.f:0.f));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",
-        static_cast<float>(color_map->getColorMapShift())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",
-        static_cast<float>(color_map->getColorMapResolution())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",
-        static_cast<float>(color_map->getColorMapRescaleScale())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",
-        static_cast<float>(color_map->getColorMapRescaleShift())));
     if (state.get(RenderState::USE_SPHERE)) {
         shader = "Shaders/DirPhongCMap" ;
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
@@ -1230,7 +1192,7 @@ void ShowFieldModule::renderNodes(
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     } else {
         shader = "Shaders/UniformColor";
-        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), nodeTransparencyValue_));
+        uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), 1.f));
     }
   }
   GeometryObject::SpireIBO::PRIMITIVE primIn = GeometryObject::SpireIBO::POINTS;
@@ -1251,13 +1213,13 @@ void ShowFieldModule::renderNodes(
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
-        node_color = color_map->valueToColor(sval);
+        node_color = colorMap.valueToColor(sval);
       } else if (fld->is_vector()) {
         fld->get_value(vval, *eiter);
-        node_color = color_map->valueToColor(vval);
+        node_color = colorMap.valueToColor(vval);
       } else if (fld->is_tensor()) {
         fld->get_value(tval, *eiter);
-        node_color = color_map->valueToColor(tval);
+        node_color = colorMap.valueToColor(tval);
       }
     }
     //accumulate VBO or IBO data
@@ -1364,12 +1326,10 @@ void ShowFieldModule::renderNodes(
   GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
 
   geom->mIBOs.push_back(geomIBO);
-
-  // Construct Pass.
-  // Build pass for the edges.
-  /// \todo Find an appropriate place to put program names like UniformColor.
+  
   GeometryObject::SpireSubPass pass =
-    GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO);
+    GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+                colorScheme, state, renderType, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -1380,7 +1340,7 @@ void ShowFieldModule::renderNodes(
 
 void ShowFieldModule::renderEdges(
   boost::shared_ptr<SCIRun::Field> field,
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+  ColorMap colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   const std::string& id) {
@@ -1394,7 +1354,6 @@ void ShowFieldModule::renderEdges(
 
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
   ColorRGB edge_colors[2];
-  ColorMap * color_map = colorMap.get().get();
 
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
@@ -1422,7 +1381,7 @@ void ShowFieldModule::renderEdges(
   if (radius < 0) radius = 1.;
   
   std::stringstream ss;
-  ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius;
+  ss << state.get(RenderState::USE_CYLINDER) << num_strips << radius << colorScheme;
   
   std::string uniqueNodeID = id + "edge" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
@@ -1451,17 +1410,6 @@ void ShowFieldModule::renderEdges(
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    //push the color map parameters
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",
-        color_map->getColorMapInvert()?1.f:0.f));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",
-        static_cast<float>(color_map->getColorMapShift())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",
-        static_cast<float>(color_map->getColorMapResolution())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleScale",
-        static_cast<float>(color_map->getColorMapRescaleScale())));
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uRescaleShift",
-        static_cast<float>(color_map->getColorMapRescaleShift())));
     if (state.get(RenderState::USE_CYLINDER)) {
         shader = "Shaders/DirPhongCMap" ;
         uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
@@ -1532,8 +1480,8 @@ void ShowFieldModule::renderEdges(
 
           sval1 = sval0;
         }
-        edge_colors[0] = color_map->valueToColor(sval0);
-        edge_colors[0] = color_map->valueToColor(sval1);
+        edge_colors[0] = colorMap.valueToColor(sval0);
+        edge_colors[1] = colorMap.valueToColor(sval1);
       }
       else if (fld->is_vector())
       {
@@ -1548,8 +1496,8 @@ void ShowFieldModule::renderEdges(
           vval1 = vval0;
         }
 
-        edge_colors[0] = color_map->valueToColor(vval0);
-        edge_colors[0] = color_map->valueToColor(vval1);
+        edge_colors[0] = colorMap.valueToColor(vval0);
+        edge_colors[1] = colorMap.valueToColor(vval1);
       }
       else if (fld->is_tensor())
       {
@@ -1564,8 +1512,8 @@ void ShowFieldModule::renderEdges(
           tval1 = tval0;
         }
 
-        edge_colors[0] = color_map->valueToColor(tval0);
-        edge_colors[0] = color_map->valueToColor(tval1);
+        edge_colors[0] = colorMap.valueToColor(tval0);
+        edge_colors[1] = colorMap.valueToColor(tval1);
       }
     }
     //accumulate VBO or IBO data
@@ -1717,8 +1665,10 @@ void ShowFieldModule::renderEdges(
   // Construct Pass.
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
+  
   GeometryObject::SpireSubPass pass =
-    GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO);
+    GeometryObject::SpireSubPass(passName, vboName, iboName, shader, colorScheme,
+                        state, renderType, geomVBO, geomIBO);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }

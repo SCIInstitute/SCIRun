@@ -25,42 +25,12 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
  */
-#ifdef OPENGL_ES
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-// Default precision
-precision highp float;
-#else
-precision mediump float;
-#endif
-#endif
-
-uniform sampler1D uTX0;
-uniform float   uCMInvert;
-uniform float   uCMShift;
-uniform float   uCMResolution;
-uniform float   uRescaleScale;
-uniform float   uRescaleShift;
-varying float   fFieldData;
+varying vec4   fColor;
 
 // Transparency to use along side the color map.
 uniform float uTransparency;
 
 void main()
 {
-   float param = clamp((fFieldData + uRescaleShift) * uRescaleScale,0.,1.);
-   float shift = uCMShift;
-   if (uCMInvert != 0.) {
-      param = 1. - param;
-      shift = shift * -1.;
-   }
-   //apply the resolution
-   int res = int(uCMResolution);
-   param = float(int(param * (float(res)))) / float(res - 1);
-   // the shift is a gamma.
-   float bp = 1. / tan((3.14159265359 / 2.) *  ( 0.5 - shift * 0.5));
-   param = pow(param,bp);
-
-   vec4 color = texture1D( uTX0, param );
-   color.a       = uTransparency;
-   gl_FragColor  = color;
+   gl_FragColor  = vec4(fColor.xyz,uTransparency);
 }

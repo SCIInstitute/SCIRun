@@ -45,8 +45,7 @@ namespace Datatypes {
   public:
     explicit ColorMap(const std::string& name, const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false,
-                        const double rescale_scale = 1.0, const double rescale_shift = 0.,
-                        const double actual_min = 0., const double actual_max = 1.);
+                        const double rescale_scale = 1.0, const double rescale_shift = 0.);
     virtual ColorMap* clone() const;
 
     std::string getColorMapName() const;
@@ -55,14 +54,11 @@ namespace Datatypes {
     bool getColorMapInvert() const;
     double getColorMapRescaleScale() const;
     double getColorMapRescaleShift() const;
-    void setColorMapRescaleScale(double scale);
-    void setColorMapRescaleShift(double shift);
-    double getColorMapActualMin() const;
-    double getColorMapActualMax() const;
-    Core::Datatypes::ColorRGB getColorMapVal(float v) const;
+    Core::Datatypes::ColorRGB getColorMapVal(double v) const;
     Core::Datatypes::ColorRGB valueToColor(double scalar);
     Core::Datatypes::ColorRGB valueToColor(Core::Geometry::Tensor tensor);
     Core::Datatypes::ColorRGB valueToColor(Core::Geometry::Vector vector);
+    void adjustColorMapForData(double min, double max);
   private:
     std::string name_;
     size_t resolution_;
@@ -71,11 +67,11 @@ namespace Datatypes {
     //rescaling options.
     double rescale_scale_;
     double rescale_shift_;
-    double actual_min_;
-    double actual_max_;
-    static float Hue_2_RGB(float v1, float v2, float vH);
-    static Core::Datatypes::ColorRGB hslToRGB(float h, float s, float l);
-    float getTransformedColor(float v) const;
+    static double Hue_2_RGB(double v1, double v2, double vH);
+    static Core::Datatypes::ColorRGB hslToRGB(double h, double s, double l);
+    double getTransformedColor(double v) const;
+    void setColorMapRescaleScale(double scale);
+    void setColorMapRescaleShift(double shift);
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable
@@ -83,8 +79,7 @@ namespace Datatypes {
   public:
     static ColorMapHandle create(const std::string& name, const size_t &resolution,
                                     const double &shift, const bool &invert,
-                                    const double &rescale_scale, const double &rescale_shift,
-                                    const double &actual_min, const double &actual_max);
+                                    const double &rescale_scale, const double &rescale_shift);
   private:
     StandardColorMapFactory();
   };

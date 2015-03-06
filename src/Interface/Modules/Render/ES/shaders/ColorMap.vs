@@ -29,18 +29,15 @@
 // Uniforms
 uniform mat4  uProjIVObject;      // Projection * Inverse View * World XForm
 
-// Transparency to use along side the color map.
-
 // Attributes
 attribute vec3  aPos;
-attribute float aFieldData;
+attribute vec4  aColor;
 
 // Outputs to the fragment shader.
-varying float    fFieldData;
+varying vec4    fColor;
 
 void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  //fFieldData  = aFieldData;
-  fFieldData  = aFieldData;
+  fColor  = aColor;
 }

@@ -33,15 +33,15 @@ uniform float   uFDToggle;        // Field data toggle
 
 // Attributes
 attribute vec3  aPos;
-attribute float aFieldData;
-attribute float aFieldDataSecondary;
+attribute vec4  aColor;
+attribute vec4  aColorSecondary;
 
 // Outputs to the fragment shader.
-varying float    fFieldData;
+varying vec4    fColor;
 
 void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  float fieldData = uFDToggle * aFieldData + (1.0 - uFDToggle) * aFieldDataSecondary;
-  fFieldData  = fieldData;
+  vec4 colorData = uFDToggle * aColor + (1.0 - uFDToggle) * aColorSecondary;
+  fColor  = colorData;
 }
