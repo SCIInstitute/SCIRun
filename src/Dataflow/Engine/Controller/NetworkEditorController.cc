@@ -82,12 +82,12 @@ NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::Net
 
 ModuleHandle NetworkEditorController::addModule(const std::string& name)
 {
-  return addModule(ModuleLookupInfo(name));
+  return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
 }
 
 ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
 {
-  auto realModule = addModuleImpl(info.module_name_);
+  auto realModule = addModuleImpl(info);
   if (signalSwitch_)
   {
     static ModuleCounter dummy;
@@ -97,11 +97,8 @@ ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
   return realModule;
 }
 
-ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleName)
+ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info)
 {
-  /// @todo: should pass in entire info struct
-  ModuleLookupInfo info;
-  info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
   if (realModule) /// @todo: mock network throws here due to null, need to have it return a mock module.
   {
@@ -127,7 +124,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   //auto disableDynamicPortManager(createDynamicPortSwitch());
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
   ModuleId id(module->get_id());
-  auto newModule = addModuleImpl(id.name_);
+  auto newModule = addModuleImpl(module->get_info());
   newModule->set_state(module->get_state()->clone());
   static ModuleCounter dummy;
   moduleAdded_(id.name_, newModule, dummy);

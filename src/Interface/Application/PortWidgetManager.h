@@ -59,6 +59,7 @@ public:
   void addInputsToLayout(QHBoxLayout* layout);
   void addOutputsToLayout(QHBoxLayout* layout);
   void reindexInputs();
+  void setHighlightPorts(bool on);
 
 private:
   Ports inputPorts_, outputPorts_;

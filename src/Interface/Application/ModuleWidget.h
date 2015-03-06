@@ -112,6 +112,9 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
+  void highlightPorts();
+  void unhighlightPorts();
+
   void printPortPositions() const;
 
   bool hasDynamicPorts() const;
@@ -176,6 +179,7 @@ private Q_SLOTS:
   void fillReplaceWithMenu();
   void replaceModuleWith();
   void updateDialogWithPortCount();
+  void handleDialogFatalError(const QString& message);
 private:
   ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;

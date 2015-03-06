@@ -45,6 +45,8 @@ uniform sampler1D uTX0;
 uniform float   uCMInvert;
 uniform float   uCMShift;
 uniform float   uCMResolution;
+uniform float   uRescaleScale;
+uniform float   uRescaleShift;
 
 // Lighting in world space. Generally, it's better to light in eye space if you
 // are dealing with point lights. Since we are only dealing with directional
@@ -75,7 +77,7 @@ void main()
    vec3  reflection  = reflect(invLightDir, normal);
    float spec        = max(0.0, dot(reflection, uCamViewVec));
 
-   float param = vFieldData;
+   float param = clamp(vFieldData * uRescaleScale + uRescaleShift,0.,1.);
    float shift = uCMShift;
    if (uCMInvert != 0.) {
       param = 1. - param;

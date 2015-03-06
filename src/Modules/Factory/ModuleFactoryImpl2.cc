@@ -49,6 +49,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
 #include <Modules/Legacy/Visualization/GenerateStreamLines.h>
+#include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -58,6 +59,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Modules::Visualization;
+using namespace SCIRun::Modules::Inverse;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
@@ -86,4 +88,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
+  addModuleDesc<BuildSurfaceLaplacianMatrix>("...","...");
 }

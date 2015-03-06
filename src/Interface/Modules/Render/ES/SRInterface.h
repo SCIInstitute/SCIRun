@@ -52,6 +52,12 @@ namespace SCIRun {
 
 		class SRCamera;
 
+    class SRInterfaceFailure : public std::runtime_error 
+    {
+    public:
+      explicit SRInterfaceFailure(const std::string& message) : std::runtime_error(message) {}
+    };
+
 		// This class will be executing on a remote thread using boost lock free
 		// structures. The view scene dialog on qt widgets only serve one purpose:
 		// to relay information to this thread so that rendering can take place.
@@ -242,11 +248,11 @@ namespace SCIRun {
 			void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
       
 
-      bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
-      bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
+            bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
+            bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
 
 
-      MouseMode                         mMouseMode;       ///< Current mouse mode.
+            MouseMode                         mMouseMode;       ///< Current mouse mode.
 
 
 			size_t                            mScreenWidth;     ///< Screen width in pixels.
@@ -254,10 +260,11 @@ namespace SCIRun {
 
 
 			GLuint                            mRainbowCMap;     ///< Rainbow color map.
+			GLuint                            mOldRainbowCMap;     ///< Rainbow color map.
 			GLuint                            mGrayscaleCMap;   ///< Grayscale color map.
-			GLuint                          mBlackBodyCMap;   ///< Blackbody color map.
+			GLuint                            mBlackBodyCMap;   ///< Blackbody color map.
 
-
+            int axesFailCount_;
 			std::shared_ptr<Gui::GLContext>   mContext;         ///< Context to use for rendering.
 			std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
 			std::vector<SRObject>             mSRObjects;       ///< All SCIRun objects.
@@ -274,7 +281,7 @@ namespace SCIRun {
 
 			ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
 			ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
-      RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency 
+            RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
 		};
 
 	} // namespace Render

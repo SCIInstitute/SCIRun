@@ -46,6 +46,11 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
+  QColor text_color_;
+  QDoubleSpinBox r_,g_,b_;
+private Q_SLOTS:
+  void getColor();
+  
 };
 
 }

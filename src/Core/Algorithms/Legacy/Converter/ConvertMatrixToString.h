@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,28 +25,29 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
 
-#ifndef MODULES_VISUALIZATION_SHOWCOLORMAP_H
-#define MODULES_VISUALIZATION_SHOWCOLORMAP_H
+#ifndef CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H
+#define CORE_ALGORITHMS_CONVERTER_COMVERTMATRIXTOSTRING_H 1
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Visualization/share.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Converter/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Visualization {
-
-	class SCISHARE ShowColorMap : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has1OutputPort<ColorMapPortTag>
-  {
-  public:
-		ShowColorMap();
-    virtual void execute();
-    virtual void setStateDefaults();
-    OUTPUT_PORT(0, ColorMapObject, ColorMap);
-  };
-}}}
+	namespace Core {
+		namespace Algorithms {
+				namespace Converters {
+			
+		class SCISHARE ConvertMatrixToStringAlgo : public AlgorithmBase
+		{
+			public:
+				static AlgorithmInputName InputMatrix;
+				static AlgorithmOutputName ResultString;
+				ConvertMatrixToStringAlgo() {}
+				bool run(Datatypes::MatrixHandle input, Datatypes::StringHandle& output) const;
+				virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+		};
+}}}}
 
 #endif

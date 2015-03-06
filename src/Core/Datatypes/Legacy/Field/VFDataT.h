@@ -37,7 +37,7 @@
    if(c < static_cast<index_type>(l) || c >= static_cast<index_type>(h)){ \
       std::ostringstream msg; \
       msg << #l "(value=" << l << ") <= " #c << "(value=" << c << ") < " << #h << "(value=" << h << ")"; \
-      throw(SCIRun::AssertionFailed(msg.str().c_str(), __FILE__, __LINE__)); \
+      throw(SCIRun::AssertionFailed(msg.str(), __FILE__, __LINE__)); \
    }
 #else
 #define TESTRANGE(c, l, h)

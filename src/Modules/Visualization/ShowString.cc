@@ -40,7 +40,10 @@ ShowStringModule::ShowStringModule() : Module(ModuleLookupInfo("ShowString", "Vi
 
 void ShowStringModule::execute()
 {
+  //TODO: doit
+  #if 0
   auto str = getRequiredInput(String);
 
   sendOutput(RenderedString, boost::make_shared<GeometryObject>(str));
+  #endif
 }
