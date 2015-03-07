@@ -63,6 +63,8 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName TextRed;
         static Core::Algorithms::AlgorithmParameterName TextGreen;
         static Core::Algorithms::AlgorithmParameterName TextBlue;
+        static Core::Algorithms::AlgorithmParameterName XTranslation;
+        static Core::Algorithms::AlgorithmParameterName YTranslation;
 
         virtual void setStateDefaults();
         INPUT_PORT(0, ColorMapObject, ColorMap);

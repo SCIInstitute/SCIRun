@@ -49,8 +49,10 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
 	addDoubleSpinBoxManager(scaleSpinner_, ShowColorMapModule::Scale);
 	addLineEditManager(unitsText_, ShowColorMapModule::Units);
 	addSpinBoxManager(sigDigitsSpinner_, ShowColorMapModule::SignificantDigits);
-	addCheckBoxManager(addExtraSpaceCheckBox_, ShowColorMapModule::AddExtraSpace);
-    connectButtonToExecuteSignal(addExtraSpaceCheckBox_);
+    
+	addSpinBoxManager(xTranslationSpin_, ShowColorMapModule::XTranslation);
+	addSpinBoxManager(yTranslationSpin_, ShowColorMapModule::YTranslation);
+    
     connectButtonToExecuteSignal(leftRadioButton_);
     connectButtonToExecuteSignal(bottomRadioButton_);
     connectButtonToExecuteSignal(firstHalfRadioButton_);
@@ -79,6 +81,8 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
     MRadioButton_->setChecked(true);
     LRadioButton_->setChecked(false);
     XLRadioButton_->setChecked(false);
+    xTranslationSpin_->setValue(0);
+    yTranslationSpin_->setValue(0);
 
   createExecuteInteractivelyToggleAction();
 }

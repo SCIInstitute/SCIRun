@@ -60,6 +60,8 @@ void ShowColorMapModule::setStateDefaults()
   state->setValue(Units, std::string(""));
   state->setValue(SignificantDigits, 2);
   state->setValue(AddExtraSpace, false);
+  state->setValue(XTranslation, 0);
+  state->setValue(YTranslation, 0);
 }
 
 void ShowColorMapModule::execute()
@@ -137,9 +139,11 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   float red = static_cast<float>(st->getValue(TextRed).toDouble());
   float green = static_cast<float>(st->getValue(TextGreen).toDouble());
   float blue = static_cast<float>(st->getValue(TextBlue).toDouble());
+  float xTrans = static_cast<float>(st->getValue(XTranslation).toInt());
+  float yTrans = static_cast<float>(st->getValue(YTranslation).toInt());
   std::stringstream ss;
   ss << resolution << sigdig << txtsize << numlabel << st->getValue(Units).toString() <<
-    scale << displaySide << red << green << blue;
+    scale << displaySide << red << green << blue << xTrans << yTrans;
 
   std::string uniqueNodeID = id + "colorMapLegend" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
@@ -155,17 +159,13 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aFieldData", 1 * sizeof(float)));
   std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
-  bool extraSpace = state->getValue(AddExtraSpace).toBool();
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uExtraSpace", extraSpace ? 1.f : 0.f));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uXTranslate",static_cast<float>(xTrans)));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uYTranslate",static_cast<float>(yTrans)));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
   int displayLength = state->getValue(DisplayLength).toInt();
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
   GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, Core::Geometry::BBox(), true);
-  //push the color map parameters
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert", map->getColorMapInvert() ? 1.f : 0.f));
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift", static_cast<float>(map->getColorMapShift())));
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution", static_cast<float>(map->getColorMapResolution())));
 
   // Construct IBO.
 
@@ -210,14 +210,16 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       cm->getColorMapActualMin()) * i +
       cm->getColorMapActualMin()) * scale);
     ss << str2 << " " << st->getValue(Units).toString();
-    text_.reset(ss.str(), textSize, Vector((displaySide == 0) ? 40. : 1., (displaySide == 0) ? 0. : 20., i));
+    text_.reset(ss.str(), textSize, Vector((displaySide == 0) ?
+                                (xTrans>50?-(textSize*strlen(ss.str().c_str())):40.) : 0.,
+                                           (displaySide == 0) ? 0. : (yTrans>50?-25.:20.), i));
     std::vector<Vector> tmp;
     std::vector<Vector> cols;
     text_.getStringVerts(tmp, cols);
     if (displaySide != 0)
       text_.reset("|", 20., Vector(1., 0., i));
     else
-      text_.reset("__", 10., Vector(10., 0., i));
+      text_.reset("__", 10., Vector(0., 0., i));
     text_.getStringVerts(tmp, cols);
     for (auto a : tmp) {
       points.push_back(a);
@@ -268,7 +270,8 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
   uniforms.clear();
-  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uExtraSpace", extraSpace ? 1. : 0.));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uXTranslate",static_cast<float>(xTrans)));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uYTranslate",static_cast<float>(yTrans)));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
   GeometryObject::SpireVBO geomVBO2 = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr2,
@@ -310,3 +313,5 @@ AlgorithmParameterName ShowColorMapModule::AddExtraSpace("AddExtraSpace");
 AlgorithmParameterName ShowColorMapModule::TextRed("TextRed");
 AlgorithmParameterName ShowColorMapModule::TextGreen("TextGreen");
 AlgorithmParameterName ShowColorMapModule::TextBlue("TextBlue");
+AlgorithmParameterName ShowColorMapModule::XTranslation("XTranslation");
+AlgorithmParameterName ShowColorMapModule::YTranslation("YTranslation");
