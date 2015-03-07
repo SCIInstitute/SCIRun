@@ -252,7 +252,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E); 
   mesh_vmesh->synchronize(Mesh::NODE_LOCATE_E); 
   std::vector<double> fvalues;
-  FieldInformation fieldinfo("TriSurfMesh", LINEARDATA_E, "double");
+  FieldInformation fieldinfo("PointCloudMesh", LINEARDATA_E, "double");
   FieldHandle point_electrodes = CreateField(fieldinfo);  
   VMesh* point_electrodes_mesh = point_electrodes->vmesh();
   
