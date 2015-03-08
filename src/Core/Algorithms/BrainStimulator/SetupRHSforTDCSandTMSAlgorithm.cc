@@ -267,9 +267,9 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
    fvalues.push_back(0);
    electrode_sponge_areas.push_back(std::numeric_limits<double>::quiet_NaN());
   } 
-  VField* elc_tri_surf_vfld = elc_tri_surf->vfield();
-  elc_tri_surf_vfld->resize_values();
-  elc_tri_surf_vfld->set_values(fvalues);
+  VField* point_electrodes_vfld = point_electrodes->vfield();
+  point_electrodes_vfld->resize_values();
+  point_electrodes_vfld->set_values(fvalues);
   
   DenseMatrixHandle empty;
   
