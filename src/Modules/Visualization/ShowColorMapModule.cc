@@ -164,6 +164,10 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
   int displayLength = state->getValue(DisplayLength).toInt();
   uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
+  //push the color map parameters
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMInvert",map->getColorMapInvert()?1.f:0.f));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMShift",static_cast<float>(map->getColorMapShift())));
+  uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uCMResolution",static_cast<float>(map->getColorMapResolution())));
   GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, Core::Geometry::BBox(), true);
 
@@ -202,9 +206,9 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   numVBOElements = 0;
   uint32_t count = 0;
   double increment = 1. / static_cast<double>(numlabel - 1);
-  double textSize = 10. * static_cast<double>(txtsize + 2);
-  const double dash_size = 10.;
-  const double pipe_size = 2. * dash_size;
+  double textSize = 10. * static_cast<double>(txtsize + 3);
+  const double dash_size = 20.;
+  const double pipe_size = 40.;
 
   for (double i = 0.; i <= 1.000000001; i += increment) {
     std::stringstream ss;
@@ -213,17 +217,19 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       cm->getColorMapActualMin()) * scale);
     ss << str2 << " " << st->getValue(Units).toString();
     //flip the text to the side with more space depending on xTrans/yTrans > 50%
+    //text offsets vary depending on side of bar and left vs. bottom. Might need to vary per platform.
     text_.reset(ss.str(), textSize, Vector((displaySide == 0) ?
                                 (xTrans>50?-(textSize*strlen(ss.str().c_str())):4.*dash_size) : 0.,
                                            (displaySide == 0) ?
-                                           0. : (yTrans>50?-pipe_size-5.:pipe_size), i));
+                                           0. : (yTrans>50?(-textSize-pipe_size/2.):pipe_size), i));
     std::vector<Vector> tmp;
     std::vector<Vector> cols;
     text_.getStringVerts(tmp, cols);
     if (displaySide != 0)
-      text_.reset("|", pipe_size, Vector(1., 0., i)); //pipe texture is 1 pixel off of scalebar
+      //pipe texture is 18 pixels too far right, move dash down a bit if closer to the top
+      text_.reset("|", pipe_size, Vector(-18., yTrans>50?-15.:0., i));
     else
-      text_.reset("__", dash_size, Vector(0., 0., i));
+      text_.reset("____", dash_size, Vector(xTrans>50?-15.:0., 0., i)); //move dashed over if bar on the right
     text_.getStringVerts(tmp, cols);
     for (auto a : tmp) {
       points.push_back(a);
