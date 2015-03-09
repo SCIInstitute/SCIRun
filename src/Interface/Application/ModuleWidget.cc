@@ -92,7 +92,7 @@ namespace Gui {
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
-        << disabled(new QAction("Destroy", parent)));
+        << new QAction("Destroy", parent));
     }
     QMenu* getMenu() { return menu_; }
     QAction* getAction(const char* name) const
@@ -511,8 +511,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
-  //TODO: doh, how do i destroy myself?
-  //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
+  connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -950,6 +949,7 @@ ModuleWidget::~ModuleWidget()
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }
+  Q_EMIT displayChanged();
 }
 
 void ModuleWidget::trackConnections()
