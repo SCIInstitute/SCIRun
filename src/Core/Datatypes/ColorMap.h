@@ -43,7 +43,7 @@ namespace Datatypes {
   class SCISHARE ColorMap : public Datatype
   {
   public:
-    explicit ColorMap(const std::string& name, const size_t resolution = 256,
+    explicit ColorMap(const std::string& name = "Rainbow", const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false,
                         const double rescale_scale = 1.0, const double rescale_shift = 0.);
     virtual ColorMap* clone() const;
@@ -55,9 +55,9 @@ namespace Datatypes {
     double getColorMapRescaleScale() const;
     double getColorMapRescaleShift() const;
     Core::Datatypes::ColorRGB getColorMapVal(double v) const;
-    Core::Datatypes::ColorRGB valueToColor(double scalar);
-    Core::Datatypes::ColorRGB valueToColor(Core::Geometry::Tensor tensor);
-    Core::Datatypes::ColorRGB valueToColor(Core::Geometry::Vector vector);
+    Core::Datatypes::ColorRGB valueToColor(double scalar) const;
+    Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
+    Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
     void adjustColorMapForData(double min, double max);
   private:
     std::string name_;

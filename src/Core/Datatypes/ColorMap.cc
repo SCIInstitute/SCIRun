@@ -164,17 +164,17 @@ void ColorMap::adjustColorMapForData(double min, double max) {
     }
 }
 
-ColorRGB ColorMap::valueToColor(double scalar) {
+ColorRGB ColorMap::valueToColor(double scalar) const {
     return getColorMapVal(scalar);
 }
 
-ColorRGB ColorMap::valueToColor(Tensor tensor) {
+ColorRGB ColorMap::valueToColor(const Tensor &tensor) const {
     //TODO this is not implemented.
     return ColorRGB(getTransformedColor(fabs(tensor.xx())),
                     getTransformedColor(fabs(tensor.yy())),
                     getTransformedColor(fabs(tensor.zz())));
 }
-ColorRGB ColorMap::valueToColor(Vector vector) {
+ColorRGB ColorMap::valueToColor(const Vector &vector) const {
     //TODO is this correct?
     return ColorRGB(getTransformedColor(fabs(vector.x())),
                     getTransformedColor(fabs(vector.y())),

@@ -106,20 +106,20 @@ namespace SCIRun {
         /// @{
         void renderNodes(
           boost::shared_ptr<SCIRun::Field> field,
-          SCIRun::Core::Datatypes::ColorMap colorMap,
+          const SCIRun::Core::Datatypes::ColorMap &colorMap,
           RenderState state, Core::Datatypes::GeometryHandle geom,
           const std::string& id);
 
         void renderFaces(
           boost::shared_ptr<SCIRun::Field> field,
-          SCIRun::Core::Datatypes::ColorMap colorMap,
+          const SCIRun::Core::Datatypes::ColorMap &colorMap,
           RenderState state, Core::Datatypes::GeometryHandle geom,
           unsigned int approx_div,
           const std::string& id);
 
         void renderFacesLinear(
           boost::shared_ptr<SCIRun::Field> field,
-          SCIRun::Core::Datatypes::ColorMap colorMap,
+          const SCIRun::Core::Datatypes::ColorMap &colorMap,
           RenderState state, Core::Datatypes::GeometryHandle geom,
           unsigned int approxDiv,
           const std::string& id);
@@ -132,12 +132,12 @@ namespace SCIRun {
           CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
           CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
           Core::Datatypes::GeometryObject::ColorScheme colorScheme,
-          std::vector<SCIRun::Core::Datatypes::ColorRGB> &face_colors,
+          const std::vector<SCIRun::Core::Datatypes::ColorRGB> &face_colors,
           const RenderState& state);
 
         void renderEdges(
           boost::shared_ptr<SCIRun::Field> field,
-          SCIRun::Core::Datatypes::ColorMap colorMap,
+          const SCIRun::Core::Datatypes::ColorMap &colorMap,
           RenderState state,
           Core::Datatypes::GeometryHandle geom,
           const std::string& id);

@@ -241,13 +241,13 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   const int dim = field->vmesh()->dimensionality();
   if (showEdges && dim < 1) { showEdges = false; }
   if (showFaces && dim < 2) { showFaces = false; }
-  
   //adjust color map to scalar data if there is one.
-  ColorMap *cmap = colorMap.get().get();
-  ColorMap adjustedCMap(cmap->getColorMapName(),cmap->getColorMapResolution(),
-                        cmap->getColorMapShift(), cmap->getColorMapInvert(),
-                        cmap->getColorMapRescaleScale(), cmap->getColorMapRescaleShift());
+  ColorMap adjustedCMap;
   if (colorMap) {
+    ColorMap *cmap = colorMap.get().get();
+    adjustedCMap = ColorMap(cmap->getColorMapName(),cmap->getColorMapResolution(),
+                          cmap->getColorMapShift(), cmap->getColorMapInvert(),
+                          cmap->getColorMapRescaleScale(), cmap->getColorMapRescaleShift());
     double actual_max = std::numeric_limits<double>::min();
     double actual_min = std::numeric_limits<double>::max();
     VField * fld = field->vfield();
@@ -279,7 +279,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
 void ShowFieldModule::renderFaces(
   boost::shared_ptr<SCIRun::Field> field,
-  ColorMap colorMap,
+  const ColorMap &colorMap,
   RenderState state, Core::Datatypes::GeometryHandle geom,
   unsigned int approxDiv,
   const std::string& id)
@@ -309,7 +309,7 @@ void ShowFieldModule::renderFaces(
 
 void ShowFieldModule::renderFacesLinear(
   boost::shared_ptr<SCIRun::Field> field,
-  ColorMap colorMap,
+  const ColorMap &colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   unsigned int approxDiv,
@@ -322,12 +322,10 @@ void ShowFieldModule::renderFacesLinear(
   auto st = get_state();
   bool invertNormals = st->getValue(FaceInvertNormals).toBool();
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
-  std::vector<double> svals(10);
-  std::vector<Core::Geometry::Vector> vvals(10);
-  std::vector<Core::Geometry::Tensor> tvals(10);
-
+  std::vector<double> svals;
+  std::vector<Core::Geometry::Vector> vvals;
+  std::vector<Core::Geometry::Tensor> tvals;
   std::vector<ColorRGB> face_colors;
-  face_colors.resize(10);
 
   if (fld->basis_order() < 0 || state.get(RenderState::USE_DEFAULT_COLOR))
   {
@@ -340,11 +338,6 @@ void ShowFieldModule::renderFacesLinear(
   else // if (fld->basis_order() >= 0)
   {
     colorScheme = GeometryObject::COLOR_IN_SITU;
-
-    for (uint32_t i = 0; i < 10; ++i)
-    {
-      face_colors[i] = ColorRGB(1.,1.,1.);
-    }
   }
 
   if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
@@ -362,10 +355,9 @@ void ShowFieldModule::renderFacesLinear(
   mesh->size(f);
   mesh->size(c);
 
-  // Attempt some form of precalculation of iboBuffer and vboBuffer size.
-  // This Initial size estimation will be off quite a bit. Each face will
-  // have up to 3 nodes associated.
+  // Three 32 bit ints to index into the VBO
   uint32_t iboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(uint32_t) * 3);
+  //Seven floats per VBO: Pos (3) XYZ, and Color (4) RGBA
   uint32_t vboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(float) * 7);
 
   // Construct VBO and IBO that will be used to render the faces. Once again,
@@ -456,6 +448,12 @@ void ShowFieldModule::renderFacesLinear(
     // Element data (Cells) so two sided faces.
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
     {
+      //two possible colors.
+      svals.resize(2);
+      vvals.resize(2);
+      tvals.resize(2);
+      face_colors = {{ColorRGB(1.,1.,1.),ColorRGB(1.,1.,1.)}};
+      
       VMesh::Elem::array_type cells;
       mesh->get_elems(cells, *fiter);
 
@@ -515,6 +513,11 @@ void ShowFieldModule::renderFacesLinear(
     // Element data (faces)
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
     {
+      //one possible color, each node that color.
+      svals.resize(1);
+      vvals.resize(1);
+      tvals.resize(1);
+      face_colors.resize(nodes.size());
       if (fld->is_scalar())
       {
         fld->get_value(svals[0], *fiter);
@@ -544,6 +547,11 @@ void ShowFieldModule::renderFacesLinear(
     // Data at nodes
     else if (fld->basis_order() == 1)
     {
+      svals.resize(nodes.size());
+      vvals.resize(nodes.size());
+      tvals.resize(nodes.size());
+      face_colors.resize(nodes.size());
+      //node.size() possible colors.
       if (fld->is_scalar())
       {
         for (size_t i = 0; i<nodes.size(); i++)
@@ -770,7 +778,7 @@ void ShowFieldModule::addFaceGeom(
   CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
   GeometryObject::ColorScheme colorScheme,
-  std::vector<ColorRGB> &face_colors,
+  const std::vector<ColorRGB> &face_colors,
   const RenderState& state)
 {
   auto writeVBOPoint = [&vboBuffer](const Core::Geometry::Point& point)
@@ -1083,7 +1091,7 @@ void ShowFieldModule::addFaceGeom(
 
 void ShowFieldModule::renderNodes(
   boost::shared_ptr<SCIRun::Field> field,
-  ColorMap colorMap,
+  const ColorMap &colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   const std::string& id)
@@ -1136,8 +1144,10 @@ void ShowFieldModule::renderNodes(
   // Construct VBO.
   std::string shader = "Shaders/UniformColor";
   std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
+  //3 floats/point (XYZ)
   attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
   if (state.get(RenderState::USE_SPHERE))
+    //3 floats/vector (XYZ)
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
   GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
 
@@ -1156,6 +1166,7 @@ void ShowFieldModule::renderNodes(
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", 1.f));
   //coloring
   if (colorScheme == GeometryObject::COLOR_MAP) {
+    //4 floats/color (RGBA)
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
     if (state.get(RenderState::USE_SPHERE)) {
         shader = "Shaders/DirPhongCMap" ;
@@ -1340,7 +1351,7 @@ void ShowFieldModule::renderNodes(
 
 void ShowFieldModule::renderEdges(
   boost::shared_ptr<SCIRun::Field> field,
-  ColorMap colorMap,
+  const ColorMap &colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   const std::string& id) {
@@ -1552,8 +1563,8 @@ void ShowFieldModule::renderEdges(
       Vector pp1, pp2;
       double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
       std::vector<Point> epts = { { p0, p1 } };
-      for (auto a : epts) {
-        ColorRGB col = a == p0 ? edge_colors[0] : edge_colors[1];
+      for (const auto &a : epts) {
+        ColorRGB col = (a == p0) ? edge_colors[0] : edge_colors[1];
         for (double phi = 0.; phi <= M_PI; phi += phi_inc) {
           for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc) {
             uint32_t offset = (uint32_t)numVBOElements;
