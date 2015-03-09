@@ -586,7 +586,7 @@ void ShowFieldModule::renderFacesLinear(
   }
 
   std::stringstream ss;
-  ss << invertNormals << colorScheme;
+  ss << invertNormals << colorScheme << faceTransparencyValue_;
 
   std::string uniqueNodeID = id + "face" + ss.str();
   std::string vboName = uniqueNodeID + "VBO";
@@ -605,6 +605,9 @@ void ShowFieldModule::renderFacesLinear(
   {
     attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
   }
+
+  if (state.get(RenderState::USE_TRANSPARENCY))
+    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", faceTransparencyValue_));
 
   if (colorScheme == GeometryObject::COLOR_MAP)
   {
@@ -647,15 +650,6 @@ void ShowFieldModule::renderFacesLinear(
         // Use colormapping only shader.
         shader = "Shaders/DblSided_ColorMap";
       }
-    }
-
-    if (state.get(RenderState::USE_TRANSPARENCY))
-    {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (faceTransparencyValue_)));
-    }
-    else
-    {
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (1.0f)));
     }
   }
   else if (colorScheme == GeometryObject::COLOR_IN_SITU)
@@ -711,32 +705,14 @@ void ShowFieldModule::renderFacesLinear(
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
       uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
-
-      if (state.get(RenderState::USE_TRANSPARENCY))
-      {
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-          "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), faceTransparencyValue_)));
-      }
-      else
-      {
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-          "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
-      }
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+        "uDiffuseColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
     }
     else
     {
       shader = "Shaders/UniformColor";
-      if (state.get(RenderState::USE_TRANSPARENCY))
-      {
-        /// \todo Add transparency slider.
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-          "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), faceTransparencyValue_)));
-      }
-      else
-      {
-        uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
-          "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
-      }
+      uniforms.push_back(GeometryObject::SpireSubPass::Uniform(
+        "uColor", glm::vec4(defaultColor.r(), defaultColor.g(), defaultColor.b(), 1.0f)));
     }
   }
 
