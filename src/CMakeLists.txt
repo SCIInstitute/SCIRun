@@ -53,9 +53,10 @@ ENDIF()
 if(WIN32)
 	STRING(LENGTH ${CMAKE_BINARY_DIR} BIN_DIR_LENGTH)
 	if(${BIN_DIR_LENGTH} GREATER 10)
-		MESSAGE(WARNING "Binary directory is too long, which could  cause the build to fail.")
+		MESSAGE(WARNING "Binary directory is too long, the build may fail due to long path names.")
 	endif()
 endif()
+
 ########################################################################
 # Build shared libraries by default
 
