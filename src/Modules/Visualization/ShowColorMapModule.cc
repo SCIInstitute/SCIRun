@@ -202,7 +202,9 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   numVBOElements = 0;
   uint32_t count = 0;
   double increment = 1. / static_cast<double>(numlabel - 1);
-  double textSize = 5. * static_cast<double>(txtsize + 2);
+  double textSize = 10. * static_cast<double>(txtsize + 2);
+  const double dash_size = 10.;
+  const double pipe_size = 2. * dash_size;
 
   for (double i = 0.; i <= 1.000000001; i += increment) {
     std::stringstream ss;
@@ -210,16 +212,18 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
       cm->getColorMapActualMin()) * i +
       cm->getColorMapActualMin()) * scale);
     ss << str2 << " " << st->getValue(Units).toString();
+    //flip the text to the side with more space depending on xTrans/yTrans > 50%
     text_.reset(ss.str(), textSize, Vector((displaySide == 0) ?
-                                (xTrans>50?-(textSize*strlen(ss.str().c_str())):40.) : 0.,
-                                           (displaySide == 0) ? 0. : (yTrans>50?-25.:20.), i));
+                                (xTrans>50?-(textSize*strlen(ss.str().c_str())):4.*dash_size) : 0.,
+                                           (displaySide == 0) ?
+                                           0. : (yTrans>50?-pipe_size-5.:pipe_size), i));
     std::vector<Vector> tmp;
     std::vector<Vector> cols;
     text_.getStringVerts(tmp, cols);
     if (displaySide != 0)
-      text_.reset("|", 20., Vector(1., 0., i));
+      text_.reset("|", pipe_size, Vector(1., 0., i)); //pipe texture is 1 pixel off of scalebar
     else
-      text_.reset("__", 10., Vector(0., 0., i));
+      text_.reset("__", dash_size, Vector(0., 0., i));
     text_.getStringVerts(tmp, cols);
     for (auto a : tmp) {
       points.push_back(a);

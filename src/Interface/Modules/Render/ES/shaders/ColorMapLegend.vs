@@ -41,20 +41,20 @@ attribute float aFieldData;
 // Outputs to the fragment shader.
 varying float   vFieldData;
 
+//constants
+const float bar_width = 30.;
+const float bar_buffer = 0.1;
+
 void main( void )
 {
   bool ds = uDisplaySide == 0.;
   bool full = uDisplayLength == 1.;
   bool half1 = uDisplayLength == 0.;
   vec3 newPos = ds?vec3(aPos.x, aPos.y, aPos.z):vec3(aPos.y,aPos.x,aPos.z);
-  float x_scale = ds?(30.0 / uWindowWidth):(full?1.8:0.9);
-  float y_scale = ds?(full?1.8:0.9):(30. * uAspectRatio / uWindowWidth);
-  float x_trans = (ds?(-1.):(full?-0.9:
-                  (half1?-1.:0.1))) + uXTranslate / 50.;
-  float y_trans = ((!ds)?(-1.):
-                  (full?-0.9:(half1?(
-                  -1.):0.1))) + uYTranslate / 50.;
-  gl_Position = vec4(newPos.x * x_scale + x_trans, 
-                     newPos.y * y_scale + y_trans, newPos.z, 1.0);
+  float x_scale =   ds ?(bar_width /                uWindowWidth):((1.-bar_buffer)*(full?2.:1.));
+  float y_scale = (!ds)?(bar_width * uAspectRatio / uWindowWidth):((1.-bar_buffer)*(full?2.:1.));
+  float x_trans = -1. + (  ds ?0.:(full?bar_buffer:(half1?0.:(bar_buffer+1.))))   + uXTranslate / 50.;
+  float y_trans = -1. + ((!ds)?0.:(full?bar_buffer:(half1?0.:(bar_buffer+1.))))   + uYTranslate / 50.;
+  gl_Position = vec4(newPos.x * x_scale + x_trans, newPos.y * y_scale + y_trans, newPos.z, 1.0);
   vFieldData  = aFieldData;
 }
