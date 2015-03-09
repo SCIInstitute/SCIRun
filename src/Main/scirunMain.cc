@@ -1,4 +1,3 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -27,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Application/Application.h>
 #include <Interface/Application/GuiApplication.h>
 #include <Core/ConsoleApplication/ConsoleApplication.h>
@@ -40,6 +40,8 @@ using namespace SCIRun::Core::Console;
 #ifdef WIN32
 
 #include <windows.h>
+#include <vector>
+#include <boost\algorithm\string.hpp>
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -49,9 +51,20 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
    freopen("CONOUT$","w",stdout);
    freopen("CONOUT$","w",stderr);  
 #endif
- 
-  const char *argv[] = {GetCommandLine()};
-  int argc = 1;
+
+  const int argc = __argc;  
+  const char *argv[50];
+  char *tempArgv[] = {GetCommandLine()};  
+  
+  // The GetCommandLine() function returns argv as a single string. The split function splits it up into
+  // the individual arguments.
+  std::vector<std::string> getArgv;
+  boost::algorithm::split(getArgv, tempArgv[0], boost::is_any_of(" \0"));
+    
+  // Put the individual arguments into the argv that will be passed.
+  for(int i = 0; i < argc; i++) 
+	  argv[i] = getArgv[i].c_str();  
+  
   Application::Instance().readCommandLine(argc, argv);
   
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
@@ -79,3 +92,4 @@ int main(int argc, const char* argv[])
 }
 
 #endif // End of main for non-Windows.
+
