@@ -126,6 +126,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
   connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureVisible()));
+  connect(module, SIGNAL(deleteMeLater()), this, SLOT(deleteLater()));
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
