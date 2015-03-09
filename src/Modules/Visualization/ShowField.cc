@@ -352,8 +352,19 @@ void ShowFieldModule::renderFacesLinear(
 {
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
+  
+  mesh->synchronize(Mesh::FACES_E);
+
+  VMesh::Face::size_type numFaces;
+
+  mesh->size(numFaces);
+
+  if (numFaces == 0)
+    return;
 
   bool withNormals = (state.get(RenderState::USE_NORMALS));
+  if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
+
   auto st = get_state();
   bool invertNormals = st->getValue(FaceInvertNormals).toBool();
   GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
@@ -391,21 +402,6 @@ void ShowFieldModule::renderFacesLinear(
     }
   }
 
-  if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
-
-  mesh->synchronize(Mesh::FACES_E);
-  VMesh::Face::iterator fiter, fiterEnd;
-  VMesh::Node::array_type nodes;
-
-  mesh->begin(fiter);
-  mesh->end(fiterEnd);
-
-  VMesh::Face::size_type f;
-  VMesh::Cell::size_type c;
-
-  mesh->size(f);
-  mesh->size(c);
-
   // Attempt some form of precalculation of iboBuffer and vboBuffer size.
   // This Initial size estimation will be off quite a bit. Each face will
   // have up to 3 nodes associated.
@@ -429,7 +425,12 @@ void ShowFieldModule::renderFacesLinear(
   uint32_t iboIndex = 0;
   int64_t numVBOElements = 0;
   
-  
+  VMesh::Face::iterator fiter, fiterEnd;
+  VMesh::Node::array_type nodes;
+
+  mesh->begin(fiter);
+  mesh->end(fiterEnd);
+
   Core::Geometry::Point idpt;
   mesh->get_nodes(nodes, *fiter);
   mesh->get_point(idpt, nodes[0]);
