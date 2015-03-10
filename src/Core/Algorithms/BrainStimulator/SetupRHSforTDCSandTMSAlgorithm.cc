@@ -272,7 +272,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   point_electrodes_vfld->set_values(fvalues);
   
   DenseMatrixHandle empty;
-  
+   
   return boost::make_tuple(empty, lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp,point_electrodes, electrode_sponge_areas);
 
  }

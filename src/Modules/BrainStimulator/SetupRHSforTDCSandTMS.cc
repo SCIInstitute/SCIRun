@@ -64,7 +64,6 @@ void SetupTDCS::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::pointdistancebound);
   setStateIntFromAlgo(Parameters::number_of_electrodes);
   setStateBoolFromAlgo(Parameters::GetContactSurface);
-  state->setValue(Parameters::GetContactSurface, false);
 }
 
 void SetupTDCS::execute()
@@ -90,7 +89,6 @@ void SetupTDCS::execute()
     setAlgoIntFromState(Parameters::refnode);   
     setAlgoDoubleFromState(Parameters::normal_dot_product_bound);
     setAlgoDoubleFromState(Parameters::pointdistancebound);
-    setAlgoBoolFromState(Parameters::GetContactSurface);
     
     algo().set(Parameters::GetContactSurface, state->getValue(Parameters::GetContactSurface).toBool());
     
