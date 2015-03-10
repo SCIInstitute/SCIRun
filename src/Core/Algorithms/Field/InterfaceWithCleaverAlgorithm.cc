@@ -190,6 +190,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
 
   }
 
+  std::cout << "Input Dimensions: " << dims[0] << " x " << dims[1] << " x " << dims[2] << std::endl;
   boost::shared_ptr<Cleaver::Volume> volume(new Cleaver::Volume(toVectorOfRawPointers(fields)));
 
   const double xScale = get(VolumeScalingX).toDouble();
@@ -225,9 +226,12 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   const bool verbose = get(Verbose).toBool();
   const bool pad = get(Padding).toBool();
   if (pad)
-    paddedVolume.reset(new Cleaver::PaddedVolume(volume.get()));
+    paddedVolume.reset(new Cleaver::PaddedVolume(volume.get()));  
     
-  std::cout << "Creating Mesh with Volume Size " << paddedVolume->size().toString() << std::endl;
+  if (pad)   
+    std::cout << "Creating Mesh with Volume Size " << paddedVolume->size().toString() << std::endl;
+       else
+          std::cout << "Creating Mesh with Volume Size " << volume->size().toString() << std::endl;
     
   boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(paddedVolume.get(), verbose));
 
