@@ -58,7 +58,6 @@ namespace Datatypes {
     Core::Datatypes::ColorRGB valueToColor(double scalar) const;
     Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
     Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
-    void adjustColorMapForData(double min, double max);
   private:
     std::string name_;
     size_t resolution_;

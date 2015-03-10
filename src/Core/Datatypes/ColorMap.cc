@@ -157,13 +157,6 @@ ColorRGB ColorMap::getColorMapVal(double v) const
   return col;
 }
 
-void ColorMap::adjustColorMapForData(double min, double max) {
-    if (rescale_scale_ == 1. && rescale_shift_ == 0.) {
-        rescale_shift_ = -min;
-        rescale_scale_ = 1. / (max - min);
-    }
-}
-
 ColorRGB ColorMap::valueToColor(double scalar) const {
     return getColorMapVal(scalar);
 }

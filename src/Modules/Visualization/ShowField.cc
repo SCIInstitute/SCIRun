@@ -241,36 +241,22 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   const int dim = field->vmesh()->dimensionality();
   if (showEdges && dim < 1) { showEdges = false; }
   if (showFaces && dim < 2) { showFaces = false; }
-  //adjust color map to scalar data if there is one.
-  ColorMap adjustedCMap;
-  if (colorMap) {
-    ColorMap *cmap = colorMap.get().get();
-    adjustedCMap = ColorMap(cmap->getColorMapName(),cmap->getColorMapResolution(),
-                          cmap->getColorMapShift(), cmap->getColorMapInvert(),
-                          cmap->getColorMapRescaleScale(), cmap->getColorMapRescaleShift());
-    double actual_max = std::numeric_limits<double>::min();
-    double actual_min = std::numeric_limits<double>::max();
-    VField * fld = field->vfield();
-    if (fld->minmax(actual_min, actual_max)) {
-        adjustedCMap.adjustColorMapForData(actual_min, actual_max);
-    }
-  }
 
   if (showNodes)
   {
     // Construct node geometry.
-    renderNodes(field, adjustedCMap, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
+    renderNodes(field, colorMap, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   if (showFaces)
   {
     int approxDiv = 1;
-    renderFaces(field, adjustedCMap, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
+    renderFaces(field, colorMap, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
   }
 
   if (showEdges)
   {
-    renderEdges(field, adjustedCMap, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
+    renderEdges(field, colorMap, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
   }
 
   return geom;
@@ -279,7 +265,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
 void ShowFieldModule::renderFaces(
   boost::shared_ptr<SCIRun::Field> field,
-  const ColorMap &colorMap,
+  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   RenderState state, Core::Datatypes::GeometryHandle geom,
   unsigned int approxDiv,
   const std::string& id)
@@ -309,7 +295,7 @@ void ShowFieldModule::renderFaces(
 
 void ShowFieldModule::renderFacesLinear(
   boost::shared_ptr<SCIRun::Field> field,
-  const ColorMap &colorMap,
+  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   unsigned int approxDiv,
@@ -448,6 +434,7 @@ void ShowFieldModule::renderFacesLinear(
     // Element data (Cells) so two sided faces.
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
     {
+      ColorMap * map = colorMap.get().get();
       //two possible colors.
       svals.resize(2);
       vvals.resize(2);
@@ -469,8 +456,8 @@ void ShowFieldModule::renderFacesLinear(
         {
           svals[1] = svals[0];
         }
-        face_colors[0] = colorMap.valueToColor(svals[0]);
-        face_colors[1] = colorMap.valueToColor(svals[1]);
+        face_colors[0] = map->valueToColor(svals[0]);
+        face_colors[1] = map->valueToColor(svals[1]);
       }
       else if (fld->is_vector())
       {
@@ -485,8 +472,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
 
-        face_colors[0] = colorMap.valueToColor(vvals[0]);
-        face_colors[1] = colorMap.valueToColor(vvals[1]);
+        face_colors[0] = map->valueToColor(vvals[0]);
+        face_colors[1] = map->valueToColor(vvals[1]);
       }
       else if (fld->is_tensor())
       {
@@ -501,8 +488,8 @@ void ShowFieldModule::renderFacesLinear(
           svals[1] = svals[0];
         }
 
-        face_colors[0] = colorMap.valueToColor(tvals[0]);
-        face_colors[1] = colorMap.valueToColor(tvals[1]);
+        face_colors[0] = map->valueToColor(tvals[0]);
+        face_colors[1] = map->valueToColor(tvals[1]);
       }
 
       state.set(RenderState::IS_DOUBLE_SIDED, true);
@@ -513,6 +500,7 @@ void ShowFieldModule::renderFacesLinear(
     // Element data (faces)
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
     {
+      ColorMap * map = colorMap.get().get();
       //one possible color, each node that color.
       svals.resize(1);
       vvals.resize(1);
@@ -521,17 +509,17 @@ void ShowFieldModule::renderFacesLinear(
       if (fld->is_scalar())
       {
         fld->get_value(svals[0], *fiter);
-        face_colors[0] = colorMap.valueToColor(svals[0]);
+        face_colors[0] = map->valueToColor(svals[0]);
       }
       else if (fld->is_vector())
       {
         fld->get_value(vvals[0], *fiter);
-        face_colors[0] = colorMap.valueToColor(vvals[0]);
+        face_colors[0] = map->valueToColor(vvals[0]);
       }
       else if (fld->is_tensor())
       {
         fld->get_value(tvals[0], *fiter);
-        face_colors[0] = colorMap.valueToColor(tvals[0]);
+        face_colors[0] = map->valueToColor(tvals[0]);
       }
 
       // Same color at all corners.
@@ -547,6 +535,7 @@ void ShowFieldModule::renderFacesLinear(
     // Data at nodes
     else if (fld->basis_order() == 1)
     {
+      ColorMap * map = colorMap.get().get();
       svals.resize(nodes.size());
       vvals.resize(nodes.size());
       tvals.resize(nodes.size());
@@ -557,7 +546,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i = 0; i<nodes.size(); i++)
         {
           fld->get_value(svals[i], nodes[i]);
-          face_colors[i] = colorMap.valueToColor(svals[i]);
+          face_colors[i] = map->valueToColor(svals[i]);
         }
       }
       else if (fld->is_vector())
@@ -565,7 +554,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i = 0; i<nodes.size(); i++)
         {
           fld->get_value(vvals[i], nodes[i]);
-          face_colors[i] = colorMap.valueToColor(vvals[i]);
+          face_colors[i] = map->valueToColor(vvals[i]);
         }
       }
       else if (fld->is_tensor())
@@ -573,7 +562,7 @@ void ShowFieldModule::renderFacesLinear(
         for (size_t i = 0; i<nodes.size(); i++)
         {
           fld->get_value(tvals[i], nodes[i]);
-          face_colors[i] = colorMap.valueToColor(tvals[i]);
+          face_colors[i] = map->valueToColor(tvals[i]);
         }
       }
 
@@ -1067,7 +1056,7 @@ void ShowFieldModule::addFaceGeom(
 
 void ShowFieldModule::renderNodes(
   boost::shared_ptr<SCIRun::Field> field,
-  const ColorMap &colorMap,
+  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   const std::string& id)
@@ -1197,16 +1186,17 @@ void ShowFieldModule::renderNodes(
     mesh->get_point(p, *eiter);
     //coloring options
     if (colorScheme != GeometryObject::COLOR_UNIFORM) {
+      ColorMap * map = colorMap.get().get();
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
-        node_color = colorMap.valueToColor(sval);
+        node_color = map->valueToColor(sval);
       } else if (fld->is_vector()) {
         fld->get_value(vval, *eiter);
-        node_color = colorMap.valueToColor(vval);
+        node_color = map->valueToColor(vval);
       } else if (fld->is_tensor()) {
         fld->get_value(tval, *eiter);
-        node_color = colorMap.valueToColor(tval);
+        node_color = map->valueToColor(tval);
       }
     }
     //accumulate VBO or IBO data
@@ -1327,7 +1317,7 @@ void ShowFieldModule::renderNodes(
 
 void ShowFieldModule::renderEdges(
   boost::shared_ptr<SCIRun::Field> field,
-  const ColorMap &colorMap,
+  boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   RenderState state,
   Core::Datatypes::GeometryHandle geom,
   const std::string& id) {
@@ -1454,6 +1444,7 @@ void ShowFieldModule::renderEdges(
     //coloring options
     if (colorScheme != GeometryObject::COLOR_UNIFORM)
     {
+      ColorMap * map = colorMap.get().get();
       if (fld->is_scalar())
       {
         if (fld->basis_order() == 1)
@@ -1467,8 +1458,8 @@ void ShowFieldModule::renderEdges(
 
           sval1 = sval0;
         }
-        edge_colors[0] = colorMap.valueToColor(sval0);
-        edge_colors[1] = colorMap.valueToColor(sval1);
+        edge_colors[0] = map->valueToColor(sval0);
+        edge_colors[1] = map->valueToColor(sval1);
       }
       else if (fld->is_vector())
       {
@@ -1483,8 +1474,8 @@ void ShowFieldModule::renderEdges(
           vval1 = vval0;
         }
 
-        edge_colors[0] = colorMap.valueToColor(vval0);
-        edge_colors[1] = colorMap.valueToColor(vval1);
+        edge_colors[0] = map->valueToColor(vval0);
+        edge_colors[1] = map->valueToColor(vval1);
       }
       else if (fld->is_tensor())
       {
@@ -1499,8 +1490,8 @@ void ShowFieldModule::renderEdges(
           tval1 = tval0;
         }
 
-        edge_colors[0] = colorMap.valueToColor(tval0);
-        edge_colors[1] = colorMap.valueToColor(tval1);
+        edge_colors[0] = map->valueToColor(tval0);
+        edge_colors[1] = map->valueToColor(tval1);
       }
     }
     //accumulate VBO or IBO data
