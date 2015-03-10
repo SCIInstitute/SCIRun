@@ -113,6 +113,11 @@ ColorRGB ColorMap::getColorMapVal(double v) const
   double f = getTransformedColor(v);
   //now grab the RGB
   ColorRGB col;
+  // This Rainbow takes into account scientific visualization recommendations.
+  // It tones down the yellow/cyan values so they don't appear to
+  // be "brighter" than the other colors. All colors "appear" to be the
+  // same brightness.
+  // Blue -> Dark Cyan -> Green -> Orange -> Red
   if (name_ == "Rainbow") {
     if (f < 0.25)
       col = ColorRGB(0., f*3., 1. - f);
@@ -123,6 +128,8 @@ ColorRGB ColorMap::getColorMapVal(double v) const
     else
       col = ColorRGB(1., 2. - 2.*f, 0.);
   }
+  //The Old Rainbow that simply transitions from blue to red 1 color at a time.
+  // Blue -> Cyan -> Green -> Yellow -> Red
   else if (name_ == "Old Rainbow") {
     if (f < 0.25)
       col = ColorRGB(0., 4.*f, 1.);
@@ -133,6 +140,9 @@ ColorRGB ColorMap::getColorMapVal(double v) const
     else
       col = ColorRGB(1., (1.-f)*4., 0.);
   }
+  // This map is designed to appear like a heat-map, where "cooler" (lower) values
+  // are darker and approach black, and "hotter" (higher) values are lighter
+  // and approach white. In between, you have the red, orange, and yellow transitions.
   else if (name_ == "Blackbody") {
     if (f < 0.333333)
       col = ColorRGB(f * 3., 0., 0.);
@@ -141,6 +151,7 @@ ColorRGB ColorMap::getColorMapVal(double v) const
     else
       col = ColorRGB(1., 1., (f - 0.6666666) * 3.);
   }
+  // A very simple black to white map with grays in between.
   else if (name_ == "Grayscale")
     col = ColorRGB(f,f,f);
   return col;
