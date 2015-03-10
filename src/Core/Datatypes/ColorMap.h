@@ -46,6 +46,7 @@ namespace Datatypes {
     explicit ColorMap(const std::string& name = "Rainbow", const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false,
                         const double rescale_scale = 1.0, const double rescale_shift = 0.);
+      
     virtual ColorMap* clone() const;
 
     std::string getColorMapName() const;
@@ -54,23 +55,28 @@ namespace Datatypes {
     bool getColorMapInvert() const;
     double getColorMapRescaleScale() const;
     double getColorMapRescaleShift() const;
-    Core::Datatypes::ColorRGB getColorMapVal(double v) const;
+    
     Core::Datatypes::ColorRGB valueToColor(double scalar) const;
     Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
     Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
+    
   private:
-    std::string name_;
-    size_t resolution_;
-    double shift_;
-    bool invert_;
-    //rescaling options.
-    double rescale_scale_;
-    double rescale_shift_;
-    static double Hue_2_RGB(double v1, double v2, double vH);
-    static Core::Datatypes::ColorRGB hslToRGB(double h, double s, double l);
+    ///<< Internal functions.
+    Core::Datatypes::ColorRGB getColorMapVal(double v) const;
     double getTransformedColor(double v) const;
-    void setColorMapRescaleScale(double scale);
-    void setColorMapRescaleShift(double shift);
+    
+    ///<< The colormap's name.
+    std::string name_;
+    ///<< The resolution of the map [2,256].
+    size_t resolution_;
+    ///<< The gamma shift.
+    double shift_;
+    ///<< Whether to invert the map or not.
+    bool invert_;
+    ///<< Rescaling scale (usually 1. / (data_max - data_min) ).
+    double rescale_scale_;
+    ///<< Rescaling shift (usually -data_min). Shift happens before scale.
+    double rescale_shift_;
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable

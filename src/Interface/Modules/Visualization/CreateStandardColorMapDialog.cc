@@ -90,7 +90,7 @@ const QString CreateStandardColorMapDialog::buildGradientString(const ColorMap& 
   for (double i = 0.001; i < 1.0; i += 0.001) {
     ss << " stop:" << i;
     ss << " rgba(";
-    ColorRGB c = cm.getColorMapVal(i);
+    ColorRGB c = cm.valueToColor(i);
     ss << int(255.*c.r()) << ", " << int(255.*c.g()) << ", " << int(255.*c.b()) << ", 255),";
   }
   ss << ");";
