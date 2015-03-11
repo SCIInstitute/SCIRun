@@ -43,9 +43,11 @@ namespace Datatypes {
   class SCISHARE ColorMap : public Datatype
   {
   public:
+    // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for it's
+    // default input range, we need to transform by default the data into [0,1] range.
     explicit ColorMap(const std::string& name = "Rainbow", const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false,
-                        const double rescale_scale = 1.0, const double rescale_shift = 0.);
+                        const double rescale_scale = .5, const double rescale_shift = 1.);
       
     virtual ColorMap* clone() const;
 
@@ -82,9 +84,10 @@ namespace Datatypes {
   class SCISHARE StandardColorMapFactory : boost::noncopyable
   {
   public:
-    static ColorMapHandle create(const std::string& name, const size_t &resolution,
-                                    const double &shift, const bool &invert,
-                                    const double &rescale_scale, const double &rescale_shift);
+   // See explanation for defaults above in ColorMap Constructor
+    static ColorMapHandle create(const std::string& name = "Rainbow", const size_t &resolution = 256,
+                                    const double &shift = 0.0, const bool &invert = false,
+                                    const double &rescale_scale = .5, const double &rescale_shift = 1.);
   private:
     StandardColorMapFactory();
   };

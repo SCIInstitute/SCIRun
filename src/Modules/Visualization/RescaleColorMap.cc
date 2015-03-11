@@ -54,7 +54,15 @@ void RescaleColorMap::setStateDefaults()
   state->setValue(Parameters::FixedMin, 0.0);
   state->setValue(Parameters::FixedMax, 1.0);
 }
-
+/**
+ * @name execute
+ *
+ * @brief This module has a simple algorithm to ensure the field data scales into ColorMap space.
+ *
+ * The "input" for this algorithm/module is the field data and the color map from
+ *  CreateStandardColorMap module. The "output" is a new color map that applies the rescaling
+ *  options from this module: rescale_shift, and rescale_scale.
+ */
 void RescaleColorMap::execute()
 {
   auto field = getRequiredInput(Field);
