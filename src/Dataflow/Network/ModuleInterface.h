@@ -108,6 +108,7 @@ namespace Networks {
     virtual ~ModuleInterface();
 
     virtual ModuleStateHandle get_state() = 0;
+    virtual const ModuleStateHandle get_state() const = 0;
 
     virtual bool do_execute() = 0;
 

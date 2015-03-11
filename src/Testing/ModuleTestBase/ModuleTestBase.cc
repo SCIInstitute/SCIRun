@@ -76,7 +76,6 @@ public:
   virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber) { return boost::signals2::connection(); }
 private:
   DatatypeHandleOption data_;
-  int previousId_;
 };
 
 class MockAlgorithmFactory : public AlgorithmFactory
@@ -121,6 +120,8 @@ void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, 
   if (portNum < module->num_input_ports())
   {
     auto iport = module->inputPorts()[portNum];
+    if (iport->nconnections() > 0)
+      iport->detach(0);
     iport->attach(0);
     DatatypeHandleOption o = data;
     dynamic_cast<StubbedDatatypeSink*>(iport->sink().get())->setData(o);

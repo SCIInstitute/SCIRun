@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,41 +24,11 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+ */
 
-#ifndef INTERFACE_MODULES_CREATEBASICCOLORMAPDIALOG_H
-#define INTERFACE_MODULES_CREATEBASICCOLORMAPDIALOG_H
+varying vec4 fColor;
 
-#include "Interface/Modules/Visualization/ui_CreateBasicColorMap.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Interface/Modules/Visualization/share.h>
-
-namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE CreateBasicColorMapDialog : public ModuleDialogGeneric, 
-  public Ui::CreateBasicColorMap
+void main()
 {
-	Q_OBJECT
-	
-public:
-  CreateBasicColorMapDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
- private Q_SLOTS:
-  void updateColorMapPreview(QString s);
-  const QString buildGradientString(SCIRun::Core::Datatypes::ColorMap cm);
-  void setShiftSlider(double d);
-  void setResolutionSlider(int i);
-  void setShiftText(int i);
-  void setResolutionText(int i);
-  void onInvertCheck(bool b);
-  
-};
-
+   gl_FragColor = fColor;
 }
-}
-
-#endif

@@ -25,34 +25,30 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
 
-#ifndef MODULES_VISUALIZATION_CREATEBASICCOLORMAP_H
-#define MODULES_VISUALIZATION_CREATEBASICCOLORMAP_H
+#ifndef INTERFACE_MODULES_RESCALECOLORMAPDIALOG_H
+#define INTERFACE_MODULES_RESCALECOLORMAPDIALOG_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Visualization/share.h>
+#include "Interface/Modules/Visualization/ui_RescaleColorMap.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Visualization {
+namespace Gui {
+  
+class SCISHARE RescaleColorMapDialog : public ModuleDialogGeneric,
+	public Ui::RescaleColorMap
+{
+	Q_OBJECT
+	
+public:
+    RescaleColorMapDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+};
 
-  class SCISHARE CreateBasicColorMap : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has1OutputPort<ColorMapPortTag>
-  {
-  public:
-    CreateBasicColorMap();
-    virtual void execute();
-    virtual void setStateDefaults();
-    
-    
-	static const Core::Algorithms::AlgorithmParameterName ColorMapName;
-	static const Core::Algorithms::AlgorithmParameterName ColorMapInvert;
-	static const Core::Algorithms::AlgorithmParameterName ColorMapShift;
-	static const Core::Algorithms::AlgorithmParameterName ColorMapResolution;
-    OUTPUT_PORT(0, ColorMapObject, ColorMap);
-  };
-}}}
+}
+}
 
 #endif

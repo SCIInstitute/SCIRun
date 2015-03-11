@@ -53,7 +53,7 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
     if (false)
       std::cout << p.first << " --> " << p.second << std::endl;
   }
-  EXPECT_EQ(84, descMap.size());
+  EXPECT_TRUE(descMap.size() >= 86);
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)

@@ -27,8 +27,8 @@
 */
 
 #include <Interface/Modules/Visualization/ShowColorMapDialog.h>
-#include <Modules/Visualization/ShowColorMapModule.h> 
-#include <Dataflow/Network/ModuleStateInterface.h> 
+#include <Modules/Visualization/ShowColorMapModule.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -44,11 +44,11 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
   fixSize();
 	addRadioButtonGroupManager({ leftRadioButton_, bottomRadioButton_ }, ShowColorMapModule::DisplaySide);
 	addRadioButtonGroupManager({ firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_ }, ShowColorMapModule::DisplayLength);
-	addRadioButtonGroupManager({ LRadioButton_, MRadioButton_, SRadioButton_, TRadioButton_, XLRadioButton_ }, ShowColorMapModule::TextSize);
-	addLineEditManager(labelsLineEdit_, ShowColorMapModule::Labels);
-	addLineEditManager(scaleLineEdit_, ShowColorMapModule::Scale);
-	addLineEditManager(unitsLineEdit_, ShowColorMapModule::Units);
-	addLineEditManager(sigDigitsLineEdit_, ShowColorMapModule::SignificantDigits);
+	addRadioButtonGroupManager({ TRadioButton_, SRadioButton_, MRadioButton_, LRadioButton_, XLRadioButton_ }, ShowColorMapModule::TextSize);
+	addSpinBoxManager(ticksSpinner_, ShowColorMapModule::Labels);
+	addDoubleSpinBoxManager(scaleSpinner_, ShowColorMapModule::Scale);
+	addLineEditManager(unitsText_, ShowColorMapModule::Units);
+	addSpinBoxManager(sigDigitsSpinner_, ShowColorMapModule::SignificantDigits);
 	addCheckBoxManager(addExtraSpaceCheckBox_, ShowColorMapModule::AddExtraSpace);
     connectButtonToExecuteSignal(addExtraSpaceCheckBox_);
     connectButtonToExecuteSignal(leftRadioButton_);
@@ -56,9 +56,50 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
     connectButtonToExecuteSignal(firstHalfRadioButton_);
     connectButtonToExecuteSignal(fullRadioButton_);
     connectButtonToExecuteSignal(secondHalfRadioButton_);
+    connectButtonToExecuteSignal(textColorPushButton_);
+    connectButtonToExecuteSignal(TRadioButton_);
+    connectButtonToExecuteSignal(SRadioButton_);
+    connectButtonToExecuteSignal(MRadioButton_);
+    connectButtonToExecuteSignal(LRadioButton_);
+    connectButtonToExecuteSignal(XLRadioButton_);
+
+    connect(textColorPushButton_,SIGNAL(clicked()),this,SLOT(getColor()));
+    text_color_ = QColor(255,255,255,255);
+	addDoubleSpinBoxManager(&r_, ShowColorMapModule::TextRed);
+	addDoubleSpinBoxManager(&g_, ShowColorMapModule::TextGreen);
+	addDoubleSpinBoxManager(&b_, ShowColorMapModule::TextBlue);
+    r_.setValue(1.);
+    g_.setValue(1.);
+    b_.setValue(1.);
+    sigDigitsSpinner_->setValue(2);
+    ticksSpinner_->setValue(10);
+    scaleSpinner_->setValue(1.);
+    TRadioButton_->setChecked(false);
+    SRadioButton_->setChecked(false);
+    MRadioButton_->setChecked(true);
+    LRadioButton_->setChecked(false);
+    XLRadioButton_->setChecked(false);
+
+  createExecuteInteractivelyToggleAction();
 }
 
 void ShowColorMapDialog::pull()
 {
   pull_newVersionToReplaceOld();
+  Pulling p(this);
+  r_.setValue(state_->getValue(ShowColorMapModule::TextRed).toDouble());
+  g_.setValue(state_->getValue(ShowColorMapModule::TextGreen).toDouble());
+  b_.setValue(state_->getValue(ShowColorMapModule::TextBlue).toDouble());
+}
+
+void ShowColorMapDialog::getColor()
+{
+  text_color_ = QColorDialog::getColor(text_color_);
+    std::stringstream ss;
+    ss << "background-color: rgb(" << text_color_.red() << ", " <<
+            text_color_.green() << ", " << text_color_.blue() << ");";
+  textColorDisplayLabel_->setStyleSheet(QString::fromStdString(ss.str()));
+  r_.setValue(text_color_.redF());
+  g_.setValue(text_color_.greenF());
+  b_.setValue(text_color_.blueF());
 }

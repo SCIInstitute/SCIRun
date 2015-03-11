@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,29 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.cc
+// Uniforms
+uniform float    uAspectRatio  ;      
+uniform float    uWindowWidth  ;
+uniform float    uExtraSpace   ;
+uniform float    uDisplaySide  ;
+uniform float    uDisplayLength;
 
-#include <Modules/Visualization/ShowColorMap.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Datatypes/ColorMap.h>
+// Attributes
+attribute vec3  aPos;
+attribute vec4  aColor;
 
-using namespace SCIRun::Modules::Visualization;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+//Outputs
+varying vec4 fColor;
 
-ShowColorMap::ShowColorMap() : Module(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
+void main( void )
 {
-  INITIALIZE_PORT(ColorMapObject);
-}
-
-void ShowColorMap::setStateDefaults()
-{
-  auto state = get_state();
-  //state->setValue(Variables::ColorMapName, std::string("Rainbow"));
-}
-
-void ShowColorMap::execute()
-{
-  sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).toString()));
+  bool ex = uExtraSpace == 1.;
+  bool ds = uDisplaySide == 0.;
+  bool full = uDisplayLength == 1.;
+  bool half1 = uDisplayLength == 0.;
+  vec3 newPos = aPos;
+  float x_scale = 1.5 / uWindowWidth;
+  float y_scale = 2.9 / (uWindowWidth / uAspectRatio);
+  float x_trans = ds?(-1.+(ex?.05:0.)):(-1.+(full?(aPos.z*1.8+.1):(aPos.z*.9+(half1?0.+(ex?.05:0.):
+                                       1.1+(ex?-.05:0.)))) - 15. / uWindowWidth);
+  float y_trans = ds?(-1.+(full?(aPos.z*1.8+.1):(aPos.z*.9+(half1?0.+(ex?.05:0.):
+                                       1.1+(ex?-.05:0.)))) - 2. / uWindowWidth):(-1.+(ex?.05:0.));
+  gl_Position = vec4(newPos.x * x_scale + x_trans, 
+                     newPos.y * y_scale + y_trans, 0., 1.0);
+  fColor = aColor;
 }

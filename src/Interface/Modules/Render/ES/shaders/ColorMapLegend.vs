@@ -49,10 +49,10 @@ void main( void )
   vec3 newPos = ds?vec3(aPos.x, aPos.y, aPos.z):vec3(aPos.y,aPos.x,aPos.z);
   float x_scale = ds?(30.0 / uWindowWidth):(full?1.8:0.9);
   float y_scale = ds?(full?1.8:0.9):(30. * uAspectRatio / uWindowWidth);
-  float x_trans = ds?(-1.+(ex?(30. / uWindowWidth):0.)):(full?-0.9:
-                  (half1?(ex?(30. / uWindowWidth - 1.):-1.):(ex?0.05:0.1)));
-  float y_trans = (!ds)?(-1.+(ex?(30. * uAspectRatio / uWindowWidth):0.)):
-                  (full?-0.9:(half1?(ex?(30. * uAspectRatio / uWindowWidth - 1.):
+  float x_trans = ds?(-1.+(ex?.05:0.)):(full?-0.9:
+                  (half1?(ex?-.95:-1.):(ex?0.05:0.1)));
+  float y_trans = (!ds)?(-1.+(ex?.05:0.)):
+                  (full?-0.9:(half1?(ex?(-.95):
                   -1.):(ex?0.05:0.1)));
   gl_Position = vec4(newPos.x * x_scale + x_trans, 
                      newPos.y * y_scale + y_trans, newPos.z, 1.0);

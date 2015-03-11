@@ -47,6 +47,7 @@ namespace SCIRun {
           MOCK_METHOD0(execute, void());
           MOCK_METHOD0(do_execute, bool());
           MOCK_METHOD0(get_state, ModuleStateHandle());
+          MOCK_CONST_METHOD0(get_state, const ModuleStateHandle());
           MOCK_METHOD1(set_state, void(ModuleStateHandle));
           MOCK_METHOD2(send_output_handle, void(const PortId&, SCIRun::Core::Datatypes::DatatypeHandle));
           MOCK_METHOD1(get_input_handle, SCIRun::Core::Datatypes::DatatypeHandleOption(const PortId&));

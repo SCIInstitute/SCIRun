@@ -27,7 +27,7 @@
 #
 
 SET(Modules_Visualization_Tests_SRCS
-  CreateBasicColorMapTests.cc
+  CreateStandardColorMapTests.cc
   MatrixAsVectorFieldTests.cc
   ShowFieldTests.cc
   ShowMeshTests.cc

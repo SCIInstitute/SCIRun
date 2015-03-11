@@ -37,10 +37,24 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
+
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Visualization
+      {
+        ALGORITHM_PARAMETER_DECL(CylinderRadius);
+      }
+    }
+  }
+
+
+
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::Module,
+      class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>
       {
@@ -62,8 +76,10 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
         static Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
         static Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
+        static Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
         static Core::Algorithms::AlgorithmParameterName SphereScaleValue;
         static Core::Algorithms::AlgorithmParameterName CylinderResolution;
+        static Core::Algorithms::AlgorithmParameterName SphereResolution;
         static Core::Algorithms::AlgorithmParameterName CylinderRadius;
 
         INPUT_PORT(0, Field, LegacyField);
@@ -74,15 +90,15 @@ namespace SCIRun {
 
         virtual void setStateDefaults();
       private:
-        /// Constructs a geometry object (essentially a spire object) from the given 
+        /// Constructs a geometry object (essentially a spire object) from the given
         /// field data.
         /// \param field    Field from which to construct geometry.
-        /// \param state    
+        /// \param state
         /// \param id       Ends up becoming the name of the spire object.
         Core::Datatypes::GeometryHandle buildGeometryObject(
           boost::shared_ptr<SCIRun::Field> field,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
-          Dataflow::Networks::ModuleStateHandle state, const std::string& id);
+          Dataflow::Networks::ModuleStateHandle state);
 
         /// Mesh construction. Any of the functions below can modify the renderState.
         /// This modified render state will be passed onto the renderer.
@@ -145,9 +161,9 @@ namespace SCIRun {
         void applyColorMapScaling(boost::shared_ptr<SCIRun::Field> field,
           Core::Datatypes::GeometryObject::SpireSubPass& pass);
 
-        double sphereScalar_;
         float faceTransparencyValue_;
         float edgeTransparencyValue_;
+        float nodeTransparencyValue_;
 
       };
 
