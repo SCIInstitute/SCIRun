@@ -171,6 +171,7 @@ Q_SIGNALS:
   void moduleSelected(bool selected);
   void displayChanged();
   void requestModuleVisible();
+  void deleteMeLater();
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
