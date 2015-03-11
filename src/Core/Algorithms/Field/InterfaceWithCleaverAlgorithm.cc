@@ -121,7 +121,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   }
   
   std::ostringstream ostr0;
-  ostr0 << "Be aware that insides and outsides of materials (to be meshed) need to be defined as positive and negative (e.g. surface distance) values across all module inputs. The zero crossings represents material boundaries." << std::endl; 
+  ostr0 << "Be aware that inside and outside of materials (to be meshed) need to be defined as positive and negative (e.g. surface distance) values across all module inputs. The zero crossings represents material boundaries." << std::endl; 
   remark(ostr0.str());
            
   std::vector<boost::shared_ptr<Cleaver::ScalarField>> fields;  
