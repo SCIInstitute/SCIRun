@@ -288,6 +288,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
 
+  connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
 
   setupInputWidgets();
 
@@ -329,6 +330,7 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   WidgetDisablingService::Instance().addNetworkEditor(networkEditor_);
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), &WidgetDisablingService::Instance(), SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), &WidgetDisablingService::Instance(), SLOT(enableInputWidgets()));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(changeExecuteActionIconToPlay()));
 
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
@@ -1379,4 +1381,14 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
     statusBar()->showMessage("Network zoom inactive", 1000);
 	}
   QMainWindow::keyPressEvent(event);
+}
+
+void SCIRunMainWindow::changeExecuteActionIconToStop()
+{
+  actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
+}
+
+void SCIRunMainWindow::changeExecuteActionIconToPlay()
+{
+  actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
 }

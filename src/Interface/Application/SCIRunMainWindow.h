@@ -163,6 +163,8 @@ private Q_SLOTS:
   void highlightPortsChanged();
   void resetWindowLayout();
   void zoomNetwork();
+  void changeExecuteActionIconToStop();
+  void changeExecuteActionIconToPlay();
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
   void adjustModuleDock(int state);
