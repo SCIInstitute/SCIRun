@@ -212,7 +212,7 @@ public:
       GLint uniformColorLoc = 0;
       for (const ren::VecUniform& unif : vecUniforms)
       {
-        if (std::string(unif.uniformName) == "uFieldData")
+        if (std::string(unif.uniformName) == "uColor")
         {
           uniformColorLoc = unif.uniformLocation;
         }
@@ -243,7 +243,7 @@ public:
           if (stride != 0) {posDeserialize.readBytes(stride);}
           posSize = attrib.sizeInBytes;
         }
-        else if (attrib.name == "aFieldData")
+        else if (attrib.name == "aColor")
         {
           if (stride != 0) {dataDeserialize.readBytes(stride);}
           dataSize = attrib.sizeInBytes;
