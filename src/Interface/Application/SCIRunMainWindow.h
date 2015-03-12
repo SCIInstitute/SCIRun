@@ -92,6 +92,7 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
+  QToolButton* executeButton_;
 
 private:
   void postConstructionSignalHookup();
