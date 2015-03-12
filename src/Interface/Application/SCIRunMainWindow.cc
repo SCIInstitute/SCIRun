@@ -289,6 +289,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
+  connect(actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
+  adjustExecuteButtonAppearance();
 
   setupInputWidgets();
 
@@ -1391,4 +1393,24 @@ void SCIRunMainWindow::changeExecuteActionIconToStop()
 void SCIRunMainWindow::changeExecuteActionIconToPlay()
 {
   actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
+}
+
+void SCIRunMainWindow::adjustExecuteButtonAppearance()
+{
+  //qDebug() << "box state is : " << actionTextIconCheckBox_->checkState();
+  switch (actionTextIconCheckBox_->checkState())
+  {
+  case 0:
+    actionTextIconCheckBox_->setText("Execute Button Text");
+    actionExecute_All_->setText("Execute All");
+    break;
+  case 1:
+    actionTextIconCheckBox_->setText("Execute Button Icon");
+    actionExecute_All_->setText("");
+    break;
+  case 2:
+    actionTextIconCheckBox_->setText("Execute Button Text+Icon");
+    actionExecute_All_->setText("Execute All");
+    break;
+  }
 }

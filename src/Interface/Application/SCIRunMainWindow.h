@@ -165,6 +165,7 @@ private Q_SLOTS:
   void zoomNetwork();
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
+  void adjustExecuteButtonAppearance();
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
   void adjustModuleDock(int state);
