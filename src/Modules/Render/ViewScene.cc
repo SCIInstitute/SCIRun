@@ -58,7 +58,7 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
 void ViewScene::setStateDefaults()
 {
   auto state = get_state();
-  //none yet, but LOTS to come...
+  state->setValue(BackgroundColor, ColorRGB(1.0, 1.0, 1.0).toString());
 }
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
@@ -125,3 +125,4 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   get_state()->fireTransientStateChangeSignal();
 }
 
+SCIRun::Core::Algorithms::AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");

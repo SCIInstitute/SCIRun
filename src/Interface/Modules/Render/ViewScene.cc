@@ -42,6 +42,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Render;
+using namespace SCIRun::Modules::Render;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -96,6 +97,21 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 		  spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
 	  }
   }
+
+  {
+    //Set background Color
+    ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
+    QColor bgColor = QColor(
+      static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
+    mConfigurationDock->setSampleColor(bgColor);
+    //state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor.red(), bgColor.green(), bgColor.blue()).toString());
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    spire->setBackgroundColor(bgColor);
+  }
+
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
@@ -418,9 +434,7 @@ void ViewSceneDialog::assignBackgroundColor()
   {
     bgColor = newColor;
     mConfigurationDock->setSampleColor(bgColor);
-    //TODO: set color of button to this color
-    //defaultMeshColorButton_->set
-    //state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
+    state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor.red(), bgColor.green(), bgColor.blue()).toString());
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     spire->setBackgroundColor(bgColor);
   }
