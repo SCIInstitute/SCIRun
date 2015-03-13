@@ -101,15 +101,12 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   {
     //Set background Color
     ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
-    QColor bgColor = QColor(
-      static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+    bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+                      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+                      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 
-    mConfigurationDock->setSampleColor(bgColor);
-    //state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor.red(), bgColor.green(), bgColor.blue()).toString());
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-    spire->setBackgroundColor(bgColor);
+    spire->setBackgroundColor(bgColor_);
   }
 
 
@@ -417,8 +414,11 @@ void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::configurationButtonClicked()
 {
-	if (!mConfigurationDock)
-		addConfigurationDock(windowTitle());
+  if (!mConfigurationDock)
+  {
+    addConfigurationDock(windowTitle());
+    mConfigurationDock->setSampleColor(bgColor_);
+  }
 
   showConfiguration_ = !mConfigurationDock->isVisible();
   mConfigurationDock->setEnabled(showConfiguration_);
@@ -428,15 +428,15 @@ void ViewSceneDialog::configurationButtonClicked()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::assignBackgroundColor()
 {
-  QColor bgColor = Qt::black;
-  auto newColor = QColorDialog::getColor(bgColor, this, "Choose background color");
+  QString title = windowTitle() + " Choose background color";
+  auto newColor = QColorDialog::getColor(bgColor_, this, title);
   if (newColor.isValid())
   {
-    bgColor = newColor;
-    mConfigurationDock->setSampleColor(bgColor);
-    state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor.red(), bgColor.green(), bgColor.blue()).toString());
+    bgColor_ = newColor;
+    mConfigurationDock->setSampleColor(bgColor_);
+    state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-    spire->setBackgroundColor(bgColor);
+    spire->setBackgroundColor(bgColor_);
   }
 }
 

@@ -58,7 +58,7 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
 void ViewScene::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(BackgroundColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
 }
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
