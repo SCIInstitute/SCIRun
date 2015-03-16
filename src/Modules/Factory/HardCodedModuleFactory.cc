@@ -162,6 +162,11 @@ bool SCIRun::Modules::Factory::operator!=(const ConnectedPortInfo& lhs, const Co
   return !(lhs == rhs);
 }
 
+bool SCIRun::Modules::Factory::operator<(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
+{
+  return true;
+}
+
 std::ostream& SCIRun::Modules::Factory::operator<<(std::ostream& o, const ConnectedPortInfo& cpi)
 {
   o << "Connected port info: ";
