@@ -32,6 +32,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Modules/Visualization/share.h>
@@ -131,8 +132,7 @@ namespace SCIRun {
           CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
           CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
           Core::Datatypes::GeometryObject::ColorScheme colorScheme,
-          std::vector<double> &scols,
-          std::vector<Core::Datatypes::Material> &vcols,
+          const std::vector<SCIRun::Core::Datatypes::ColorRGB> &face_colors,
           const RenderState& state);
 
         void renderEdges(
@@ -157,10 +157,7 @@ namespace SCIRun {
           Dataflow::Networks::ModuleStateHandle state,
           boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
         /// @}
-
-        void applyColorMapScaling(boost::shared_ptr<SCIRun::Field> field,
-          Core::Datatypes::GeometryObject::SpireSubPass& pass);
-
+        
         float faceTransparencyValue_;
         float edgeTransparencyValue_;
         float nodeTransparencyValue_;
