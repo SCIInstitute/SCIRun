@@ -26,16 +26,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Application/Application.h>
 #include <Interface/Application/GuiApplication.h>
 #include <Core/ConsoleApplication/ConsoleApplication.h>
+
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Console;
 
-int main(int argc, const char* argv[])
+// If building on WIN32, use this entry point.
+#ifdef WIN32
+
+#include <windows.h>
+#include <vector>
+#include <boost\algorithm\string.hpp>
+
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+#ifdef SCIRUN_SHOW_CONSOLE 
+   AllocConsole();
+   freopen("CONIN$","r",stdin);
+   freopen("CONOUT$","w",stdout);
+   freopen("CONOUT$","w",stderr);  
+#endif
+
+  const int argc = __argc;  
+  const char *argv[50];
+  char *tempArgv[] = {GetCommandLine()};  
+  
+  // The GetCommandLine() function returns argv as a single string. The split function splits it up into
+  // the individual arguments.
+  std::vector<std::string> getArgv;
+  boost::algorithm::split(getArgv, tempArgv[0], boost::is_any_of(" \0"));
+    
+  // Put the individual arguments into the argv that will be passed.
+  for(int i = 0; i < argc; i++) 
+	  argv[i] = getArgv[i].c_str();  
+  
   Application::Instance().readCommandLine(argc, argv);
   
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
@@ -46,3 +75,21 @@ int main(int argc, const char* argv[])
   return ConsoleApplication::run(argc, argv);
 #endif
 }
+
+#else // If not WIN32 use this main()/entry point.
+
+int main(int argc, const char* argv[])
+{
+	Application::Instance().readCommandLine(argc, argv);
+
+	//TODO: must read --headless flag here, or try pushing command queue building all the way up here
+
+#ifndef BUILD_HEADLESS
+	return GuiApplication::run(argc, argv);
+#else
+	return ConsoleApplication::run(argc, argv);
+#endif
+}
+
+#endif // End of main for non-Windows.
+
