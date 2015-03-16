@@ -59,7 +59,7 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, ModuleStateFactoryHandle(), ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   auto network = controller.getNetwork();
@@ -156,4 +156,16 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 TEST_F(ModuleReplaceTests, DISABLED_NoConnectedPortsCanBeReplacedWithAnything)
 {
   FAIL() << "todo";
+}
+
+TEST(ReplacementFilterBuilderTests, CanBuild)
+{
+  HardCodedModuleFactory factory;
+
+  auto descMap = factory.getDirectModuleDescriptionLookupMap();
+
+  ModuleReplacementFilterBuilder builder(descMap);
+  auto filter = builder.build();
+
+  ASSERT_TRUE(filter != nullptr);
 }

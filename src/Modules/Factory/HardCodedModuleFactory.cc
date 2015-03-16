@@ -199,3 +199,22 @@ ConnectedPortInfo SCIRun::Modules::Factory::makeConnectedPortInfo(ModuleHandle m
   }
   return cpi;
 }
+
+boost::shared_ptr<ModuleReplacementFilter> ModuleReplacementFilterBuilder::build()
+{
+  ModuleReplacementFilter::ReplaceMap replaceMap;
+
+  for (const auto& infoDesc : descMap_)
+  {
+    if (false)
+      std::cout << infoDesc.first << " --> " << infoDesc.second << std::endl;
+
+    registerModule(infoDesc.first, infoDesc.second.input_ports_, infoDesc.second.output_ports_);
+  }
+
+  return boost::make_shared<ModuleReplacementFilter>(std::move(replaceMap));
+}
+
+void ModuleReplacementFilterBuilder::registerModule(const ModuleLookupInfo& info, const InputPortDescriptionList& inputPorts, const OutputPortDescriptionList& outputPorts)
+{
+}

@@ -48,23 +48,30 @@ namespace SCIRun {
 
       SCISHARE bool operator==(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
       SCISHARE bool operator!=(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
+      SCISHARE bool operator<(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
       SCISHARE std::ostream& operator<<(std::ostream& o, const ConnectedPortInfo& cpi);
       SCISHARE ConnectedPortInfo makeConnectedPortInfo(Dataflow::Networks::ModuleHandle module); 
 
       class SCISHARE ModuleReplacementFilter
       {
       public:
+        typedef std::map<ConnectedPortInfo, std::vector<Dataflow::Networks::ModuleLookupInfo>> ReplaceMap;
+        explicit ModuleReplacementFilter(ReplaceMap&& map) : replaceMap_(map) {}
         std::vector<Dataflow::Networks::ModuleLookupInfo> findReplacements(const ConnectedPortInfo& ports) const;
+      private:
+        ReplaceMap replaceMap_;
       };
 
       class SCISHARE ModuleReplacementFilterBuilder
       {
       public:
+        explicit ModuleReplacementFilterBuilder(const Dataflow::Networks::DirectModuleDescriptionLookupMap& map) : descMap_(map) {}
+        boost::shared_ptr<ModuleReplacementFilter> build();
+      private:
         void registerModule(const Dataflow::Networks::ModuleLookupInfo& info,
           const Dataflow::Networks::InputPortDescriptionList& inputPorts,
           const Dataflow::Networks::OutputPortDescriptionList& outputPorts);
-
-        boost::shared_ptr<ModuleReplacementFilter> build();
+        const Dataflow::Networks::DirectModuleDescriptionLookupMap& descMap_;
       };
 
       class SCISHARE HardCodedModuleFactory : public SCIRun::Dataflow::Networks::ModuleFactory
