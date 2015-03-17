@@ -211,15 +211,78 @@ boost::shared_ptr<ModuleReplacementFilter> ModuleReplacementFilterBuilder::build
 
   for (const auto& infoDesc : descMap_)
   {
-    if (false)
-      std::cout << infoDesc.first << " --> " << infoDesc.second << std::endl;
-
-    registerModule(infoDesc.first, infoDesc.second.input_ports_, infoDesc.second.output_ports_);
+    // if (false)
+    //   std::cout << infoDesc.first << " --> " << infoDesc.second << std::endl;
+    //
+    registerModule(replaceMap, infoDesc.first, infoDesc.second.input_ports_, infoDesc.second.output_ports_);
   }
 
   return boost::make_shared<ModuleReplacementFilter>(std::move(replaceMap));
 }
 
-void ModuleReplacementFilterBuilder::registerModule(const ModuleLookupInfo& info, const InputPortDescriptionList& inputPorts, const OutputPortDescriptionList& outputPorts)
+void ModuleReplacementFilterBuilder::registerModule(ModuleReplacementFilter::ReplaceMap& replaceMap,
+  const ModuleLookupInfo& info, const InputPortDescriptionList& inputPorts, const OutputPortDescriptionList& outputPorts)
 {
+  for (const auto& cpi : allPossibleConnectedPortConfigs(inputPorts, outputPorts))
+  {
+    replaceMap[cpi].push_back(info);
+  }
+}
+
+namespace
+{
+  template <typename K, typename V>
+  std::map<K,V> unionMaps(const std::map<K,V>& m1, const std::map<K,V>& m2)
+  {
+    return std::map<K,V>();
+  }
+
+  void addOptionsForOneSide(const std::vector<PortDescription>& inputPorts, std::vector<ConnectedPortTypesWithCount>& inputOptions)
+  {
+    for (const auto& in : inputPorts)
+    {
+      if (inputOptions.empty())
+      {
+        inputOptions.push_back({ { in.datatype, 0 } });
+        inputOptions.push_back({ { in.datatype, 1 } });
+      }
+      else
+      {
+        std::vector<ConnectedPortTypesWithCount> inputOptionsAdditional;
+        for (const auto& opt : inputOptions)
+        {
+          inputOptionsAdditional.push_back(unionMaps(opt, { { in.datatype, 0 } }));
+          inputOptionsAdditional.push_back(unionMaps(opt, { { in.datatype, 1 } }));
+        }
+        std::copy(inputOptionsAdditional.begin(), inputOptionsAdditional.end(), std::back_inserter(inputOptions));
+      }
+    }
+  }
+}
+
+std::vector<ConnectedPortInfo> SCIRun::Modules::Factory::allPossibleConnectedPortConfigs(const InputPortDescriptionList& inputPorts,
+  const OutputPortDescriptionList& outputPorts)
+{
+  std::vector<ConnectedPortTypesWithCount> inputOptions, outputOptions;
+  addOptionsForOneSide(inputPorts, inputOptions);
+  addOptionsForOneSide(outputPorts, outputOptions);
+
+  std::vector<ConnectedPortInfo> cpis;
+
+//NO!: need cartesian product iterator
+  std::transform(inputOptions.begin(), inputOptions.end(), outputOptions.begin(), std::back_inserter(cpis),
+    [](const ConnectedPortTypesWithCount& in, const ConnectedPortTypesWithCount& out) { return ConnectedPortInfo { in, out }; });
+
+  return cpis;
+}
+
+const std::vector<ModuleLookupInfo>& ModuleReplacementFilter::findReplacements(const ConnectedPortInfo& ports) const
+{
+  auto iter = replaceMap_.find(ports);
+  if (iter == replaceMap_.end())
+  {
+    static const std::vector<ModuleLookupInfo> empty;
+    return empty;
+  }
+  return iter->second;
 }

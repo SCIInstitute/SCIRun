@@ -153,8 +153,19 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
   }
 }
 
-TEST_F(ModuleReplaceTests, DISABLED_NoConnectedPortsCanBeReplacedWithAnything)
+TEST_F(ModuleReplaceTests, NoConnectedPortsCanBeReplacedWithAnything)
 {
+  HardCodedModuleFactory factory;
+
+  auto descMap = factory.getDirectModuleDescriptionLookupMap();
+
+  ModuleReplacementFilterBuilder builder(descMap);
+  auto filter = builder.build();
+
+  ConnectedPortInfo noConnections;
+
+  EXPECT_EQ(descMap.size(), filter->findReplacements(noConnections).size());
+
   FAIL() << "todo";
 }
 
