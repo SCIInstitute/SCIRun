@@ -36,7 +36,6 @@
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/DynamicPortManager.h>
@@ -50,6 +49,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::ReplacementImpl;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
@@ -421,11 +421,11 @@ void NetworkEditorController::enableSignals()
   signalSwitch_ = true;
 }
 
-const std::vector<ModuleLookupInfo>& NetworkEditorController::possibleReplacements(ModuleHandle module) const
+const std::vector<ModuleLookupInfo>& NetworkEditorController::possibleReplacements(ModuleHandle module)
 {
   if (!replacementFilter_)
   {
-    auto descMap = factory.getDirectModuleDescriptionLookupMap();
+    auto descMap = moduleFactory_->getDirectModuleDescriptionLookupMap();
     ModuleReplacementFilterBuilder builder(descMap);
     replacementFilter_ = builder.build();
   }

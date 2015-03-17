@@ -36,6 +36,7 @@
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
+#include <Dataflow/Network/ModuleFactory.h> // todo split out replacement impl types
 #include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
@@ -142,7 +143,7 @@ namespace Engine {
 
     const Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
 
-    const std::vector<Networks::ModuleLookupInfo>& possibleReplacements(Networks::ModuleHandle module) const;
+    const std::vector<Networks::ModuleLookupInfo>& possibleReplacements(Networks::ModuleHandle module);
 
   private:
     void printNetwork() const;
@@ -172,6 +173,7 @@ namespace Engine {
 
     boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
     bool signalSwitch_;
+    boost::shared_ptr<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
   };
 
   typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;

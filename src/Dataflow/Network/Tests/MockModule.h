@@ -102,6 +102,7 @@ namespace SCIRun {
           virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory);
           virtual void setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory);
           virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
+          virtual const DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const { throw "not implemented"; }
         private:
           size_t moduleCounter_;
           ModuleStateFactoryHandle stateFactory_;

@@ -50,6 +50,7 @@ namespace Networks {
     virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) = 0;
     virtual void setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory) = 0;
     virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const = 0;
+    virtual const DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const = 0;
   };
 
   SCISHARE SCIRun::Dataflow::Networks::ModuleHandle CreateModuleFromUniqueName(ModuleFactory& factory, const std::string& moduleName);
