@@ -179,3 +179,35 @@ TEST(ReplacementFilterBuilderTests, CanBuild)
 
   ASSERT_TRUE(filter != nullptr);
 }
+
+TEST_F(ModuleReplaceTests, CurrentConnectionsFilterReplacements)
+{
+  HardCodedModuleFactory factory;
+  auto descMap = factory.getDirectModuleDescriptionLookupMap();
+  ModuleReplacementFilterBuilder builder(descMap);
+  auto filter = builder.build();
+
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+  auto network = controller.getNetwork();
+  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle process = controller.addModule("NeedToExecuteTester");
+  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+
+  ASSERT_EQ(3, network->nmodules());
+
+  auto repl = filter->findReplacements(makeConnectedPortInfo(send));
+  EXPECT_EQ(descMap.size(), repl.size()); //everything
+
+  auto cid1 = network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 0));
+  auto cid2 = network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
+  ASSERT_EQ(2, network->nconnections());
+
+  repl = filter->findReplacements(makeConnectedPortInfo(send));
+  EXPECT_LE(repl.size(), descMap.size()); // some modules have been filtered out
+
+  network->disconnect(cid1);
+  repl = filter->findReplacements(makeConnectedPortInfo(send));
+  EXPECT_EQ(descMap.size(), repl.size()); //everything again
+}
