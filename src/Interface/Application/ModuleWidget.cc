@@ -87,7 +87,7 @@ namespace Gui {
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
-        << disabled(new QAction("Replace With", parent))
+        << new QAction("Replace With", parent)
         << new QAction("Collapse", parent)
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
@@ -631,15 +631,12 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
 
-  //TODO: very slow code, action disabled anyway--turning off for now
-#if 0
   auto replaceWith = actionsMenu_->getAction("Replace With");
   auto menu = new QMenu(this);
   replaceWith->setMenu(menu);
   fillReplaceWithMenu();
-  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
-  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
-#endif
+//  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
+//  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
@@ -658,8 +655,12 @@ void ModuleWidget::fillReplaceWithMenu()
   auto menu = getReplaceWithMenu();
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
+  auto replacements = Core::Application::Instance().controller()->possibleReplacements(this->theModule_);
+  auto matches = [](const ModuleDescription& md) { return [&](const ModuleLookupInfo& mli) { return md.lookupInfo_.module_name_ == mli.module_name_; }; };
+  auto isReplacement = [&](const ModuleDescription& md)
+    { return std::find_if(replacements.begin(), replacements.end(), matches(md)) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
-    [this](const ModuleDescription& md) { return canReplaceWith(this->theModule_, md); },
+    isReplacement,
     [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); });
 }
 

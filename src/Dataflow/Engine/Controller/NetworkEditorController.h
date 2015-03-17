@@ -142,10 +142,12 @@ namespace Engine {
 
     const Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
 
+    const std::vector<Networks::ModuleLookupInfo>& possibleReplacements(Networks::ModuleHandle module) const;
+
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
-    
+
     void executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
     void initExecutor();
     ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);

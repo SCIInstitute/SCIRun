@@ -35,6 +35,7 @@ using namespace SCIRun;
 using namespace SCIRun::Testing;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::ReplacementImpl;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Core::Algorithms;
 

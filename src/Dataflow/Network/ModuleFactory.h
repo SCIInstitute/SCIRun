@@ -28,9 +28,11 @@
 /// @todo Documentation Dataflow/Network/ModuleFactory.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_FACTORY_H
-#define DATAFLOW_NETWORK_MODULE_FACTORY_H 
+#define DATAFLOW_NETWORK_MODULE_FACTORY_H
 
+#include <vector>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Network/share.h>
 
@@ -51,6 +53,48 @@ namespace Networks {
   };
 
   SCISHARE SCIRun::Dataflow::Networks::ModuleHandle CreateModuleFromUniqueName(ModuleFactory& factory, const std::string& moduleName);
+
+  namespace ReplacementImpl
+  {
+    //loose replace interpretation: order of ports doesn't matter, only number. could use multiset here, but not as easy to deal with.
+    typedef std::map<std::string, int> ConnectedPortTypesWithCount;
+    struct SCISHARE ConnectedPortInfo
+    {
+      ConnectedPortTypesWithCount input, output;
+    };
+
+    SCISHARE bool operator==(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
+    SCISHARE bool operator!=(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
+    SCISHARE bool operator<(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
+    SCISHARE std::ostream& operator<<(std::ostream& o, const ConnectedPortInfo& cpi);
+    SCISHARE ConnectedPortInfo makeConnectedPortInfo(Dataflow::Networks::ModuleHandle module);
+
+    SCISHARE std::vector<ConnectedPortInfo> allPossibleConnectedPortConfigs(
+      const Dataflow::Networks::InputPortDescriptionList& inputPorts,
+      const Dataflow::Networks::OutputPortDescriptionList& outputPorts);
+
+    class SCISHARE ModuleReplacementFilter
+    {
+    public:
+      typedef std::map<ConnectedPortInfo, std::vector<Dataflow::Networks::ModuleLookupInfo>> ReplaceMap;
+      explicit ModuleReplacementFilter(ReplaceMap&& map) : replaceMap_(map) {}
+      const std::vector<Dataflow::Networks::ModuleLookupInfo>& findReplacements(const ConnectedPortInfo& ports) const;
+    private:
+      ReplaceMap replaceMap_;
+    };
+
+    class SCISHARE ModuleReplacementFilterBuilder
+    {
+    public:
+      explicit ModuleReplacementFilterBuilder(const Dataflow::Networks::DirectModuleDescriptionLookupMap& map) : descMap_(map) {}
+      boost::shared_ptr<ModuleReplacementFilter> build();
+    private:
+      void registerModule(ModuleReplacementFilter::ReplaceMap& replaceMap, const Dataflow::Networks::ModuleLookupInfo& info,
+        const Dataflow::Networks::InputPortDescriptionList& inputPorts,
+        const Dataflow::Networks::OutputPortDescriptionList& outputPorts);
+      const Dataflow::Networks::DirectModuleDescriptionLookupMap& descMap_;
+    };
+  }
 
 }}}
 

@@ -420,3 +420,14 @@ void NetworkEditorController::enableSignals()
 {
   signalSwitch_ = true;
 }
+
+const std::vector<ModuleLookupInfo>& NetworkEditorController::possibleReplacements(ModuleHandle module) const
+{
+  if (!replacementFilter_)
+  {
+    auto descMap = factory.getDirectModuleDescriptionLookupMap();
+    ModuleReplacementFilterBuilder builder(descMap);
+    replacementFilter_ = builder.build();
+  }
+  return replacementFilter_->findReplacements(makeConnectedPortInfo(module));
+}
