@@ -164,7 +164,9 @@ bool SCIRun::Modules::Factory::operator!=(const ConnectedPortInfo& lhs, const Co
 
 bool SCIRun::Modules::Factory::operator<(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
 {
-  return true;
+  if (lhs.input == rhs.input)
+    return lhs.output < rhs.output;
+  return lhs.input < rhs.input;
 }
 
 void print(const std::vector<ConnectedPortTypesWithCount>& cptwc)
@@ -229,19 +231,23 @@ boost::shared_ptr<ModuleReplacementFilter> ModuleReplacementFilterBuilder::build
 
   for (const auto& infoDesc : descMap_)
   {
-    // if (false)
-    //   std::cout << infoDesc.first << " --> " << infoDesc.second << std::endl;
-    //
     registerModule(replaceMap, infoDesc.first, infoDesc.second.input_ports_, infoDesc.second.output_ports_);
   }
 
+/*
+  std::cout << "\n\nREPLACE MAP\n";
+  for (const auto& x : replaceMap)
+  {
+    std::cout << x.first << " --> " << x.second.size() << std::endl;
+  }
+*/
   return boost::make_shared<ModuleReplacementFilter>(std::move(replaceMap));
 }
 
 void ModuleReplacementFilterBuilder::registerModule(ModuleReplacementFilter::ReplaceMap& replaceMap,
   const ModuleLookupInfo& info, const InputPortDescriptionList& inputPorts, const OutputPortDescriptionList& outputPorts)
 {
-  std::cout << "Module: " << info << std::endl;
+  //std::cout << "~~~Module: " << info << std::endl;
   for (const auto& cpi : allPossibleConnectedPortConfigs(inputPorts, outputPorts))
   {
     replaceMap[cpi].push_back(info);
@@ -261,30 +267,48 @@ namespace
     return sumUnion;
   }
 
-  void addOptionsForOneSide(const std::vector<PortDescription>& inputPorts, std::vector<ConnectedPortTypesWithCount>& inputOptions)
+  void addOptionsForOneSide(const std::vector<PortDescription>& ports, std::vector<ConnectedPortTypesWithCount>& options)
   {
-    for (const auto& in : inputPorts)
+    if (ports.empty())
     {
-      if (inputOptions.empty())
+      options.push_back(ConnectedPortTypesWithCount());
+      return;
+    }
+    for (const auto& port : ports)
+    {
+      if (options.empty())
       {
-        inputOptions.push_back({ { in.datatype, 0 } });
-        inputOptions.push_back({ { in.datatype, 1 } });
+        options.push_back({ { port.datatype, 0 } });
+        options.push_back({ { port.datatype, 1 } });
       }
       else
       {
-        std::vector<ConnectedPortTypesWithCount> inputOptionsAdditional;
-        for (const auto& opt : inputOptions)
+        std::vector<ConnectedPortTypesWithCount> optionsNextLevel;
+        for (const auto& opt : options)
         {
-          {
-            inputOptionsAdditional.push_back(unionMaps<ConnectedPortTypesWithCount>(opt, { { in.datatype, 0 } }));
-            inputOptionsAdditional.push_back(unionMaps<ConnectedPortTypesWithCount>(opt, { { in.datatype, 1 } }));
-          }
+          optionsNextLevel.push_back(unionMaps<ConnectedPortTypesWithCount>(opt, { { port.datatype, 0 } }));
+          optionsNextLevel.push_back(unionMaps<ConnectedPortTypesWithCount>(opt, { { port.datatype, 1 } }));
         }
-        std::copy(inputOptionsAdditional.begin(), inputOptionsAdditional.end(), std::back_inserter(inputOptions));
+        options = optionsNextLevel;
       }
     }
-    std::set<ConnectedPortTypesWithCount> all(inputOptions.begin(), inputOptions.end());
-    inputOptions.assign(all.begin(), all.end());
+    std::set<ConnectedPortTypesWithCount> uniqueCombos(options.begin(), options.end());
+    options.assign(uniqueCombos.begin(), uniqueCombos.end());
+
+    std::for_each(options.begin(), options.end(),
+      [](ConnectedPortTypesWithCount& cptwc)
+        {
+          auto iter = cptwc.begin();
+          auto endIter = cptwc.end();
+
+          for(; iter != endIter; ) {
+            if (iter->second == 0) {
+              iter = cptwc.erase(iter);
+            } else {
+              ++iter;
+            }
+          }
+        });
   }
 }
 
@@ -294,7 +318,7 @@ std::vector<ConnectedPortInfo> SCIRun::Modules::Factory::allPossibleConnectedPor
   std::vector<ConnectedPortTypesWithCount> inputOptions, outputOptions;
 
   static int once = 0;
-  const int times = 5;
+  const int times = 0;
 
   addOptionsForOneSide(inputPorts, inputOptions);
 
@@ -324,6 +348,7 @@ std::vector<ConnectedPortInfo> SCIRun::Modules::Factory::allPossibleConnectedPor
 
   if (once < times)
   {
+    std::cout << "___CPI___ " << cpis.size() << std::endl;
     std::copy(cpis.begin(), cpis.end(), std::ostream_iterator<ConnectedPortInfo>(std::cout, "\n "));
     once++;
   }

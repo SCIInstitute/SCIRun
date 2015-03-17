@@ -106,6 +106,9 @@ namespace Networks {
     std::string module_name_;
   };
 
+  SCISHARE bool operator==(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs);
+  SCISHARE bool operator!=(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs);
+
   typedef boost::function<class Module*()> ModuleMaker;
 
   struct SCISHARE ModuleDescription

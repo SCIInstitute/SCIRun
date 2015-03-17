@@ -162,3 +162,13 @@ bool ModuleLookupInfoLess::operator()(const ModuleLookupInfo& lhs, const ModuleL
   //return std::tie(lhs.package_name_, lhs.category_name_, lhs.module_name_) < std::tie(rhs.package_name_, rhs.category_name_, rhs.module_name_);
   return lhs.module_name_ < rhs.module_name_;
 }
+
+bool SCIRun::Dataflow::Networks::operator==(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs)
+{
+  return lhs.module_name_ == rhs.module_name_;// && lhs.id == rhs.id;
+}
+
+bool SCIRun::Dataflow::Networks::operator!=(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs)
+{
+  return !(lhs == rhs);
+}

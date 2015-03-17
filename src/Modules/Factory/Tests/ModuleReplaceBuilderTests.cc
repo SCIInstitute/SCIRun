@@ -48,11 +48,6 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 
   auto descMap = factory.getDirectModuleDescriptionLookupMap();
 
-  for (const auto& p : descMap)
-  {
-    if (false)
-      std::cout << p.first << " --> " << p.second << std::endl;
-  }
   EXPECT_TRUE(descMap.size() >= 86);
 }
 
@@ -163,10 +158,14 @@ TEST_F(ModuleReplaceTests, NoConnectedPortsCanBeReplacedWithAnything)
   auto filter = builder.build();
 
   ConnectedPortInfo noConnections;
+  auto noConnectionReplacements = filter->findReplacements(noConnections);
+  EXPECT_EQ(descMap.size(), noConnectionReplacements.size());
 
-  EXPECT_EQ(descMap.size(), filter->findReplacements(noConnections).size());
-
-  FAIL() << "todo";
+  for (const auto& p : descMap)
+  {
+    if (std::find(noConnectionReplacements.begin(), noConnectionReplacements.end(), p.first) == noConnectionReplacements.end())
+      std::cout << "replacements list did not contain " << p.first << std::endl;
+  }
 }
 
 TEST(ReplacementFilterBuilderTests, CanBuild)
