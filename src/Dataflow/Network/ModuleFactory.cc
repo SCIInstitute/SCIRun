@@ -115,6 +115,7 @@ ConnectedPortInfo SCIRun::Dataflow::Networks::ReplacementImpl::makeConnectedPort
     if (out->nconnections() > 0)
       cpi.output[out->get_typename()]++;
   }
+  //std::cout << module->get_id() << " has cpi " << cpi << std::endl;
   return cpi;
 }
 
@@ -143,7 +144,7 @@ void ModuleReplacementFilterBuilder::registerModule(ModuleReplacementFilter::Rep
   //std::cout << "~~~Module: " << info << std::endl;
   for (const auto& cpi : allPossibleConnectedPortConfigs(inputPorts, outputPorts))
   {
-    replaceMap[cpi].push_back(info);
+    replaceMap[cpi].insert(info);
   }
 }
 
@@ -249,12 +250,12 @@ std::vector<ConnectedPortInfo> SCIRun::Dataflow::Networks::ReplacementImpl::allP
   return cpis;
 }
 
-const std::vector<ModuleLookupInfo>& ModuleReplacementFilter::findReplacements(const ConnectedPortInfo& ports) const
+const ModuleLookupInfoSet& ModuleReplacementFilter::findReplacements(const ConnectedPortInfo& ports) const
 {
   auto iter = replaceMap_.find(ports);
   if (iter == replaceMap_.end())
   {
-    static const std::vector<ModuleLookupInfo> empty;
+    static const ModuleLookupInfoSet empty;
     return empty;
   }
   return iter->second;

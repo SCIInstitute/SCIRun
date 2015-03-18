@@ -143,7 +143,7 @@ namespace Engine {
 
     const Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
 
-    const std::vector<Networks::ModuleLookupInfo>& possibleReplacements(Networks::ModuleHandle module);
+    const Networks::ReplacementImpl::ModuleLookupInfoSet& possibleReplacements(Networks::ModuleHandle module);
 
   private:
     void printNetwork() const;

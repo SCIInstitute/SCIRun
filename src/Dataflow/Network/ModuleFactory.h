@@ -31,6 +31,7 @@
 #define DATAFLOW_NETWORK_MODULE_FACTORY_H
 
 #include <vector>
+#include <set>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
@@ -74,12 +75,14 @@ namespace Networks {
       const Dataflow::Networks::InputPortDescriptionList& inputPorts,
       const Dataflow::Networks::OutputPortDescriptionList& outputPorts);
 
+    typedef std::set<Dataflow::Networks::ModuleLookupInfo, Dataflow::Networks::ModuleLookupInfoLess> ModuleLookupInfoSet;
+
     class SCISHARE ModuleReplacementFilter
     {
     public:
-      typedef std::map<ConnectedPortInfo, std::vector<Dataflow::Networks::ModuleLookupInfo>> ReplaceMap;
+      typedef std::map<ConnectedPortInfo, ModuleLookupInfoSet> ReplaceMap;
       explicit ModuleReplacementFilter(ReplaceMap&& map) : replaceMap_(map) {}
-      const std::vector<Dataflow::Networks::ModuleLookupInfo>& findReplacements(const ConnectedPortInfo& ports) const;
+      const ModuleLookupInfoSet& findReplacements(const ConnectedPortInfo& ports) const;
     private:
       ReplaceMap replaceMap_;
     };

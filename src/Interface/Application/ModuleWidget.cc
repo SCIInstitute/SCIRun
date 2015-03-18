@@ -635,8 +635,8 @@ void ModuleWidget::setupModuleActions()
   auto menu = new QMenu(this);
   replaceWith->setMenu(menu);
   fillReplaceWithMenu();
-//  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
-//  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
+  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
@@ -656,9 +656,7 @@ void ModuleWidget::fillReplaceWithMenu()
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
   auto replacements = Core::Application::Instance().controller()->possibleReplacements(this->theModule_);
-  auto matches = [](const ModuleDescription& md) { return [&](const ModuleLookupInfo& mli) { return md.lookupInfo_.module_name_ == mli.module_name_; }; };
-  auto isReplacement = [&](const ModuleDescription& md)
-    { return std::find_if(replacements.begin(), replacements.end(), matches(md)) != replacements.end(); };
+  auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
     isReplacement,
     [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); });

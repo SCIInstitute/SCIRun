@@ -421,7 +421,7 @@ void NetworkEditorController::enableSignals()
   signalSwitch_ = true;
 }
 
-const std::vector<ModuleLookupInfo>& NetworkEditorController::possibleReplacements(ModuleHandle module)
+const ModuleLookupInfoSet& NetworkEditorController::possibleReplacements(ModuleHandle module)
 {
   if (!replacementFilter_)
   {
