@@ -92,7 +92,7 @@ namespace Gui {
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
-        << disabled(new QAction("Destroy", parent)));
+        << new QAction("Destroy", parent));
     }
     QMenu* getMenu() { return menu_; }
     QAction* getAction(const char* name) const
@@ -511,8 +511,11 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
-  //TODO: doh, how do i destroy myself?
-  //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
+  connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
+
+  connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
+  connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
+  connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -950,6 +953,7 @@ ModuleWidget::~ModuleWidget()
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }
+  Q_EMIT displayChanged();
 }
 
 void ModuleWidget::trackConnections()
@@ -961,6 +965,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
+    Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
@@ -969,6 +974,11 @@ void ModuleWidget::execute()
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
+}
+
+void ModuleWidget::changeExecuteButtonToStop()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
 }
 
 boost::signals2::connection ModuleWidget::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)
@@ -1239,6 +1249,12 @@ void ModuleWidget::executeButtonPushed()
 {
   LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   Q_EMIT executedManually(theModule_);
+  changeExecuteButtonToStop();
+}
+
+void ModuleWidget::changeExecuteButtonToPlay()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
 }
 
 bool ModuleWidget::globalMiniMode_(false);

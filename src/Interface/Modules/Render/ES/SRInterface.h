@@ -258,12 +258,6 @@ namespace SCIRun {
 			size_t                            mScreenWidth;     ///< Screen width in pixels.
 			size_t                            mScreenHeight;    ///< Screen height in pixels.
 
-
-			GLuint                            mRainbowCMap;     ///< Rainbow color map.
-			GLuint                            mOldRainbowCMap;     ///< Rainbow color map.
-			GLuint                            mGrayscaleCMap;   ///< Grayscale color map.
-			GLuint                            mBlackBodyCMap;   ///< Blackbody color map.
-
             int axesFailCount_;
 			std::shared_ptr<Gui::GLContext>   mContext;         ///< Context to use for rendering.
 			std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.

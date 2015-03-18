@@ -106,10 +106,6 @@ namespace SCIRun {
 		//------------------------------------------------------------------------------
 		SRInterface::~SRInterface()
 		{
-			glDeleteTextures(1, &mRainbowCMap);
-			glDeleteTextures(1, &mOldRainbowCMap);
-			glDeleteTextures(1, &mGrayscaleCMap);
-			glDeleteTextures(1, &mBlackBodyCMap);
 		}
 
 		//------------------------------------------------------------------------------
@@ -582,46 +578,8 @@ namespace SCIRun {
         state.state = pass.renderState;
         mCore.addComponent(entityID, state);
 
-        // Add appropriate renderer based on the color scheme to use.
-        if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_UNIFORM
-          || pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_IN_SITU)
-        {
-          RenderBasicGeom geom;
-          mCore.addComponent(entityID, geom);
-        }
-        else if (pass.mColorScheme == Core::Datatypes::GeometryObject::COLOR_MAP
-          && obj->mColorMap)
-        {
-          RenderColorMapGeom geom;
-          mCore.addComponent(entityID, geom);
-
-          // Construct texture component and add it to our entity for rendering.
-          ren::Texture component;
-          component.textureUnit = 0;
-          component.setUniformName("uTX0");
-          component.textureType = GL_TEXTURE_1D;
-
-          // Setup appropriate texture to render the color map.
-          if (*obj->mColorMap == "Rainbow") {
-            component.glid = mRainbowCMap;
-          } else if (*obj->mColorMap == "Old Rainbow") {
-            component.glid = mOldRainbowCMap;
-          } else if (*obj->mColorMap == "Blackbody") {
-            component.glid = mBlackBodyCMap;
-          } else {
-            component.glid = mGrayscaleCMap;
-          }
-          mCore.addComponent(entityID, component);
-
-          // Compare entity and system requirements.
-          //mCore.displayEntityVersusSystemInfo(entityID, getSystemName_RenderColorMap());
-        }
-        else
-        {
-          std::cerr << "Renderer: Unknown color scheme!" << std::endl;
-          RenderBasicGeom geom;
-          mCore.addComponent(entityID, geom);
-        }
+        RenderBasicGeom geom;
+        mCore.addComponent(entityID, geom);
 
         // Ensure common uniforms are covered.
         ren::CommonUniforms commonUniforms;
@@ -1101,110 +1059,6 @@ namespace SCIRun {
 		// Create default colormaps.
 		void SRInterface::generateColormaps()
 		{
-			size_t resolution = 1000;
-            float step = 1.f / static_cast<float>(resolution);
-            ColorMap cm("Rainbow");
-			std::vector<uint8_t> rainbow;
-			rainbow.reserve(resolution * 3);
-			for (float i = 0.f; i < 1.f; i+=step) {
-                ColorRGB col = cm.getColorMapVal(i);
-				rainbow.push_back(static_cast<uint8_t>(col.r() * 255.0f));
-				rainbow.push_back(static_cast<uint8_t>(col.g() * 255.0f));
-				rainbow.push_back(static_cast<uint8_t>(col.b() * 255.0f));
-				rainbow.push_back(static_cast<uint8_t>(255.0f));
-			}
-
-			// Build rainbow texture (eyetracking version -- will need to change).
-			GL(glGenTextures(1, &mRainbowCMap));
-			GL(glBindTexture(GL_TEXTURE_1D, mRainbowCMap));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-			GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-			GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
-			GL(glTexImage1D(GL_TEXTURE_1D, 0,
-				GL_RGBA8,
-				static_cast<GLsizei>(rainbow.size() / 4), 0,
-				GL_RGBA,
-				GL_UNSIGNED_BYTE, &rainbow[0]));
-
-            cm = ColorMap("Old Rainbow");
-			// build old rainbow texture.
-			std::vector<uint8_t> oldrainbow;
-			oldrainbow.reserve(resolution * 3);
-			for (float i = 0.f; i < 1.f; i+=step) {
-                ColorRGB col = cm.getColorMapVal(i);
-				oldrainbow.push_back(static_cast<uint8_t>(col.r() * 255.0f));
-				oldrainbow.push_back(static_cast<uint8_t>(col.g() * 255.0f));
-				oldrainbow.push_back(static_cast<uint8_t>(col.b() * 255.0f));
-				oldrainbow.push_back(static_cast<uint8_t>(255.0f));
-			}
-
-			// oldrainbow texture.
-			GL(glGenTextures(1, &mOldRainbowCMap));
-			GL(glBindTexture(GL_TEXTURE_1D, mOldRainbowCMap));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-			GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-			GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
-			GL(glTexImage1D(GL_TEXTURE_1D, 0,
-				GL_RGBA8,
-				static_cast<GLsizei>(oldrainbow.size() / 4), 0,
-				GL_RGBA,
-				GL_UNSIGNED_BYTE, &oldrainbow[0]));
-            
-            cm = ColorMap("Grayscale");
-			// build grayscale texture.
-			std::vector<uint8_t> grayscale;
-			grayscale.reserve(resolution * 3);
-			for (float i = 0.f; i < 1.f; i+=step) {
-                ColorRGB col = cm.getColorMapVal(i);
-				grayscale.push_back(static_cast<uint8_t>(col.r() * 255.0f));
-				grayscale.push_back(static_cast<uint8_t>(col.g() * 255.0f));
-				grayscale.push_back(static_cast<uint8_t>(col.b() * 255.0f));
-				grayscale.push_back(static_cast<uint8_t>(255.0f));
-			}
-
-			// Grayscale texture.
-			GL(glGenTextures(1, &mGrayscaleCMap));
-			GL(glBindTexture(GL_TEXTURE_1D, mGrayscaleCMap));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-			GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-			GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
-			GL(glTexImage1D(GL_TEXTURE_1D, 0,
-				GL_RGBA8,
-				static_cast<GLsizei>(grayscale.size() / 4), 0,
-				GL_RGBA,
-				GL_UNSIGNED_BYTE, &grayscale[0]));
-
-            cm = ColorMap("Blackbody");
-            //blackbody texture
-			std::vector<uint8_t> blackbody;
-			blackbody.reserve(resolution * 3);
-			for (float i = 0.f; i < 1.f; i+=step) {
-                ColorRGB col = cm.getColorMapVal(i);
-				blackbody.push_back(static_cast<uint8_t>(col.r() * 255.0f));
-				blackbody.push_back(static_cast<uint8_t>(col.g() * 255.0f));
-				blackbody.push_back(static_cast<uint8_t>(col.b() * 255.0f));
-				blackbody.push_back(static_cast<uint8_t>(255.0f));
-			}
-
-			// Build rainbow texture (eyetracking version -- will need to change).
-			GL(glGenTextures(1, &mBlackBodyCMap));
-			GL(glBindTexture(GL_TEXTURE_1D, mBlackBodyCMap));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-			GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-			GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-			GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
-			GL(glTexImage1D(GL_TEXTURE_1D, 0,
-				GL_RGBA8,
-				static_cast<GLsizei>(blackbody.size() / 4), 0,
-				GL_RGBA,
-				GL_UNSIGNED_BYTE, &blackbody[0]));
 		}
 
 

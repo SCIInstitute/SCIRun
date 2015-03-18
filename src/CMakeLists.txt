@@ -47,6 +47,15 @@ IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
+################################################################################
+# If building on Windows, make sure that the path to the bin directory is short.
+#
+if(WIN32)
+	STRING(LENGTH ${CMAKE_BINARY_DIR} BIN_DIR_LENGTH)
+	if(${BIN_DIR_LENGTH} GREATER 10)
+		MESSAGE(WARNING "Binary directory is too long, the build may fail due to long path names.")
+	endif()
+endif()
 
 ########################################################################
 # Build shared libraries by default

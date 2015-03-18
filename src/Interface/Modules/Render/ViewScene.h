@@ -116,12 +116,13 @@ namespace SCIRun {
       QToolBar*                             mViewBar;             ///< Tool bar for view options.
       QComboBox*                            mDownViewBox;         ///< Combo box for Down axis options.
       QComboBox*                            mUpVectorBox;         ///< Combo box for Up Vector options.
-      ViewSceneControlsDock*                mConfigurationDock;   ///< Dock holding configuration functions               mConfigurationDialog; ///< Menu holding configuration functions
+      ViewSceneControlsDock*                mConfigurationDock;   ///< Dock holding configuration functions
 
       bool shown_;
       bool hideViewBar_;
       bool showConfiguration_;
       bool itemValueChanged_;
+      QColor bgColor_;
       std::shared_ptr<class ViewSceneItemManager> itemManager_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;

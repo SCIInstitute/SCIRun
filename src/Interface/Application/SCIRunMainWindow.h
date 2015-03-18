@@ -92,6 +92,7 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
+  QToolButton* executeButton_;
 
 private:
   void postConstructionSignalHookup();
@@ -163,6 +164,9 @@ private Q_SLOTS:
   void highlightPortsChanged();
   void resetWindowLayout();
   void zoomNetwork();
+  void changeExecuteActionIconToStop();
+  void changeExecuteActionIconToPlay();
+  void adjustExecuteButtonAppearance();
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
   void adjustModuleDock(int state);
