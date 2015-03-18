@@ -248,6 +248,7 @@ Q_SIGNALS:
     boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
     boost::shared_ptr<ZLevelManager> zLevelManager_;
+    std::string latestModuleId_;
   };
 }
 }

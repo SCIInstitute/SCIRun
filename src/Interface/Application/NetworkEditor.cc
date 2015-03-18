@@ -142,6 +142,8 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count)
 {
+  qDebug() << "addModuleWidget " << module->get_id().id_.c_str();
+  latestModuleId_ = module->get_id().id_;
   //std::cout << "\tNE modules done (start): " << *count.count << std::endl;
   ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
@@ -216,12 +218,22 @@ void NetworkEditor::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHan
 
 void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {
-  std::cout << "TODO: replace module: " << moduleToReplace->get_module_name() << " with " << newModuleName << std::endl;
-  //auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
-  //QPointF increment(0, portToConnect->isInput() ? -110 : 110);
-  //lastModulePosition_ = widget->scenePos() + increment;
+  //add new module
 
-  //controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
+  auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
+  QPointF increment(100, 100);
+  lastModulePosition_ = oldModule->scenePos() + increment;
+  qDebug() << "replace: adding new";
+  controller_->addModule(newModuleName);
+
+  // connect up same ports
+  qDebug() << "TODO: replace module: " << moduleToReplace->get_id().id_.c_str() << " with " << latestModuleId_.c_str();
+  auto newModule = findById(scene_->items(), latestModuleId_);
+
+
+  qDebug() << "replace: deleting old";
+  // delete old module
+  oldModule->deleteLater();
 }
 
 namespace
