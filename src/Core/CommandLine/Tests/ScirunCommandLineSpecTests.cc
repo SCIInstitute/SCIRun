@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,7 +35,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 {
   CommandLineParser parser;
 
-  const std::string expectedHelp = 
+  const std::string expectedHelp =
     "SCIRun5 basic options:\n"
     "  -h [ --help ]         prints usage information\n"
     "  -v [ --version ]      prints out version information\n"
@@ -53,9 +53,9 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  --verbose             Turn on debug log information\n"
     "  --threadMode arg      network execution threading mode--DEVELOPER USE ONLY\n"
     "  --reexecuteMode arg   network reexecution mode--DEVELOPER USE ONLY\n";
-  
+
   EXPECT_EQ(expectedHelp, parser.describe());
-  
+
   {
     const char* argv[] = {"scirun.exe", "--help", "net.srn5"};
     int argc = sizeof(argv)/sizeof(char*);
@@ -63,7 +63,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     ApplicationParametersHandle aph = parser.parse(argc, argv);
 
     EXPECT_TRUE(aph->help());
-    EXPECT_EQ("net.srn5", aph->inputFile().get());
+    EXPECT_EQ("net.srn5", aph->inputFiles()[0]);
   }
 
   {
@@ -73,7 +73,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     ApplicationParametersHandle aph = parser.parse(argc, argv);
 
     EXPECT_TRUE(aph->help());
-    EXPECT_EQ("net.srn5", aph->inputFile().get());
+    EXPECT_EQ("net.srn5", aph->inputFiles()[0]);
   }
 
   {
@@ -84,7 +84,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     EXPECT_TRUE(aph->version());
     EXPECT_FALSE(aph->help());
-    EXPECT_FALSE(aph->inputFile());
+    EXPECT_TRUE(aph->inputFiles().empty());
   }
 
   {
@@ -95,7 +95,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     EXPECT_TRUE(aph->version());
     EXPECT_FALSE(aph->help());
-    EXPECT_FALSE(aph->inputFile());
+    EXPECT_TRUE(aph->inputFiles().empty());
   }
 
   {
@@ -106,7 +106,19 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     EXPECT_FALSE(aph->help());
     EXPECT_TRUE(aph->executeNetwork());
-    EXPECT_EQ("net.srn5", aph->inputFile().get());
+    EXPECT_EQ("net.srn5", aph->inputFiles()[0]);
+  }
+
+  {
+    const char* argv[] = {"scirun.exe", "-e", "net1.srn5", "net2.srn5"};
+    int argc = sizeof(argv)/sizeof(char*);
+
+    ApplicationParametersHandle aph = parser.parse(argc, argv);
+
+    EXPECT_FALSE(aph->help());
+    EXPECT_TRUE(aph->executeNetwork());
+    EXPECT_EQ("net1.srn5", aph->inputFiles()[0]);
+    EXPECT_EQ("net2.srn5", aph->inputFiles()[1]);
   }
 
   {
@@ -118,7 +130,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     EXPECT_FALSE(aph->help());
     EXPECT_TRUE(aph->executeNetworkAndQuit());
     EXPECT_FALSE(aph->executeNetwork());
-    EXPECT_EQ("net.srn5", aph->inputFile().get());
+    EXPECT_EQ("net.srn5", aph->inputFiles()[0]);
   }
 
   {

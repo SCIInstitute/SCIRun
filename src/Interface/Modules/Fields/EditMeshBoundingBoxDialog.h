@@ -46,6 +46,14 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
+    
+    QDoubleSpinBox spinner_scale_;
+    double scale_;
+private Q_SLOTS:
+     void ScaleUpPush();
+     void ScaleDoubleUpPush();
+     void ScaleDownPush();
+     void ScaleDoubleDownPush();
 };
 
 }

@@ -83,13 +83,13 @@ namespace Engine {
   class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>, public Networks::NetworkEditorControllerInterface
   {
   public:
-    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf,
+    NetworkEditorController(Networks::ModuleFactoryHandle mf,
       Networks::ModuleStateFactoryHandle sf,
       ExecutionStrategyFactoryHandle executorFactory,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       Networks::ReexecuteStrategyFactoryHandle reexFactory,
       Networks::NetworkEditorSerializationManager* nesm = 0);
-    explicit NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = 0);
+    NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = 0);
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////Start: To be Pythonized/////////////////////////////
@@ -144,7 +144,12 @@ namespace Engine {
 
   private:
     void printNetwork() const;
-    Networks::ModuleHandle addModuleImpl(const std::string& moduleName);
+    Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
+    
+    void executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
+    void initExecutor();
+    ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
+
     Networks::NetworkHandle theNetwork_;
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
@@ -153,6 +158,8 @@ namespace Engine {
     ExecutionStrategyHandle currentExecutor_;
     ExecutionStrategyFactoryHandle executorFactory_;
     Networks::NetworkEditorSerializationManager* serializationManager_;
+
+    ExecutionQueueManager executionManager_;
 
     ModuleAddedSignalType moduleAdded_;
     ModuleRemovedSignalType moduleRemoved_; //not used yet

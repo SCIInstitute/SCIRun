@@ -42,43 +42,47 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Render;
+using namespace SCIRun::Modules::Render;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent /* = 0 */)
-	: ModuleDialogGeneric(state, parent), shown_(false), itemManager_(new ViewSceneItemManager)
+  : ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false), itemValueChanged_(true),
+	itemManager_(new ViewSceneItemManager)
 {
-	setupUi(this);
-	setWindowTitle(QString::fromStdString(name));
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
 
-	addToolBar();
-	addViewBar();
-	addConfigurationButton();
+  addToolBar();
+  addViewBar();
+  addConfigurationButton();
+  itemManager_->SetupConnections(this);
 
-	// Setup Qt OpenGL widget.
-	QGLFormat fmt;
-	fmt.setAlpha(true);
-	fmt.setRgba(true);
-	fmt.setDepth(true);
-	fmt.setDoubleBuffer(true);
-	fmt.setDepthBufferSize(24);
+  // Setup Qt OpenGL widget.
+  QGLFormat fmt;
+  fmt.setAlpha(true);
+  fmt.setRgba(true);
+  fmt.setDepth(true);
+  fmt.setDoubleBuffer(true);
+  fmt.setDepthBufferSize(24);
 
-	mGLWidget = new GLWidget(new QtGLContext(fmt));
+  mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
+  connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
 
-	if (mGLWidget->isValid())
-	{
-		// Hook up the GLWidget
-		glLayout->addWidget(mGLWidget);
-		glLayout->update();
+  if (mGLWidget->isValid())
+  {
+    // Hook up the GLWidget
+    glLayout->addWidget(mGLWidget);
+    glLayout->update();
 
-		// Set spire transient value (should no longer be used).
-		mSpire = std::weak_ptr<Render::SRInterface>(mGLWidget->getSpire());
-	}
-	else
-	{
-		/// \todo Display dialog.
-		delete mGLWidget;
-	}
+    // Set spire transient value (should no longer be used).
+    mSpire = std::weak_ptr<Render::SRInterface>(mGLWidget->getSpire());
+  }
+  else
+  {
+    /// \todo Display dialog.
+    delete mGLWidget;
+  }
 
   {
 	  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
@@ -94,72 +98,119 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 	  }
   }
 
+  {
+    //Set background Color
+    ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
+    bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+                      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+                      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    spire->setBackgroundColor(bgColor_);
+  }
+
+
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
-	
-	addConfigurationDock(QString::fromStdString(name));
+
 }
 
-//------------------------------------------------------------------------------
-ViewSceneDialog::~ViewSceneDialog()
-{
-}
-
-//------------------------------------------------------------------------------
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 {
 	// NOTE: At one point this was required because the renderer was
 	// multi-threaded. It is likely we will run into the same issue in the
 	// future. Kept for future reference.
 	//glLayout->removeWidget(mGLWidget);
+  mGLWidget->close();
+	ModuleDialogGeneric::closeEvent(evt);
 }
 
-//------------------------------------------------------------------------------
 void ViewSceneDialog::newGeometryValue()
 {
-	LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
-	Guard lock(SCIRun::Modules::Render::ViewScene::mutex_.get());
+  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
-	LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
-	itemManager_->removeAll();
-	// Grab the geomData transient value.
-	auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-	if (geomDataTransient && !geomDataTransient->empty())
-	{
-		auto geomData = optional_any_cast_or_default<SCIRun::Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
-		if (!geomData)
-		{
-			LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-			return;
-		}
-		std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-		if (spire == nullptr)
-		{
-			LOG_DEBUG("Logical error: Spire lock not acquired.");
-			return;
-		}
+  Guard lock(SCIRun::Modules::Render::ViewScene::mutex_.get());
 
-		std::vector<std::string> validObjects;
-		for (auto it = geomData->begin(); it != geomData->end(); ++it)
-		{
-			boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
-			spire->handleGeomObject(obj);
-			validObjects.push_back(obj->objectName);
-			itemManager_->addItem(QString::fromStdString(obj->objectName));
-		}
-		spire->gcInvalidObjects(validObjects);
-	}
-	else
-	{
-		std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-		if (spire == nullptr)
-			return;
-		spire->removeAllGeomObjects();
-	}
-	//TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
-	//state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
+
+  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
+
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  if (spire == nullptr)
+    return;
+  spire->removeAllGeomObjects();
+
+
+  // Grab the geomData transient value.
+  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  if (geomDataTransient && !geomDataTransient->empty())
+  {
+    auto geomData = optional_any_cast_or_default<SCIRun::Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+    if (!geomData)
+    {
+      LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
+      return;
+    }
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    if (spire == nullptr)
+    {
+      LOG_DEBUG("Logical error: Spire lock not acquired.");
+      return;
+    }
+
+    int port = 0;
+    std::vector<std::string> objectNames;
+    std::vector<std::string> validObjects;
+    for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
+    {
+      boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
+			auto name = obj->uniqueID();
+      objectNames.push_back(name);
+      if (!isObjectUnselected(name))
+      {
+        spire->handleGeomObject(obj, port);
+        validObjects.push_back(name);
+      }
+    }
+    spire->gcInvalidObjects(validObjects);
+
+    std::sort(objectNames.begin(), objectNames.end());
+    if (previousObjectNames_ != objectNames)
+    {
+      itemValueChanged_ = true;
+      previousObjectNames_ = objectNames;
+    }
+    if (itemValueChanged_)
+    {
+      itemManager_->removeAll();
+      for (auto it = objectNames.begin(); it != objectNames.end(); ++it)
+      {
+        std::string name = *it;
+        auto displayName = QString::fromStdString(name).split('_').first();
+        if (isObjectUnselected(name))
+        {
+          itemManager_->addItem(QString::fromStdString(name), displayName, false);
+        }
+        else
+        {
+          itemManager_->addItem(QString::fromStdString(name), displayName, true);
+        }
+      }
+      itemValueChanged_ = false;
+    }
+  }
+
+  else
+  {
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    if (spire == nullptr)
+      return;
+    spire->removeAllGeomObjects();
+  }
+
+  //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
+  //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
 
 //------------------------------------------------------------------------------
@@ -363,34 +414,87 @@ void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::configurationButtonClicked()
 {
-	showConfiguration_ = !mConfigurationDock->isVisible();
-	mConfigurationDock->setEnabled(showConfiguration_);
-	mConfigurationDock->setVisible(showConfiguration_);
+  if (!mConfigurationDock)
+  {
+    addConfigurationDock(windowTitle());
+    mConfigurationDock->setSampleColor(bgColor_);
+  }
+
+  showConfiguration_ = !mConfigurationDock->isVisible();
+  mConfigurationDock->setEnabled(showConfiguration_);
+  mConfigurationDock->setVisible(showConfiguration_);
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::assignBackgroundColor()
+{
+  QString title = windowTitle() + " Choose background color";
+  auto newColor = QColorDialog::getColor(bgColor_, this, title);
+  if (newColor.isValid())
+  {
+    bgColor_ = newColor;
+    mConfigurationDock->setSampleColor(bgColor_);
+    state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    spire->setBackgroundColor(bgColor_);
+  }
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::CONTINUOUS_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::UPDATE_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::setTransparencySortTypeLists(bool index)
+{
+  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+  spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::handleUnselectedItem(const QString& name)
+{
+  itemValueChanged_ = true;
+  unselectedObjectNames_.push_back(name.toStdString());
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::handleSelectedItem(const QString& name)
+{
+  itemValueChanged_ = true;
+  unselectedObjectNames_.erase(std::remove(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name.toStdString()), unselectedObjectNames_.end());
+  newGeometryValue();
+}
+
+//------------------------------------------------------------------------------
+bool ViewSceneDialog::isObjectUnselected(std::string& name)
+{
+  return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
+}
+
 void ViewSceneDialog::addToolBar()
 {
 	mToolBar = new QToolBar(this);
+	mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
 
-	//addMouseMenu();
 	addAutoViewButton();
 	addObjectToggleMenu();
 
 	glLayout->addWidget(mToolBar);
-}
-
-void ViewSceneDialog::addMouseMenu(QWidget* widget)
-{
-	auto menu = new QComboBox(this);
-	menu->setToolTip("Change Mouse Controls");
-	menu->addItem("Legacy Mouse Control");
-	menu->addItem("New Mouse Control");
-	connect(menu, SIGNAL(currentIndexChanged(int)), this, SLOT(menuMouseControlChanged(int)));
-	menu->setCurrentIndex(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? 1 : 0);
-	menu->setParent(widget);
-	//mToolBar->addWidget(menu);
-	//mToolBar->addSeparator();
 }
 
 void ViewSceneDialog::addAutoViewButton()
@@ -429,7 +533,7 @@ void ViewSceneDialog::addObjectToggleMenu()
 
 void ViewSceneDialog::addViewBarButton()
 {
-	QPushButton* viewBarBtn = new QPushButton(this);
+	QPushButton* viewBarBtn = new QPushButton();
 	viewBarBtn->setToolTip("Show View Options");
 	viewBarBtn->setText("Views");
 	viewBarBtn->setAutoDefault(false);
@@ -468,6 +572,7 @@ void ViewSceneDialog::addViewOptions()
 	mDownViewBox->addItem("-X");
 	mDownViewBox->addItem("-Y");
 	mDownViewBox->addItem("-Z");
+	WidgetStyleMixin::toolbarStyle(mViewBar);
 	connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
 	mViewBar->addWidget(mDownViewBox);
 	mViewBar->addSeparator();
@@ -486,7 +591,7 @@ void ViewSceneDialog::addViewOptions()
 
 void ViewSceneDialog::addConfigurationButton()
 {
-	QPushButton* configurationButton = new QPushButton(this);
+	QPushButton* configurationButton = new QPushButton();
 	configurationButton->setToolTip("Open/Close Configuration Menu");
 	configurationButton->setText("Configure");
 	configurationButton->setAutoDefault(false);
@@ -498,82 +603,44 @@ void ViewSceneDialog::addConfigurationButton()
 
 void ViewSceneDialog::addConfigurationDock(const QString& viewName)
 {
+  QString name = viewName + " Configuration";
+  mConfigurationDock = new ViewSceneControlsDock(name, this);
+  mConfigurationDock->setVisible(false);
+
 	showConfiguration_ = false;
-	mConfigurationDock = new QDockWidget(this);
-	QString name = viewName + " Configuration";
-	mConfigurationDock->setWindowTitle(name);
-	mConfigurationDock->setAllowedAreas(Qt::RightDockWidgetArea);
-	mConfigurationDock->setFloating(true);
-	mConfigurationDock->setMinimumWidth(300);
-	mConfigurationDock->setMinimumHeight(150);
-	mConfigurationDock->setVisible(false);
-	mConfigurationDock->setEnabled(false);
-
-	QTabWidget* tabs = new QTabWidget(mConfigurationDock);
-	tabs->setFixedSize(300, 150);
-	
-	// View Tab
-	QWidget* viewTab = new QWidget();
-	addShowOrientationCheckbox(viewTab);
-	QPushButton* upButton = new QPushButton(viewTab);
-	upButton->setToolTip("Rotate up");
-	upButton->setText("Up");
-	upButton->setAutoDefault(false);
-	upButton->setDefault(false);
-	upButton->setGeometry(15, 25, 35, 25);
-	//connect(upButton, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-	QPushButton* downButton = new QPushButton(viewTab);
-	downButton->setToolTip("Rotate down");
-	downButton->setText("Down");
-	downButton->setAutoDefault(false);
-	downButton->setDefault(false);
-	downButton->setGeometry(15, 75, 35, 25);
-
-	QPushButton* leftButton = new QPushButton(viewTab);
-	leftButton->setToolTip("Rotate left");
-	leftButton->setText("Left");
-	leftButton->setAutoDefault(false);
-	leftButton->setDefault(false);
-	leftButton->setGeometry(0, 50, 35, 25);
-
-	QPushButton* rightButton = new QPushButton(viewTab);
-	rightButton->setToolTip("Rotate right");
-	rightButton->setText("Right");
-	rightButton->setAutoDefault(false);
-	rightButton->setDefault(false);
-	rightButton->setGeometry(35, 50, 35, 25);
-
-	tabs->addTab(viewTab, "View");
-
-	// Control Tab
-	QWidget* controlTab = new QWidget();
-	addMouseMenu(controlTab);
-	tabs->addTab(controlTab, "Controls");
-
-
 }
 
-void ViewSceneDialog::addShowOrientationCheckbox(QWidget* widget)
+void ViewSceneDialog::hideConfigurationDock()
 {
-	QCheckBox* showOrientationCheckBox = new QCheckBox(widget);
-	showOrientationCheckBox->setText("Orientation");
-	showOrientationCheckBox->setToolTip("Toggle Orientation Axes");
-	showOrientationCheckBox->setChecked(true);
-
-	connect(showOrientationCheckBox, SIGNAL(clicked(bool)), this, SLOT(showOrientationChecked(bool)));
+	if (mConfigurationDock)
+	{
+  	showConfiguration_ = mConfigurationDock->isVisible();
+  	if (showConfiguration_)
+  	{
+    	configurationButtonClicked();
+  	}
+	}
 }
 
-void ViewSceneDialog::showEvent(QShowEvent *evt)
+void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
-	ModuleDialogGeneric::showEvent(evt);
 	if (!shown_)
 	{
 		autoViewClicked();
 		shown_ = true;
 	}
+	ModuleDialogGeneric::showEvent(evt);
 }
 
-ViewSceneItemManager::ViewSceneItemManager() : model_(new QStandardItemModel(3, 1))
+void ViewSceneDialog::hideEvent(QHideEvent* evt)
+{
+	hideConfigurationDock();
+	ModuleDialogGeneric::hideEvent(evt);
+}
+
+
+ViewSceneItemManager::ViewSceneItemManager()
+  : model_(new QStandardItemModel(3, 1))
 {
 	model_->setItem(0, 0, new QStandardItem(QString("Object Selection")));
 	connect(model_, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(slotChanged(const QModelIndex&, const QModelIndex&)));
@@ -593,12 +660,25 @@ ViewSceneItemManager::ViewSceneItemManager() : model_(new QStandardItemModel(3, 
 #endif
 }
 
-void ViewSceneItemManager::addItem(const QString& name)
+
+void ViewSceneItemManager::SetupConnections(ViewSceneDialog* slotHolder)
+{
+  connect(this, SIGNAL(itemUnselected(const QString&)), slotHolder, SLOT(handleUnselectedItem(const QString&)));
+  connect(this, SIGNAL(itemSelected(const QString&)), slotHolder, SLOT(handleSelectedItem(const QString&)));
+}
+
+void ViewSceneItemManager::addItem(const QString& name, const QString& displayName, bool checked)
 {
 	QStandardItem* item = new QStandardItem(name);
+  //TODO dan
+  //item->setToolTip(displayName);
 
 	item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
-	item->setData(Qt::Checked, Qt::CheckStateRole);
+
+  if (checked)
+    item->setData(Qt::Checked, Qt::CheckStateRole);
+  else
+    item->setData(Qt::Unchecked, Qt::CheckStateRole);
 	items_.push_back(item);
 
 	model_->appendRow(item);

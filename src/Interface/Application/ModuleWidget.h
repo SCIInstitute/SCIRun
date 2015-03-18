@@ -35,6 +35,7 @@
 #include <QStackedWidget>
 #include <set>
 #include <deque>
+#include <atomic>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/HasNotes.h>
 #include <Interface/Application/PositionProvider.h>
@@ -111,9 +112,14 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
+  void highlightPorts();
+  void unhighlightPorts();
+
   void printPortPositions() const;
 
   bool hasDynamicPorts() const;
+
+  void createStartupNote();
 
   static const int PORT_SPACING = 3;
 
@@ -132,6 +138,7 @@ public Q_SLOTS:
   void updateProgressBar(double percent);
   void updateModuleTime();
   void launchDocumentation();
+  void setStartupNote(const QString& text);
   void updateNote(const Note& note);
   void duplicate();
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
@@ -164,6 +171,9 @@ Q_SIGNALS:
   void moduleSelected(bool selected);
   void displayChanged();
   void requestModuleVisible();
+  void deleteMeLater();
+  void executeEnds();
+  void signalExecuteButtonIconChangeToStop();
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
@@ -172,6 +182,9 @@ private Q_SLOTS:
   void fillReplaceWithMenu();
   void replaceModuleWith();
   void updateDialogWithPortCount();
+  void handleDialogFatalError(const QString& message);
+  void changeExecuteButtonToPlay();
+  void changeExecuteButtonToStop();
 private:
   ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
@@ -182,6 +195,7 @@ private:
   bool isMini_, errored_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
+  std::atomic<int> previousModuleState_;
 
   void addPorts(int index);
   void createPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
@@ -223,7 +237,7 @@ private:
   bool deleting_;
   const QString defaultBackgroundColor_;
   int fullIndex_, miniIndex_;
-  bool isViewScene_; //TODO: lots of special logic around this case. 
+  bool isViewScene_; //TODO: lots of special logic around this case.
 
   static bool globalMiniMode_;
 };

@@ -28,7 +28,7 @@
 
 /// \author James Hughes
 /// \date   September 2012
-/// \brief  Not sure this file should go in Modules/Render. But it is an 
+/// \brief  Not sure this file should go in Modules/Render. But it is an
 ///         auxiliary file to the ViewScene render module.
 
 #ifndef INTERFACE_MODULES_GLWIDGET_H
@@ -58,7 +58,7 @@ class GLWidget : public QGLWidget
   Q_OBJECT
 
 public:
-  GLWidget(QtGLContext* context);
+  GLWidget(QtGLContext* context, QWidget* parent);
   ~GLWidget();
 
   std::shared_ptr<Render::SRInterface> getSpire() const {return mGraphics;}
@@ -67,6 +67,8 @@ public:
   /// contexts running on the same thread.
   void makeCurrent();
 
+Q_SIGNALS:
+  void fatalError(const QString& message);
 protected:
   virtual void mousePressEvent(QMouseEvent* event);
   virtual void mouseMoveEvent(QMouseEvent* event);
@@ -81,7 +83,7 @@ public Q_SLOTS:
   void updateRenderer();
 
 private:
- 
+
   /// Retrieve SRInterface mouse button from mouse event.
   Render::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
 

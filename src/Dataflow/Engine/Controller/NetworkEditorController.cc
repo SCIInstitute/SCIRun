@@ -82,12 +82,12 @@ NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::Net
 
 ModuleHandle NetworkEditorController::addModule(const std::string& name)
 {
-  return addModule(ModuleLookupInfo(name));
+  return addModule(ModuleLookupInfo(name, "Category TODO", "SCIRun"));
 }
 
 ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
 {
-  auto realModule = addModuleImpl(info.module_name_);
+  auto realModule = addModuleImpl(info);
   if (signalSwitch_)
   {
     static ModuleCounter dummy;
@@ -97,11 +97,8 @@ ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
   return realModule;
 }
 
-ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleName)
+ModuleHandle NetworkEditorController::addModuleImpl(const ModuleLookupInfo& info)
 {
-  /// @todo: should pass in entire info struct
-  ModuleLookupInfo info;
-  info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
   if (realModule) /// @todo: mock network throws here due to null, need to have it return a mock module.
   {
@@ -127,7 +124,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   //auto disableDynamicPortManager(createDynamicPortSwitch());
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
   ModuleId id(module->get_id());
-  auto newModule = addModuleImpl(id.name_);
+  auto newModule = addModuleImpl(module->get_info());
   newModule->set_state(module->get_state()->clone());
   static ModuleCounter dummy;
   moduleAdded_(id.name_, newModule, dummy);
@@ -296,7 +293,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       {
         ModuleHandle module = theNetwork_->module(i);
         moduleAdded_(module->get_module_name(), module, modulesDone);
-        networkDoneLoading_(i);
+        networkDoneLoading_(static_cast<int>(i));
       }
 
       {
@@ -333,30 +330,38 @@ void NetworkEditorController::clear()
   LOG_DEBUG("NetworkEditorController::clear()" << std::endl);
 }
 
+// TODO:
+// - [X] refactor duplication
+// - [X] set up execution context queue
+// - [X] separate threads for looping through queue: another producer/consumer pair
+
 void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
-  if (!currentExecutor_)
-  {
-    currentExecutor_ = executorFactory_->createDefault();
-  }
-
-  ExecuteAllModules filter;
-  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
-  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
-  currentExecutor_->execute(context);
+  executeGeneric(lookup, ExecuteAllModules::Instance());
 }
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup)
 {
-  if (!currentExecutor_)
-  {
-    currentExecutor_ = executorFactory_->createDefault();
-  }
-
   ExecuteSingleModule filter(module, *theNetwork_);
-  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting, filter);
-  ExecutionContext context(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
-  currentExecutor_->execute(context);
+  executeGeneric(lookup, filter);
+}
+
+void NetworkEditorController::initExecutor()
+{
+  executionManager_.initExecutor(executorFactory_);
+}
+
+ExecutionContextHandle NetworkEditorController::createExecutionContext(const ExecutableLookup* lookup, ModuleFilter filter)
+{
+  return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
+}
+
+void NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+{
+  initExecutor();
+  auto context = createExecutionContext(lookup, filter);
+
+  executionManager_.enqueueContext(context);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const
@@ -377,7 +382,7 @@ NetworkGlobalSettings& NetworkEditorController::getSettings()
 
 void NetworkEditorController::setExecutorType(int type)
 {
-  currentExecutor_ = executorFactory_->create((ExecutionStrategy::Type)type);
+  executionManager_.setExecutionStrategy(executorFactory_->create((ExecutionStrategy::Type)type));
 }
 
 const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const

@@ -47,6 +47,15 @@ IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
+################################################################################
+# If building on Windows, make sure that the path to the bin directory is short.
+#
+if(WIN32)
+	STRING(LENGTH ${CMAKE_BINARY_DIR} BIN_DIR_LENGTH)
+	if(${BIN_DIR_LENGTH} GREATER 10)
+		MESSAGE(WARNING "Binary directory is too long, the build may fail due to long path names.")
+	endif()
+endif()
 
 ########################################################################
 # Build shared libraries by default
@@ -77,13 +86,46 @@ IF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 ENDIF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
 
+########################################################################
+# Git revision details
+
+# Appends the cmake/modules path to MAKE_MODULE_PATH variable.
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules ${CMAKE_MODULE_PATH})
+
+# Make a version file containing the current version from git.
+include(GetGitRevisionDescription)
+git_describe(VERSION_TAG --tag)
+git_describe(VERSION_BRANCH --all)
+get_git_head_revision(VERSION_REFSPEC VERSION_HASHVAR)
+
+MESSAGE(STATUS "Git version tag: " "${VERSION_TAG}")
+MESSAGE(STATUS "Git version branch: " "${VERSION_BRANCH}")
+MESSAGE(STATUS "Git version commit hash: " "${VERSION_HASHVAR}")
+
+#parse the version information into pieces.
+string(REGEX REPLACE "^v([0-9]+)\\..*" "\\1" VERSION_MAJOR "${VERSION_TAG}")
+string(REGEX REPLACE "^v[0-9]+\\.([0-9]+).*" "\\1" VERSION_MINOR "${VERSION_TAG}")
+#TODO: make generic 
+string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\-(alpha.[A-Za-z0-9_]+)\\-?.*" "\\1" VERSION_PATCH "${VERSION_TAG}")
+#TODO: parse SHA 
+#string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1" VERSION_SHA1 "${VERSION}")
+#set(VERSION_SHORT "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
+#MESSAGE(STATUS "Git version major: " "${VERSION_MAJOR}")
+#MESSAGE(STATUS "Git version minor: " "${VERSION_MINOR}")
+#MESSAGE(STATUS "Git version patch name: " "${VERSION_PATCH}")
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules/Version.cc.in
+ ${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc)
+set(version_file "${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc")
+
 
 ########################################################################
 # SCIRUN version number.
 
-SET(SCIRUN_VERSION_MAJOR "5")
-SET(SCIRUN_VERSION_MINOR "0")
-SET(SCIRUN_VERSION_PATCH "0")
+SET(SCIRUN_VERSION_MAJOR "${VERSION_MAJOR}")
+SET(SCIRUN_VERSION_MINOR "${VERSION_MINOR}")
+SET(SCIRUN_VERSION_PATCH "${VERSION_PATCH}")
 
 SET(SCIRUN_VERSION_STRING "${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
 
@@ -187,6 +229,8 @@ IF(UNIX)
 ENDIF()
 
 IF(APPLE)
+  SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
+  SET(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -ftemplate-depth=256")
   SET(CMAKE_CXX_FLAGS_DEBUG "-Wshorten-64-to-32 ${CMAKE_CXX_FLAGS_DEBUG}")
 
@@ -296,10 +340,11 @@ IF(WITH_TETGEN)
   ADD_DEFINITIONS(-DWITH_TETGEN)
 ENDIF(WITH_TETGEN)
 
-
 ########################################################################
 # Configure CPM and Spire - http://github.com/iauns/cpm
 # Configure CPM and Spire - http://github.com/CIBC-Internal/cpm
+
+MESSAGE(STATUS "Configuring CPMs")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -322,7 +367,7 @@ endif()
 include(${CPM_DIR}/CPM.cmake)
 
 # TODO: Add tags for *all* of the CPM modules. This will allow upstream
-# flexibility. Once all versions are appopriately tagged, I will be able
+# flexibility. Once all versions are appropriately tagged, I will be able
 # to untag upstream and keep it moving forward.
 
 # ++ MODULE: GL Platform
@@ -397,6 +442,8 @@ CPM_AddModule("bserialize"
 
 CPM_Finish()
 
+MESSAGE(STATUS "Done configuring CPMs")
+
 ########################################################################
 # Copy Spire-SCIRun specific assets and shaders
 
@@ -460,6 +507,24 @@ IF(NOT BUILD_HEADLESS)
   ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 ENDIF()
 
+########################################################################
+# Find and configure Qwt custom widgets
+
+OPTION(WITH_QWT_WIDGETS "Qwt Custom Widgets" OFF)
+MARK_AS_ADVANCED(WITH_QWT_WIDGETS)
+
+IF(WITH_QWT_WIDGETS)
+  SET(QWT_INCLUDE_DIR CACHE PATH "Qwt include directory")
+  IF(NOT QWT_INCLUDE_DIR)
+    MESSAGE(FATAL_ERROR "QWT_INCLUDE_DIR should be set to path like 'qwt-6.0.1/include'")
+  ENDIF()
+  INCLUDE_DIRECTORIES(${QWT_INCLUDE_DIR})
+  SET(QWT_LIBRARY CACHE FILEPATH "Qwt library")
+  IF(NOT QWT_LIBRARY)
+  	MESSAGE(FATAL_ERROR "QWT_LIBRARY should be set to a filepath like 'qwt-6.0.1/lib/libqwt.so'")
+  ENDIF()
+  SET(qwt_libraries ${QWT_LIBRARY} )
+ENDIF()
 
 ########################################################################
 # Find and configure dl library
@@ -631,6 +696,7 @@ SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Forward         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Visualization         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_FiniteElements         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Legacy_Geometry         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_DataIO         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Converter         PROPERTY FOLDER "Core/Algorithms")
 
@@ -698,9 +764,11 @@ SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualizati
 SET_PROPERTY(TARGET Modules_BrainStimulator   PROPERTY FOLDER "Modules/Brain")
 SET_PROPERTY(TARGET Modules_Legacy_FiniteElements   PROPERTY FOLDER "Modules/FiniteElements")
 SET_PROPERTY(TARGET Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
+SET_PROPERTY(TARGET Modules_Legacy_Converters PROPERTY FOLDER "Modules/Basic")
 SET_PROPERTY(TARGET Modules_Legacy_Forward PROPERTY FOLDER "Modules/Forward")
 SET_PROPERTY(TARGET Modules_Legacy_Inverse PROPERTY FOLDER "Modules/Inverse")
 SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO")
+SET_PROPERTY(TARGET Modules_Legacy_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
 IF(BUILD_TESTING)
@@ -756,6 +824,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
   SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
   SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO_Tests PROPERTY FOLDER "Modules/DataIO")
+  SET_PROPERTY(TARGET Modules_Factory_Tests   PROPERTY FOLDER "Modules/Basic")
 ENDIF()
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
@@ -780,8 +849,6 @@ ENDIF()
 
 ########################################################################
 # Custom CMake settings for CPack
-
-SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules")
 
 ########################################################################
 # CPack

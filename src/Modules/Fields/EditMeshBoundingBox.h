@@ -30,6 +30,8 @@
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 
 #include <Dataflow/Network/Module.h>
+#include <Modules/Fields/BoxWidgetTypes.h>
+#include <Core/Datatypes/Geometry.h>
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
@@ -42,7 +44,7 @@ namespace Fields {
 
   class EditMeshBoundingBoxImpl;
 
-  class SCISHARE EditMeshBoundingBox : public Dataflow::Networks::Module,
+  class SCISHARE EditMeshBoundingBox : public Dataflow::Networks::GeometryGeneratingModule,
     public Has1InputPort<FieldPortTag>,
     public Has3OutputPorts<FieldPortTag, GeometryPortTag, MatrixPortTag>
   {
@@ -69,10 +71,7 @@ namespace Fields {
 	static const Core::Algorithms::AlgorithmParameterName OutputSizeY;
 	static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
 	//Widgeconst t Scale/Mode
-	static const Core::Algorithms::AlgorithmParameterName DoubleScaleUp;
-	static const Core::Algorithms::AlgorithmParameterName ScaleUp;
-	static const Core::Algorithms::AlgorithmParameterName ScaleDown;
-	static const Core::Algorithms::AlgorithmParameterName DoubleScaleDown;
+	static const Core::Algorithms::AlgorithmParameterName Scale;
 	static const Core::Algorithms::AlgorithmParameterName NoTranslation;
 	static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
 	static const Core::Algorithms::AlgorithmParameterName RDITranslation;
@@ -102,6 +101,8 @@ namespace Fields {
     void widget_moved(bool);
     void createBoxWidget();
     void setBoxRestrictions();
+    Core::Datatypes::GeometryHandle buildGeometryObject();
+    SCIRun::Core::Geometry::BBox bbox_;
 
     BoxWidgetPtr box_;
     boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;

@@ -33,14 +33,14 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds& bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
+ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
 {
-  bounds.executeStarts_();
+  bounds_->executeStarts_();
 }
 
 ScopedExecutionBoundsSignaller::~ScopedExecutionBoundsSignaller()
 {
-  bounds_.executeFinishes_(errorCodeRetriever_());
+  bounds_->executeFinishes_(errorCodeRetriever_());
 }
 
 const ExecuteAllModules& ExecuteAllModules::Instance()
@@ -49,11 +49,16 @@ const ExecuteAllModules& ExecuteAllModules::Instance()
   return instance_;
 }
 
-ExecutionContext::ExecutionContext(const NetworkInterface& net) : network(net), lookup(net) {}
+ExecutionContext::ExecutionContext(NetworkInterface& net) : network(net), lookup(net) {}
 
 const ExecutionBounds& ExecutionContext::bounds() const
 {
   return executionBounds_;
+}
+
+void ExecutionContext::preexecute()
+{
+  network.setModuleExecutionState(ModuleInterface::Waiting, additionalFilter);
 }
 
 bool WaitsForStartupInitialization::waitedAlready_(false);

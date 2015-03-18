@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,12 +32,15 @@
 //    Date   : July 2006
 
 
-#include <Core/Algorithms/Fields/StreamLines/StreamLineIntegrators.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/StreamLines/StreamLineIntegrators.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
-
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 /// interpolate using the generic linear interpolator
 bool
@@ -53,7 +56,7 @@ StreamLineIntegrators::interpolate( const Point &p,
 }
 
 
-// LUTs for the RK-fehlberg algorithm 
+// LUTs for the RK-fehlberg algorithm
 static const double rkf_a[] =
   {16.0/135, 0, 6656.0/12825, 28561.0/56430, -9.0/50, 2.0/55};
 static const double rkf_ab[] =
@@ -91,32 +94,24 @@ StreamLineIntegrators::FindAdamsBashforth()
   }
 
   seed_ = nodes_[nodes_.size() - 1];
-  
+
   for (unsigned int i=5; i<max_steps_; i++) {
     seed_ += (step_size_/720.) * (1901.0 * f[0] - 2774.0 * f[1] +
 		       2616.0 * f[2] - 1274.0 * f[3] +
 		       251.0 * f[4]);
-    
+
     f[4] = f[3];
     f[3] = f[2];
     f[2] = f[1];
     f[1] = f[0];
 
     if (!interpolate(seed_, f[0])) {
-      break; 
+      break;
     }
 
     nodes_.push_back(seed_);
   }
 }
-
-
-void
-StreamLineIntegrators::FindAdamsMoulton()
-{
-  /// @todo: Implement AdamsMoulton
-}
-
 
 void
 StreamLineIntegrators::FindHeun()
@@ -196,7 +191,7 @@ StreamLineIntegrators::FindRKF()
 			terms[2]*rkf_ab[2] + terms[3]*rkf_ab[3] +
 			terms[4]*rkf_ab[4] + terms[5]*rkf_ab[5]);
     const double err2 = err.length2();
-    
+
     // Is the error tolerable?  Adjust the step size accordingly.  Too
     // small?  Grow it for next time but keep small-error result.  Too
     // big?  Recompute with smaller size.
@@ -209,7 +204,7 @@ StreamLineIntegrators::FindRKF()
     }
 
     // Compute and add the point to the list of points found.
-    seed_ += (terms[0]*rkf_a[0] + terms[1]*rkf_a[1] + terms[2]*rkf_a[2] + 
+    seed_ += (terms[0]*rkf_a[0] + terms[1]*rkf_a[1] + terms[2]*rkf_a[2] +
 	      terms[3]*rkf_a[3] + terms[4]*rkf_a[4] + terms[5]*rkf_a[5]);
 
     // If the new point is inside the field, add it.  Otherwise stop.
@@ -226,37 +221,32 @@ StreamLineIntegrators::ComputeRKFTerms(Vector v[6],       // storage for terms
 				  const Point &p,    // previous point
 				  double s)
 {
-  // Already computed this one when we did the inside test.
-  //  if (!interpolate(p, v[0]))
-  //  {
-  //    return -1;
-  //  }
   v[0] *= s;
-  
+
   if (!interpolate(p + v[0]*rkf_d[1][0], v[1]))
     return 0;
 
   v[1] *= s;
-  
+
   if (!interpolate(p + v[0]*rkf_d[2][0] + v[1]*rkf_d[2][1], v[2]))
     return 1;
 
   v[2] *= s;
-  
+
   if (!interpolate(p +
 		   v[0]*rkf_d[3][0] + v[1]*rkf_d[3][1] +
 		   v[2]*rkf_d[3][2], v[3]))
     return 2;
 
   v[3] *= s;
-  
+
   if (!interpolate(p +
 		   v[0]*rkf_d[4][0] + v[1]*rkf_d[4][1] +
 		   v[2]*rkf_d[4][2] + v[3]*rkf_d[4][3], v[4]))
     return 3;
 
   v[4] *= s;
-  
+
   if (!interpolate(p +
 		   v[0]*rkf_d[5][0] + v[1]*rkf_d[5][1] +
 		   v[2]*rkf_d[5][2] + v[3]*rkf_d[5][3] +
@@ -270,30 +260,26 @@ StreamLineIntegrators::ComputeRKFTerms(Vector v[6],       // storage for terms
 
 
 void
-StreamLineIntegrators::integrate( unsigned int method )
+StreamLineIntegrators::integrate(IntegrationMethod method)
 {
-  switch ( method ) {
-  case 0:
+  switch ( method ) 
+  {
+  case AdamsBashforth:
     FindAdamsBashforth();
     break;
 
-  case 1:
-    FindAdamsMoulton();
-    break;
-
-  case 2:
+  case Heun:
     FindHeun();
     break;
 
-  case 3:
+  case RungeKutta:
     FindRK4();
     break;
 
-  case 4:
+  case RungeKuttaFehlberg:
     FindRKF();
     break;
+  default:
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown stream line integration method (Cell walk uses different function)"));
   }
-}
-
-
 }

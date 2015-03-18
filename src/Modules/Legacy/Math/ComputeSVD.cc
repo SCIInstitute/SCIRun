@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2011 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,96 +26,41 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///
-///@file  ComputeSVD.cc
-///
-///@author
-///   Burak Erem
-///@date  November 27, 2011
-
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Modules/Legacy/Math/ComputeSVD.h>
+#include <Core/Algorithms/Math/ComputeSVD.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
 
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Core/Util/StringUtil.h>
-#include <iostream>
-#include <sstream>
-
-namespace SCIRun {
-
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-class ComputeSVD : public Module {
-  public:
-    ComputeSVD(GuiContext*);
 
-    virtual ~ComputeSVD();
-    virtual void execute();
-};
-
-
-DECLARE_MAKER(ComputeSVD)
-
-ComputeSVD::ComputeSVD(GuiContext* ctx) :
-  Module("ComputeSVD", ctx, Source, "Math", "SCIRun")
+ComputeSVD::ComputeSVD() : Module(ModuleLookupInfo("ComputeSVD", "Math", "SCIRun"),false)
 {
+	INITIALIZE_PORT(InputMatrix);
+	INITIALIZE_PORT(LeftSingularMatrix);
+	INITIALIZE_PORT(SingularValues);
+	INITIALIZE_PORT(RightSingularMatrix);
 }
 
-ComputeSVD::~ComputeSVD()
+void ComputeSVD::execute()
 {
+	auto input_matrix = getRequiredInput(InputMatrix);
+	
+	if(needToExecute())
+	{
+		update_state(Executing);
+		
+		auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
+		
+		sendOutputFromAlgorithm(LeftSingularMatrix, output);
+		sendOutputFromAlgorithm(SingularValues, output);
+		sendOutputFromAlgorithm(RightSingularMatrix, output);
+		
+	}
 }
-
-
-void
-ComputeSVD::execute()
-{
-  update_state(NeedData);
-
-  // Get the input matrix
-  MatrixHandle imH;
-  get_input_handle("Input", imH);
-  
-  // The input matrix is an m-by-n matrix, find and store those sizes
-  int m = imH->nrows();
-  int n = imH->ncols();
-  int numsingularvals = std::min(m,n);
-  
-  // We don't care what type of matrix the input is, just obtain a dense matrix
-  // (because that's the only type that has a built-in svd member function at the moment)
-  DenseMatrix *denseinput = imH->dense();
-  
-  // Create the matrices for the singular value decomposition
-  MatrixHandle SingularVals = new ColumnMatrix(numsingularvals);
-  ColumnMatrix *S = SingularVals->column();
-
-  MatrixHandle LeftSingularMat = new DenseMatrix(m,m);
-  DenseMatrix *U = LeftSingularMat->dense();
-
-  MatrixHandle RightSingularMat = new DenseMatrix(n,n);
-  DenseMatrix *V = RightSingularMat->dense();
-
-  // Compute the SVD of the input matrix
-  try
-  {
-    LinearAlgebra::svd(*denseinput, *U, *S, *V);
-  }
-  catch (const SCIRun::Exception& exception)
-  {
-	  std::ostringstream oss;
-	  oss << "Caught exception: " << exception.type() << " " << exception.message();
-	  error(oss.str());
-    return;
-  }
-   
-  // Pass the singular value decomposition matrices as output
-  send_output_handle("LeftSingularMat", LeftSingularMat);
-  send_output_handle("SingularVals", SingularVals);
-  send_output_handle("RightSingularMat", RightSingularMat);
-  
-}
-
-} // End namespace SCIRun
-
-

@@ -117,7 +117,8 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   module_(module),
   grabbedByWidget_(false),
   isSelected_(false),
-  pressedSubWidget_(0)
+  pressedSubWidget_(0),
+  doHighlight_(false)
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
@@ -125,10 +126,16 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
   connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureVisible()));
+  connect(module, SIGNAL(deleteMeLater()), this, SLOT(deleteLater()));
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+}
+
+void ModuleProxyWidget::createStartupNote()
+{
+  module_->createStartupNote();
 }
 
 void ModuleProxyWidget::ensureVisible()
@@ -300,4 +307,27 @@ void ModuleProxyWidget::setNoteGraphicsContext()
 void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 {
   setDefaultNotePositionImpl(position);
+}
+
+void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+{
+  //TODO: need to update PPPs
+  //TODO: need to call same in dragEnter event, if connection in progress
+  if (doHighlight_)
+    module_->highlightPorts();
+  QGraphicsProxyWidget::hoverEnterEvent(event);
+}
+
+void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+{
+  //TODO: need to update PPPs
+  //TODO: need to call same in dragLeave event, if connection in progress
+  if (doHighlight_)
+    module_->unhighlightPorts();
+  QGraphicsProxyWidget::hoverLeaveEvent(event);
+}
+
+void ModuleProxyWidget::highlightPorts(int state)
+{
+  doHighlight_ = state != 0;
 }

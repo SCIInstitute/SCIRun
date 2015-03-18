@@ -92,7 +92,7 @@ namespace Gui {
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
-        << disabled(new QAction("Destroy", parent)));
+        << new QAction("Destroy", parent));
     }
     QMenu* getMenu() { return menu_; }
     QAction* getAction(const char* name) const
@@ -399,7 +399,7 @@ void ModuleWidgetDisplayMini::setupButtons(bool hasUI, QObject* module)
 
 void ModuleWidgetDisplayMini::setupIcons()
 {
-  
+
 }
 
 QAbstractButton* ModuleWidgetDisplayMini::getOptionsButton() const
@@ -447,6 +447,20 @@ void ModuleWidgetDisplayMini::adjustLayout(QLayout* layout)
   // #endif
 }
 
+static const int UNSET = -1;
+static const int SELECTED = -50;
+static const int ERRORED = -100;
+static bool isUnsetOrSelected(int state)
+{
+  return UNSET == state || SELECTED == state;
+}
+
+typedef boost::bimap<QString, int> ColorStateLookup;
+typedef ColorStateLookup::value_type ColorStatePair;
+static ColorStateLookup colorStateLookup;
+void fillColorStateLookup(const QString& background);
+
+
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<SCIRun::Gui::DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
   : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
@@ -459,6 +473,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   isMini_(globalMiniMode_),
   errored_(false),
   theModule_(theModule),
+  previousModuleState_(UNSET),
   moduleId_(theModule->get_id()),
   dialog_(nullptr),
   dockable_(nullptr),
@@ -472,6 +487,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   miniIndex_(0),
   isViewScene_(name == "ViewScene")
 {
+  fillColorStateLookup(defaultBackgroundColor_);
+
   setupModuleActions();
   setupLogging();
 
@@ -481,22 +498,24 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   currentDisplay_ = isMini_ ? miniWidgetDisplay_.get() : fullWidgetDisplay_.get();
   setCurrentIndex(isMini_ ? miniIndex_ : fullIndex_);
 
+  makeOptionsDialog();
   createPorts(*theModule_);
   addPorts(currentIndex());
 
-  //std::cout << "current widget size: " << currentWidget()->size().width() << " " << currentWidget()->size().height() << std::endl;
   resize(currentWidget()->size());
 
-  makeOptionsDialog();
-
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
-  theModule_->connectExecutionStateChanged(boost::bind(&ModuleWidget::moduleStateUpdated, this, _1));
-  connect(this, SIGNAL(moduleStateUpdated(int)), this, SLOT(updateBackgroundColorForModuleState(int)));
+  theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
+
+  theModule_->connectExecuteSelfRequest([this]() { executeButtonPushed(); });
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
-  //TODO: doh, how do i destroy myself?
-  //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
+  connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
+
+  connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
+  connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
+  connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -586,7 +605,7 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
   if (color == Qt::red)
   {
     errored_ = true;
-    updateBackgroundColor(moduleRGBA(237, 67, 55));
+    updateBackgroundColor(moduleRGBA(176, 23, 31));
   }
   currentDisplay_->getLogButton()->setStyleSheet(
     QString("* { background-color: %1 }")
@@ -612,12 +631,15 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
 
+  //TODO: very slow code, action disabled anyway--turning off for now
+#if 0
   auto replaceWith = actionsMenu_->getAction("Replace With");
   auto menu = new QMenu(this);
   replaceWith->setMenu(menu);
   fillReplaceWithMenu();
   connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+#endif
 
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
@@ -828,6 +850,14 @@ void PortWidgetManager::addPort(InputPortWidget* port)
   inputPorts_.push_back(port);
 }
 
+void PortWidgetManager::setHighlightPorts(bool on)
+{
+  for (auto& port : getAllPorts())
+  {
+    port->setHighlight(on);
+  }
+}
+
 void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_)
@@ -912,6 +942,8 @@ ModuleWidget::~ModuleWidget()
 
     if (dockable_)
     {
+      if (isViewScene_) // see bug #808
+        dockable_->setFloating(false);
       SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
       delete dockable_;
     }
@@ -921,6 +953,7 @@ ModuleWidget::~ModuleWidget()
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }
+  Q_EMIT displayChanged();
 }
 
 void ModuleWidget::trackConnections()
@@ -932,6 +965,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
+    Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
@@ -940,6 +974,11 @@ void ModuleWidget::execute()
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
+}
+
+void ModuleWidget::changeExecuteButtonToStop()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
 }
 
 boost::signals2::connection ModuleWidget::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)
@@ -957,19 +996,41 @@ boost::signals2::connection ModuleWidget::connectErrorListener(const ErrorSignal
   return theModule_->connectErrorListener(subscriber);
 }
 
+void fillColorStateLookup(const QString& background)
+{
+  if (colorStateLookup.empty())
+  {
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(205,190,112), (int)ModuleInterface::Waiting));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(170,204,170), (int)ModuleInterface::Executing));
+    colorStateLookup.insert(ColorStatePair(background, (int)ModuleInterface::Completed));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(0,255,255), SELECTED));
+    colorStateLookup.insert(ColorStatePair(moduleRGBA(176, 23, 31), ERRORED));
+  }
+}
+
+//primitive state machine: will be replaced next week.
+//TODO: slot should set previousModuleState_
 void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
   switch (moduleState)
   {
   case (int)ModuleInterface::Waiting:
-    Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
+    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Completed)
+    {
+      Q_EMIT backgroundColorUpdated(moduleRGBA(205,190,112));
+    }
     break;
   case (int)ModuleInterface::Executing:
-    Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
+    if (isUnsetOrSelected(previousModuleState_) || previousModuleState_ == (int)ModuleInterface::Waiting)
+    {
+      Q_EMIT backgroundColorUpdated(moduleRGBA(170,204,170));
+    }
     break;
   case (int)ModuleInterface::Completed:
-    if (!errored_)
-      Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    {
+      if (!errored_)
+        Q_EMIT backgroundColorUpdated(defaultBackgroundColor_);
+    }
     break;
   }
 }
@@ -982,6 +1043,7 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
     if (SCIRunMainWindow::Instance()->newInterface())
       rounded = "color: white; border-radius: 7px;";
     setStyleSheet(rounded + " background-color: " + color);
+    previousModuleState_ = colorStateLookup.left.at(color);
   }
 }
 
@@ -1006,15 +1068,16 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialog_)
     {
       if (!dialogFactory_)
-        dialogFactory_.reset(new ModuleDialogFactory(0));
+        dialogFactory_.reset(new ModuleDialogFactory(0, addWidgetToExecutionDisableList, removeWidgetFromExecutionDisableList));
 
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
-      dialog_->pull();
       addWidgetToExecutionDisableList(dialog_->getExecuteAction());
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
       connect(this, SIGNAL(dynamicPortChanged()), this, SLOT(updateDialogWithPortCount()));
+      connect(dialog_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
+      connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
@@ -1027,6 +1090,8 @@ void ModuleWidget::makeOptionsDialog()
         dockable_->setFloating(!Core::Preferences::Instance().modulesAreDockable);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
+
+      dialog_->pull();
     }
   }
 }
@@ -1121,6 +1186,20 @@ void ModuleWidget::launchDocumentation()
     GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
 }
 
+void ModuleWidget::setStartupNote(const QString& text)
+{
+  auto note = getCurrentNote();
+  note.plainText_ = text;
+  note.html_ = "<p style=\"color:white\">" + text;
+  updateNoteFromFile(note);
+}
+
+void ModuleWidget::createStartupNote()
+{
+  if (dialog_)
+    dialog_->createStartupNote();
+}
+
 void ModuleWidget::updateNote(const Note& note)
 {
   setCurrentNote(note, false);
@@ -1170,6 +1249,12 @@ void ModuleWidget::executeButtonPushed()
 {
   LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   Q_EMIT executedManually(theModule_);
+  changeExecuteButtonToStop();
+}
+
+void ModuleWidget::changeExecuteButtonToPlay()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
 }
 
 bool ModuleWidget::globalMiniMode_(false);
@@ -1208,5 +1293,29 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
   auto size = widget(newIndex)->size();
   setCurrentIndex(newIndex);
   resize(size);
+  Q_EMIT displayChanged();
+}
+
+void ModuleWidget::handleDialogFatalError(const QString& message)
+{
+  qDebug() << "Dialog error: " << message;
+  updateBackgroundColor(moduleRGBA(176, 23, 31)); //TODO: will consolidate as part of state machine refactoring
+  colorLocked_ = true;
+  setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nDelete and re-add to network for proper execution.");
+}
+
+void ModuleWidget::highlightPorts()
+{
+  ports_->setHighlightPorts(true);
+  inputPortLayout_->setSpacing(PORT_SPACING * 4);
+  outputPortLayout_->setSpacing(PORT_SPACING * 4);
+  Q_EMIT displayChanged();
+}
+
+void ModuleWidget::unhighlightPorts()
+{
+  ports_->setHighlightPorts(false);
+  inputPortLayout_->setSpacing(PORT_SPACING);
+  outputPortLayout_->setSpacing(PORT_SPACING);
   Q_EMIT displayChanged();
 }

@@ -56,8 +56,11 @@ public:
 
     // Node flags
     USE_SPHERE,
+    USE_TRANSPARENT_NODES,
 
     // Edge flags
+    USE_CYLINDER,
+    USE_TRANSPARENT_EDGES,
 
     // Face flags
     USE_NORMALS,
@@ -99,6 +102,13 @@ public:
     RING_GLYPH
   };
 
+  enum TransparencySortType
+  {
+    CONTINUOUS_SORT,
+    UPDATE_SORT,
+    LISTS_SORT
+  };
+
   RenderState()
   {
     for (int i = 0; i < MAX_ACTION_FLAGS; ++i)
@@ -122,6 +132,7 @@ public:
 
   // Render state flags.
   bool mFlags[MAX_ACTION_FLAGS];
+  TransparencySortType mSortType = CONTINUOUS_SORT;
 
   Core::Datatypes::ColorRGB defaultColor;
 };

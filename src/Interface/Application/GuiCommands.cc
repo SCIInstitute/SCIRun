@@ -49,8 +49,8 @@ using namespace SCIRun::Dataflow::Networks;
 
 bool LoadFileCommandGui::execute()
 {
-  auto inputFile = Application::Instance().parameters()->inputFile();
-  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile.get()));
+  auto inputFiles = Application::Instance().parameters()->inputFiles();
+  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFiles[index_]));
 }
 
 bool ExecuteCurrentNetworkCommandGui::execute()
@@ -68,6 +68,7 @@ bool QuitAfterExecuteCommandGui::execute()
 bool QuitCommandGui::execute()
 {
   SCIRunMainWindow::Instance()->quit();
+  exit(0);
   return true;
 }
 
@@ -99,7 +100,7 @@ bool ShowSplashScreenGui::execute()
 
 void ShowSplashScreenGui::initSplashScreen()
 {
-  splash_ = new QSplashScreen(0, QPixmap(":/gear/splash-scirun.png").scaled(990, 490),  Qt::WindowStaysOnTopHint);
+  splash_ = new QSplashScreen(0, QPixmap(":/general/Resources/scirun_5_0_alpha.png"), Qt::WindowStaysOnTopHint);
   splashTimer_ = new QTimer;
   splashTimer_->setSingleShot( true );
   splashTimer_->setInterval( 5000 );
@@ -143,7 +144,7 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 bool FileOpenCommand::execute()
 {
   if (!filename_.empty())
-    GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
+    GuiLogger::Instance().log("Attempting load of " + QString::fromStdString(filename_));
 
   try
   {

@@ -41,23 +41,21 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
-MusilRNG *musil = new MusilRNG;
-
 BuildNoiseColumnMatrixAlgorithm::BuildNoiseColumnMatrixAlgorithm()
 {
 	addParameter(SignalToNoiseRatio(),10);
 }
 
-void BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle output_matrix) const
+MatrixHandle BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle input_matrix) const
 {
-	if(matrix_is::sparse(output_matrix))
-		matrix_convert::to_dense(output_matrix);		
-	
+  static MusilRNG musil;
+
 	double mean, power, sigma;
 	mean=power=sigma=0;
 	int r, c;
-	int nr = output_matrix->nrows();
-	int nc = output_matrix->ncols();
+  int nr = input_matrix->nrows();
+  int nc = input_matrix->ncols();
+  DenseMatrixHandle output(new DenseMatrix(nr, nc));
 	double curr;
 	
 	double snr = get(SignalToNoiseRatio()).toDouble();
@@ -66,32 +64,31 @@ void BuildNoiseColumnMatrixAlgorithm::run(MatrixHandle output_matrix) const
 	for(r = 0; r < nr; r++) {
 		for(c = 0; c < nc; c++)
 		{
-			curr = output_matrix->get(r,c);
+      curr = input_matrix->get(r, c);
 			power += (curr - mean)*(curr - mean);
 		}
 	}
 	power /= nc*nr;
 	
-	sigma = sqrt(power)/(snr*Sqrt(2*M_PI));
+	sigma = sqrt(power)/(snr*sqrt(2*M_PI));
 	
 	for(r = 0; r < nr; r++)
 	{
 		for(c = 0; c < nc; c++)
 		{
-			const double rnd = 2.0 * (*musil)() -1.0;
+			const double rnd = 2.0 * musil() -1.0;
 			double perturb = rnd * sigma * sqrt((-2.0 * log(rnd*rnd))/(rnd*rnd));
-			output_matrix->put(r,c,perturb);
+      (*output)(r, c) = perturb;
 		}
 	}
+  return output;
 }
 
 AlgorithmOutput BuildNoiseColumnMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
 	auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
 	
-	MatrixHandle output_matrix = input_matrix;
-	
-	run(output_matrix);
+  MatrixHandle output_matrix = run(input_matrix);
 	
 	AlgorithmOutput output;
 	output[Variables::ResultMatrix] = output_matrix;

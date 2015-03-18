@@ -31,6 +31,9 @@
 
 #include <Core/Datatypes/Datatype.h>
 #include <boost/noncopyable.hpp>
+#include <Core/Datatypes/Color.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -40,24 +43,53 @@ namespace Datatypes {
   class SCISHARE ColorMap : public Datatype
   {
   public:
-    explicit ColorMap(const std::string& name);
-
+    // Because colors need to be in the range [0,1], and SCIRun4 used [-1,1] for it's
+    // default input range, we need to transform by default the data into [0,1] range.
+    explicit ColorMap(const std::string& name = "Rainbow", const size_t resolution = 256,
+                        const double shift = 0.0, const bool invert = false,
+                        const double rescale_scale = .5, const double rescale_shift = 1.);
+      
     virtual ColorMap* clone() const;
 
-    std::string getColorMapName() const {return name_;}
+    std::string getColorMapName() const;
+    size_t getColorMapResolution() const;
+    double getColorMapShift() const;
+    bool getColorMapInvert() const;
+    double getColorMapRescaleScale() const;
+    double getColorMapRescaleShift() const;
+    
+    Core::Datatypes::ColorRGB valueToColor(double scalar) const;
+    Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
+    Core::Datatypes::ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
+    
   private:
+    ///<< Internal functions.
+    Core::Datatypes::ColorRGB getColorMapVal(double v) const;
+    double getTransformedColor(double v) const;
+    
+    ///<< The colormap's name.
     std::string name_;
-    boost::shared_ptr<class ColorMapImpl> impl_;
+    ///<< The resolution of the map [2,256].
+    size_t resolution_;
+    ///<< The gamma shift.
+    double shift_;
+    ///<< Whether to invert the map or not.
+    bool invert_;
+    ///<< Rescaling scale (usually 1. / (data_max - data_min) ).
+    double rescale_scale_;
+    ///<< Rescaling shift (usually -data_min). Shift happens before scale.
+    double rescale_shift_;
   };
 
   class SCISHARE StandardColorMapFactory : boost::noncopyable
   {
   public:
-    static ColorMapHandle create(const std::string& name);
+   // See explanation for defaults above in ColorMap Constructor
+    static ColorMapHandle create(const std::string& name = "Rainbow", const size_t &resolution = 256,
+                                    const double &shift = 0.0, const bool &invert = false,
+                                    const double &rescale_scale = .5, const double &rescale_shift = 1.);
   private:
     StandardColorMapFactory();
-    static ColorMap rainbow_;
-    static ColorMap grayscale_;
   };
 
 }}}

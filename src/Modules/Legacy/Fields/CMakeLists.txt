@@ -71,6 +71,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataFromSourceToDestination.h
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
+  ConvertIndicesToFieldData.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -170,7 +171,7 @@ SET(Modules_Legacy_Fields_SRCS
   CalculateSignedDistanceToField.cc
   #CalculateIsInsideField.cc
   #CalculateInsideWhichField.cc
-  #ConvertIndicesToFieldData.cc
+  ConvertIndicesToFieldData.cc
   CreateFieldData.cc
   #GetFieldData.cc
   #SetFieldData.cc

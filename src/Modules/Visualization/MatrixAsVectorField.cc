@@ -40,6 +40,8 @@ MatrixAsVectorFieldModule::MatrixAsVectorFieldModule() : Module(ModuleLookupInfo
 
 void MatrixAsVectorFieldModule::execute()
 {
+  //TODO: remove this module
+  #if 0
   auto mat = getRequiredInput(Matrix);
 
   if (mat->rows() != 6)
@@ -49,4 +51,5 @@ void MatrixAsVectorFieldModule::execute()
   }
 
   sendOutput(RenderedMatrix, boost::make_shared<GeometryObject>(mat));
+  #endif
 }

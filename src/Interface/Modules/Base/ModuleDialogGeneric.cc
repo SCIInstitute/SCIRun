@@ -30,17 +30,22 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
 #include <boost/foreach.hpp>
+#include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
+ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
+ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
+
 ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
   pulling_(false),
   executeAction_(0),
   shrinkAction_(0),
+  executeInteractivelyToggleAction_(0),
   collapsed_(false),
   dock_(0)
 {
@@ -56,15 +61,38 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();
   createShrinkAction();
+  connectStateChangeToExecute(); //TODO: make this a module state variable if a module wants it saved
 }
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
 {
+  if (disablerAdd_ && disablerRemove_)
+  {
+    std::for_each(needToRemoveFromDisabler_.begin(), needToRemoveFromDisabler_.end(), disablerRemove_);
+  }
 }
 
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
-  connect(button, SIGNAL(clicked()), this, SIGNAL(executeActionTriggered()));
+  connect(button, SIGNAL(clicked()), this, SIGNAL(executeFromStateChangeTriggered()));
+  if (disablerAdd_ && disablerRemove_)
+  {
+    disablerAdd_(button);
+    needToRemoveFromDisabler_.push_back(button);
+  }
+}
+
+void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
+{
+  /*
+  TODO: investigate why duplicate executes are signalled.
+  connect(box, SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(executeActionTriggered()));
+  if (disablerAdd_ && disablerRemove_)
+  {
+    disablerAdd_(box);
+    needToRemoveFromDisabler_.push_back(box);
+  }
+  */
 }
 
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)
@@ -96,8 +124,35 @@ void ModuleDialogGeneric::createShrinkAction()
 {
   shrinkAction_ = new QAction(this);
   shrinkAction_->setText("Collapse");
-  //shrinkAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  //TODO: redo this slot to hook up to toggled() signal
   connect(shrinkAction_, SIGNAL(triggered()), this, SLOT(toggleCollapse()));
+}
+
+void ModuleDialogGeneric::createExecuteInteractivelyToggleAction()
+{
+  executeInteractivelyToggleAction_ = new QAction(this);
+  executeInteractivelyToggleAction_->setText("Execute Interactively");
+  executeInteractivelyToggleAction_->setCheckable(true);
+  executeInteractivelyToggleAction_->setChecked(true);
+  connect(executeInteractivelyToggleAction_, SIGNAL(toggled(bool)), this, SLOT(executeInteractivelyToggled(bool)));
+}
+
+void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
+{
+  if (toggle)
+    connectStateChangeToExecute();
+  else
+    disconnectStateChangeToExecute();
+}
+
+void ModuleDialogGeneric::connectStateChangeToExecute()
+{
+  connect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
+}
+
+void ModuleDialogGeneric::disconnectStateChangeToExecute()
+{
+  disconnect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
 }
 
 void ModuleDialogGeneric::toggleCollapse()
@@ -135,6 +190,8 @@ void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e)
 {
   QMenu menu(this);
   menu.addAction(executeAction_);
+  if (executeInteractivelyToggleAction_)
+    menu.addAction(executeInteractivelyToggleAction_);
   menu.addAction(shrinkAction_);
   menu.exec(e->globalPos());
 
@@ -178,7 +235,7 @@ public:
     ToQStringConverter toLabelConverter = &QString::fromStdString) :
   WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
   {
-    connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     const GuiStringTranslationMap& stringMap) :
@@ -190,7 +247,7 @@ public:
     }
     fromLabelConverter_ = [this](const QString& qstr) { return findOrFirst(stringMap_.left, qstr.toStdString()); };
     toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(findOrFirst(stringMap_.right, str)); };
-    connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+    connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
   virtual void pull() override
   {
@@ -239,7 +296,7 @@ class CompositeSlotManager : public WidgetSlotManager
 {
 public:
   CompositeSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, const std::vector<Widget*>& widgets)
-    : WidgetSlotManager(state, dialog) 
+    : WidgetSlotManager(state, dialog)
   {
     std::transform(widgets.begin(), widgets.end(), std::back_inserter(managers_), [&](Widget* w) { return boost::make_shared<Manager>(state, dialog, stateKey, w); });
   }
@@ -380,7 +437,7 @@ public:
       virtual void pushImpl() override
       {
         LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
-        try 
+        try
         {
           auto value = boost::lexical_cast<double>(lineEdit_->text().toStdString());
           state_->setValue(stateKey_, value);
@@ -556,7 +613,36 @@ void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmP
 {
   addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
 }
+/*
+class SliderSlotManager : public WidgetSlotManager
+{
+public:
+  SliderSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSlider* slider) :
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), slider_(slider)
+  {
+  }
+  virtual void pull() override
+  {
+    auto newValue = state_->getValue(stateKey_).toInt();
+    if (newValue != slider_->value())
+    {
+      LOG_DEBUG("In new version of pull code for QSlider: " << newValue);
+      slider_->setValue(newValue);
+    }
+  }
+  virtual void pushImpl() override
+  {
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QSlider* slider_;
+};
 
+void ModuleDialogGeneric::addSliderManager(QSlider* slider, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, slider));
+}
+*/
 class RadioButtonGroupSlotManager : public WidgetSlotManager
 {
 public:
@@ -592,4 +678,26 @@ private:
 void ModuleDialogGeneric::addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<RadioButtonGroupSlotManager>(state_, *this, stateKey, radioButtons));
+}
+
+void WidgetStyleMixin::tabStyle(QTabWidget* tabs)
+{
+	tabs->setStyleSheet(
+		"QTabBar::tab::selected, QTabBar::tab::hover         {color:black; background-color: #F0F0F0; border: 1px solid rgb(66,66,69); min-width:2ex; padding: 5px 10px;} "
+		"QTabBar::tab:!selected {color: white; background-color: rgb(66,66,69); border: 1px solid #FFFFFF; min-width:2ex; padding: 5px 10px; }"
+		"QTabBar::tab:selected  {color:black; background-color: #F0F0F0; border: 1px solid rgb(66,66,69); min-width:2ex; padding: 5px 10px;}"
+		);
+}
+
+void WidgetStyleMixin::tableHeaderStyle(QTableWidget* tableHeader)
+{
+	tableHeader->setStyleSheet(
+		"QHeaderView::section {background: rgb(66,66,69);}"
+		);
+}
+
+void WidgetStyleMixin::toolbarStyle(QToolBar* toolbar)
+{
+  toolbar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
+    "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
 }

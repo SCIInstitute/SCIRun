@@ -55,6 +55,9 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
   connect(buttonBox_->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(ok()));
   connect(buttonBox_->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(cancel()));
 
+  label_2->setHidden(true);
+  alignmentComboBox_->setHidden(true);
+
   //TODO: settable notes
   previousColor_ = Qt::black;
   position_ = Default;

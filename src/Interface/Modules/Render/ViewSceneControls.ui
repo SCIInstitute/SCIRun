@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ViewSceneControls</class>
+ <widget class="QDockWidget" name="ViewSceneControls">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>300</width>
+    <height>415</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>300</width>
+    <height>415</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>ViewScene Configuration</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="RenderTab">
+       <attribute name="title">
+        <string>Render</string>
+       </attribute>
+       <widget class="QPushButton" name="setBackgroundColorPushButton_">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>60</y>
+          <width>91</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Scene Color</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="currentBackgroundLabel_">
+        <property name="geometry">
+         <rect>
+          <x>25</x>
+          <y>22</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Panel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_6">
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>90</y>
+          <width>260</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>Transparency Rendering</string>
+        </property>
+        <widget class="QRadioButton" name="contSortRadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>141</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Continuous Sort</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="updateSortRadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>40</y>
+           <width>141</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Intermittent Sort</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="listSortRadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>60</y>
+           <width>141</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>List Sort</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="ClippingTab">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <attribute name="title">
+        <string>Clipping</string>
+       </attribute>
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>10</y>
+          <width>260</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>Plane</string>
+        </property>
+        <widget class="QRadioButton" name="Plane1RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>23</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 1</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="Plane2RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>43</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 2</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="Plane3RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>63</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 3</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="Plane4RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>23</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 4</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="Plane5RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>43</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 5</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="Plane6RadioButton_">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>63</y>
+           <width>91</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Plane 6</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>105</y>
+          <width>260</width>
+          <height>91</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>Plane Settings</string>
+        </property>
+        <widget class="QCheckBox" name="planeVisibleCheckBox_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>24</y>
+           <width>240</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Clipping Plane Visible</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="showPlaneFrameCheckBox_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>44</y>
+           <width>240</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Show Clipping Plane Frame</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="reversePlaneNormalCheckBox_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>64</y>
+           <width>240</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Reverse Clipping Plane Normal</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>200</y>
+          <width>260</width>
+          <height>151</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>GroupBox</string>
+        </property>
+        <widget class="QLabel" name="label_4">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>120</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>D:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="dSliderValueLabel_">
+         <property name="geometry">
+          <rect>
+           <x>31</x>
+           <y>120</y>
+           <width>41</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+        </widget>
+        <widget class="QSlider" name="zValueHorizontalSlider_">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>90</y>
+           <width>181</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-100</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_3">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>90</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Z:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="xSliderValueLabel_">
+         <property name="geometry">
+          <rect>
+           <x>31</x>
+           <y>30</y>
+           <width>41</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+        </widget>
+        <widget class="QSlider" name="dValueHorizontalSlider_">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>120</y>
+           <width>181</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-100</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+        <widget class="QLabel" name="ySliderValueLabel_">
+         <property name="geometry">
+          <rect>
+           <x>31</x>
+           <y>60</y>
+           <width>41</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+        </widget>
+        <widget class="QSlider" name="xValueHorizontalSlider_">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>30</y>
+           <width>181</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-100</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>30</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>X:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="zSliderValueLabel_">
+         <property name="geometry">
+          <rect>
+           <x>31</x>
+           <y>90</y>
+           <width>41</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+        </widget>
+        <widget class="QSlider" name="yValueHorizontalSlider_">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>60</y>
+           <width>181</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-100</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_2">
+         <property name="geometry">
+          <rect>
+           <x>11</x>
+           <y>60</y>
+           <width>31</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Y:</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="ViewTab">
+       <attribute name="title">
+        <string>View</string>
+       </attribute>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>10</y>
+          <width>260</width>
+          <height>140</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>Auto Rotate Settings</string>
+        </property>
+        <widget class="QPushButton" name="rotateUpButton_">
+         <property name="geometry">
+          <rect>
+           <x>88</x>
+           <y>24</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="toolTip">
+          <string>Rotate Object Up</string>
+         </property>
+         <property name="text">
+          <string>Up</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="rotateLeftButton_">
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>54</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="toolTip">
+          <string>Rotate Object Left</string>
+         </property>
+         <property name="text">
+          <string>Left</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="rotateRightButton_">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>54</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="toolTip">
+          <string>Rotate Object Right</string>
+         </property>
+         <property name="text">
+          <string>Right</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="rotateDownButton_">
+         <property name="geometry">
+          <rect>
+           <x>88</x>
+           <y>84</y>
+           <width>75</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="toolTip">
+          <string>Rotate Object Down</string>
+         </property>
+         <property name="text">
+          <string>Down</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="autoRotateCheckBox_">
+         <property name="geometry">
+          <rect>
+           <x>50</x>
+           <y>114</y>
+           <width>101</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="toolTip">
+          <string>Toggle Auto Rotate</string>
+         </property>
+         <property name="text">
+          <string>Auto Rotate</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="geometry">
+         <rect>
+          <x>8</x>
+          <y>160</y>
+          <width>261</width>
+          <height>80</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>View Options</string>
+        </property>
+        <widget class="QCheckBox" name="orientationCheckBox_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>24</y>
+           <width>101</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="toolTip">
+          <string>Toggle Orientation Axis</string>
+         </property>
+         <property name="text">
+          <string>Orientation</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="ControlsTab">
+       <attribute name="title">
+        <string>Controls</string>
+       </attribute>
+       <widget class="QComboBox" name="mouseControlComboBox_">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>141</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>Legacy Mouse Control</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>New Mouse Control</string>
+         </property>
+        </item>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -36,8 +36,6 @@ SET(Core_Util_Legacy_SRCS
   Environment_Defaults.cc  
   FileUtils.cc 
   FullFileName.cc
-  LogFile.cc
-  ProgressReporter.cc   
   soloader.cc
   Timer.cc             
   ThrottledRunnable.cc 
@@ -55,10 +53,8 @@ SET(Core_Util_Legacy_HEADERS
   FancyAssert.h
   FileUtils.h
   FullFileName.h
-  LogFile.h
   MemoryUtil.h
   NotFinished.h 
-  ProgressReporter.h
   Rand.h
   sci_system.h
   soloader.h

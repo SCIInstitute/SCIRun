@@ -44,6 +44,14 @@ namespace
   {
     return QString::fromStdString(ap.name().name());
   }
+
+  QStringList convertPathList(const std::vector<boost::filesystem::path>& paths)
+  {
+    QStringList strs;
+    for (const auto& path : paths)
+      strs << QString::fromStdString(path.string());
+    return strs;
+  }
 }
 
 void SCIRunMainWindow::readSettings()
@@ -110,7 +118,16 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(snapTo).toBool();
     prefs.modulesSnapToGrid.setValue(value);
     modulesSnapToCheckBox_->setChecked(value);
-    GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString(prefs.modulesSnapToGrid ? "true" : "false"));
+    GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString::number(prefs.modulesSnapToGrid));
+  }
+
+  const QString portHighlight = qname(prefs.highlightPorts);
+  if (settings.contains(portHighlight))
+  {
+    auto value = settings.value(portHighlight).toBool();
+    prefs.highlightPorts.setValue(value);
+    portSizeEffectsCheckBox_->setChecked(value);
+    GuiLogger::Instance().log("Setting read: highlight ports on hover = " + QString::number(prefs.highlightPorts));
   }
 
   const QString dockable = qname(prefs.modulesAreDockable);
@@ -162,6 +179,14 @@ void SCIRunMainWindow::readSettings()
     setDataDirectory(dataDir);
   }
 
+  const QString dataPath = "dataPath";
+  if (settings.contains(dataPath))
+  {
+    auto path = settings.value(dataPath).toStringList().join(";");
+    GuiLogger::Instance().log("Setting read: dataPath = " + path);
+    setDataPath(path);
+  }
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -179,13 +204,15 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
   settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
   settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());
+  settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
   settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
-  settings.setValue("dataDirectory", dataDirectory());
+  settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
+  settings.setValue("dataPath", convertPathList(prefs.dataPath()));
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

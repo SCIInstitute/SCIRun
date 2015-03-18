@@ -452,13 +452,13 @@ double BuildBEMatrixBase::get_new_auto_g(
     {
       gama_j = gama_j + gama;
       rhoj = h / cos(alfa - gama_j);
-      sum = sum + sqrt( Abs(rhoj * rhoj_1) );
+      sum = sum + sqrt( std::fabs(rhoj * rhoj_1) );
       rhoj_1 = rhoj;
     }
-    sai_new = sum * sqrt( Abs(gama * sin(gama)) );
+    sai_new = sum * sqrt(std::fabs(gama * sin(gama)));
     delta = 0;
     if (sai_new + sai_old)
-      delta = Abs( (sai_new - sai_old) / (sai_new + sai_old) );
+      delta = std::fabs((sai_new - sai_old) / (sai_new + sai_old));
     sai_old = sai_new;
   }
   return sai_new;
@@ -1023,9 +1023,11 @@ BEMAlgoPtr BEMAlgoImplFactory::create(const bemfield_vector& fields)
 
 static void printInfo(const DenseMatrix& m, const std::string& name)
 {
+#if 0
   std::cout << name << ": " << m.rows() << " x " << m.cols() << std::endl;
   std::cout << name << " min: " << m.minCoeff() << std::endl;
   std::cout << name << " max: " << m.maxCoeff() << std::endl;
+#endif
 }
 
 MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
@@ -1128,14 +1130,14 @@ MatrixHandle SurfaceToSurface::compute(const bemfield_vector& fields) const
       if (i == sourcefieldindices[j])
       {
         auto block = EJ.blockRef(i,j);
-        std::cout << "EJ block auto " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
+        //std::cout << "EJ block auto " << i << "," << j << " is size " << block.rows() << " x " << block.cols() /*<< " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
 
         make_auto_G_compute(fields[i].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }
       else
       {
         auto block = EJ.blockRef(i,j);
-        std::cout << "EJ block cross " << i << "," << j << " is size " << block.rows() << " x " << block.cols()/* << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
+        //std::cout << "EJ block cross " << i << "," << j << " is size " << block.rows() << " x " << block.cols()/* << " starting at " << blockStartsEE[i] << "," << blockStartsEJ[j]*/ << std::endl;
 
         make_cross_G_compute(fields[i].field_->vmesh(), fields[sourcefieldindices[j]].field_->vmesh(), block, fields[i].insideconductivity, fields[i].outsideconductivity, op_cond, triangleareas);
       }

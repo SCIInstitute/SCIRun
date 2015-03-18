@@ -52,6 +52,12 @@ namespace SCIRun {
 
 		class SRCamera;
 
+    class SRInterfaceFailure : public std::runtime_error 
+    {
+    public:
+      explicit SRInterfaceFailure(const std::string& message) : std::runtime_error(message) {}
+    };
+
 		// This class will be executing on a remote thread using boost lock free
 		// structures. The view scene dialog on qt widgets only serve one purpose:
 		// to relay information to this thread so that rendering can take place.
@@ -114,7 +120,7 @@ namespace SCIRun {
 			void gcInvalidObjects(const std::vector<std::string>& validObjects);
 
 			/// Handles a new geometry object.
-			void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object);
+			void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object, int port);
 
 			/// Performs a frame.
 			void doFrame(double currentTime, double constantDeltaTime);
@@ -133,18 +139,46 @@ namespace SCIRun {
 
 			/// Toggle Orientation Axes
 			void showOrientation(bool value);
+      
+      /// Set the Background Color
+      void setBackgroundColor(QColor color);
+
+      /// Set Transparency Rener Type
+      void setTransparencyRendertype(RenderState::TransparencySortType rType);
 
 		private:
+
+      class DepthIndex {
+      public:
+        size_t mIndex;
+        double mDepth;
+
+        DepthIndex() :
+          mIndex(0),
+          mDepth(0.0)
+        {}
+
+        DepthIndex(size_t index, double depth) :
+          mIndex(index),
+          mDepth(depth)
+        {}
+
+        bool operator<(const DepthIndex& di) const
+        {
+          return this->mDepth < di.mDepth;
+        }
+      };
 
 			class SRObject
 			{
 			public:
 				SRObject(const std::string& name, const glm::mat4& objToWorld,
-					const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap) :
+					const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap, int port) :
 					mName(name),
 					mObjectToWorld(objToWorld),
 					mBBox(bbox),
-					mColorMap(colorMap)
+					mColorMap(colorMap),
+					mPort(port)
 				{}
 
 				// Different types of uniform transformations that are associated
@@ -169,14 +203,15 @@ namespace SCIRun {
 					Core::Datatypes::GeometryObject::RenderType renderType;
 				};
 
-				std::string           mName;
-				glm::mat4             mObjectToWorld;
-				std::list<SRPass>     mPasses;
-				Core::Geometry::BBox  mBBox;          ///< Objects bounding box (calculated from VBO).
+				std::string                     mName;
+				glm::mat4                       mObjectToWorld;
+				std::list<SRPass>               mPasses;
+				Core::Geometry::BBox            mBBox;          ///< Objects bounding box (calculated from VBO).
 
 				boost::optional<std::string>    mColorMap;
-			};
 
+				int										          mPort;
+			};
 			// Sets up ESCore.
 			void setupCore();
 
@@ -195,7 +230,7 @@ namespace SCIRun {
 			// Simple hash function. Modify if hash collisions occur due to string
 			// hashing. The simplest approach would be to have all names placed in a
 			// hash multimap with a list which assigns ids to names.
-			uint64_t getEntityIDForName(const std::string& name);
+			uint64_t getEntityIDForName(const std::string& name, int port);
 
 			// Adds a VBO to the given entityID.
 			void addVBOToEntity(uint64_t entityID, const std::string& vboName);
@@ -203,36 +238,44 @@ namespace SCIRun {
 			// Adds an IBO to the given entityID.
 			void addIBOToEntity(uint64_t entityID, const std::string& iboName);
 
+      void reorderIBO(Core::Datatypes::GeometryObject::SpireSubPass& pass);
+
 			// Adds a shader to the given entityID. Represents different materials
 			// associated with different passes.
 			void addShaderToEntity(uint64_t entityID, const std::string& shaderName);
 
 			// Apply uniform.
 			void applyUniform(uint64_t entityID, const Core::Datatypes::GeometryObject::SpireSubPass::Uniform& uniform);
+      
 
-			bool							showOrientation_; ///< Whether the coordinate axes will render or not.
+            bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
+            bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
 
-			MouseMode                       mMouseMode;       ///< Current mouse mode.
 
-			size_t                          mScreenWidth;     ///< Screen width in pixels.
-			size_t                          mScreenHeight;    ///< Screen height in pixels.
+            MouseMode                         mMouseMode;       ///< Current mouse mode.
 
-			GLuint                          mRainbowCMap;     ///< Rainbow color map.
-			GLuint                          mGrayscaleCMap;   ///< Grayscale color map.
 
-			std::shared_ptr<Gui::GLContext> mContext;         ///< Context to use for rendering.
-			std::unique_ptr<SRCamera>       mCamera;          ///< Primary camera.
-			std::vector<SRObject>           mSRObjects;       ///< All SCIRun objects.
-			Core::Geometry::BBox            mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
+			size_t                            mScreenWidth;     ///< Screen width in pixels.
+			size_t                            mScreenHeight;    ///< Screen height in pixels.
 
-			ESCore                          mCore;            ///< Entity system core.
+            int axesFailCount_;
+			std::shared_ptr<Gui::GLContext>   mContext;         ///< Context to use for rendering.
+			std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
+			std::vector<SRObject>             mSRObjects;       ///< All SCIRun objects.
+			Core::Geometry::BBox              mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
 
-			std::string                     mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
-			std::string                     mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
-			std::string                     mArrowObjectName; ///< Object name for profile arrow.
 
-			ren::ShaderVBOAttribs<5>        mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
-			ren::CommonUniforms             mArrowUniforms;   ///< Common uniforms used in the arrow shader.
+			ESCore                            mCore;            ///< Entity system core.
+
+
+			std::string                       mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
+			std::string                       mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
+			std::string                       mArrowObjectName; ///< Object name for profile arrow.
+
+
+			ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
+			ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
+            RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
 		};
 
 	} // namespace Render

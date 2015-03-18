@@ -35,7 +35,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/BuildMatrixOfSurfaceNormalsAlgo.h
   #Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h
-  #FieldData/ConvertIndicesToFieldData.h
+  FieldData/ConvertIndicesToFieldDataAlgo.h
   FieldData/CalculateGradientsAlgo.h
   FieldData/CalculateVectorMagnitudesAlgo.h
   #FieldData/ConvertMappingMatrixToFieldData.h
@@ -72,13 +72,15 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   TransformMesh/ProjectPointsOntoMesh.h
   MeshData/FlipSurfaceNormals.h
   RefineMesh/RefineMesh.h
-	
+
   RefineMesh/RefineMeshCurveAlgoV.h
   RefineMesh/RefineMeshHexVolAlgoV.h
   RefineMesh/RefineMeshQuadSurfAlgoV.h
   RefineMesh/RefineMeshTetVolAlgoV.h
   RefineMesh/RefineMeshTriSurfAlgoV.h
   RefineMesh/EdgePairHash.h
+  StreamLines/StreamLineIntegrators.h
+  StreamLines/GenerateStreamLines.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -116,7 +118,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
 #FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
   FieldData/SwapFieldDataWithMatrixEntriesAlgo.cc
-  #FieldData/ConvertIndicesToFieldData.cc
+  FieldData/ConvertIndicesToFieldDataAlgo.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
   FieldData/SetFieldData.cc
@@ -175,8 +177,8 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #ResampleMesh/PadRegularMesh.cc
   #SampleField/GeneratePointSamplesFromField.cc
   SmoothMesh/FairMesh.cc
-  #StreamLines/StreamLineIntegrators.cc
-  #StreamLines/GenerateStreamLines.cc
+  StreamLines/StreamLineIntegrators.cc
+  StreamLines/GenerateStreamLines.cc
   TransformMesh/AlignMeshBoundingBoxes.cc
   #TransformMesh/TransformMeshWithTransform.cc
   #TransformMesh/ConvertMeshCoordinateSystem.cc
