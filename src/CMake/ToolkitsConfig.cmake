@@ -26,23 +26,27 @@
 
 # TODO: Would CMake's ExternalData commands work here? Look into it...
 
-MACRO(EXTERNAL_TOOLKITS)
-  SET(ep_base "${CMAKE_BINARY_DIR}/Toolkits/BrainStimulator")
-  SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-
-  # BrainStimulator
-  # master should be publicly released version
+# Macro to include toolkit repos that contain files that do not need to be compiled
+# i.e. networks, data, documentation etc.
+MACRO(EXTERNAL_TOOLKIT name)
+  SET(toolkit_ExternalProject_name "${name}_external")
+  # toolkit master should be always be publicly released version
   SET(toolkit_GIT_TAG "origin/master")
 
-  SET(toolkit_DIR "${CMAKE_CURRENT_BINARY_DIR}/Toolkits/BrainStimulator")
-  SET(toolkit_DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/BrainStimulator")
+  SET(toolkit_DIR "${CMAKE_BINARY_DIR}/Toolkits/${name}")
+  SET(toolkit_DOWNLOAD_DIR "${CMAKE_BINARY_DIR}/download/${name}")
+
+  # separate toolkit source from the rest of the external project files
+  SET(ep_base "${toolkit_DOWNLOAD_DIR}")
+  SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
   # If CMake ever allows overriding the checkout command or adding flags,
   # git checkout -q will silence message about detached head (harmless).
-  ExternalProject_Add(BrainStimulator_external
-    GIT_REPOSITORY "https://github.com/SCIInstitute/BrainStimulator.git"
+  ExternalProject_Add(${toolkit_ExternalProject_name}
+    GIT_REPOSITORY "https://github.com/SCIInstitute/${name}.git"
     GIT_TAG ${toolkit_GIT_TAG}
     BUILD_IN_SOURCE ON
+    SOURCE_DIR ${toolkit_DIR}
     BUILD_COMMAND ""
     CONFIGURE_COMMAND ""
     PATCH_COMMAND ""
