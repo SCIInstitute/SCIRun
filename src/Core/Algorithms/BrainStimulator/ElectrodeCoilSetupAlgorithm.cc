@@ -74,6 +74,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, AllInputsTDCS);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ProtoTypeInputComboBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessCheckBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessSpinBox);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, InvertNormalsCheckBox);
 
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::FINAL_ELECTRODES_FIELD("FINAL_ELECTRODES_FIELD");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::MOVED_ELECTRODES_FIELD("MOVED_ELECTRODES_FIELD");
@@ -110,6 +111,7 @@ ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
   addParameter(TableValues, 0);
   addParameter(ProtoTypeInputCheckbox, false);
   addParameter(ProtoTypeInputComboBox, false);
+  addParameter(InvertNormalsCheckBox, false);
   addParameter(AllInputsTDCS, false);
   addParameter(ElectrodethicknessCheckBox, false);
   addParameter(ElectrodethicknessSpinBox, 1.0); 
@@ -314,7 +316,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
      }
      catch (...)
      {
-      THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from  ");
+      THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve coil prototype positions ");
      }
     
      DenseMatrixHandle magnetic_dipoles(boost::make_shared<DenseMatrix>(fielddata->nrows(),3));
@@ -598,7 +600,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
    Vector norm;
    scalp_vmesh->synchronize(Mesh::NORMALS_E);
    scalp_vmesh->get_normal(norm,didx); /// ... get its normal
-   //update GUI table normals
+   /// update GUI table normals
    double nx,ny,nz;
    Variable::List new_row;
    boost::tie(new_row,nx,ny,nz)=make_table_row(i,elc_x[i],elc_y[i],elc_z[i],norm.x(),norm.y(),norm.z());
@@ -904,17 +906,53 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	}
        }
        int offset=nr_elc_sponge_triangles_on_scalp;
-       for (int iter_tmp=0;iter_tmp<2;iter_tmp++)
+       
+       /// the triangle ordering should form a tringle where is normal is opposite to scalp surface normal ... to ensure the normals of the electrode point all in the same direction
+       Point tmp; 
+       VMesh::Node::index_type scalp_node_idx;
+       bool flip_scalp_normal=false;
+       if(scalp_vmesh->find_closest_node(distance,tmp,scalp_node_idx,r))
        {
+        scalp_vmesh->get_normal(norm,scalp_node_idx);	
+        double dot_product=Dot(norm, Vector(nx,ny,nz));
+	if( dot_product > 0)
+	{
+	 flip_scalp_normal=true;
+	}
+       } 
+	
+       for (int iter_tmp=0;iter_tmp<2;iter_tmp++)
+       {     
         for (VMesh::Elem::index_type k=0; k<tmp_fld_msh->num_elems(); k++) 
         {
          VMesh::Node::array_type onodes(3); 
          tmp_fld_msh->get_nodes(onodes, k);
-         onodes[0]+=offset;
+	  /*
+	 VMesh::Node::array_type tmp_onodes(3);  
+	 tmp_onodes[0]=onodes[0];
+	 tmp_onodes[1]=onodes[1];
+	 tmp_onodes[2]=onodes[2];
+	 onodes[0]=tmp_onodes[2];
+	 onodes[1]=tmp_onodes[1];
+	 onodes[2]=tmp_onodes[0]; 
+
+	 if((iter_tmp==0 && flip_scalp_normal)) /// tissue surface normals should ALWAYS point outwards !!!
+	 {
+ 	  VMesh::Node::array_type tmp_onodes(3);  /// flip scalp surface triangles
+	  tmp_onodes[0]=onodes[0];
+	  tmp_onodes[1]=onodes[1];
+	  tmp_onodes[2]=onodes[2];
+	  onodes[0]=tmp_onodes[2];
+	  onodes[1]=tmp_onodes[1];
+	  onodes[2]=tmp_onodes[0];
+         } 
+	 
+	 onodes[0]+=offset;
          onodes[1]+=offset;
          onodes[2]+=offset;
-         output_vmesh->add_elem(onodes);
-         field_values_elc_on_scalp.push_back(i);
+	 
+	 output_vmesh->add_elem(onodes);
+         field_values_elc_on_scalp.push_back(i);*/
         } 
 	offset+=tmp_fld_msh->num_nodes();
        }  
@@ -927,7 +965,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        /// connect electrode sponge surfaces
        if (boundary->vmesh()->is_curvemesh())
        {
-         tmp_fld_msh->synchronize(Mesh::NODE_LOCATE_E);
+        tmp_fld_msh->synchronize(Mesh::NODE_LOCATE_E);
 	VMesh::Edge::iterator meshEdgeIter;
         VMesh::Edge::iterator meshEdgeEnd;
         VMesh::Node::array_type nodesFromEdge(2);
@@ -959,7 +997,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	  }
 	  long i1=(long)idx1, i2=(long)idx2;
 	  long i3=i1+tmp_fld_msh->num_nodes(), i4=i2+tmp_fld_msh->num_nodes();
-	  VMesh::Node::array_type onodes(3); 
+	  VMesh::Node::array_type onodes(3);
 	  onodes[0]=i3+nr_elc_sponge_triangles_on_scalp;
 	  onodes[1]=i1+nr_elc_sponge_triangles_on_scalp;
 	  onodes[2]=i4+nr_elc_sponge_triangles_on_scalp;
@@ -969,10 +1007,11 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	  onodes[1]=i1+nr_elc_sponge_triangles_on_scalp;
 	  onodes[2]=i2+nr_elc_sponge_triangles_on_scalp;
 	  output_vmesh->add_elem(onodes);
+	  
 	  field_values_elc_on_scalp.push_back(i);
         }   
 	
-        nr_elc_sponge_triangles_on_scalp+=tmp_fld_msh->num_nodes()+count_pts; 
+       // nr_elc_sponge_triangles_on_scalp+=tmp_fld_msh->num_nodes()+count_pts; 
        } else
        {
          std::ostringstream ostr3;
