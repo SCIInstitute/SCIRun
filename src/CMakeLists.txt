@@ -307,8 +307,12 @@ ENDIF()
 ########################################################################
 # Download external data sources
 
-INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
-EXTERNAL_TOOLKIT(BrainStimulator)
+OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
+MARK_AS_ADVANCED(DOWNLOAD_TOOLKITS)
+IF(DOWNLOAD_TOOLKITS)
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
+  EXTERNAL_TOOLKIT(BrainStimulator)
+ENDIF()
 
 ########################################################################
 # Configure zlib external project
