@@ -36,10 +36,10 @@ uniform float    uDisplayLength;
 
 // Attributes
 attribute vec3  aPos;
-attribute vec4  aColor;
+attribute vec2  aTexCoord;
 
 //Outputs
-varying vec4 fColor;
+varying vec2 fTexCoord;
 
 //constants
 const float text_x_scale = 0.5;
@@ -60,5 +60,5 @@ void main( void )
                         + uYTranslate / 50.;
   gl_Position = vec4(newPos.x * x_scale + x_trans, 
                      newPos.y * y_scale + y_trans, 0., 1.0);
-  fColor = aColor;
+  fTexCoord = aTexCoord;
 }

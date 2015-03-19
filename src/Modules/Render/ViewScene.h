@@ -70,6 +70,7 @@ namespace Render {
     virtual void setStateDefaults();
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    static Core::Algorithms::AlgorithmParameterName BackgroundColor;
     
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 

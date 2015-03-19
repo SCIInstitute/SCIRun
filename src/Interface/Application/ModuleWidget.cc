@@ -512,6 +512,10 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
   connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
+
+  connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
+  connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
+  connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -961,6 +965,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
+    Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
@@ -969,6 +974,11 @@ void ModuleWidget::execute()
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
+}
+
+void ModuleWidget::changeExecuteButtonToStop()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
 }
 
 boost::signals2::connection ModuleWidget::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)
@@ -1239,6 +1249,12 @@ void ModuleWidget::executeButtonPushed()
 {
   LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   Q_EMIT executedManually(theModule_);
+  changeExecuteButtonToStop();
+}
+
+void ModuleWidget::changeExecuteButtonToPlay()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
 }
 
 bool ModuleWidget::globalMiniMode_(false);

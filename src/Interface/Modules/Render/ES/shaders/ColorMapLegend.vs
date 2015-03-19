@@ -36,10 +36,10 @@ uniform float    uDisplayLength;
 
 // Attributes
 attribute vec3  aPos;
-attribute float aFieldData;
+attribute vec4  aColor;
 
 // Outputs to the fragment shader.
-varying float   vFieldData;
+varying vec4   fColor;
 
 //constants
 const float bar_width = 30.;
@@ -56,5 +56,5 @@ void main( void )
   float x_trans = -1. + (  ds ?0.:(full?bar_buffer:(half1?0.:(bar_buffer+1.))))   + uXTranslate / 50.;
   float y_trans = -1. + ((!ds)?0.:(full?bar_buffer:(half1?0.:(bar_buffer+1.))))   + uYTranslate / 50.;
   gl_Position = vec4(newPos.x * x_scale + x_trans, newPos.y * y_scale + y_trans, newPos.z, 1.0);
-  vFieldData  = aFieldData;
+  fColor = aColor;
 }

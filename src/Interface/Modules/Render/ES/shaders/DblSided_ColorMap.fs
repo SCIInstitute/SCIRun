@@ -25,24 +25,12 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#ifdef OPENGL_ES
-  #ifdef GL_FRAGMENT_PRECISION_HIGH
-    // Default precision
-    precision highp float;
-  #else
-    precision mediump float;
-  #endif
-#endif
-
-uniform sampler1D uTX0;
-varying float	fFieldData;
+varying vec4 fColor;
 
 // Transparency to use along side the color map.
 uniform float uTransparency;
 
 void main()
 {
-  vec4 color    = texture1D(uTX0, fFieldData);
-  color.a       = uTransparency;
-	gl_FragColor  = color;
+  gl_FragColor  = vec4(fColor.xyx,uTransparency);
 }
