@@ -143,7 +143,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count)
 {
-  qDebug() << "addModuleWidget " << module->get_id().id_.c_str();
+  //qDebug() << "addModuleWidget " << module->get_id().id_.c_str();
   latestModuleId_ = module->get_id().id_;
   //std::cout << "\tNE modules done (start): " << *count.count << std::endl;
   ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
@@ -222,27 +222,62 @@ void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHa
   //add new module
 
   auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
-  QPointF increment(100, 100);
-  lastModulePosition_ = oldModule->scenePos() + increment;
-  qDebug() << "replace: adding new";
+  lastModulePosition_ = oldModule->scenePos();
+  //qDebug() << "replace: adding new";
   controller_->addModule(newModuleName);
 
   // connect up same ports
-  qDebug() << "TODO: replace module: " << moduleToReplace->get_id().id_.c_str() << " with " << latestModuleId_.c_str();
+  //qDebug() << "TODO: replace module: " << moduleToReplace->get_id().id_.c_str() << " with " << latestModuleId_.c_str();
   auto newModule = findById(scene_->items(), latestModuleId_);
 
   auto oldModPorts = oldModule->getModuleWidget()->ports();
   auto newModPorts = newModule->getModuleWidget()->ports();
-  for (const auto& iport : oldModPorts.inputs())
+  
   {
-    //qDebug() << port->get_portname().c_str();
-    if (iport->isConnected())
+    int nextInputIndex = 0;
+    auto newInputs = newModPorts.inputs();
+    for (const auto& iport : oldModPorts.inputs())
     {
-      requestConnection(iport->connectedPorts()[0], newModPorts.inputs()[iport->getIndex()]);
+      //qDebug() << port->get_portname().c_str();
+      if (iport->isConnected())
+      {
+        auto toConnect = std::find_if(newInputs.begin(), newInputs.end(),
+          [&](const PortWidget* port) { return port->get_typename() == iport->get_typename() && port->getIndex() >= nextInputIndex; });
+        if (toConnect == newInputs.end())
+          throw "logical error";
+        requestConnection(iport->connectedPorts()[0], *toConnect);
+        nextInputIndex = (*toConnect)->getIndex() + 1;
+      }
     }
   }
 
-  qDebug() << "replace: deleting old";
+  {
+    int nextOutputIndex = 0;
+    auto newOutputs = newModPorts.outputs();
+    for (const auto& oport : oldModPorts.outputs())
+    {
+      //qDebug() << port->get_portname().c_str();
+      if (oport->isConnected())
+      {
+        auto toConnect = std::find_if(newOutputs.begin(), newOutputs.end(),
+          [&](const PortWidget* port) { return port->get_typename() == oport->get_typename() && port->getIndex() >= nextOutputIndex; });
+        if (toConnect == newOutputs.end())
+          throw "logical error";
+        auto connectedPorts = oport->connectedPorts();
+        std::vector<PortWidget*> dynamicPortsNeedSpecialHandling;
+        std::copy_if(connectedPorts.begin(), connectedPorts.end(), std::back_inserter(dynamicPortsNeedSpecialHandling), [](const PortWidget* p) { return p->isDynamic(); });
+        connectedPorts.erase(std::remove_if(connectedPorts.begin(), connectedPorts.end(), [](const PortWidget* p) { return p->isDynamic(); }), connectedPorts.end());
+        oport->deleteConnections();
+        for (const auto& connected : connectedPorts)
+        {
+          requestConnection(connected, *toConnect);
+        }
+        nextOutputIndex = (*toConnect)->getIndex() + 1;
+      }
+    }
+  }
+
+  //qDebug() << "replace: deleting old";
   // delete old module
   oldModule->deleteLater();
 }

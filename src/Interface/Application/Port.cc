@@ -501,6 +501,13 @@ QColor BlankPort::color() const
 
 std::vector<PortWidget*> PortWidget::connectedPorts() const
 {
-  //TODO
-  return {};
+  std::vector<PortWidget*> otherPorts;
+  auto notThisOne = [this](const std::pair<PortWidget*, PortWidget*>& portPair) { if (portPair.first == this) return portPair.second; else return portPair.first; };
+  for (const auto& c : connections_)
+  {
+    auto ends = c->connectedPorts();
+
+    otherPorts.push_back(notThisOne(ends));
+  }
+  return otherPorts;
 }
