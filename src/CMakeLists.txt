@@ -305,6 +305,16 @@ IF(DISABLE_ExternalProject_UPDATE)
 ENDIF()
 
 ########################################################################
+# Download external data sources
+
+OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
+MARK_AS_ADVANCED(DOWNLOAD_TOOLKITS)
+IF(DOWNLOAD_TOOLKITS)
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
+  EXTERNAL_TOOLKIT(BrainStimulator)
+ENDIF()
+
+########################################################################
 # Configure zlib external project
 
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ZlibConfig.cmake)
