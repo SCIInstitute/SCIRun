@@ -34,6 +34,7 @@
 #include <QPushButton>
 #include <QColor>
 #include <set>
+#include <vector>
 #include <Interface/Application/PositionProvider.h>
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
@@ -114,6 +115,8 @@ public:
 
   void trackConnections();
   void deleteConnections();
+
+  std::vector<PortWidget*> connectedPorts() const;
 
   QPointF position() const;
 

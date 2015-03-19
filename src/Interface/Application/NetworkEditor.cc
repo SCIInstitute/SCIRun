@@ -37,6 +37,7 @@
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
+#include <Interface/Application/PortWidgetManager.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/ClosestPortFinder.h>
@@ -230,6 +231,16 @@ void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHa
   qDebug() << "TODO: replace module: " << moduleToReplace->get_id().id_.c_str() << " with " << latestModuleId_.c_str();
   auto newModule = findById(scene_->items(), latestModuleId_);
 
+  auto oldModPorts = oldModule->getModuleWidget()->ports();
+  auto newModPorts = newModule->getModuleWidget()->ports();
+  for (const auto& iport : oldModPorts.inputs())
+  {
+    //qDebug() << port->get_portname().c_str();
+    if (iport->isConnected())
+    {
+      requestConnection(iport->connectedPorts()[0], newModPorts.inputs()[iport->getIndex()]);
+    }
+  }
 
   qDebug() << "replace: deleting old";
   // delete old module

@@ -498,3 +498,9 @@ QColor BlankPort::color() const
 {
   return QColor(0,0,0,0);
 }
+
+std::vector<PortWidget*> PortWidget::connectedPorts() const
+{
+  //TODO
+  return {};
+}

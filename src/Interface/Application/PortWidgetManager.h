@@ -50,6 +50,9 @@ public:
     return boost::join(inputPorts_, outputPorts_);
   }
 
+  const Ports& inputs() const { return inputPorts_; }
+  const Ports& outputs() const { return outputPorts_; }
+
   size_t numInputPorts() const { return inputPorts_.size(); }
   size_t numOutputPorts() const { return outputPorts_.size(); }
 
