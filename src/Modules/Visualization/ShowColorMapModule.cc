@@ -284,9 +284,10 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
-
+  /*******************************************************************************************
+  // TODO we're not adding this geometry (font) until we debug for it to work on Windows.
   geom->mPasses.push_back(pass2);
-
+  *******************************************************************************************/
   return geom;
 }
 
