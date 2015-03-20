@@ -49,13 +49,14 @@ ENDIF()
 
 ################################################################################
 # If building on Windows, make sure that the path to the bin directory is short.
-#
-if(WIN32)
-	STRING(LENGTH ${CMAKE_BINARY_DIR} BIN_DIR_LENGTH)
-	if(${BIN_DIR_LENGTH} GREATER 10)
-		MESSAGE(WARNING "Binary directory is too long, the build may fail due to long path names.")
-	endif()
-endif()
+# TODO: Revisit if CPM module names get shorter.
+
+IF(WIN32)
+  STRING(LENGTH ${CMAKE_BINARY_DIR} BIN_DIR_LENGTH)
+  IF(${BIN_DIR_LENGTH} GREATER 15)
+    MESSAGE(WARNING "Binary directory is too long, the build may fail due to long path names.")
+  ENDIF()
+ENDIF()
 
 ########################################################################
 # Build shared libraries by default
