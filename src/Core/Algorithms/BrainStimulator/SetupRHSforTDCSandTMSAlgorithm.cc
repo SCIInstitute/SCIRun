@@ -210,6 +210,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   
  VMesh*  mesh_vmesh = mesh->vmesh();
  VMesh::size_type mesh_num_nodes = mesh_vmesh->num_nodes();
+ mesh_vmesh->synchronize(Mesh::NODE_LOCATE_E);
  DenseMatrixHandle lhs_knows, elc_elem, elc_elem_typ, elc_elem_def, elc_con_imp;
  std::vector<double> electrode_sponge_areas;
  index_type refnode_number = get(Parameters::refnode).toInt();
@@ -249,8 +250,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   remark(ostr4.str());	
   
   VMesh* mesh_elc_tri_surf = elc_tri_surf->vmesh();
-  mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E); 
-  mesh_vmesh->synchronize(Mesh::NODE_LOCATE_E); 
+  mesh_elc_tri_surf->synchronize(Mesh::NODE_LOCATE_E);  
   std::vector<double> fvalues;
   FieldInformation fieldinfo("PointCloudMesh", LINEARDATA_E, "double");
   FieldHandle point_electrodes = CreateField(fieldinfo);  
@@ -534,7 +534,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   {
    THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Lookup of mesh defined electrode (first input) and definition (fourth input) do not match - check your inputs!");  
   } 
-  
   /// determine the outgoing normal of the scalp to find sponge/electrode surface
   Point o1((*sponge_center_pojected_onto_scalp)(k,0)+(*sponge_center_pojected_onto_scalp_normal)(k,0)*elc_thickness/2,(*sponge_center_pojected_onto_scalp)(k,1)+(*sponge_center_pojected_onto_scalp_normal)(k,1)*elc_thickness/2,(*sponge_center_pojected_onto_scalp)(k,2)+(*sponge_center_pojected_onto_scalp_normal)(k,2)*elc_thickness/2);
   Point o2((*sponge_center_pojected_onto_scalp)(k,0)-(*sponge_center_pojected_onto_scalp_normal)(k,0)*elc_thickness/2,(*sponge_center_pojected_onto_scalp)(k,1)-(*sponge_center_pojected_onto_scalp_normal)(k,1)*elc_thickness/2,(*sponge_center_pojected_onto_scalp)(k,2)-(*sponge_center_pojected_onto_scalp_normal)(k,2)*elc_thickness/2); 
@@ -624,7 +623,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     tmp_fld->set_value(static_cast<int>(0), idx); 
    }
   }
-  
   /// use SplitFieldByDomainAlgo to find only labeled (based on elc. normal criteria) surfaces
   VMesh::Elem::index_type c_ind=0;
   SplitFieldByDomainAlgo algo2;
@@ -659,7 +657,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     remark(" At least for one electrode the electrode/sponge interface could not be identified.");
     continue;
   } else
-  {     
+  {    
     SplitFieldByConnectedRegionAlgo algo3;
     algo3.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
     algo3.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
@@ -698,8 +696,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     nr_elc_sponge_triangles+=tri_mesh_vmesh->num_nodes(); 
   }
  }
-}
- 
+} 
  /// create matrix outputs
  elc_sponge_surf_vfld->resize_values();
  elc_sponge_surf_vfld->set_values(field_values);
@@ -725,14 +722,12 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   (*elc_elem_typ)(l,0)=2; //define triangles to incject currents in TDCS simulations
   VMesh::Node::array_type onodes(3); 
   elc_sponge_surf_vmesh->get_nodes(onodes, l);
-  
   elc_sponge_surf_vmesh->get_center(p,onodes[0]);
-  mesh_vmesh->find_closest_node(distance,q,node_ind,p);  
+  mesh_vmesh->find_closest_node(distance,q,node_ind,p);
   if (node_ind==refnode_number) /// check if ref_node is part of electrode definition throw error, first triangle node of definition
   {
    THROW_ALGORITHM_PROCESSING_ERROR("Reference node is part of electrode definition. Choose another reference node for given electrode surface mesh. "); 
   }
-  
   (*elc_elem_def)(l,0)=node_ind;
   Point pos;
   mesh_vmesh->get_point(pos, node_ind);
@@ -747,7 +742,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   (*elc_elem_def)(l,1)=node_ind;
   mesh_vmesh->get_point(pos, node_ind);
   double x2=pos.x(), y2=pos.y(), z2=pos.z();
-  
   elc_sponge_surf_vmesh->get_center(p,onodes[2]);
   mesh_vmesh->find_closest_node(distance,q,node_ind,p);
   if (node_ind==refnode_number) /// check if ref_node is part of electrode definition throw error, third triangle node of definition
@@ -767,7 +761,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   double area_tmp1=z1*x2+x1*z3+z2*x3-x2*z3-x1*z2-z1*x3;
   double area_tmp2=x1*y2+y1*x3+x2*y3-y2*x3-y1*x2-x1*y3;
   double triangle_area=0.5 * sqrt(area_tmp*area_tmp+area_tmp1*area_tmp1+area_tmp2*area_tmp2);
-  
   double tmp_fld_val=0;
   elc_sponge_surf_vfld->get_value(tmp_fld_val,l);
     
@@ -784,7 +777,6 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  }
  area*=1e-6;
  electrode_sponge_areas.push_back(area);
- 
  DenseMatrixHandle selectmatrixind(new DenseMatrix(mesh_vmesh->num_nodes(), 1)); ///create indeces for SelectSubMatrix
  for(long i=0;i<mesh_vmesh->num_nodes();i++)
  { 
