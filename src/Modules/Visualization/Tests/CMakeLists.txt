@@ -29,6 +29,7 @@
 SET(Modules_Visualization_Tests_SRCS
   CreateStandardColorMapTests.cc
   MatrixAsVectorFieldTests.cc
+  RescaleColorMapTests.cc
   ShowFieldTests.cc
   ShowMeshTests.cc
   ShowStringTests.cc
