@@ -34,8 +34,10 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
+#include <boost/statechart/event.hpp>
 #include <boost/statechart/state_machine.hpp>
 #include <boost/statechart/simple_state.hpp>
+#include <boost/statechart/transition.hpp>
 #include <iostream>
 
 namespace sc = boost::statechart;
@@ -88,4 +90,61 @@ TEST(StateChartHelloWorld, Run)
   myMachine.initiate();
   // When we leave main(), myMachine is destructed what leads to
   // the destruction of all currently active states.
+}
+
+struct EvStartStop : sc::event< EvStartStop > {};
+struct EvReset : sc::event< EvReset > {};
+
+struct Active;
+struct StopWatch : sc::state_machine< StopWatch, Active > {};
+
+struct Stopped;
+
+// The simple_state class template accepts up to four parameters:
+// - The third parameter specifies the inner initial state, if
+//   there is one. Here, only Active has inner states, which is
+//   why it needs to pass its inner initial state Stopped to its
+//   base
+// - The fourth parameter specifies whether and what kind of
+//   history is kept
+
+// Active is the outermost state and therefore needs to pass the
+// state machine class it belongs to
+struct Active : sc::simple_state<
+  Active, StopWatch, Stopped >
+  {
+    typedef sc::transition< EvReset, Active > reactions;
+  };
+
+// Stopped and Running both specify Active as their Context,
+// which makes them nested inside Active
+struct Running : sc::simple_state< Running, Active >
+{
+  typedef sc::transition< EvStartStop, Stopped > reactions;
+};
+struct Stopped : sc::simple_state< Stopped, Active >
+{
+  typedef sc::transition< EvStartStop, Running > reactions;
+  // A state can define an arbitrary number of reactions. That's
+// why we have to put them into an mpl::list<> as soon as there
+// is more than one of them
+// (see Specifying multiple reactions for a state).
+};
+
+// Because the context of a state must be a complete type (i.e.
+// not forward declared), a machine must be defined from
+// "outside to inside". That is, we always start with the state
+// machine, followed by outermost states, followed by the direct
+// inner states of outermost states and so on. We can do so in a
+// breadth-first or depth-first way or employ a mixture of the
+// two.
+
+TEST(StateChartStopwatch, Run)
+{
+  StopWatch myWatch;
+  myWatch.initiate();
+  myWatch.process_event( EvStartStop() );
+  myWatch.process_event( EvStartStop() );
+  myWatch.process_event( EvStartStop() );
+  myWatch.process_event( EvReset() );
 }
