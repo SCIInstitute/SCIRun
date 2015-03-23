@@ -41,6 +41,7 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   fixSize();
   WidgetStyleMixin::tabStyle(this->tabWidget);
   WidgetStyleMixin::tableHeaderStyle(this->electrode_tableWidget);
+  addCheckBoxManager(GetContactSurfCheckBox_, Parameters::GetContactSurface);
   addSpinBoxManager(refnode_, Parameters::refnode);
   addDoubleSpinBoxManager(pointdistancebound_, Parameters::pointdistancebound);
   addDoubleSpinBoxManager(normal_dot_product_bound_, Parameters::normal_dot_product_bound);
@@ -50,7 +51,7 @@ SetupRHSforTDCSandTMSDialog::SetupRHSforTDCSandTMSDialog(const std::string& name
   electrode_tableWidget->setColumnCount(4);
   electrode_tableWidget->setRowCount(max_nr_elc);
   QStringList tableHeader;
-  tableHeader << "Electrode" << "Current intensity [mA]" << "Real Impedance [Ohm*m^2]" << "Surface Area [m^2]";
+  tableHeader << "Electrode" << "Tot. inj. current [mA]" << "Real impedance [Ohm*m^2]" << "Surface area [m^2]";
   electrode_tableWidget->setHorizontalHeaderLabels(tableHeader);
 
 
@@ -148,5 +149,5 @@ void SetupRHSforTDCSandTMSDialog::pull()
   }
   state_->setValue(Parameters::ElectrodeTableValues, elc_vals_in_table);
   state_->setValue(Parameters::ImpedanceTableValues, imp_elc_vals_in_table);
-
+  pull_newVersionToReplaceOld();
 }

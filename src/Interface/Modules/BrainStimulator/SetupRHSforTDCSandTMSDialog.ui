@@ -24,7 +24,7 @@
     <widget class="QTabWidget" name="tabWidget">
      <property name="minimumSize">
       <size>
-       <width>550</width>
+       <width>610</width>
        <height>350</height>
       </size>
      </property>
@@ -48,7 +48,7 @@
           <widget class="QTableWidget" name="electrode_tableWidget">
            <property name="minimumSize">
             <size>
-             <width>411</width>
+             <width>481</width>
              <height>91</height>
             </size>
            </property>
@@ -87,7 +87,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Reference node number (its potential will be set to 0):</string>
+        <string>Reference node number (Pot.=0):</string>
        </property>
       </widget>
      </item>
@@ -98,6 +98,16 @@
        </property>
       </widget>
      </item>
+     <item>
+     <widget class="QCheckBox" name="GetContactSurfCheckBox_">
+     <property name="text">
+      <string> Get sponge-scalp surface </string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     </widget>
+    </item>
     </layout>
    </item>
    <item row="2" column="0">
