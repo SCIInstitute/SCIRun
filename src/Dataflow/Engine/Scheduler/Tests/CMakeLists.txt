@@ -30,6 +30,7 @@ SET(Engine_Scheduler_Tests_SRCS
   BoostGraphExampleTests.cc
   SchedulerBehavioralTests.cc
   SchedulingWithBoostGraph.cc
+  BoostStateChartExampleTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS
