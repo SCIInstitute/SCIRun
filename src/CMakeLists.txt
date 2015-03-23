@@ -839,7 +839,6 @@ SET_PROPERTY(TARGET sqlite PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET Zlib_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET Teem_external   PROPERTY FOLDER "Externals")
-SET_PROPERTY(TARGET BrainStimulator_external   PROPERTY FOLDER "Externals")
 
 IF(BUILD_WITH_PYTHON)
   SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
@@ -851,6 +850,10 @@ ENDIF()
 IF(WITH_TETGEN)
   SET_PROPERTY(TARGET tetgen         PROPERTY FOLDER "Externals")
   SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
+ENDIF()
+
+IF(DOWNLOAD_TOOLKITS)
+  SET_PROPERTY(TARGET BrainStimulator_external   PROPERTY FOLDER "Externals")
 ENDIF()
 
 ########################################################################
