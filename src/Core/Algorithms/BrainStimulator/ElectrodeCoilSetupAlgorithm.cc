@@ -38,6 +38,7 @@
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -580,6 +581,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
  DenseMatrixHandle elc_sponge_locations;  
  auto tab_values = get(Parameters::TableValues).toVector(); 
  bool flip_normal=false;
+ FlipSurfaceNormalsAlgo flipnormal_algo;
  if (tab_values.size()==elc_prototyp_map.size() && elc_thickness.size()==elc_prototyp_map.size() && elc_x.size()==elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size())
  {  
   VMesh* scalp_vmesh = scalp->vmesh(); 
@@ -927,32 +929,12 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         {
          VMesh::Node::array_type onodes(3); 
          tmp_fld_msh->get_nodes(onodes, k);
-	  /*
-	 VMesh::Node::array_type tmp_onodes(3);  
-	 tmp_onodes[0]=onodes[0];
-	 tmp_onodes[1]=onodes[1];
-	 tmp_onodes[2]=onodes[2];
-	 onodes[0]=tmp_onodes[2];
-	 onodes[1]=tmp_onodes[1];
-	 onodes[2]=tmp_onodes[0]; 
-
-	 if((iter_tmp==0 && flip_scalp_normal)) /// tissue surface normals should ALWAYS point outwards !!!
-	 {
- 	  VMesh::Node::array_type tmp_onodes(3);  /// flip scalp surface triangles
-	  tmp_onodes[0]=onodes[0];
-	  tmp_onodes[1]=onodes[1];
-	  tmp_onodes[2]=onodes[2];
-	  onodes[0]=tmp_onodes[2];
-	  onodes[1]=tmp_onodes[1];
-	  onodes[2]=tmp_onodes[0];
-         } 
 	 
 	 onodes[0]+=offset;
          onodes[1]+=offset;
          onodes[2]+=offset;
-	 
 	 output_vmesh->add_elem(onodes);
-         field_values_elc_on_scalp.push_back(i);*/
+         field_values_elc_on_scalp.push_back(i);
         } 
 	offset+=tmp_fld_msh->num_nodes();
        }  
@@ -1011,7 +993,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	  field_values_elc_on_scalp.push_back(i);
         }   
 	
-       // nr_elc_sponge_triangles_on_scalp+=tmp_fld_msh->num_nodes()+count_pts; 
+        nr_elc_sponge_triangles_on_scalp+=tmp_fld_msh->num_nodes()+count_pts; 
        } else
        {
          std::ostringstream ostr3;
@@ -1053,16 +1035,24 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
    }
   }
  }
+ FieldInformation fi(scalp);
+ if (fi.is_trisurfmesh()) /// invert face normals -> surface element normals of electrode sponge should point outwards like every other surface
+ { 	
+  VMesh::Face::size_type isize;
+  output->vmesh()->size(isize);
+  flipnormal_algo.run(output, output);
+ }
  } else
  {
   std::ostringstream ostr3;
   ostr3 << " Internal error: tDCS electrode could not be generated. " << std::endl;
   remark(ostr3.str());	
- }
+ } 
  
  VariableHandle table2(new Variable(Name("Table"), new_table));
- 
+
  return boost::make_tuple(elc_sponge_locations, electrode_field, output, table2);
+   
 }
 
 boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::run(const FieldHandle scalp, const DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const
