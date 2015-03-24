@@ -38,6 +38,7 @@ using ::testing::Return;
 #include <boost/statechart/state_machine.hpp>
 #include <boost/statechart/simple_state.hpp>
 #include <boost/statechart/transition.hpp>
+#include <ctime>
 #include <iostream>
 
 namespace sc = boost::statechart;
@@ -113,15 +114,37 @@ struct Stopped;
 struct Active : sc::simple_state<
   Active, StopWatch, Stopped >
   {
+  public:
     typedef sc::transition< EvReset, Active > reactions;
+    Active() : elapsedTime_( 0.0 ) {}
+    double ElapsedTime() const { return elapsedTime_; }
+    double & ElapsedTime() { return elapsedTime_; }
+  private:
+    double elapsedTime_;
   };
 
 // Stopped and Running both specify Active as their Context,
 // which makes them nested inside Active
 struct Running : sc::simple_state< Running, Active >
 {
+public:
   typedef sc::transition< EvStartStop, Stopped > reactions;
+  Running() : startTime_( std::time( 0 ) ) {}
+  ~Running()
+  {
+    // Similar to when a derived class object accesses its
+    // base class portion, context<>() is used to gain
+    // access to the direct or indirect context of a state.
+    // This can either be a direct or indirect outer state
+    // or the state machine itself
+    // (e.g. here: context< StopWatch >()).
+    context< Active >().ElapsedTime() +=
+      std::difftime( std::time( 0 ), startTime_ );
+  }
+private:
+  std::time_t startTime_;
 };
+
 struct Stopped : sc::simple_state< Stopped, Active >
 {
   typedef sc::transition< EvStartStop, Running > reactions;
