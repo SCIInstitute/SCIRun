@@ -145,8 +145,8 @@ SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
 SET(APPLICATION_VENDOR "SCI" CACHE INTERNAL "Vendor information" FORCE)
 SET(APPLICATION_CONTACT "scirun-users@sci.utah.edu" CACHE INTERNAL "Contact information" FORCE)
 SET(APPLICATION_WINDOWS_ICON "${CMAKE_SOURCE_DIR}/Interface/Application\\\\scirun-icon-large.ico" CACHE INTERNAL "Windows icon" FORCE)
-SET(APPLICATION_OSX_ICON_FULL_PATH "${CMAKE_SOURCE_DIR}/Interface/Application/scirun-icon-large.icns" CACHE INTERNAL "OSX icon" FORCE)
-SET(APPLICATION_OSX_ICON "scirun-icon-large.icns" CACHE INTERNAL "OSX icon" FORCE)
+SET(APPLICATION_OSX_ICON_FULL_PATH "${CMAKE_SOURCE_DIR}/Resources/Icons/scirun5.icns" CACHE INTERNAL "OSX icon" FORCE)
+SET(APPLICATION_OSX_ICON "scirun5.icns" CACHE INTERNAL "OSX icon" FORCE)
 
 ########################################################################
 # Standard system and compiler tests
@@ -875,7 +875,7 @@ SET(PACKAGING_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Welcome.txt" CACHE INTE
 # TODO: need release notes
 #SET(PACKAGING_RELEASENOTES "${CMAKE_CURRENT_SOURCE_DIR}/ReleaseNotes.txt" CACHE INTERNAL "Where to find the releasenotes file." FORCE )
 
-SET(PACKAGING_ICON "${CMAKE_SOURCE_DIR}/Resources/Icons\\\\scirun_package_icon_32.bmp" CACHE INTERNAL "Packing icon." FORCE )
+SET(PACKAGING_ICON "${CMAKE_SOURCE_DIR}/Resources/Icons\\\\scirun5_256.png" CACHE INTERNAL "Packing icon." FORCE )
 
 MESSAGE(STATUS "Configuring SCIRun packaging")
 
