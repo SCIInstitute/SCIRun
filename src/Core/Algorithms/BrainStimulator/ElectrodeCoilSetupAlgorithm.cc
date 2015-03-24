@@ -909,30 +909,78 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        }
        int offset=nr_elc_sponge_triangles_on_scalp;
        
-       /// the triangle ordering should form a tringle where is normal is opposite to scalp surface normal ... to ensure the normals of the electrode point all in the same direction
+       /// the triangle ordering should form a tringle which normal is opposite to scalp surface normal, check it!
        Point tmp; 
        VMesh::Node::index_type scalp_node_idx;
-       bool flip_scalp_normal=false;
+       bool scalp_elec_surf_needs_flipping=false;
        if(scalp_vmesh->find_closest_node(distance,tmp,scalp_node_idx,r))
        {
         scalp_vmesh->get_normal(norm,scalp_node_idx);	
         double dot_product=Dot(norm, Vector(nx,ny,nz));
 	if( dot_product > 0)
 	{
-	 flip_scalp_normal=true;
+	 scalp_elec_surf_needs_flipping=true;
 	}
        } 
+
+       VMesh::Elem::index_type node_tri_ind=0; /// use first triangle to determine ordering
+       VMesh::Node::array_type onodes(3); 
+       scalp_vmesh->get_nodes(onodes, node_tri_ind); 
+       double omin=std::numeric_limits<double>::quiet_NaN(), omax=std::numeric_limits<double>::quiet_NaN(); /// determine tri ordering from scalp mesh
+       int imin=-1,imax=-1;
+     
+       for (int q=0;q<3;q++)
+       {
+        if (onodes[q]<omin || IsNan(omin))
+        {
+         omin=onodes[q];
+	 imin=q;
+        } 
+        if (onodes[q]>omax || IsNan(omax)) 
+        {
+         omax=onodes[q];
+	 imax=q;
+        }
+       }
+       
+       if (imin==imax) // an triangle that has nodes that are the same (sliver element?) - that shoud not happend
+       {
+        std::ostringstream ostr1;
+        ostr1 << " Triangular definition of scalp surface element contains duplicated node number in electrode/sponge - scalp contact surface. " << std::endl;
+        THROW_ALGORITHM_PROCESSING_ERROR(ostr1.str());
+       }
+    
+       double ordering[3];
+       for (int q=0;q<3;q++)
+       {
+        if (q==imin) 
+         ordering[q]=0;
+          else
+        if (q==imax) 
+         ordering[q]=2;
+	  else
+	    ordering[q]=1;
+       }
+       
+       if(scalp_elec_surf_needs_flipping)
+       {
+        double tmp_ordering[3];
+        tmp_ordering[0]=ordering[2]; tmp_ordering[1]=ordering[1]; tmp_ordering[2]=ordering[0];
+	ordering[0]=tmp_ordering[0]; ordering[1]=tmp_ordering[1]; ordering[2]=tmp_ordering[2];
+       }
 	
        for (int iter_tmp=0;iter_tmp<2;iter_tmp++)
        {     
         for (VMesh::Elem::index_type k=0; k<tmp_fld_msh->num_elems(); k++) 
         {
-         VMesh::Node::array_type onodes(3); 
-         tmp_fld_msh->get_nodes(onodes, k);
-	 
-	 onodes[0]+=offset;
-         onodes[1]+=offset;
-         onodes[2]+=offset;
+         VMesh::Node::array_type onodes(3),tmp_onodes(3); 
+         tmp_fld_msh->get_nodes(onodes, k);	 
+	 onodes[0]+=offset; onodes[1]+=offset; onodes[2]+=offset;
+	 if(iter_tmp==0)
+	 {
+	  tmp_onodes[0]=onodes[0]; tmp_onodes[1]=onodes[1]; tmp_onodes[2]=onodes[2];
+	  onodes[ordering[0]]=tmp_onodes[0]; onodes[ordering[1]]=tmp_onodes[1]; onodes[ordering[2]]=tmp_onodes[2];	 
+	 }
 	 output_vmesh->add_elem(onodes);
          field_values_elc_on_scalp.push_back(i);
         } 
