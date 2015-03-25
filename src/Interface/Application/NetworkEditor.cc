@@ -232,7 +232,7 @@ void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHa
 
   auto oldModPorts = oldModule->getModuleWidget()->ports();
   auto newModPorts = newModule->getModuleWidget()->ports();
-  
+
   {
     int nextInputIndex = 0;
     auto newInputs = newModPorts.inputs();
@@ -309,6 +309,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
   connect(module, SIGNAL(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)),
     this, SLOT(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)));
+  connect(module, SIGNAL(disableWidgetDisabling()), this, SIGNAL(disableWidgetDisabling()));
+  connect(module, SIGNAL(reenableWidgetDisabling()), this, SIGNAL(reenableWidgetDisabling()));
 
   if (module->hasDynamicPorts())
   {

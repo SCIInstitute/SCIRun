@@ -85,10 +85,12 @@ namespace Gui {
     CORE_SINGLETON( WidgetDisablingService );
 
   private:
-    WidgetDisablingService() : ne_(0) {}
+    WidgetDisablingService() : ne_(0), serviceEnabled_(true) {}
   public Q_SLOTS:
-    void disableInputWidgets(); 
+    void disableInputWidgets();
     void enableInputWidgets();
+    void temporarilyDisableService();
+    void temporarilyEnableService();
   public:
     void addNetworkEditor(NetworkEditor* ne);
     void addWidget(const InputWidget& w);
@@ -102,6 +104,7 @@ namespace Gui {
   private:
     NetworkEditor* ne_;
     std::vector<InputWidget> inputWidgets_;
+    bool serviceEnabled_;
   };
 
   inline void addWidgetToExecutionDisableList(const InputWidget& w)

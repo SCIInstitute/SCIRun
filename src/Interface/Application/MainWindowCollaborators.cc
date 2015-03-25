@@ -124,10 +124,22 @@ void WidgetDisablingService::disableInputWidgets()
 {
   ne_->disableInputWidgets();
   setWidgetsDisableFlag(inputWidgets_, true);
+  qDebug() << "disabling widgets; service on?" << serviceEnabled_;
 }
 
 void WidgetDisablingService::enableInputWidgets()
 {
   ne_->enableInputWidgets();
   setWidgetsDisableFlag(inputWidgets_, false);
+  qDebug() << "enabling widgets; service on?" << serviceEnabled_;
+}
+
+void WidgetDisablingService::temporarilyDisableService()
+{
+  serviceEnabled_ = false;
+}
+
+void WidgetDisablingService::temporarilyEnableService()
+{
+  serviceEnabled_ = true;
 }
