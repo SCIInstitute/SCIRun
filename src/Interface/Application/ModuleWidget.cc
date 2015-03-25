@@ -507,8 +507,9 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
-  theModule_->connectExecuteSelfRequest([this]() { executeButtonPushed(); });
-  theModule_->connectExecuteSelfRequest([this]() { disableWidgetDisabling(); });
+  theModule_->connectExecuteSelfRequest([this]() { executeAgain(); });
+  connect(this, SIGNAL(executeAgain()), this, SLOT(executeButtonPushed()));
+  //theModule_->connectExecuteSelfRequest([this]() { disableWidgetDisabling(); });
   //TODO: connect reenableWidgetDisabling
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
