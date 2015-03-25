@@ -47,7 +47,7 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   addTwoChoiceBooleanComboBoxManager(rowColumnComboBox_, Parameters::IsSliceColumn);
   addSpinBoxManager(indexIncrementSpinBox_, Parameters::SliceIncrement);
   addSpinBoxManager(executionDelaySpinBox_, Parameters::PlayModeDelay);
-  
+
   playModeMap_.insert(StringPair("Loop once", "looponce"));
   playModeMap_.insert(StringPair("Loop forever (EXPERIMENTAL)", "loopforever"));
   addComboBoxManager(playModeComboBox_, Parameters::PlayModeType, playModeMap_);
@@ -118,4 +118,5 @@ void GetMatrixSliceDialog::startPlay()
 void GetMatrixSliceDialog::stopPlay()
 {
   state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+  Q_EMIT executionLoopHalted();
 }
