@@ -74,6 +74,7 @@ public:
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
   ~SCIRunMainWindow();
+  int returnCode() const { return returnCode_; }
 public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
@@ -123,6 +124,7 @@ private:
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
+  int returnCode_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
