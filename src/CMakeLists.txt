@@ -3,7 +3,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2014 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -47,6 +47,16 @@ IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
+################################################################################
+# If building on Windows, make sure that the path to the bin directory is short.
+# TODO: Revisit if CPM module names get shorter.
+
+IF(WIN32)
+  STRING(LENGTH ${CMAKE_BINARY_DIR} BIN_DIR_LENGTH)
+  IF(${BIN_DIR_LENGTH} GREATER 15)
+    MESSAGE(WARNING "Binary directory is too long, the build may fail due to long path names.")
+  ENDIF()
+ENDIF()
 
 ########################################################################
 # Build shared libraries by default
@@ -293,6 +303,16 @@ IF(DISABLE_ExternalProject_UPDATE)
   ELSE()
     SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
   ENDIF()
+ENDIF()
+
+########################################################################
+# Download external data sources
+
+OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
+MARK_AS_ADVANCED(DOWNLOAD_TOOLKITS)
+IF(DOWNLOAD_TOOLKITS)
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
+  EXTERNAL_TOOLKIT(BrainStimulator)
 ENDIF()
 
 ########################################################################
@@ -830,6 +850,10 @@ ENDIF()
 IF(WITH_TETGEN)
   SET_PROPERTY(TARGET tetgen         PROPERTY FOLDER "Externals")
   SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
+ENDIF()
+
+IF(DOWNLOAD_TOOLKITS)
+  SET_PROPERTY(TARGET BrainStimulator_external   PROPERTY FOLDER "Externals")
 ENDIF()
 
 ########################################################################

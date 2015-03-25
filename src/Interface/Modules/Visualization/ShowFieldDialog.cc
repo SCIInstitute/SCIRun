@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2012 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 License for the specific language governing rights and limitations under
@@ -78,15 +78,6 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   connectButtonToExecuteSignal(nodesAsSpheresButton_);
 
   createExecuteInteractivelyToggleAction();
-
-  //default values
-  cylinder_rad_spin->setValue(0.1);
-  cylinder_res_spin->setValue(10);
-  sphereResolutionSpinBox->setValue(10);
-  scaleSphereDoubleSpinBox_->setValue(0.03);
-  nodeTransparencyDoubleSpinBox_->setValue(0.65);
-  edgeTransparencyDoubleSpinBox_->setValue(0.65);
-  transparencyDoubleSpinBox_->setValue(0.65);
 
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 

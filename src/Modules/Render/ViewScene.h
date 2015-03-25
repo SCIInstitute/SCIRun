@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -70,6 +70,7 @@ namespace Render {
     virtual void setStateDefaults();
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    static Core::Algorithms::AlgorithmParameterName BackgroundColor;
     
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
 

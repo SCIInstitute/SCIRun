@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -34,28 +34,11 @@ using namespace SCIRun::Core::Geometry;
 
 TextBuilder::TextBuilder(const std::string& text, const double scale,
             const Vector shift)
-: text_(text), scale_(scale), shift_(shift) {
-    std::ifstream in("Assets/times_new_roman.font");
-    if (in.fail()) {
-        //try the MAC App location if the UNIX/Windows location didn't work.
-        in.open("SCIRun.app/Contents/MacOS/Assets/times_new_roman.font");
-        if (in.fail()) {
-            std::cerr << "Cannot find font \"Assets/times_new_roman.font\"" << std::endl;
-            return;
-        }
-    }
-    in >> font0_w_ >> font0_h_;
-    font0_ = new uint16_t[font0_w_*font0_h_];
-    in.read((char*)font0_,sizeof(uint16_t)*font0_w_*font0_h_);
-    in.close();
-}
+: text_(text), scale_(scale), shift_(shift) {}
 
-TextBuilder::~TextBuilder() {
-    delete font0_;
-}
+TextBuilder::~TextBuilder() {}
 
-void TextBuilder::getStringVerts(std::vector<Vector> &verts,  std::vector<Vector> &colors) {
-    if (!font0_) return;
+void TextBuilder::getStringVerts(std::vector<Vector> &verts,  std::vector<Vector> &coords) {
     Vector shift = shift_;
     for (auto a : text_) {
         std::vector<Vector> tmp;
@@ -65,51 +48,41 @@ void TextBuilder::getStringVerts(std::vector<Vector> &verts,  std::vector<Vector
             verts.push_back(v + shift);
         }
         for (auto v : tmp2) {
-            colors.push_back(v);
+            coords.push_back(v);
         }
         shift = shift + Vector(scale_,0.,0.);
     }
 }
 
-void TextBuilder::getCharVerts(const char c, std::vector<Vector> &verts, std::vector<Vector> &colors) {
+void TextBuilder::getCharVerts(const char c, std::vector<Vector> &verts, std::vector<Vector> &coords) {
     char idx = c - 32;
     if (idx < 0 || idx >= 96) idx = 95;
     //get the offset into the font array.
-    size_t row = idx / 16;
+    size_t row = 6 - idx / 16;
     size_t col = c % 16;
-    size_t pixel_row = row * 64;
-    size_t pixel_col = col * 64;
-    const uint16_t *font = font0_;
-    size_t resolution = 128;
-    for (size_t i = 0; i < resolution; i++) {
-        for (size_t j = 0; j < resolution; j++) {
-            //sample resolution x resolution across the square of the current letter.
-            size_t sample_x = 2+pixel_col + static_cast<size_t>(60. * static_cast<double>(j) /
-                                                    static_cast<double>(resolution)+.5);
-            size_t sample_y = 2+pixel_row + static_cast<size_t>(60. * static_cast<double>(i) /
-                                                    static_cast<double>(resolution)+.5);
-            uint16_t pixel = 0;//font[sample_y*1024 + sample_x];
-            //anti-alias
-            for(int u = -1; u <= 0; u++) {
-                for (int v = -1; v <= 0; v++) {
-                    size_t sub_x = std::min(std::max((size_t)0,u+sample_x),font0_w_);
-                    size_t sub_y = std::min(std::max((size_t)0,v+sample_y),font0_h_);
-                    uint16_t pixel2 = font[sub_y*font0_w_ + sub_x];
-                    pixel = ((pixel & 0xff00) + ((((pixel2 >> 8) / 4) << 8) & 0xff00)) |
-                                ((pixel & 0x00ff) + ((pixel2 & 0x00ff) / 4));
-                }
-            }
-            unsigned char val = (pixel >> 8) & 0x00ff;
-            unsigned char alpha = pixel & 0x00ff;
-            if (alpha > 100) {
-                verts.push_back(scale_ * Vector(static_cast<double>(j),
-                                resolution-static_cast<double>(i),0.) /
-                                static_cast<double>(resolution));
-                colors.push_back(Vector(static_cast<float>(val) / 255.f,
-                                        static_cast<float>(alpha) / 255.f,0.));
-            }
-        }
-    }
+    double left,right,top,bottom;
+    left = static_cast<double>(col) / 16.;
+    right = left + 1./16.;
+    top = static_cast<double>(row) / 6.;
+    bottom = top - 1./6.;
+    Vector ll = Vector(left,bottom,0.);
+    Vector lr = Vector(right,bottom,0.);
+    Vector ur = Vector(right,top,0.);
+    Vector ul = Vector(left,top,0.);
+    //triangle 1
+    verts.push_back(scale_ * Vector(0.,0.,0.));
+    coords.push_back(ll);
+    verts.push_back(scale_ * Vector(0.,1.,0.));
+    coords.push_back(ul);
+    verts.push_back(scale_ * Vector(1.,0.,0.));
+    coords.push_back(lr);
+    //triangle 2
+    verts.push_back(scale_ * Vector(0.,1.,0.));
+    coords.push_back(ul);
+    verts.push_back(scale_ * Vector(1.,0.,0.));
+    coords.push_back(lr);
+    verts.push_back(scale_ * Vector(1.,1.,0.));
+    coords.push_back(ur);
 }
 
 void TextBuilder::reset(const std::string& text, const double scale, const Vector shift) {

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -25,14 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#ifdef OPENGL_ES
-  #ifdef GL_FRAGMENT_PRECISION_HIGH
-    // Default precision
-    precision highp float;
-  #else
-    precision mediump float;
-  #endif
-#endif
 
 uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
 uniform vec4    uAmbientColor;      // Ambient color
@@ -40,13 +32,12 @@ uniform vec4    uSpecularColor;     // Specular color
 uniform vec4    uDiffuseColor;      // Diffuse color
 uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDirWorld;     // Directional light (world space).
-uniform sampler1D uTX0;
 
 // Lighting in world space. Generally, it's better to light in eye space if you
 // are dealing with point lights. Since we are only dealing with directional
 // lights we light in world space.
 varying vec3  vNormal;
-varying float vFieldData;
+varying vec4  vColor;
 
 void main()
 {
@@ -71,7 +62,7 @@ void main()
   vec3  reflection  = reflect(invLightDir, normal);
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
-  vec4 diffuseColor = texture1D( uTX0, vFieldData );
+  vec4 diffuseColor = vColor;
   diffuseColor.a = uAmbientColor.a;
 
   spec              = pow(spec, uSpecularPower);

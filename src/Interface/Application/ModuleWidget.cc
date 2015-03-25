@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -87,12 +87,12 @@ namespace Gui {
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
-        << disabled(new QAction("Replace With", parent))
+        << new QAction("Replace With", parent)
         << new QAction("Collapse", parent)
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
-        << disabled(new QAction("Destroy", parent)));
+        << new QAction("Destroy", parent));
     }
     QMenu* getMenu() { return menu_; }
     QAction* getAction(const char* name) const
@@ -511,8 +511,11 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
-  //TODO: doh, how do i destroy myself?
-  //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
+  connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
+
+  connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
+  connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
+  connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -628,15 +631,12 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
 
-  //TODO: very slow code, action disabled anyway--turning off for now
-#if 0
   auto replaceWith = actionsMenu_->getAction("Replace With");
   auto menu = new QMenu(this);
   replaceWith->setMenu(menu);
   fillReplaceWithMenu();
   connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
-#endif
 
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
@@ -655,8 +655,10 @@ void ModuleWidget::fillReplaceWithMenu()
   auto menu = getReplaceWithMenu();
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
+  auto replacements = Core::Application::Instance().controller()->possibleReplacements(this->theModule_);
+  auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
-    [this](const ModuleDescription& md) { return canReplaceWith(this->theModule_, md); },
+    isReplacement,
     [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); });
 }
 
@@ -950,6 +952,7 @@ ModuleWidget::~ModuleWidget()
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }
+  Q_EMIT displayChanged();
 }
 
 void ModuleWidget::trackConnections()
@@ -961,6 +964,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
+    Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
@@ -969,6 +973,11 @@ void ModuleWidget::execute()
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
+}
+
+void ModuleWidget::changeExecuteButtonToStop()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
 }
 
 boost::signals2::connection ModuleWidget::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)
@@ -1239,6 +1248,12 @@ void ModuleWidget::executeButtonPushed()
 {
   LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   Q_EMIT executedManually(theModule_);
+  changeExecuteButtonToStop();
+}
+
+void ModuleWidget::changeExecuteButtonToPlay()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
 }
 
 bool ModuleWidget::globalMiniMode_(false);

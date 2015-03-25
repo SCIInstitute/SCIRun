@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -63,6 +63,8 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName TextRed;
         static Core::Algorithms::AlgorithmParameterName TextGreen;
         static Core::Algorithms::AlgorithmParameterName TextBlue;
+        static Core::Algorithms::AlgorithmParameterName XTranslation;
+        static Core::Algorithms::AlgorithmParameterName YTranslation;
 
         virtual void setStateDefaults();
         INPUT_PORT(0, ColorMapObject, ColorMap);

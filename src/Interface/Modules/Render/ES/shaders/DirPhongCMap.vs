@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -29,23 +29,21 @@
 // Uniforms
 uniform mat4    uProjIVObject;      // Projection transform * Inverse View
 uniform mat4    uObject;            // Object -> World
-uniform float   uMinVal;
-uniform float   uMaxVal;
 
 // Attributes
 attribute vec3  aPos;
 attribute vec3  aNormal;
-attribute float aFieldData;
+attribute vec4  aColor;
 
 // Outputs to the fragment shader.
 varying vec3    vNormal;
-varying float   vFieldData;
+varying vec4    vColor;
 
 void main( void )
 {
    // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
    // was generated in gamma space, and we need to convert it to linear space.
    vNormal  = vec3(uObject * vec4(aNormal, 0.0));
-   vFieldData = (aFieldData - uMinVal) / (uMaxVal - uMinVal);
+   vColor = aColor;
    gl_Position = uProjIVObject * vec4(aPos, 1.0);
 }
