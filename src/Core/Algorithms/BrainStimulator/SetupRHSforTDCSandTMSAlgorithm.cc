@@ -471,6 +471,9 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     elc_sponge_surf_vmesh->add_point(o1); /// duplicated nodes are ok! they are gonna be deleted in last step of this function
     elc_sponge_surf_vmesh->add_point(o2);
     elc_sponge_surf_vmesh->add_point(o3);
+    
+    node_tri_ind=0; /// get the first triangle to determine the orientation of the mesh
+    mesh_scalp_tri_surf->get_nodes(onodes, node_tri_ind);
     double omin=std::numeric_limits<double>::quiet_NaN(), omax=std::numeric_limits<double>::quiet_NaN(); //determine tri ordering from scalp mesh
     int imin=-1,imax=-1;
     for (int q=0;q<3;q++)
