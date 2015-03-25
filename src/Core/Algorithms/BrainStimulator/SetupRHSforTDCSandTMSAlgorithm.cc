@@ -233,8 +233,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
  if ( refnode_number > mesh_num_nodes || refnode_number<0)
  {
     THROW_ALGORITHM_PROCESSING_ERROR(" Reference node exceeds number of FEM nodes. ");
- }
- 
+ }  
  /// prepare LHS_KNOWNS which is the an input to addknownstolinearsystem (called x) besides the stiffness matrix
  lhs_knows=boost::make_shared<DenseMatrix>(mesh_num_nodes,1);
  for(VMesh::Node::index_type idx=0; idx<mesh_num_nodes; idx++)
@@ -471,6 +470,8 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
     elc_sponge_surf_vmesh->add_point(o1); /// duplicated nodes are ok! they are gonna be deleted in last step of this function
     elc_sponge_surf_vmesh->add_point(o2);
     elc_sponge_surf_vmesh->add_point(o3);
+    node_tri_ind=0; /// get the first triangle to determine the orientation of the mesh
+    mesh_scalp_tri_surf->get_nodes(onodes, node_tri_ind);
     double omin=std::numeric_limits<double>::quiet_NaN(), omax=std::numeric_limits<double>::quiet_NaN(); //determine tri ordering from scalp mesh
     int imin=-1,imax=-1;
     for (int q=0;q<3;q++)
@@ -545,8 +546,7 @@ boost::tuple<DenseMatrixHandle, DenseMatrixHandle, DenseMatrixHandle, DenseMatri
   double dot_sp_o1 = Dot(sp_o1, current_scalp_normal_at_elec);
   double dot_sp_o2 = Dot(sp_o2, current_scalp_normal_at_elec);
   
-  double x=0,y=0,z=0;
-  
+  double x=0,y=0,z=0;  
   if( (dot_sp_o1<0 && dot_sp_o2<0) || (dot_sp_o1>0 && dot_sp_o2>0) )
   {
     THROW_ALGORITHM_PROCESSING_ERROR("Internal error: Criteria to find sponge top and bottom failed!");
