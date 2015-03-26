@@ -36,6 +36,7 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
@@ -582,17 +583,26 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
  auto tab_values = get(Parameters::TableValues).toVector(); 
  bool flip_normal=false;
  FlipSurfaceNormalsAlgo flipnormal_algo;
+ ConvertMeshToTriSurfMeshAlgo conv_algo;
+ FieldInformation scalp_info(scalp);
+ if (scalp_info.is_quadsurf())
+   conv_algo.run(scalp,scalp);
+  
  if (tab_values.size()==elc_prototyp_map.size() && elc_thickness.size()==elc_prototyp_map.size() && elc_x.size()==elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size())
  {  
   VMesh* scalp_vmesh = scalp->vmesh(); 
   VField* scalp_vfld = scalp->vfield(); 
   valid_electrode_definition.resize(elc_prototyp_map.size());
   for (int i=0; i<elc_prototyp_map.size(); i++)
-  {
+  { 
    if (elc_thickness[i]<=0 || IsNan(elc_thickness[i]))
    { 
-    continue; 
+    std::ostringstream ostr3;
+    ostr3 << " Please provide positive electrode thickness - skip electrode definition: " << i << std::endl;
+    remark(ostr3.str());
+    continue;
    }
+   
    double distance=0;
    bool skip_current_iteration=false;
    VMesh::Node::index_type didx;
@@ -634,6 +644,9 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
    }   
    FieldHandle prototype = elc_coil_proto[elc_prototyp_map[i]-1];
    FieldInformation fi(prototype);
+   if (fi.is_quadsurfmesh())
+     conv_algo.run(prototype,prototype);
+       else
    if(fi.is_trisurfmesh()) 
    {
     GetMeshNodesAlgo algo_getfieldnodes;
@@ -1105,6 +1118,14 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
 boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::run(const FieldHandle scalp, const DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const
 {
+ FieldInformation fi(scalp);
+ if (!(fi.is_trisurfmesh() || fi.is_quadsurfmesh()))
+    {
+      std::ostringstream ostr;
+      ostr << " First input (SCALP_SURF) needs to be a triangluar (TRISURF) of rectangular mesh (QUADSURF)." << std::endl;
+      THROW_ALGORITHM_PROCESSING_ERROR(ostr.str());
+    }
+
  VariableHandle table_output = fill_table(scalp, locations, elc_coil_proto);
  DenseMatrixHandle elc_sponge_locations;
  FieldHandle electrodes_field, coils_field, final_electrodes_field;
@@ -1240,7 +1261,14 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
        ostr1 << "Module input " << (c1+2) << " seems to be empty" << std::endl;
        THROW_ALGORITHM_PROCESSING_ERROR(ostr1.str());
      }
-     
+     FieldInformation fi_proto(prototyp);
+     if (!(fi_proto.is_trisurfmesh() || fi_proto.is_quadsurfmesh()))
+     {
+      std::ostringstream ostr;
+      ostr << (c1+2) << ". input needs to be a triangluar (TRISURF) of rectangular mesh (QUADSURF)." << std::endl;
+      THROW_ALGORITHM_PROCESSING_ERROR(ostr.str());
+     }
+
      GetFieldDataAlgo algo_getfielddata;
      DenseMatrixHandle fielddata;
      try
