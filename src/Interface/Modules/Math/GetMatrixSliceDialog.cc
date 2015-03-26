@@ -113,10 +113,13 @@ void GetMatrixSliceDialog::startPlay()
 {
   state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PLAY));
   Q_EMIT executeActionTriggered();
+  Q_EMIT executionLoopStarted();
+  //qDebug() << " execution loop started emitted ";
 }
 
 void GetMatrixSliceDialog::stopPlay()
 {
   state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
   Q_EMIT executionLoopHalted();
+  //qDebug() << " execution loop halted emitted ";
 }

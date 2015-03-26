@@ -86,7 +86,8 @@ namespace Gui {
     void executeFromStateChangeTriggered();
     void setStartupNote(const QString& text);
     void fatalError(const QString& message);
-    void executionLoopHalted(); //TODO: doesn't really belong here
+    void executionLoopStarted();
+    void executionLoopHalted();
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
     virtual void contextMenuEvent(QContextMenuEvent* e) override;
