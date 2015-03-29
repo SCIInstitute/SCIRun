@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -47,7 +47,7 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   addTwoChoiceBooleanComboBoxManager(rowColumnComboBox_, Parameters::IsSliceColumn);
   addSpinBoxManager(indexIncrementSpinBox_, Parameters::SliceIncrement);
   addSpinBoxManager(executionDelaySpinBox_, Parameters::PlayModeDelay);
-  
+
   playModeMap_.insert(StringPair("Loop once", "looponce"));
   playModeMap_.insert(StringPair("Loop forever (EXPERIMENTAL)", "loopforever"));
   addComboBoxManager(playModeComboBox_, Parameters::PlayModeType, playModeMap_);
@@ -113,9 +113,13 @@ void GetMatrixSliceDialog::startPlay()
 {
   state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PLAY));
   Q_EMIT executeActionTriggered();
+  Q_EMIT executionLoopStarted();
+  //qDebug() << " execution loop started emitted ";
 }
 
 void GetMatrixSliceDialog::stopPlay()
 {
   state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
+  Q_EMIT executionLoopHalted();
+  //qDebug() << " execution loop halted emitted ";
 }

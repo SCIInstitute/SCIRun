@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -64,7 +64,7 @@ void CreateStandardColorMap::execute()
     //just in case there is a problem with the QT values...
     res = std::min(std::max(res,2),256);
     shift = std::min(std::max(shift,-1.),1.);
-    sendOutput(ColorMapObject, StandardColorMapFactory::create(name,res, shift,inv,1.,0.,0.,1.));
+    sendOutput(ColorMapObject, StandardColorMapFactory::create(name,res, shift,inv));
   }
 }
 

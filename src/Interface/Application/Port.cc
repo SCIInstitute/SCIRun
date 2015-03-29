@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -497,4 +497,17 @@ ModuleId BlankPort::getUnderlyingModuleId() const
 QColor BlankPort::color() const
 {
   return QColor(0,0,0,0);
+}
+
+std::vector<PortWidget*> PortWidget::connectedPorts() const
+{
+  std::vector<PortWidget*> otherPorts;
+  auto notThisOne = [this](const std::pair<PortWidget*, PortWidget*>& portPair) { if (portPair.first == this) return portPair.second; else return portPair.first; };
+  for (const auto& c : connections_)
+  {
+    auto ends = c->connectedPorts();
+
+    otherPorts.push_back(notThisOne(ends));
+  }
+  return otherPorts;
 }

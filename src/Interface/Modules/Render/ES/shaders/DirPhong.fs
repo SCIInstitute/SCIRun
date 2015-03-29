@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -40,6 +40,7 @@ uniform vec4    uDiffuseColor;      // Diffuse color
 uniform vec4    uSpecularColor;     // Specular color     
 uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDirWorld;     // Directional light (world space).
+uniform float   uTransparency;
 
 // Lighting in world space. Generally, it's better to light in eye space if you
 // are dealing with point lights. Since we are only dealing with directional
@@ -70,6 +71,7 @@ void main()
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
   spec              = pow(spec, uSpecularPower);
-  gl_FragColor      = vec4((diffuse * spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor).rgb, uDiffuseColor.a);
+  gl_FragColor      = vec4((diffuse * spec * uSpecularColor + 
+                       diffuse * uDiffuseColor + uAmbientColor).rgb, uTransparency);
 }
 

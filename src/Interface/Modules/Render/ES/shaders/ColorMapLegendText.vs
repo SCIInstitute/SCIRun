@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -29,31 +29,36 @@
 // Uniforms
 uniform float    uAspectRatio  ;      
 uniform float    uWindowWidth  ;
-uniform float    uExtraSpace   ;
+uniform float    uXTranslate;
+uniform float    uYTranslate;
 uniform float    uDisplaySide  ;
 uniform float    uDisplayLength;
 
 // Attributes
 attribute vec3  aPos;
-attribute vec4  aColor;
+attribute vec2  aTexCoord;
 
 //Outputs
-varying vec4 fColor;
+varying vec2 fTexCoord;
+
+//constants
+const float text_x_scale = 0.5;
+const float bar_buffer = 0.1;
 
 void main( void )
 {
-  bool ex = uExtraSpace == 1.;
   bool ds = uDisplaySide == 0.;
   bool full = uDisplayLength == 1.;
   bool half1 = uDisplayLength == 0.;
   vec3 newPos = aPos;
-  float x_scale = 1.5 / uWindowWidth;
-  float y_scale = 2.9 / (uWindowWidth / uAspectRatio);
-  float x_trans = ds?(-1.+(ex?.05:0.)):(-1.+(full?(aPos.z*1.8+.1):(aPos.z*.9+(half1?0.+(ex?.05:0.):
-                                       1.1+(ex?-.05:0.)))) - 15. / uWindowWidth);
-  float y_trans = ds?(-1.+(full?(aPos.z*1.8+.1):(aPos.z*.9+(half1?0.+(ex?.05:0.):
-                                       1.1+(ex?-.05:0.)))) - 2. / uWindowWidth):(-1.+(ex?.05:0.));
+  float tick_separation = aPos.z * (1. - bar_buffer) * (full?2.:1.);
+  float x_scale = text_x_scale / uWindowWidth;
+  float y_scale = 1. / (uWindowWidth / uAspectRatio);
+  float x_trans = -1. + (  ds ?0.:(tick_separation+(full?bar_buffer:(half1?0.:(bar_buffer+1.)))))
+                        + uXTranslate / 50.;
+  float y_trans = -1. + ((!ds)?0.:(tick_separation+(full?bar_buffer:(half1?0.:(bar_buffer+1.)))))   
+                        + uYTranslate / 50.;
   gl_Position = vec4(newPos.x * x_scale + x_trans, 
                      newPos.y * y_scale + y_trans, 0., 1.0);
-  fColor = aColor;
+  fTexCoord = aTexCoord;
 }

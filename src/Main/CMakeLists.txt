@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -51,12 +51,11 @@ IF(APPLE)
 
   ADD_EXECUTABLE(${APPLICATION_NAME} MACOSX_BUNDLE ${SCIRunMain_SOURCES})
 
-ELSEIF(WIN32)
+ELSEIF(WIN32)  
   IF(SCIRUN_SHOW_CONSOLE)
-    ADD_EXECUTABLE(${APPLICATION_NAME} ${SCIRunMain_SOURCES})
-  ELSE()
-    ADD_EXECUTABLE(${APPLICATION_NAME} WIN32 ${SCIRunMain_SOURCES})
+    ADD_DEFINITIONS(-DSCIRUN_SHOW_CONSOLE=1)
   ENDIF()
+  ADD_EXECUTABLE(${APPLICATION_NAME} WIN32 ${SCIRunMain_SOURCES})
 
   # TODO: probably need this for Xcode
   IF(WIN32 AND MSVC)

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -102,6 +102,7 @@ namespace SCIRun {
           virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory);
           virtual void setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory);
           virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
+          virtual const DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const { throw "not implemented"; }
         private:
           size_t moduleCounter_;
           ModuleStateFactoryHandle stateFactory_;

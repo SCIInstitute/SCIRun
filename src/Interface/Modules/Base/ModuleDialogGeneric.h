@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -86,6 +86,8 @@ namespace Gui {
     void executeFromStateChangeTriggered();
     void setStartupNote(const QString& text);
     void fatalError(const QString& message);
+    void executionLoopStarted();
+    void executionLoopHalted();
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
     virtual void contextMenuEvent(QContextMenuEvent* e) override;

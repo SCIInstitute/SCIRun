@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -54,7 +54,15 @@ void RescaleColorMap::setStateDefaults()
   state->setValue(Parameters::FixedMin, 0.0);
   state->setValue(Parameters::FixedMax, 1.0);
 }
-
+/**
+ * @name execute
+ *
+ * @brief This module has a simple algorithm to ensure the field data scales into ColorMap space.
+ *
+ * The "input" for this algorithm/module is the field data and the color map from
+ *  CreateStandardColorMap module. The "output" is a new color map that applies the rescaling
+ *  options from this module: rescale_shift, and rescale_scale.
+ */
 void RescaleColorMap::execute()
 {
   auto field = getRequiredInput(Field);
@@ -99,14 +107,14 @@ void RescaleColorMap::execute()
       state->setValue(Parameters::FixedMin, fixed_min);
       state->setValue(Parameters::FixedMax, fixed_max);
     }
-    cm_scale = (actual_max - actual_min) / (fixed_max - fixed_min);
-    cm_shift = (actual_min - fixed_min) / (fixed_max - fixed_min);
+    cm_shift =  - fixed_min;
+    cm_scale = 1. / (fixed_max - fixed_min);
 
     sendOutput(ColorMapOutput, StandardColorMapFactory::create(colorMap->getColorMapName(),
       colorMap->getColorMapResolution(),
       colorMap->getColorMapShift(),
       colorMap->getColorMapInvert(),
-      cm_scale, cm_shift, fixed_min, fixed_max));
+      cm_scale, cm_shift));
   }
 }
 

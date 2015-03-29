@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2012 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 License for the specific language governing rights and limitations under
@@ -42,6 +42,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Render;
+using namespace SCIRun::Modules::Render;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -96,6 +97,18 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 		  spire->setMouseMode(Render::SRInterface::MOUSE_OLDSCIRUN);
 	  }
   }
+
+  {
+    //Set background Color
+    ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
+    bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+                      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+                      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
+    std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
+    spire->setBackgroundColor(bgColor_);
+  }
+
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
@@ -401,8 +414,11 @@ void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::configurationButtonClicked()
 {
-	if (!mConfigurationDock)
-		addConfigurationDock(windowTitle());
+  if (!mConfigurationDock)
+  {
+    addConfigurationDock(windowTitle());
+    mConfigurationDock->setSampleColor(bgColor_);
+  }
 
   showConfiguration_ = !mConfigurationDock->isVisible();
   mConfigurationDock->setEnabled(showConfiguration_);
@@ -412,17 +428,15 @@ void ViewSceneDialog::configurationButtonClicked()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::assignBackgroundColor()
 {
-  QColor bgColor = Qt::black;
-  auto newColor = QColorDialog::getColor(bgColor, this, "Choose background color");
+  QString title = windowTitle() + " Choose background color";
+  auto newColor = QColorDialog::getColor(bgColor_, this, title);
   if (newColor.isValid())
   {
-    bgColor = newColor;
-    mConfigurationDock->setSampleColor(bgColor);
-    //TODO: set color of button to this color
-    //defaultMeshColorButton_->set
-    //state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
+    bgColor_ = newColor;
+    mConfigurationDock->setSampleColor(bgColor_);
+    state_->setValue(Modules::Render::ViewScene::BackgroundColor, ColorRGB(bgColor_.red(), bgColor_.green(), bgColor_.blue()).toString());
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-    spire->setBackgroundColor(bgColor);
+    spire->setBackgroundColor(bgColor_);
   }
 }
 
