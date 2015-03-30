@@ -100,15 +100,20 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
     //Set background Color
-    ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
-    bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-                      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-                      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
-
+    if (state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString() != "")
+    {
+      ColorRGB color(state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString());
+      bgColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+                        static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+                        static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+    }
+    else
+    {
+      bgColor_ = Qt::black;
+    }
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
   }
-
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
