@@ -26,50 +26,50 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Modules/Visualization/ShowField.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Utils/Exception.h>
+#include <Core/Logging/Log.h>
+#include <Core/Datatypes/ColorMap.h>
 
-using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
+using namespace SCIRun::Modules::Visualization;
+using namespace SCIRun::Core;
+using namespace SCIRun;
+using namespace SCIRun::Core::Logging;
+using ::testing::Values;
+using ::testing::Combine;
+using ::testing::Range;
 
-ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds* bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
+class ShowColorMapModuleTest : public ModuleTest
 {
-  bounds_->executeStarts_();
-}
-
-ScopedExecutionBoundsSignaller::~ScopedExecutionBoundsSignaller()
-{
-  bounds_->executeFinishes_(errorCodeRetriever_());
-}
-
-const ExecuteAllModules& ExecuteAllModules::Instance()
-{
-  static ExecuteAllModules instance_;
-  return instance_;
-}
-
-ExecutionContext::ExecutionContext(NetworkInterface& net) : network(net), lookup(net) {}
-
-const ExecutionBounds& ExecutionContext::bounds() const
-{
-  return executionBounds_;
-}
-
-void ExecutionContext::preexecute()
-{
-  network.setModuleExecutionState(ModuleInterface::Waiting, additionalFilter);
-}
-
-bool WaitsForStartupInitialization::waitedAlready_(false);
-
-void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& lookup) const
-{
-  if (!waitedAlready_ && lookup.containsViewScene())
+protected:
+  virtual void SetUp()
   {
-    std::cout << "Waiting for rendering system initialization...." << std::endl;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(800));
-    std::cout << "Done waiting." << std::endl;
-    waitedAlready_ = true;
+    Log::get().setVerbose(false);
+    showColorMap = makeModule("ShowColorMap");
+    showColorMap->setStateDefaults();
+    colorMap.reset(new ColorMap());
+    stubPortNWithThisData(showColorMap, 0, colorMap);
   }
+
+  UseRealModuleStateFactory f;
+  ModuleHandle showColorMap;
+  ColorMapHandle colorMap;
+};
+
+TEST_F(ShowColorMapModuleTest, ModuleRuns)
+{
+  showColorMap->execute();
+}
+
+TEST_F(ShowColorMapModuleTest, DISABLED_TODO)
+{
+  FAIL() << "insert more test code here";
 }

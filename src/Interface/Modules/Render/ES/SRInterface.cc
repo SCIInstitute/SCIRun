@@ -1069,7 +1069,8 @@ namespace SCIRun {
             //font texture
             //read in the font data
             bool success = true;
-            std::ifstream in("Assets/times_new_roman.font");
+            auto fontPath = SCIRun::Core::Application::Instance().executablePath() / "Assets" / "times_new_roman.font";
+            std::ifstream in(fontPath.string());
             if (in.fail()) {
                 //try the MAC App location if the UNIX/Windows location didn't work.
                 in.open("SCIRun.app/Contents/MacOS/Assets/times_new_roman.font");

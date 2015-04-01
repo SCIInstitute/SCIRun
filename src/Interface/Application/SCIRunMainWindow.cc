@@ -77,7 +77,7 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
+SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(0)
 {
 	setupUi(this);
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -340,6 +340,9 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), &WidgetDisablingService::Instance(), SLOT(enableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(changeExecuteActionIconToPlay()));
 
+	connect(networkEditor_, SIGNAL(disableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyDisableService()));
+  connect(networkEditor_, SIGNAL(reenableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyEnableService()));
+
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
 
@@ -464,6 +467,7 @@ void SCIRunMainWindow::setupQuitAfterExecute()
 void SCIRunMainWindow::exitApplication(int code)
 {
   close();
+  returnCode_ = code;
   qApp->exit(code);
 }
 

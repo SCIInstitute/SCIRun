@@ -203,6 +203,8 @@ Q_SIGNALS:
     void snapToModules();
     void highlightPorts(int state);
     void zoomLevelChanged(int zoom);
+    void disableWidgetDisabling();
+    void reenableWidgetDisabling();
   private Q_SLOTS:
     void cut();
     void copy();
