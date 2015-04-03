@@ -58,18 +58,18 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   WidgetStyleMixin::tabStyle(tabWidget);
 
   /////Set unused widgets to be not visible
-  //Clipping tab
-  ClippingTab->setVisible(false);
-  ClippingTab->setEnabled(false);
-  groupBox_3->setVisible(false);
-  groupBox_4->setVisible(false);
-  groupBox_5->setVisible(false);
+  ////Clipping tab
+  //ClippingTab->setVisible(false);
+  //ClippingTab->setEnabled(false);
+  //groupBox_3->setVisible(false);
+  //groupBox_4->setVisible(false);
+  //groupBox_5->setVisible(false);
 
-  //View Tab
-  groupBox->setVisible(false);
+  ////View Tab
+  //groupBox->setVisible(false);
 
-  //Render Tab
-  groupBox_6->setVisible(false);
+  ////Render Tab
+  //groupBox_6->setVisible(false);
 
 }
 
