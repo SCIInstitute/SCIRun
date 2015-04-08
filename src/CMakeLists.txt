@@ -607,6 +607,7 @@ ADD_SUBDIRECTORY(Interface)
 ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
 ADD_SUBDIRECTORY(Modules)
+ADD_SUBDIRECTORY(Graphics)
 
 ADD_SUBDIRECTORY(Main)
 
@@ -756,8 +757,6 @@ SET_PROPERTY(TARGET Interface_Modules_Inverse   PROPERTY FOLDER "Interface/Modul
 SET_PROPERTY(TARGET Interface_Modules_Factory   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Application")
 
-SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
-
 SET_PROPERTY(TARGET Modules_Basic   PROPERTY FOLDER "Modules/Basic")
 SET_PROPERTY(TARGET Modules_Math   PROPERTY FOLDER "Modules/Math")
 SET_PROPERTY(TARGET Modules_Legacy_Math   PROPERTY FOLDER "Modules/Math")
@@ -777,6 +776,8 @@ SET_PROPERTY(TARGET Modules_Legacy_Inverse PROPERTY FOLDER "Modules/Inverse")
 SET_PROPERTY(TARGET Modules_Legacy_Matlab_DataIO PROPERTY FOLDER "Modules/DataIO")
 SET_PROPERTY(TARGET Modules_Legacy_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
+
+SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 
 IF(BUILD_TESTING)
   SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
