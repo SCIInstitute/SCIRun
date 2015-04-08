@@ -94,6 +94,7 @@ protected:
     // ChangeMesh
     "('AlignMeshBoundingBoxes',         1,        0,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
     "('ConvertQuadSurfToTriSurf',       1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
+    "('ConvertHexVolToTetVol',	        1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"   
     "('GetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('SetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     // DataIO

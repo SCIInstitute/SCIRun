@@ -29,7 +29,7 @@
 # CMakeLists.txt for Dataflow/Modules/Fields
 
 SET(Modules_Legacy_Fields_HEADERS
-	RefineMesh.h
+  RefineMesh.h
   CreateLatVol.h
   GetFieldBoundary.h
   BuildMappingMatrix.h
@@ -51,6 +51,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateSignedDistanceToField.h
   ClipFieldByFunction3.h
   ConvertQuadSurfToTriSurf.h
+  ConvertHexVolToTetVol.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
   SetFieldData.h
@@ -103,6 +104,7 @@ SET(Modules_Legacy_Fields_SRCS
   #ConvertMeshCoordinateSystem.cc
   ConvertFieldBasis.cc
   ConvertFieldDataType.cc
+  ConvertHexVolToTetVol.cc
   #ChooseField.cc
   #ClipFieldByFunction.cc
   #ClipFieldByFunction2.cc
