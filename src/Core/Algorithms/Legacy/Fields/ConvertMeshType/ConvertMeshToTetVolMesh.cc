@@ -24,82 +24,25 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   Author            : Moritz Dannhauer
+   Last modification : April 8 2015 (ported from SCIRun4)
 */
 
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
-
-bool ConvertHexVolToTetVolV(AlgoBase *algo, 
-                            FieldHandle input, 
-                            FieldHandle& output);
-
-bool ConvertLatVolToTetVolV(AlgoBase *algo, 
-                            FieldHandle input, 
-                            FieldHandle& output);
-bool 
-ConvertMeshToTetVolMeshAlgo::
-run(FieldHandle input, FieldHandle& output)
-{
-  /// Mark start of algorithm and report that we will not report progress
-  algo_start("ConvertMeshToTetVolMesh");
-
-  if (input.get_rep() == 0)
-  {
-    error("No input field");
-    algo_end(); return (false);
-  }
-
-  // no precompiled version available, so compile one
-
-  FieldInformation fi(input);
-  FieldInformation fo(input);
-  
-  if (fi.is_nonlinear())
-  {
-    error("This function has not yet been defined for non-linear elements");
-    algo_end(); return (false);
-  }
-
-  if (fi.is_tet_element())
-  {
-    output = input;
-    remark("Input is already a TetVolMesh; just copying input to output");
-    algo_end(); return (true);
-  }
-
-  fo.make_tetvolmesh();
-  
-  output = CreateField(fo);
-  if (output.get_rep() == 0)
-  {
-    error("Could not allocate output field");
-    algo_end(); return (false);
-  }
-  
-  if (fi.is_latvolmesh() || fi.is_structhexvolmesh())
-  {
-    return (ConvertLatVolToTetVolV(this,input,output));
-  }
-  else if (fi.is_hexvolmesh())
-  {
-    return (ConvertHexVolToTetVolV(this,input,output));  
-  }
-  else
-  {
-    error("No algorithm is available to convert this type of mesh");
-    algo_end(); return (false);
-  }
-}
-
-
-bool ConvertHexVolToTetVolV(AlgoBase *algo, 
-                            FieldHandle input, 
-                            FieldHandle& output)
+bool ConvertMeshToTetVolMeshAlgo::ConvertHexVolToTetVolV(FieldHandle input, FieldHandle& output) const
 {
   VField *ifield = input->vfield();
   VMesh *imesh = ifield->vmesh();
@@ -169,8 +112,8 @@ bool ConvertHexVolToTetVolV(AlgoBase *algo,
             {
               if (visited[neighbors[p]] != newtype)
               {
-                algo->error("Algorithm cannot deal with topology of input field, field cannot by sorted into checker board type of ordering");
-                algo->algo_end(); return (false);
+                error("Algorithm cannot deal with topology of input field, field cannot by sorted into checker board type of ordering");
+                return (false);
               }
             }
             else
@@ -256,18 +199,14 @@ bool ConvertHexVolToTetVolV(AlgoBase *algo,
   }
 
   // Copy properties of the property manager
-	output->copy_properties(input.get_rep());
+  // output->copy_properties(input.get_rep());
   
   // Success:
-  algo->algo_end(); return (true);
+  return true;			    
 }
 
-
-bool ConvertLatVolToTetVolV(AlgoBase *algo, 
-                            FieldHandle input, 
-                            FieldHandle& output)
+bool ConvertMeshToTetVolMeshAlgo::ConvertLatVolToTetVolV(FieldHandle input, FieldHandle& output) const
 {
-
   VField *ifield = input->vfield();
   VMesh *imesh = ifield->vmesh();
 
@@ -304,15 +243,15 @@ bool ConvertLatVolToTetVolV(AlgoBase *algo,
   imesh->get_dimensions(dims);
   if (dims.size() != 3)
   {
-    algo->error("Could not obtain LatVol dimensions");
-    algo->algo_end(); return (false);    
+    error("Could not obtain LatVol dimensions");
+    return (false);    
   }
   const size_type d2 = (dims[0]-1)*(dims[1]-1);
   const size_type d1 = dims[0]-1;
   
   imesh->begin(bi); 
   imesh->end(ei);
-  
+ 
   while (bi != ei)
   {
     VMesh::Node::array_type lv;
@@ -367,11 +306,80 @@ bool ConvertLatVolToTetVolV(AlgoBase *algo,
   }
 
   // Copy properties of the property manager
-	output->copy_properties(input.get_rep());
+  // output->copy_properties(input.get_rep());
   
   // Success:
-  algo->algo_end(); return (true);
+  return true;			    
 }
 
+bool ConvertMeshToTetVolMeshAlgo::run(FieldHandle input, FieldHandle& output) const
+{
+  ScopedAlgorithmStatusReporter asr(this, "ConvertMeshToTetVolMeshAlgo");
+  
+  if (!input)
+  {
+    error("No input field");
+    return (false);
+  }
+ 
+    // Create information fields and fill them out with the data types of the input
+  FieldInformation fi(input);
+  FieldInformation fo(input);
+  
+  // Ignore non linear cases for now
+  if (fi.is_nonlinear())
+  {
+    error("This function has not yet been defined for non-linear elements");
+    return (false);
+  }
 
-} // End namespace SCIRunAlgo
+  // In case it is already a trisurf skip algorithm
+  if (fi.is_tet_element())
+  {
+    output = input;
+    remark("Input is already a TetVolMesh; just copying input to output");
+    return (true);
+  }
+  
+  fo.make_tetvolmesh();
+  
+  output = CreateField(fo);
+  if (!output)
+  {
+    error("Could not allocate output field");
+     return (false);
+  }
+  
+  if (fi.is_latvolmesh() || fi.is_structhexvolmesh())
+  {
+    return (ConvertLatVolToTetVolV(input,output));
+  }
+  else if (fi.is_hexvolmesh())
+  {
+    return (ConvertHexVolToTetVolV(input,output));  
+  }
+  else
+  {
+    error("No algorithm is available to convert this type of mesh");
+    return (false);
+  }
+  
+ return true;
+}
+
+AlgorithmInputName ConvertMeshToTetVolMeshAlgo::HexOrLatVol("HexOrLatVol");
+AlgorithmOutputName ConvertMeshToTetVolMeshAlgo::TetVol("TetVol");
+
+AlgorithmOutput ConvertMeshToTetVolMeshAlgo::run_generic(const AlgorithmInput& input) const
+{
+ auto hex_or_latvol = input.get<Field>(HexOrLatVol);
+ 
+ FieldHandle tetvol;
+ if (!run(hex_or_latvol, tetvol))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+    
+ AlgorithmOutput output;
+ output[TetVol] = tetvol;
+ 
+ return output;
+}

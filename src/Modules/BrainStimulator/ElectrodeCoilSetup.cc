@@ -57,6 +57,7 @@ void ElectrodeCoilSetupModule::setStateDefaults()
 {
   setStateIntFromAlgo(Parameters::NumberOfPrototypes);
   setStateBoolFromAlgo(Parameters::ProtoTypeInputCheckbox);
+  setStateBoolFromAlgo(Parameters::InvertNormalsCheckBox);
   setStateBoolFromAlgo(Parameters::AllInputsTDCS);
   setStateIntFromAlgo(Parameters::ProtoTypeInputComboBox);
   setStateListFromAlgo(Parameters::TableValues);
@@ -73,6 +74,7 @@ void ElectrodeCoilSetupModule::execute()
  if (needToExecute())  //newStatePresent
  {
    setAlgoBoolFromState(Parameters::ProtoTypeInputCheckbox);
+   setAlgoBoolFromState(Parameters::InvertNormalsCheckBox);
    setAlgoBoolFromState(Parameters::AllInputsTDCS);
    setAlgoIntFromState(Parameters::ProtoTypeInputComboBox);
    setAlgoBoolFromState(Parameters::ElectrodethicknessCheckBox);
@@ -91,13 +93,17 @@ void ElectrodeCoilSetupModule::execute()
 	
     algo().set(Parameters::TableValues, table_handle);
      
-    auto output = algo().run_generic(input);
+    auto output = algo().run_generic(input);  
+
     auto table = output.additionalAlgoOutput();
+
     if (table)
      get_state()->setValue(Parameters::TableValues, table->value());
+
     sendOutputFromAlgorithm(FINAL_ELECTRODES_FIELD, output);
     sendOutputFromAlgorithm(MOVED_ELECTRODES_FIELD, output);
     sendOutputFromAlgorithm(ELECTRODE_SPONGE_LOCATION_AVR, output);
     sendOutputFromAlgorithm(COILS_FIELD, output);
+
  }
 }

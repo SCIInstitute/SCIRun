@@ -50,6 +50,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
 #include <Modules/Legacy/Visualization/GenerateStreamLines.h>
 #include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
+#include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -89,4 +90,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
   addModuleDesc<BuildSurfaceLaplacianMatrix>("...","...");
+  addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
 }

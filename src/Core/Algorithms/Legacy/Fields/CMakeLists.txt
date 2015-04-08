@@ -52,6 +52,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshDerivatives/SplitByConnectedRegion.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
   ConvertMeshType/ConvertMeshToIrregularMesh.h
+  ConvertMeshType/ConvertMeshToTetVolMesh.h
   TransformMesh/AlignMeshBoundingBoxes.h
   MeshData/SetMeshNodes.h
   MeshData/GetMeshNodes.h
@@ -92,7 +93,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   ClipMesh/ClipMeshBySelection.cc
   #CollectFields/CollectPointClouds.cc
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.cc
-  #ConvertMeshType/ConvertMeshToTetVolMesh.cc
+  ConvertMeshType/ConvertMeshToTetVolMesh.cc
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.cc
   #ConvertMeshType/ConvertMeshToUnstructuredMesh.cc
   ConvertMeshType/ConvertMeshToIrregularMesh.cc

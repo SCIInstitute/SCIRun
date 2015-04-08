@@ -143,6 +143,22 @@
     <double>1.000000000000000</double>
    </property>
   </widget>
+  <widget class="QCheckBox" name="invertNormalsCheckBox_">
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">   
+    <rect>
+     <x>390</x>
+     <y>360</y>
+     <width>321</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Invert normals to position electrodes on scalp</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
