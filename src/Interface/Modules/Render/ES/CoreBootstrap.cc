@@ -27,9 +27,7 @@
 #include "comp/RenderBasicGeom.h"
 #include "comp/StaticWorldLight.h"
 #include "systems/RenderBasicSys.h"
-#include "systems/RenderColorMapSys.h"
 #include "systems/RenderTransBasicSys.h"
-#include "systems/RenderTransColorMapSys.h"
 #include "CoreBootstrap.h"
 #include "AssetBootstrap.h"
 #include "Core.h"
@@ -114,8 +112,6 @@ public:
 
     core.addUserSystem(getSystemName_RenderBasicGeom());
 		core.addUserSystem(getSystemName_RenderBasicTransGeom());
-    core.addUserSystem(getSystemName_RenderColorMap());
-    core.addUserSystem(getSystemName_RenderColorMapTrans());
 
     // --== General ==--
 

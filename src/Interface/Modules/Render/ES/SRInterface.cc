@@ -62,15 +62,12 @@
 #include "CoreBootstrap.h"
 #include "comp/StaticSRInterface.h"
 #include "comp/RenderBasicGeom.h"
-#include "comp/RenderColorMapGeom.h"
 #include "comp/SRRenderState.h"
 #include "comp/RenderList.h"
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "systems/RenderBasicSys.h"
-#include "systems/RenderColorMapSys.h"
 #include "systems/RenderTransBasicSys.h"
-#include "systems/RenderTransColorMapSys.h"
 #include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Core::Datatypes;
