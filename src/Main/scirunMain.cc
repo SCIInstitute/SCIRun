@@ -55,6 +55,16 @@ int mainImpl(int argc, const char* argv[])
 #include <vector>
 #include <boost/algorithm/string.hpp>
 
+static std::string&& stripQuotes(std::string& s)
+{
+  if (s.front() == '"' && s.back() == '"')
+  {
+    s.erase(0, 1); // erase the first character
+    s.erase(s.size() - 1); // erase the last character
+  }
+  return std::move(s);
+}
+
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 #ifdef SCIRUN_SHOW_CONSOLE 
@@ -75,7 +85,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     
   // Put the individual arguments into the argv that will be passed.
   for(int i = 0; i < argc; i++) 
-	  argv[i] = getArgv[i].c_str();  
+    argv[i] = stripQuotes(getArgv[i]).c_str();
   
   return mainImpl(argc, argv);
 }
