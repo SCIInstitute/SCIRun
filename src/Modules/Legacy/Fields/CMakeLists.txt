@@ -72,6 +72,7 @@ SET(Modules_Legacy_Fields_HEADERS
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
   ConvertIndicesToFieldData.h
+  ConvertHexVolToTetVol.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -129,7 +130,7 @@ SET(Modules_Legacy_Fields_SRCS
   #SubsampleStructuredFieldByIndices.cc
   JoinFields.cc
   CalculateGradients.cc
-  #ConvertHexVolToTetVol.cc
+  ConvertHexVolToTetVol.cc
   #MergeFields.cc
   #InsertHexVolSheetAlongSurface.cc
   #MergeTriSurfs.cc
