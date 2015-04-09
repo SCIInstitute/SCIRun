@@ -3,7 +3,7 @@
 
  The MIT License
 
- Copyright (c) 2012 Scientific Computing and Imaging Institute,
+ Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
 
  License for the specific language governing rights and limitations under
@@ -150,52 +150,4 @@ const ModuleDescriptionMap& HardCodedModuleFactory::getAllAvailableModuleDescrip
 const DirectModuleDescriptionLookupMap& HardCodedModuleFactory::getDirectModuleDescriptionLookupMap() const
 {
   return impl_->lookup.lookup_;
-}
-
-bool SCIRun::Modules::Factory::operator==(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
-{
-  return lhs.input == rhs.input && lhs.output == rhs.output;
-}
-
-bool SCIRun::Modules::Factory::operator!=(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs)
-{
-  return !(lhs == rhs);
-}
-
-std::ostream& SCIRun::Modules::Factory::operator<<(std::ostream& o, const ConnectedPortInfo& cpi)
-{
-  o << "Connected port info: ";
-  if (cpi.input.empty())
-    o << "[No inputs connected] ";
-  else
-    for (const auto& p : cpi.input)
-    {
-      o << "Input[" << p.first << ":" << p.second << "] ";
-    }
-  if (cpi.output.empty())
-    o << "[No outputs connected] ";
-  else
-    for (const auto& p : cpi.output)
-    {
-      o << "Output[" << p.first << ":" << p.second << "] ";
-    }
-  return o;
-}
-
-ConnectedPortInfo SCIRun::Modules::Factory::makeConnectedPortInfo(ModuleHandle module)
-{
-  ConnectedPortInfo cpi;
-  if (!module)
-    return cpi;
-  for (const auto& in : module->inputPorts())
-  {
-    if (in->nconnections() > 0)
-      cpi.input[in->get_typename()]++;
-  }
-  for (const auto& out : module->outputPorts())
-  {
-    if (out->nconnections() > 0)
-      cpi.output[out->get_typename()]++;
-  }
-  return cpi;
 }

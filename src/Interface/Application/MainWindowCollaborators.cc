@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -124,10 +124,24 @@ void WidgetDisablingService::disableInputWidgets()
 {
   ne_->disableInputWidgets();
   setWidgetsDisableFlag(inputWidgets_, true);
+  //qDebug() << "disabling widgets; service on?" << serviceEnabled_;
 }
 
 void WidgetDisablingService::enableInputWidgets()
 {
   ne_->enableInputWidgets();
   setWidgetsDisableFlag(inputWidgets_, false);
+  //qDebug() << "enabling widgets; service on?" << serviceEnabled_;
+}
+
+void WidgetDisablingService::temporarilyDisableService()
+{
+  //qDebug() << "temp disable service";
+  serviceEnabled_ = false;
+}
+
+void WidgetDisablingService::temporarilyEnableService()
+{
+  //qDebug() << "temp enable service";
+  serviceEnabled_ = true;
 }

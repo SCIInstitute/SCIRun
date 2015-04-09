@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -27,8 +27,10 @@
 #
 
 SET(Modules_Visualization_Tests_SRCS
-  CreateBasicColorMapTests.cc
+  CreateStandardColorMapTests.cc
   MatrixAsVectorFieldTests.cc
+  RescaleColorMapTests.cc
+  ShowColorMapTests.cc
   ShowFieldTests.cc
   ShowMeshTests.cc
   ShowStringTests.cc

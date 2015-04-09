@@ -3,7 +3,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2014 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -47,6 +47,16 @@ IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
+################################################################################
+# If building on Windows, make sure that the path to the bin directory is short.
+# TODO: Revisit if CPM module names get shorter.
+
+IF(WIN32)
+  STRING(LENGTH ${CMAKE_BINARY_DIR} BIN_DIR_LENGTH)
+  IF(${BIN_DIR_LENGTH} GREATER 15)
+    MESSAGE(WARNING "Binary directory is too long, the build may fail due to long path names.")
+  ENDIF()
+ENDIF()
 
 ########################################################################
 # Build shared libraries by default
@@ -135,8 +145,8 @@ SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
 SET(APPLICATION_VENDOR "SCI" CACHE INTERNAL "Vendor information" FORCE)
 SET(APPLICATION_CONTACT "scirun-users@sci.utah.edu" CACHE INTERNAL "Contact information" FORCE)
 SET(APPLICATION_WINDOWS_ICON "${CMAKE_SOURCE_DIR}/Interface/Application\\\\scirun-icon-large.ico" CACHE INTERNAL "Windows icon" FORCE)
-SET(APPLICATION_OSX_ICON_FULL_PATH "${CMAKE_SOURCE_DIR}/Interface/Application/scirun-icon-large.icns" CACHE INTERNAL "OSX icon" FORCE)
-SET(APPLICATION_OSX_ICON "scirun-icon-large.icns" CACHE INTERNAL "OSX icon" FORCE)
+SET(APPLICATION_OSX_ICON_FULL_PATH "${CMAKE_SOURCE_DIR}/Resources/Icons/scirun5.icns" CACHE INTERNAL "OSX icon" FORCE)
+SET(APPLICATION_OSX_ICON "scirun5.icns" CACHE INTERNAL "OSX icon" FORCE)
 
 ########################################################################
 # Standard system and compiler tests
@@ -293,6 +303,16 @@ IF(DISABLE_ExternalProject_UPDATE)
   ELSE()
     SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
   ENDIF()
+ENDIF()
+
+########################################################################
+# Download external data sources
+
+OPTION(DOWNLOAD_TOOLKITS "Download toolkit repositories." ON)
+MARK_AS_ADVANCED(DOWNLOAD_TOOLKITS)
+IF(DOWNLOAD_TOOLKITS)
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ToolkitsConfig.cmake)
+  EXTERNAL_TOOLKIT(BrainStimulator)
 ENDIF()
 
 ########################################################################
@@ -681,6 +701,7 @@ SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Forward         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Visualization         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_FiniteElements         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Legacy_Geometry         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_DataIO         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Converter         PROPERTY FOLDER "Core/Algorithms")
 
@@ -831,6 +852,10 @@ IF(WITH_TETGEN)
   SET_PROPERTY(TARGET tetlib         PROPERTY FOLDER "Externals")
 ENDIF()
 
+IF(DOWNLOAD_TOOLKITS)
+  SET_PROPERTY(TARGET BrainStimulator_external   PROPERTY FOLDER "Externals")
+ENDIF()
+
 ########################################################################
 # Custom CMake settings for CPack
 
@@ -850,7 +875,7 @@ SET(PACKAGING_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Welcome.txt" CACHE INTE
 # TODO: need release notes
 #SET(PACKAGING_RELEASENOTES "${CMAKE_CURRENT_SOURCE_DIR}/ReleaseNotes.txt" CACHE INTERNAL "Where to find the releasenotes file." FORCE )
 
-SET(PACKAGING_ICON "${CMAKE_SOURCE_DIR}/Resources/Icons\\\\scirun_package_icon_32.bmp" CACHE INTERNAL "Packing icon." FORCE )
+SET(PACKAGING_ICON "${CMAKE_SOURCE_DIR}/Resources/Icons\\\\scirun5_256.png" CACHE INTERNAL "Packing icon." FORCE )
 
 MESSAGE(STATUS "Configuring SCIRun packaging")
 

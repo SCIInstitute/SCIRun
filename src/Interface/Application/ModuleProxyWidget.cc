@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -126,6 +126,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
   connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureVisible()));
+  connect(module, SIGNAL(deleteMeLater()), this, SLOT(deleteLater()));
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()

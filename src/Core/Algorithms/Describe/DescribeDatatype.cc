@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -32,6 +32,7 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Geometry.h>
 
 using namespace SCIRun::Core::Algorithms::General;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -68,6 +69,12 @@ std::string DescribeDatatype::describe(const DatatypeHandle data) const
     auto info = algo.run(field);
 
     return "[Field Data] Info:\n" + ReportFieldInfoAlgorithm::summarize(info);
+  }
+
+  auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
+  if (geom)
+  {
+    return "[Geometry Object] ID:\n" + geom->uniqueID();
   }
 
   return "[Unknown Datatype]";

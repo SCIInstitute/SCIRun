@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,49 +26,49 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.cc
+/// @todo Documentation Modules/Visualization/CreateStandardColorMap.cc
 
-#include <Modules/Visualization/CreateBasicColorMap.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Modules/Visualization/CreateStandardColorMap.h>
 #include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
 
-CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateStandardColorMap", "Visualization", "SCIRun"))
+const ModuleLookupInfo CreateStandardColorMap::staticInfo_("CreateStandardColorMap", "Visualization", "SCIRun");
+
+CreateStandardColorMap::CreateStandardColorMap() : Module(staticInfo_)
 {
   INITIALIZE_PORT(ColorMapObject);
 }
 
-void CreateBasicColorMap::setStateDefaults()
+void CreateStandardColorMap::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(ColorMapName, std::string("Rainbow"));
-  state->setValue(ColorMapResolution, 256);
-  state->setValue(ColorMapInvert, false);
-  state->setValue(ColorMapShift, 0.0);
+  state->setValue(Parameters::ColorMapName, std::string("Rainbow"));
+  state->setValue(Parameters::ColorMapResolution, 256);
+  state->setValue(Parameters::ColorMapInvert, false);
+  state->setValue(Parameters::ColorMapShift, 0.0);
 }
 
-void CreateBasicColorMap::execute()
+void CreateStandardColorMap::execute()
 {
   if (needToExecute())
   {
     auto state = get_state();
-    auto name = state->getValue(ColorMapName).toString();
-    auto res = state->getValue(ColorMapResolution).toInt();
-    auto inv = state->getValue(ColorMapInvert).toBool();
-    auto shift = state->getValue(ColorMapShift).toDouble();
+    auto name = state->getValue(Parameters::ColorMapName).toString();
+    auto res = state->getValue(Parameters::ColorMapResolution).toInt();
+    auto inv = state->getValue(Parameters::ColorMapInvert).toBool();
+    auto shift = state->getValue(Parameters::ColorMapShift).toDouble();
     //just in case there is a problem with the QT values...
     res = std::min(std::max(res,2),256);
     shift = std::min(std::max(shift,-1.),1.);
-    sendOutput(ColorMapObject,StandardColorMapFactory::create(name,res, shift,inv));
+    sendOutput(ColorMapObject, StandardColorMapFactory::create(name,res, shift,inv));
   }
 }
 
-
-const AlgorithmParameterName CreateBasicColorMap::ColorMapName("ColorMapName");
-const AlgorithmParameterName CreateBasicColorMap::ColorMapInvert("ColorMapInvert");
-const AlgorithmParameterName CreateBasicColorMap::ColorMapShift("ColorMapShift");
-const AlgorithmParameterName CreateBasicColorMap::ColorMapResolution("ColorMapResolution");
+ALGORITHM_PARAMETER_DEF(Visualization, ColorMapName);
+ALGORITHM_PARAMETER_DEF(Visualization, ColorMapInvert);
+ALGORITHM_PARAMETER_DEF(Visualization, ColorMapShift);
+ALGORITHM_PARAMETER_DEF(Visualization, ColorMapResolution);

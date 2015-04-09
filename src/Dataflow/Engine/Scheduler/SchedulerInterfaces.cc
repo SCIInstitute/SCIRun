@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -68,7 +68,7 @@ void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& l
   if (!waitedAlready_ && lookup.containsViewScene())
   {
     std::cout << "Waiting for rendering system initialization...." << std::endl;
-    boost::this_thread::sleep(boost::posix_time::milliseconds(600));
+    boost::this_thread::sleep(boost::posix_time::milliseconds(800));
     std::cout << "Done waiting." << std::endl;
     waitedAlready_ = true;
   }

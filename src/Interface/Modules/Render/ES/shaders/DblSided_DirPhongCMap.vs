@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -29,19 +29,17 @@
 // Uniforms
 uniform mat4    uProjIVObject;      // Projection transform * Inverse View
 uniform mat4    uObject;            // Object -> World
-uniform float   uMinVal;
-uniform float   uMaxVal;
 uniform float   uFDToggle;          // Field data toggle
 
 // Attributes
 attribute vec3  aPos;
 attribute vec3  aNormal;
-attribute float aFieldData;
-attribute float aFieldDataSecondary;
+attribute vec4  aColor;
+attribute vec4  aColorSecondary;
 
 // Outputs to the fragment shader.
 varying vec3    vNormal;
-varying float   vFieldData;
+varying vec4    vColor;
 
 void main( void )
 {
@@ -49,6 +47,6 @@ void main( void )
 
   vNormal  = vec3(uObject * vec4(aNormal, 0.0));
 
-  float fieldData = uFDToggle * aFieldData + (1.0 - uFDToggle) * aFieldDataSecondary;
-  vFieldData  = (fieldData - uMinVal) / (uMaxVal - uMinVal);
+  vec4 colorData = uFDToggle * aColor + (1.0 - uFDToggle) * aColorSecondary;
+  vColor = colorData;
 }

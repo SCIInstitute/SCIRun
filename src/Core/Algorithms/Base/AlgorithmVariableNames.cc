@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -43,7 +43,6 @@ PARAMETER(Method)
 PARAMETER(Preconditioner)
 PARAMETER(Filename)
 PARAMETER(BuildConvergence)
-PARAMETER(ColorMapName)
 PARAMETER(FileTypeList)
 PARAMETER(FileExtension)
 PARAMETER(FileTypeName)

@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2012 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 License for the specific language governing rights and limitations under
@@ -89,6 +89,6 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
-  addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
+  addModuleDesc<BuildSurfaceLaplacianMatrix>("...","...");
   addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
 }

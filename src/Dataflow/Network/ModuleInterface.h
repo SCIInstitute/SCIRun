@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -108,6 +108,7 @@ namespace Networks {
     virtual ~ModuleInterface();
 
     virtual ModuleStateHandle get_state() = 0;
+    virtual const ModuleStateHandle get_state() const = 0;
 
     virtual bool do_execute() = 0;
 

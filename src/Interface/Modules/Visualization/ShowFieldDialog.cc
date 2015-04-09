@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2012 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 License for the specific language governing rights and limitations under
@@ -36,6 +36,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Visualization;
 
 ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -54,10 +55,12 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
   addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
   addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
+  addDoubleSpinBoxManager(nodeTransparencyDoubleSpinBox_, ShowFieldModule::NodeTransparencyValue);
   addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, ShowFieldModule::EdgeTransparencyValue);
   addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
-  addDoubleSpinBoxManager(cylinder_rad_spin, ShowFieldModule::CylinderRadius);
+  addDoubleSpinBoxManager(cylinder_rad_spin, Parameters::CylinderRadius);
   addSpinBoxManager(cylinder_res_spin, ShowFieldModule::CylinderResolution);
+  addSpinBoxManager(sphereResolutionSpinBox, ShowFieldModule::SphereResolution);
   addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowFieldModule::EdgesAsCylinders);
   addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_ }, ShowFieldModule::NodeAsSpheres);
 
@@ -74,27 +77,25 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   connectButtonToExecuteSignal(nodesAsPointsButton_);
   connectButtonToExecuteSignal(nodesAsSpheresButton_);
 
-  //default values
-  cylinder_rad_spin->setValue(1.0);
-  cylinder_res_spin->setValue(5);
+  createExecuteInteractivelyToggleAction();
 
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
 
   /////Set unused widgets to be not visible
   //Nodes Tab
-  label_4->setVisible(false); // Sphere scale lable
-  scaleSphereDoubleSpinBox_->setVisible(false); // Sphere scale spin box
-  resolutionSpinBox->setVisible(false); //resolution spin box
-  label_5->setVisible(false); //resolution label
-  groupBox_3->setVisible(false); //Node coloring
-  groupBox_4->setVisible(false); //Node Display Type Group Box
+  //label_4->setVisible(false); // Sphere scale lable
+  //scaleSphereDoubleSpinBox_->setVisible(false); // Sphere scale spin box
+  //resolutionSpinBox->setVisible(false); //resolution spin box
+  //label_5->setVisible(false); //resolution label
+  //groupBox_3->setVisible(false); //Node coloring
+  //groupBox_4->setVisible(false); //Node Display Type Group Box
 
   //Edges Tab
-  groupBox_7->setVisible(false);//Edge Display Type Group Box
-  label_9->setVisible(false); //resolution label
-  cylinder_res_spin->setVisible(false); //resolution spinbox
-  label_8->setVisible(false); //scale label
-  cylinder_rad_spin->setVisible(false); //cylinder scale spinbox
+  //groupBox_7->setVisible(false);//Edge Display Type Group Box
+  //label_9->setVisible(false); //resolution label
+  //cylinder_res_spin->setVisible(false); //resolution spinbox
+  //label_8->setVisible(false); //scale label
+  //cylinder_rad_spin->setVisible(false); //cylinder scale spinbox
   //groupBox_6->setVisible(false); //edge coloring
 
   //Faces Tab

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -56,6 +56,7 @@ namespace BrainStimulator {
   ALGORITHM_PARAMETER_DECL(normal_dot_product_bound);
   ALGORITHM_PARAMETER_DECL(pointdistancebound);
   ALGORITHM_PARAMETER_DECL(number_of_electrodes);
+  ALGORITHM_PARAMETER_DECL(GetContactSurface);
   
   class SCISHARE SetupTDCSAlgorithm : public AlgorithmBase
   {
@@ -65,8 +66,6 @@ namespace BrainStimulator {
 
     boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle,
     Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle, Datatypes::DenseMatrixHandle, std::vector<double>> run(FieldHandle mesh, const std::vector<Variable>& elcs, const std::vector<Variable>& impelc,int num_of_elc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
-    
-    //static AlgorithmParameterName number_of_electrodes();
     
     static AlgorithmInputName MESH;
     static AlgorithmInputName SCALP_TRI_SURF_MESH;
@@ -83,12 +82,13 @@ namespace BrainStimulator {
     
     static Core::Algorithms::AlgorithmParameterName ElectrodeParameterName(int i);
     static Core::Algorithms::AlgorithmParameterName ElectrodeImpedanceParameterName(int i);
+   
   private:  
     static const int special_label;
     static const int max_number_of_electrodes;
     static const double electode_current_summation_bound;
-    SCIRun::Core::Datatypes::DenseMatrixHandle create_rhs(FieldHandle mesh, const std::vector<Variable>& elcs, int num_of_elc) const;
-    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle, std::vector<double>> create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
+    SCIRun::Core::Datatypes::DenseMatrixHandle create_rhs(FieldHandle mesh, FieldHandle elc_tri_surf, const std::vector<Variable>& elcs, int num_of_elc) const;    
+    boost::tuple<Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, Datatypes::DenseMatrixHandle, FieldHandle, std::vector<double>> create_lhs(FieldHandle mesh, const std::vector<Variable>& impelc, FieldHandle scalp_tri_surf, FieldHandle elc_tri_surf, SCIRun::Core::Datatypes::DenseMatrixHandle elc_sponge_location) const;
   };
 
 }}}}

@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2012 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 License for the specific language governing rights and limitations under
@@ -144,7 +144,7 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 bool FileOpenCommand::execute()
 {
   if (!filename_.empty())
-    GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
+    GuiLogger::Instance().log("Attempting load of " + QString::fromStdString(filename_));
 
   try
   {

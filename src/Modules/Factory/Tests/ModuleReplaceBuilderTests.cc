@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -35,6 +35,7 @@ using namespace SCIRun;
 using namespace SCIRun::Testing;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::ReplacementImpl;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Core::Algorithms;
 
@@ -48,18 +49,13 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
 
   auto descMap = factory.getDirectModuleDescriptionLookupMap();
 
-  for (const auto& p : descMap)
-  {
-    if (false)
-      std::cout << p.first << " --> " << p.second << std::endl;
-  }
-  EXPECT_EQ(84, descMap.size());
+  EXPECT_TRUE(descMap.size() >= 86);
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, ModuleStateFactoryHandle(), ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
 
   auto network = controller.getNetwork();
@@ -153,7 +149,66 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
   }
 }
 
-TEST_F(ModuleReplaceTests, DISABLED_NoConnectedPortsCanBeReplacedWithAnything)
+TEST_F(ModuleReplaceTests, NoConnectedPortsCanBeReplacedWithAnything)
 {
-  FAIL() << "todo";
+  HardCodedModuleFactory factory;
+
+  auto descMap = factory.getDirectModuleDescriptionLookupMap();
+
+  ModuleReplacementFilterBuilder builder(descMap);
+  auto filter = builder.build();
+
+  ConnectedPortInfo noConnections;
+  auto noConnectionReplacements = filter->findReplacements(noConnections);
+  EXPECT_EQ(descMap.size(), noConnectionReplacements.size());
+
+  for (const auto& p : descMap)
+  {
+    if (std::find(noConnectionReplacements.begin(), noConnectionReplacements.end(), p.first) == noConnectionReplacements.end())
+      std::cout << "replacements list did not contain " << p.first << std::endl;
+  }
+}
+
+TEST(ReplacementFilterBuilderTests, CanBuild)
+{
+  HardCodedModuleFactory factory;
+
+  auto descMap = factory.getDirectModuleDescriptionLookupMap();
+
+  ModuleReplacementFilterBuilder builder(descMap);
+  auto filter = builder.build();
+
+  ASSERT_TRUE(filter != nullptr);
+}
+
+TEST_F(ModuleReplaceTests, CurrentConnectionsFilterReplacements)
+{
+  HardCodedModuleFactory factory;
+  auto descMap = factory.getDirectModuleDescriptionLookupMap();
+  ModuleReplacementFilterBuilder builder(descMap);
+  auto filter = builder.build();
+
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr);
+  initModuleParameters(false);
+  auto network = controller.getNetwork();
+  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle process = controller.addModule("NeedToExecuteTester");
+  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+
+  ASSERT_EQ(3, network->nmodules());
+
+  auto repl = filter->findReplacements(makeConnectedPortInfo(send));
+  EXPECT_EQ(descMap.size(), repl.size()); //everything
+
+  auto cid1 = network->connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 0));
+  auto cid2 = network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
+  ASSERT_EQ(2, network->nconnections());
+
+  repl = filter->findReplacements(makeConnectedPortInfo(send));
+  EXPECT_LE(repl.size(), descMap.size()); // some modules have been filtered out
+
+  network->disconnect(cid1);
+  repl = filter->findReplacements(makeConnectedPortInfo(send));
+  EXPECT_EQ(descMap.size(), repl.size()); //everything again
 }

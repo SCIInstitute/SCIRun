@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2012 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 License for the specific language governing rights and limitations under
@@ -93,9 +93,10 @@ boost::shared_ptr<Cleaver::ScalarField> InterfaceWithCleaverAlgorithm::makeCleav
   const Transform &transform = vmesh->get_transform();
   
   int x_spacing=fabs(transform.get_mat_val(0,0)), y_spacing=fabs(transform.get_mat_val(1,1)), z_spacing=fabs(transform.get_mat_val(2,2));
-  if (IsNan(x_spacing)) x_spacing=1;
-  if (IsNan(y_spacing)) y_spacing=1;
-  if (IsNan(z_spacing)) z_spacing=1;
+  
+  if (IsNan(x_spacing) || x_spacing<=0) x_spacing=1; /// dont allow negative or zero scaling of the bounding box
+  if (IsNan(y_spacing) || y_spacing<=0) y_spacing=1;
+  if (IsNan(z_spacing) || z_spacing<=0) z_spacing=1;
   
   cleaverField->setScale(Cleaver::vec3(x_spacing,y_spacing,z_spacing));
   
@@ -119,6 +120,10 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
     return FieldHandle();
   }
   
+  std::ostringstream ostr0;
+  ostr0 << "Be aware that inside and outside of materials (to be meshed) need to be defined as positive and negative (e.g. surface distance) values across all module inputs. The zero crossings represents material boundaries." << std::endl; 
+  remark(ostr0.str());
+           
   std::vector<boost::shared_ptr<Cleaver::ScalarField>> fields;  
 
   VMesh::dimension_type dims; int x=0,y=0,z=0; 
@@ -201,7 +206,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
     const std::string scaling = get_option(VolumeScalingOption);
     if ("Absolute size" == scaling) 
     {
-      volume->setSize(xScale, yScale,zScale);
+      volume->setSize(xScale, yScale, zScale);
     }
     else if ("Relative size" == scaling)
     {
@@ -213,6 +218,9 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
     else // None
     {
       volume->setSize(dims[0],dims[1],dims[2]);
+      std::ostringstream ostr1,ostr2;
+      ostr1 << "Scaling 'None' .... using " << "Scaling " << dims[0] << "x" << dims[1] << "x" << dims[2] << std::endl; 
+      remark(ostr1.str()); 
     }
   }
   else
@@ -224,12 +232,22 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   boost::shared_ptr<Cleaver::AbstractVolume> paddedVolume(volume);
   const bool verbose = get(Verbose).toBool();
   const bool pad = get(Padding).toBool();
+  
   if (pad)
+  {
     paddedVolume.reset(new Cleaver::PaddedVolume(volume.get()));
-    
-  std::cout << "Creating Mesh with Volume Size " << paddedVolume->size().toString() << std::endl;
-    
-  boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(paddedVolume.get(), verbose));
+  } 
+  
+  if (verbose)
+  {  
+   std::cout << "Input Dimensions: " << dims[0] << " x " << dims[1] << " x " << dims[2] << std::endl;
+   if (pad)   
+    std::cout << "Padded Mesh with Volume Size " << paddedVolume->size().toString() << std::endl;
+       else
+          std::cout << "Creating Mesh with Volume Size " << volume->size().toString() << std::endl;
+  }
+
+  boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(pad ? paddedVolume.get() : volume.get(), verbose));
 
   auto nr_of_tets  = mesh->tets.size();
   auto nr_of_verts = mesh->verts.size();
@@ -270,15 +288,14 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   ofield->resize_values();
   ofield->set_values(values);
   mesh->computeAngles();
-  std::ostringstream ostr1;
-  ostr1 << "Number of tetrahedral elements:" << nr_of_tets <<  std::endl;
-  ostr1 << "Number of tetrahedral nodes:" << nr_of_verts << std::endl;
-  ostr1 << "Worst Angle (min):" <<  mesh->min_angle << std::endl;
-  ostr1 << "Worst Angle (max):" <<  mesh->max_angle << std::endl;
-  ostr1 << "Volume:" << volume->size().toString() << std::endl;
+  
+  std::ostringstream ostr1,ostr2;
+  ostr1 << "(nodes, elements, dims) - (" << nr_of_verts << " , " << nr_of_tets << " , " << volume->size().toString() << ")" << std::endl;
+  ostr2 << "(min angle, max angle) - (" <<  mesh->min_angle << " , " << mesh->max_angle << ")" << std::endl;
 
   remark(ostr1.str()); 
-
+  remark(ostr2.str());
+  
   return output;
 }
 

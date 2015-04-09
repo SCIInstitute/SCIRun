@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,39 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CREATEBASICCOLORMAPDIALOG_H
-#define INTERFACE_MODULES_CREATEBASICCOLORMAPDIALOG_H
 
-#include "Interface/Modules/Visualization/ui_CreateBasicColorMap.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Interface/Modules/Visualization/share.h>
+/*
+ *  SurfaceLaplacian.h
+ *
+ *   Yesim
+ *   Department of Computer Science
+ *   University of Utah
+ *   Nov 2003
+ */
+
+
+#ifndef SurfaceLaplacian_h
+#define SurfaceLaplacian_h
+
+#include <Core/Datatypes/MatrixFwd.h>
+
+#include <Core/Algorithms/Legacy/Geometry/share.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE CreateBasicColorMapDialog : public ModuleDialogGeneric, 
-  public Ui::CreateBasicColorMap
-{
-	Q_OBJECT
-	
-public:
-  CreateBasicColorMapDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
- private Q_SLOTS:
-  void updateColorMapPreview(QString s);
-  const QString buildGradientString(SCIRun::Core::Datatypes::ColorMap cm);
-  void setShiftSlider(double d);
-  void setResolutionSlider(int i);
-  void setShiftText(int i);
-  void setResolutionText(int i);
-  void onInvertCheck(bool b);
-  
-};
 
-}
-}
+SCISHARE Core::Datatypes::MatrixHandle surfaceLaplacian(class VMesh *mesh);
 
-#endif
+} // End namespace SCIRun
+#endif // SurfaceLaplacian_h
+ 

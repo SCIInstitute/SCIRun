@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -24,42 +24,52 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Modules/Visualization/CreateBasicColorMap.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Utils/Exception.h>
+#ifndef MODULES_VISUALIZATION_RESCALECOLORMAP_H
+#define MODULES_VISUALIZATION_RESCALECOLORMAP_H
 
-using namespace SCIRun::Testing;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core;
+#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Modules/Visualization/share.h>
 
-class CreateBasicColorMapModuleTest : public ModuleTest
+namespace SCIRun 
 {
-};
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Visualization
+      {
+        ALGORITHM_PARAMETER_DECL(AutoScale);
+        ALGORITHM_PARAMETER_DECL(Symmetric);
+        ALGORITHM_PARAMETER_DECL(FixedMin);
+        ALGORITHM_PARAMETER_DECL(FixedMax);
+      }
+    }
+  }
 
-TEST_F(CreateBasicColorMapModuleTest, ThrowsForUnknownColorMapName)
-{
-  UseRealModuleStateFactory f;
+  namespace Modules 
+  {
+    namespace Visualization 
+    {
 
-  auto cbc = makeModule("CreateStandardColorMap");
+      class SCISHARE RescaleColorMap : public SCIRun::Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
+        public Has1OutputPort<ColorMapPortTag>
+      {
+      public:
+        RescaleColorMap();
+        virtual void execute();
+        virtual void setStateDefaults();
+        INPUT_PORT(0, Field, LegacyField);
+        INPUT_PORT(1, ColorMapObject, ColorMap);
+        OUTPUT_PORT(0, ColorMapOutput, ColorMap);
 
-  cbc->get_state()->setValue(Variables::ColorMapName, std::string("null"));
-
-  EXPECT_THROW(cbc->execute(), InvalidArgumentException);
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
+  }
 }
 
-TEST_F(CreateBasicColorMapModuleTest, DISABLED_CreatesRainbowByDefault)
-{
-  UseRealModuleStateFactory f;
-
-  auto cbc = makeModule("CreateStandardColorMap");
-
-  cbc->execute();
-
-  FAIL() << "TODO: need output value collector dummy module: See Issue #499";
-}
+#endif

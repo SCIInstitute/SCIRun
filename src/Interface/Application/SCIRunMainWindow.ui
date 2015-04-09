@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1093</width>
-         <height>482</height>
+         <width>1081</width>
+         <height>467</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -682,6 +682,19 @@
              <widget class="QCheckBox" name="portSizeEffectsCheckBox_">
               <property name="text">
                <string>Highlight Ports on Hover</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QCheckBox" name="actionTextIconCheckBox_">
+              <property name="text">
+               <string>Execute Button State</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+              <property name="tristate">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
