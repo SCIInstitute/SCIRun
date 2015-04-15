@@ -30,17 +30,19 @@
 //    Author : Martin Cole
 //    Date   : Fri Jun 15 21:33:04 2001
 
-#include <Core/Algorithms/Fields/MarchingCubes/TetMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/TetMC.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+//#include <sci_hash_map.h>
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <sci_hash_map.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
 
-namespace SCIRun {
+//namespace SCIRun {
 
 void 
 TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 {
-  build_field_ = build_field;
+/*  build_field_ = build_field;
   build_geom_  = build_geom;
   basis_order_ = field_->basis_order();
 
@@ -79,7 +81,7 @@ TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
     FieldInformation fi("TriSurfMesh",basis_order_,"double");
     trisurf_handle_ = CreateField(fi);
     trisurf_ = trisurf_handle_->vmesh();
-  }
+  }*/
 }
 
 
@@ -87,7 +89,7 @@ VMesh::Node::index_type
 TetMC::find_or_add_edgepoint(index_type u0, 
                              index_type u1,
                              double d0, const Point &p) 
-{
+{/*
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
@@ -120,14 +122,14 @@ TetMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx)
     surf_node_idx = trisurf_->add_point(p);
     node_map_[tet_node_idx] = surf_node_idx;
   }
-  return (surf_node_idx);
+  return (surf_node_idx); */
 }
 
 
 void
 TetMC::find_or_add_parent(index_type u0, index_type u1,
                           double d0, index_type face) 
-{
+{/*
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
   edgepair_t np;
@@ -141,23 +143,23 @@ TetMC::find_or_add_parent(index_type u0, index_type u1,
   else
   {
     ASSERT(loc == edge_map_.end())
-  }
+  }*/
 }
 
 
 void 
 TetMC::extract( VMesh::Elem::index_type cell, double v )
-{
+{/*
   if (basis_order_ == 0)
     extract_c(cell, v);
   else
-    extract_n(cell, v);
+    extract_n(cell, v);*/
 }
 
 
 void 
 TetMC::extract_c( VMesh::Elem::index_type cell, double iso )
-{
+{/*
   double selfvalue, nbrvalue;
   field_->value( selfvalue, cell );
   VMesh::DElem::array_type faces;
@@ -196,7 +198,7 @@ TetMC::extract_c( VMesh::Elem::index_type cell, double iso )
         find_or_add_parent(cell, nbr_cell, d, tface);
       }
     }
-  }
+  }*/
 }
 
 void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
@@ -220,7 +222,7 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
     {3, 2, 1, 0},   /* 0, 1, 2 - reverse of 3 */
     {0, 0, 0, 0}    /* all - ignore */
   };
-    
+/*    
   VMesh::Node::array_type nodes(3);    
   VMesh::Node::array_type node;
   Point p[4];
@@ -319,16 +321,16 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
     // MarchingCubes calls extract on each and every cell. i.e., this is
     // not an error
     break;
-  }
+  }*/
 }
 
 FieldHandle
 TetMC::get_field(double value)
-{
+{/*
   trisurf_handle_->vfield()->resize_values();
   trisurf_handle_->vfield()->set_all_values(value);
 
-  return (trisurf_handle_);  
+  return (trisurf_handle_); */ 
 }
 
-} // end namespace
+//} // end namespace

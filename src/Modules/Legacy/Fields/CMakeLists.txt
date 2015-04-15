@@ -72,6 +72,7 @@ SET(Modules_Legacy_Fields_HEADERS
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
   ConvertIndicesToFieldData.h
+  ExtractSimpleIsosurface.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -193,6 +194,7 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateProfile.cc
   MapFieldDataFromElemToNode.cc  
   MapFieldDataFromNodeToElem.cc
+  ExtractSimpleIsosurface.cc
 )
 
 IF(WITH_TETGEN)

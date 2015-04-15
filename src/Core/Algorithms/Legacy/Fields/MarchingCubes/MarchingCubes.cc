@@ -26,12 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Thread/Thread.h>
+//#include <Core/Thread/Thread.h>
 #include <Core/Thread/Mutex.h>
 
-#include <Core/Algorithms/Fields/MarchingCubes/MarchingCubes.h>
-#include <Core/Algorithms/Math/AppendMatrix/AppendMatrices.h>
-#include <Core/Algorithms/Fields/MergeFields/AppendFields.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/MarchingCubes.h>
+//#include <Core/Algorithms/Math/AppendMatrix/AppendMatrices.h>
+//#include <Core/Algorithms/Fields/MergeFields/AppendFields.h>
+
+/*
 #include <Core/Algorithms/Fields/MarchingCubes/HexMC.h>
 #include <Core/Algorithms/Fields/MarchingCubes/UHexMC.h>
 #include <Core/Algorithms/Fields/MarchingCubes/PrismMC.h>
@@ -39,23 +41,21 @@
 #include <Core/Algorithms/Fields/MarchingCubes/TriMC.h>
 #include <Core/Algorithms/Fields/MarchingCubes/QuadMC.h>
 #include <Core/Algorithms/Fields/MarchingCubes/EdgeMC.h>
-
 #include <Core/Geom/GeomGroup.h>
 #include <Core/Geom/GeomMaterial.h>
+*/
 
-#include <Core/Datatypes/FieldInformation.h>
+//#include <Core/Datatypes/FieldInformation.h>
 
-#include <Core/Util/MemoryUtil.h>
-
-namespace SCIRunAlgo {
-
+//#include <Core/Util/MemoryUtil.h>
 
 using namespace SCIRun;
 
 template <class TESSELATOR>
 class MarchingCubesAlgoP {
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   public:
+  
     MarchingCubesAlgoP(FieldHandle input, std::vector<double>& iso_values) : 
       input_(input),
       iso_values_(iso_values) { }
@@ -90,8 +90,10 @@ class MarchingCubesAlgoP {
   private:
     SCIRunAlgo::AppendFieldsAlgo append_fields_;
     SCIRunAlgo::AppendMatricesAlgo append_matrices_;
+ #endif
 };
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 template <class TESSELATOR>
 bool
@@ -361,3 +363,5 @@ MarchingCubesAlgo::run(FieldHandle input, std::vector<double>& isovalues,
 }
 
 }
+
+#endif

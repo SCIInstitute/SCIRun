@@ -26,14 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MarchingCubes/BaseMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
-namespace SCIRun {
+//namespace SCIRun {
 
-MatrixHandle 
-BaseMC::get_interpolant()
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+
+MatrixHandle BaseMC::get_interpolant()
 {
-  if( !build_field_ ) return (0);
+ /* if( !build_field_ ) return (0);
 
     // The columns represent the source nodes while the rows
     // represent the destination nodes
@@ -80,13 +82,13 @@ BaseMC::get_interpolant()
 
     rr[i] = nnz;
   
-    return new SparseRowMatrix(nrows, ncols, sparseData, nnz);
+    return new SparseRowMatrix(nrows, ncols, sparseData, nnz);*/
+    return MatrixHandle();
 }
 
   
-MatrixHandle 
-BaseMC::get_parent_cells()
-{
+MatrixHandle BaseMC::get_parent_cells()
+{/*
   if( !build_field_ ) return (0);
 
 
@@ -114,7 +116,8 @@ BaseMC::get_parent_cells()
 
     rr[i] = nrows;
 
-    return new SparseRowMatrix(nrows, ncols, sparseData, nnz);
+    return new SparseRowMatrix(nrows, ncols, sparseData, nnz);*/
+    return MatrixHandle();
 }
 
-} //end namespace
+//} //end namespace

@@ -41,23 +41,23 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_TETMC_H
 #define CORE_ALGORITHMS_VISUALIZATION_TETMC_H 1
 
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Point.h>
+//#include <Core/Geom/GeomTriangles.h>
 
-#include <Core/Geom/GeomTriangles.h>
-
-#include <Core/Algorithms/Fields/MarchingCubes/BaseMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 
-namespace SCIRun {
-    
+namespace SCIRun { 
 class TetMC : public BaseMC
 {
   public:
     TetMC( Field *field ) : field_handle_(field), 
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
-                            triangles_(0), 
+                            //triangles_(0), 
                             trisurf_handle_(0),
                             trisurf_(0) {}
 
@@ -74,7 +74,7 @@ class TetMC : public BaseMC
     VMesh::Node::index_type find_or_add_edgepoint(index_type n0, 
                                                   index_type n1,
                                                   double d0,
-                                                  const Point &p);
+                                                  const Core::Geometry::Point &p);
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type &n0);
 
     void find_or_add_parent(index_type u0, index_type u1,
@@ -84,12 +84,11 @@ class TetMC : public BaseMC
     VField*     field_;
     VMesh*      mesh_;
 
-    GeomFastTriangles *triangles_;
+   // GeomFastTriangles *triangles_;
 
     FieldHandle trisurf_handle_;
     VMesh*      trisurf_;
-};
-  
+  };
 } // End namespace SCIRun
 
 #endif // TetMC_h

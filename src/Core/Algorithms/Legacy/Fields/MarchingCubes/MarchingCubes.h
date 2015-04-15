@@ -29,29 +29,29 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_MARCHINGCUBES_H
 #define CORE_ALGORITHMS_VISUALIZATION_MARCHINGCUBES_H 1
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+//#include <Core/Datatypes/Matrix.h>
 
-#include <Core/Thread/Thread.h>
-#include <Core/Geom/GeomGroup.h>
+//#include <Core/Thread/Thread.h>
+//#include <Core/Geom/GeomGroup.h>
 
 #include <string>
 #include <vector>
 
-#include <Core/Algorithms/Util/AlgoBase.h>
-#include <Core/Algorithms/Fields/share.h>
+//#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Field/share.h>
 
-namespace SCIRunAlgo {
+namespace SCIRun {
+ namespace Core {
+  namespace Algorithms {
+   class MarchingCubesAlgo : public AlgorithmBase {
 
-using namespace SCIRun;
-
-class SCISHARE MarchingCubesAlgo : public AlgoBase {
-
-  public:
+   public:
 
     MarchingCubesAlgo()
     {
-      add_bool("transparency",false);
+   /*   add_bool("transparency",false);
       add_bool("build_geometry", false);
       add_bool("build_field", false);
       add_bool("build_node_interpolant", false);
@@ -60,9 +60,10 @@ class SCISHARE MarchingCubesAlgo : public AlgoBase {
       add_int("num_threads",-1);
       
       add_color("color",Color(0.5,0.5,0.5));
-      add_colormap("colormap",0);
+      add_colormap("colormap",0);*/
     };
-    
+   
+   /* 
     bool run(FieldHandle input, std::vector<double>& isovalues, 
              GeomHandle& geometry,
              FieldHandle& field,
@@ -77,9 +78,11 @@ class SCISHARE MarchingCubesAlgo : public AlgoBase {
 
     bool run(FieldHandle input, std::vector<double>& isovalues, 
              FieldHandle& field, MatrixHandle& interpolant );
+	     */
 
-};
+   };
   
-} // End namespace AlgoSCIRun
-
+  }
+ } // End namespace SCIRun
+}
 #endif
