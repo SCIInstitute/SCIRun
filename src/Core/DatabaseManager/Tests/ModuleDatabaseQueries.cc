@@ -94,6 +94,7 @@ protected:
     // ChangeMesh
     "('AlignMeshBoundingBoxes',         1,        0,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
     "('ConvertQuadSurfToTriSurf',       1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
+    "('ConvertHexVolToTetVol',          1,        1,                  0,              0,          1,              0,                    1,                  0,                              1,             1),"   
     "('GetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('SetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     // DataIO
@@ -215,7 +216,7 @@ TEST_F(ModuleDatabaseQueries, CountEnabledModules)
 {
   auto count = countEnabledModules();
   std::cout << "# of enabled modules: " << count << std::endl;
-  EXPECT_EQ(56, count);
+  EXPECT_EQ(57, count);
 }
 
 //TODO: figure out better way to generate a report from these tests. Need a process to enforce keeping them up to date (special branch?)
