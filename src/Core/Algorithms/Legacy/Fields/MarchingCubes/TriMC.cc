@@ -31,10 +31,10 @@
 //    Date   : Sept 2002
 
 #include <Core/Algorithms/Fields/MarchingCubes/TriMC.h>
-
 #include <Core/Datatypes/FieldInformation.h>
-#include <sci_hash_map.h>
+//#include <sci_hash_map.h>
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 namespace SCIRun {
 
 void 
@@ -272,3 +272,5 @@ TriMC::get_field(double value)
 }
 
 }
+
+#endif

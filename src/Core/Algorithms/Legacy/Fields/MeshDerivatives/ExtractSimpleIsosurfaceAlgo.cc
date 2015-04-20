@@ -27,6 +27,7 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/MarchingCubes.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -53,14 +54,16 @@ ExtractSimpleIsosurfaceAlgo::ExtractSimpleIsosurfaceAlgo()
   addParameter(GUIIsoValue, 0.0);
 }
 
-
 bool ExtractSimpleIsosurfaceAlgo::run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& output) const
 {
   if (isovalues.size()==0)
   {  
     THROW_ALGORITHM_INPUT_ERROR("Error in ExtractIsosurface algorithm: No Isovalue available.");
   }
-     
+    
+  MarchingCubesAlgo marching_;   
+  marching_.run(input, isovalues, output);
+  
   return (true);
 }
 

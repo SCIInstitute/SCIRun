@@ -56,8 +56,8 @@ class BaseMC
 {
   public:
 
-/*    BaseMC() : build_field_(false), build_geom_(false), basis_order_(-1),
-         nnodes_(0), ncells_(0), geomHandle_(0) {}
+    BaseMC() : build_field_(false), build_geom_(false), basis_order_(-1),
+         nnodes_(0), ncells_(0) {}
 
     virtual ~BaseMC() {}
 
@@ -67,70 +67,36 @@ class BaseMC
             bool transparency ) = 0;
             
     virtual FieldHandle get_field(double val) = 0;
-    
+    /*
     GeomHandle   get_geom() { return geomHandle_; }
     */
     Core::Datatypes::MatrixHandle get_interpolant();     
     Core::Datatypes::MatrixHandle get_parent_cells();
-
+    
+    bool build_field_;
+    bool build_geom_;
+    int basis_order_;
+ 
   protected:
-/*
-    struct edgepair_t
+  
+  struct edgepair_t
+  {
+    SCIRun::index_type first;
+    SCIRun::index_type second;
+    double dfirst;
+  };
+  
+  struct edgepairless
+  {
+    bool operator()(const edgepair_t &a, const edgepair_t &b) const
     {
-      SCIRun::index_type first;
-      SCIRun::index_type second;
-      double dfirst;
-    };
-
-    struct edgepairless
+      return less(a,b);
+    }
+    static bool less(const edgepair_t &a, const edgepair_t &b)
     {
-      bool operator()(const edgepair_t &a, const edgepair_t &b) const
-      {
-        return less(a,b);
-      }
-      static bool less(const edgepair_t &a, const edgepair_t &b)
-      {
-        return a.first < b.first || (a.first == b.first && a.second < b.second);
-      }
-    };
-
-  #ifdef HAVE_HASH_MAP
-    
-    struct edgepairequal
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b) const
-      {
-        return a.first == b.first && a.second == b.second;
-      }
-    };
-
-    struct edgepairhash
-    {
-      unsigned int operator()(const edgepair_t &a) const
-      {
-  #if defined(__ECC) || defined(_MSC_VER)
-        hash_compare<unsigned int> h;
-  #else
-        hash<unsigned int> h;
-  #endif
-        return h(a.first ^ a.second);
-      }
-  # if defined(__ECC) || defined(_MSC_VER)
-
-        // These are particularly needed by ICC's hash stuff
-        static const size_t bucket_size = 4;
-        static const size_t min_buckets = 8;
-        
-        // This is a less than function.
-        bool operator()(const edgepair_t & a, const edgepair_t & b) const {
-          return edgepairless::less(a,b);
-        }
-  # endif // endif ifdef __ICC
-    };
-    
-  #else
-    typedef std::map<edgepair_t,SCIRun::index_type,edgepairless> edge_hash_type;
-  #endif
+      return a.first < b.first || (a.first == b.first && a.second < b.second);
+    }
+  }; 
 
     std::vector<SCIRun::index_type> cell_map_;  // Unique cells when surfacing node data.
     std::vector<SCIRun::index_type> node_map_;  // Unique nodes when surfacing cell data.
@@ -139,28 +105,6 @@ class BaseMC
     SCIRun::size_type ncells_;
   
     //GeomHandle geomHandle_;
-    */
-    SCIRun::size_type nnodes_;
-    SCIRun::size_type ncells_;
-    
-    struct edgepair_t
-    {
-      SCIRun::index_type first;
-      SCIRun::index_type second;
-      double dfirst;
-    };
-
-    struct edgepairless
-    {
-      bool operator()(const edgepair_t &a, const edgepair_t &b) const
-      {
-        return less(a,b);
-      }
-      static bool less(const edgepair_t &a, const edgepair_t &b)
-      {
-        return a.first < b.first || (a.first == b.first && a.second < b.second);
-      }
-    };
     
     #ifdef HAVE_HASH_MAP
     
@@ -195,14 +139,19 @@ class BaseMC
         }
   # endif // endif ifdef __ICC
     };
+  
+  # if defined(__ECC) || defined(_MSC_VER)
+    typedef hash_map<edgepair_t, SCIRun::index_type, edgepairhash> edge_hash_type;
+  #else
+    typedef hash_map<edgepair_t,
+         SCIRun::index_type,
+         edgepairhash,
+         edgepairequal> edge_hash_type;
+  #endif // !defined(__ECC) && !defined(_MSC_VER)
     
   #else
     typedef std::map<edgepair_t,SCIRun::index_type,edgepairless> edge_hash_type;
   #endif
-        
-    bool build_field_;
-    bool build_geom_;
-    int basis_order_;
     edge_hash_type edge_map_;  // Unique edge cuts when surfacing node data
 };
      

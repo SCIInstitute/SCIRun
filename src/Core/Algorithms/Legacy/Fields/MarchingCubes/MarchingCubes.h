@@ -45,41 +45,40 @@
 namespace SCIRun {
  namespace Core {
   namespace Algorithms {
-   class MarchingCubesAlgo : public AlgorithmBase {
-
-   public:
-
-    MarchingCubesAlgo()
-    {
-   /*   add_bool("transparency",false);
-      add_bool("build_geometry", false);
-      add_bool("build_field", false);
-      add_bool("build_node_interpolant", false);
-      add_bool("build_elem_interpolant", false);
-      
-      add_int("num_threads",-1);
-      
-      add_color("color",Color(0.5,0.5,0.5));
-      add_colormap("colormap",0);*/
-    };
+  
+   using namespace SCIRun::Core::Datatypes;
    
+   class SCISHARE MarchingCubesAlgo : public AlgorithmBase 
+   {
+
+    public:
+
+    MarchingCubesAlgo();
+    
+    static AlgorithmParameterName transparency;
+    static AlgorithmParameterName build_geometry;
+    static AlgorithmParameterName build_field;
+    static AlgorithmParameterName build_node_interpolant;
+    static AlgorithmParameterName build_elem_interpolant;
+    static AlgorithmParameterName num_threads;
    /* 
-    bool run(FieldHandle input, std::vector<double>& isovalues, 
-             GeomHandle& geometry,
-             FieldHandle& field,
-             MatrixHandle& node_interpolant,
-             MatrixHandle& elem_interpolant );
-
-    bool run(FieldHandle input, std::vector<double>& isovalues, 
-             GeomHandle& geometry );
-
-    bool run(FieldHandle input, std::vector<double>& isovalues, 
-             FieldHandle& field );
-
+   {  
+      add_color("color",Color(0.5,0.5,0.5));
+      add_colormap("colormap",0);
+    };*/
+    bool run(FieldHandle input, std::vector<double>& isovalues);
+   
+    bool run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& field);
+     
     bool run(FieldHandle input, std::vector<double>& isovalues, 
              FieldHandle& field, MatrixHandle& interpolant );
-	     */
-
+	     
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    
+    bool run(FieldHandle input, std::vector<double>& isovalues, 
+             FieldHandle& field,
+             MatrixHandle& node_interpolant,
+             MatrixHandle& elem_interpolant ) const;
    };
   
   }

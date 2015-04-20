@@ -42,6 +42,7 @@
 #define CORE_ALGORITHMS_VISUALIZATION_TETMC_H 1
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -54,7 +55,7 @@ namespace SCIRun {
 class TetMC : public BaseMC
 {
   public:
-    TetMC( Field *field ) : field_handle_(field), 
+    TetMC( FieldHandle field ) : field_handle_(field), 
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
                             //triangles_(0), 

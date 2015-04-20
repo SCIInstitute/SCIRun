@@ -38,40 +38,40 @@
  */
 
 
-#ifndef CORE_ALGORITHMS_VISUALIZATION_TRIMC_H
-#define CORE_ALGORITHMS_VISUALIZATION_TRIMC_H 1
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBES_TRIMC_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBES_TRIMC_H
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+//#include <Core/Datatypes/Matrix.h>
 
-#include <Core/Geom/GeomLine.h>
+//#include <Core/Geom/GeomLine.h>
 
 #include <Core/Algorithms/Fields/MarchingCubes/BaseMC.h>
 
-
 namespace SCIRun {
-
+ namespace Core {
+  namespace Algorithms {
 
 /// A Marching Cube tesselator for a triangle face
 
 class TriMC : public BaseMC
 {
   public:
-    TriMC( Field *field ) : field_handle_(field), 
+   /* TriMC( Field *field ) : field_handle_(field), 
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
                             lines_(0),
                             curve_handle_(0), 
-                            curve_(0) {}
+                            curve_(0) {}*/
 
     virtual ~TriMC() {}
     
-    void extract( VMesh::Elem::index_type, double );
-    virtual void reset( int, bool build_field, bool build_geom, bool transparency );
-    virtual FieldHandle get_field(double val);
+    //void extract( VMesh::Elem::index_type, double );
+    //virtual void reset( int, bool build_field, bool build_geom, bool transparency );
+    //virtual FieldHandle get_field(double val);
 
   private:
-    void extract_n( VMesh::Elem::index_type, double );
+    /*void extract_n( VMesh::Elem::index_type, double );
     void extract_f( VMesh::Elem::index_type, double );
 
     VMesh::Node::index_type find_or_add_edgepoint(index_type n0,
@@ -91,9 +91,10 @@ class TriMC : public BaseMC
     GeomLines   *lines_;
 
     FieldHandle curve_handle_;
-    VMesh*      curve_;
+    VMesh*      curve_;*/
 };
   
-} // End namespace SCIRun
-
+  } // End namespace SCIRun
+ }
+}
 #endif // TriMC_h
