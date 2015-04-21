@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -29,21 +29,19 @@
 // Uniforms
 uniform mat4    uProjIVObject;    // Projection * Inverse View * World XForm
 uniform vec4    uColor;           // Uniform color
-uniform float   uMinVal;
-uniform float   uMaxVal;
 uniform float   uFDToggle;        // Field data toggle
 
 // Attributes
 attribute vec3  aPos;
-attribute float aFieldData;
-attribute float aFieldDataSecondary;
+attribute vec4  aColor;
+attribute vec4  aColorSecondary;
 
 // Outputs to the fragment shader.
-varying float    fFieldData;
+varying vec4    fColor;
 
 void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  float fieldData = uFDToggle * aFieldData + (1.0 - uFDToggle) * aFieldDataSecondary;
-  fFieldData  = (fieldData - uMinVal) / (uMaxVal - uMinVal);
+  vec4 colorData = uFDToggle * aColor + (1.0 - uFDToggle) * aColorSecondary;
+  fColor  = colorData;
 }

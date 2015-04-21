@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -45,7 +45,10 @@ int GuiApplication::run(int argc, const char* argv[])
     mainWin->setController(Core::Application::Instance().controller());
     mainWin->initialize();
 
-    return app.exec();
+    auto ret = app.exec();
+    //std::cout << "return code from app: " << ret << std::endl;
+    //std::cout << "return code from mainWin: " << mainWin->returnCode() << std::endl;
+    return mainWin->returnCode();
   }
   catch (std::exception& e)
   {

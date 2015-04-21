@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2012 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 License for the specific language governing rights and limitations under
@@ -49,6 +49,7 @@ DEALINGS IN THE SOFTWARE.
 class QToolBar;
 class QStandardItemModel;
 class QStandardItem;
+class QGLWidget;
 
 namespace SCIRun {
 
@@ -58,6 +59,20 @@ namespace SCIRun {
 
     class GLWidget;
     class ViewSceneControlsDock;
+
+    class Screenshot : public QObject
+    {
+      Q_OBJECT
+    public:
+      explicit Screenshot(QGLWidget *glwidget, QObject *parent = 0);
+      void takeScreenshot();
+      void saveScreenshot();
+      QString screenshotFile() const;
+    private:
+      QGLWidget* viewport_;
+      QImage screenshot_;
+      uint index_;
+    };
 
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric,
       public Ui::ViewScene
@@ -88,6 +103,7 @@ namespace SCIRun {
       void setTransparencySortTypeLists(bool index);
       void handleUnselectedItem(const QString& name);
       void handleSelectedItem(const QString& name);
+      void screenshotClicked();
 
     protected:
       virtual void closeEvent(QCloseEvent* evt) override;
@@ -98,6 +114,7 @@ namespace SCIRun {
       bool isObjectUnselected(std::string& name);
       void addToolBar();
       void addAutoViewButton();
+      void addScreenshotButton();
       void addObjectToggleMenu();
       void addViewBarButton();
       void addViewBar();
@@ -116,15 +133,17 @@ namespace SCIRun {
       QToolBar*                             mViewBar;             ///< Tool bar for view options.
       QComboBox*                            mDownViewBox;         ///< Combo box for Down axis options.
       QComboBox*                            mUpVectorBox;         ///< Combo box for Up Vector options.
-      ViewSceneControlsDock*                mConfigurationDock;   ///< Dock holding configuration functions               mConfigurationDialog; ///< Menu holding configuration functions
+      ViewSceneControlsDock*                mConfigurationDock;   ///< Dock holding configuration functions
 
       bool shown_;
       bool hideViewBar_;
       bool showConfiguration_;
       bool itemValueChanged_;
+      QColor bgColor_;
       std::shared_ptr<class ViewSceneItemManager> itemManager_;
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;
+      Screenshot* screenshotTaker_;
 
       friend class ViewSceneControlsDock;
 		};

@@ -3,7 +3,7 @@
 
   The MIT License
 
-  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+  Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
   License for the specific language governing rights and limitations under
@@ -77,7 +77,7 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
+SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true), returnCode_(0)
 {
 	setupUi(this);
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -175,7 +175,12 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
   executeBar->setObjectName("ExecuteToolBar");
-  executeBar->addAction(actionExecute_All_);
+
+	executeButton_ = new QToolButton;
+	executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	executeButton_->addAction(actionExecute_All_);
+	executeButton_->setDefaultAction(actionExecute_All_);
+	executeBar->addWidget(executeButton_);
 
   networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
   executeBar->addActions(networkProgressBar_->actions());
@@ -288,6 +293,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
 
+  connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
+  connect(actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
+	actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
+  adjustExecuteButtonAppearance();
 
   setupInputWidgets();
 
@@ -329,6 +338,10 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   WidgetDisablingService::Instance().addNetworkEditor(networkEditor_);
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), &WidgetDisablingService::Instance(), SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), &WidgetDisablingService::Instance(), SLOT(enableInputWidgets()));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(changeExecuteActionIconToPlay()));
+
+	connect(networkEditor_, SIGNAL(disableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyDisableService()));
+  connect(networkEditor_, SIGNAL(reenableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyEnableService()));
 
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
@@ -454,6 +467,7 @@ void SCIRunMainWindow::setupQuitAfterExecute()
 void SCIRunMainWindow::exitApplication(int code)
 {
   close();
+  returnCode_ = code;
   qApp->exit(code);
 }
 
@@ -1379,4 +1393,35 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
     statusBar()->showMessage("Network zoom inactive", 1000);
 	}
   QMainWindow::keyPressEvent(event);
+}
+
+void SCIRunMainWindow::changeExecuteActionIconToStop()
+{
+  actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
+	actionExecute_All_->setText("Halt Execution");
+}
+
+void SCIRunMainWindow::changeExecuteActionIconToPlay()
+{
+  actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
+	actionExecute_All_->setText("Execute All");
+}
+
+void SCIRunMainWindow::adjustExecuteButtonAppearance()
+{
+  switch (actionTextIconCheckBox_->checkState())
+  {
+  case 0:
+    actionTextIconCheckBox_->setText("Execute Button Text");
+		executeButton_->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    break;
+  case 1:
+    actionTextIconCheckBox_->setText("Execute Button Icon");
+		executeButton_->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    break;
+  case 2:
+    actionTextIconCheckBox_->setText("Execute Button Text+Icon");
+		executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    break;
+  }
 }

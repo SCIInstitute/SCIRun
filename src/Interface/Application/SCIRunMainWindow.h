@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -74,6 +74,7 @@ public:
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
   ~SCIRunMainWindow();
+  int returnCode() const { return returnCode_; }
 public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
@@ -92,6 +93,7 @@ private:
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
+  QToolButton* executeButton_;
 
 private:
   void postConstructionSignalHookup();
@@ -122,6 +124,7 @@ private:
   QString currentFile_;
   QDir latestNetworkDirectory_;
   bool firstTimePythonShown_;
+  int returnCode_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
@@ -163,6 +166,9 @@ private Q_SLOTS:
   void highlightPortsChanged();
   void resetWindowLayout();
   void zoomNetwork();
+  void changeExecuteActionIconToStop();
+  void changeExecuteActionIconToPlay();
+  void adjustExecuteButtonAppearance();
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
   void adjustModuleDock(int state);

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -40,7 +40,10 @@ ShowStringModule::ShowStringModule() : Module(ModuleLookupInfo("ShowString", "Vi
 
 void ShowStringModule::execute()
 {
+  //TODO: doit
+  #if 0
   auto str = getRequiredInput(String);
 
   sendOutput(RenderedString, boost::make_shared<GeometryObject>(str));
+  #endif
 }

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -35,7 +35,7 @@
 #ifndef MCUBE2_H
 #define MCUBE2_H
 
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
 

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -44,7 +44,7 @@ namespace Fields {
 
   class EditMeshBoundingBoxImpl;
 
-  class SCISHARE EditMeshBoundingBox : public Dataflow::Networks::Module,
+  class SCISHARE EditMeshBoundingBox : public Dataflow::Networks::GeometryGeneratingModule,
     public Has1InputPort<FieldPortTag>,
     public Has3OutputPorts<FieldPortTag, GeometryPortTag, MatrixPortTag>
   {
@@ -91,7 +91,7 @@ namespace Fields {
     OUTPUT_PORT(2, Transformation_Matrix, Matrix);
 
 	static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-      
+
   private:
     void executeImpl(FieldHandle f);
     void clear_vals();
@@ -105,7 +105,6 @@ namespace Fields {
     SCIRun::Core::Geometry::BBox bbox_;
 
     BoxWidgetPtr box_;
-    double cylinder_scale_;
     boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
   };
 }}}

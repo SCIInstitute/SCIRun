@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -27,25 +27,29 @@
 */
 
 
-#ifndef CORE_ALGORITHMS_VISUALIZATION_QUADMC_H
-#define CORE_ALGORITHMS_VISUALIZATION_QUADMC_H 1
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBE_QUADMC_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBE_QUADMC_H 1
 
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Point.h>
 
-#include <Core/Geom/GeomLine.h>
+//#include <Core/Geom/GeomLine.h>
 
-#include <Core/Algorithms/Fields/MarchingCubes/BaseMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
 
 class QuadMC : public BaseMC
 {
   public:
-    QuadMC( Field *field ) : field_handle_(field), 
+    QuadMC( FieldHandle field ) : field_handle_(field), 
                              field_(field->vfield()),
                              mesh_(field->vmesh()),
-                             lines_(0), 
+                             //lines_(0), 
                              curve_handle_(0),
                              curve_(0) {} 
     virtual ~QuadMC() {}
@@ -58,27 +62,19 @@ class QuadMC : public BaseMC
     void extract_n( VMesh::Elem::index_type, double );
     void extract_f( VMesh::Elem::index_type, double );
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type n0,
-                                                  index_type n1,
-                                                  double d0,
-                                                  const Point &p);
+    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const Point &p);
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type &idx);
 
-    void find_or_add_parent(index_type u0, index_type u1,
-                            double d0, index_type edge);
-
+    void find_or_add_parent(index_type u0, index_type u1, double d0, index_type edge);
 
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
     
-    GeomLines *lines_;
+    //GeomLines *lines_;
     
     FieldHandle curve_handle_;
     VMesh*      curve_;
 };
   
-
-} // End namespace SCIRun
-
 #endif

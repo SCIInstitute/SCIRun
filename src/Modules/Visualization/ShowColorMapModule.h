@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -24,46 +24,55 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
+   */
 
 #ifndef MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 #define MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Modules/Visualization/TextBuilder.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Visualization {
+  namespace Modules {
+    namespace Visualization {
 
-	class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<ColorMapPortTag>, 
-    public Has1OutputPort<GeometryPortTag>
-  {
-  public:
-		ShowColorMapModule();
+      class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+        public Has1InputPort<ColorMapPortTag>,
+        public Has1OutputPort<GeometryPortTag>
+      {
+      private:
+        SCIRun::Modules::Visualization::TextBuilder text_;
+      public:
+        ShowColorMapModule();
         virtual void execute();
-        Core::Datatypes::GeometryHandle buildGeometryObject(boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap> cm,
-                                            Dataflow::Networks::ModuleStateHandle state,
-                                            const std::string& id);
+        Core::Datatypes::GeometryHandle buildGeometryObject(Core::Datatypes::ColorMapHandle cm,
+          Dataflow::Networks::ModuleStateHandle state,
+          const std::string& id);
 
-		static Core::Algorithms::AlgorithmParameterName DisplaySide;
-		static Core::Algorithms::AlgorithmParameterName DisplayLength;
-		static Core::Algorithms::AlgorithmParameterName TextSize;
-		static Core::Algorithms::AlgorithmParameterName TextColor;
-		static Core::Algorithms::AlgorithmParameterName Labels;
-		static Core::Algorithms::AlgorithmParameterName Scale;
-		static Core::Algorithms::AlgorithmParameterName Units;
-		static Core::Algorithms::AlgorithmParameterName SignificantDigits;
-		static Core::Algorithms::AlgorithmParameterName AddExtraSpace; 
+        static Core::Algorithms::AlgorithmParameterName DisplaySide;
+        static Core::Algorithms::AlgorithmParameterName DisplayLength;
+        static Core::Algorithms::AlgorithmParameterName TextSize;
+        static Core::Algorithms::AlgorithmParameterName TextColor;
+        static Core::Algorithms::AlgorithmParameterName Labels;
+        static Core::Algorithms::AlgorithmParameterName Scale;
+        static Core::Algorithms::AlgorithmParameterName Units;
+        static Core::Algorithms::AlgorithmParameterName SignificantDigits;
+        static Core::Algorithms::AlgorithmParameterName AddExtraSpace;
+        static Core::Algorithms::AlgorithmParameterName TextRed;
+        static Core::Algorithms::AlgorithmParameterName TextGreen;
+        static Core::Algorithms::AlgorithmParameterName TextBlue;
+        static Core::Algorithms::AlgorithmParameterName XTranslation;
+        static Core::Algorithms::AlgorithmParameterName YTranslation;
 
-		virtual void setStateDefaults();
+        virtual void setStateDefaults();
         INPUT_PORT(0, ColorMapObject, ColorMap);
-		OUTPUT_PORT(0, GeometryOutput, GeometryObject); 
+        OUTPUT_PORT(0, GeometryOutput, GeometryObject);
 
-  };
-}}}
+      };
+    }
+  }
+}
 
 #endif

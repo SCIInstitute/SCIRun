@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -203,6 +203,8 @@ Q_SIGNALS:
     void snapToModules();
     void highlightPorts(int state);
     void zoomLevelChanged(int zoom);
+    void disableWidgetDisabling();
+    void reenableWidgetDisabling();
   private Q_SLOTS:
     void cut();
     void copy();
@@ -248,6 +250,7 @@ Q_SIGNALS:
     boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
     boost::shared_ptr<ZLevelManager> zLevelManager_;
+    std::string latestModuleId_;
   };
 }
 }

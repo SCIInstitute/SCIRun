@@ -3,7 +3,7 @@
 
  The MIT License
 
- Copyright (c) 2012 Scientific Computing and Imaging Institute,
+ Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
 
 
@@ -121,8 +121,13 @@ void Application::readCommandLine(int argc, const char* argv[])
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
 
-  private_->app_filename_ = boost::filesystem::path( argv[0] );
-  private_->app_filepath_ = private_->app_filename_.parent_path();
+  private_->app_filename_ = boost::filesystem::path(argv[0]);
+
+  if (!private_->app_filename_.parent_path().empty())
+  {
+    private_->app_filepath_ = boost::filesystem::system_complete(private_->app_filename_.parent_path());
+  }
+
   private_->parameters_ = private_->parser.parse(argc, argv);
 
   Logging::Log::get().setVerbose(parameters()->verboseMode());
@@ -160,7 +165,6 @@ void Application::executeCommandLineRequests(Commands::GlobalCommandFactoryHandl
 boost::filesystem::path Application::executablePath() const
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
-
   return private_->app_filepath_;
 }
 

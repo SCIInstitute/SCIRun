@@ -36,13 +36,13 @@
 #include <Core/Algorithms/Legacy/Fields/MergeFields/AppendFieldsAlgo.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-//#include <Core/Algorithms/Fields/MarchingCubes/HexMC.h>
-//#include <Core/Algorithms/Fields/MarchingCubes/UHexMC.h>
-//#include <Core/Algorithms/Fields/MarchingCubes/PrismMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/HexMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/UHexMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/PrismMC.h>
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/TetMC.h>
-//#include <Core/Algorithms/Fields/MarchingCubes/TriMC.h>
-//#include <Core/Algorithms/Fields/MarchingCubes/QuadMC.h>
-//#include <Core/Algorithms/Fields/MarchingCubes/EdgeMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/TriMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/QuadMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/EdgeMC.h>
 //#include <Core/Geom/GeomGroup.h>
 //#include <Core/Geom/GeomMaterial.h>
 
@@ -250,18 +250,18 @@ bool MarchingCubesAlgo::run(FieldHandle input, std::vector<double>& isovalues, F
   }
   else if (fi.is_crv_element())
   {
-    //MarchingCubesAlgoP<EdgeMC> algo(input,isovalues);
-    //success = algo.run(this,field,geometry,node_interpolant,elem_interpolant);
+    MarchingCubesAlgoP<EdgeMC> algo(input,isovalues);
+    success = algo.run(this,field,node_interpolant,elem_interpolant);
   }
   else if (fi.is_tri_element())
   {
-    //MarchingCubesAlgoP<TriMC> algo(input,isovalues);
-    //success = algo.run(this,field,geometry,node_interpolant,elem_interpolant);
+    MarchingCubesAlgoP<TriMC> algo(input,isovalues);
+    success = algo.run(this,field,node_interpolant,elem_interpolant);
   }
   else if (fi.is_quad_element())
   {
-    //MarchingCubesAlgoP<QuadMC> algo(input,isovalues);
-    //success = algo.run(this,field,geometry,node_interpolant,elem_interpolant);
+    MarchingCubesAlgoP<QuadMC> algo(input,isovalues);
+    success = algo.run(this,field,node_interpolant,elem_interpolant);
   }
   else if (fi.is_tet_element())
   {
@@ -270,20 +270,20 @@ bool MarchingCubesAlgo::run(FieldHandle input, std::vector<double>& isovalues, F
   }
   else if (fi.is_prism_element())
   {
-    //MarchingCubesAlgoP<PrismMC> algo(input,isovalues);
-    //success = algo.run(this,field,geometry,node_interpolant,elem_interpolant);
+    MarchingCubesAlgoP<PrismMC> algo(input,isovalues);
+    success = algo.run(this,field,node_interpolant,elem_interpolant);
   }
   else if (fi.is_hex_element())
   {
     if (fi.is_structuredmesh())
     {
-      //MarchingCubesAlgoP<HexMC> algo(input,isovalues);
-      //success = algo.run(this,field,geometry,node_interpolant,elem_interpolant);
+      MarchingCubesAlgoP<HexMC> algo(input,isovalues);
+      success = algo.run(this,field,node_interpolant,elem_interpolant);
     }
     else
     {
-      //MarchingCubesAlgoP<UHexMC> algo(input,isovalues);
-      //success = algo.run(this,field,geometry,node_interpolant,elem_interpolant);
+      MarchingCubesAlgoP<UHexMC> algo(input,isovalues);
+      success = algo.run(this,field,node_interpolant,elem_interpolant);
     }
   }
   
@@ -299,7 +299,7 @@ void MarchingCubesAlgoP<TESSELATOR>::parallel( int proc, int nproc, size_t iso)
   VMesh*  imesh  = input_->vmesh();
   
   VMesh::size_type num_elems = imesh->num_elems(); 
-
+  
   index_type start = (proc)*(num_elems/nproc);
   index_type end = (proc < nproc-1) ? (proc+1)*(num_elems/nproc) : num_elems;
 
@@ -327,7 +327,7 @@ void MarchingCubesAlgoP<TESSELATOR>::parallel( int proc, int nproc, size_t iso)
   output_parent_cell_matrix_[iso*nproc+proc] = 0;
   
   //output_geometry_[iso*nproc+proc] = 0;
-
+  
   if (build_field_) 
   { 
     output_field_[iso*nproc+proc] = tesselator_[proc]->get_field(isoval);

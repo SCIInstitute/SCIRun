@@ -3,7 +3,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -53,6 +53,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
   ConvertMeshType/ConvertMeshToIrregularMesh.h
+  ConvertMeshType/ConvertMeshToTetVolMesh.h
   TransformMesh/AlignMeshBoundingBoxes.h
   MeshData/SetMeshNodes.h
   MeshData/GetMeshNodes.h
@@ -75,8 +76,15 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/FlipSurfaceNormals.h
   RefineMesh/RefineMesh.h
   MarchingCubes/BaseMC.h
+  MarchingCubes/HexMC.h
+  MarchingCubes/UHexMC.h
   MarchingCubes/TetMC.h
+  MarchingCubes/TriMC.h
   MarchingCubes/MarchingCubes.h
+  MarchingCubes/QuadMC.h
+  MarchingCubes/EdgeMC.h
+  MarchingCubes/PrismMC.h
+  MarchingCubes/mcube2.h
   RefineMesh/RefineMeshCurveAlgoV.h
   RefineMesh/RefineMeshHexVolAlgoV.h
   RefineMesh/RefineMeshQuadSurfAlgoV.h
@@ -96,7 +104,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   ClipMesh/ClipMeshBySelection.cc
   #CollectFields/CollectPointClouds.cc
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.cc
-  #ConvertMeshType/ConvertMeshToTetVolMesh.cc
+  ConvertMeshType/ConvertMeshToTetVolMesh.cc
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.cc
   #ConvertMeshType/ConvertMeshToUnstructuredMesh.cc
   ConvertMeshType/ConvertMeshToIrregularMesh.cc
@@ -145,15 +153,15 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #Mapping/FindClosestNodesFromPointField.cc
   MarchingCubes/BaseMC.cc
   MarchingCubes/TetMC.h
-  #MarchingCubes/EdgeMC.cc
-  #MarchingCubes/HexMC.cc
+  MarchingCubes/EdgeMC.cc
+  MarchingCubes/HexMC.cc
   MarchingCubes/MarchingCubes.cc
-  #MarchingCubes/mcube2.cc
-  #MarchingCubes/PrismMC.cc
-  #MarchingCubes/QuadMC.cc
+  MarchingCubes/mcube2.cc
+  MarchingCubes/PrismMC.cc
+  MarchingCubes/QuadMC.cc
   MarchingCubes/TetMC.cc
-  #MarchingCubes/TriMC.cc
-  #MarchingCubes/UHexMC.cc
+  MarchingCubes/TriMC.cc
+  MarchingCubes/UHexMC.cc
   #MedialAxis/MedialAxis.cc
   #MedialAxis/MedialAxis2.cc
   MergeFields/AppendFieldsAlgo.cc

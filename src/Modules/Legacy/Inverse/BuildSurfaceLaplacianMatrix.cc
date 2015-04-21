@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -29,10 +29,12 @@
 #include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Datatypes/DenseMatrix.h>
+
+//TODO: split into algo class
+#include <Core/Algorithms/Legacy/Geometry/SurfaceLaplacian.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules;
@@ -40,30 +42,33 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Inverse;
-//using namespace SCIRun::Core::Algorithms::Geometry;
 
-BuildSurfaceLaplacianMatrix::BuildSurfaceLaplacianMatrix() : Module(ModuleLookupInfo("BuildSurfaceLaplacianMatrix","Inverse","SCIRun"),false)
+const ModuleLookupInfo BuildSurfaceLaplacianMatrix::staticInfo_("BuildSurfaceLaplacianMatrix","Inverse","SCIRun");
+
+BuildSurfaceLaplacianMatrix::BuildSurfaceLaplacianMatrix() : Module(staticInfo_, false)
 {
-	INITIALIZE_PORT(InputField);
+	INITIALIZE_PORT(Source);
 	INITIALIZE_PORT(ResultMatrix);
 }
 
 void BuildSurfaceLaplacianMatrix::execute()
 {
-	
-	if(needToExecute())
+  auto source = getRequiredInput(Source);
+
+	if (needToExecute())
 	{
 		update_state(Executing);
-		
-		auto input_field = getRequiredInput(InputField);
-		
-		//MatrixHandle output_matrix = surfaceLaplacian(input_field->vmesh());
-		MatrixHandle output_matrix;
-		
-		AlgorithmOutput output;
-		output[Variables::ResultMatrix] = output_matrix;
-		
-		sendOutputFromAlgorithm(ResultMatrix,output);
-		
+
+    FieldInformation fis(source);
+
+    if (!fis.is_trisurfmesh())
+    {
+      error("Input field must be a TriSurfField.");
+      return;
+    }
+
+    auto result = surfaceLaplacian(source->vmesh());
+
+    sendOutput(ResultMatrix, result);
 	}
 }

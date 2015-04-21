@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -72,6 +72,7 @@ public:
   QColor color() const; 
   ModuleIdPair getConnectedToModuleIds() const; 
   void updateNoteFromFile(const Note& note);
+  std::pair<PortWidget*, PortWidget*> connectedPorts() const { return{ fromPort_, toPort_ }; }
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);

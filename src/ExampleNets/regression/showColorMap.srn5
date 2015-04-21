@@ -132,7 +132,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>12</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -177,8 +177,8 @@
 								<second>
 									<name>Labels</name>
 									<value>
-										<which>3</which>
-										<value>1</value>
+										<which>0</which>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -189,8 +189,8 @@
 								<second>
 									<name>Scale</name>
 									<value>
-										<which>3</which>
-										<value>1</value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -201,8 +201,20 @@
 								<second>
 									<name>SignificantDigits</name>
 									<value>
-										<which>3</which>
-										<value>1</value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextBlue</name>
+								</first>
+								<second>
+									<name>TextBlue</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -215,6 +227,30 @@
 									<value>
 										<which>2</which>
 										<value>Color(255,255,255)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextGreen</name>
+								</first>
+								<second>
+									<name>TextGreen</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextRed</name>
+								</first>
+								<second>
+									<name>TextRed</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -256,7 +292,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>14</count>
+							<count>16</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -266,7 +302,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000030e-002</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -278,7 +314,7 @@
 									<name>CylinderResolution</name>
 									<value>
 										<which>0</which>
-										<value>5</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -380,6 +416,18 @@
 							</item>
 							<item>
 								<first>
+									<name>NodeTransparencyValue</name>
+								</first>
+								<second>
+									<name>NodeTransparencyValue</name>
+									<value>
+										<which>1</which>
+										<value>6.50000000000000020e-001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ShowEdges</name>
 								</first>
 								<second>
@@ -416,13 +464,25 @@
 							</item>
 							<item>
 								<first>
+									<name>SphereResolution</name>
+								</first>
+								<second>
+									<name>SphereResolution</name>
+									<value>
+										<which>0</which>
+										<value>10</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>SphereScaleValue</name>
 								</first>
 								<second>
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>2.99999999999999990e-002</value>
 									</value>
 								</second>
 							</item>

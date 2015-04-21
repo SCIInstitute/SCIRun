@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -161,4 +161,14 @@ bool ModuleLookupInfoLess::operator()(const ModuleLookupInfo& lhs, const ModuleL
   //TODO: this is the correct ordering, but right now the package and category are not passed in when adding modules to the network. For now, just compare by module name.
   //return std::tie(lhs.package_name_, lhs.category_name_, lhs.module_name_) < std::tie(rhs.package_name_, rhs.category_name_, rhs.module_name_);
   return lhs.module_name_ < rhs.module_name_;
+}
+
+bool SCIRun::Dataflow::Networks::operator==(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs)
+{
+  return lhs.module_name_ == rhs.module_name_;// && lhs.id == rhs.id;
+}
+
+bool SCIRun::Dataflow::Networks::operator!=(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs)
+{
+  return !(lhs == rhs);
 }

@@ -43,10 +43,10 @@ using namespace SCIRun::Core::Geometry;
 void 
 TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 {
+ 
   build_field_ = build_field;
   build_geom_  = build_geom;
   basis_order_ = field_->basis_order();
-
   edge_map_.clear();
   VMesh::Node::size_type nsize;
   mesh_->size(nsize);
@@ -238,7 +238,7 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
   {
     code = code*2+(value[i] > v );
   }
-
+  
   switch ( num[code] ) 
   {
   case 1: 

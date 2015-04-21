@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -40,6 +40,8 @@ MatrixAsVectorFieldModule::MatrixAsVectorFieldModule() : Module(ModuleLookupInfo
 
 void MatrixAsVectorFieldModule::execute()
 {
+  //TODO: remove this module
+  #if 0
   auto mat = getRequiredInput(Matrix);
 
   if (mat->rows() != 6)
@@ -49,4 +51,5 @@ void MatrixAsVectorFieldModule::execute()
   }
 
   sendOutput(RenderedMatrix, boost::make_shared<GeometryObject>(mat));
+  #endif
 }

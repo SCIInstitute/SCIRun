@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -45,6 +45,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   pulling_(false),
   executeAction_(0),
   shrinkAction_(0),
+  executeInteractivelyToggleAction_(0),
   collapsed_(false),
   dock_(0)
 {
@@ -60,6 +61,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();
   createShrinkAction();
+  connectStateChangeToExecute(); //TODO: make this a module state variable if a module wants it saved
 }
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
@@ -72,7 +74,7 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
 
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
-  connect(button, SIGNAL(clicked()), this, SIGNAL(executeActionTriggered()));
+  connect(button, SIGNAL(clicked()), this, SIGNAL(executeFromStateChangeTriggered()));
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(button);
@@ -122,8 +124,35 @@ void ModuleDialogGeneric::createShrinkAction()
 {
   shrinkAction_ = new QAction(this);
   shrinkAction_->setText("Collapse");
-  //shrinkAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  //TODO: redo this slot to hook up to toggled() signal
   connect(shrinkAction_, SIGNAL(triggered()), this, SLOT(toggleCollapse()));
+}
+
+void ModuleDialogGeneric::createExecuteInteractivelyToggleAction()
+{
+  executeInteractivelyToggleAction_ = new QAction(this);
+  executeInteractivelyToggleAction_->setText("Execute Interactively");
+  executeInteractivelyToggleAction_->setCheckable(true);
+  executeInteractivelyToggleAction_->setChecked(true);
+  connect(executeInteractivelyToggleAction_, SIGNAL(toggled(bool)), this, SLOT(executeInteractivelyToggled(bool)));
+}
+
+void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
+{
+  if (toggle)
+    connectStateChangeToExecute();
+  else
+    disconnectStateChangeToExecute();
+}
+
+void ModuleDialogGeneric::connectStateChangeToExecute()
+{
+  connect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
+}
+
+void ModuleDialogGeneric::disconnectStateChangeToExecute()
+{
+  disconnect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
 }
 
 void ModuleDialogGeneric::toggleCollapse()
@@ -161,6 +190,8 @@ void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e)
 {
   QMenu menu(this);
   menu.addAction(executeAction_);
+  if (executeInteractivelyToggleAction_)
+    menu.addAction(executeInteractivelyToggleAction_);
   menu.addAction(shrinkAction_);
   menu.exec(e->globalPos());
 

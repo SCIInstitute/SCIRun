@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -48,7 +48,6 @@ public:
   static const AlgorithmParameterName Preconditioner;
   static const AlgorithmParameterName Filename;
   static const AlgorithmParameterName BuildConvergence;
-  static const AlgorithmParameterName ColorMapName;
   static const AlgorithmParameterName FileTypeList;
   static const AlgorithmParameterName FileExtension;
   static const AlgorithmParameterName FileTypeName;

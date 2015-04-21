@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -32,16 +32,17 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
+typedef SCIRun::Modules::Fields::EditMeshBoundingBox EditMeshBoundingBoxModule;
+
 EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-: ModuleDialogGeneric(state, parent), scale_(1.0)
+: ModuleDialogGeneric(state, parent), scale_(0.1)
 {
   setupUi(this);
   //custom value for cylinder size
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  typedef SCIRun::Modules::Fields::EditMeshBoundingBox EditMeshBoundingBoxModule;
   addCheckBoxManager(useOutputCenterCheckBox_, EditMeshBoundingBoxModule::UseOutputCenter);
   addCheckBoxManager(useOutputSizeCheckBox_, EditMeshBoundingBoxModule::UseOutputSize);
   addCheckableButtonManager(noTranslationRadioButton_, EditMeshBoundingBoxModule::NoTranslation);
@@ -59,23 +60,21 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   addDynamicLabelManager(inputSizeXLabel_, EditMeshBoundingBoxModule::InputSizeX);
   addDynamicLabelManager(inputSizeYLabel_, EditMeshBoundingBoxModule::InputSizeY);
   addDynamicLabelManager(inputSizeZLabel_, EditMeshBoundingBoxModule::InputSizeZ);
-    
+
     addDoubleSpinBoxManager(&spinner_scale_, EditMeshBoundingBoxModule::Scale);
     connectButtonToExecuteSignal(downScaleToolButton_);
     connectButtonToExecuteSignal(upScaleToolButton_);
     connectButtonToExecuteSignal(doubleDownScaleToolButton_);
     connectButtonToExecuteSignal(doubleUpScaleToolButton_);
-    
+    spinner_scale_.setValue(scale_);
 
-    
-    
     connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleUpPush()));
     connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleUpPush()));
     connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDownPush()));
     connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleDownPush()));
 
-    
-    
+
+  createExecuteInteractivelyToggleAction();
 }
 
 void EditMeshBoundingBoxDialog::ScaleUpPush() { scale_*=1.25; spinner_scale_.setValue(scale_); }
@@ -86,4 +85,6 @@ void EditMeshBoundingBoxDialog::ScaleDoubleDownPush() { scale_*=0.64; spinner_sc
 void EditMeshBoundingBoxDialog::pull()
 {
   pull_newVersionToReplaceOld();
+  Pulling p(this);
+  //outputCenterXSpinBox_->setValue(state_->getValue(EditMeshBoundingBoxModule::OutputCenterX).toDouble());
 }

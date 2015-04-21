@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -39,34 +39,6 @@ namespace SCIRun {
   namespace Modules {
     namespace Factory {
 
-      //loose replace interpretation: order of ports doesn't matter, only number. could use multiset here, but not as easy to deal with.
-      typedef std::map<std::string, int> ConnectedPortTypesWithCount;
-      struct SCISHARE ConnectedPortInfo
-      {
-        ConnectedPortTypesWithCount input, output;
-      };
-
-      SCISHARE bool operator==(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
-      SCISHARE bool operator!=(const ConnectedPortInfo& lhs, const ConnectedPortInfo& rhs);
-      SCISHARE std::ostream& operator<<(std::ostream& o, const ConnectedPortInfo& cpi);
-      SCISHARE ConnectedPortInfo makeConnectedPortInfo(Dataflow::Networks::ModuleHandle module); 
-
-      class SCISHARE ModuleReplacementFilter
-      {
-      public:
-        std::vector<Dataflow::Networks::ModuleLookupInfo> findReplacements(const ConnectedPortInfo& ports) const;
-      };
-
-      class SCISHARE ModuleReplacementFilterBuilder
-      {
-      public:
-        void registerModule(const Dataflow::Networks::ModuleLookupInfo& info,
-          const Dataflow::Networks::InputPortDescriptionList& inputPorts,
-          const Dataflow::Networks::OutputPortDescriptionList& outputPorts);
-
-        boost::shared_ptr<ModuleReplacementFilter> build();
-      };
-
       class SCISHARE HardCodedModuleFactory : public SCIRun::Dataflow::Networks::ModuleFactory
       {
       public:
@@ -76,8 +48,8 @@ namespace SCIRun {
         virtual void setStateFactory(SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory);
         virtual void setAlgorithmFactory(SCIRun::Core::Algorithms::AlgorithmFactoryHandle algoFactory);
         virtual void setReexecutionFactory(SCIRun::Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory);
-        virtual const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
-        const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const;
+        virtual const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
+        virtual const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const;
       private:
         SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
         boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;

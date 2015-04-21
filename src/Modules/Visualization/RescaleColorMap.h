@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -24,29 +24,52 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
-/// @todo Documentation Modules/Visualization/CreateBasicColorMap.h
+   */
 
-#ifndef MODULES_VISUALIZATION_SHOWCOLORMAP_H
-#define MODULES_VISUALIZATION_SHOWCOLORMAP_H
+#ifndef MODULES_VISUALIZATION_RESCALECOLORMAP_H
+#define MODULES_VISUALIZATION_RESCALECOLORMAP_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Geometry.h>
 #include <Modules/Visualization/share.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace Visualization {
-
-	class SCISHARE ShowColorMap : public SCIRun::Dataflow::Networks::Module,
-    public HasNoInputPorts,
-    public Has1OutputPort<ColorMapPortTag>
+namespace SCIRun 
+{
+  namespace Core
   {
-  public:
-		ShowColorMap();
-    virtual void execute();
-    virtual void setStateDefaults();
-    OUTPUT_PORT(0, ColorMapObject, ColorMap);
-  };
-}}}
+    namespace Algorithms
+    {
+      namespace Visualization
+      {
+        ALGORITHM_PARAMETER_DECL(AutoScale);
+        ALGORITHM_PARAMETER_DECL(Symmetric);
+        ALGORITHM_PARAMETER_DECL(FixedMin);
+        ALGORITHM_PARAMETER_DECL(FixedMax);
+      }
+    }
+  }
+
+  namespace Modules 
+  {
+    namespace Visualization 
+    {
+
+      class SCISHARE RescaleColorMap : public SCIRun::Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
+        public Has1OutputPort<ColorMapPortTag>
+      {
+      public:
+        RescaleColorMap();
+        virtual void execute();
+        virtual void setStateDefaults();
+        INPUT_PORT(0, Field, LegacyField);
+        INPUT_PORT(1, ColorMapObject, ColorMap);
+        OUTPUT_PORT(0, ColorMapOutput, ColorMap);
+
+        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+    }
+  }
+}
 
 #endif

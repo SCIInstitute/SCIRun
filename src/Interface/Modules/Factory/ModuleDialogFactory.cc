@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -87,8 +87,9 @@
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
-#include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
+#include <Interface/Modules/Visualization/CreateStandardColorMapDialog.h>
 #include <Interface/Modules/Visualization/ShowColorMapDialog.h> 
+#include <Interface/Modules/Visualization/RescaleColorMapDialog.h>
 #include <Interface/Modules/Matlab/ImportDatatypesFromMatlabDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
@@ -139,7 +140,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
     ADD_MODULE_DIALOG(CreateLatVol, CreateLatVolDialog)
-    ADD_MODULE_DIALOG(CreateStandardColorMap, CreateBasicColorMapDialog)
+    ADD_MODULE_DIALOG(CreateStandardColorMap, CreateStandardColorMapDialog)
     ADD_MODULE_DIALOG(GetDomainBoundary, GetDomainBoundaryDialog)
     ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
     ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)
@@ -183,6 +184,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 	ADD_MODULE_DIALOG(ConvertIndicesToFieldData, ConvertIndicesToFieldDataDialog)
     ADD_MODULE_DIALOG(SolveInverseProblemWithTikhonov, SolveInverseProblemWithTikhonovDialog)
 	ADD_MODULE_DIALOG(ShowColorMap, ShowColorMapDialog) 
+	ADD_MODULE_DIALOG(RescaleColorMap, RescaleColorMapDialog)
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog) 
   ;
 }

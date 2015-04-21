@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -36,6 +36,7 @@
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
+#include <Dataflow/Network/ModuleFactory.h> // todo split out replacement impl types
 #include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
@@ -142,10 +143,12 @@ namespace Engine {
 
     const Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
 
+    const Networks::ReplacementImpl::ModuleLookupInfoSet& possibleReplacements(Networks::ModuleHandle module);
+
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
-    
+
     void executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
     void initExecutor();
     ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
@@ -170,6 +173,7 @@ namespace Engine {
 
     boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
     bool signalSwitch_;
+    boost::shared_ptr<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
   };
 
   typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;

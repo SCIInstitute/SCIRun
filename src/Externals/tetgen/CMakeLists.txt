@@ -67,7 +67,7 @@
 
 
 # CMake build scripts modifications by Scientific Computing and Imaging Institute
-# Copyright (c) 2009 Scientific Computing and Imaging Institute, University of Utah.
+# Copyright (c) 2015 Scientific Computing and Imaging Institute, University of Utah.
 
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
