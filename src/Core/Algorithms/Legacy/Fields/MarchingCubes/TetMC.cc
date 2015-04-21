@@ -33,12 +33,12 @@
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/TetMC.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-//#include <sci_hash_map.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <sci_hash_map.h>
+#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
-
-//namespace SCIRun {
 
 void 
 TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
@@ -65,7 +65,8 @@ TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
       node_map_ = std::vector<SCIRun::index_type>(nnodes_, -1);
     }
   }
- /*
+ 
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   triangles_ = 0;
   if (build_geom_)
   {
@@ -75,7 +76,8 @@ TetMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
       triangles_ = new GeomFastTriangles;
   }
   geomHandle_ = triangles_;
-  */
+ #endif
+ 
   trisurf_ = 0;
   if (build_field_)
   {
@@ -179,11 +181,13 @@ TetMC::extract_c( VMesh::Elem::index_type cell, double iso )
     {
       mesh_->get_nodes(nodes, faces[i]);
       mesh_->get_centers(p,nodes);
-      /*
+      
+     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         triangles_->add(p[0], p[1], p[2]);
-      }*/
+      }
+     #endif
 
       if (build_field_)
       {
@@ -255,11 +259,14 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
       const Point p1(Interpolate( p[o],p[i], v1));
       const Point p2(Interpolate( p[o],p[j], v2));
       const Point p3(Interpolate( p[o],p[k], v3));
-      /*
+     
+     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         triangles_->add( p1, p2, p3 );
-      }*/
+      }
+     #endif
+      
       if (build_field_)
       {
         VMesh::Node::index_type i1, i2, i3;
@@ -289,12 +296,15 @@ void TetMC::extract_n( VMesh::Elem::index_type cell, double v )
       const Point p2(Interpolate( p[o],p[j], v2));
       const Point p3(Interpolate( p[k],p[j], v3));
       const Point p4(Interpolate( p[k],p[i], v4));
-      /*
+     
+     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         triangles_->add( p1, p2, p3 );
         triangles_->add( p1, p3, p4 );
-      }*/
+      }
+     #endif
+      
       if (build_field_)
       {
         VMesh::Node::index_type i1, i2, i3, i4;
@@ -334,4 +344,3 @@ TetMC::get_field(double value)
   return (trisurf_handle_);  
 }
 
-//} // end namespace

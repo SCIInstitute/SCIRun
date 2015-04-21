@@ -47,7 +47,9 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 
-//#include <Core/Geom/GeomLine.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Geom/GeomLine.h>
+#endif
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
@@ -87,9 +89,11 @@ class TriMC : public BaseMC
     FieldHandle field_handle_;
     VField* field_;
     VMesh*  mesh_;
-
-    //GeomLines   *lines_;
-
+    
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+     GeomLines   *lines_;
+    #endif
+    
     FieldHandle curve_handle_;
     VMesh*      curve_;
 };

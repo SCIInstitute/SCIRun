@@ -26,7 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <Core/Thread/Thread.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Thread/Thread.h>
+#endif
+
 #include <Core/Thread/Parallel.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -43,10 +46,13 @@
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/TriMC.h>
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/QuadMC.h>
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/EdgeMC.h>
-//#include <Core/Geom/GeomGroup.h>
-//#include <Core/Geom/GeomMaterial.h>
 
-//#include <Core/Util/MemoryUtil.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Geom/GeomGroup.h>
+ #include <Core/Geom/GeomMaterial.h>
+
+ #include <Core/Util/MemoryUtil.h>
+#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -91,7 +97,9 @@ class MarchingCubesAlgoP {
     
     ~MarchingCubesAlgoP()
     {
-      //delete_all_items(tesselator_);
+      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+       delete_all_items(tesselator_);
+      #endif
     }
     
     FieldHandle    input_;
@@ -100,7 +108,9 @@ class MarchingCubesAlgoP {
     std::vector<FieldHandle>  output_field_;
     std::vector<MatrixHandle> output_interpolant_matrix_;
     std::vector<MatrixHandle> output_parent_cell_matrix_;
-    //std::vector<GeomHandle>   output_geometry_;
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+     std::vector<GeomHandle>   output_geometry_;
+    #endif
     
     bool build_field_;
     bool build_node_interpolant_;
@@ -146,7 +156,8 @@ MarchingCubesAlgoP<TESSELATOR>::run(const AlgorithmBase* algo,
                         MatrixHandle& elem_interpolant) 
 {
   algo_ = algo;
-  /*
+  
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   int np = algo->get_int("num_threads");
   /// By default (-1) choose number of processors
   if (np < 1) np = Thread::numProcessors();
@@ -154,7 +165,7 @@ MarchingCubesAlgoP<TESSELATOR>::run(const AlgorithmBase* algo,
   if (np > 4*Thread::numProcessors()) np = 4*Thread::numProcessors();
   */
   /// @todo: FIX MULTI THREADING OF MARCHING CUBES FIELDS ARE NOT PROPORLY LINKED
-  
+ #endif 
   int np = Parallel::NumCores();
   
   np = 1;
@@ -175,11 +186,11 @@ MarchingCubesAlgoP<TESSELATOR>::run(const AlgorithmBase* algo,
   build_elem_interpolant_ = algo->get(MarchingCubesAlgo::build_elem_interpolant).toBool();
   transparency_ = algo->get(MarchingCubesAlgo::transparency).toBool();
   
-  /* 
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   append_fields_.set_progress_reporter(algo->get_progress_reporter());
   append_matrices_.set_progress_reporter(algo->get_progress_reporter());
   append_matrices_.set_option("method","append_rows");
- */
+ #endif
 
   for (size_t j=0; j<iso_values_.size(); j++)
   {
@@ -189,11 +200,12 @@ MarchingCubesAlgoP<TESSELATOR>::run(const AlgorithmBase* algo,
     }
     else
     {
-      //Thread::parallel(this,&MarchingCubesAlgoP<TESSELATOR>::parallel,np,np,j);
+      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+       Thread::parallel(this,&MarchingCubesAlgoP<TESSELATOR>::parallel,np,np,j);
+      #endif
     }
   }
-  
-  /*
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
   if (output_geometry_.size() == 0)
   {
     geometry = 0;
@@ -208,27 +220,29 @@ MarchingCubesAlgoP<TESSELATOR>::run(const AlgorithmBase* algo,
     GeomGroup* group = new GeomGroup;
     for (size_t j=0; j < output_geometry_.size(); j++) group->add(output_geometry_[j]);
     geometry = group; 
-  }*/
-
+  }
+ #endif
+ 
   if (build_field_)
   {
    if (!(append_fields_.run(output_field_,output))) 
       return (false);
   }
 
-
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (build_node_interpolant_)
   {
-    /*if (!(append_matrices_.run(output_interpolant_matrix_,node_interpolant))) 
-      return (false);*/
+    if (!(append_matrices_.run(output_interpolant_matrix_,node_interpolant))) 
+      return (false);
   }
 
   if (build_elem_interpolant_)
   {
-    /*if (!(append_matrices_.run(output_parent_cell_matrix_,elem_interpolant))) 
-      return (false);*/
+    if (!(append_matrices_.run(output_parent_cell_matrix_,elem_interpolant))) 
+      return (false);
   }
-
+ #endif
+ 
   return (true);
 }
 
@@ -326,7 +340,9 @@ void MarchingCubesAlgoP<TESSELATOR>::parallel( int proc, int nproc, size_t iso)
   output_interpolant_matrix_[iso*nproc+proc] = 0;
   output_parent_cell_matrix_[iso*nproc+proc] = 0;
   
-  //output_geometry_[iso*nproc+proc] = 0;
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+   output_geometry_[iso*nproc+proc] = 0;
+  #endif
   
   if (build_field_) 
   { 
@@ -340,7 +356,8 @@ void MarchingCubesAlgoP<TESSELATOR>::parallel( int proc, int nproc, size_t iso)
   {
     output_parent_cell_matrix_[iso*nproc+proc] = tesselator_[proc]->get_parent_cells();
   }
-  /*
+  
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (build_geometry_)
   {
     MaterialHandle mathandle;
@@ -364,6 +381,8 @@ void MarchingCubesAlgoP<TESSELATOR>::parallel( int proc, int nproc, size_t iso)
     {
       output_geometry_[iso*nproc+proc] = 0;
     }
-  }*/
+  }
+  #endif
+  
 }
 

@@ -34,9 +34,13 @@
 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/mcube2.h>
-//#include <sci_hash_map.h>
 
-//#include <teem/air.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+ #include <sci_hash_map.h>
+
+ #include <teem/air.h>
+#endif
+
 #include <Core/Math/MiscMath.h>
 
 void  HexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
@@ -144,8 +148,10 @@ void HexMC::extract_c( VMesh::Elem::index_type cell, double iso )
 {
   double selfvalue, nbrvalue;
   field_->value( selfvalue, cell );
-  
-  //if (!(airExists(selfvalue))) return;
+ 
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
+  if (!(airExists(selfvalue))) return;
+ #endif  
   if (IsNan(selfvalue)) return;
   
   VMesh::DElem::array_type faces;
@@ -160,7 +166,9 @@ void HexMC::extract_c( VMesh::Elem::index_type cell, double iso )
   {
     if (mesh_->get_neighbor(nbr_cell, cell, faces[i]) &&
         field_->value(nbrvalue, nbr_cell) &&
-        //airExists(nbrvalue) &&
+	#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+         airExists(nbrvalue) &&
+	#endif
 	!IsNan(selfvalue) &&
         selfvalue <= iso && iso < nbrvalue)
     {
@@ -203,7 +211,9 @@ void  HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
   for (int i=7; i>=0; i--)
   {
     // skip anything with a NaN
-    //if (!airExists(value[i])) return;
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+     if (!airExists(value[i])) return;
+    #endif
     if (IsNan(value[i])) return;
     code = code*2+(value[i] < iso );
   }

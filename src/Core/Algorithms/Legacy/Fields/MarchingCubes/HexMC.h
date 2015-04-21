@@ -45,8 +45,10 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 
-//#include <Core/Geom/GeomTriangles.h>
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+ #include <Core/Geom/GeomTriangles.h>
+#endif
+ 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 using namespace SCIRun;
@@ -59,7 +61,9 @@ class HexMC : public BaseMC
     HexMC( FieldHandle field ) : field_handle_(field),
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
-                            //triangles_(0), 
+                           #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+			    triangles_(0), 
+			   #endif
                             trisurf_(0), 
                             trisurf_handle_(0),
                             quadsurf_(0),
@@ -85,14 +89,14 @@ class HexMC : public BaseMC
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
-
-    //GeomFastTriangles *triangles_;
-  
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+    GeomFastTriangles *triangles_;
+   #endif
     VMesh*      trisurf_;
     FieldHandle trisurf_handle_;
 
     VMesh*      quadsurf_;
     FieldHandle quadsurf_handle_;
 };
-    
+
 #endif

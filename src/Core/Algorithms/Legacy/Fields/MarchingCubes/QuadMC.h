@@ -36,20 +36,25 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 
-//#include <Core/Geom/GeomLine.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Geom/GeomLine.h>
+#endif
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
+namespace SCIRun {
 class QuadMC : public BaseMC
 {
   public:
     QuadMC( FieldHandle field ) : field_handle_(field), 
                              field_(field->vfield()),
                              mesh_(field->vmesh()),
-                             //lines_(0), 
+                            #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+			     lines_(0), 
+			    #endif
                              curve_handle_(0),
                              curve_(0) {} 
     virtual ~QuadMC() {}
@@ -71,10 +76,13 @@ class QuadMC : public BaseMC
     VField*     field_;
     VMesh*      mesh_;
     
-    //GeomLines *lines_;
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+     GeomLines *lines_;
+    #endif
     
     FieldHandle curve_handle_;
     VMesh*      curve_;
 };
-  
+
+} // End namespace SCIRun  
 #endif

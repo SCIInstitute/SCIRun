@@ -38,7 +38,10 @@
 #include <string>
 #include <vector>
 
-//#include <Core/Algorithms/Util/AlgoBase.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Algorithms/Util/AlgoBase.h>
+#endif
+
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Field/share.h>
 
@@ -61,11 +64,14 @@ namespace SCIRun {
     static AlgorithmParameterName build_node_interpolant;
     static AlgorithmParameterName build_elem_interpolant;
     static AlgorithmParameterName num_threads;
-   /* 
+   
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    {  
       add_color("color",Color(0.5,0.5,0.5));
       add_colormap("colormap",0);
-    };*/
+    };
+    #endif
+    
     bool run(FieldHandle input, std::vector<double>& isovalues);
    
     bool run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& field);

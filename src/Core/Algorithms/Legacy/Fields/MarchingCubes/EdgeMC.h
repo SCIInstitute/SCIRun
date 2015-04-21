@@ -36,15 +36,15 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 
-//#include <Core/Geom/GeomPoint.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+ #include <Core/Geom/GeomPoint.h>
+#endif
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
 /// A Marching Square tesselator for a curve line
-
 class EdgeMC :  public BaseMC
 {
   public:
@@ -52,7 +52,9 @@ class EdgeMC :  public BaseMC
    EdgeMC( FieldHandle field ) : field_handle_(field), 
                              field_(field->vfield()),
                              mesh_(field->vmesh()),
-                             //points_(0), 
+                            #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+			     points_(0), 
+			    #endif
                              pointcloud_handle_(0),
                              pointcloud_(0) {}
 
@@ -76,9 +78,11 @@ class EdgeMC :  public BaseMC
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
-    
-   // GeomPoints *points_;
-  
+   
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+    GeomPoints *points_;
+   #endif
+   
     FieldHandle pointcloud_handle_;
     VMesh*      pointcloud_;
 };

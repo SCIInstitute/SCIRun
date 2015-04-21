@@ -45,20 +45,25 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Geom/GeomTriangles.h>
+#endif
 
-// #include <Core/Geom/GeomTriangles.h>
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
+namespace SCIRun {
 class PrismMC : public BaseMC
 {
   public:
     PrismMC( FieldHandle field ) : field_handle_(field),                             
                               field_(field->vfield()),
                               mesh_(field->vmesh()),
-                              //triangles_(0), 
+                             #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+			      triangles_(0), 
+			     #endif
                               trisurf_handle_(0),
                               trisurf_(0) {}
 
@@ -83,11 +88,13 @@ class PrismMC : public BaseMC
     VField*     field_;
     VMesh*      mesh_;
 
-    //GeomFastTriangles *triangles_;
-
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+     GeomFastTriangles *triangles_;
+    #endif
+    
     FieldHandle trisurf_handle_;
     VMesh*      trisurf_;
 };
   
-
+} // End namespace SCIRun 
 #endif

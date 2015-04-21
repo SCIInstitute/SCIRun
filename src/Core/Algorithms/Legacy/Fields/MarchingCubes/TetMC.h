@@ -46,7 +46,10 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Point.h>
-//#include <Core/Geom/GeomTriangles.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Geom/GeomTriangles.h>
+#endif
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
@@ -58,7 +61,9 @@ class TetMC : public BaseMC
     TetMC( FieldHandle field ) : field_handle_(field), 
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
-                            //triangles_(0), 
+			   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+                            triangles_(0), 
+			   #endif
                             trisurf_handle_(0),
                             trisurf_(0) {}
 
@@ -84,9 +89,11 @@ class TetMC : public BaseMC
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
-
-   // GeomFastTriangles *triangles_;
-
+    
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+     GeomFastTriangles *triangles_;
+    #endif
+    
     FieldHandle trisurf_handle_;
     VMesh*      trisurf_;
   };

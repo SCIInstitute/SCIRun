@@ -67,9 +67,11 @@ class BaseMC
             bool transparency ) = 0;
             
     virtual FieldHandle get_field(double val) = 0;
-    /*
-    GeomHandle   get_geom() { return geomHandle_; }
-    */
+    
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+     GeomHandle   get_geom() { return geomHandle_; }
+    #endif
+    
     Core::Datatypes::MatrixHandle get_interpolant();     
     Core::Datatypes::MatrixHandle get_parent_cells();
     

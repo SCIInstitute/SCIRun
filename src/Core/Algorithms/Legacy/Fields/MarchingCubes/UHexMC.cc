@@ -33,7 +33,9 @@
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/UHexMC.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-//#include <sci_hash_map.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <sci_hash_map.h>
+#endif
 
 void UHexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 {
