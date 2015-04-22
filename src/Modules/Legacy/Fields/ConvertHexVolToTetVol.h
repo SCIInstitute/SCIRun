@@ -26,30 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+#ifndef MODULES_LEGACY_FIELDS_ConvertHexVolToTetVol_H__
+#define MODULES_LEGACY_FIELDS_ConvertHexVolToTetVol_H__
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-ConvertHexVolToTetVol::ConvertHexVolToTetVol()
-  : Module(ModuleLookupInfo("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun"), false)
-{
-  INITIALIZE_PORT(HexOrLatVol);
-  INITIALIZE_PORT(TetVol);
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-void ConvertHexVolToTetVol::execute()
-{
-  FieldHandle ifield = getRequiredInput(HexOrLatVol);
-  
-  // inputs_changed_ || !oport_cached("HexOrLatVol")
-  if (needToExecute())
-  {
-    update_state(Executing);
-    
-    auto output = algo().run_generic(withInputData((HexOrLatVol, ifield)));
+	/// @class ConvertHexVolToTetVol
+	/// @brief Convert a Hexahedra- or a LatVol-Field into a TetVolField. 
 
-    sendOutputFromAlgorithm(TetVol, output);
+      class SCISHARE ConvertHexVolToTetVol : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ConvertHexVolToTetVol();
+
+        virtual void execute();
+        virtual void setStateDefaults() {}
+
+        INPUT_PORT(0, HexOrLatVol, LegacyField);
+        OUTPUT_PORT(0, TetVol, LegacyField);
+      };
+
+    }
   }
 }
+
+#endif

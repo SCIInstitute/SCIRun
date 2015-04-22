@@ -39,6 +39,7 @@
 #include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -653,18 +654,17 @@ void matlabconverter::mlArrayTOsciMatrix(const matlabarray &ma,MatrixHandle &han
         // the casting operators
         size_type nnz = static_cast<size_type>(ma.getnnz());
         size_type m = static_cast<size_type>(ma.getm());
-        size_type n = static_cast<size_type>(ma.getn()); 
-        SparseRowMatrixHandle sparse(new SparseRowMatrix(n, m));
-        //SparseRowMatrix::Data data(n + 1, nnz);
-        //const SparseRowMatrix::Rows& rows = data.rows();
-        //const SparseRowMatrix::Columns& cols = data.columns();
-        //const SparseRowMatrix::Storage& values = data.data();
+        size_type n = static_cast<size_type>(ma.getn());
+
+        LegacySparseDataContainer<double> sparseData(n + 1, nnz, nnz);
 
         // NOTE: this was flipped around in the old code: the arrays rows/cols were passed as cols/rows into the SparseRowMatrix ctor.  Hence the screwy order here, and the transpose call below.
         // REASON: SCIRun uses Row sparse matrices and Matlab Column sparse matrices.
-        ma.getnumericarray(sparse->valuePtr(), nnz);
-        ma.getrowsarray(sparse->get_cols(), nnz);
-        ma.getcolsarray(sparse->get_rows(), (n+1));
+        ma.getnumericarray(sparseData.data().get(), nnz);
+        ma.getrowsarray(sparseData.columns().get(), nnz);
+        ma.getcolsarray(sparseData.rows().get(), (n + 1));
+
+        SparseRowMatrixHandle sparse(new SparseRowMatrix(n, m, sparseData.rows().get(), sparseData.columns().get(), sparseData.data().get(), nnz));
 
         if (disable_transpose_)
         {
