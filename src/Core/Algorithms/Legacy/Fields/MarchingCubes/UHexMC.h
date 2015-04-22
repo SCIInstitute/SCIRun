@@ -44,9 +44,7 @@
 
 /// A Marching Cube teselator for an Unstructured Hexagon cell     
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
-
+namespace SCIRun {
 class UHexMC : public BaseMC
 {
   public:
@@ -73,7 +71,7 @@ class UHexMC : public BaseMC
     void extract_c( VMesh::Elem::index_type, double);
     void extract_n( VMesh::Elem::index_type, double);
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const Point &p);
+    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const SCIRun::Core::Geometry::Point &p);
 
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type& );
     
@@ -92,5 +90,5 @@ class UHexMC : public BaseMC
     VMesh*      quadsurf_;
     FieldHandle quadsurf_handle_;
 };
-
+}
 #endif

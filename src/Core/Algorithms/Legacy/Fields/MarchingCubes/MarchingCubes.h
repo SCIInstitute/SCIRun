@@ -43,14 +43,12 @@
 #endif
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Field/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
  namespace Core {
   namespace Algorithms {
   
-   using namespace SCIRun::Core::Datatypes;
-   
    class SCISHARE MarchingCubesAlgo : public AlgorithmBase 
    {
 
@@ -77,14 +75,14 @@ namespace SCIRun {
     bool run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& field);
      
     bool run(FieldHandle input, std::vector<double>& isovalues, 
-             FieldHandle& field, MatrixHandle& interpolant );
+             FieldHandle& field, Datatypes::MatrixHandle& interpolant );
 	     
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
     
     bool run(FieldHandle input, std::vector<double>& isovalues, 
              FieldHandle& field,
-             MatrixHandle& node_interpolant,
-             MatrixHandle& elem_interpolant ) const;
+             Datatypes::MatrixHandle& node_interpolant,
+             Datatypes::MatrixHandle& elem_interpolant ) const;
    };
   
   }

@@ -62,6 +62,12 @@ FieldHandle LoadInTetrahedrals()
    return loadFieldFromFile(TestResources::rootDir() / "Fields/ExtractSimpleIsosurface/test_isosimsuf_tet.fld");
 }
 
+FieldHandle LoadInLatVol()
+{
+   return loadFieldFromFile(TestResources::rootDir() / "Fields/ExtractSimpleIsosurface/test_isosimsuf_latvol.fld");
+}
+
+
 TEST_F(ExtractSimpleIsosurfaceModuleTests, ExtractSimpleIsosurfaceTriangleNoThrow_Example1)
 {
   auto test = makeModule("ExtractSimpleIsosurface");
@@ -74,6 +80,14 @@ TEST_F(ExtractSimpleIsosurfaceModuleTests, ExtractSimpleIsosurfaceTriangleNoThro
 {
   auto test = makeModule("ExtractSimpleIsosurface");
   FieldHandle f=LoadInTetrahedrals(); 
+  stubPortNWithThisData(test, 0, f);
+  EXPECT_NO_THROW(test->execute());
+}
+
+TEST_F(ExtractSimpleIsosurfaceModuleTests, ExtractSimpleIsosurfaceTriangleNoThrow_Example3)
+{
+  auto test = makeModule("ExtractSimpleIsosurface");
+  FieldHandle f=LoadInLatVol(); 
   stubPortNWithThisData(test, 0, f);
   EXPECT_NO_THROW(test->execute());
 }

@@ -51,8 +51,7 @@
  
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
+namespace SCIRun{
 
 class HexMC : public BaseMC
 {
@@ -80,7 +79,7 @@ class HexMC : public BaseMC
 
   private:
    
-    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const Point &p);
+    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const SCIRun::Core::Geometry::Point &p);
 
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type& );
 
@@ -99,4 +98,5 @@ class HexMC : public BaseMC
     FieldHandle quadsurf_handle_;
 };
 
+} // namespace SCIRun
 #endif

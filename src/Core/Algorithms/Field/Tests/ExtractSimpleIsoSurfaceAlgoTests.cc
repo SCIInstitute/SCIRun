@@ -57,6 +57,11 @@ FieldHandle LoadInTetrahedrals()
    return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld");
 }
 
+FieldHandle LoadInLatVol()
+{
+   return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_latvol.fld");
+}
+
 TEST(ExtractSimpleIsoSurfaceAlgoTest, ExtractSimpleIsoSurf_Triangles_DataOnNodes)
 {
   ExtractSimpleIsosurfaceAlgo algo;
@@ -82,4 +87,17 @@ TEST(ExtractSimpleIsoSurfaceAlgoTest, ExtractSimpleIsoSurf_Tetrahedrals_DataOnNo
   EXPECT_EQ(output->vmesh()->num_nodes(),60);
   EXPECT_EQ(output->vmesh()->num_elems(),116);
   EXPECT_EQ(output->vfield()->num_values(),60);
+}
+
+TEST(ExtractSimpleIsoSurfaceAlgoTest, ExtractSimpleIsoSurf_LatVol_DataOnNodes)
+{
+  ExtractSimpleIsosurfaceAlgo algo;
+  FieldHandle input_tiangle, output;
+  input_tiangle=LoadInLatVol();
+  std::vector<double> isovalues;
+  isovalues.push_back(0.3);
+  algo.run(input_tiangle,isovalues,output);
+  EXPECT_EQ(output->vmesh()->num_nodes(),5);
+  EXPECT_EQ(output->vmesh()->num_elems(),3);
+  EXPECT_EQ(output->vfield()->num_values(),5);
 }

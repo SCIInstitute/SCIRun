@@ -39,6 +39,9 @@
  #include <sci_hash_map.h>
 #endif
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+
 void PrismMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 {
   build_field_ = build_field;

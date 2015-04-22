@@ -53,9 +53,6 @@
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
-
 namespace SCIRun {
 
 /// A Marching Cube tesselator for a triangle face
@@ -80,7 +77,7 @@ class TriMC : public BaseMC
     void extract_n( VMesh::Elem::index_type, double );
     void extract_f( VMesh::Elem::index_type, double );
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const Point &p);
+    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const SCIRun::Core::Geometry::Point &p);
     
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type &idx);
      

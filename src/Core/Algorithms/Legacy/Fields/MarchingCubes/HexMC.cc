@@ -43,6 +43,9 @@
 
 #include <Core/Math/MiscMath.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+
 void  HexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 {
   build_field_ = build_field;

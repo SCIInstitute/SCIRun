@@ -41,11 +41,16 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_BASEMC_H
 #define CORE_ALGORITHMS_VISUALIZATION_BASEMC_H 1
 
-//#include <sci_defs/hashmap_defs.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <sci_defs/hashmap_defs.h>
+#endif
 
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-//#include <Core/Geom/GeomObj.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Geom/GeomObj.h>
+#endif
 
 #include <Core/Utils/Legacy/TypeDescription.h>
 

@@ -51,9 +51,6 @@
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
-
 namespace SCIRun {
 class PrismMC : public BaseMC
 {
@@ -78,7 +75,7 @@ class PrismMC : public BaseMC
     void extract_n( VMesh::Elem::index_type, double );
     void extract_c( VMesh::Elem::index_type, double );
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p);
+    VMesh::Node::index_type find_or_add_edgepoint(index_type u0, index_type u1, double d0, const SCIRun::Core::Geometry::Point &p);
 
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type &);
   

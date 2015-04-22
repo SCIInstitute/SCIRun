@@ -28,8 +28,6 @@
 
 #include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
-//namespace SCIRun {
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 
@@ -124,4 +122,3 @@ MatrixHandle BaseMC::get_parent_cells()
     return MatrixHandle();
 }
 
-//} //end namespace
