@@ -107,6 +107,12 @@ bool PrintVersionCommand::execute()
   return true;
 }
 
+bool PrintModulesCommand::execute()
+{
+  std::cout << "TODO: MODULE LIST " << Application::Instance().version() << std::endl;
+  return true;
+}
+
 bool RunPythonScriptCommandConsole::execute()
 {
   auto script = Application::Instance().parameters()->pythonScriptFile();
