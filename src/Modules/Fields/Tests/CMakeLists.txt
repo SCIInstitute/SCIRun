@@ -45,6 +45,7 @@ SET(Modules_Fields_Tests_SRCS
   MapFieldDataFromNodeToElemTests.cc
   MapFieldDataFromElemToNodeTests.cc
   SplitFieldByConnectedRegionTests.cc
+  ExtractSimpleIsoSurfaceTest.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests

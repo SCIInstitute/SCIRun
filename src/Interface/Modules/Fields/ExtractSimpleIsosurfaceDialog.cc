@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//
-// ** SCIRun version of vtkMarchingCubesCases.hh -- added nbr info to cases **
-//
-// marching cubes case table for generating isosurfaces
-//
+#include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-#ifndef MCUBE2_H
-#define MCUBE2_H
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-#include <Core/Algorithms/Legacy/Fields/share.h>
+ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addDoubleSpinBoxManager(doubleSpinBox_, ExtractSimpleIsosurfaceAlgo::GUIIsoValue);
+}
 
-namespace SCIRun {
-
-typedef struct {
-  int edges[16];
-  int nbrs;
-} TRIANGLE_CASES;
-
-/* REFERENCED */
-extern SCISHARE int edge_tab[12][2];
-
-//
-// Edges to intersect. Three at a time form a triangle. Comments at end of line
-// indicate case number (0->255) and base case number (0->15).
-//
-
-extern SCISHARE TRIANGLE_CASES triCases[];
-
-} // End namespace SCIRun
-
-#endif // MCUBE2_H
+void ExtractSimpleIsosurfaceDialog::pull()
+{
+  pull_newVersionToReplaceOld();
+}

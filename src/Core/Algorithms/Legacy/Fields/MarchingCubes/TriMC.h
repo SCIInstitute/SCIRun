@@ -38,29 +38,32 @@
  */
 
 
-#ifndef CORE_ALGORITHMS_VISUALIZATION_TRIMC_H
-#define CORE_ALGORITHMS_VISUALIZATION_TRIMC_H 1
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBES_TRIMC_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBES_TRIMC_H
 
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Point.h>
 
-#include <Core/Geom/GeomLine.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Geom/GeomLine.h>
+#endif
 
-#include <Core/Algorithms/Fields/MarchingCubes/BaseMC.h>
-
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 namespace SCIRun {
-
 
 /// A Marching Cube tesselator for a triangle face
 
 class TriMC : public BaseMC
 {
   public:
-    TriMC( Field *field ) : field_handle_(field), 
+    TriMC( FieldHandle field ) : field_handle_(field), 
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
-                            lines_(0),
+                            //lines_(0),
                             curve_handle_(0), 
                             curve_(0) {}
 
@@ -74,26 +77,24 @@ class TriMC : public BaseMC
     void extract_n( VMesh::Elem::index_type, double );
     void extract_f( VMesh::Elem::index_type, double );
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type n0,
-                                                  index_type n1,
-                                                  double d0,
-                                                  const Point &p);
-
+    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const SCIRun::Core::Geometry::Point &p);
+    
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type &idx);
-
-    void find_or_add_parent(index_type u0, index_type u1,
-                            double d0, index_type edge);
-
+     
+    void find_or_add_parent(index_type u0, index_type u1, double d0, index_type edge);
+    
     FieldHandle field_handle_;
-    VField*     field_;
-    VMesh*      mesh_;
-
-    GeomLines   *lines_;
-
+    VField* field_;
+    VMesh*  mesh_;
+    
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+     GeomLines   *lines_;
+    #endif
+    
     FieldHandle curve_handle_;
     VMesh*      curve_;
 };
   
 } // End namespace SCIRun
-
+ 
 #endif // TriMC_h

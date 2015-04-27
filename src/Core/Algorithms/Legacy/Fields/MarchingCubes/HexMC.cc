@@ -30,21 +30,23 @@
 //    Author : Martin Cole
 //    Date   : Fri Jun 15 21:33:04 2001
 
-#include <Core/Algorithms/Fields/MarchingCubes/HexMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/HexMC.h>
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Algorithms/Fields/MarchingCubes/mcube2.h>
-#include <sci_hash_map.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/mcube2.h>
 
-#include <teem/air.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+ #include <sci_hash_map.h>
 
-namespace SCIRun {
+ #include <teem/air.h>
+#endif
 
-void 
-HexMC::reset( int /*n*/,
-			  bool build_field,
-			  bool build_geom,
-			  bool transparency )
+#include <Core/Math/MiscMath.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+
+void  HexMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 {
   build_field_ = build_field;
   build_geom_  = build_geom;
@@ -69,6 +71,7 @@ HexMC::reset( int /*n*/,
     }
   }
 
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   triangles_ = 0;
   if (build_geom_)
   {
@@ -78,7 +81,8 @@ HexMC::reset( int /*n*/,
       triangles_ = new GeomFastTriangles;
   }
   geomHandle_ = triangles_;
-
+ #endif
+ 
   trisurf_ = 0;
   quadsurf_ = 0;
   if (build_field_)
@@ -98,35 +102,7 @@ HexMC::reset( int /*n*/,
   }
 }
 
-
-VMesh::Node::index_type
-HexMC::find_or_add_edgepoint(index_type u0, 
-                             index_type u1,
-                             double d0, const Point &p) 
-{
-  if (d0 < 0.0) { u1 = -1; }
-  if (d0 > 1.0) { u0 = -1; }
-  edgepair_t np;
-  
-  if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
-  else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-  const edge_hash_type::iterator loc = edge_map_.find(np);
-  
-  if (loc == edge_map_.end())
-  {
-    const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);
-    edge_map_[np] = nodeindex;
-    return (nodeindex);
-  }
-  else
-  {
-    return ((*loc).second);
-  }
-}
-
-
-VMesh::Node::index_type
-HexMC::find_or_add_nodepoint(VMesh::Node::index_type& tet_node_idx)
+VMesh::Node::index_type HexMC::find_or_add_nodepoint(VMesh::Node::index_type& tet_node_idx)
 {
   VMesh::Node::index_type surf_node_idx;
   index_type i = node_map_[tet_node_idx];
@@ -143,10 +119,7 @@ HexMC::find_or_add_nodepoint(VMesh::Node::index_type& tet_node_idx)
   return (surf_node_idx);
 }
 
-
-void
-HexMC::find_or_add_parent(index_type u0, index_type u1,
-                          double d0, index_type face) 
+void HexMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type face) 
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
@@ -166,9 +139,7 @@ HexMC::find_or_add_parent(index_type u0, index_type u1,
   }
 }
 
-
-void 
-HexMC::extract( VMesh::Elem::index_type cell, double iso )
+void HexMC::extract( VMesh::Elem::index_type cell, double iso )
 {
   if (basis_order_ == 0)
     extract_c(cell, iso);
@@ -176,13 +147,15 @@ HexMC::extract( VMesh::Elem::index_type cell, double iso )
     extract_n(cell, iso);
 }
 
-
-void 
-HexMC::extract_c( VMesh::Elem::index_type cell, double iso )
+void HexMC::extract_c( VMesh::Elem::index_type cell, double iso )
 {
   double selfvalue, nbrvalue;
   field_->value( selfvalue, cell );
+ 
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
   if (!(airExists(selfvalue))) return;
+ #endif  
+  if (IsNan(selfvalue)) return;
   
   VMesh::DElem::array_type faces;
   mesh_->get_delems(faces, cell);
@@ -196,19 +169,22 @@ HexMC::extract_c( VMesh::Elem::index_type cell, double iso )
   {
     if (mesh_->get_neighbor(nbr_cell, cell, faces[i]) &&
         field_->value(nbrvalue, nbr_cell) &&
-        airExists(nbrvalue) &&
+	#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+         airExists(nbrvalue) &&
+	#endif
+	!IsNan(selfvalue) &&
         selfvalue <= iso && iso < nbrvalue)
     {
       mesh_->get_nodes(face_nodes, faces[i]);
 
       mesh_->get_centers(p,face_nodes);
-
+     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         triangles_->add(p[0], p[1], p[2]);
         triangles_->add(p[2], p[3], p[0]);
       }
-
+     #endif
       if (build_field_)
       {
         for (int j=0; j<4; j++)
@@ -224,9 +200,7 @@ HexMC::extract_c( VMesh::Elem::index_type cell, double iso )
   }
 }
 
-
-void 
-HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
+void  HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
 {
   VMesh::Node::array_type node(8);
   Point p[8];
@@ -240,7 +214,10 @@ HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
   for (int i=7; i>=0; i--)
   {
     // skip anything with a NaN
-    if (!airExists(value[i])) return;
+    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+     if (!airExists(value[i])) return;
+    #endif
+    if (IsNan(value[i])) return;
     code = code*2+(value[i] < iso );
   }
 
@@ -279,12 +256,14 @@ HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
     index_type v0 = vertex[v++];
     index_type v1 = vertex[v++];
     index_type v2 = vertex[v++];
-
+    
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (build_geom_)
     {
       triangles_->add(q[v0], q[v1], q[v2]);
     }
-    
+   #endif 
+   
     if (build_field_)
     {
       if (surf_node[v0] != surf_node[v1] &&
@@ -302,8 +281,7 @@ HexMC::extract_n( VMesh::Elem::index_type cell, double iso )
   }
 }
 
-FieldHandle
-HexMC::get_field(double value)
+FieldHandle HexMC::get_field(double value)
 {
   if (basis_order_ == 0)
   {
@@ -319,4 +297,24 @@ HexMC::get_field(double value)
   }
 }
 
+VMesh::Node::index_type HexMC::find_or_add_edgepoint(index_type u0, index_type u1, double d0, const Point &p) 
+{
+  if (d0 < 0.0) { u1 = -1; }
+  if (d0 > 1.0) { u0 = -1; }
+  edgepair_t np;
+  
+  if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
+  else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
+  const edge_hash_type::iterator loc = edge_map_.find(np);
+  
+  if (loc == edge_map_.end())
+  {
+    const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);
+    edge_map_[np] = nodeindex;
+    return (nodeindex);
+  }
+  else
+  {
+    return ((*loc).second);
+  }
 }
