@@ -109,7 +109,7 @@ bool PrintVersionCommand::execute()
 
 bool PrintModulesCommand::execute()
 {
-  std::cout << "TODO: MODULE LIST " << Application::Instance().version() << std::endl;
+  std::cout << "MODULE LIST as of " << Application::Instance().version() << "\n" << Application::Instance().moduleList() << std::endl;
   return true;
 }
 
