@@ -32,6 +32,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Math/TrigTable.h>
 
@@ -61,6 +62,7 @@ namespace SCIRun {
       void generateBox(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double x_side, double y_side, double z_side, std::vector<QuadStrip>& quadstrips);
       void generateCylinder(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius1, double radius2, double length, int nu, int nv, std::vector<QuadStrip>& quadstrips);
       void generateEllipsoid(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double scales, int nu, int nv, int half, std::vector<QuadStrip>& quadstrips);
+      void generateTransforms(const Core::Geometry::Point& center, const Core::Geometry::Vector& normal, Core::Geometry::Transform& trans, Core::Geometry::Transform& rotate);
 
       
     };

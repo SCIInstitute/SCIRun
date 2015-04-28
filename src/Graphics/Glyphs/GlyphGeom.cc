@@ -27,7 +27,6 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Graphics/Glyphs/GlyphGeom.h>
-#include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Math/MiscMath.h>
 
 using namespace SCIRun;
@@ -57,7 +56,7 @@ void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double ra
 
   Transform trans;
   Transform rotate;
-  //gen_transforms(center, t, trans, rotate);
+  generateTransforms(center, t, trans, rotate);
 
   // Draw the cylinder
   double dz = length / (float)nv;
@@ -122,7 +121,7 @@ void GlyphGeom::generateEllipsoid(const Point& center, const Vector& t, double s
 
   Transform trans;
   Transform rotate;
-  //gen_transforms(center, t, trans, rotate);
+  generateTransforms(center, t, trans, rotate);
 
   trans.post_scale(Vector(1.0, 1.0, 1.0) * scales);
   rotate.post_scale(Vector(1.0, 1.0, 1.0) / scales);
@@ -177,7 +176,7 @@ void GlyphGeom::generateBox(const Point& center, const Vector& t, double x_side,
 
   Transform trans;
   Transform rotate;
-  //gen_transforms(center, t, trans, rotate);
+  generateTransforms(center, t, trans, rotate);
 
   //Draw the Box
   Point p1 = trans * Point(-half_x_side, half_y_side, half_z_side);
@@ -247,4 +246,30 @@ void GlyphGeom::generateBox(const Point& center, const Vector& t, double x_side,
   quadstrips.push_back(quadstrip4);
   quadstrips.push_back(quadstrip5);
   quadstrips.push_back(quadstrip6);
+}
+
+void GlyphGeom::generateTransforms(const Core::Geometry::Point& center, const Core::Geometry::Vector& normal, 
+                                   Transform& trans, Transform& rotate)
+{
+  Vector axis = normal;
+
+  axis.normalize();
+
+  Vector z(0, 0, 1), zrotaxis;
+  
+  if((Abs(axis.x()) + Abs(axis.y())) < 1.e-5)
+  {
+    // Only x-z plane...
+    zrotaxis = Vector(0, 1, 0);
+  }
+  else
+  {
+    zrotaxis = Cross(axis, z);
+    zrotaxis.normalize();
+  }
+  
+  double cangle = Dot(z, axis);
+  double zrotangle = -acos(cangle);
+
+  rotate.post_rotate(zrotangle, zrotaxis);
 }
