@@ -49,7 +49,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 	QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent), mConfigurationDock(0), shown_(false), itemValueChanged_(true),
 	itemManager_(new ViewSceneItemManager),
-  screenshotTaker_(0)
+  screenshotTaker_(0), saveScreenshotOnNewGeometry_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -87,7 +87,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   {
 	  std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-	  if (spire == nullptr)
+	  if (!spire)
 		  return;
 	  if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
 	  {
@@ -118,7 +118,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 	state->connect_state_changed(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
 	connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
-
 }
 
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
@@ -143,7 +142,7 @@ void ViewSceneDialog::newGeometryValue()
   LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
   std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-  if (spire == nullptr)
+  if (!spire)
     return;
   spire->removeAllGeomObjects();
 
@@ -159,7 +158,7 @@ void ViewSceneDialog::newGeometryValue()
       return;
     }
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-    if (spire == nullptr)
+    if (!spire)
     {
       LOG_DEBUG("Logical error: Spire lock not acquired.");
       return;
@@ -206,14 +205,18 @@ void ViewSceneDialog::newGeometryValue()
       itemValueChanged_ = false;
     }
   }
-
   else
   {
     std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-    if (spire == nullptr)
+    if (!spire)
       return;
     spire->removeAllGeomObjects();
   }
+
+	if (saveScreenshotOnNewGeometry_)
+	{
+		screenshotClicked();
+	}
 
   //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
   //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
@@ -223,7 +226,7 @@ void ViewSceneDialog::newGeometryValue()
 void ViewSceneDialog::menuMouseControlChanged(int index)
 {
 	std::shared_ptr<Render::SRInterface> spire = mSpire.lock();
-	if (spire == nullptr)
+	if (!spire)
 		return;
 
 	if (index == 0)
@@ -527,6 +530,11 @@ void ViewSceneDialog::addScreenshotButton()
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
   mToolBar->addWidget(screenshotButton);
 
+	auto saveNewGeom = new QCheckBox(this);
+	saveNewGeom->setText("Save screenshot on geometry update");
+	connect(saveNewGeom, SIGNAL(stateChanged(int)), this, SLOT(saveNewGeometryChanged(int)));
+	mToolBar->addWidget(saveNewGeom);
+
   mToolBar->addSeparator();
 }
 
@@ -757,9 +765,9 @@ Screenshot::Screenshot(QGLWidget *glwidget, QObject *parent)
   index_(0)
 {
   QDir dir(filePath);
-  if (!dir.exists()) 
+  if (!dir.exists())
   {
-    qDebug() << "creating file directory" << filePath;
+    //qDebug() << "creating file directory" << filePath;
     dir.mkpath(filePath);
   }
 }
@@ -773,11 +781,16 @@ void Screenshot::saveScreenshot()
 {
   index_++;
   QString fileName = screenshotFile();
-  qDebug() << "saving ViewScene screenshot to:" << fileName;
+  //qDebug() << "saving ViewScene screenshot to:" << fileName;
   screenshot_.save(fileName);
 }
 
 QString Screenshot::screenshotFile() const
 {
   return filePath + QString("/viewScene_%1_%2.png").arg(QDateTime::currentDateTime().toString("yyyy.MM.dd.HHmmss.zzz")).arg(index_);
+}
+
+void ViewSceneDialog::saveNewGeometryChanged(int state)
+{
+	saveScreenshotOnNewGeometry_ = state != 0;
 }
