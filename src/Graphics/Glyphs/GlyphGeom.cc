@@ -26,9 +26,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <math.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Core/GeometryPrimitives/Transform.h>
+#include <Core/Math/MiscMath.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Graphics;
@@ -57,7 +57,7 @@ void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double ra
 
   Transform trans;
   Transform rotate;
-  gen_transforms(center, t, trans, rotate);
+  //gen_transforms(center, t, trans, rotate);
 
   // Draw the cylinder
   double dz = length / (float)nv;
@@ -107,7 +107,7 @@ void GlyphGeom::generateEllipsoid(const Point& center, const Vector& t, double s
 {
   nu++; //Bring nu to expected value for shape.
 
-  double start = 0, stop = M_PI;
+  double start = 0, stop =  M_PI;
 
   // Half ellipsoid criteria.
   if (half == -1) start = M_PI / 2.0;
@@ -122,7 +122,7 @@ void GlyphGeom::generateEllipsoid(const Point& center, const Vector& t, double s
 
   Transform trans;
   Transform rotate;
-  gen_transforms(center, t, trans, rotate);
+  //gen_transforms(center, t, trans, rotate);
 
   trans.post_scale(Vector(1.0, 1.0, 1.0) * scales);
   rotate.post_scale(Vector(1.0, 1.0, 1.0) / scales);
@@ -177,7 +177,7 @@ void GlyphGeom::generateBox(const Point& center, const Vector& t, double x_side,
 
   Transform trans;
   Transform rotate;
-  gen_transforms(center, t, trans, rotate);
+  //gen_transforms(center, t, trans, rotate);
 
   //Draw the Box
   Point p1 = trans * Point(-half_x_side, half_y_side, half_z_side);

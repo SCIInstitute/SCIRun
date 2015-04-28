@@ -33,6 +33,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Math/TrigTable.h>
+
 #include <Graphics/Glyphs/share.h>
 
 namespace SCIRun {
@@ -54,6 +56,7 @@ namespace SCIRun {
 
     private:
       Core::Datatypes::GeometryHandle objectHandle_;
+      std::vector<SinCosTable> tables_;
 
       void generateBox(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double x_side, double y_side, double z_side, std::vector<QuadStrip>& quadstrips);
       void generateCylinder(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius1, double radius2, double length, int nu, int nv, std::vector<QuadStrip>& quadstrips);

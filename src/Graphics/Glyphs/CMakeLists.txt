@@ -41,7 +41,11 @@ SCIRUN_ADD_LIBRARY(Graphics_Glyphs
 )
 
 TARGET_LINK_LIBRARIES(Graphics_Glyphs
+  Core_Math
+  Core_Datatypes
+  Core_Geometry_Primitives
   ${OPENGL_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
