@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>9</count>
+			<count>10</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateFieldData:0</first>
@@ -50,7 +50,7 @@
 									<name>FunctionString</name>
 									<value>
 										<which>2</which>
-										<value>RESULT = X^2+Y^2;</value>
+										<value>RESULT = X^2+Y^2+Z^2;</value>
 									</value>
 								</second>
 							</item>
@@ -203,10 +203,26 @@
 									<name>GUIIsoValue</name>
 									<value>
 										<which>1</which>
-										<value>9.99999999999999890e-001</value>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GetFieldBoundary:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GetFieldBoundary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
 						</stateMap>
 					</state>
 				</second>
@@ -737,7 +753,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>8</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateFieldData:0</moduleId1_>
@@ -769,9 +785,9 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:1</moduleId2_>
+				<moduleId2_>GetFieldBoundary:0</moduleId2_>
 				<port2_>
-					<name>Field</name>
+					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -794,6 +810,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetFieldBoundary:0</moduleId1_>
+				<port1_>
+					<name>BoundaryField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:1</moduleId2_>
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
@@ -838,7 +866,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>9</count>
+		<count>10</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateFieldData:0</first>
@@ -865,6 +893,13 @@
 			<first>ExtractSimpleIsosurface:0</first>
 			<second>
 				<first>-9.88000000000000000e+002</first>
+				<second>-5.32000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>GetFieldBoundary:0</first>
+			<second>
+				<first>-1.29200000000000000e+003</first>
 				<second>-5.32000000000000000e+002</second>
 			</second>
 		</item>
