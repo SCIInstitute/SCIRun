@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="11">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
@@ -102,7 +102,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -175,7 +175,15 @@
 0.7
 0.8
 0.9
-1.0</value>
+0.8
+0.7
+0.6
+0.5
+0.4
+0.3
+0.2
+0.1
+</value>
 									</value>
 								</second>
 							</item>
@@ -203,7 +211,7 @@
 									<name>GUIIsoValue</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>0.69999999999999996</value>
 									</value>
 								</second>
 							</item>
@@ -259,7 +267,7 @@
 									<name>MaxIndex</name>
 									<value>
 										<which>0</which>
-										<value>9</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -283,7 +291,7 @@
 									<name>PlayModeType</name>
 									<value>
 										<which>2</which>
-										<value>looponce</value>
+										<value>loopforever</value>
 									</value>
 								</second>
 							</item>
@@ -307,7 +315,7 @@
 									<name>SliceIndex</name>
 									<value>
 										<which>0</which>
-										<value>9</value>
+										<value>6</value>
 									</value>
 								</second>
 							</item>
@@ -351,7 +359,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>0.10000000000000001</value>
 									</value>
 								</second>
 							</item>
@@ -399,7 +407,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>0.64999997615814209</value>
 									</value>
 								</second>
 							</item>
@@ -435,7 +443,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>0.64999997615814209</value>
 									</value>
 								</second>
 							</item>
@@ -471,7 +479,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>0.64999997615814209</value>
 									</value>
 								</second>
 							</item>
@@ -519,7 +527,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999990e-002</value>
+										<value>0.029999999999999999</value>
 									</value>
 								</second>
 							</item>
@@ -547,7 +555,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>0.10000000000000001</value>
 									</value>
 								</second>
 							</item>
@@ -595,7 +603,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>0.64999997615814209</value>
 									</value>
 								</second>
 							</item>
@@ -631,7 +639,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>0.64999997615814209</value>
 									</value>
 								</second>
 							</item>
@@ -667,7 +675,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>0.64999997615814209</value>
 									</value>
 								</second>
 							</item>
@@ -715,7 +723,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999990e-002</value>
+										<value>0.029999999999999999</value>
 									</value>
 								</second>
 							</item>
@@ -753,7 +761,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>9</count>
+			<count>10</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateFieldData:0</moduleId1_>
@@ -833,6 +841,18 @@
 					<name>OutputMatrix</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>ExtractSimpleIsosurface:0</moduleId2_>
+				<port2_>
+					<name>Isovalue</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GetMatrixSlice:0</moduleId1_>
+				<port1_>
+					<name>OutputMatrix</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>ReportMatrixInfo:0</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
@@ -871,71 +891,71 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateFieldData:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-9.88000000000000000e+002</first>
-				<second>-6.84000000000000000e+002</second>
+				<first>-988</first>
+				<second>-684</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-9.88000000000000000e+002</first>
-				<second>-8.36000000000000000e+002</second>
+				<first>-988</first>
+				<second>-836</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:0</first>
 			<second>
-				<first>-6.08000000000000000e+002</first>
-				<second>-8.36000000000000000e+002</second>
+				<first>-608</first>
+				<second>-836</second>
 			</second>
 		</item>
 		<item>
 			<first>ExtractSimpleIsosurface:0</first>
 			<second>
-				<first>-9.88000000000000000e+002</first>
-				<second>-5.32000000000000000e+002</second>
+				<first>-988</first>
+				<second>-532</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:0</first>
 			<second>
-				<first>-1.29200000000000000e+003</first>
-				<second>-5.32000000000000000e+002</second>
+				<first>-1292</first>
+				<second>-532</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:0</first>
 			<second>
-				<first>-6.08000000000000000e+002</first>
-				<second>-6.84000000000000000e+002</second>
+				<first>-608</first>
+				<second>-684</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:0</first>
 			<second>
-				<first>-5.32000000000000000e+002</first>
-				<second>-5.32000000000000000e+002</second>
+				<first>-532</first>
+				<second>-532</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-9.88000000000000000e+002</first>
-				<second>-3.80000000000000000e+002</second>
+				<first>-988</first>
+				<second>-380</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>-1.29200000000000000e+003</first>
-				<second>-3.80000000000000000e+002</second>
+				<first>-1292</first>
+				<second>-380</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>-9.88000000000000000e+002</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-988</first>
+				<second>-228</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -948,11 +968,11 @@
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt; color:#ffffff;&quot;&gt;ID: 0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 0</noteText>
 				<position>0</position>
-				<fontSize>8</fontSize>
+				<fontSize>13</fontSize>
 			</second>
 		</item>
 		<item>
@@ -961,11 +981,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;ID: 1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8pt; color:#ffffff;&quot;&gt;ID: 1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>ID: 1</noteText>
 				<position>0</position>
-				<fontSize>8</fontSize>
+				<fontSize>13</fontSize>
 			</second>
 		</item>
 	</moduleNotes>

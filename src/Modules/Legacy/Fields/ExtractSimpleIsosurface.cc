@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -41,6 +41,7 @@ ExtractSimpleIsosurfaceModule::ExtractSimpleIsosurfaceModule()
   : Module(ModuleLookupInfo("ExtractSimpleIsosurface", "NewField", "SCIRun"), true)
 {
   INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Isovalue);
   INITIALIZE_PORT(OutputField);
 }
 
@@ -53,20 +54,20 @@ void ExtractSimpleIsosurfaceModule::setStateDefaults()
 void ExtractSimpleIsosurfaceModule::execute()
 {
   FieldHandle field = getRequiredInput(InputField);
-  
-  // If parameters changed, do algorithm
-  /*
-  inputs_changed_ || 
-  !oport_cached("BoundaryField") || 
-  !oport_cached("Mapping")
-  */
+  auto isovalueOption = getOptionalInput(Isovalue);
 
   if (needToExecute())
   {
     update_state(Executing);
-    
+
+    if (isovalueOption && *isovalueOption && !(*isovalueOption)->empty())
+    {
+      double iso = (*isovalueOption)->get(0,0);
+      get_state()->setValue(ExtractSimpleIsosurfaceAlgo::GUIIsoValue, iso);
+    }
+
     setAlgoDoubleFromState(ExtractSimpleIsosurfaceAlgo::GUIIsoValue);
-    
+
     auto output = algo().run_generic(withInputData((InputField, field)));
 
     sendOutputFromAlgorithm(OutputField, output);
