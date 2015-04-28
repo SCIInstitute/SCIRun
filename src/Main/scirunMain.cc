@@ -77,16 +77,17 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
   const int argc = __argc;  
   const char *argv[50];
   char *tempArgv[] = {GetCommandLine()};  
-  
+
   // The GetCommandLine() function returns argv as a single string. The split function splits it up into
   // the individual arguments.
   std::vector<std::string> getArgv;
-  boost::algorithm::split(getArgv, tempArgv[0], boost::is_any_of(" \0"));
-    
-  // Put the individual arguments into the argv that will be passed.
-  for(int i = 0; i < argc; i++) 
-    argv[i] = stripQuotes(getArgv[i]).c_str();
+  boost::algorithm::split(getArgv, tempArgv[0], boost::is_any_of(" \0"), boost::algorithm::token_compress_on);
   
+  // Put the individual arguments into the argv that will be passed.
+  for (int i = 0; i < argc; i++)
+  {
+    argv[i] = stripQuotes(getArgv[i]).c_str();
+  }
   return mainImpl(argc, argv);
 }
 
