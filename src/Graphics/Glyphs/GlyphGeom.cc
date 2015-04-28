@@ -39,15 +39,62 @@ GlyphGeom::GlyphGeom()
 
 }
 
-void GlyphGeom::addSphere(const Core::Geometry::Point& center, double radius, int nu, int nv, int half)
+Core::Datatypes::GeometryHandle getObject()
 {
-  std::vector<QuadStrip> quadstrips;
-  generateEllipsoid(center, Vector(0, 0, 1), radius, nu, nv, half, quadstrips);
+  return objectHandle_;
 
 }
 
-void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double radius1, double radius2,
-                                 double length, int nu, int nv, std::vector<QuadStrip>& quadstrips)
+void GlyphGeom::addArrow(const Point& center, const Vector& t,
+                         double radius, double length, int nu = 20, int nv = 0)
+{
+  std::vector<QuadStrip> quadstrips;
+  double ratio = 2.0;
+  Transform trans;
+  Transform rotate;
+  generateTransforms(center, t, trans, rotate);
+  
+  Vector offset = rotate * Vecote(0,0,1);
+  offset.safe_normalize();
+  offset *= length * ratio;
+  
+  generateCylinder(center, t, radius, radius/10.0, radius/10.0, length*ratio, nu, nv, quadstrips);
+  generateCylinder(center+offset, t, radius, 0.0, length, nu, nv, quadstrips);
+  
+  // add strips to the object
+}
+
+void GlyphGeom::addBox(const Point& center, const Vector& t,
+                       double x_side, double y_side, double z_side)
+{
+  std::vector<QuadStrip> quadstrips;
+  generateBox(center, t, x_side, y_side, z_side, quadstrips);
+  
+  // add strips to object
+}
+
+void GlyphGeom::addCylinder(const Point& center, const Vector& t,
+                            double radius1, double length, int nu = 20, int nv = 2)
+{
+  std::vector<QuadStrip> quadstrips;
+  generateCylinder(center, t, raius1, radius1, length, nu, nv, quadstrips);
+  
+  // add the strips to the object
+}
+
+void GlyphGeom::addSphere(const Point& center, double radius,
+                          int nu, int nv, int half)
+{
+  std::vector<QuadStrip> quadstrips;
+  generateEllipsoid(center, Vector(0, 0, 1), radius, nu, nv, half, quadstrips);
+  
+  // add strips to the object
+
+}
+
+void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double radius1,
+                                 double radius2, double length, int nu, int nv,
+                                 std::vector<QuadStrip>& quadstrips)
 {
   nu++; //Bring nu to expected value for shape.
 
@@ -101,8 +148,8 @@ void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double ra
 
 }
 
-void GlyphGeom::generateEllipsoid(const Point& center, const Vector& t, double scales, int nu, int nv, int half,
-                                  std::vector<QuadStrip>& quadstrips)
+void GlyphGeom::generateEllipsoid(const Point& center, const Vector& t, double scales,
+                                  int nu, int nv, int half, std::vector<QuadStrip>& quadstrips)
 {
   nu++; //Bring nu to expected value for shape.
 
@@ -248,7 +295,7 @@ void GlyphGeom::generateBox(const Point& center, const Vector& t, double x_side,
   quadstrips.push_back(quadstrip6);
 }
 
-void GlyphGeom::generateTransforms(const Core::Geometry::Point& center, const Core::Geometry::Vector& normal, 
+void GlyphGeom::generateTransforms(const Point& center, const Vector& normal,
                                    Transform& trans, Transform& rotate)
 {
   Vector axis = normal;
