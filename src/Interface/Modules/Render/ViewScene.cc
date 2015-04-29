@@ -213,10 +213,10 @@ void ViewSceneDialog::newGeometryValue()
     spire->removeAllGeomObjects();
   }
 
-	if (saveScreenshotOnNewGeometry_)
-	{
-		screenshotClicked();
-	}
+  if (saveScreenshotOnNewGeometry_)
+  {
+    screenshotClicked();
+  }
 
   //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
   //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
@@ -530,10 +530,10 @@ void ViewSceneDialog::addScreenshotButton()
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
   mToolBar->addWidget(screenshotButton);
 
-	auto saveNewGeom = new QCheckBox(this);
-	saveNewGeom->setText("Save screenshot on geometry update");
-	connect(saveNewGeom, SIGNAL(stateChanged(int)), this, SLOT(saveNewGeometryChanged(int)));
-	mToolBar->addWidget(saveNewGeom);
+  auto saveNewGeom = new QCheckBox(this);
+  saveNewGeom->setText("Save screenshot on geometry update");
+  connect(saveNewGeom, SIGNAL(stateChanged(int)), this, SLOT(saveNewGeometryChanged(int)));
+  mToolBar->addWidget(saveNewGeom);
 
   mToolBar->addSeparator();
 }
@@ -792,5 +792,5 @@ QString Screenshot::screenshotFile() const
 
 void ViewSceneDialog::saveNewGeometryChanged(int state)
 {
-	saveScreenshotOnNewGeometry_ = state != 0;
+  saveScreenshotOnNewGeometry_ = state != 0;
 }
