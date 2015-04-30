@@ -58,8 +58,12 @@ ModuleLookupInfo ShowFieldGlyphs::staticInfo_("ShowFieldGlyphs", "Visualization"
 
 ShowFieldGlyphs::ShowFieldGlyphs() : GeometryGeneratingModule(staticInfo_)
 {
-  INITIALIZE_PORT(Field);
-  INITIALIZE_PORT(ColorMapObject);
+  INITIALIZE_PORT(PrimaryData);
+  INITIALIZE_PORT(PrimaryColorMap);
+  INITIALIZE_PORT(SecondaryData);
+  INITIALIZE_PORT(SecondaryColorMap);
+  INITIALIZE_PORT(TertiaryData);
+  INITIALIZE_PORT(TertiaryColorMap);
   INITIALIZE_PORT(SceneGraph);
 }
 
@@ -70,8 +74,8 @@ void ShowFieldGlyphs::setStateDefaults()
 
 void ShowFieldGlyphs::execute()
 {
-  boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
-  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
+  boost::shared_ptr<SCIRun::Field> field = getRequiredInput(PrimaryData);
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(PrimaryColorMap);
 
   if (needToExecute())
   {
