@@ -39,14 +39,14 @@ GlyphGeom::GlyphGeom()
 
 }
 
-Core::Datatypes::GeometryHandle getObject()
+GeometryHandle GlyphGeom::getObject()
 {
   return objectHandle_;
 
 }
 
 void GlyphGeom::addArrow(const Point& center, const Vector& t,
-                         double radius, double length, int nu = 20, int nv = 0)
+                         double radius, double length, int nu, int nv)
 {
   std::vector<QuadStrip> quadstrips;
   double ratio = 2.0;
@@ -54,11 +54,11 @@ void GlyphGeom::addArrow(const Point& center, const Vector& t,
   Transform rotate;
   generateTransforms(center, t, trans, rotate);
   
-  Vector offset = rotate * Vecote(0,0,1);
+  Vector offset = rotate * Vector(0,0,1);
   offset.safe_normalize();
   offset *= length * ratio;
   
-  generateCylinder(center, t, radius, radius/10.0, radius/10.0, length*ratio, nu, nv, quadstrips);
+  generateCylinder(center, t, radius/10.0, radius/10.0, length*ratio, nu, nv, quadstrips);
   generateCylinder(center+offset, t, radius, 0.0, length, nu, nv, quadstrips);
   
   // add strips to the object
@@ -74,10 +74,10 @@ void GlyphGeom::addBox(const Point& center, const Vector& t,
 }
 
 void GlyphGeom::addCylinder(const Point& center, const Vector& t,
-                            double radius1, double length, int nu = 20, int nv = 2)
+                            double radius1, double length, int nu, int nv)
 {
   std::vector<QuadStrip> quadstrips;
-  generateCylinder(center, t, raius1, radius1, length, nu, nv, quadstrips);
+  generateCylinder(center, t, radius1, radius1, length, nu, nv, quadstrips);
   
   // add the strips to the object
 }
