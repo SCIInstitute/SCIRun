@@ -2,7 +2,8 @@ language:
 - cpp
 
 os:
-- osx
+#Too many slow builds on Travis OSX images causing build errors. Turning off to speed up turn around. We can investigate later. For now, main developers should build on Mac before merging.
+#- osx
 - linux
 
 compiler:
