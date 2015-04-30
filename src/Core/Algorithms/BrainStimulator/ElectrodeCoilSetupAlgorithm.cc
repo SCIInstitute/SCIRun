@@ -77,6 +77,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, ProtoTypeInputComboBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessCheckBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessSpinBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, InvertNormalsCheckBox);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, ImproveElectrodeShapeInterpolationCheckBox);
 
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::FINAL_ELECTRODES_FIELD("FINAL_ELECTRODES_FIELD");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::MOVED_ELECTRODES_FIELD("MOVED_ELECTRODES_FIELD");
@@ -117,6 +118,7 @@ ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
   addParameter(AllInputsTDCS, false);
   addParameter(ElectrodethicknessCheckBox, false);
   addParameter(ElectrodethicknessSpinBox, 1.0); 
+  addParameter(ImproveElectrodeShapeInterpolationCheckBox, false);
  }
 }
 
@@ -611,7 +613,10 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
    VMesh::Node::index_type didx;
    Point elc(elc_x[i],elc_y[i],elc_z[i]),r;
    scalp_vmesh->synchronize(Mesh::NODE_LOCATE_E);
-   scalp_vmesh->find_closest_node(distance,r,didx,elc);  /// project GUI (x,y,z) onto scalp and ...
+   scalp_vmesh->find_closest_node(distance,r,didx,elc);  /// project GUI (x,y,z) onto scalp and ...   
+   std::ostringstream ostr3;
+   ostr3 << " Distance of electrode " << i+1 << " to scalp surface is " << distance << " [distance units]." << std::endl;
+   remark(ostr3.str());   
    Vector norm;
    scalp_vmesh->synchronize(Mesh::NORMALS_E);
    scalp_vmesh->get_normal(norm,didx); /// ... get its normal
@@ -630,7 +635,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       flip_normal=true;
     }   
    } 
-     
+    
    /// move coil prototype to projected location
    /// first, compute the transfer matrices
    std::vector<double> axis;
@@ -767,6 +772,33 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 	  
     VField* tmp_sdf_vfld  = sdf_output->vfield();   
     VMesh*  tmp_sdf_vmsh  = sdf_output->vmesh(); 
+    
+    tmp_sdf_vmsh->synchronize(Mesh::NODE_LOCATE_E);
+    Point tmp_p;
+    
+    double label_switch=0.0,fld_value=std::numeric_limits<double>::quiet_NaN(); 
+ 
+    for (VMesh::Elem::index_type k=0; k<tmp_sdf_vmsh->num_elems(); k++) 
+     {
+       VMesh::Node::array_type onodes(3); 
+       tmp_sdf_vmsh->get_nodes(onodes, k);
+       
+       for (VMesh::Node::index_type l=0; l<3; l++)
+        {
+	 tmp_sdf_vmsh->get_center(tmp_p,onodes[l]);
+	 if(tmp_p.x()==r.x() && tmp_p.y()==r.y() && tmp_p.z()==r.z())
+	 {
+	  tmp_sdf_vfld->get_value(fld_value,k);
+	  if (fld_value>=0)  
+	   label_switch=0.0;
+	     else
+	       label_switch=1.0;
+	       
+	  break;
+	 }
+	}
+      }
+    
     if (!tmp_sdf_vfld || tmp_sdf_vfld->num_values()<=0)
     {
      std::ostringstream ostr3;
@@ -779,16 +811,16 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     std::vector<double> tmp_field_bin_values;
     bool found_elc_surf=false;
     tmp_field_bin_values.resize(tmp_sdf_vfld->num_values());
-    for (VMesh::Node::index_type l=0; l<tmp_sdf_vfld->num_values(); l++) /// find out which nodes are inside the 
+    for (VMesh::Node::index_type l=0; l<tmp_sdf_vfld->num_values(); l++) /// find out which nodes are inside the prototype
     {
      double tmp_sdf_fld_val=std::numeric_limits<double>::quiet_NaN(); /// store binary classification of which scalp nodes are inside prototype and which are outside
      tmp_sdf_vfld->get_value(tmp_sdf_fld_val,l);
      if (tmp_sdf_fld_val <= 0.0)
      {
-      tmp_field_bin_values[l]=1.0;
+      tmp_field_bin_values[l]=(1.0-label_switch);
       found_elc_surf=true;
      } else
-       tmp_field_bin_values[l]=0.0;
+       tmp_field_bin_values[l]=(label_switch-0.0);
     }     
     FieldHandle final_electrode_sponge_surf;
     
@@ -832,7 +864,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         else
           final_electrode_sponge_surf_fld->set_value(0.0,l);
     } 
- 
+     
     if (!found_elc_surf)
     {
      std::ostringstream ostr3;
@@ -873,7 +905,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        found_elc_surf=false;
        continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
      }
-     
+
      SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
      algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
      algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
@@ -881,6 +913,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      found_elc_surf=false;
      double distance=std::numeric_limits<double>::quiet_NaN();
      VMesh::Node::index_type didx;
+      
      for(int l=0;l<result.size();l++)
      {
       FieldHandle tmp_fld = result[l];
@@ -888,7 +921,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
       tmp_fld_msh->synchronize(Mesh::NODE_LOCATE_E); 
       tmp_fld_msh->find_closest_node(distance,p,didx,r);
- 
+      
       if (distance==0)
       {    
        found_elc_surf=true;
@@ -1006,7 +1039,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         } 
 	offset+=tmp_fld_msh->num_nodes();
        }  
-       
        MatrixHandle mapping;
        GetFieldBoundaryAlgo algo_getfldbnd;     
        FieldHandle boundary;       
@@ -1014,7 +1046,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        VMesh* boundary_msh  = boundary->vmesh();
        /// connect electrode sponge surfaces
        if (boundary->vmesh()->is_curvemesh())
-       {
+       { 
         tmp_fld_msh->synchronize(Mesh::NODE_LOCATE_E);
 	VMesh::Edge::iterator meshEdgeIter;
         VMesh::Edge::iterator meshEdgeEnd;
@@ -1115,7 +1147,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
  VariableHandle table2(new Variable(Name("Table"), new_table));
  return boost::make_tuple(elc_sponge_locations, electrode_field, output, table2);
-   
+ //return boost::make_tuple(elc_sponge_locations, electrode_field, find_elc_surf, table2);  
 }
 
 boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::run(const FieldHandle scalp, const DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const
@@ -1292,15 +1324,14 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
      {
      
      }
-
-     if ( (fieldnodes->nrows()!=fielddata->nrows()) )
+     
+     if ( (fieldnodes->nrows()!=3 || fieldnodes->ncols()!=3) && 
+          (fielddata->nrows()==fieldnodes->nrows() || fielddata->nrows()==fieldnodes->ncols()) 
+        )
      {      
-      if( !((fieldnodes->nrows()==3 || fieldnodes->nrows()==1) && (fielddata->nrows()==3 || fielddata->nrows()==1)) )
-      { 
        std::ostringstream ostr_;
-       ostr_ << "Module input " << (c1+2) << " (assigned tms coil prototype) does not contain same number of nodes as data values (linear basis)." << std::endl;
+       ostr_ << "Module input " << (c1+2) << " (prototype) does contain corrupted data (mesh locations does not match mesh data dimensions)." << std::endl;
        THROW_ALGORITHM_PROCESSING_ERROR(ostr_.str());
-      }
      }
           
      /// get Coil normal from GUI

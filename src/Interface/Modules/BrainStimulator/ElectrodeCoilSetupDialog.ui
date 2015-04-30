@@ -144,10 +144,7 @@
    </property>
   </widget>
   <widget class="QCheckBox" name="invertNormalsCheckBox_">
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">   
+   <property name="geometry">
     <rect>
      <x>390</x>
      <y>360</y>
@@ -157,6 +154,22 @@
    </property>
    <property name="text">
     <string>Invert normals to position electrodes on scalp</string>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="improveElectrodeShapeInterpolationCheckBox_">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>390</y>
+     <width>271</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Improve electrode shape interpolation</string>
    </property>
   </widget>
  </widget>
