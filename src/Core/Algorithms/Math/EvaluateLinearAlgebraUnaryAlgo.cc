@@ -49,7 +49,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
 EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(matrix, "matrix");
-  DenseMatrixHandle result;
+  MatrixHandle result;
 
   Operator oper = params.get<0>();
 
