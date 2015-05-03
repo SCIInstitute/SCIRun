@@ -78,6 +78,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessCheckBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ElectrodethicknessSpinBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, InvertNormalsCheckBox);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, ImproveElectrodeShapeInterpolationCheckBox);
+ALGORITHM_PARAMETER_DEF(BrainStimulator, PutElectrodesOnScalpCheckBox);
 
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::FINAL_ELECTRODES_FIELD("FINAL_ELECTRODES_FIELD");
 const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::MOVED_ELECTRODES_FIELD("MOVED_ELECTRODES_FIELD");
@@ -119,6 +120,7 @@ ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
   addParameter(ElectrodethicknessCheckBox, false);
   addParameter(ElectrodethicknessSpinBox, 1.0); 
   addParameter(ImproveElectrodeShapeInterpolationCheckBox, false);
+  addParameter(PutElectrodesOnScalpCheckBox, false);
  }
 }
 
@@ -592,6 +594,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
    conv_algo.run(scalp_mesh,scalp);
       else
         scalp=scalp_mesh;
+ 
+ auto do_not_create_interpolated_elc_shapes = get(Parameters::PutElectrodesOnScalpCheckBox).toBool();
 	
  if (tab_values.size()==elc_prototyp_map.size() && elc_thickness.size()==elc_prototyp_map.size() && elc_x.size()==elc_prototyp_map.size() && elc_y.size()==elc_prototyp_map.size() && elc_z.size()==elc_prototyp_map.size() && elc_angle_rotation.size()==elc_prototyp_map.size())
  {  
@@ -749,6 +753,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     
     tmp_tdcs_elc_vfld->set_all_values(0.0);
     
+   if(do_not_create_interpolated_elc_shapes)
+   {
     /// since the protoype has to be centered around coordinate origin
     /// it will envelop the scalp/electrode sponge surface at its final location (it is now!)
     /// scalp needs to have data stored on nodes for clipping to prevent having frayed electrode sponge corners
@@ -873,6 +879,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
      skip_current_iteration=true;
      continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
     }
+     
      /// are there multiple not connected scalp surfaces that are inside the prototype
      /// use projected point r (that was projected on scalp surface) to differentiate which surface is the one to use
      /// but first splitbydomain to get the surface with tha value 1.0
@@ -935,6 +942,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         tmp_fld_msh->get_center(p,k);
 	output_vmesh->add_point(p);
        }
+       
        /// create electrode sponge top triangle nodes
        long count_pts=0;
        for (VMesh::Node::index_type k=0; k<tmp_fld_msh->num_nodes(); k++) 
@@ -1103,7 +1111,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
        
       }
      }
-     
+    }
    } else
    {
     std::ostringstream ostr3;
@@ -1111,32 +1119,39 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
     remark(ostr3.str());
     skip_current_iteration=true;
     continue; 	    
-   }
+   } 
   tdcs_vfld->resize_values();
   tdcs_vfld->set_values(field_values);
-  output_vfld->resize_values();
-  output_vfld->set_values(field_values_elc_on_scalp);
-  elc_sponge_locations = boost::make_shared<DenseMatrix>(DenseMatrix::Zero(num_valid_electrode_definition,4));
-  int count=0;
-  for(int j=0;j<valid_electrode_definition.size();j++)
+  
+  if(do_not_create_interpolated_elc_shapes)
   {
-   if(valid_electrode_definition[j]==1)
+   output_vfld->resize_values();
+   output_vfld->set_values(field_values_elc_on_scalp);
+   elc_sponge_locations = boost::make_shared<DenseMatrix>(DenseMatrix::Zero(num_valid_electrode_definition,4));
+   int count=0;
+   for(int j=0;j<valid_electrode_definition.size();j++)
    {
-    if(count<elc_sponge_locations->nrows())
+    if(valid_electrode_definition[j]==1)
     {
-     (*elc_sponge_locations)(count,0)=elc_x[i];
-     (*elc_sponge_locations)(count,1)=elc_y[i];
-     (*elc_sponge_locations)(count,2)=elc_z[i];
-     (*elc_sponge_locations)(count,3)=elc_thickness[i];
-     count++;
+     if(count<elc_sponge_locations->nrows())
+     {
+      (*elc_sponge_locations)(count,0)=elc_x[i];
+      (*elc_sponge_locations)(count,1)=elc_y[i];
+      (*elc_sponge_locations)(count,2)=elc_z[i];
+      (*elc_sponge_locations)(count,3)=elc_thickness[i];
+      count++;
+     }
     }
    }
   }
  }
  
- VMesh::Face::size_type isize;
- output->vmesh()->size(isize);
- flipnormal_algo.run(output, output);
+ if(do_not_create_interpolated_elc_shapes)
+ {
+  VMesh::Face::size_type isize;
+  output->vmesh()->size(isize);
+  flipnormal_algo.run(output, output);
+ }
  
  } else
  {
@@ -1147,7 +1162,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
  VariableHandle table2(new Variable(Name("Table"), new_table));
  return boost::make_tuple(elc_sponge_locations, electrode_field, output, table2);
- //return boost::make_tuple(elc_sponge_locations, electrode_field, find_elc_surf, table2);  
+  
 }
 
 boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::run(const FieldHandle scalp, const DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const

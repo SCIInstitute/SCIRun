@@ -64,6 +64,7 @@ void ElectrodeCoilSetupModule::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::ElectrodethicknessSpinBox);
   setStateBoolFromAlgo(Parameters::ElectrodethicknessCheckBox);
   setStateBoolFromAlgo(Parameters::ImproveElectrodeShapeInterpolationCheckBox);
+  setStateBoolFromAlgo(Parameters::PutElectrodesOnScalpCheckBox);
 }
 
 void ElectrodeCoilSetupModule::execute()
@@ -80,6 +81,7 @@ void ElectrodeCoilSetupModule::execute()
    setAlgoBoolFromState(Parameters::AllInputsTDCS);
    setAlgoIntFromState(Parameters::ProtoTypeInputComboBox);
    setAlgoBoolFromState(Parameters::ElectrodethicknessCheckBox);
+   setAlgoBoolFromState(Parameters::PutElectrodesOnScalpCheckBox);
    setAlgoDoubleFromState(Parameters::ElectrodethicknessSpinBox);
    
    update_state(Executing);

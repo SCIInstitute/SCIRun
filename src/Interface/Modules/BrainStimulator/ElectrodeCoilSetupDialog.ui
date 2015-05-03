@@ -172,6 +172,19 @@
     <string>Improve electrode shape interpolation</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="PutElectrodesOnScalpCheckBox_">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>390</y>
+     <width>341</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Compute 3rd module output (might take a while)</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

@@ -64,6 +64,7 @@ namespace BrainStimulator {
   ALGORITHM_PARAMETER_DECL(ElectrodethicknessSpinBox);
   ALGORITHM_PARAMETER_DECL(InvertNormalsCheckBox);
   ALGORITHM_PARAMETER_DECL(ImproveElectrodeShapeInterpolationCheckBox);
+  ALGORITHM_PARAMETER_DECL(PutElectrodesOnScalpCheckBox);
   
   class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
   {
