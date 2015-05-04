@@ -65,7 +65,7 @@ void RescaleColorMap::setStateDefaults()
  */
 void RescaleColorMap::execute()
 {
-  auto field = getRequiredInput(Field);
+  auto fields = getRequiredDynamicInputs(Field);
   auto colorMap = getRequiredInput(ColorMapObject);
 
   if (needToExecute())
@@ -79,6 +79,7 @@ void RescaleColorMap::execute()
     double cm_scale = 1.;
     double cm_shift = 0.;
 
+    auto field = fields[0];
     //set the min/max values to the actual min/max if we choose auto
     VField* fld = field->vfield();
     double actual_min = std::numeric_limits<double>::max();
@@ -90,16 +91,16 @@ void RescaleColorMap::execute()
       return;
     }
 
-    if (autoscale) 
+    if (autoscale)
     {
       //center around zero
-      if (symmetric) 
+      if (symmetric)
       {
         double mx = std::max(std::abs(actual_min), std::abs(actual_max));
         fixed_min = -mx;
         fixed_max = mx;
       }
-      else 
+      else
       {
         fixed_min = actual_min;
         fixed_max = actual_max;
