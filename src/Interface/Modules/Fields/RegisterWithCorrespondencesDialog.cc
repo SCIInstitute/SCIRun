@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,44 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/RegisterWithCorrespondences.h>
-
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
+#include <Interface/Modules/Fields/RegisterWithCorrespondencesDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <QtGui>
 
-
-using namespace SCIRun;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
 
-/// @class RegisterWithCorrespondences
-/// @brief This module allows you to morph using a thin plate spline algorithm
-/// one point set or mesh to another point set or mesh. 
-
-RegisterWithCorrespondences::RegisterWithCorrespondences() : Module(ModuleLookupInfo("RegisterWithCorrespondences","ChangeFieldData","SCIRun"))
+RegisterWithCorrespondencesDialog::RegisterWithCorrespondencesDialog(const std::string& name, ModuleStateHandle state,
+	QWidget* parent/* = 0*/)
+	: ModuleDialogGeneric(state, parent)
 {
-	INITIALIZE_PORT(InputField);
-	INITIALIZE_PORT(Correspondences1);
-	INITIALIZE_PORT(Correspondences2);
-	INITIALIZE_PORT(OutputField);
+	setupUi(this);
+	setWindowTitle(QString::fromStdString(name));
+	fixSize();
+	
+	addRadioButtonGroupManager({ affineRadioButton_, morphRadioButton_, noneRadioButton_}, Variables::Operator);
+	
 }
 
-void RegisterWithCorrespondences::setStateDefaults() {
-	setStateIntFromAlgo(Variables::Operator);
+void RegisterWithCorrespondencesDialog::pull() {
+	pull_newVersionToReplaceOld();
 }
-
-void RegisterWithCorrespondences::execute()
-{
-	auto input1 = getRequiredInput(InputField);
-	auto input2 = getRequiredInput(Correspondences1);
-	auto input3 = getRequiredInput(Correspondences2);
-  
-    auto output = algo().run_generic(withInputData((InputField,input1),(Correspondences1,input2),(Correspondences2,input3)));
-    sendOutputFromAlgorithm(OutputField, output);
-  
-}
-
