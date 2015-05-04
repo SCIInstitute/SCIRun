@@ -87,6 +87,8 @@ namespace Datatypes {
 
     static PersistentTypeID type_id;
 
+    virtual MatrixBase<T>* clone() const override = 0;
+
   private:
     virtual void print(std::ostream&) const = 0;
       /// @todo: not much to go here for now.
