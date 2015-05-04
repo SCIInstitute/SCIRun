@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -33,7 +33,7 @@ ADD_SUBDIRECTORY(FiniteElements)
 ADD_SUBDIRECTORY(Forward)
 ADD_SUBDIRECTORY(Inverse)
 #ADD_SUBDIRECTORY(String)
-#ADD_SUBDIRECTORY(Converters)
+ADD_SUBDIRECTORY(Converters)
 ADD_SUBDIRECTORY(Bundle)
 ADD_SUBDIRECTORY(Matlab)
 ADD_SUBDIRECTORY(Visualization)

@@ -3,7 +3,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -31,11 +31,13 @@
 SET(Modules_Legacy_Inverse_HEADERS
   SolveInverseProblemWithTikhonov.h
   SolveInverseProblemWithTikhonovImpl.h
+  BuildSurfaceLaplacianMatrix.h
 )
 
 SET(Modules_Legacy_Inverse_SRCS
   SolveInverseProblemWithTikhonov.cc
   SolveInverseProblemWithTikhonovImpl.cc
+  BuildSurfaceLaplacianMatrix.cc
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Inverse
@@ -45,7 +47,7 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_Inverse
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Inverse
  Dataflow_Network
- #Core_Algorithms_Legacy_Inverse
+ Core_Algorithms_Legacy_Geometry
  Core_Datatypes_Legacy_Field
  Algorithms_Base
  Core_Basis

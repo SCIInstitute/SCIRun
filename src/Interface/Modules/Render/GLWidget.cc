@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -43,6 +43,7 @@ namespace SCIRun {
 namespace Gui {
 
 const int RendererUpdateInMS = 35;
+const double updateTime = RendererUpdateInMS / 1000.0;
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
@@ -62,8 +63,8 @@ GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
   auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
   shaderSearchDirs.push_back(shadersInBinDirectory.string());
 
-  mGraphics = std::shared_ptr<Render::SRInterface>(
-      new Render::SRInterface(mContext, shaderSearchDirs));
+  mGraphics.reset(new Render::SRInterface(mContext, shaderSearchDirs));
+
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(RendererUpdateInMS);
@@ -158,11 +159,18 @@ void GLWidget::makeCurrent()
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  double updateTime = static_cast<double>(RendererUpdateInMS) / 1000.0;
   mCurrentTime += updateTime;
 
-  mGraphics->doFrame(mCurrentTime, updateTime);
-  mContext->swapBuffers();
+  try
+  {
+    mGraphics->doFrame(mCurrentTime, updateTime);
+    mContext->swapBuffers();
+  }
+  catch (const SCIRun::Render::SRInterfaceFailure& e)
+  {
+    Q_EMIT fatalError(e.what());
+    mTimer->stop();
+  }
 }
 
 } // namespace Gui

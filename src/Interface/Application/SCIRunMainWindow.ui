@@ -651,24 +651,54 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="modulesSnapToCheckBox_">
-            <property name="text">
-             <string>Modules Snap To Grid</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="dockableModulesCheckBox_">
-            <property name="text">
-             <string>Enable Module Dock</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="0" column="1">
+             <widget class="QCheckBox" name="dockableModulesCheckBox_">
+              <property name="text">
+               <string>Enable Module Dock</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QCheckBox" name="modulesSnapToCheckBox_">
+              <property name="maximumSize">
+               <size>
+                <width>200</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Modules Snap To Grid</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="portSizeEffectsCheckBox_">
+              <property name="text">
+               <string>Highlight Ports on Hover</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QCheckBox" name="actionTextIconCheckBox_">
+              <property name="text">
+               <string>Execute Button State</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+              <property name="tristate">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>

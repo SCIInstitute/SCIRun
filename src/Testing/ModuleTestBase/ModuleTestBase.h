@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -42,7 +42,7 @@ namespace SCIRun
     {
     protected:
       ModuleTestBase();
-
+      void initModuleParameters(bool verbose = true);
       Dataflow::Networks::ModuleHandle makeModule(const std::string& name);
 
       void stubPortNWithThisData(Dataflow::Networks::ModuleHandle module, size_t portNum, Core::Datatypes::DatatypeHandle data);

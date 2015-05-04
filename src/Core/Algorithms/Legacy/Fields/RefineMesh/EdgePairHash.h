@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -29,8 +29,7 @@
 #ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H
 #define CORE_ALGORITHMS_FIELDS_REFINEMESH_EDGEPAIRHASH_H 1
 
-// Datatypes that the algorithm uses
-#include <boost/unordered_map.hpp> 
+#include <boost/unordered_map.hpp>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun{

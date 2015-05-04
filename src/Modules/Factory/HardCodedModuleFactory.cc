@@ -3,7 +3,7 @@
 
  The MIT License
 
- Copyright (c) 2012 Scientific Computing and Imaging Institute,
+ Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
 
  License for the specific language governing rights and limitations under
@@ -145,4 +145,9 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
 const ModuleDescriptionMap& HardCodedModuleFactory::getAllAvailableModuleDescriptions() const
 {
   return impl_->lookup.descMap_;
+}
+
+const DirectModuleDescriptionLookupMap& HardCodedModuleFactory::getDirectModuleDescriptionLookupMap() const
+{
+  return impl_->lookup.lookup_;
 }

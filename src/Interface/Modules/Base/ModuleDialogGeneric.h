@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -83,7 +83,11 @@ namespace Gui {
     void pullSignal();
     void executionTimeChanged(int time);
     void executeActionTriggered();
+    void executeFromStateChangeTriggered();
     void setStartupNote(const QString& text);
+    void fatalError(const QString& message);
+    void executionLoopStarted();
+    void executionLoopHalted();
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
     virtual void contextMenuEvent(QContextMenuEvent* e) override;
@@ -113,15 +117,22 @@ namespace Gui {
     void addDynamicLabelManager(QLabel* label, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const Core::Algorithms::AlgorithmParameterName& stateKey);
     //void addSliderManager(QSlider* slider, const Core::Algorithms::AlgorithmParameterName& stateKey);
+
+    void createExecuteInteractivelyToggleAction();
+  private Q_SLOTS:
+    void executeInteractivelyToggled(bool toggle);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
     void createShrinkAction();
     void doCollapse();
+    void connectStateChangeToExecute();
+    void disconnectStateChangeToExecute();
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
     QAction* executeAction_;
     QAction* shrinkAction_;
+    QAction* executeInteractivelyToggleAction_;
     bool collapsed_;
     QString windowTitle_;
     QDockWidget* dock_;

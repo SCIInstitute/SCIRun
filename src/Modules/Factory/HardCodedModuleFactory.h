@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -32,12 +32,13 @@
 #define HARD_CODED_MODULE_FACTORY_H
 
 #include <Dataflow/Network/ModuleFactory.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Modules/Factory/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Factory {
-      
+
       class SCISHARE HardCodedModuleFactory : public SCIRun::Dataflow::Networks::ModuleFactory
       {
       public:
@@ -47,7 +48,8 @@ namespace SCIRun {
         virtual void setStateFactory(SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory);
         virtual void setAlgorithmFactory(SCIRun::Core::Algorithms::AlgorithmFactoryHandle algoFactory);
         virtual void setReexecutionFactory(SCIRun::Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory);
-        virtual const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
+        virtual const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
+        virtual const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const;
       private:
         SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
         boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +27,7 @@
 */
 
 #ifndef CORE_DATATYPES_HAS_ID_H
-#define CORE_DATATYPES_HAS_ID_H 
+#define CORE_DATATYPES_HAS_ID_H
 
 #include <Core/Utils/StringUtil.h>
 #include <Core/Datatypes/share.h>
@@ -50,9 +50,16 @@ namespace Core {
     IdGenerator generator_;
     const IdType id_;
   };
-   
+
 
   typedef HasId<int, AtomicCounter> HasIntegerId;
+
+  class SCISHARE GeometryIDGenerator
+  {
+  public:
+    virtual ~GeometryIDGenerator() {}
+    virtual std::string generateGeometryID(const std::string& tag) const = 0;
+  };
 
 }}
 

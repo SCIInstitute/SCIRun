@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -77,7 +77,7 @@ ReexecuteStrategyFactoryHandle NetworkTests::reex_;
 TEST_F(NetworkTests, CanAddAndRemoveModules)
 {
   Network network(moduleFactory_, sf_, af_, reex_);
- 
+
   EXPECT_EQ(0, network.nmodules());
 
   ModuleLookupInfo mli;
@@ -125,7 +125,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
   ModuleLookupInfo mli2;
   mli2.module_name_ = "Module2";
   ModuleHandle m2 = network.add_module(mli2);
-  
+
   ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
   EXPECT_EQ("module:1_p#o1:0#_@to@_module:2_p#i2:0#", connId.id_);

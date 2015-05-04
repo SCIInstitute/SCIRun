@@ -5,10 +5,10 @@
 
   The MIT License
 
-  Copyright (c) 2011 Scientific Computing and Imaging Institute,
+  Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-   
+
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -35,7 +35,6 @@
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Utils/Legacy/FileUtils.h>
 #include <Core/Utils/Legacy/sci_system.h>
-#include <sci_defs/version_defs.h>
 
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -50,31 +49,6 @@
 #include <fstream>
 #include <map>
 #include <list>
-
-#define SCI_OK_TO_INCLUDE_SCI_ENVIRONMENT_DEFS_H
-#include <sci_defs/environment_defs.h>
-
-#include <stdio.h>
-#ifndef _WIN32
-#  include <unistd.h>
-#  include <sys/param.h>
-#else
-#  define MAXPATHLEN 256
-#  include <direct.h>
-#  include <windows.h>
-#  include <Core/Utils/Legacy/Dir.h>
-#endif
-#include <string.h>
-#include <cctype>
-
-
-#ifndef LOAD_PACKAGE
-#  error You must set a LOAD_PACKAGE or life is pretty dull
-#endif
-
-#ifndef ITCL_WIDGETS
-#  error You must set ITCL_WIDGETS to the iwidgets/scripts path
-#endif
 
 using namespace SCIRun;
 namespace bfs=boost::filesystem;
@@ -97,7 +71,7 @@ SCISHARE Mutex nrrdIEPluginMutex("Nrrd Import/Export Plugin Table Lock");
 
 }
 
-
+#if 0
 /// This set stores all of the environemnt keys that were set when scirun was
 /// started. Its checked by sci_putenv to ensure we don't overwrite variables
 static std::map<std::string, std::string> scirun_env;
@@ -111,7 +85,7 @@ MacroSubstitute( const std::string& var_value )
   std::ostringstream newstring;
   const std::size_t macroFound = var_value.find('$');
   const std::size_t len = var_value.length();
-  
+
   if ( (macroFound != std::string::npos) &&
       (macroFound+1 < len) &&
       (var_value[macroFound+1] == '(') )
@@ -122,7 +96,7 @@ MacroSubstitute( const std::string& var_value )
       std::size_t start = macroFound + 2;
       std::size_t end = macroEndFound - 1;
       std::string macro = var_value.substr(start, (end - start + 1));
-      
+
       const char *env = sci_getenv(macro);
       if (env)
       {
@@ -135,7 +109,7 @@ MacroSubstitute( const std::string& var_value )
       {
         // macro not found, return unmodified string
         return var_value;
-      }      
+      }
       return newstring.str();
     }
   }
@@ -162,7 +136,7 @@ SCIRun::sci_putenv( const std::string &key, const std::string &val )
   scirun_env[key] = val;
 }
 
-std::map<std::string, std::string>& 
+std::map<std::string, std::string>&
 SCIRun::get_sci_environment()
 {
   return (scirun_env);
@@ -179,7 +153,7 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
   // see http://msdn.microsoft.com/en-us/library/ms724872%28v=VS.85%29.aspx
   const int KEY_NAME_SIZE=255;
   const int VALUE_NAME_SIZE=16383;
-  
+
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE", 0, KEY_READ, &software) == ERROR_SUCCESS)
   {
     if (RegOpenKeyEx(software, "SCI Institute", 0, KEY_READ, &company) == ERROR_SUCCESS)
@@ -208,8 +182,8 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
             std::cerr << "Error or unexpected registry value." << std::endl;
             TCHAR* lpMsgBuf;
             FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                           0, GetLastError(), 
-                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
+                           0, GetLastError(),
+                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                            (LPTSTR) &lpMsgBuf, 0, 0);
             if (lpMsgBuf)
               std::cerr << lpMsgBuf << std::endl;
@@ -217,31 +191,31 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
             LocalFree(lpMsgBuf);
           }
 
-          
+
           if (RegOpenKeyEx(version, "Packages", 0, KEY_READ|KEY_ENUMERATE_SUB_KEYS, &pack) == ERROR_SUCCESS)
           {
             // see http://msdn.microsoft.com/en-us/library/ms724256(VS.85).aspx
             TCHAR  name[KEY_NAME_SIZE];           // buffer for subkey name
             DWORD  nameSize;                  // size of name string
             // MAX_PATH defined in WinDef.h
-            TCHAR  className[MAX_PATH] = TEXT("");  // buffer for class name 
+            TCHAR  className[MAX_PATH] = TEXT("");  // buffer for class name
             DWORD  classNameSize = MAX_PATH;  // size of class string
-            DWORD  maxClassNameSize;          // longest class string 
-            DWORD  numSubKeys = 0;            // number of subkeys 
-            DWORD  maxSubKeySize;             // longest subkey size 
-            DWORD  numValues;              // number of values for key 
-            DWORD  maxValueName;           // longest value name 
-            DWORD  maxValueData;           // longest value data 
-            DWORD  securityDescriptorSize; // size of security descriptor 
-            FILETIME filetime;             // last write time 
-            
-            DWORD index, code = ERROR_SUCCESS; 
+            DWORD  maxClassNameSize;          // longest class string
+            DWORD  numSubKeys = 0;            // number of subkeys
+            DWORD  maxSubKeySize;             // longest subkey size
+            DWORD  numValues;              // number of values for key
+            DWORD  maxValueName;           // longest value name
+            DWORD  maxValueData;           // longest value data
+            DWORD  securityDescriptorSize; // size of security descriptor
+            FILETIME filetime;             // last write time
+
+            DWORD index, code = ERROR_SUCCESS;
             // Force SCIRun package to be first.
             // The SCIRun package must always be available.
             packages = "SCIRun,";
             bool scirunPackageFound = false;
-            
-            // Get the class name and the value count. 
+
+            // Get the class name and the value count.
             code = RegQueryInfoKey(pack, (LPTSTR) className, &classNameSize, 0, &numSubKeys, &maxSubKeySize,
                                    &maxClassNameSize, &numValues, &maxValueName, &maxValueData,
                                    &securityDescriptorSize, &filetime);
@@ -267,8 +241,8 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
               std::cerr << "Error reading SCIRun package data from registry." << std::endl;
               TCHAR* lpMsgBuf;
               FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                             0, GetLastError(), 
-                             MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
+                             0, GetLastError(),
+                             MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                              (LPTSTR) &lpMsgBuf, 0, 0);
               if (lpMsgBuf)
                 std::cerr << lpMsgBuf << std::endl;
@@ -289,7 +263,7 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
     }
     RegCloseKey(software);
   }
-  
+
   if (RegOpenKeyEx(HKEY_CURRENT_USER, "Volatile Environment", 0, KEY_READ, &volatileEnvironment) == ERROR_SUCCESS) {
     TCHAR data[MAX_PATH];
     DWORD size = MAX_PATH;
@@ -307,8 +281,8 @@ void getWin32RegistryValues(bfs::path& obj, bfs::path& src, bfs::path& appdata, 
     std::cerr << "Error reading SCIRun application data path from registry." << std::endl;
     TCHAR* lpMsgBuf;
     FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                   0, GetLastError(), 
-                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
+                   0, GetLastError(),
+                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                    (LPTSTR) &lpMsgBuf, 0, 0);
     if (lpMsgBuf)
       std::cerr << lpMsgBuf << std::endl;
@@ -341,7 +315,7 @@ void set_env_to_zero_if_not_present(const std::string& key)
     sci_putenv(key, "0");
 }
 
-void putenv_if_not_present(const std::string& key, const std::string& value) 
+void putenv_if_not_present(const std::string& key, const std::string& value)
 {
   if (!sci_getenv(key))
   {
@@ -353,7 +327,7 @@ void putenv_if_not_present(const std::string& key, const std::string& value)
 class SciEnvironmentBuilder
 {
 public:
-  static void set_home(bfs::path& appdata) 
+  static void set_home(bfs::path& appdata)
   {
     // native windows doesn't have "HOME"
     if (!sci_getenv("HOME"))
@@ -363,8 +337,8 @@ public:
     }
   }
 
-  static void try_get_working_windows_directories(bfs::path& objdir, bfs::path& srcdir, bfs::path& appdata, 
-    bfs::path& thirdpartydir, std::string& packages) 
+  static void try_get_working_windows_directories(bfs::path& objdir, bfs::path& srcdir, bfs::path& appdata,
+    bfs::path& thirdpartydir, std::string& packages)
   {
 #ifdef _WIN32
     getWin32RegistryValues(objdir, srcdir, appdata, thirdpartydir, packages);
@@ -386,12 +360,12 @@ public:
 #endif
   }
 
-  static void append_directory(std::string& objdir, char* execname, const std::string& executable_name) 
+  static void append_directory(std::string& objdir, char* execname, const std::string& executable_name)
   {
     const char *path = sci_getenv("PATH");
     if (path &&
-      objdir.find("/") == std::string::npos && 
-      objdir.find("\\") == std::string::npos) 
+      objdir.find("/") == std::string::npos &&
+      objdir.find("\\") == std::string::npos)
     {
       objdir = findFileInPath(execname, path);
       ASSERT(objdir.length());
@@ -404,13 +378,13 @@ public:
     }
   }
 
-  static void set_object_directory(char* execname, bfs::path& objdir, std::string& executable_name) 
+  static void set_object_directory(char* execname, bfs::path& objdir, std::string& executable_name)
   {
-    if (!sci_getenv("SCIRUN_OBJDIR")) 
+    if (!sci_getenv("SCIRUN_OBJDIR"))
     {
       if (!execname)
         sci_putenv("SCIRUN_OBJDIR", objdir.string());
-      else 
+      else
       {
         std::string objDirectory(execname);
 
@@ -435,10 +409,10 @@ public:
 
         sci_putenv("SCIRUN_OBJDIR", objDirectory);
       }
-    }	
+    }
   }
 
-  static void set_obj_dir_non_windows(const bfs::path& testdir, bfs::path& objdir ) 
+  static void set_obj_dir_non_windows(const bfs::path& testdir, bfs::path& objdir )
   {
 #ifndef _WIN32
     std::string sciruntcl_package("sciruntcl");
@@ -461,7 +435,7 @@ public:
 #endif
   }
 
-  static void test_and_set_various_source_dirs(const bfs::path& testdir, bfs::path& srcdir) 
+  static void test_and_set_various_source_dirs(const bfs::path& testdir, bfs::path& srcdir)
   {
     if ( bfs::exists( testdir / "src" ) )
     {
@@ -477,10 +451,10 @@ public:
     {
       srcdir = testdir / ".." / ".." / "src";
       sci_putenv("SCIRUN_SRCDIR", format_path(srcdir));
-    }	
+    }
   }
 
-  static void override_defaults(char** env) 
+  static void override_defaults(char** env)
   {
     if (env) {
       char **environment = env;
@@ -492,8 +466,8 @@ public:
       }
     }
   }
-  
-  static void set_example_nets_dir(const bfs::path& srcdir) 
+
+  static void set_example_nets_dir(const bfs::path& srcdir)
   {
     putenv_if_not_present("SCIRUN_EXAMPLE_NETS_DIR", format_path(get_example_nets_dir(srcdir.string())));
   }
@@ -505,7 +479,7 @@ public:
 std::string SCIRun::get_example_nets_dir(const std::string& srcdir)
 {
   bfs::path srcDirectory(srcdir);
-  
+
   bfs::path nets = srcDirectory / "nets";
   if (bfs::exists(nets))
     return nets.string();
@@ -523,20 +497,20 @@ SCIRun::create_sci_environment(char **env, char *execname)
   // set defaults
   scirun_env.clear();
   create_environment_defaults(scirun_env);
-  
+
   SciEnvironmentBuilder::override_defaults(env);
-  
+
   bfs::path srcdir = SCIRUN_SRCDIR;
   bfs::path objdir = SCIRUN_OBJDIR;
-  
-  if (execname) 
+
+  if (execname)
   {
     bfs::path full_name(execname);
     bfs::path testdir = full_name.parent_path();
     SciEnvironmentBuilder::set_obj_dir_non_windows(testdir, objdir);
     SciEnvironmentBuilder::test_and_set_various_source_dirs(testdir, srcdir);
   }
-  
+
   bfs::path thirdpartydir = objdir;
   const bfs::path tcllibrary = objdir / "lib" / "tcl8.6";
   const bfs::path tklibrary = objdir / "lib" / "tk8.6";
@@ -546,10 +520,10 @@ SCIRun::create_sci_environment(char **env, char *execname)
   sci_putenv("TK_LIBRARY", format_path(tklibrary));
 
 #ifndef _WIN32
-  setenv("TCL_LIBRARY", tcllibrary.c_str() , 1); 
+  setenv("TCL_LIBRARY", tcllibrary.c_str() , 1);
   setenv("TK_LIBRARY", tklibrary.c_str() , 1);
 #endif
-    
+
   bfs::path appdata;
   std::string packages = LOAD_PACKAGE;
   SciEnvironmentBuilder::try_get_working_windows_directories(objdir, srcdir, appdata, thirdpartydir, packages);
@@ -579,31 +553,31 @@ SCIRun::create_sci_environment(char **env, char *execname)
   if (!pkg_lib_path.empty())
     putenv_if_not_present("SCIRUN_PACKAGE_LIB_PATH", pkg_lib_path);
 #endif
-  
+
   putenv_if_not_present("SCIRUN_TMP_DIR", "/tmp/");
-  
+
   set_env_to_zero_if_not_present("SCIRUN_NET_SUBSTITUTE_DATADIR");
   set_env_to_zero_if_not_present("SCIRUN_NET_RELATIVE_FILENAMES");
-  
+
   SciEnvironmentBuilder::set_home(appdata);
-  
-  sci_putenv("SCIRUN_ITCL_WIDGETS", 
+
+  sci_putenv("SCIRUN_ITCL_WIDGETS",
              MacroSubstitute(sci_getenv("SCIRUN_ITCL_WIDGETS")));
-  
+
   sci_putenv("EXECUTABLE_NAME", executable_name);
-  
+
   std::string rcfile = "." + executable_name + "rc";
   find_and_parse_rcfile(rcfile);
 }
 
 // parse_rcfile reads the file 'rcfile' into SCIRuns enviroment mechanism
-// It uses sci_putenv to set variables in the environment. 
+// It uses sci_putenv to set variables in the environment.
 // Returns true if the file was opened and parsed.  False otherwise.
 bool
 SCIRun::parse_rcfile( const char* rcfile )
 {
   if ( !validFile( bfs::path(rcfile) )) return (false);
-    
+
   std::ifstream file;
 
   try
@@ -616,14 +590,14 @@ SCIRun::parse_rcfile( const char* rcfile )
   }
 
   std::string line;
-  
+
   while(!file.eof())
-  { 
+  {
     std::getline(file,line);
 
     std::string key;
     std::string value;
-    
+
     size_t startloc = 0;
     while (startloc < line.size() && ((line[startloc] == ' ')||(line[startloc] == '\t'))) startloc++;
     size_t equalloc = line.find("=");
@@ -660,11 +634,11 @@ SCIRun::parse_rcfile( const char* rcfile )
 
   sci_putenv("SCIRUN_RC_PARSED","1");
   sci_putenv("SCIRUN_RCFILE",rcfile);
-  
+
   return true;
 }
 
-// find_and_parse_rcfile will search for the rcfile file in 
+// find_and_parse_rcfile will search for the rcfile file in
 // default locations and read it into the environemnt if possible.
 /// @todo: boostify this
 void
@@ -676,20 +650,20 @@ SCIRun::find_and_parse_rcfile(const std::string &rcfile)
   // 1. check the local directory
   std::string filename(rcfile);
   foundrc = parse_rcfile(filename.c_str());
-  
+
   // 2. check the BUILD_DIR
   if (!foundrc) {
     filename = SCIRUN_OBJDIR + slash + std::string(rcfile);
     foundrc = parse_rcfile(filename.c_str());
   }
-  
+
   // 3. check the user's home directory
   const char *HOME = NULL;
   if (!foundrc && (HOME = sci_getenv("HOME"))) {
     filename = HOME + slash + std::string(rcfile);
     foundrc = parse_rcfile(filename.c_str());
   }
-  
+
   // 4. check the source code directory
   if (!foundrc) {
     filename = SCIRUN_SRCDIR + slash + std::string(rcfile);
@@ -708,7 +682,7 @@ SCIRun::update_rcfile(const std::string& key, const std::string& value)
 {
   std::string filename = sci_getenv("SCIRUN_RCFILE");
   if (filename.size() == 0) return (false);
-  
+
   std::ifstream file;
 
   try
@@ -722,11 +696,11 @@ SCIRun::update_rcfile(const std::string& key, const std::string& value)
 
   std::string line;
   std::list<std::string> lines;
-  
+
   bool found = false;
-        
+
   while(!file.eof())
-  { 
+  {
     std::getline(file,line);
     size_t startloc = 0;
     while (startloc < line.size() && ((line[startloc] == ' ')||(line[startloc] == '\t'))) startloc++;
@@ -747,15 +721,15 @@ SCIRun::update_rcfile(const std::string& key, const std::string& value)
     lines.push_back(line);
   }
   file.close();
-  
+
   if (found == false)
   {
     line = key + "=" + value + "\n";
     lines.push_back(line);
   }
-  
+
   std::ofstream nfile;
-  
+
   try
   {
     nfile.open(filename.c_str());
@@ -768,7 +742,7 @@ SCIRun::update_rcfile(const std::string& key, const std::string& value)
   std::list<std::string>::iterator it, it_end;
   it = lines.begin();
   it_end = lines.end();
-  
+
   while(it != it_end)
   {
     nfile << (*it); ++it;
@@ -804,7 +778,7 @@ SCIRun::copy_and_parse_scirunrc()
     }
 
     std::cout << "Copying " << srcRc << " to " << homerc << "\n";
-    if (copyFile(srcRc, homerc) == 0) 
+    if (copyFile(srcRc, homerc) == 0)
     {
       // If the scirunrc file was copied, then parse it.
       parse_rcfile(homerc.c_str());
@@ -815,11 +789,11 @@ SCIRun::copy_and_parse_scirunrc()
   }
 }
 
-// sci_getenv_p will lookup the value of the environment variable 'key' and 
+// sci_getenv_p will lookup the value of the environment variable 'key' and
 // returns false if the variable is equal to 'false', 'no', 'off', or '0'
 // returns true otherwise.  Case insensitive.
 bool
-SCIRun::sci_getenv_p(const std::string &key) 
+SCIRun::sci_getenv_p(const std::string &key)
 {
   const char *value = sci_getenv(key);
 
@@ -841,12 +815,12 @@ bool
 SCIRun::replace_environment_variables(std::string& str)
 {
   // scan for variable names
-  
+
   std::string::size_type size = str.size();
   std::string::size_type old_size = str.size();
   std::string::size_type start_loc = 0;
   std::string::size_type dollar_loc = str.find('$',start_loc);
-  
+
   while (dollar_loc != std::string::npos)
   {
     // found a possible variable
@@ -869,12 +843,12 @@ SCIRun::replace_environment_variables(std::string& str)
     else
     {
       std::string::size_type end_loc = start_loc+1;
-      
+
       while ( (end_loc < size) && ((str[end_loc] >= 'a' && str[end_loc] <= 'z')||
-              (str[end_loc] >= 'A' && str[end_loc] <= 'Z') || 
+              (str[end_loc] >= 'A' && str[end_loc] <= 'Z') ||
               (str[end_loc] >= '0' && str[end_loc] <= '9') ||
               (str[end_loc] == '_' ))) end_loc++;
-              
+
       if (end_loc > start_loc+1)
       {
         std::string key = str.substr(dollar_loc+1,end_loc-dollar_loc-1);
@@ -885,7 +859,7 @@ SCIRun::replace_environment_variables(std::string& str)
           str = str.substr(0,dollar_loc)+value+str.substr(end_loc);
           size = str.size();
           start_loc = size - end_loc - 1;
-        }        
+        }
       }
     }
     dollar_loc = str.find('$',start_loc+1);
@@ -896,4 +870,5 @@ SCIRun::replace_environment_variables(std::string& str)
 
 
 
+#endif
 #endif

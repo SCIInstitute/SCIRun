@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CreateBasicColorMap</class>
- <widget class="QDialog" name="CreateBasicColorMap">
+ <class>CreateStandardColorMap</class>
+ <widget class="QDialog" name="CreateStandardColorMap">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -67,7 +67,12 @@
         </property>
         <item>
          <property name="text">
-          <string>Grayscale</string>
+          <string>Rainbow</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Old Rainbow</string>
          </property>
         </item>
         <item>
@@ -77,7 +82,7 @@
         </item>
         <item>
          <property name="text">
-          <string>Rainbow</string>
+          <string>Grayscale</string>
          </property>
         </item>
        </widget>

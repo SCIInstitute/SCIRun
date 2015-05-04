@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -32,11 +32,14 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Logging/Log.h>
+#include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Testing;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Visualization;
+using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core;
 using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
@@ -78,3 +81,49 @@ INSTANTIATE_TEST_CASE_P(
   //, 256 // probably runs out of memory
   )
   );
+
+class ShowFieldStateGeometryNameSynchronizationTest : public ModuleTest
+{
+protected:
+  virtual void SetUp()
+  {
+    Log::get().setVerbose(false);
+    showField = makeModule("ShowField");
+    showField->setStateDefaults();
+    auto size = 2;
+    latVol = CreateEmptyLatVol(size, size, size);
+    stubPortNWithThisData(showField, 0, latVol);
+  }
+
+  UseRealModuleStateFactory f;
+  ModuleHandle showField;
+  FieldHandle latVol;
+};
+
+TEST_F(ShowFieldStateGeometryNameSynchronizationTest, GeometryNameSynchronizesWithShowFieldState)
+{
+  ModuleLevelUniqueIDGenerator generator(*showField, "EntireField");
+  auto hash1 = generator();
+  auto hash2NoChange = generator();
+  EXPECT_EQ(hash1, hash2NoChange);
+
+  showField->get_state()->setValue(Parameters::CylinderRadius, 2);
+
+  auto stateChangeShouldBeDifferent = generator();
+  EXPECT_NE(hash2NoChange, stateChangeShouldBeDifferent);
+  EXPECT_EQ(stateChangeShouldBeDifferent, generator());
+
+  auto size = 3;
+  latVol = CreateEmptyLatVol(size, size, size);
+  stubPortNWithThisData(showField, 0, latVol);
+
+  auto inputChangeShouldBeDifferent = generator();
+  EXPECT_NE(stateChangeShouldBeDifferent, inputChangeShouldBeDifferent);
+
+  stubPortNWithThisData(showField, 1, ColorMapHandle());
+  auto addInputShouldBeDifferent = generator();
+  EXPECT_NE(inputChangeShouldBeDifferent, addInputShouldBeDifferent);
+
+  EXPECT_NE(hash1, addInputShouldBeDifferent);
+  EXPECT_NE(inputChangeShouldBeDifferent, hash1);
+}

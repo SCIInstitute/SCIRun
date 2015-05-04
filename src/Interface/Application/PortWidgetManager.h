@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -50,6 +50,9 @@ public:
     return boost::join(inputPorts_, outputPorts_);
   }
 
+  const Ports& inputs() const { return inputPorts_; }
+  const Ports& outputs() const { return outputPorts_; }
+
   size_t numInputPorts() const { return inputPorts_.size(); }
   size_t numOutputPorts() const { return outputPorts_.size(); }
 
@@ -59,6 +62,7 @@ public:
   void addInputsToLayout(QHBoxLayout* layout);
   void addOutputsToLayout(QHBoxLayout* layout);
   void reindexInputs();
+  void setHighlightPorts(bool on);
 
 private:
   Ports inputPorts_, outputPorts_;

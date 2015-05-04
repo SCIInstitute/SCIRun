@@ -3,7 +3,7 @@
 
  The MIT License
 
- Copyright (c) 2012 Scientific Computing and Imaging Institute,
+ Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
 
 
@@ -49,6 +49,13 @@ using namespace SCIRun::Core::Commands;
     if (params->help())
     {
       q->enqueue(cmdFactory_->create(PrintHelp));
+      q->enqueue(cmdFactory_->create(QuitCommand));
+      return q;
+    }
+
+    if (params->printModuleList())
+    {
+      q->enqueue(cmdFactory_->create(PrintModules));
       q->enqueue(cmdFactory_->create(QuitCommand));
       return q;
     }

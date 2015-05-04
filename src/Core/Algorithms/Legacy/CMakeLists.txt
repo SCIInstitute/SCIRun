@@ -3,7 +3,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -30,5 +30,6 @@ ADD_SUBDIRECTORY(Fields)
 ADD_SUBDIRECTORY(DataIO)
 ADD_SUBDIRECTORY(Converter)
 ADD_SUBDIRECTORY(Forward)
+ADD_SUBDIRECTORY(Geometry)
 #ADD_SUBDIRECTORY(Math)
 ADD_SUBDIRECTORY(FiniteElements)

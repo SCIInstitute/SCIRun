@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -27,9 +27,6 @@
 */
 
 #include <iostream>
-#include <boost/foreach.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
 #include <QtGui>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
@@ -40,6 +37,8 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
+
+#include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -56,36 +55,39 @@ namespace SCIRun {
         return std::find_if(module.input_ports_.begin(), module.input_ports_.end(), [&](const InputPortDescription& in) { return in.datatype == portTypeToMatch; }) != module.input_ports_.end();
     }
 
-    void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, PortWidget* parent)
+    QList<QAction*> fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, PortWidget* parent)
     {
       const std::string& portTypeToMatch = parent->get_typename();
       bool isInput = parent->isInput();
-      fillMenuWithFilteredModuleActions(menu, moduleMap,
+      return fillMenuWithFilteredModuleActions(menu, moduleMap,
         [=](const ModuleDescription& m) { return portTypeMatches(portTypeToMatch, isInput, m); },
         [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), parent, SLOT(connectNewModule())); });
     }
 
     //TODO: lots of duplicated filtering here. Make smarter logic to cache based on port type, since it's the same menu for each type--just need to copy an existing one.
-    void fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup)
+    QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup)
     {
-      BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
+      QList<QAction*> allCompatibleActions;
+      for (const auto& package : moduleMap)
       {
         const std::string& packageName = package.first;
         auto p = new QMenu(QString::fromStdString(packageName), menu);
         menu->addMenu(p);
-        BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
+        for (const auto& category : package.second)
         {
           const std::string& categoryName = category.first;
           QList<QAction*> actions;
 
-          BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
+          for (const auto& module : category.second)
           {
             if (modulePred(module.second))
             {
               const std::string& moduleName = module.first;
-              auto m = new QAction(QString::fromStdString(moduleName), menu);
-              hookup(m);
-              actions.append(m);
+              auto qname = QString::fromStdString(moduleName);
+              auto action = new QAction(qname, menu);
+              hookup(action);
+              actions.append(action);
+              allCompatibleActions.append(action);
             }
           }
           if (!actions.empty())
@@ -97,13 +99,14 @@ namespace SCIRun {
         }
         menu->addSeparator();
       }
+      return allCompatibleActions;
     }
 
 
     class PortActionsMenu : public QMenu
     {
     public:
-      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent)
+      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent), faves_(nullptr)
       {
         QList<QAction*> actions;
         if (!parent->isInput())
@@ -121,30 +124,33 @@ namespace SCIRun {
         addActions(actions);
 
         auto m = new QMenu("Connect Module", parent);
-        fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
+        faves_ = new QMenu("Favorites", m);
+        m->addMenu(faves_);
+        compatibleModuleActions_ = fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
         addMenu(m);
       }
-      QAction* getAction(const char* name) const
+      void filterFavorites()
       {
-        BOOST_FOREACH(QAction* action, actions())
-        {
-          if (action->text().contains(name))
-            return action;
-        }
-        return 0;
+        faves_->clear();
+        for (const auto& action : compatibleModuleActions_)
+          if (SCIRunMainWindow::Instance()->isInFavorites(action->text())) // TODO: break out predicate
+            faves_->addAction(action);
       }
+    private:
+      QMenu* faves_;
+      QList<QAction*> compatibleModuleActions_;
     };
   }}
 
 PortWidget::PortWidgetMap PortWidget::portWidgetMap_;
 
-PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent) {}
+PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent), isHighlighted_(false) {}
 
 PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId,
   const PortId& portId, size_t index,
   bool isInput, bool isDynamic,
   boost::shared_ptr<ConnectionFactory> connectionFactory,
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
@@ -157,7 +163,6 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
   setToolTip(QString(name_).replace("_", " ") + (isDynamic ? ("[" + QString::number(portId_.id) + "]") : "") + " : " + QString::fromStdString(typename_));
-
 
   setMenu(menu_);
 
@@ -195,9 +200,16 @@ void PortWidget::turn_on_light()
 void PortWidgetBase::paintEvent(QPaintEvent* event)
 {
   QSize size = sizeHint();
+  const double highlightFactor = 1.7;
+  if (isHighlighted_)
+  {
+    size *= highlightFactor;
+    resize(size);
+  }
+
   QPainter painter(this);
   painter.fillRect(QRect(QPoint(), size), color());
-  QPoint lightStart = isInput() ? QPoint(0,5) : QPoint(0,0);
+  QPoint lightStart = isInput() ? QPoint(0, size.height() - 2) : QPoint(0,0);
 
   //TODO: remove light entirely?
   QColor lightColor = isLightOn() ? Qt::red : color();
@@ -298,6 +310,7 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
   }
   else if (button == Qt::RightButton && (!isConnected() || !isInput()))
   {
+    menu_->filterFavorites();
     showMenu();
   }
 }
@@ -423,6 +436,18 @@ ModuleId PortWidget::getUnderlyingModuleId() const
   return moduleId_;
 }
 
+void PortWidget::setHighlight(bool on)
+{
+  isHighlighted_ = on;
+  if (on)
+  {
+    if (isInput() && isConnected())
+      isHighlighted_ = false;
+  }
+  else
+  {
+  }
+}
 
 void PortWidget::portCachingChanged(bool checked)
 {
@@ -472,4 +497,17 @@ ModuleId BlankPort::getUnderlyingModuleId() const
 QColor BlankPort::color() const
 {
   return QColor(0,0,0,0);
+}
+
+std::vector<PortWidget*> PortWidget::connectedPorts() const
+{
+  std::vector<PortWidget*> otherPorts;
+  auto notThisOne = [this](const std::pair<PortWidget*, PortWidget*>& portPair) { if (portPair.first == this) return portPair.second; else return portPair.first; };
+  for (const auto& c : connections_)
+  {
+    auto ends = c->connectedPorts();
+
+    otherPorts.push_back(notThisOne(ends));
+  }
+  return otherPorts;
 }

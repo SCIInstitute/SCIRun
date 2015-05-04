@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -37,6 +37,7 @@
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
+#include <Interface/Application/PortWidgetManager.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/ClosestPortFinder.h>
@@ -142,6 +143,8 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count)
 {
+  //qDebug() << "addModuleWidget " << module->get_id().id_.c_str();
+  latestModuleId_ = module->get_id().id_;
   //std::cout << "\tNE modules done (start): " << *count.count << std::endl;
   ModuleWidget* moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
@@ -216,12 +219,67 @@ void NetworkEditor::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHan
 
 void NetworkEditor::replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {
-  std::cout << "TODO: replace module: " << moduleToReplace->get_module_name() << " with " << newModuleName << std::endl;
-  //auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
-  //QPointF increment(0, portToConnect->isInput() ? -110 : 110);
-  //lastModulePosition_ = widget->scenePos() + increment;
+  //add new module
 
-  //controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
+  auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
+  lastModulePosition_ = oldModule->scenePos();
+  //qDebug() << "replace: adding new";
+  controller_->addModule(newModuleName);
+
+  // connect up same ports
+  //qDebug() << "TODO: replace module: " << moduleToReplace->get_id().id_.c_str() << " with " << latestModuleId_.c_str();
+  auto newModule = findById(scene_->items(), latestModuleId_);
+
+  auto oldModPorts = oldModule->getModuleWidget()->ports();
+  auto newModPorts = newModule->getModuleWidget()->ports();
+
+  {
+    int nextInputIndex = 0;
+    auto newInputs = newModPorts.inputs();
+    for (const auto& iport : oldModPorts.inputs())
+    {
+      //qDebug() << port->get_portname().c_str();
+      if (iport->isConnected())
+      {
+        auto toConnect = std::find_if(newInputs.begin(), newInputs.end(),
+          [&](const PortWidget* port) { return port->get_typename() == iport->get_typename() && port->getIndex() >= nextInputIndex; });
+        if (toConnect == newInputs.end())
+          throw "logical error";
+        requestConnection(iport->connectedPorts()[0], *toConnect);
+        nextInputIndex = (*toConnect)->getIndex() + 1;
+      }
+    }
+  }
+
+  {
+    int nextOutputIndex = 0;
+    auto newOutputs = newModPorts.outputs();
+    for (const auto& oport : oldModPorts.outputs())
+    {
+      //qDebug() << port->get_portname().c_str();
+      if (oport->isConnected())
+      {
+        auto toConnect = std::find_if(newOutputs.begin(), newOutputs.end(),
+          [&](const PortWidget* port) { return port->get_typename() == oport->get_typename() && port->getIndex() >= nextOutputIndex; });
+        if (toConnect == newOutputs.end())
+          throw "logical error";
+        auto connectedPorts = oport->connectedPorts();
+        std::vector<PortWidget*> dynamicPortsNeedSpecialHandling;
+        std::copy_if(connectedPorts.begin(), connectedPorts.end(), std::back_inserter(dynamicPortsNeedSpecialHandling), [](const PortWidget* p) { return p->isDynamic(); });
+        connectedPorts.erase(std::remove_if(connectedPorts.begin(), connectedPorts.end(), [](const PortWidget* p) { return p->isDynamic(); }), connectedPorts.end());
+        oport->deleteConnections();
+        for (const auto& connected : connectedPorts)
+        {
+          requestConnection(connected, *toConnect);
+        }
+        nextOutputIndex = (*toConnect)->getIndex() + 1;
+      }
+    }
+  }
+
+  //qDebug() << "replace: deleting old";
+  // delete old module
+  oldModule->deleteLater();
 }
 
 namespace
@@ -251,6 +309,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
   connect(module, SIGNAL(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)),
     this, SLOT(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)));
+  connect(module, SIGNAL(disableWidgetDisabling()), this, SIGNAL(disableWidgetDisabling()));
+  connect(module, SIGNAL(reenableWidgetDisabling()), this, SIGNAL(reenableWidgetDisabling()));
 
   if (module->hasDynamicPorts())
   {
@@ -274,12 +334,14 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(modified()));
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(snapToModules()), proxy, SLOT(snapToGrid()));
+  connect(this, SIGNAL(highlightPorts(int)), proxy, SLOT(highlightPorts(int)));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
   connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
+  proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
   scene_->addItem(proxy);
   proxy->createStartupNote();

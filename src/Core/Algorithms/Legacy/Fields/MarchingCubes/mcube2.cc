@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -32,7 +32,7 @@
 // marching cubes case table for generating isosurfaces
 //
 
-#include <Core/Algorithms/Fields/MarchingCubes/mcube2.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/mcube2.h>
 
 namespace SCIRun {
 

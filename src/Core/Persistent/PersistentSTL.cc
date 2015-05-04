@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2009 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 
@@ -203,62 +203,78 @@ namespace SCIRun {
         if ((index_size == 4)&&(sizeof(index_type)==4))
         {
           data.resize(static_cast<size_t>(size));
-          if (stream.supports_block_io())
-            stream.block_io(&data.front(),4,static_cast<size_t>(size));
-          else
-            for (long long i=0; i<size;i++)
+          if (size > 0)
+          {
+            if (stream.supports_block_io())
+              stream.block_io(&data.front(), 4, static_cast<size_t>(size));
+            else
             {
-              stream.io(data[i]);
+              for (long long i = 0; i < size; i++)
+              {
+                stream.io(data[i]);
+              }
             }
+          }
         }
         else if ((index_size == 4)&&(sizeof(index_type)==8))
         {
           std::vector<unsigned int> indices;
           indices.resize(static_cast<size_t>(size));
-
-          if (stream.supports_block_io())
-            stream.block_io(&indices.front(),4,static_cast<size_t>(size));
-          else
-            for (unsigned int i=0; i<size;i++)
+          if (size > 0)
+          {
+            if (stream.supports_block_io())
+              stream.block_io(&indices.front(), 4, static_cast<size_t>(size));
+            else
             {
-              stream.io(indices[i]);
-            }      
+              for (unsigned int i = 0; i < size; i++)
+              {
+                stream.io(indices[i]);
+              }
+            }
 
             data.resize(static_cast<size_t>(size));
-            for (unsigned int i=0; i<size; i++)
+            for (unsigned int i = 0; i < size; i++)
             {
-              data[i] = static_cast<index_type>(indices[i]);        
+              data[i] = static_cast<index_type>(indices[i]);
             }
+          }
         }
         else if ((index_size == 8)&&(sizeof(index_type)==4))
         {
           std::vector<long long> indices;
           indices.resize(static_cast<size_t>(size));
-
-          if (stream.supports_block_io())
-            stream.block_io(&indices.front(),8,static_cast<size_t>(size));
-          else
-            for (long long i=0; i<size;i++)
-            {
-              stream.io(indices[i]);
-            }      
+          if (size > 0)
+          {
+            if (stream.supports_block_io())
+              stream.block_io(&indices.front(), 8, static_cast<size_t>(size));
+            else
+              for (long long i = 0; i < size; i++)
+              {
+                stream.io(indices[i]);
+              }
 
             data.resize(static_cast<size_t>(size));
-            for (long long i=0; i<size; i++)
+            for (long long i = 0; i < size; i++)
             {
-              data[i] = static_cast<index_type>(indices[i]);        
+              data[i] = static_cast<index_type>(indices[i]);
             }
+          }
         }
         if ((index_size == 8)&&(sizeof(index_type)==8))
         {
           data.resize(static_cast<size_t>(size));
-          if (stream.supports_block_io())
-            stream.block_io(&data.front(),8,static_cast<size_t>(size));
-          else
-            for (long long i=0; i<size;i++)
+          if (size > 0)
+          {
+            if (stream.supports_block_io())
+              stream.block_io(&data.front(), 8, static_cast<size_t>(size));
+            else
             {
-              stream.io(data[i]);
+              for (long long i = 0; i < size; i++)
+              {
+                stream.io(data[i]);
+              }
             }
+          }
         }      
         stream.end_class();      
         return;

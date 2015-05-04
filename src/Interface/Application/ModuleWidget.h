@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -112,6 +112,9 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
+  void highlightPorts();
+  void unhighlightPorts();
+
   void printPortPositions() const;
 
   bool hasDynamicPorts() const;
@@ -168,6 +171,12 @@ Q_SIGNALS:
   void moduleSelected(bool selected);
   void displayChanged();
   void requestModuleVisible();
+  void deleteMeLater();
+  void executeEnds();
+  void signalExecuteButtonIconChangeToStop();
+  void disableWidgetDisabling();
+  void reenableWidgetDisabling();
+  void executeAgain();
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
@@ -176,6 +185,9 @@ private Q_SLOTS:
   void fillReplaceWithMenu();
   void replaceModuleWith();
   void updateDialogWithPortCount();
+  void handleDialogFatalError(const QString& message);
+  void changeExecuteButtonToPlay();
+  void changeExecuteButtonToStop();
 private:
   ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;

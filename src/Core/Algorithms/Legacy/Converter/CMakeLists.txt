@@ -3,7 +3,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -36,12 +36,14 @@ SET(Core_Algorithms_Legacy_Converter_SRCS
   #ConvertToNrrd.cc
   #MatricesToDipoleField.cc
   #ConvertBundleToField.cc
+  ConvertMatrixToString.cc
 )
 
 SET(Core_Algorithms_Legacy_Converter_HEADERS
   ConverterAlgo.h
   NrrdToField.h
   FieldToNrrd.h
+  ConvertMatrixToString.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Converter

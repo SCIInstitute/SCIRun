@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2012 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 License for the specific language governing rights and limitations under
@@ -49,6 +49,9 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/FiniteElements/BuildFEVolRHS.h>
 #include <Modules/Legacy/Visualization/GenerateStreamLines.h>
+#include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
+#include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
+#include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -58,6 +61,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Modules::Visualization;
+using namespace SCIRun::Modules::Inverse;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
@@ -86,4 +90,7 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
+  addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
+  addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
+  addModuleDesc<ExtractSimpleIsosurfaceModule>("ExtractSimpleIsosurface","NewField","SCIRun","...","...");
 }

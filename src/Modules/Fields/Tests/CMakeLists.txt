@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -34,6 +34,7 @@ SET(Modules_Fields_Tests_SRCS
   CalculateSignedDistanceToFieldTests.cc
   GetFieldBoundaryTests.cc
   ConvertQuadSurfToTriSurfTests.cc
+  ConvertHexVolToTetVolTests.cc
   AlignMeshBoundingBoxesTests.cc
   GetFieldNodesTests.cc
   SetFieldNodesTests.cc
@@ -44,6 +45,7 @@ SET(Modules_Fields_Tests_SRCS
   MapFieldDataFromNodeToElemTests.cc
   MapFieldDataFromElemToNodeTests.cc
   SplitFieldByConnectedRegionTests.cc
+  ExtractSimpleIsoSurfaceTest.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests

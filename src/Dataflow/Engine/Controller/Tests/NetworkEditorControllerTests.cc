@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -136,7 +136,7 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
   
   EXPECT_CALL(slots_, moduleAddedSlot(_,_)).Times(1);
   EXPECT_CALL(*mockNetwork_, add_module(_)).Times(1);
-  controller.addModule(ModuleLookupInfo("m1"));
+  controller.addModule(ModuleLookupInfo("m1", "cat", "pack"));
   
   EXPECT_CALL(slots_, moduleRemovedSlot(_)).Times(1);
   EXPECT_CALL(*mockNetwork_, remove_module(ModuleId("m1"))).Times(1);

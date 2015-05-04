@@ -3,7 +3,7 @@ For more information, please see: http://software.sci.utah.edu
 
 The MIT License
 
-Copyright (c) 2012 Scientific Computing and Imaging Institute,
+Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
 
@@ -427,6 +427,8 @@ void TikhonovAlgorithmImpl::run(const TikhonovAlgorithmImpl::Input& input)
     {
       rm[i] = AtrA[i] + lambda_sq * RtrR[i];
     }
+    //TODO: don't use pointers, math should look like this:
+    //regForMatrix = ARRtrAtr + lambda_sq * CCtr;
 
     if (computeRegularizedInverse_)
     {

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2011 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -32,7 +32,7 @@
 ///
 ///@author
 ///       McKay Davis
-///       Scientific Computing and Imaging Institute 
+///       Scientific Computing and Imaging Institute
 ///       University of Utah
 ///@date  January 2004
 ///
@@ -42,7 +42,7 @@
 
 #include <string>
 #include <map>
-
+#if 0
 #include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
@@ -56,15 +56,15 @@ namespace SCIRun {
 
   // Use the following functions to get/put environment variables.
   SCISHARE void sci_putenv( const std::string & key, const std::string & val );
-  // Returns NULL if 'key' not found. 
+  // Returns NULL if 'key' not found.
   SCISHARE const char *sci_getenv( const std::string & key );
 
   // sci_getenv_p
   // will return a bool representing the value of environment variable 'key'
   // returns FALSE if and only if:
-  //   the variable does not exist, 
+  //   the variable does not exist,
   //   or is empty,
-  //   or is equal (Case insensitive) to 'false', 'no', 'off', or '0' 
+  //   or is equal (Case insensitive) to 'false', 'no', 'off', or '0'
   // returns TRUE:
   //   otherwise.
   SCISHARE bool sci_getenv_p( const std::string & key );
@@ -77,3 +77,4 @@ namespace SCIRun {
 } // end namespace SCIRun
 
 #endif // #ifndef Core_Util_Environment_h
+#endif

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -87,8 +87,9 @@ class SCISHARE ConverterAlgo : public AlgorithmBase
 
     #ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
     bool NrrdToMatrix(NrrdDataHandle input, Datatypes::MatrixHandle& output);
+	#endif
     bool MatrixToString(Datatypes::MatrixHandle input, Datatypes::StringHandle& output);
-    #endif
+    
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
   private:

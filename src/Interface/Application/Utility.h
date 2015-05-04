@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -65,7 +65,7 @@ namespace Gui
 
   typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
   typedef boost::function<void(QAction*)> QActionHookup;
-  void fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
+  QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
   QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
 }
 

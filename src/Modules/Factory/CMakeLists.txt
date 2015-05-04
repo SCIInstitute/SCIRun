@@ -3,7 +3,7 @@
 #
 #  The MIT License
 #
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -62,6 +62,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_Bundle
   Modules_Legacy_Fields
   Modules_Legacy_Matlab_DataIO
+  Modules_Legacy_Converters
 )
 
 IF(BUILD_SHARED_LIBS)

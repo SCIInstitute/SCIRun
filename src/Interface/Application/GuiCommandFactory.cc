@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -48,6 +48,8 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type, int param) co
     return boost::make_shared<PrintHelpCommand>();
   case PrintVersion:
     return boost::make_shared<PrintVersionCommand>();
+  case PrintModules:
+    return boost::make_shared<PrintModulesCommand>();
   case LoadNetworkFile:
     return boost::make_shared<LoadFileCommandGui>(param);
   case RunPythonScript:

@@ -4,7 +4,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -28,31 +28,34 @@
 #
 
 SET(Interface_Modules_Visualization_FORMS
-  CreateBasicColorMap.ui
+  CreateStandardColorMap.ui
   GenerateStreamLines.ui
   MatrixAsVectorField.ui
   ShowField.ui
   ShowString.ui
   ShowColorMap.ui
+  RescaleColorMap.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
-  CreateBasicColorMapDialog.h
+  CreateStandardColorMapDialog.h
   GenerateStreamLinesDialog.h
   MatrixAsVectorFieldDialog.h
   share.h
   ShowFieldDialog.h
   ShowStringDialog.h
   ShowColorMapDialog.h
+  RescaleColorMapDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES 
-  CreateBasicColorMapDialog.cc
+  CreateStandardColorMapDialog.cc
   GenerateStreamLinesDialog.cc
   MatrixAsVectorFieldDialog.cc
   ShowFieldDialog.cc
   ShowStringDialog.cc
   ShowColorMapDialog.cc
+  RescaleColorMapDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS ${Interface_Modules_Visualization_FORMS})

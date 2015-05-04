@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -76,6 +76,12 @@ namespace Console {
   };
 
   class SCISHARE PrintVersionCommand : public Core::Commands::ConsoleCommand
+  {
+  public:
+    virtual bool execute();
+  };
+
+  class SCISHARE PrintModulesCommand : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();

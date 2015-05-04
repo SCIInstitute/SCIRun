@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -54,14 +54,17 @@ namespace SCIRun
       void setDefaultNotePosition(NotePosition position);
       void createPortPositionProviders();
       void snapToGrid();
+      void highlightPorts(int state);
 
     Q_SIGNALS:
       void selected();
       void widgetMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+      void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+      void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+      void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+      void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
       QVariant itemChange(GraphicsItemChange change, const QVariant& value);
       virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
@@ -77,6 +80,7 @@ namespace SCIRun
       QWidget* pressedSubWidget_;
       QPointF position_;
       QPointF cachedPosition_;
+      bool doHighlight_;
     };
 
   }

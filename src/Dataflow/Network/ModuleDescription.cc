@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -74,7 +74,7 @@ ModuleDescription::~ModuleDescription()
 ModuleLookupInfo::ModuleLookupInfo() {}
 
 ModuleLookupInfo::ModuleLookupInfo(const std::string& mod, const std::string& cat, const std::string& pack)
-  : package_name_(pack), category_name_(cat), module_name_(mod) 
+  : package_name_(pack), category_name_(cat), module_name_(mod)
 {}
 
 ModuleId::ModuleId() : name_("<Unknown>"), id_("<Invalid>"), idNumber_(-1) {}
@@ -143,4 +143,32 @@ std::string PortId::toString() const
   std::ostringstream ostr;
   ostr << *this;
   return ostr.str();
+}
+
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ModuleLookupInfo& mli)
+{
+  return o << "Module[" << mli.package_name_ << "::" << mli.category_name_ << "::" << mli.module_name_ << "]";
+
+}
+
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ModuleDescription& desc)
+{
+  return o << "Description: TODO " << desc.lookupInfo_;
+}
+
+bool ModuleLookupInfoLess::operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const
+{
+  //TODO: this is the correct ordering, but right now the package and category are not passed in when adding modules to the network. For now, just compare by module name.
+  //return std::tie(lhs.package_name_, lhs.category_name_, lhs.module_name_) < std::tie(rhs.package_name_, rhs.category_name_, rhs.module_name_);
+  return lhs.module_name_ < rhs.module_name_;
+}
+
+bool SCIRun::Dataflow::Networks::operator==(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs)
+{
+  return lhs.module_name_ == rhs.module_name_;// && lhs.id == rhs.id;
+}
+
+bool SCIRun::Dataflow::Networks::operator!=(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs)
+{
+  return !(lhs == rhs);
 }

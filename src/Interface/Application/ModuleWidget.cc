@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -87,12 +87,12 @@ namespace Gui {
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
-        << disabled(new QAction("Replace With", parent))
+        << new QAction("Replace With", parent)
         << new QAction("Collapse", parent)
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
-        << disabled(new QAction("Destroy", parent)));
+        << new QAction("Destroy", parent));
     }
     QMenu* getMenu() { return menu_; }
     QAction* getAction(const char* name) const
@@ -507,12 +507,16 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
-  theModule_->connectExecuteSelfRequest([this]() { executeButtonPushed(); });
+  theModule_->connectExecuteSelfRequest([this]() { executeAgain(); });
+  connect(this, SIGNAL(executeAgain()), this, SLOT(executeButtonPushed()));
 
   Core::Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
-  //TODO: doh, how do i destroy myself?
-  //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
+  connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(deleteMeLater()));
+
+  connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
+  connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
+  connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -628,15 +632,12 @@ void ModuleWidget::setupModuleActions()
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
   addWidgetToExecutionDisableList(actionsMenu_->getAction("Execute"));
 
-  //TODO: very slow code, action disabled anyway--turning off for now
-#if 0
   auto replaceWith = actionsMenu_->getAction("Replace With");
   auto menu = new QMenu(this);
   replaceWith->setMenu(menu);
   fillReplaceWithMenu();
   connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
-#endif
 
   connect(actionsMenu_->getAction("Execute"), SIGNAL(triggered()), this, SLOT(executeButtonPushed()));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
@@ -655,8 +656,10 @@ void ModuleWidget::fillReplaceWithMenu()
   auto menu = getReplaceWithMenu();
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
+  auto replacements = Core::Application::Instance().controller()->possibleReplacements(this->theModule_);
+  auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(),
-    [this](const ModuleDescription& md) { return canReplaceWith(this->theModule_, md); },
+    isReplacement,
     [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); });
 }
 
@@ -847,6 +850,14 @@ void PortWidgetManager::addPort(InputPortWidget* port)
   inputPorts_.push_back(port);
 }
 
+void PortWidgetManager::setHighlightPorts(bool on)
+{
+  for (auto& port : getAllPorts())
+  {
+    port->setHighlight(on);
+  }
+}
+
 void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_)
@@ -942,6 +953,7 @@ ModuleWidget::~ModuleWidget()
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }
+  Q_EMIT displayChanged();
 }
 
 void ModuleWidget::trackConnections()
@@ -953,6 +965,7 @@ void ModuleWidget::trackConnections()
 void ModuleWidget::execute()
 {
   {
+    Q_EMIT signalExecuteButtonIconChangeToStop();
     errored_ = false;
     //colorLocked_ = true; //TODO
     timer_.restart();
@@ -961,6 +974,11 @@ void ModuleWidget::execute()
     //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
+}
+
+void ModuleWidget::changeExecuteButtonToStop()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
 }
 
 boost::signals2::connection ModuleWidget::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)
@@ -1059,6 +1077,9 @@ void ModuleWidget::makeOptionsDialog()
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
       connect(this, SIGNAL(dynamicPortChanged()), this, SLOT(updateDialogWithPortCount()));
       connect(dialog_, SIGNAL(setStartupNote(const QString&)), this, SLOT(setStartupNote(const QString&)));
+      connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
+      connect(dialog_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
+      connect(dialog_, SIGNAL(executionLoopHalted()), this, SIGNAL(reenableWidgetDisabling()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), 0);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
@@ -1230,6 +1251,12 @@ void ModuleWidget::executeButtonPushed()
 {
   LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   Q_EMIT executedManually(theModule_);
+  changeExecuteButtonToStop();
+}
+
+void ModuleWidget::changeExecuteButtonToPlay()
+{
+  currentDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
 }
 
 bool ModuleWidget::globalMiniMode_(false);
@@ -1268,5 +1295,29 @@ void ModuleWidget::changeDisplay(int oldIndex, int newIndex)
   auto size = widget(newIndex)->size();
   setCurrentIndex(newIndex);
   resize(size);
+  Q_EMIT displayChanged();
+}
+
+void ModuleWidget::handleDialogFatalError(const QString& message)
+{
+  qDebug() << "Dialog error: " << message;
+  updateBackgroundColor(moduleRGBA(176, 23, 31)); //TODO: will consolidate as part of state machine refactoring
+  colorLocked_ = true;
+  setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nDelete and re-add to network for proper execution.");
+}
+
+void ModuleWidget::highlightPorts()
+{
+  ports_->setHighlightPorts(true);
+  inputPortLayout_->setSpacing(PORT_SPACING * 4);
+  outputPortLayout_->setSpacing(PORT_SPACING * 4);
+  Q_EMIT displayChanged();
+}
+
+void ModuleWidget::unhighlightPorts()
+{
+  ports_->setHighlightPorts(false);
+  inputPortLayout_->setSpacing(PORT_SPACING);
+  outputPortLayout_->setSpacing(PORT_SPACING);
   Q_EMIT displayChanged();
 }

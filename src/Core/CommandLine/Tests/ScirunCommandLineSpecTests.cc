@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -52,7 +52,8 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  --no_splash           Turn off splash screen\n"
     "  --verbose             Turn on debug log information\n"
     "  --threadMode arg      network execution threading mode--DEVELOPER USE ONLY\n"
-    "  --reexecuteMode arg   network reexecution mode--DEVELOPER USE ONLY\n";
+    "  --reexecuteMode arg   network reexecution mode--DEVELOPER USE ONLY\n"
+    "  --list-modules        print list of available modules\n";
 
   EXPECT_EQ(expectedHelp, parser.describe());
 

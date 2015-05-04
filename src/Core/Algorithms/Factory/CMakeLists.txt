@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -49,6 +49,7 @@ TARGET_LINK_LIBRARIES(Algorithms_Factory
   Algorithms_DataIO
   Algorithms_Field
   Core_Algorithms_Legacy_FiniteElements
+  Core_Algorithms_Legacy_Converter
   ${SCI_BOOST_LIBRARY}
 )
 

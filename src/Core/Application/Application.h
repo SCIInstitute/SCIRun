@@ -3,7 +3,7 @@
 
  The MIT License
 
- Copyright (c) 2012 Scientific Computing and Imaging Institute,
+ Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
 
 
@@ -81,6 +81,7 @@ public:
   std::string commandHelpString() const;
   std::string applicationName() const;
   std::string version() const;
+  std::string moduleList();
 
   void shutdown();
 

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -76,29 +76,37 @@ public:
   virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber) { return boost::signals2::connection(); }
 private:
   DatatypeHandleOption data_;
-  int previousId_;
 };
 
 class MockAlgorithmFactory : public AlgorithmFactory
 {
 public:
+  explicit MockAlgorithmFactory(bool verbose) : verbose_(verbose) {}
   virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const
   {
-    std::cout << "Creating mock algorithm named: " << name << std::endl;
+    if (verbose_)
+      std::cout << "Creating mock algorithm named: " << name << std::endl;
     return AlgorithmHandle(new NiceMock<MockAlgorithm>);
   }
+private:
+  bool verbose_;
 };
 
 ModuleTestBase::ModuleTestBase() : factory_(new HardCodedModuleFactory)
 {
+  initModuleParameters();
+}
+
+void ModuleTestBase::initModuleParameters(bool verbose)
+{
   Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
-  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
+  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory(verbose));
   DefaultValue<AlgorithmParameterName>::Set(AlgorithmParameterName());
   DefaultValue<AlgorithmParameter>::Set(AlgorithmParameter());
   DefaultValue<const AlgorithmParameter&>::Set(algoParam_);
   DefaultValue<AlgorithmOutput>::Set(AlgorithmOutput());
   DefaultValue<AlgorithmInput>::Set(AlgorithmInput());
-  Core::Logging::Log::get().setVerbose(true);
+  Core::Logging::Log::get().setVerbose(verbose);
 }
 
 ModuleHandle ModuleTestBase::makeModule(const std::string& name)
@@ -112,6 +120,8 @@ void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, 
   if (portNum < module->num_input_ports())
   {
     auto iport = module->inputPorts()[portNum];
+    if (iport->nconnections() > 0)
+      iport->detach(0);
     iport->attach(0);
     DatatypeHandleOption o = data;
     dynamic_cast<StubbedDatatypeSink*>(iport->sink().get())->setData(o);
@@ -163,7 +173,7 @@ UseRealAlgorithmFactory::UseRealAlgorithmFactory()
 
 UseRealAlgorithmFactory::~UseRealAlgorithmFactory()
 {
-  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
+  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory(true));
 }
 
 UseRealModuleStateFactory::UseRealModuleStateFactory()

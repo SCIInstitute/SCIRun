@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -28,7 +28,7 @@
 /// @todo Documentation Dataflow/Network/ModuleDescription.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
-#define DATAFLOW_NETWORK_MODULE_DESCRIPTION_H 
+#define DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
 
 #include <string>
 #include <vector>
@@ -54,7 +54,7 @@ namespace Networks {
 
   struct SCISHARE PortDescription
   {
-    PortDescription(const PortId& p, const std::string& d, bool dyn) : 
+    PortDescription(const PortId& p, const std::string& d, bool dyn) :
       id(p), datatype(d), isDynamic(dyn) {}
     PortId id;
     std::string datatype;
@@ -72,6 +72,8 @@ namespace Networks {
 
   typedef PortDescription InputPortDescription;
   typedef PortDescription OutputPortDescription;
+  typedef std::vector<InputPortDescription> InputPortDescriptionList;
+  typedef std::vector<OutputPortDescription> OutputPortDescriptionList;
 
   struct SCISHARE ModuleId
   {
@@ -98,11 +100,14 @@ namespace Networks {
   struct SCISHARE ModuleLookupInfo
   {
     ModuleLookupInfo();
-    ModuleLookupInfo(const std::string& mod, const std::string& cat = "", const std::string& pack = "");
+    ModuleLookupInfo(const std::string& mod, const std::string& cat, const std::string& pack);
     std::string package_name_;
     std::string category_name_;
     std::string module_name_;
   };
+
+  SCISHARE bool operator==(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs);
+  SCISHARE bool operator!=(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs);
 
   typedef boost::function<class Module*()> ModuleMaker;
 
@@ -114,8 +119,8 @@ namespace Networks {
     std::string module_version_;
     std::string moduleStatus_;
     std::string moduleInfo_;
-    std::vector<InputPortDescription> input_ports_;
-    std::vector<OutputPortDescription> output_ports_;
+    InputPortDescriptionList input_ports_;
+    OutputPortDescriptionList output_ports_;
     //bool                              optional_;
     //bool                              hide_;
     //bool                              dynamic_;
@@ -126,7 +131,16 @@ namespace Networks {
     //bool                              has_gui_node_;
   };
 
+  SCISHARE std::ostream& operator<<(std::ostream& o, const ModuleLookupInfo& mli);
+  SCISHARE std::ostream& operator<<(std::ostream& o, const ModuleDescription& desc);
   SCISHARE bool canReplaceWith(ModuleHandle module, const ModuleDescription& potentialReplacement);
+
+  struct SCISHARE ModuleLookupInfoLess
+  {
+    bool operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const;
+  };
+
+  typedef std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> DirectModuleDescriptionLookupMap;
 
 }}}
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="10">
+<boost_serialization signature="serialization::archive" version="11">
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>21</count>
+			<count>25</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BuildBEMatrix:6</first>
@@ -91,14 +91,14 @@
 												<name></name>
 												<value>
 													<which>1</which>
-													<value>0</value>
+													<value>0.00000000000000000e+000</value>
 												</value>
 											</item>
 											<item>
 												<name></name>
 												<value>
 													<which>1</which>
-													<value>1</value>
+													<value>1.00000000000000000e+000</value>
 												</value>
 											</item>
 										</value>
@@ -120,14 +120,14 @@
 												<name></name>
 												<value>
 													<which>1</which>
-													<value>1</value>
+													<value>1.00000000000000000e+000</value>
 												</value>
 											</item>
 											<item>
 												<name></name>
 												<value>
 													<which>1</which>
-													<value>0</value>
+													<value>0.00000000000000000e+000</value>
 												</value>
 											</item>
 										</value>
@@ -182,7 +182,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -200,7 +200,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>21</count>
+							<count>22</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -282,7 +282,7 @@
 									<name>OutputCenterX</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>-1.51700000000000020e+001</value>
 									</value>
 								</second>
 							</item>
@@ -294,7 +294,7 @@
 									<name>OutputCenterY</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>4.43250000000000030e+001</value>
 									</value>
 								</second>
 							</item>
@@ -306,7 +306,7 @@
 									<name>OutputCenterZ</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>2.87850000000000020e+002</value>
 									</value>
 								</second>
 							</item>
@@ -318,7 +318,7 @@
 									<name>OutputSizeX</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>1.00520000000000010e+002</value>
 									</value>
 								</second>
 							</item>
@@ -330,7 +330,7 @@
 									<name>OutputSizeY</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>1.00870000000000000e+002</value>
 									</value>
 								</second>
 							</item>
@@ -342,7 +342,7 @@
 									<name>OutputSizeZ</name>
 									<value>
 										<which>1</which>
-										<value>0</value>
+										<value>1.58839999999999970e+002</value>
 									</value>
 								</second>
 							</item>
@@ -427,6 +427,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Scale</name>
+								</first>
+								<second>
+									<name>Scale</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -923,6 +935,478 @@
 				</second>
 			</item>
 			<item>
+				<first>RescaleColorMap:7</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>7.70030289734321550e-002</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>-7.11328184326256480e-003</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>RescaleColorMap:8</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>2.33971775799849050e-002</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>-1.33377905812873590e-001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowColorMap:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>13</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AddExtraSpace</name>
+								</first>
+								<second>
+									<name>AddExtraSpace</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplayLength</name>
+								</first>
+								<second>
+									<name>DisplayLength</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplaySide</name>
+								</first>
+								<second>
+									<name>DisplaySide</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Labels</name>
+								</first>
+								<second>
+									<name>Labels</name>
+									<value>
+										<which>0</which>
+										<value>10</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Scale</name>
+								</first>
+								<second>
+									<name>Scale</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SignificantDigits</name>
+								</first>
+								<second>
+									<name>SignificantDigits</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextBlue</name>
+								</first>
+								<second>
+									<name>TextBlue</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextGreen</name>
+								</first>
+								<second>
+									<name>TextGreen</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextRed</name>
+								</first>
+								<second>
+									<name>TextRed</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextSize</name>
+								</first>
+								<second>
+									<name>TextSize</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Units</name>
+								</first>
+								<second>
+									<name>Units</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XTranslation</name>
+								</first>
+								<second>
+									<name>XTranslation</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YTranslation</name>
+								</first>
+								<second>
+									<name>YTranslation</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowColorMap:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>13</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AddExtraSpace</name>
+								</first>
+								<second>
+									<name>AddExtraSpace</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplayLength</name>
+								</first>
+								<second>
+									<name>DisplayLength</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplaySide</name>
+								</first>
+								<second>
+									<name>DisplaySide</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Labels</name>
+								</first>
+								<second>
+									<name>Labels</name>
+									<value>
+										<which>0</which>
+										<value>10</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Scale</name>
+								</first>
+								<second>
+									<name>Scale</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SignificantDigits</name>
+								</first>
+								<second>
+									<name>SignificantDigits</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextBlue</name>
+								</first>
+								<second>
+									<name>TextBlue</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextGreen</name>
+								</first>
+								<second>
+									<name>TextGreen</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextRed</name>
+								</first>
+								<second>
+									<name>TextRed</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextSize</name>
+								</first>
+								<second>
+									<name>TextSize</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Units</name>
+								</first>
+								<second>
+									<name>Units</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XTranslation</name>
+								</first>
+								<second>
+									<name>XTranslation</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YTranslation</name>
+								</first>
+								<second>
+									<name>YTranslation</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ShowField:15</first>
 				<second>
 					<module>
@@ -1014,7 +1498,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.5</value>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1098,7 +1582,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1198,7 +1682,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.5</value>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1282,7 +1766,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1382,7 +1866,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>0.5</value>
+										<value>5.00000000000000000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1466,7 +1950,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>1</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1576,7 +2060,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>27</count>
+			<count>36</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>BuildBEMatrix:6</moduleId1_>
@@ -1596,7 +2080,7 @@
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:15</moduleId2_>
+				<moduleId2_>RescaleColorMap:7</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -1608,19 +2092,7 @@
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:16</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateStandardColorMap:18</moduleId1_>
-				<port1_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowField:17</moduleId2_>
+				<moduleId2_>RescaleColorMap:8</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -1659,7 +2131,7 @@
 				<moduleId2_>ViewScene:19</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>3</id>
+					<id>5</id>
 				</port2_>
 			</item>
 			<item>
@@ -1843,6 +2315,102 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>RescaleColorMap:7</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowColorMap:0</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:7</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:15</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:7</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:16</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:8</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowColorMap:1</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:8</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:17</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowColorMap:0</moduleId1_>
+				<port1_>
+					<name>GeometryOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:19</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>8</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowColorMap:1</moduleId1_>
+				<port1_>
+					<name>GeometryOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:19</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>6</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:15</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:19</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>9</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>ShowField:16</moduleId1_>
 				<port1_>
 					<name>SceneGraph</name>
@@ -1851,7 +2419,7 @@
 				<moduleId2_>ViewScene:19</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>1</id>
+					<id>7</id>
 				</port2_>
 			</item>
 			<item>
@@ -1863,6 +2431,18 @@
 				<moduleId2_>ViewScene:19</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SwapFieldDataWithMatrixEntries:10</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:7</moduleId2_>
+				<port2_>
+					<name>Field</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1896,6 +2476,18 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>RescaleColorMap:8</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SwapFieldDataWithMatrixEntries:9</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>ShowField:17</moduleId2_>
 				<port2_>
 					<name>Field</name>
@@ -1905,153 +2497,181 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>21</count>
+		<count>25</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>BuildBEMatrix:6</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-1368</first>
-				<second>-760</second>
+				<first>-1.36800000000000000e+003</first>
+				<second>-7.60000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:18</first>
 			<second>
-				<first>-608</first>
-				<second>-76</second>
+				<first>-6.08000000000000000e+002</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>EditMeshBoundingBox:24</first>
 			<second>
-				<first>-1584.8024999999998</first>
-				<second>-1284.0649999999998</second>
+				<first>-1.58480249999999980e+003</first>
+				<second>-1.28406499999999980e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>EvaluateLinearAlgebraBinary:7</first>
 			<second>
-				<first>-1444</first>
-				<second>-608</second>
+				<first>-1.44400000000000000e+003</first>
+				<second>-6.08000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>FlipSurfaceNormals:4</first>
 			<second>
-				<first>-228</first>
-				<second>-1292</second>
+				<first>-2.28000000000000000e+002</first>
+				<second>-1.29200000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>FlipSurfaceNormals:5</first>
 			<second>
-				<first>-1444</first>
-				<second>-1140</second>
+				<first>-1.44400000000000000e+003</first>
+				<second>-1.14000000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:14</first>
 			<second>
-				<first>76</first>
-				<second>-76</second>
+				<first>7.60000000000000000e+001</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:3</first>
 			<second>
-				<first>-988</first>
-				<second>-912</second>
+				<first>-9.88000000000000000e+002</first>
+				<second>-9.12000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetMatrixSlice:8</first>
 			<second>
-				<first>-836</first>
-				<second>-456</second>
+				<first>-8.36000000000000000e+002</first>
+				<second>-4.56000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>-228</first>
-				<second>-1444</second>
+				<first>-2.28000000000000000e+002</first>
+				<second>-1.44400000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>-1520</first>
-				<second>-1444</second>
+				<first>-1.52000000000000000e+003</first>
+				<second>-1.44400000000000000e+003</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:12</first>
 			<second>
-				<first>-228</first>
-				<second>-304</second>
+				<first>-2.28000000000000000e+002</first>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:11</first>
 			<second>
-				<first>76</first>
-				<second>-304</second>
+				<first>7.60000000000000000e+001</first>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:2</first>
 			<second>
-				<first>-1064</first>
-				<second>-1140</second>
+				<first>-1.06400000000000000e+003</first>
+				<second>-1.14000000000000000e+003</second>
+			</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:7</first>
+			<second>
+				<first>-6.08000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:8</first>
+			<second>
+				<first>-1.29200000000000000e+003</first>
+				<second>2.28000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowColorMap:0</first>
+			<second>
+				<first>-4.56000000000000000e+002</first>
+				<second>3.80000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowColorMap:1</first>
+			<second>
+				<first>-1.06400000000000000e+003</first>
+				<second>3.80000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:15</first>
 			<second>
-				<first>-380</first>
-				<second>304</second>
+				<first>-1.52000000000000000e+002</first>
+				<second>3.80000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:16</first>
 			<second>
-				<first>-760</first>
-				<second>228</second>
+				<first>-7.60000000000000000e+002</first>
+				<second>3.80000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:17</first>
 			<second>
-				<first>-1368</first>
-				<second>228</second>
+				<first>-1.36800000000000000e+003</first>
+				<second>3.80000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>SwapFieldDataWithMatrixEntries:10</first>
 			<second>
-				<first>-912</first>
-				<second>-228</second>
+				<first>-9.12000000000000000e+002</first>
+				<second>-2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>SwapFieldDataWithMatrixEntries:13</first>
 			<second>
-				<first>-228</first>
-				<second>76</second>
+				<first>-2.28000000000000000e+002</first>
+				<second>7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>SwapFieldDataWithMatrixEntries:9</first>
 			<second>
-				<first>-1596</first>
-				<second>-228</second>
+				<first>-1.59600000000000000e+003</first>
+				<second>-2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:19</first>
 			<second>
-				<first>-988</first>
-				<second>456</second>
+				<first>-9.12000000000000000e+002</first>
+				<second>6.08000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -2064,17 +2684,17 @@
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Compute the transfer&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;matrix between the&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;inner and outer&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;surfaces&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Compute the transfer&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;matrix between the&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;inner and outer&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;surfaces&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Compute the transfer
 matrix between the
 inner and outer
 surfaces</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2083,13 +2703,13 @@ surfaces</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Move inner surface via widget&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;(translate, rotate, scale)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Move inner surface via widget&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;(translate, rotate, scale)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Move inner surface via widget
 (translate, rotate, scale)</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2098,15 +2718,15 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Compute the time-dependent&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;output (outer surface)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Compute the time-dependent&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;output (outer surface)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Compute the time-dependent
 output (outer surface)
 potentials</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2115,13 +2735,13 @@ potentials</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Choose the same time&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;instant as the other data&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Choose the same time&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;instant as the other data&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Choose the same time
 instant as the other data</noteText>
 				<position>6</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2130,17 +2750,17 @@ instant as the other data</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Choose the same&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;time instant from&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;the input data&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;(inner surface)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Choose the same&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;time instant from&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;the input data&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;(inner surface)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Choose the same
 time instant from
 the input data
 (inner surface)</noteText>
 				<position>5</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2149,17 +2769,17 @@ the input data
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#e6e6e6;&quot;&gt;Choose which time-step&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#e6e6e6;&quot;&gt;from the computed output&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#e6e6e6;&quot;&gt;potentials (outer surface)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#e6e6e6;&quot;&gt;to visualize&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#e6e6e6;&quot;&gt;Choose which time-step&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#e6e6e6;&quot;&gt;from the computed output&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#e6e6e6;&quot;&gt;potentials (outer surface)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#e6e6e6;&quot;&gt;to visualize&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Choose which time-step
 from the computed output
 potentials (outer surface)
 to visualize</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2168,11 +2788,11 @@ to visualize</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Read the outer surface (torso)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Read the outer surface (torso)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Read the outer surface (torso)</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2181,11 +2801,11 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Read the inner surface (heart)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Read the inner surface (heart)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Read the inner surface (heart)</noteText>
 				<position>0</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2194,15 +2814,15 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Read geometry for &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;measurement sites&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;on outer surface&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Read geometry for &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;measurement sites&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;on outer surface&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Read geometry for 
 measurement sites
 on outer surface</noteText>
 				<position>3</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2211,15 +2831,15 @@ on outer surface</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Read the time-dependent&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;outer surface potentials&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;(measured)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Read the time-dependent&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;outer surface potentials&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;(measured)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Read the time-dependent
 outer surface potentials
 (measured)</noteText>
 				<position>3</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2228,15 +2848,15 @@ outer surface potentials
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Read the time-dependent&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;known (inner surface)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Read the time-dependent&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;known (inner surface)&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Read the time-dependent
 known (inner surface)
 potentials</noteText>
 				<position>6</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2245,11 +2865,11 @@ potentials</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Show measurement sites&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Show measurement sites&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Show measurement sites</noteText>
 				<position>3</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2258,13 +2878,13 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Show computed&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;outer surface&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Show computed&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;outer surface&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Show computed
 outer surface</noteText>
 				<position>3</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2273,11 +2893,11 @@ outer surface</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Show inner surface&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Show inner surface&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Show inner surface</noteText>
 				<position>3</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2286,17 +2906,17 @@ p, li { white-space: pre-wrap; }
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Merge outer surface&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;geometry with&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;selected time-step&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;of computed potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Merge outer surface&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;geometry with&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;selected time-step&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;of computed potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Merge outer surface
 geometry with
 selected time-step
 of computed potentials</noteText>
 				<position>5</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2305,15 +2925,15 @@ of computed potentials</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Merge outer surface&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;geometry with &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;measured potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Merge outer surface&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;geometry with &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;measured potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Merge outer surface
 geometry with 
 measured potentials</noteText>
 				<position>6</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 		<item>
@@ -2322,15 +2942,15 @@ measured potentials</noteText>
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;Merge inner surface&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;geometry with&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:16pt; color:#ffffff;&quot;&gt;computed potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:7.5pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;Merge inner surface&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;geometry with&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt; color:#ffffff;&quot;&gt;computed potentials&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
 				<noteText>Merge inner surface
 geometry with
 computed potentials</noteText>
 				<position>6</position>
-				<fontSize>13</fontSize>
+				<fontSize>7</fontSize>
 			</second>
 		</item>
 	</moduleNotes>

@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -29,7 +29,7 @@
 # CMakeLists.txt forc Dataflow/Modules/Converters
 
 SET(Modules_Legacy_Converters_HEADERS
-  #ConvertMatrixToString.h
+  ConvertMatrixToString.h
   #ConvertMatrixToField.h
   #ConvertBundleToField.h
   share.h
@@ -49,17 +49,17 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Converters
   Core_Datatypes
   Dataflow_Network
   Core_Persistent
-  Core_Util
-  Core_Exceptions
+  #Core_Util
+  #Core_Exceptions
   Core_Thread
-  Dataflow_GuiInterface
-  Core_Geom
+  #Dataflow_GuiInterface
+  #Core_Geom
   Core_Datatypes
-  Core_Geometry
-  Core_GeomInterface
-  Dataflow_TkExtensions
-  Core_Algorithms_Converter
-  Core_Algorithms_Fields
+  #Core_Geometry
+  #Core_GeomInterface
+  #Dataflow_TkExtensions
+  Core_Algorithms_Legacy_Converter
+  Core_Algorithms_Legacy_Fields
   ${TK_LIBRARY}
   ${GL_LIBRARY}
   ${M_LIBRARY}

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,40 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Modules/Visualization/CreateBasicColorMap.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Utils/Exception.h>
+#ifndef MODULES_LEGACY_FIELDS_ConvertHexVolToTetVol_H__
+#define MODULES_LEGACY_FIELDS_ConvertHexVolToTetVol_H__
 
-using namespace SCIRun::Testing;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-class CreateBasicColorMapModuleTest : public ModuleTest
-{
-};
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-TEST_F(CreateBasicColorMapModuleTest, ThrowsForUnknownColorMapName)
-{
-  UseRealModuleStateFactory f;
+	/// @class ConvertHexVolToTetVol
+	/// @brief Convert a Hexahedra- or a LatVol-Field into a TetVolField. 
 
-  auto cbc = makeModule("CreateStandardColorMap");
+      class SCISHARE ConvertHexVolToTetVol : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ConvertHexVolToTetVol();
 
-  cbc->get_state()->setValue(Variables::ColorMapName, std::string("null"));
+        virtual void execute();
+        virtual void setStateDefaults() {}
 
-  EXPECT_THROW(cbc->execute(), InvalidArgumentException);
+        INPUT_PORT(0, HexOrLatVol, LegacyField);
+        OUTPUT_PORT(0, TetVol, LegacyField);
+      };
+
+    }
+  }
 }
 
-TEST_F(CreateBasicColorMapModuleTest, DISABLED_CreatesRainbowByDefault)
-{
-  UseRealModuleStateFactory f;
-
-  auto cbc = makeModule("CreateStandardColorMap");
-
-  cbc->execute();
-
-  FAIL() << "TODO: need output value collector dummy module: See Issue #499";
-}
+#endif

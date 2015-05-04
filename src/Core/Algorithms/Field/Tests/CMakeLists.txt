@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -50,6 +50,8 @@ SET(Algorithms_Field_Tests_SRCS
   LoadFieldsForAlgoCoreTests.cc
   LoadFieldsForAlgoCoreTests.h
   SplitByConnectedRegionTests.cc
+  ConvertMeshToTetVolTests.cc
+  ExtractSimpleIsoSurfaceAlgoTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests

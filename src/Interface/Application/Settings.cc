@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -118,7 +118,16 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(snapTo).toBool();
     prefs.modulesSnapToGrid.setValue(value);
     modulesSnapToCheckBox_->setChecked(value);
-    GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString(prefs.modulesSnapToGrid ? "true" : "false"));
+    GuiLogger::Instance().log("Setting read: modules snap to grid = " + QString::number(prefs.modulesSnapToGrid));
+  }
+
+  const QString portHighlight = qname(prefs.highlightPorts);
+  if (settings.contains(portHighlight))
+  {
+    auto value = settings.value(portHighlight).toBool();
+    prefs.highlightPorts.setValue(value);
+    portSizeEffectsCheckBox_->setChecked(value);
+    GuiLogger::Instance().log("Setting read: highlight ports on hover = " + QString::number(prefs.highlightPorts));
   }
 
   const QString dockable = qname(prefs.modulesAreDockable);
@@ -195,6 +204,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.networkBackgroundColor), QString::fromStdString(prefs.networkBackgroundColor));
   settings.setValue(qname(prefs.modulesSnapToGrid), prefs.modulesSnapToGrid.val());
   settings.setValue(qname(prefs.modulesAreDockable), prefs.modulesAreDockable.val());
+  settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());

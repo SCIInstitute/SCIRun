@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -73,14 +73,12 @@ namespace Datatypes {
       RENDER_RLIST_CYLINDER,
     };
 
-    explicit GeometryObject(DatatypeConstHandle dh);
+    GeometryObject(DatatypeConstHandle dh, const GeometryIDGenerator& idGenerator, const std::string& tag);
     GeometryObject(const GeometryObject& other);
     GeometryObject& operator=(const GeometryObject& other);
-    DatatypeConstHandle get_underlying() const;
     virtual GeometryObject* clone() const { return new GeometryObject(*this); }
 
-    std::string objectName;     ///< Name of this object. Should be unique
-                                ///< across all modules in the network.
+    const std::string& uniqueID() const { return objectName_; }
 
     // Could require rvalue references...
     struct SpireVBO
@@ -239,6 +237,8 @@ namespace Datatypes {
 
   private:
     DatatypeConstHandle data_;
+
+    const std::string objectName_;     ///< Name of this object. Should be unique across all modules in the network.
   };
 
 }}}

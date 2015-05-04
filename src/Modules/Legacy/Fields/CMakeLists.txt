@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -72,6 +72,8 @@ SET(Modules_Legacy_Fields_HEADERS
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
   ConvertIndicesToFieldData.h
+  ConvertHexVolToTetVol.h
+  ExtractSimpleIsosurface.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -129,7 +131,7 @@ SET(Modules_Legacy_Fields_SRCS
   #SubsampleStructuredFieldByIndices.cc
   JoinFields.cc
   CalculateGradients.cc
-  #ConvertHexVolToTetVol.cc
+  ConvertHexVolToTetVol.cc
   #MergeFields.cc
   #InsertHexVolSheetAlongSurface.cc
   #MergeTriSurfs.cc
@@ -193,6 +195,7 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateProfile.cc
   MapFieldDataFromElemToNode.cc  
   MapFieldDataFromNodeToElem.cc
+  ExtractSimpleIsosurface.cc
 )
 
 IF(WITH_TETGEN)

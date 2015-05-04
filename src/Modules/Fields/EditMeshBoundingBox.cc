@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -152,8 +152,7 @@ namespace SCIRun
 }
 
 EditMeshBoundingBox::EditMeshBoundingBox()
-: Module(staticInfo_),
-  cylinder_scale_(1.0),
+: GeometryGeneratingModule(staticInfo_),
   impl_(new EditMeshBoundingBoxImpl)
 {
     INITIALIZE_PORT(InputField);
@@ -183,10 +182,10 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(OutputCenterX, 0.0);
   state->setValue(OutputCenterY, 0.0);
   state->setValue(OutputCenterZ, 0.0);
-  state->setValue(OutputSizeX, 100.0);
-  state->setValue(OutputSizeY, 100.0);
-  state->setValue(OutputSizeZ, 100.0);
-  state->setValue(Scale, 1.0);
+  state->setValue(OutputSizeX, 1.0);
+  state->setValue(OutputSizeY, 1.0);
+  state->setValue(OutputSizeZ, 1.0);
+  state->setValue(Scale, 0.1);
 
   //TODO
 
@@ -241,20 +240,28 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
                     center + Vector(0, size.y() / 2., 0),
                     center + Vector(0, 0, size.z() / 2.));
 
-    auto state = get_state();
+  auto state = get_state();
+  const bool useOutputSize = state->getValue(UseOutputSize).toBool();
+  const bool useOutputCenter = state->getValue(UseOutputCenter).toBool();
     char s[32];
     sprintf(s, "%8.4f",center.x());
     state->setValue(InputCenterX, boost::lexical_cast<std::string>(s));
+    if (!useOutputCenter) state->setValue(OutputCenterX, center.x());
     sprintf(s, "%8.4f",center.y());
     state->setValue(InputCenterY, boost::lexical_cast<std::string>(s));
+    if (!useOutputCenter) state->setValue(OutputCenterY, center.y());
     sprintf(s, "%8.4f",center.z());
     state->setValue(InputCenterZ, boost::lexical_cast<std::string>(s));
+    if (!useOutputCenter) state->setValue(OutputCenterZ, center.z());
     sprintf(s, "%8.4f",size.x());
     state->setValue(InputSizeX, boost::lexical_cast<std::string>(s));
+    if (!useOutputSize) state->setValue(OutputSizeX, size.x());
     sprintf(s, "%8.4f",size.y());
     state->setValue(InputSizeY, boost::lexical_cast<std::string>(s));
+    if (!useOutputSize) state->setValue(OutputSizeY, size.y());
     sprintf(s, "%8.4f",size.z());
     state->setValue(InputSizeZ, boost::lexical_cast<std::string>(s));
+    if (!useOutputSize) state->setValue(OutputSizeZ, size.z());
 }
 
 bool EditMeshBoundingBox::isBoxEmpty() const
@@ -264,12 +271,8 @@ bool EditMeshBoundingBox::isBoxEmpty() const
   return (c == r) || (c == d) || (c == b);
 }
 
-Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
-
-    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(NULL));
-    std::ostringstream ostr;
-    ostr << get_id() << "EditBoundingBox_" << geom.get();
-    geom->objectName = ostr.str();
+Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject()
+{
     GeometryObject::ColorScheme colorScheme(GeometryObject::COLOR_UNIFORM);
     int64_t numVBOElements = 0;
     std::vector<std::pair<Point,Point>> bounding_edges;
@@ -295,7 +298,6 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     };
     auto state = get_state();
     double scale = state->getValue(Scale).toDouble();
-    scale = std::max(scale,0.01);
     int num_strips = 50.;
     std::vector<Vector> tri_points;
     std::vector<Vector> tri_normals;
@@ -400,8 +402,11 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
         vboBuffer->write(static_cast<float>(tri_normals.at(i).y()));
         vboBuffer->write(static_cast<float>(tri_normals.at(i).z()));
     }
-
-    std::string uniqueNodeID = "bounding_edge_face";
+    std::stringstream ss;
+    ss << scale;
+    for(auto a : points) ss << a.x() << a.y() << a.z();
+    
+    std::string uniqueNodeID = "bounding_box_cylinders" + std::string(ss.str().c_str());
     std::string vboName      = uniqueNodeID + "VBO";
     std::string iboName      = uniqueNodeID + "IBO";
     std::string passName     = uniqueNodeID + "Pass";
@@ -415,15 +420,10 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
 
     // If true, then the VBO will be placed on the GPU. We don't want to place
     // VBOs on the GPU when we are generating rendering lists.
-    GeometryObject::SpireVBO geomVBO = GeometryObject::SpireVBO(vboName, attribs, vboBufferSPtr,
-                                                                numVBOElements, bbox_, true);
-    geom->mVBOs.push_back(geomVBO);
+    GeometryObject::SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements, bbox_, true);
 
     // Construct IBO.
-    GeometryObject::SpireIBO geomIBO = GeometryObject::SpireIBO(iboName,
-                                                                GeometryObject::SpireIBO::TRIANGLES,
-                                                                sizeof(uint32_t), iboBufferSPtr);
-    geom->mIBOs.push_back(geomIBO);
+    GeometryObject::SpireIBO geomIBO(iboName, GeometryObject::SpireIBO::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
     RenderState renState;
 
@@ -435,8 +435,7 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     renState.set(RenderState::USE_NORMALS, true);
 
     // Construct Pass.
-    GeometryObject::SpireSubPass pass =
-    GeometryObject::SpireSubPass(passName, vboName, iboName, shader,
+    GeometryObject::SpireSubPass pass(passName, vboName, iboName, shader,
                                  colorScheme, renState, renderType, geomVBO, geomIBO);
     // Add all uniforms generated above to the pass.
     std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
@@ -449,6 +448,9 @@ Core::Datatypes::GeometryHandle EditMeshBoundingBox::buildGeometryObject() {
     uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
     for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
+    Core::Datatypes::GeometryHandle geom(new Core::Datatypes::GeometryObject(nullptr, *this, "BoundingBox"));
+    geom->mIBOs.push_back(geomIBO);
+    geom->mVBOs.push_back(geomVBO);
     geom->mPasses.push_back(pass);
 
     return geom;
@@ -607,6 +609,7 @@ void EditMeshBoundingBox::executeImpl(FieldHandle fh)
 
   const bool useOutputSize = state->getValue(UseOutputSize).toBool();
   const bool useOutputCenter = state->getValue(UseOutputCenter).toBool();
+
   if (useOutputSize || useOutputCenter)
   {
     Point center, right, down, in;

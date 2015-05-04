@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,87 +26,49 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : BuildSurfaceLaplacianMatrix.cc
-//    Author : yesim
-//    Date   : Sat Feb  9 11:36:47 2002
+#include <Modules/Legacy/Inverse/BuildSurfaceLaplacianMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-#include <Core/Algorithms/Geometry/SurfaceLaplacian.h>
-
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-#include <Core/Containers/Array2.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-#include <math.h>
-
-
-namespace BioPSE {
+//TODO: split into algo class
+#include <Core/Algorithms/Legacy/Geometry/SurfaceLaplacian.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Modules;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Inverse;
 
-class BuildSurfaceLaplacianMatrix : public Module {
-public:
+const ModuleLookupInfo BuildSurfaceLaplacianMatrix::staticInfo_("BuildSurfaceLaplacianMatrix","Inverse","SCIRun");
 
-  // CONSTRUCTOR
-  BuildSurfaceLaplacianMatrix(GuiContext *context);
-
-  // DESTRUCTOR
-  virtual ~BuildSurfaceLaplacianMatrix();
-
-  virtual void execute();
-};
-
-DECLARE_MAKER(BuildSurfaceLaplacianMatrix)
-
-
-// CONSTRUCTOR
-BuildSurfaceLaplacianMatrix::BuildSurfaceLaplacianMatrix(GuiContext *context)
-  : Module("BuildSurfaceLaplacianMatrix", context, Source, "Inverse", "BioPSE")
+BuildSurfaceLaplacianMatrix::BuildSurfaceLaplacianMatrix() : Module(staticInfo_, false)
 {
+	INITIALIZE_PORT(Source);
+	INITIALIZE_PORT(ResultMatrix);
 }
 
-// DESTRUCTOR
-BuildSurfaceLaplacianMatrix::~BuildSurfaceLaplacianMatrix()
+void BuildSurfaceLaplacianMatrix::execute()
 {
-}
+  auto source = getRequiredInput(Source);
 
-///////////////////////////////////////////////
-// MODULE EXECUTION
-///////////////////////////////////////////////
-void
-BuildSurfaceLaplacianMatrix::execute()
-{
-  // Getting input field.
-  FieldHandle source;
-  MatrixHandle result;
-  
-  get_input_handle("Source", source, true);
-  
-  if (inputs_changed_ || !oport_cached("Result"))
-  {
-  
-    update_state(Executing);
-    
+	if (needToExecute())
+	{
+		update_state(Executing);
+
     FieldInformation fis(source);
-    
-    if (!fis.is_trisurfmesh()) 
+
+    if (!fis.is_trisurfmesh())
     {
       error("Input field must be a TriSurfField.");
       return;
     }
-		
-    result = surfaceLaplacian(source->vmesh());
-	
-    send_output_handle("Result", result);
-  }
 
-} 
+    auto result = surfaceLaplacian(source->vmesh());
 
-}// End namespace BioPSE
+    sendOutput(ResultMatrix, result);
+	}
+}

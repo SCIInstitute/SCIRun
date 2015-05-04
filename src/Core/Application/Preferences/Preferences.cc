@@ -3,7 +3,7 @@
 
  The MIT License
 
- Copyright (c) 2009 Scientific Computing and Imaging Institute,
+ Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
 
 
@@ -45,6 +45,7 @@ Preferences::Preferences() :
   saveBeforeExecute("saveBeforeExecute", false),
   useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
   modulesSnapToGrid("modulesSnapToGrid", true),
+  highlightPorts("highlightPorts", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080")
 {

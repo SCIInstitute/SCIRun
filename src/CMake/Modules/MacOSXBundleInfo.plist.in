@@ -36,7 +36,7 @@
 	<array>
 		<dict>
 			<key>CFBundleTypeIconFile</key>
-			<string>scirun-icon-large.icns</string>
+			<string>scirun5.icns</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSTypeIsPackage</key>

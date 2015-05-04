@@ -3,7 +3,7 @@
 
  The MIT License
 
- Copyright (c) 2012 Scientific Computing and Imaging Institute,
+ Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
 
 
@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-/// @todo Documentation Core/Command/Command.h 
+/// @todo Documentation Core/Command/Command.h
 
 #ifndef CORE_COMMAND_COMMAND_H
 #define CORE_COMMAND_COMMAND_H
@@ -77,6 +77,7 @@ namespace SCIRun
         ShowSplashScreen,
         PrintHelp,
         PrintVersion,
+        PrintModules,
         LoadNetworkFile,
         RunPythonScript,
         SetupDataDirectory,

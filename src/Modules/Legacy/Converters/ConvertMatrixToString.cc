@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,50 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Converters/ConvertMatrixToString.h>
+#include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
 
-#include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/String.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
-#include <Core/Algorithms/Converter/ConverterAlgo.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-namespace SCIRun {
-
-class ConvertMatrixToString : public Module {
-public:
-  ConvertMatrixToString(GuiContext*);
-  virtual void execute();
-};
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 
-DECLARE_MAKER(ConvertMatrixToString)
-ConvertMatrixToString::ConvertMatrixToString(GuiContext* ctx)
-  : Module("ConvertMatrixToString", ctx, Source, "Converters", "SCIRun")
+using namespace SCIRun;
+using namespace SCIRun::Modules;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Converters;
+
+
+ConvertMatrixToString::ConvertMatrixToString() : Module(ModuleLookupInfo("ConvertMatrixToString","Converters","BioPSE"),false)
 {
+	INITIALIZE_PORT(InputMatrix);
+	INITIALIZE_PORT(ResultString);
 }
 
 void ConvertMatrixToString::execute()
 {
-  // Define local handles of data objects:
-  MatrixHandle Mat;
-  StringHandle Str;
+	auto input_matrix = getRequiredInput(InputMatrix);
+	
+	auto output = algo().run_generic(withInputData((InputMatrix,input_matrix)));
+	
+	sendOutputFromAlgorithm(ResultString, output);
+} 
 
-  // Get the new input data:  
-  get_input_handle("Matrix",Mat,true);
-  
-  // Only reexecute if the input changed. SCIRun uses simple scheduling
-  // that executes every module downstream even if no data has changed:  
-  if (inputs_changed_ || !oport_cached("String"))
-  {
-    update_state(Executing);  
-    SCIRunAlgo::ConverterAlgo algo(this);
-    if (!(algo.MatrixToString(Mat,Str))) return;
 
-    // send new output if there is any:    
-    send_output_handle("String",Str);
-  }
-}
-
-} // End namespace SCIRun

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -44,18 +44,8 @@ namespace SCIRun {
         ModuleDescriptionLookup();
         Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) const;
         Dataflow::Networks::ModuleDescriptionMap descMap_;
+        Dataflow::Networks::DirectModuleDescriptionLookupMap lookup_;
       private:
-
-        struct ModuleLookupInfoLess
-        {
-          bool operator()(const Dataflow::Networks::ModuleLookupInfo& lhs, const Dataflow::Networks::ModuleLookupInfo& rhs) const
-          {
-            return lhs.module_name_ < rhs.module_name_;
-          }
-        };
-
-        typedef std::map<Dataflow::Networks::ModuleLookupInfo, Dataflow::Networks::ModuleDescription, ModuleLookupInfoLess> Lookup;
-        Lookup lookup_;
         bool includeTestingModules_;
 
         /// @todo: remove this function and use static MLI from each module
