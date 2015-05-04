@@ -26,29 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_VISUALIZATION_UHEXMC_H
-#define CORE_ALGORITHMS_VISUALIZATION_UHEXMC_H 1
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBE_UHEXMC_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MARCHINGCUBE_UHEXMC_H 1
 
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Point.h>
 
-#include <Core/Geom/GeomTriangles.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <Core/Geom/GeomTriangles.h>
+#endif
 
-#include <Core/Algorithms/Fields/MarchingCubes/mcube2.h>
-#include <Core/Algorithms/Fields/MarchingCubes/BaseMC.h>
-
-namespace SCIRun {
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/mcube2.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/BaseMC.h>
 
 /// A Marching Cube teselator for an Unstructured Hexagon cell     
 
+namespace SCIRun {
 class UHexMC : public BaseMC
 {
   public:
   
-    UHexMC( Field *field ) : field_handle_(field), 
+   UHexMC( FieldHandle field ) : field_handle_(field), 
                             field_(field->vfield()),
                             mesh_(field->vmesh()),
+			   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
                             triangles_(0), 
+			   #endif
                             trisurf_(0), 
                             trisurf_handle_(0),
                             quadsurf_(0),
@@ -61,31 +67,28 @@ class UHexMC : public BaseMC
   virtual FieldHandle get_field(double val);
 
   private:
+    
     void extract_c( VMesh::Elem::index_type, double);
     void extract_n( VMesh::Elem::index_type, double);
 
-    VMesh::Node::index_type find_or_add_edgepoint(index_type n0,
-                                                  index_type n1,
-                                                  double d0,
-                                                  const Point &p);
+    VMesh::Node::index_type find_or_add_edgepoint(index_type n0, index_type n1, double d0, const SCIRun::Core::Geometry::Point &p);
 
     VMesh::Node::index_type find_or_add_nodepoint(VMesh::Node::index_type& );
     
-    void find_or_add_parent(index_type u0, index_type u1,
-          double d0, index_type face);
+    void find_or_add_parent(index_type u0, index_type u1, double d0, index_type face);
 
     FieldHandle field_handle_;
     VField*     field_;
     VMesh*      mesh_;
-
-    GeomFastTriangles *triangles_;
-  
+   
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    //GeomFastTriangles *triangles_;
+   #endif
+   
     VMesh*      trisurf_;
     FieldHandle trisurf_handle_;
     VMesh*      quadsurf_;
     FieldHandle quadsurf_handle_;
 };
-  
-} // End namespace SCIRun
-
+}
 #endif

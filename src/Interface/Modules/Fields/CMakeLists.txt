@@ -57,6 +57,7 @@ SET(Interface_Modules_Fields_FORMS
   ConvertFieldBasis.ui
   swapfielddatawithmatrixentries.ui
   EditMeshBoundingBox.ui
+  ExtractSimpleIsosurface.ui
   registerwithcorrespondences.ui
 )
 
@@ -90,6 +91,7 @@ SET(Interface_Modules_Fields_HEADERS
   SwapFieldDataWithMatrixEntriesDialog.h
   EditMeshBoundingBoxDialog.h
   ConvertIndicesToFieldDataDialog.h
+  ExtractSimpleIsosurfaceDialog.h
   RegisterWithCorrespondencesDialog.h
 )
 
@@ -122,6 +124,7 @@ SET(Interface_Modules_Fields_SOURCES
   RefineMeshDialog.cc
   EditMeshBoundingBoxDialog.cc
   ConvertIndicesToFieldDataDialog.cc
+  ExtractSimpleIsosurfaceDialog.cc
   RegisterWithCorrespondencesDialog.cc
 )
 

@@ -88,7 +88,7 @@ namespace SCIRun {
     Q_SIGNALS:
       void newGeometryValueForwarder();
 
-      protected Q_SLOTS:
+    protected Q_SLOTS:
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
@@ -104,6 +104,7 @@ namespace SCIRun {
       void handleUnselectedItem(const QString& name);
       void handleSelectedItem(const QString& name);
       void screenshotClicked();
+      void saveNewGeometryChanged(int state);
 
     protected:
       virtual void closeEvent(QCloseEvent* evt) override;
@@ -144,6 +145,7 @@ namespace SCIRun {
       std::vector<std::string> unselectedObjectNames_;
       std::vector<std::string> previousObjectNames_;
       Screenshot* screenshotTaker_;
+      bool saveScreenshotOnNewGeometry_;
 
       friend class ViewSceneControlsDock;
 		};

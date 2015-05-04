@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//
-// ** SCIRun version of vtkMarchingCubesCases.hh -- added nbr info to cases **
-//
-// marching cubes case table for generating isosurfaces
-//
+#ifndef MODULES_LEGACY_FIELDS_ExtractSimpleIsosurface_H__
+#define MODULES_LEGACY_FIELDS_ExtractSimpleIsosurface_H__
 
-#ifndef MCUBE2_H
-#define MCUBE2_H
-
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-typedef struct {
-  int edges[16];
-  int nbrs;
-} TRIANGLE_CASES;
+      class SCISHARE ExtractSimpleIsosurfaceModule : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, MatrixPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ExtractSimpleIsosurfaceModule();
 
-/* REFERENCED */
-extern SCISHARE int edge_tab[12][2];
+        virtual void execute();
+        virtual void setStateDefaults();
 
-//
-// Edges to intersect. Three at a time form a triangle. Comments at end of line
-// indicate case number (0->255) and base case number (0->15).
-//
+        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(1, Isovalue, Matrix);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+      };
 
-extern SCISHARE TRIANGLE_CASES triCases[];
+    }
+  }
+}
 
-} // End namespace SCIRun
-
-#endif // MCUBE2_H
+#endif

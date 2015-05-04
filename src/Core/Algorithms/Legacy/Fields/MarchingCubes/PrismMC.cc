@@ -30,19 +30,19 @@
 //    Author : Allen Sanderson
 //    Date   : Thu July 24 21:33:04 2003
 
-#include <Core/Algorithms/Fields/MarchingCubes/PrismMC.h>
-#include <Core/Algorithms/Fields/MarchingCubes/mcube2.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/PrismMC.h>
+#include <Core/Algorithms/Legacy/Fields/MarchingCubes/mcube2.h>
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <sci_hash_map.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-namespace SCIRun {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ #include <sci_hash_map.h>
+#endif
 
-void 
-PrismMC::reset( int /*n*/,
-                bool build_field,
-                bool build_geom,
-                bool transparency )
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+
+void PrismMC::reset( int /*n*/, bool build_field, bool build_geom, bool transparency )
 {
   build_field_ = build_field;
   build_geom_ = build_geom;
@@ -57,7 +57,7 @@ PrismMC::reset( int /*n*/,
   VMesh::Elem::size_type csize;
   mesh_->size(csize);
   ncells_ = csize;
-
+ #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (basis_order_ == 0)
   {
     mesh_->synchronize(Mesh::FACES_E|Mesh::ELEM_NEIGHBORS_E);
@@ -66,7 +66,6 @@ PrismMC::reset( int /*n*/,
       node_map_ = std::vector<index_type>(nnodes_, -1);
     }
   }
-
   triangles_ = 0;
   if (build_geom_)
   {
@@ -76,7 +75,8 @@ PrismMC::reset( int /*n*/,
       triangles_ = new GeomFastTriangles;
   }
   geomHandle_ = triangles_;
-
+ #endif
+ 
   trisurf_ = 0;
   if (build_field_)
   {
@@ -86,54 +86,15 @@ PrismMC::reset( int /*n*/,
   }
 }
 
-
-VMesh::Node::index_type
-PrismMC::find_or_add_edgepoint(index_type u0, 
-                               index_type u1,
-                               double d0, const Point &p) 
+void PrismMC::extract( VMesh::Elem::index_type cell, double v )
 {
-  if (d0 < 0.0) { u1 = -1; }
-  if (d0 > 1.0) { u0 = -1; }
-  edgepair_t np;
-  
-  if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
-  else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
-  const edge_hash_type::iterator loc = edge_map_.find(np);
-  
-  if (loc == edge_map_.end())
-  {
-    const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);
-    edge_map_[np] = nodeindex;
-    return (nodeindex);
-  }
+  if (basis_order_ == 0)
+    extract_c(cell, v);
   else
-  {
-    return ((*loc).second);
-  }
+    extract_n(cell, v);
 }
 
-
-
-VMesh::Node::index_type
-PrismMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx) 
-{
-  VMesh::Node::index_type surf_node_idx;
-  index_type i = node_map_[tet_node_idx];
-  if (i != -1) surf_node_idx = VMesh::Node::index_type(i);
-  else 
-  {
-    Point p;
-    mesh_->get_point(p, tet_node_idx);
-    surf_node_idx = trisurf_->add_point(p);
-    node_map_[tet_node_idx] = surf_node_idx;
-  }
-  return (surf_node_idx);
-}
-
-
-void
-PrismMC::find_or_add_parent(index_type u0, index_type u1,
-                            double d0, index_type face) 
+void PrismMC::find_or_add_parent(index_type u0, index_type u1, double d0, index_type face) 
 {
   if (d0 < 0.0) { u1 = -1; }
   if (d0 > 1.0) { u0 = -1; }
@@ -154,19 +115,22 @@ PrismMC::find_or_add_parent(index_type u0, index_type u1,
     // twice.
   }
 }
-
-void 
-PrismMC::extract( VMesh::Elem::index_type cell, double v )
+VMesh::Node::index_type PrismMC::find_or_add_nodepoint(VMesh::Node::index_type &tet_node_idx) 
 {
-  if (basis_order_ == 0)
-    extract_c(cell, v);
-  else
-    extract_n(cell, v);
+  VMesh::Node::index_type surf_node_idx;
+  index_type i = node_map_[tet_node_idx];
+  if (i != -1) surf_node_idx = VMesh::Node::index_type(i);
+  else 
+  {
+    Point p;
+    mesh_->get_point(p, tet_node_idx);
+    surf_node_idx = trisurf_->add_point(p);
+    node_map_[tet_node_idx] = surf_node_idx;
+  }
+  return (surf_node_idx);
 }
 
-
-void 
-PrismMC::extract_c( VMesh::Elem::index_type cell, double iso )
+void PrismMC::extract_c( VMesh::Elem::index_type cell, double iso )
 {
   double selfvalue, nbrvalue;
   field_->get_value( selfvalue, cell );
@@ -187,7 +151,7 @@ PrismMC::extract_c( VMesh::Elem::index_type cell, double iso )
     {
       mesh_->get_nodes(face_nodes, faces[i]);
       mesh_->get_centers(p,face_nodes);
-
+     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         triangles_->add(p[0], p[1], p[2]);
@@ -195,7 +159,7 @@ PrismMC::extract_c( VMesh::Elem::index_type cell, double iso )
         if( face_nodes.size() == 4 )
           triangles_->add(p[0], p[2], p[3]);
       }
-
+     #endif
       if (build_field_)
       {
         for (size_t j=0; j<face_nodes.size(); j++)
@@ -226,9 +190,7 @@ PrismMC::extract_c( VMesh::Elem::index_type cell, double iso )
   }
 }
 
-
-void
-PrismMC::extract_n( VMesh::Elem::index_type cell, double iso )
+void PrismMC::extract_n( VMesh::Elem::index_type cell, double iso )
 {
   VMesh::Node::array_type node(6);
   Point p[8];
@@ -295,10 +257,12 @@ PrismMC::extract_n( VMesh::Elem::index_type cell, double iso )
     // above in order to make a hexvol for MC. 
     if( v0 != v1 && v0 != v2 && v1 != v2 ) 
     {
+     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       if (build_geom_)
       {
         triangles_->add(q[v0], q[v1], q[v2]);
       }
+     #endif
       if (build_field_)
       {
         if (surf_node[v0] != surf_node[v1] &&
@@ -317,8 +281,7 @@ PrismMC::extract_n( VMesh::Elem::index_type cell, double iso )
   }
 }
 
-FieldHandle
-PrismMC::get_field(double value)
+FieldHandle PrismMC::get_field(double value)
 {
   trisurf_handle_->vfield()->resize_values();
   trisurf_handle_->vfield()->set_all_values(value);
@@ -326,4 +289,27 @@ PrismMC::get_field(double value)
   return (trisurf_handle_);  
 }
 
+VMesh::Node::index_type PrismMC::find_or_add_edgepoint(index_type u0, 
+                               index_type u1,
+                               double d0, const Point &p) 
+{
+  if (d0 < 0.0) { u1 = -1; }
+  if (d0 > 1.0) { u0 = -1; }
+  edgepair_t np;
+  
+  if (u0 < u1)  { np.first = u0; np.second = u1; np.dfirst = d0; }
+  else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
+  const edge_hash_type::iterator loc = edge_map_.find(np);
+  
+  if (loc == edge_map_.end())
+  {
+    const VMesh::Node::index_type nodeindex = trisurf_->add_point(p);
+    edge_map_[np] = nodeindex;
+    return (nodeindex);
+  }
+  else
+  {
+    return ((*loc).second);
+  }
 }
+

@@ -180,6 +180,23 @@ std::string Application::version() const
   return VersionInfo::GIT_VERSION_TAG.empty() ? "5.0.0 developer version" : VersionInfo::GIT_VERSION_TAG;
 }
 
+std::string Application::moduleList()
+{
+  std::ostringstream ostr;
+  auto map = controller()->getAllAvailableModuleDescriptions();
+  for (const auto& p1 : map)
+  {
+    for (const auto& p2 : p1.second)
+    {
+      for (const auto& p3 : p2.second)
+      {
+        ostr << p1.first << "::" << p2.first << "::" << p3.first << std::endl;
+      }
+    }
+  }
+  return ostr.str();;
+}
+
 boost::filesystem::path Application::configDirectory() const
 {
   return applicationHelper.configDirectory();

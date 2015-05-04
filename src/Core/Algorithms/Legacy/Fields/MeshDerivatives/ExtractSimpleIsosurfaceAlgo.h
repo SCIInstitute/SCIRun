@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,34 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//
-// ** SCIRun version of vtkMarchingCubesCases.hh -- added nbr info to cases **
-//
-// marching cubes case table for generating isosurfaces
-//
 
-#ifndef MCUBE2_H
-#define MCUBE2_H
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MESHDERIVATIVES_ExtractIsosurface_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MESHDERIVATIVES_ExtractIsosurface_H 1
 
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
 
-typedef struct {
-  int edges[16];
-  int nbrs;
-} TRIANGLE_CASES;
+class SCISHARE ExtractSimpleIsosurfaceAlgo : public AlgorithmBase
+{
+public:
+  ExtractSimpleIsosurfaceAlgo();
+  
+  static AlgorithmInputName InputField;
+  static AlgorithmOutputName OutputField;
+  static AlgorithmParameterName GUIIsoValue;
+  bool run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& output) const;
 
-/* REFERENCED */
-extern SCISHARE int edge_tab[12][2];
+  AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+};
 
-//
-// Edges to intersect. Three at a time form a triangle. Comments at end of line
-// indicate case number (0->255) and base case number (0->15).
-//
+}}}}
 
-extern SCISHARE TRIANGLE_CASES triCases[];
-
-} // End namespace SCIRun
-
-#endif // MCUBE2_H
+#endif 

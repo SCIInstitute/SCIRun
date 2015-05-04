@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,34 +26,43 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//
-// ** SCIRun version of vtkMarchingCubesCases.hh -- added nbr info to cases **
-//
-// marching cubes case table for generating isosurfaces
-//
 
-#ifndef MCUBE2_H
-#define MCUBE2_H
+#ifndef CORE_ALGORITHMS_LEGACY_FIELDS_MERGEFIELDS_APPENDFIELDS_H
+#define CORE_ALGORITHMS_LEGACY_FIELDS_MERGEFIELDS_APPENDFIELDS_H 1
 
+// Datatypes used
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+
+#include <vector>
+
+// Base for algorithm
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+
+// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Algorithm {
+namespace Fields {
 
-typedef struct {
-  int edges[16];
-  int nbrs;
-} TRIANGLE_CASES;
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 
-/* REFERENCED */
-extern SCISHARE int edge_tab[12][2];
+class SCISHARE AppendFieldsAlgorithm : public AlgorithmBase
+{
+  public:
+    // Algorithm Functions
+    bool run(std::vector<FieldHandle>& input, FieldHandle& output);   
+    bool run(std::list<FieldHandle>& input, FieldHandle& output);   
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AppendFieldsAlgorithm();
+};
 
-//
-// Edges to intersect. Three at a time form a triangle. Comments at end of line
-// indicate case number (0->255) and base case number (0->15).
-//
+} // namespace SCIRun
+}
+}
+}
+#endif
 
-extern SCISHARE TRIANGLE_CASES triCases[];
-
-} // End namespace SCIRun
-
-#endif // MCUBE2_H
