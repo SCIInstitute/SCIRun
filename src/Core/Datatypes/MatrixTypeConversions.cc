@@ -80,6 +80,19 @@ std::string matrix_is::whatType(const MatrixHandle& mh)
   return typeid(*mh).name();
 }
 
+MatrixTypeCode matrix_is::typeCode(const MatrixHandle& mh)
+{
+  if (!mh)
+    return NULL_MATRIX;
+  if (matrix_is::column(mh))
+    return COLUMN;
+  else if (matrix_is::dense(mh))
+    return DENSE;
+  else if (matrix_is::sparse(mh))
+    return SPARSE_ROW;
+  return UNKNOWN;
+}
+
 /* Old Code - disabled
 DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
 {
@@ -109,7 +122,7 @@ DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
   if (sparse)
   {
     DenseColumnMatrix dense_col(DenseColumnMatrix::Zero(sparse->nrows()));
-    for (index_type i = 0; i < sparse->nrows(); i++)
+    for (auto i = 0; i < sparse->nrows(); i++)
       dense_col(i, 0) = sparse->coeff(i, 0);
 
     return boost::make_shared<DenseColumnMatrix>(dense_col);
@@ -155,7 +168,7 @@ SparseRowMatrixHandle matrix_convert::to_sparse(const MatrixHandle& mh)
   if (col)
   {
     SparseRowMatrixFromMap::Values data;
-    for (index_type i = 0; i<col->nrows(); i++)
+    for (auto i = 0; i<col->nrows(); i++)
       if (fabs((*col)(i, 0)) > zero_threshold)
         data[i][0] = (*col)(i, 0);
 
@@ -165,14 +178,19 @@ SparseRowMatrixHandle matrix_convert::to_sparse(const MatrixHandle& mh)
   auto dense = matrix_cast::as_dense(mh);
   if (dense)
   {
-    SparseRowMatrixFromMap::Values data;
-    for (index_type i = 0; i < dense->nrows(); i++)
-      for (index_type j = 0; j<dense->ncols(); j++)
-        if (fabs((*dense)(i, j))>zero_threshold)
-          data[i][j] = (*dense)(i, j);
-
-    return SparseRowMatrixFromMap::make(dense->nrows(), dense->ncols(), data);
+    return denseToSparse(*dense);
   }
 
   return SparseRowMatrixHandle();
+}
+
+SparseRowMatrixHandle matrix_convert::denseToSparse(const DenseMatrix& dense)
+{
+  SparseRowMatrixFromMap::Values data;
+  for (auto i = 0; i < dense.nrows(); i++)
+    for (auto j = 0; j < dense.ncols(); j++)
+      if (fabs(dense(i, j))>zero_threshold)
+        data[i][j] = dense(i, j);
+
+  return SparseRowMatrixFromMap::make(dense.nrows(), dense.ncols(), data);
 }

@@ -30,8 +30,7 @@
 #define ALGORITHMS_MATH_EVALUATELINEARALGEBRAUNARY_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/MatrixFwd.h>
-//#include <boost/optional.hpp>
+#include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Math/share.h>
 
 /// \addtogroup Algorithms_Math
@@ -98,6 +97,17 @@ namespace Math {
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
+
+  namespace detail
+  {
+    class SCISHARE NegateMatrix : public Datatypes::MatrixVisitor
+    {
+    public:
+      virtual void visit(Datatypes::DenseMatrixGeneric<double>& dense) override;
+      virtual void visit(Datatypes::SparseRowMatrixGeneric<double>& sparse) override;
+      virtual void visit(Datatypes::DenseColumnMatrixGeneric<double>& column) override;
+    };
+  }
 }}}}
 
 

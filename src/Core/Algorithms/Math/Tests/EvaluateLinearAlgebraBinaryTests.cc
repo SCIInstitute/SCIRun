@@ -28,6 +28,7 @@
 
 #include <gtest/gtest.h>
 
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -37,62 +38,50 @@
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
-
-namespace
-{
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3, 3));
-    for (int i = 0; i < m->rows(); ++ i)
-      for (int j = 0; j < m->cols(); ++ j)
-        (*m)(i, j) = 3.0 * i + j;
-    return m;
-  }
-  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
-}
-
-TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanAdd)
-{
-  EvaluateLinearAlgebraBinaryAlgorithm algo;
-
-  DenseMatrixHandle m(matrix1());
-  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::ADD);
-  EXPECT_EQ(2 * *m, *result);
-}
-
-TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanSubtract)
-{
-  EvaluateLinearAlgebraBinaryAlgorithm algo;
-
-  DenseMatrixHandle m(matrix1());
-  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT);
-  EXPECT_EQ(Zero, *result);
-}
-
-TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanMultiply)
-{
-  EvaluateLinearAlgebraBinaryAlgorithm algo;
-
-  DenseMatrixHandle m(matrix1());
-  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-  EXPECT_EQ(*m * *m, *result);
-}
+using namespace SCIRun::TestUtils;
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, NullInputThrowsException)
 {
   EvaluateLinearAlgebraBinaryAlgorithm algo;
 
-  EXPECT_THROW(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(DenseMatrixHandle(), matrix1()), EvaluateLinearAlgebraBinaryAlgorithm::ADD), AlgorithmInputException);
-  EXPECT_THROW(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(matrix1(), DenseMatrixHandle()), EvaluateLinearAlgebraBinaryAlgorithm::ADD), AlgorithmInputException);
+  EXPECT_THROW(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(DenseMatrixHandle(), DenseMatrixHandle(matrix1().clone())), EvaluateLinearAlgebraBinaryAlgorithm::ADD), AlgorithmInputException);
+  EXPECT_THROW(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(DenseMatrixHandle(matrix1().clone()), DenseMatrixHandle()), EvaluateLinearAlgebraBinaryAlgorithm::ADD), AlgorithmInputException);
 }
 
-TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunction)
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanAddDenseDense)
 {
-	EvaluateLinearAlgebraBinaryAlgorithm algo; 
+  EvaluateLinearAlgebraBinaryAlgorithm algo;
 
-	DenseMatrixHandle m(matrix1());
-	std::string functionArg = "x+y"; 
-	DenseMatrixHandle result  = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg));
-	EXPECT_EQ( *m+*m, *result); 
-	
+  DenseMatrixHandle m(matrix1().clone());
+  DenseMatrixHandle result = matrix_cast::as_dense(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::ADD));
+  EXPECT_EQ(2 * *m, *result);
 }
+
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanSubtractDenseDense)
+{
+  EvaluateLinearAlgebraBinaryAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1().clone());
+  DenseMatrixHandle result = matrix_cast::as_dense(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT));
+  EXPECT_EQ(Zero, *result);
+}
+
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanMultiplyDenseDense)
+{
+  EvaluateLinearAlgebraBinaryAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1().clone());
+  DenseMatrixHandle result = matrix_cast::as_dense(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
+  EXPECT_EQ(*m * *m, *result);
+}
+
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanUseFunctionDenseDense)
+{
+  EvaluateLinearAlgebraBinaryAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1().clone());
+  std::string functionArg = "x+y";
+  DenseMatrixHandle result = matrix_cast::as_dense(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::FUNCTION, functionArg)));
+  EXPECT_EQ(*m + *m, *result);
+}
+

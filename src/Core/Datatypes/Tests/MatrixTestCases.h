@@ -36,7 +36,7 @@ namespace SCIRun
 {
 namespace TestUtils
 {
-  Core::Datatypes::DenseMatrix matrix1()
+  static inline Core::Datatypes::DenseMatrix matrix1()
   {
     Core::Datatypes::DenseMatrix m(3, 3);
     for (int i = 0; i < m.rows(); ++ i)
@@ -44,15 +44,15 @@ namespace TestUtils
         m(i, j) = 3.0 * i + j;
     return m;
   }
-  Core::Datatypes::SparseRowMatrixHandle matrix1sparse()
+  static inline Core::Datatypes::SparseRowMatrixHandle matrix1sparse()
   {
     return Core::Datatypes::matrix_convert::to_sparse(boost::make_shared<Core::Datatypes::DenseMatrix>(matrix1()));
   }
-  Core::Datatypes::DenseColumnMatrixHandle matrix1column()
+  static inline Core::Datatypes::DenseColumnMatrixHandle matrix1column()
   {
     return Core::Datatypes::matrix_convert::to_column(boost::make_shared<Core::Datatypes::DenseMatrix>(matrix1()));
   }
-  Core::Datatypes::DenseMatrix matrixNonSquare()
+  static inline Core::Datatypes::DenseMatrix matrixNonSquare()
   {
     Core::Datatypes::DenseMatrix m(3, 4);
     for (int i = 0; i < m.rows(); ++ i)

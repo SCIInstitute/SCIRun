@@ -37,6 +37,7 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::Math::detail;
 using namespace SCIRun::Core::Algorithms;
 
 EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
@@ -46,25 +47,21 @@ EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
 	addParameter(Variables::FunctionString, std::string("x+10"));
 }
 
-namespace impl //TODO: break out; useful in general
+void NegateMatrix::visit(DenseMatrixGeneric<double>& dense)
 {
-  class NegateMatrix : public MatrixVisitor
-  {
-  public:
-    virtual void visit(DenseMatrixGeneric<double>& dense) override
-    {
-      dense *= -1;
-    }
-    virtual void visit(SparseRowMatrixGeneric<double>& sparse) override
-    {
-      sparse *= -1;
-    }
-    virtual void visit(DenseColumnMatrixGeneric<double>& column) override
-    {
-      column *= -1;
-    }
-  };
+  dense *= -1;
+}
+void NegateMatrix::visit(SparseRowMatrixGeneric<double>& sparse) 
+{
+  sparse *= -1;
+}
+void NegateMatrix::visit(DenseColumnMatrixGeneric<double>& column) 
+{
+  column *= -1;
+}
 
+namespace impl 
+{
   class TransposeMatrix : public MatrixVisitor
   {
   public:
@@ -115,7 +112,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   {
   case NEGATE:
     result.reset(matrix->clone());
-    result->accept(impl::NegateMatrix());
+    result->accept(NegateMatrix());
     break;
   case TRANSPOSE:
     result.reset(matrix->clone());
