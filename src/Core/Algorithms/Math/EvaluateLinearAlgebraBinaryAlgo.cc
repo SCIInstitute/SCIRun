@@ -204,7 +204,8 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     if (lhs->nrows() != rhs->nrows() || lhs->ncols() != rhs->ncols())
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to subtract matrices.");
     result.reset(rhs->clone());
-    result->accept(detail::NegateMatrix());
+    detail::NegateMatrix neg;
+    result->accept(neg);
     impl::AddMatrices add(lhs);
     result->accept(add);
     return add.sum_;

@@ -51,16 +51,16 @@ void NegateMatrix::visit(DenseMatrixGeneric<double>& dense)
 {
   dense *= -1;
 }
-void NegateMatrix::visit(SparseRowMatrixGeneric<double>& sparse) 
+void NegateMatrix::visit(SparseRowMatrixGeneric<double>& sparse)
 {
   sparse *= -1;
 }
-void NegateMatrix::visit(DenseColumnMatrixGeneric<double>& column) 
+void NegateMatrix::visit(DenseColumnMatrixGeneric<double>& column)
 {
   column *= -1;
 }
 
-namespace impl 
+namespace impl
 {
   class TransposeMatrix : public MatrixVisitor
   {
@@ -111,13 +111,19 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   switch (oper)
   {
   case NEGATE:
+  {
     result.reset(matrix->clone());
-    result->accept(NegateMatrix());
+    NegateMatrix negate;
+    result->accept(negate);
     break;
+  }
   case TRANSPOSE:
+  {
     result.reset(matrix->clone());
-    result->accept(impl::TransposeMatrix());
+    impl::TransposeMatrix tr;
+    result->accept(tr);
     break;
+  }
   case SCALAR_MULTIPLY:
   {
     boost::optional<double> scalarOption = params.get<1>();
@@ -125,7 +131,8 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
       THROW_ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
     double scalar = scalarOption.get();
     result.reset(matrix->clone());
-    result->accept(impl::ScalarMultiplyMatrix(scalar));
+    impl::ScalarMultiplyMatrix mult(scalar);
+    result->accept(mult);
   }
   break;
   case FUNCTION:
