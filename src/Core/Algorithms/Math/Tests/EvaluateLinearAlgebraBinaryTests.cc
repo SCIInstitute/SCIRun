@@ -55,12 +55,6 @@ MatrixHandle EvalBinaryOperator(MatrixHandle lhs, MatrixHandle rhs, EvaluateLine
   return algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhs, rhs), op);
 }
 
-template <int LhsCode, int RhsCode>
-MatrixHandle EvalOperator(EvaluateLinearAlgebraBinaryAlgorithm::Parameters op)
-{
-  return EvalBinaryOperator(getOperand(LhsCode), getOperand(RhsCode), op);
-}
-
 MatrixHandle getOperand(int code)
 {
   switch (code)
@@ -74,6 +68,12 @@ MatrixHandle getOperand(int code)
   default:
     return nullptr;
   }
+}
+
+template <int LhsCode, int RhsCode>
+MatrixHandle EvalOperator(EvaluateLinearAlgebraBinaryAlgorithm::Parameters op)
+{
+  return EvalBinaryOperator(getOperand(LhsCode), getOperand(RhsCode), op);
 }
 
 TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanAddDenseDense)
