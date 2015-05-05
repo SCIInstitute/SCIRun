@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="2">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>3</count>
+			<count>10</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ConvertMatrixType:0</first>
@@ -64,6 +64,126 @@
 				</second>
 			</item>
 			<item>
+				<first>EvaluateLinearAlgebraBinary:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>EvaluateLinearAlgebraBinary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>x+y</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Operator</name>
+								</first>
+								<second>
+									<name>Operator</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>EvaluateLinearAlgebraBinary:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>EvaluateLinearAlgebraBinary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>x+y</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Operator</name>
+								</first>
+								<second>
+									<name>Operator</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>EvaluateLinearAlgebraBinary:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>EvaluateLinearAlgebraBinary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>x+y</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Operator</name>
+								</first>
+								<second>
+									<name>Operator</name>
+									<value>
+										<which>0</which>
+										<value>2</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>EvaluateLinearAlgebraUnary:0</first>
 				<second>
 					<module>
@@ -115,13 +235,149 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ReportMatrixInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>2</count>
+			<count>12</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>ConvertMatrixType:0</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:0</moduleId2_>
+				<port2_>
+					<name>LHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertMatrixType:0</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:0</moduleId2_>
+				<port2_>
+					<name>RHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertMatrixType:0</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:1</moduleId2_>
+				<port2_>
+					<name>LHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertMatrixType:0</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:1</moduleId2_>
+				<port2_>
+					<name>RHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertMatrixType:0</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:2</moduleId2_>
+				<port2_>
+					<name>LHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertMatrixType:0</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:2</moduleId2_>
+				<port2_>
+					<name>RHS</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertMatrixType:0</moduleId1_>
+				<port1_>
 					<name>ResultMatrix</name>
 					<id>0</id>
 				</port1_>
@@ -143,10 +399,58 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:0</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:1</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:1</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraBinary:2</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EvaluateLinearAlgebraUnary:0</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>3</count>
+		<count>10</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ConvertMatrixType:0</first>
@@ -163,10 +467,59 @@
 			</second>
 		</item>
 		<item>
+			<first>EvaluateLinearAlgebraBinary:0</first>
+			<second>
+				<first>0</first>
+				<second>-380</second>
+			</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:1</first>
+			<second>
+				<first>0</first>
+				<second>-304</second>
+			</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraBinary:2</first>
+			<second>
+				<first>0</first>
+				<second>-228</second>
+			</second>
+		</item>
+		<item>
 			<first>EvaluateLinearAlgebraUnary:0</first>
 			<second>
 				<first>-456</first>
 				<second>-380</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:0</first>
+			<second>
+				<first>-380</first>
+				<second>-228</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:1</first>
+			<second>
+				<first>76</first>
+				<second>-76</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:2</first>
+			<second>
+				<first>-76</first>
+				<second>-76</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportMatrixInfo:3</first>
+			<second>
+				<first>0</first>
+				<second>-76</second>
 			</second>
 		</item>
 	</modulePositions>
