@@ -188,7 +188,6 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   ENSURE_ALGORITHM_INPUT_NOT_NULL(rhs, "rhs");
 
   Operator oper = params.get<0>();
-  /// @todo: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
   case ADD:
@@ -221,9 +220,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   case FUNCTION:
   {
     NewArrayMathEngine engine;
-    MatrixHandle lhsInput, rhsInput;
-    lhsInput.reset(lhs->clone());
-    rhsInput.reset(rhs->clone());
+    MatrixHandle lhsInput(lhs->clone()), rhsInput(rhs->clone());
 
     if (!(engine.add_input_fullmatrix("x", lhsInput)))
       THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
@@ -236,11 +233,22 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     function_string = "RESULT=" + function_string;
     engine.add_expressions(function_string);
 
-    if (!(engine.add_output_fullmatrix("RESULT", lhsInput)))
+    //bad API: how does it know what type/size the output matrix should be? Here are my guesses:
+    MatrixHandle omatrix;
+    if (matrix_is::sparse(lhs))
+      omatrix.reset(lhs->clone());
+    else if (matrix_is::sparse(rhs))
+      omatrix.reset(rhs->clone());
+    else if (matrix_is::dense(lhs) && matrix_is::dense(rhs))
+      omatrix.reset(lhs->clone());
+    else
+      omatrix = matrix_convert::to_sparse(lhs);
+
+    if (!(engine.add_output_fullmatrix("RESULT", omatrix)))
       THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
     if (!(engine.run()))
       THROW_ALGORITHM_INPUT_ERROR("Error running math engine");
-    result = lhsInput;
+    result = omatrix;
   }
   break;
   default:
