@@ -138,7 +138,7 @@ namespace impl //TODO: break out; useful in general
           *matrix_cast::as_column(product_) *= dense;
           break;
         case SPARSE_ROW:
-          *matrix_cast::as_sparse(product_) = *matrix_cast::as_sparse(product_) + *matrix_convert::denseToSparse(dense);
+          *matrix_cast::as_sparse(product_) = *matrix_cast::as_sparse(product_) * *matrix_convert::denseToSparse(dense);
           break;
         }
       }
