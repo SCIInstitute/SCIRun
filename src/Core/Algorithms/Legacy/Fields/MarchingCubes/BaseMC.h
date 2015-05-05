@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 
 /*
@@ -46,7 +46,7 @@
 #include <boost/unordered_map.hpp>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
- #include <Core/Geom/GeomObj.h>
+#include <Core/Geom/GeomObj.h>
 #endif
 
 #include <Core/Utils/Legacy/TypeDescription.h>
@@ -54,25 +54,25 @@
 
 namespace SCIRun {
 
-class BaseMC
-{
+  class BaseMC
+  {
   public:
 
     BaseMC() : build_field_(false), build_geom_(false), basis_order_(-1),
-         nnodes_(0), ncells_(0) {}
+      nnodes_(0), ncells_(0) {}
 
     virtual ~BaseMC() {}
 
-    virtual void reset( int,
-            bool build_field,
-            bool build_geom,
-            bool transparency ) = 0;
+    virtual void reset(int,
+      bool build_field,
+      bool build_geom,
+      bool transparency) = 0;
 
     virtual FieldHandle get_field(double val) = 0;
 
-    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-     GeomHandle   get_geom() { return geomHandle_; }
-    #endif
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    GeomHandle   get_geom() { return geomHandle_; }
+#endif
 
     Core::Datatypes::MatrixHandle get_interpolant();
     Core::Datatypes::MatrixHandle get_parent_cells();
@@ -81,23 +81,23 @@ class BaseMC
     bool build_geom_;
     int basis_order_;
 
-  struct edgepair_t
-  {
-    SCIRun::index_type first;
-    SCIRun::index_type second;
-    double dfirst;
-  };
-protected:
-  struct edgepairhash
-  {
-    size_t operator()(const edgepair_t &a) const
+    struct edgepair_t
     {
-      boost::hash<size_t> h;
-      return h((a.first << 3) ^ a.second);
-    }
-  };
+      SCIRun::index_type first;
+      SCIRun::index_type second;
+      double dfirst;
+    };
+  protected:
+    struct edgepairhash
+    {
+      size_t operator()(const edgepair_t &a) const
+      {
+        boost::hash<size_t> h;
+        return h((a.first << 3) ^ a.second);
+      }
+    };
 
-  typedef boost::unordered_map<edgepair_t, SCIRun::index_type, edgepairhash> edge_hash_type;
+    typedef boost::unordered_map<edgepair_t, SCIRun::index_type, edgepairhash> edge_hash_type;
 
     std::vector<SCIRun::index_type> cell_map_;  // Unique cells when surfacing node data.
     std::vector<SCIRun::index_type> node_map_;  // Unique nodes when surfacing cell data.
@@ -105,18 +105,18 @@ protected:
     SCIRun::size_type nnodes_;
     SCIRun::size_type ncells_;
 
-  edge_hash_type edge_map_;  // Unique edge cuts when surfacing node data
-};
+    edge_hash_type edge_map_;  // Unique edge cuts when surfacing node data
+  };
 
-inline bool operator==(const BaseMC::edgepair_t& lhs, const BaseMC::edgepair_t& rhs)
-{
-  return lhs.first == rhs.first && lhs.second == rhs.second;
-}
+  inline bool operator==(const BaseMC::edgepair_t& lhs, const BaseMC::edgepair_t& rhs)
+  {
+    return lhs.first == rhs.first && lhs.second == rhs.second;
+  }
 
-inline bool operator!=(const BaseMC::edgepair_t& lhs, const BaseMC::edgepair_t& rhs)
-{
-  return !(lhs == rhs);
-}
+  inline bool operator!=(const BaseMC::edgepair_t& lhs, const BaseMC::edgepair_t& rhs)
+  {
+    return !(lhs == rhs);
+  }
 
 } // End namespace SCIRun
 
