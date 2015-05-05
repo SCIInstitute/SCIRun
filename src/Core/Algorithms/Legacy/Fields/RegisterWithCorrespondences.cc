@@ -755,9 +755,10 @@ bool RegisterWithCorrespondencesAlgo::radial_basis_func(VMesh* Cors, VMesh* poin
     points->size(num_pts);
     
     double xcomp=0.0,ycomp=0.0,zcomp=0.0,mag=0.0;
-    //Smat = matrix_convert::to_dense(Smat);
     DenseMatrixHandle Sigma = matrix_convert::to_dense(Smat);
-
+    //Smat=new DenseMatrix(num_pts,num_cors);
+    //DenseMatrix *Sigma = dynamic_cast<DenseMatrix*>(Smat->dense());
+	
     for(int i=0;i<num_pts;++i)
     {
       for(int j=0;j<num_cors;++j)

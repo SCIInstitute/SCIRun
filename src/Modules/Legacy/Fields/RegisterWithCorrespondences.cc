@@ -62,7 +62,7 @@ void RegisterWithCorrespondences::execute()
 	auto input2 = getRequiredInput(Correspondences1);
 	auto input3 = getRequiredInput(Correspondences2);
   
-    auto output = algo().run_generic(withInputData((InputField,input1),(Correspondences1,input2),(Correspondences2,input3)));
+    auto output = algo().run_generic(withInputData((InputField,input1)(Correspondences1,input2)(Correspondences2,input3)));
     sendOutputFromAlgorithm(OutputField, output);
   
 }
