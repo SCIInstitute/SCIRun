@@ -100,8 +100,8 @@ bool RegisterWithCorrespondencesAlgo::runM(FieldHandle input, FieldHandle Cors1,
 
   FieldHandle input_cp, Cors1_cp, Cors2_cp;
   input_cp.reset(input->deep_clone());
-  Cors1_cp.reset(Cors1_cp->deep_clone());
-  Cors2_cp.reset(Cors2_cp->deep_clone());
+  Cors1_cp.reset(Cors1->deep_clone());
+  Cors2_cp.reset(Cors2->deep_clone());
 
   if (!output)
   {
