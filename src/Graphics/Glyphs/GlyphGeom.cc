@@ -34,17 +34,37 @@ using namespace SCIRun::Graphics;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
 
-GlyphGeom::GlyphGeom()
+GlyphGeom::GlyphGeom() //: numVBOElements_(0)
 {
 
 }
 
-GeometryHandle GlyphGeom::getObject()
+void GlyphGeom::addGlyphsToGeom(Core::Datatypes::GeometryHandle geom)
 {
-  return objectHandle_;
-
+ 
 }
 
+void GlyphGeom::getBufferInfo(int64_t& numVBOElements, std::vector<Vector>& points, std::vector<Vector>& normals,
+                              std::vector<ColorRGB>& colors, std::vector<uint32_t>& indices)
+{
+  numVBOElements = numVBOElements_;
+  points = points_;
+  normals = normals_;
+  colors = colors_;
+  indices = indices_;
+}
+
+void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double resolution)
+{
+  double ratio = 0.75;
+
+  Point mid(ratio * (p1.x() + p2.x()), ratio * (p1.y() + p2.y()), ratio * (p1.z() + p2.z()));
+
+  generateCylinder(p1, mid, radius / 10.0, radius / 10.0, resolution, numVBOElements_, points_, normals_, indices_);
+  generateCylinder(mid, p2, radius, 0.0, resolution, numVBOElements_, points_, normals_, indices_);
+}
+
+// Addarrow from SCIRun 4
 void GlyphGeom::addArrow(const Point& center, const Vector& t,
                          double radius, double length, int nu, int nv)
 {
@@ -64,6 +84,7 @@ void GlyphGeom::addArrow(const Point& center, const Vector& t,
   // add strips to the object
 }
 
+// from SCIRun 4
 void GlyphGeom::addBox(const Point& center, const Vector& t,
                        double x_side, double y_side, double z_side)
 {
@@ -82,6 +103,7 @@ void GlyphGeom::addCylinder(const Point& center, const Vector& t,
   // add the strips to the object
 }
 
+// from SCIRun 4
 void GlyphGeom::addSphere(const Point& center, double radius,
                           int nu, int nv, int half)
 {
@@ -92,6 +114,48 @@ void GlyphGeom::addSphere(const Point& center, double radius,
 
 }
 
+void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
+                                 double radius2, double resolution, int64_t& numVBOElements,
+                                 std::vector<Vector>& points, std::vector<Vector>& normals,
+                                 std::vector<uint32_t>& indices)
+{
+  double num_strips = resolution;
+  if (num_strips < 0) num_strips = 20.0;
+  double r1 = radius1 < 0 ? 1.0 : radius1; 
+  double r2 = radius2 < 0 ? 1.0 : radius2;
+
+  //generate triangles for the cylinders.
+  Vector n((p1 - p2).normal()), u = (10 * n + Vector(10, 10, 10)).normal();
+  Vector crx = Cross(u, n).normal();
+  u = Cross(crx, n).normal();
+  Vector p;
+  for (double strips = 0.; strips <= num_strips; strips += 1.)
+  {
+    uint32_t offset = (uint32_t)numVBOElements;
+    p = std::cos(2. * M_PI * strips / num_strips) * u +
+      std::sin(2. * M_PI * strips / num_strips) * crx;
+    p.normalize();
+    points.push_back(r1 * p + Vector(p1));
+    /*if (colorScheme == GeometryObject::COLOR_MAP || colorScheme == GeometryObject::COLOR_IN_SITU)
+      colors.push_back(edge_colors[0]);*/
+    numVBOElements++;
+    points.push_back(r2 * p + Vector(p2));
+    /*if (colorScheme == GeometryObject::COLOR_MAP || colorScheme == GeometryObject::COLOR_IN_SITU)
+      colors.push_back(edge_colors[1]);*/
+    numVBOElements++;
+    normals.push_back(p);
+    normals.push_back(p);
+    indices.push_back(0 + offset);
+    indices.push_back(1 + offset);
+    indices.push_back(2 + offset);
+    indices.push_back(2 + offset);
+    indices.push_back(1 + offset);
+    indices.push_back(3 + offset);
+  }
+  for (int jj = 0; jj < 6; jj++) indices.pop_back();
+}
+
+// Generate cylinder from SCIRun 4
 void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double radius1,
                                  double radius2, double length, int nu, int nv,
                                  std::vector<QuadStrip>& quadstrips)
@@ -99,6 +163,7 @@ void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double ra
   nu++; //Bring nu to expected value for shape.
 
   if (nu > 20) nu = 20;
+  if (nv == 0) nv = 20;
   SinCosTable& tab1 = tables_[nu];
 
   Transform trans;
@@ -148,6 +213,7 @@ void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double ra
 
 }
 
+// generate ellipsoid from SCIRun 4
 void GlyphGeom::generateEllipsoid(const Point& center, const Vector& t, double scales,
                                   int nu, int nv, int half, std::vector<QuadStrip>& quadstrips)
 {
@@ -214,6 +280,7 @@ void GlyphGeom::generateEllipsoid(const Point& center, const Vector& t, double s
   }
 }
 
+//generate box from SCIRun 4
 void GlyphGeom::generateBox(const Point& center, const Vector& t, double x_side, double y_side,
                             double z_side, std::vector<QuadStrip>& quadstrips)
 {
@@ -295,6 +362,7 @@ void GlyphGeom::generateBox(const Point& center, const Vector& t, double x_side,
   quadstrips.push_back(quadstrip6);
 }
 
+// from SCIRun 4
 void GlyphGeom::generateTransforms(const Point& center, const Vector& normal,
                                    Transform& trans, Transform& rotate)
 {

@@ -60,6 +60,20 @@ namespace SCIRun {
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
         virtual void setStateDefaults();
+      private:
+        /// Constructs a geometry object (essentially a spire object) from the given
+        /// field data.
+        /// \param field    Field from which to construct geometry.
+        /// \param state
+        /// \param id       Ends up becoming the name of the spire object.
+        Core::Datatypes::GeometryHandle buildGeometryObject(
+          boost::shared_ptr<SCIRun::Field> field,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
+          RenderState state);
+
+        RenderState getRenderState(
+          Dataflow::Networks::ModuleStateHandle state,
+          boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap);
       };
     } // Visualization
   } // Modules
