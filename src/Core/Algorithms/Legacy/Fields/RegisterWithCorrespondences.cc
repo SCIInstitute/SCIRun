@@ -60,12 +60,19 @@ AlgorithmOutput RegisterWithCorrespondencesAlgo::run_generic(const AlgorithmInpu
 
   FieldHandle return_field;
 
-  if (get(Variables::Operator).toInt() == 0)
+  auto op = get(Variables::Operator).toInt();
+  switch (op)
+  {
+  case 0:
     runM(input_field, corres1, corres2, return_field);
-  else if (get(Variables::Operator).toInt() == 1)
+    break;
+  case 1:
     runA(input_field, corres1, corres2, return_field);
-  else if (get(Variables::Operator).toInt() == 2)
+    break;
+  case 2:
     runN(input_field, corres1, corres2, return_field);
+    break;
+  }
 
   AlgorithmOutput output;
   output[Variables::OutputField] = return_field;
@@ -405,42 +412,32 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   double sumx;
   double sumy;
   double sumz;
-  if (!input == 0)
+  if (!input)
   {
     error("No input field");
     return (false);
   }
-  if (!Cors1 == 0)
+  if (!Cors1)
   {
     error("No Correspondence1 input field");
     return (false);
   }
-  if (!Cors2 == 0)
+  if (!Cors2)
   {
     error("No Correspndence2 input field");
     return (false);
   }
 
   FieldInformation fi(input);
-  output = input;
-  //output.detach();
-  //output->mesh_detach();
 
   FieldHandle input_cp, Cors1_cp, Cors2_cp;
 
-  input_cp = input;
-  //input_cp.detach();
-  //input_cp->mesh_detach();
+  output.reset(input->deep_clone());
+  input_cp.reset(input->deep_clone());
+  Cors1_cp.reset(Cors1->deep_clone());
+  Cors2_cp.reset(Cors2->deep_clone());
 
-  Cors1_cp = Cors1;
-  //Cors1_cp.detach();
-  //Cors1_cp->mesh_detach();
-
-  Cors2_cp = Cors2;
-  //Cors2_cp.detach();
-  //Cors2_cp->mesh_detach();
-
-  if (!output == 0)
+  if (!output)
   {
     error("Could not allocate output field");
     return (false);
@@ -696,29 +693,27 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
 
 bool RegisterWithCorrespondencesAlgo::runN(FieldHandle input, FieldHandle Cors1, FieldHandle Cors2, FieldHandle& output) const
 {
-  if (!input == 0)
+  if (!input)
   {
     error("No input field");
     return (false);
   }
-  if (!Cors1 == 0)
+  if (!Cors1)
   {
     error("No Correspondence1 input field");
     return (false);
   }
-  if (!Cors2 == 0)
+  if (!Cors2)
   {
     error("No Correspndence2 input field");
     return (false);
   }
 
-  FieldInformation fi(input);
-  //output = CreateField(fi,input->mesh());
-  output = input;
-  //output.detach();
-  //output->mesh_detach();
+  FieldHandle input_cp;
 
-  if (!output == 0)
+  output.reset(input->deep_clone());
+
+  if (!output)
   {
     error("Could not allocate output field");
     return (false);
