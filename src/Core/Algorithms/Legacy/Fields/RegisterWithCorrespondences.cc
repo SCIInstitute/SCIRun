@@ -54,6 +54,7 @@ RegisterWithCorrespondencesAlgo::RegisterWithCorrespondencesAlgo()
 
 AlgorithmOutput RegisterWithCorrespondencesAlgo::run_generic(const AlgorithmInput& input) const
 {
+  std::cout << "ALGO" << std::endl;
   auto input_field = input.get<Field>(Variables::InputField);
   auto corres1 = input.get<Field>(Correspondences1);
   auto corres2 = input.get<Field>(Correspondences2);
@@ -64,12 +65,15 @@ AlgorithmOutput RegisterWithCorrespondencesAlgo::run_generic(const AlgorithmInpu
   switch (op)
   {
   case 0:
+    std::cout << "runM" << std::endl;
     runM(input_field, corres1, corres2, return_field);
     break;
   case 1:
+    std::cout << "runA" << std::endl;
     runA(input_field, corres1, corres2, return_field);
     break;
   case 2:
+    std::cout << "runN" << std::endl;
     runN(input_field, corres1, corres2, return_field);
     break;
   }
@@ -448,6 +452,18 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   VMesh* icors1 = Cors1_cp->vmesh();
   VMesh* icors2 = Cors2_cp->vmesh();
 
+  {
+    const BBox bbox = omesh->get_bounding_box();
+    if (bbox.valid())
+    {
+      std::cout << "output size: " << bbox.diagonal() << " center: " << bbox.center() << std::endl;
+    }
+    else
+    {
+      std::cout << "output bbox invalid" << std::endl;
+    }
+  }
+
   //get the number of nodes in input field  
   //VMesh::size_type num_nodes = imesh->num_nodes();
 
@@ -537,7 +553,7 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   }
 
   //create B for big matrix//
-  DenseMatrixHandle BMat(new DenseMatrix(num_cors1, 4));
+  DenseMatrix BMat(num_cors1, 4);
   VMesh::Node::iterator it;
   Point P;
 
@@ -548,37 +564,34 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
     icors2->get_point(P, *(it));
 
     //horizontal x,y,z
-    BMat->put(L1, 0, P.x());
-    BMat->put(L1, 1, P.y());
-    BMat->put(L1, 2, P.z());
-    BMat->put(L1, 3, 1);
+    BMat(L1, 0) = P.x();
+    BMat(L1, 1) = P.y();
+    BMat(L1, 2) = P.z();
+    BMat(L1, 3) = 1;
   }
 
   //Create big matrix //
-  DenseMatrixHandle BigMat(new DenseMatrix(3 * num_cors1, 12));
-  double temp = 0;
+  DenseMatrix BigMat(3 * num_cors1, 12);
 
   for (int i = 0; i < (3 * num_cors1); ++i)
   {
     for (int j = 0; j < (12); ++j)
     {
-      BigMat->put(i, j, 0);
+      BigMat(i, j) = 0;
     }
   }
   for (int i = 0; i < (num_cors1); ++i)
   {
     for (int j = 0; j < 4; ++j)
     {
-      temp = BMat->get(i, j);
-      BigMat->put(i, j, temp);
+      BigMat(i, j) = BMat(i, j);
     }
   }
   for (int i = 0; i < (num_cors1); ++i)
   {
     for (int j = 0; j < 4; ++j)
     {
-      temp = BMat->get(i, j);
-      BigMat->put(num_cors1 + i, 4 + j, temp);
+      BigMat(num_cors1 + i, 4 + j) = BMat(i, j);
 
     }
   }
@@ -586,8 +599,7 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   {
     for (int j = 0; j < (4); ++j)
     {
-      temp = BMat->get(i, j);
-      BigMat->put(2 * num_cors1 + i, 8 + j, temp);
+      BigMat(2 * num_cors1 + i, 8 + j) = BMat(i, j);
     }
   }
 
@@ -615,19 +627,16 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   int m = num_cors1;
   int n = 4;
 
-  SparseRowMatrixHandle matS;
-
   //create the U and V matrix
-  DenseMatrixHandle UMat(new DenseMatrix(m, m));
-  DenseMatrixHandle VMat(new DenseMatrix(n, n));
+  DenseMatrix UMat;
+  DenseMatrix VMat;
 
   //run SVD
   try
   {
-    Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(*BigMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
-    UMat = boost::make_shared<DenseMatrix>(svd_mat.matrixU());
-    VMat = boost::make_shared<DenseMatrix>(svd_mat.matrixV());
-    matS = matrix_convert::to_sparse(boost::make_shared<DenseColumnMatrix>(svd_mat.singularValues()));
+    Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(BigMat, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    UMat = svd_mat.matrixU();
+    VMat = svd_mat.matrixV();
   }
   catch (const SCIRun::Exception& exception)
   {
@@ -638,43 +647,43 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
   }
 
   //Make more storage for the solving the linear least squares
-  DenseMatrixHandle RsideMat(new DenseMatrix(m, 1));
-  DenseMatrixHandle CMat(new DenseMatrix(m, 1));
-  DenseMatrixHandle YMat(new DenseMatrix(n, 1));
-  DenseMatrixHandle CoefMat(new DenseMatrix(n, 1));
+  DenseMatrix RsideMat(m, 1);
+  DenseMatrix CMat(m, 1);
+  DenseMatrix YMat(n, 1);
+  DenseMatrix CoefMat(n, 1);
 
   for (int xyz = 0; xyz < 3; xyz++)
   {
 
     for (int loop = 0; loop < m; ++loop)
     {
-      RsideMat->put(loop, 0, rside[xyz*m + loop]);
+      RsideMat(loop, 0) = rside[xyz*m + loop];
     }
 
     //c=trans(Um)*rside;
-    DenseMatrix trans_mat = UMat->transpose();
+    DenseMatrix trans_mat = UMat.transpose();
     size_t out_col = 0; size_t out_row = 0;
     for (size_t r = 0; r < trans_mat.nrows(); r++) {
       double total = 0;
-      for (size_t rside_cols = 0; rside_cols < RsideMat->ncols(); rside_cols++) {
+      for (size_t rside_cols = 0; rside_cols < RsideMat.ncols(); rside_cols++) {
         for (size_t c = 0; c < trans_mat.ncols(); c++) {
-          total += trans_mat.get(r, c) * RsideMat->get(c, rside_cols);
+          total += trans_mat.get(r, c) * RsideMat(c, rside_cols);
         }
-        CMat->put(out_col, out_row, total);
+        CMat(out_col, out_row) = total;
         out_col++;
       }
       out_row++;
     }
 
-    trans_mat = VMat->transpose();
+    trans_mat = VMat.transpose();
     out_col = 0; out_row = 0;
     for (size_t r = 0; r < trans_mat.nrows(); r++) {
       double total = 0;
-      for (size_t YMat_cols = 0; YMat_cols < YMat->ncols(); YMat_cols++) {
+      for (size_t YMat_cols = 0; YMat_cols < YMat.ncols(); YMat_cols++) {
         for (size_t c = 0; c < trans_mat.ncols(); c++) {
-          total += trans_mat.get(r, c) * YMat->get(c, YMat_cols);
+          total += trans_mat.get(r, c) * YMat(c, YMat_cols);
         }
-        CoefMat->put(out_col, out_row, total);
+        CoefMat(out_col, out_row) = total;
         out_col++;
       }
       out_row++;
@@ -682,11 +691,24 @@ bool RegisterWithCorrespondencesAlgo::runA(FieldHandle input, FieldHandle Cors1,
 
     for (int p = 0; p < n; p++)
     {
-      coefs.push_back(CoefMat->get(p, 0));
+      coefs.push_back(CoefMat(p, 0));
     }
   }
   //done with solve, make the new field
   make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
+
+
+  {
+    const BBox bbox = omesh->get_bounding_box();
+    if (bbox.valid())
+    {
+      std::cout << "output size: " << bbox.diagonal() << " center: " << bbox.center() << std::endl;
+    }
+    else
+    {
+      std::cout << "output bbox invalid" << std::endl;
+    }
+  }
 
   return (true);
 }

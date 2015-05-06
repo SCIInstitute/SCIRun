@@ -318,7 +318,7 @@
 									<name>Operator</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -830,7 +830,7 @@
 									<name>DefaultMeshColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.5,0.5,0.5)</value>
+										<value>Color(0.254902,0.498039,0.105882)</value>
 									</value>
 								</second>
 							</item>
@@ -1600,7 +1600,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>22</count>
+			<count>21</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
@@ -1729,18 +1729,6 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowColorMap:0</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>RescaleColorMap:0</moduleId1_>
-				<port1_>
-					<name>ColorMapOutput</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowField:1</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
